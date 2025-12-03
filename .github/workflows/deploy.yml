@@ -1,5 +1,6 @@
 name: Deploy Next.js Project
 
+# Trigger: ad ogni push sul branch main
 on:
   push:
     branches:
@@ -8,46 +9,45 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}   # variabile per Postgres
 
     steps:
-      # 1?? Checkout repository
+      # 1️⃣ Checkout del repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2?? Setup Node.js
+      # 2️⃣ Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
 
-      # 3?? Install dependencies
+      # 3️⃣ Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # 4?? Build Next.js
-      - name: Build Next.js
+      # 4️⃣ Build Next.js
+      - name: Build project
         run: npm run build
 
-      # 5?? Copy build (.next) to VPS via SCP
-      - name: Copy .next to VPS
+      # 5️⃣ Copia build (.next) sul VPS via SCP
+      - name: Copy build to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_KEY }}
+          host: ${{ secrets.VPS_HOST }}        # es. 87.106.40.188
+          username: ${{ secrets.VPS_USER }}    # es. root
+          key: ${{ secrets.VPS_KEY }}          # la tua chiave privata SSH
           port: 22
           source: ".next/**"
           target: "/var/www/TML-Website/"
 
-      # 6?? Restart PM2 on VPS 
+      # 6️⃣ Riavvia PM2 sul VPS
       - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
+          port: 22
           script: |
             cd /var/www/TML-Website
-            pm2 restart server.js
+            pm2 restart server.js || pm2 start server.js
