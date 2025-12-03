@@ -28,6 +28,7 @@
     "next": "^15.5.3",
     "ollama": "^0.5.18",
     "pg": "^8.16.3",
+    "postgres": "^3.2.0",
     "prisma": "^6.19.0",
     "react": "^18.2.0",
     "react-checkbox-tree": "^1.8.0",
