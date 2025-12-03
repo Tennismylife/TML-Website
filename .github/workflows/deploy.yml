@@ -49,7 +49,7 @@ jobs:
           source: ".next/**,public/**,package.json,server.js"  # includi anche server.js e package.json
           target: "/var/www/TML-Website/"
 
-      # 7?? Restart PM2 on VPS
+      # 7?? Restart PM2 on VPS 
       - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
