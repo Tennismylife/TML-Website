@@ -1,0 +1,30 @@
+services:
+  db:
+    container_name: tennis-postgres
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: tennis
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web:
+    container_name: tennis-next
+    build: .
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/tennis
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    command: yarn dev
+
+volumes:
+  postgres_data:

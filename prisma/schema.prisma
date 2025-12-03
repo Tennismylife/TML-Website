@@ -1,0 +1,528 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Player {
+  id         String    @id @default(cuid())
+  player     String
+  atpname    String?
+  birthdate  DateTime?
+  weight     Int?
+  height     Int?
+  turnedpro  Int?
+  birthplace String?
+  coaches    String?
+  hand       String?
+  backhand   String?
+  ioc        String?
+
+  matchesP1  Match[]   @relation("P1")
+  matchesP2  Match[]   @relation("P2")
+
+  tournaments PlayerTournament[]
+  rankings   Ranking[]
+}
+
+model Match {
+  id                 Int       @id
+  year               Int?
+  tourney_id         String?
+  event_id           String?
+  tourney_name       String?
+  surface            String?
+  draw_size          Int?
+  tourney_level      String?
+  tourney_date       DateTime?
+  match_num          Int?
+  winner_id          String?
+  winner_seed        Int?
+  winner_entry       String?
+  winner_name        String?
+  winner_hand        String?
+  winner_ht          Int?
+  winner_ioc         String?
+  winner_age         Float?
+  winner_rank        Int?
+  winner_rank_points Int?
+  loser_id           String?
+  loser_seed         Int?
+  loser_entry        String?
+  loser_name         String?
+  loser_hand         String?
+  loser_ht           Int?
+  loser_ioc          String?
+  loser_age          Float?
+  loser_rank         Int?
+  loser_rank_points  Int?
+  score              String?
+  best_of            Int?
+  round              String?
+  minutes            Int?
+  w_ace              Int?
+  w_df               Int?
+  w_svpt             Int?
+  w_1stIn            Int?
+  w_1stWon           Int?
+  w_2ndWon           Int?
+  w_SvGms            Int?
+  w_bpSaved          Int?
+  w_bpFaced          Int?
+  l_ace              Int?
+  l_df               Int?
+  l_svpt             Int?
+  l_1stIn            Int?
+  l_1stWon           Int?
+  l_2ndWon           Int?
+  l_SvGms            Int?
+  l_bpSaved          Int?
+  l_bpFaced          Int?
+  status             Boolean?
+  team_event         Boolean?
+
+  player1            Player?   @relation("P1", fields: [winner_id], references: [id])
+  player2            Player?   @relation("P2", fields: [loser_id], references: [id])
+}
+
+model PlayerTournament {
+  id        Int     @id @default(autoincrement())
+  player    Player  @relation(fields: [player_id], references: [id])
+  player_id String
+  event_id  String
+  tourney_id  Int
+  tourney_name  String
+  year        Int
+  round       String
+  surface     String
+  tourney_level String
+  draw_size   Int?
+  tourney_date DateTime
+  @@unique([player_id, event_id])
+  @@index([player_id])
+  @@index([event_id])
+}
+
+enum TournamentCategory {
+  GRAND_SLAM
+  MASTERS_1000
+  FINALS
+  OLYMPICS
+  OTHER
+}
+
+enum Surface {
+  Hard
+  Clay
+  Grass
+  Carpet
+  Unknown
+}
+
+model Tournament {
+  id        Int                 @id @default(autoincrement())
+  name      Json?
+  category  Json?
+  city      Json?
+  country   Json?
+  ioc       Json?
+  surfaces  Json?
+  indoor    Boolean?
+  website   String?
+
+  @@index([category])
+  @@index([name])
+}
+
+model RankingDate {
+  id       Int       @id @default(autoincrement())
+  date     DateTime      @unique
+  rankings Ranking[]
+}
+
+model Ranking {
+  id            Int         @id @default(autoincrement())
+  rank          Int
+  points        Int
+  playerId      String
+  rankingDateId Int
+  rankingDate   RankingDate @relation(fields: [rankingDateId], references: [id])
+  player        Player?     @relation(fields: [playerId], references: [id])  // <--- rendi opzionale
+  @@unique([rankingDateId, playerId])
+}
+
+
+model RankingTable {
+  id          Int     @id @default(autoincrement())
+  year        String
+  tournament  String?
+  tourney_id  String?
+  tourney_date  DateTime?
+  prize_money String?
+  atp_category String?
+
+  @@unique([id, year])
+}
+
+//  Wins
+model mVTopWinners {
+  winner_id   String   @id
+  winner_name String
+  winner_ioc  String?
+  total_wins  Int
+  @@map("mv_top_winners") // Mappa il nome reale della view
+}
+
+
+//  Played
+model mVTopPlayed {
+  player_id   String   @id
+  player_name String
+  player_ioc  String?
+  total_played  Int
+  @@map("mv_top_played") // Mappa il nome reale della view
+}
+
+
+model mVH2HCount {
+  id              Int     @id                     // corrisponde a ROW_NUMBER()
+  global_h2h      Json
+  by_surface      Json
+  by_tourney_level Json
+  by_best_of      Json
+  by_round        Json
+  @@map("mv_h2h_count")                             // mappa al nome della materialized view nel DB
+}
+
+model mVH2HSeason {
+  player_1_id   String
+  player_2_id   String
+  player_1_name String
+  player_2_name String
+  player_1_ioc  String?
+  player_2_ioc  String?
+  year          Int
+  matches_played Int
+
+  @@id([year, player_1_id, player_2_id])  // ID composto per unicità per stagione e coppia
+  @@map("mv_h2h_season")              // Mappa al nome della materialized view nel DB
+}
+
+model mVH2HTourney {
+  tourney_id     String   @map("tourney_id")
+  tourney_name   String   @map("tourney_name")
+  player_1_id    String   @map("player_1_id")
+  player_2_id    String   @map("player_2_id")
+  player_1_name  String   @map("player_1_name")
+  player_2_name  String   @map("player_2_name")
+  player_1_ioc   String   @map("player_1_ioc")
+  player_2_ioc   String   @map("player_2_ioc")
+  matches_played Int      @map("matches_played")
+
+  @@map("mv_h2h_tourney") // nome reale della materialized view nel DB
+  @@id([tourney_id, player_1_id, player_2_id])  // ID composto per unicità per stagione e coppia
+}
+
+model mVEntries {
+  player_id          String
+  player_name        String
+  player_ioc         String?
+  tournaments_played Int
+
+  @@map("mv_entries")
+  @@id([player_id]) // player_id è unico nella view
+}
+
+
+model mVTimespanEntries {
+  player_id        String 
+  surface_timespan Json?
+  level_timespan   Json?
+  overall_timespan Json?
+
+  @@map("mv_timespan_entries")
+  @@id([player_id]) // player_id è unico nella view
+}
+
+
+model mVSameTournamentWins {
+  tourney_id     String
+  tourney_name   String
+  player_id      String
+  player_name    String
+  total_wins     Int 
+  surface_totals Json
+  level_totals   Json
+  best_of_totals Json
+  round_totals   Json 
+
+  @@map("mv_same_tournament_wins")
+  @@id([tourney_id, player_id, total_wins])
+}
+
+model mVSameTournamentPlayed {
+  tourney_id     String 
+  tourney_name   String
+  player_id      String
+  player_name    String
+  total_matches  Int 
+  surface_totals Json? 
+  level_totals   Json?
+  best_of_totals Json?
+  round_totals   Json? 
+
+  @@map("mv_same_tournament_played")
+  @@id([tourney_id, player_id, total_matches])
+}
+
+model mVSameTournamentEntries {
+  tourney_id     String  
+  player_id      String  
+  tourney_name   String
+  total_entries  Int     
+  surface_totals Json?
+  level_totals   Json?
+
+  @@map("mv_same_tournament_entries")
+  @@id([tourney_id, player_id, total_entries])
+}
+
+
+model mVSameTournamentTitles {
+  tourney_id     String
+  tourney_name   String?
+  player_id      String
+  total_titles   Int
+  surface_titles Json?
+  level_titles   Json?
+
+  @@map("mv_same_tournament_titles")
+  @@id([tourney_id, player_id, total_titles])
+}
+
+model mVSameTournamentRounds {
+  tourney_id        String
+  tourney_name      String
+  player_id     String
+  total_rounds  Int
+  surface_totals Json?
+  level_totals  Json?
+  round_totals  Json?
+
+  @@map("mv_same_tournament_rounds")
+  @@id([tourney_id, player_id, total_rounds])
+}
+
+model mVSameSeasonWins {
+  year        Int
+  player_id     String
+  total_wins    Int
+  surface_wins  Json?
+  level_wins    Json?
+  best_of_wins  Json?
+  round_wins    Json?
+
+  @@map("mv_same_season_wins")
+  @@id([year, player_id, total_wins])
+}
+
+
+model mVSameSeasonPlayed {
+  year           Int
+  player_id        String
+  total_played     Int
+  surface_played   Json?
+  level_played     Json?
+  best_of_played   Json?
+  round_played     Json?
+
+  @@map("mv_same_season_played")
+  @@id([year, player_id, total_played])
+}
+
+
+model mVSameSeasonEntries {
+  year         Int
+  player_id      String
+  total_entries  Int
+  surface_totals Json?
+  level_totals   Json?
+
+  @@map("mv_same_season_entries")
+  @@id([year, player_id, total_entries])
+}
+
+model mVSameSeasonTitles {
+  year           Int
+  player_id       String  
+  player_name     String
+  titles_in_year   Int 
+  surface_totals  Json
+  level_totals    Json
+
+  @@id([year, player_id, titles_in_year])    // chiave primaria composta: un record per giocatore/anno
+  @@map("mv_same_season_titles") // nome della materialized view nel DB
+}
+
+model mVSameSeasonRounds {
+  year           Int
+  player_id     String
+  total_rounds  Int
+  surface_totals Json?
+  level_totals  Json?
+  round_totals  Json?
+
+  @@map("mv_same_season_rounds")
+  @@id([year, player_id, total_rounds])
+}
+
+model mVSameSeasonPercentage {
+  year           Int
+  player_id     String
+  total_played  Int
+  total_wins    Int
+  win_rate      Float
+
+  surface       Json?    // es. { "Clay": { played, wins, win_rate }, ... }
+  level         Json?    // es. { "A": { played, wins, win_rate }, ... }
+  round         Json?    // es. { "F": { played, wins, win_rate }, ... }
+  best_of       Json?    // es. { "3": { played, wins, win_rate }, "5": {...} }
+
+  @@map("mv_same_season_percentage")
+  @@id([year, player_id, win_rate])
+}
+
+model mVAllEntries {
+  player_id   String
+  event_id    String
+  age         Float?
+
+  @@map("mv_all_entries")
+  @@id([player_id, event_id])
+}
+
+model mvWinsAges {
+  winner_id             String
+  ages_json             Json?
+  ages_by_surface_json  Json?
+  ages_by_level_json    Json?
+  ages_by_round_json    Json?
+  ages_by_best_of_json  Json?
+
+  @@map("mv_wins_ages") // nome della materialized view nel DB
+  @@id([winner_id])
+}
+
+
+model mVPlayedAges {
+  player_id              String
+  ages_json              Json?
+  ages_by_surface_json   Json?
+  ages_by_level_json     Json?
+  ages_by_round_json     Json?
+  ages_by_best_of_json   Json?
+
+ @@map("mv_played_ages") // nome della materialized view nel DB
+  @@id([player_id])
+}
+
+model mVEntriesAges {
+  player_id              String
+  ages_json              Json?
+  ages_by_surface_json   Json?
+  ages_by_level_json     Json?
+
+ @@map("mv_entries_ages") // nome della materialized view nel DB
+ @@id([player_id])
+}
+
+
+model mVNeededto {
+  player_id     String
+  overall_json  Json
+  surface_json  Json
+  level_json    Json
+
+  @@map("mv_neededto") // nome della materialized view nel DB
+  @@id([player_id])
+}
+
+model mVNeededToRound {
+  player_id      String
+  round          String
+  overall_json   Json
+  surface_json   Json?
+  level_json     Json?
+
+  @@map("mv_neededto_round")
+  @@id([player_id, round])
+}
+
+model mvAllConsecutiveWinStreaks {
+  id        Int   @id @default(autoincrement()) // Prisma richiede un id
+  global    Json
+  surfaces  Json
+  levels    Json
+  best_of   Json
+
+  @@map("mv_all_consecutive_win_streaks") // nome della view nel DB
+}
+
+model mVStreakRounds {
+  player_id   String
+  player_name String
+  player_ioc  String
+  min_round   String
+  maxStreak   Int
+  event_ids   String[]  // Postgres array di testo
+
+  @@id([player_id, min_round])
+  @@map("mv_streak_rounds")
+}
+
+model mVStats {
+  id           Int      @id @default(autoincrement())
+  winner_id    String?
+  loser_id     String?
+
+  surface      String?
+  year         Int?
+  tourney_level String?
+
+  w_ace        Int?
+  w_df         Int?
+  w_svpt       Int?
+  w_1stIn      Int?
+  w_1stWon     Int?
+  w_2ndWon     Int?
+  w_SvGms      Int?
+  w_bpSaved    Int?
+  w_bpFaced    Int?
+
+  l_ace        Int?
+  l_df         Int?
+  l_svpt       Int?
+  l_1stIn      Int?
+  l_1stWon     Int?
+  l_2ndWon     Int?
+  l_SvGms      Int?
+  l_bpSaved    Int?
+  l_bpFaced    Int?
+
+  stats        Boolean?
+
+  w_setsWon    Int?
+  l_setsWon    Int?
+  w_gmsWon     Int?
+  l_gmsWon     Int?
+  w_tbWon      Int?
+  l_tbWon      Int?
+
+  @@map("mv_stats")
+}
+
+
