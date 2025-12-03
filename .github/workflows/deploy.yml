@@ -1,6 +1,6 @@
 name: Deploy Next.js Project
 
-# Trigger: ad ogni push sul branch main
+# Trigger: ogni push su main
 on:
   push:
     branches:
@@ -11,36 +11,46 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout del repository
+      # 1?? Checkout del repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Setup Node.js
+      # 2?? Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
 
-      # 3️⃣ Install dependencies
+      # 3?? Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # 4️⃣ Build Next.js
+      # 4?? Build Next.js
       - name: Build project
         run: npm run build
 
-      # 5️⃣ Copia build (.next) sul VPS via SCP
+      # 5?? Controlla che la cartella .next esista e abbia file
+      - name: Check .next folder
+        run: |
+          if [ ! -d ".next" ] || [ -z "$(ls -A .next)" ]; then
+            echo ".next folder is missing or empty"
+            exit 1
+          else
+            echo ".next folder exists and is ready"
+          fi
+
+      # 6?? Copia build sul VPS via SCP
       - name: Copy build to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
-          host: ${{ secrets.VPS_HOST }}        # es. 87.106.40.188
-          username: ${{ secrets.VPS_USER }}    # es. root
-          key: ${{ secrets.VPS_KEY }}          # la tua chiave privata SSH
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
           port: 22
           source: ".next/**"
           target: "/var/www/TML-Website/"
 
-      # 6️⃣ Riavvia PM2 sul VPS
+      # 7?? Riavvia PM2 sul VPS
       - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:

@@ -4,3 +4,4 @@ node_modules
 .next
 .dev.db
 .next_build
+ServerCommands.txt
