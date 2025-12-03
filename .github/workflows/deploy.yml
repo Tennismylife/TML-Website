@@ -56,7 +56,7 @@ jobs:
             .env         # se vuoi mantenere l'env sul server
           target: "/var/www/TML-Website/"
 
-      # 7?? Riavvia PM2 sul VPS con DATABASE_URL 
+      # 7?? Riavvia PM2 sul VPS con DATABASE_URL
       - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
