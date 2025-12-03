@@ -29,11 +29,7 @@ jobs:
         with:
           host: ${{ secrets.87.106.40.188 }}
           username: ${{ secrets.root }}
-          key: ${{ secrets.b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
-QyNTUxOQAAACDAucoMEKqwt1UZPEaL63HDuSY7EqmjeMpeCvLVV1Wa+gAAAJjADP3bwAz9
-2wAAAAtzc2gtZWQyNTUxOQAAACDAucoMEKqwt1UZPEaL63HDuSY7EqmjeMpeCvLVV1Wa+g
-AAAEC8EgGOnTj3vsMTEbWrvz58EmWwYYZud66I86Sx5wUZUsC5ygwQqrC3VRk8RovrccO5
-JjsSqaN4yl4K8tVXVZr6AAAADmdpdGh1Yi1hY3Rpb25zAQIDBAUGBw== }}
+          key: ${{ secrets.VPS_KEY }}
           port: 22
           source: ".next/**"
           target: "/var/www/TML-Website/"
@@ -43,11 +39,7 @@ JjsSqaN4yl4K8tVXVZr6AAAADmdpdGh1Yi1hY3Rpb25zAQIDBAUGBw== }}
         with:
           host: ${{ secrets.87.106.40.188 }}
           username: ${{ secrets.root }}
-          key: ${{ secrets.b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
-QyNTUxOQAAACDAucoMEKqwt1UZPEaL63HDuSY7EqmjeMpeCvLVV1Wa+gAAAJjADP3bwAz9
-2wAAAAtzc2gtZWQyNTUxOQAAACDAucoMEKqwt1UZPEaL63HDuSY7EqmjeMpeCvLVV1Wa+g
-AAAEC8EgGOnTj3vsMTEbWrvz58EmWwYYZud66I86Sx5wUZUsC5ygwQqrC3VRk8RovrccO5
-JjsSqaN4yl4K8tVXVZr6AAAADmdpdGh1Yi1hY3Rpb25zAQIDBAUGBw== }}
+          key: ${{ secrets.VPS_KEY }}
           script: |
             cd /var/www/TML-Website
             pm2 restart server.js
