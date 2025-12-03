@@ -27,8 +27,8 @@ jobs:
       - name: Copy build (.next) to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
-          host: ${{ secrets.87.106.40.188 }}
-          username: ${{ secrets.root }}
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           port: 22
           source: ".next/**"
@@ -37,8 +37,8 @@ jobs:
       - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
-          host: ${{ secrets.87.106.40.188 }}
-          username: ${{ secrets.root }}
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           script: |
             cd /var/www/TML-Website
