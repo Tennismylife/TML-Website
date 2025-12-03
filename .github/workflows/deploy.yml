@@ -1,6 +1,6 @@
+name: Build & Deploy Next.js Project
 
-name: Deploy Next.js Project
-
+# Trigger ad ogni push sul branch main
 on:
   push:
     branches:
@@ -10,8 +10,11 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}  # Postgres URL
+
     steps:
-      # 1?? Checkout del repository
+      # 1?? Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -25,49 +28,35 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # 4?? Build Next.js con variabili per fase build
+      # 4?? Test database connection
+      - name: Test PostgreSQL connection
+        run: |
+          echo "Testing database connection..."
+          npx prisma db pull
+
+      # 5?? Build Next.js
       - name: Build project
         run: npm run build
-        env:
-          DATABASE_URL: "postgresql://postgres:Matlab1985911@87.106.40.188:5432/tennis?schema=public" # Mock DB
-          NEXT_PHASE: "phase-production-build" # Indica che siamo in fase di build
 
-      # 5?? Verifica build
-      - name: Check .next_build folder
-        run: |
-          if [ ! -d ".next_build" ] || [ -z "$(ls -A .next_build)" ]; then
-            echo ".next_build folder is missing or empty"
-            exit 1
-          else
-            echo ".next_build folder exists and is ready"
-          fi
-
-      # 6?? Copia progetto completo sul VPS
-      - name: Copy project to VPS
+      # 6?? Copy build (.next) and public to VPS via SCP
+      - name: Copy build to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           port: 22
-          source: |
-            .next_build/**
-            package.json
-            package-lock.json
-            server.js
-            .env.production
+          source: ".next/**,public/**,package.json,server.js"  # includi anche server.js e package.json
           target: "/var/www/TML-Website/"
 
-      # 7?? Riavvia PM2 sul VPS con DATABASE_URL reale
+      # 7?? Restart PM2 on VPS
       - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
-          port: 22
           script: |
             cd /var/www/TML-Website
             npm install --production
-            export $(cat .env.production | xargs) # Carica variabili da .env.production
-            pm2 restart "npm start" --name TML-Website || pm2 start "npm start" --name TML-Website
+            pm2 restart server.js || pm2 start server.js --name TML-Website
