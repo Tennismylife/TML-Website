@@ -1,3 +1,4 @@
+
 name: Deploy Next.js Project
 
 on:
@@ -24,11 +25,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # 4?? Build Next.js con DATABASE_URL
+      # 4?? Build Next.js con variabile NEXT_PHASE
       - name: Build project
         run: npm run build
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NEXT_PHASE: "phase-production-build" # Indica che siamo in fase di build
 
       # 5?? Verifica build
       - name: Check .next folder
@@ -52,11 +54,11 @@ jobs:
             .next/**
             package.json
             package-lock.json
-            server.js    # o index.js, il file di avvio Node/PM2
-            .env         # se vuoi mantenere l'env sul server
+            server.js
+            .env
           target: "/var/www/TML-Website/"
 
-      # 7?? Riavvia PM2 sul VPS con DATABASE_URL 
+      # 7?? Riavvia PM2 sul VPS con DATABASE_URL
       - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
