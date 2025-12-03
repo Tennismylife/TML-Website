@@ -25,21 +25,21 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # 4?? Build Next.js con variabile NEXT_PHASE
+      # 4?? Build Next.js con variabili per fase build
       - name: Build project
         run: npm run build
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: "postgresql://fake:fake@localhost:5432/fake?schema=public" # Mock DB
           NEXT_PHASE: "phase-production-build" # Indica che siamo in fase di build
 
       # 5?? Verifica build
-      - name: Check .next folder
+      - name: Check .next_build folder
         run: |
-          if [ ! -d ".next" ] || [ -z "$(ls -A .next)" ]; then
-            echo ".next folder is missing or empty"
+          if [ ! -d ".next_build" ] || [ -z "$(ls -A .next_build)" ]; then
+            echo ".next_build folder is missing or empty"
             exit 1
           else
-            echo ".next folder exists and is ready"
+            echo ".next_build folder exists and is ready"
           fi
 
       # 6?? Copia progetto completo sul VPS
@@ -51,14 +51,14 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           port: 22
           source: |
-            .next/**
+            .next_build/**
             package.json
             package-lock.json
             server.js
-            .env
+            .env.production
           target: "/var/www/TML-Website/"
 
-      # 7?? Riavvia PM2 sul VPS con DATABASE_URL
+      # 7?? Riavvia PM2 sul VPS con DATABASE_URL reale
       - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
@@ -69,5 +69,5 @@ jobs:
           script: |
             cd /var/www/TML-Website
             npm install --production
-            export DATABASE_URL="${{ secrets.DATABASE_URL }}"
-            pm2 restart server.js || pm2 start server.js
+            export $(cat .env.production | xargs) # Carica variabili da .env.production
+            pm2 restart "npm start" --name TML-Website || pm2 start "npm start" --name TML-Website
