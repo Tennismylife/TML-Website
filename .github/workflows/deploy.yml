@@ -29,7 +29,6 @@ jobs:
       - name: Build project
         run: npm run build
         env:
-          DATABASE_URL: "postgresql://fake:fake@localhost:5432/fake?schema=public" # Mock DB
           NEXT_PHASE: "phase-production-build" # Indica che siamo in fase di build
 
       # 5?? Verifica build
