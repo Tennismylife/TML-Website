@@ -1,0 +1,56 @@
+name: Deploy Next.js Project
+
+# Trigger: ad ogni push sul branch main
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout del repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # 4. Build Next.js
+      - name: Build project
+        run: npm run build
+
+      # 5. Copy build (.next) to VPS via SCP
+      - name: Copy build to VPS
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.87.106.40.188 }}
+          username: ${{ secrets.root }}
+          key: ${{ secrets.b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+QyNTUxOQAAACDAucoMEKqwt1UZPEaL63HDuSY7EqmjeMpeCvLVV1Wa+gAAAJjADP3bwAz9
+2wAAAAtzc2gtZWQyNTUxOQAAACDAucoMEKqwt1UZPEaL63HDuSY7EqmjeMpeCvLVV1Wa+g
+AAAEC8EgGOnTj3vsMTEbWrvz58EmWwYYZud66I86Sx5wUZUsC5ygwQqrC3VRk8RovrccO5
+JjsSqaN4yl4K8tVXVZr6AAAADmdpdGh1Yi1hY3Rpb25zAQIDBAUGBw== }}  # chiave SSH privata come secret
+          port: 22
+          source: ".next/**"
+          target: "/var/www/TML-Website/"
+
+      # 6. Restart PM2 on VPS
+      - name: Restart PM2
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.87.106.40.188 }}
+          username: ${{ secrets.root }}
+          key: ${{ secrets.githubactionskeys }}
+          script: |
+            cd /var/www/TML-Website
+            pm2 restart server.js
