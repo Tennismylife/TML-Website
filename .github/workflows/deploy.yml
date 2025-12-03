@@ -8,23 +8,30 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}   # variabile per Postgres
 
     steps:
+      # 1?? Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # 2?? Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
 
+      # 3?? Install dependencies
       - name: Install dependencies
         run: npm install
 
-      - name: Build project
+      # 4?? Build Next.js
+      - name: Build Next.js
         run: npm run build
 
-      - name: Copy build (.next) to VPS
+      # 5?? Copy build (.next) to VPS via SCP
+      - name: Copy .next to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -34,6 +41,7 @@ jobs:
           source: ".next/**"
           target: "/var/www/TML-Website/"
 
+      # 6?? Restart PM2 on VPS
       - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
