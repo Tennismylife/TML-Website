@@ -29,6 +29,7 @@ jobs:
       - name: Build project
         run: npm run build
         env:
+          DATABASE_URL: "postgresql://postgres:Matlab1985911@87.106.40.188:5432/tennis?schema=public" # Mock DB
           NEXT_PHASE: "phase-production-build" # Indica che siamo in fase di build
 
       # 5?? Verifica build
