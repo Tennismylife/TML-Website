@@ -46,7 +46,7 @@ jobs:
       - name: Test PostgreSQL connection
         run: npx prisma db pull
 
-      # 5?? Aggiorna binaryTargets e genera client Prisma
+      # 5?? Aggiorna binaryTargets e genera client Prisma 
       - name: Generate Prisma Client for RHEL
         run: |
           sed -i '/binaryTargets/c\  binaryTargets = ["native","rhel-openssl-3.0.x"]' prisma/schema.prisma
