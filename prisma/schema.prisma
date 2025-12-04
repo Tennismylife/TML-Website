@@ -27,6 +27,8 @@ model Player {
 
   tournaments PlayerTournament[]
   rankings   Ranking[]
+  
+  @@map("player") // questo mantiene la tabella reale "player" in Postgres
 }
 
 model Match {
@@ -87,6 +89,7 @@ model Match {
 
   player1            Player?   @relation("P1", fields: [winner_id], references: [id])
   player2            Player?   @relation("P2", fields: [loser_id], references: [id])
+  @@map("match") // questo mantiene la tabella reale "match" in Postgres
 }
 
 model PlayerTournament {
