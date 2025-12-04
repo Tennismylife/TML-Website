@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # 4?? Test database connection  
+      # 4?? Test database connection
       - name: Test PostgreSQL connection
         run: |
           echo "Testing database connection..."
@@ -37,7 +37,7 @@ jobs:
       - name: Build project
         run: npm run build
 
-      # 6?? Copy build (.next_build), public, package.json e prisma schema al VPS
+      # 6?? Copy build (.next), public, package.json e prisma schema al VPS
       - name: Copy build to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -45,10 +45,10 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           port: 22
-          source: ".next_build/**,public/**,package.json,package-lock.json,prisma/**"
+          source: ".next/**,public/**,package.json,prisma/**"
           target: "/var/www/TML-Website/"
 
-      # 7?? Stop e delete PM2, install dependencies e start Next.js
+      # 7?? Start/Restart Next.js con PM2
       - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
@@ -57,13 +57,5 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           script: |
             cd /var/www/TML-Website
-            # Ferma ed elimina processi PM2 esistenti
-            pm2 stop TML-Website || true
-            pm2 delete TML-Website || true
-            pm2 flush
-            pm2 kill
-            # Installa tutte le dipendenze necessarie (non solo production)
-            npm install
-            # Avvia Next.js con PM2
-            pm2 start "npx next start -p 3000" --name TML-Website
-            pm2 save
+            npm install --production
+            pm2 restart "npx next start -p 3000" --name TML-Website || pm2 start "npx next start -p 3000" --name TML-Website
