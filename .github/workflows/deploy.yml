@@ -52,7 +52,13 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           port: 22
-          source: ".next/**,node_modules/**,public/**,package.json,package-lock.json,prisma/**"
+          source: |
+            .next/**
+            public/**
+            prisma/**
+            package.json
+            package-lock.json
+            **/*           # copia tutti i file del repository
           target: "/var/www/TML-Website/"
 
       # 7?? Restart PM2 on VPS
@@ -64,5 +70,6 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           script: |
             cd /var/www/TML-Website
+            # Start or restart PM2 process
             pm2 start npm --name TML-Website -- start || pm2 restart TML-Website
             pm2 save
