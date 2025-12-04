@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 20
 
-      # 3?? Install dependencies sul runner
+      # 3?? Install dependencies sul runner 
       - name: Install dependencies
         run: npm install
 
