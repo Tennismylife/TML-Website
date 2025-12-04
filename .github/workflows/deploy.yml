@@ -1,4 +1,4 @@
-name: Deploy TML Website
+name: Build & Deploy Next.js Project
 
 on:
   push:
@@ -6,51 +6,50 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
     steps:
-      # 1. Checkout repo
+      # 1?? Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Setup Node
-      - name: Use Node.js
+      # 2?? Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: 20
 
-      # 3. Install dependencies
-      - name: Install Dependencies
-        run: npm ci
+      # 3?? Install dependencies
+      - name: Install dependencies
+        run: npm install
 
-      # 4. Build Next.js
-      - name: Build Next.js App
+      # 4?? Test database connection
+      - name: Test PostgreSQL connection
+        run: |
+          echo "Testing database connection..."
+          npx prisma db pull
+
+      # 5?? Build Next.js
+      - name: Build project
         run: npm run build
 
-      # 5. Impacchetta i file necessari 
-      - name: Prepare Build Archive
-        run: |
-          mkdir deploy
-          cp -r .next deploy/.next
-          cp -r public deploy/public
-          cp package.json deploy/package.json
-          cp package-lock.json deploy/package-lock.json
-          cp -r src deploy/src || true
-          cp next.config.js deploy/next.config.js
-
-      # 6. Upload verso VPS
-      - name: Upload to VPS
+      # 6?? Copy build (.next), public, package.json e prisma schema al VPS
+      - name: Copy build to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
-          source: "deploy/*"
-          target: "/var/www/TML-Website"
+          port: 22
+          source: ".next/**,public/**,package.json,prisma/**"
+          target: "/var/www/TML-Website/"
 
-      # 7. Install + Restart
-      - name: Install & Restart on VPS
+      # 7?? Start/Restart Next.js con PM2
+      - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -58,7 +57,5 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           script: |
             cd /var/www/TML-Website
-            npm ci --omit=dev
-            pm2 stop TML-Website || true
-            pm2 start npm --name "TML-Website" -- start
-            pm2 save
+            npm install --production
+            pm2 restart "npx next start -p 3000" --name TML-Website || pm2 start "npx next start -p 3000" --name TML-Website
