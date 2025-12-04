@@ -1,4 +1,4 @@
-name: Build & Deploy Next.js Project (Prisma 6)
+name: Build & Deploy Next.js Project (Prisma 6 Guaranteed)
 
 on:
   push:
@@ -23,27 +23,32 @@ jobs:
         with:
           node-version: 20
 
-      # 3?? Forza installazione Prisma 6 e tutte le dipendenze
-      - name: Install dependencies and Prisma 6
+      # 3?? Pulizia completa e installazione Prisma 6
+      - name: Clean install Prisma 6
         run: |
-          # Rimuovi eventuale Prisma 7
+          # Rimuovi node_modules e lock file per partire puliti
+          rm -rf node_modules package-lock.json
+
+          # Disinstalla eventuale Prisma 7
           npm uninstall prisma @prisma/client || true
 
-          # Installa Prisma CLI e Client versione 6
+          # Installa Prisma CLI 6 e Client 6
           npm install prisma@6 --save-dev
           npm install @prisma/client@6
 
           # Installa tutte le altre dipendenze
           npm install
 
+          # Verifica versione
+          npx prisma --version
+
       # 4?? Test database connection
       - name: Test PostgreSQL connection
         run: npx prisma db pull
 
-      # 5?? Genera Prisma Client specifico per AlmaLinux/RHEL
+      # 5?? Aggiorna binaryTargets e genera client Prisma
       - name: Generate Prisma Client for RHEL
         run: |
-          # Aggiorna binaryTargets
           sed -i '/binaryTargets/c\  binaryTargets = ["native","rhel-openssl-3.0.x"]' prisma/schema.prisma
           npx prisma generate
 
@@ -51,7 +56,7 @@ jobs:
       - name: Build project
         run: npm run build
 
-      # 7?? Copia sul VPS tutti i file pronti (Zero Install)
+      # 7?? Copia sul VPS tutti i file pronti
       - name: Copy project to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
