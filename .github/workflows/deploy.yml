@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # 4?? Test database connection 
+      # 4?? Test database connection  
       - name: Test PostgreSQL connection
         run: |
           echo "Testing database connection..."
