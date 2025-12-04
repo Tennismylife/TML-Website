@@ -1,4 +1,4 @@
-name: Build & Deploy Next.js Project (Prisma 6 Guaranteed)
+name: Build & Deploy Next.js Project (Prisma 6 Only)
 
 on:
   push:
@@ -23,37 +23,29 @@ jobs:
         with:
           node-version: 20
 
-      # 3?? Cache node_modules e Next.js cache per build più veloce
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            node_modules
-            .next/cache
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      # 4?? Pulizia completa e installazione Prisma 6
+      # 3?? Pulizia completa e installazione Prisma 6
       - name: Clean install Prisma 6
         run: |
           rm -rf node_modules package-lock.json
           rm -rf node_modules/.prisma || true
+          npm uninstall prisma || true
           npm uninstall prisma @prisma/client || true
           npm install prisma@6 --save-dev
           npm install @prisma/client@6
           npm install
-          npx prisma --version
+          echo "? Prisma CLI e Client versione 6 installati"
+          npm ls prisma
+          npm ls @prisma/client
 
-      # 5?? Test database connection
+      # 4?? Test database connection
       - name: Test PostgreSQL connection
         run: npx prisma db pull
 
-      # 6?? Build Next.js
+      # 5?? Build Next.js
       - name: Build project
         run: npm run build
 
-      # 7?? Copia sul VPS tutti i file pronti
+      # 6?? Copia tutti i file sul VPS (zero install)
       - name: Copy project to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -64,7 +56,7 @@ jobs:
           source: ".next/**,node_modules/**,public/**,package.json,package-lock.json,prisma/**"
           target: "/var/www/TML-Website/"
 
-      # 8?? Riavvia PM2 sul VPS
+      # 7?? Riavvia PM2 sul VPS
       - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
