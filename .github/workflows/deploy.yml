@@ -23,21 +23,28 @@ jobs:
         with:
           node-version: 20
 
-      # 3?? Install dependencies
+      # 3?? Cache node modules
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      # 4?? Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # 4?? Test database connection 
+      # 5?? Test database connection
       - name: Test PostgreSQL connection
-        run: |
-          echo "Testing database connection..."
-          npx prisma db pull
+        run: npx prisma db pull
 
-      # 5?? Build Next.js
+      # 6?? Build Next.js
       - name: Build project
         run: npm run build
 
-      # 6?? Copy build (.next), public, package.json e prisma schema al VPS
+      # 7?? Copy files to VPS
       - name: Copy build to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -45,11 +52,11 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           port: 22
-          source: ".next/**,public/**,package.json,prisma/**"
+          source: ".next/**,public/**,package.json,package-lock.json,prisma/**"
           target: "/var/www/TML-Website/"
 
-      # 7?? Start/Restart Next.js con PM2
-      - name: Restart PM2
+      # 8?? Install dependencies e restart PM2 sul VPS
+      - name: Install dependencies & Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -57,4 +64,5 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           script: |
             cd /var/www/TML-Website
-            pm2 restart "npx next start -p 3000" --name TML-Website || pm2 start "npx next start -p 3000" --name TML-Website
+            npm install --production
+            pm2 restart TML-Website || pm2 start npm --name TML-Website -- run start
