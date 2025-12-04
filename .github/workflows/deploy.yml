@@ -28,7 +28,7 @@ jobs:
       - name: Build Next.js App
         run: npm run build
 
-      # 5. Impacchetta i file necessari
+      # 5. Impacchetta i file necessari 
       - name: Prepare Build Archive
         run: |
           mkdir deploy
