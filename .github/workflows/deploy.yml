@@ -35,11 +35,9 @@ jobs:
 
       # 5?? Build Next.js
       - name: Build project
-        run: |
-          rm -rf .next           # Pulisce eventuali build vecchie
-          npm run build
+        run: npm run build
 
-      # 6?? Copy build and project files to VPS
+      # 6?? Copy build (.next), public, package.json e prisma schema al VPS
       - name: Copy build to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -47,11 +45,11 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           port: 22
-          source: ".next/**,public/**,package.json,prisma/**,.env"
+          source: ".next/**,public/**,package.json,prisma/**"
           target: "/var/www/TML-Website/"
 
-      # 7?? Install production dependencies & restart PM2
-      - name: Start/Restart PM2 on VPS
+      # 7?? Start/Restart Next.js con PM2
+      - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -60,5 +58,4 @@ jobs:
           script: |
             cd /var/www/TML-Website
             npm install --production
-            pm2 delete TML-Website || true
-            pm2 start npm --name "TML-Website" -- start -- -H 127.0.0.1
+            pm2 restart "npx next start -p 3000" --name TML-Website || pm2 start "npx next start -p 3000" --name TML-Website
