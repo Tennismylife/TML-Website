@@ -1,11 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  experimental: {
-    appDir: true, // opzionale, puoi lasciare se vuoi usare app directory
-  },
-  // Rimuovi distDir, così Next.js userà la cartella predefinita `.next`
-  output: 'standalone', // utile per deploy su VPS
+
+  // QUESTO È OBBLIGATORIO per far funzionare node .next/standalone/server.js con PM2
+  output: 'standalone',
+
+  // Opzionale ma fortemente consigliato in produzione
+  swcMinify: true,
+  poweredByHeader: false,
+
+  // Se vuoi forzare la porta (utile se non usi variabile d'ambiente)
+  // env: {
+  //   PORT: '3000'
+  // },
 };
 
 module.exports = nextConfig;
