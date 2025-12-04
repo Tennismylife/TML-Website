@@ -1,11 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true, // Abilita React Strict Mode
+  reactStrictMode: true,
   experimental: {
-    appDir: true, // Abilita la nuova app directory
+    appDir: true, // opzionale, puoi lasciare se vuoi usare app directory
   },
-  distDir: '.next_build', // Cartella build personalizzata
-  output: 'standalone', // ? Necessario per deploy su VPS
+  // Rimuovi distDir, così Next.js userà la cartella predefinita `.next`
+  output: 'standalone', // utile per deploy su VPS
 };
 
 module.exports = nextConfig;

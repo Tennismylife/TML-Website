@@ -13,7 +13,7 @@ jobs:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     steps:
-      # 1?? Checkout repository  
+      # 1?? Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -23,12 +23,11 @@ jobs:
         with:
           node-version: 20
 
-      # 3?? Pulizia completa e installazione Prisma 6
+      # 3?? Clean install Prisma 6
       - name: Clean install Prisma 6
         run: |
           rm -rf node_modules package-lock.json
           rm -rf node_modules/.prisma || true
-          npm uninstall prisma || true
           npm uninstall prisma @prisma/client || true
           npm install prisma@6 --save-dev
           npm install @prisma/client@6
@@ -41,11 +40,11 @@ jobs:
       - name: Test PostgreSQL connection
         run: npx prisma db pull
 
-      # 5?? Build Next.js
+      # 5?? Build Next.js (cartella standard .next)
       - name: Build project
         run: npm run build
 
-      # 6?? Copia tutti i file sul VPS (zero install)
+      # 6?? Copy all files to VPS
       - name: Copy project to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -56,7 +55,7 @@ jobs:
           source: ".next/**,node_modules/**,public/**,package.json,package-lock.json,prisma/**"
           target: "/var/www/TML-Website/"
 
-      # 7?? Riavvia PM2 sul VPS
+      # 7?? Restart PM2 on VPS
       - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
@@ -65,4 +64,5 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           script: |
             cd /var/www/TML-Website
-            pm2 start "npx next start -p 3000" --name TML-Website || pm2 restart TML-Website
+            pm2 start npm --name TML-Website -- start || pm2 restart TML-Website
+            pm2 save
