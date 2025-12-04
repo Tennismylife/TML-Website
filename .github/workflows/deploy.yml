@@ -13,43 +13,44 @@ jobs:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     steps:
-      # 1?? Checkout repository
+      # 1) Checkout
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2?? Setup Node.js
+      # 2) Node
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
 
-      # 3?? Install dependencies
+      # 3) Install deps
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      # 4?? Test database connection 
+      # 4) Test Prisma
       - name: Test PostgreSQL connection
         run: |
           echo "Testing database connection..."
           npx prisma db pull
 
-      # 5?? Build Next.js
+      # 5) Build
       - name: Build project
         run: npm run build
 
-      # 6?? Copy build (.next), public, package.json e prisma schema al VPS
-      - name: Copy build to VPS
+      # 6) Copy *entire project* to VPS
+      - name: Copy entire project to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           port: 22
-          source: ".next/**,public/**,package.json,prisma/**"
+          source: "./"
           target: "/var/www/TML-Website/"
+          rm: true
 
-      # 7?? Start/Restart Next.js con PM2
-      - name: Restart PM2
+      # 7) PM2 restart
+      - name: Restart PM2 on VPS
         uses: appleboy/ssh-action@v0.1.5
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -57,5 +58,10 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           script: |
             cd /var/www/TML-Website
-            npm install --production
-            pm2 restart "npx next start -p 3000" --name TML-Website || pm2 start "npx next start -p 3000" --name TML-Website
+            npm ci --omit=dev
+
+            pm2 stop TML-Website || true
+            pm2 delete TML-Website || true
+
+            pm2 start "npx next start -p 3000" --name TML-Website
+            pm2 save
