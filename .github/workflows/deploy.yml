@@ -48,8 +48,8 @@ jobs:
           source: ".next/** public/** package.json prisma/** ecosystem.config.js"
           target: "/var/www/TML-Website/"
 
-      # 7. Install production dependencies and restart PM2
-      - name: Restart PM2
+      # 7. Cleanup, install production dependencies and restart PM2
+      - name: Cleanup and Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -57,7 +57,10 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           script: |
             cd /var/www/TML-Website
+            echo "Cleaning previous build..."
+            rm -rf .next
             npm install --production
+            echo "Restarting PM2..."
             pm2 delete TML-Website || true
             pm2 start ecosystem.config.js
             pm2 save
