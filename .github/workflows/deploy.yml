@@ -50,7 +50,6 @@ jobs:
       - name: Generate Prisma Client for RHEL
         run: |
           sed -i '/binaryTargets/c\  binaryTargets = ["native","rhel-openssl-3.0.x"]' prisma/schema.prisma
-          npx prisma generate
 
       # 6?? Build Next.js
       - name: Build project
