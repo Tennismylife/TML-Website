@@ -13,31 +13,31 @@ jobs:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     steps:
-      # 1?? Checkout repository
+      # 1. Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2?? Setup Node.js
+      # 2. Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
 
-      # 3?? Install dependencies
+      # 3. Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # 4?? Test database connection
+      # 4. Test database connection
       - name: Test PostgreSQL connection
         run: |
           echo "Testing database connection..."
-          npx prisma db pull
+          npx prisma db pull || exit 1
 
-      # 5?? Build Next.js
+      # 5. Build Next.js
       - name: Build project
         run: npm run build
 
-      # 6?? Copy build (.next), public, package.json e prisma schema al VPS
+      # 6. Copy build and required files to VPS
       - name: Copy build to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -45,10 +45,10 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           port: 22
-          source: ".next/**,public/**,package.json,prisma/**"
+          source: ".next/** public/** package.json prisma/** ecosystem.config.js"
           target: "/var/www/TML-Website/"
 
-      # 7?? Start/Restart Next.js con PM2
+      # 7. Install production dependencies and restart PM2
       - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
@@ -58,4 +58,6 @@ jobs:
           script: |
             cd /var/www/TML-Website
             npm install --production
-            pm2 restart "npx next start -p 3000" --name TML-Website || pm2 start "npx next start -p 3000" --name TML-Website
+            pm2 delete TML-Website || true
+            pm2 start ecosystem.config.js
+            pm2 save
