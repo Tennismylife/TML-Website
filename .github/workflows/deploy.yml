@@ -56,6 +56,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           script: |
-            cd /var/www/TML-Website
-            npm install --production
-            pm2 restart "npx next start -p 3000" --name TML-Website || pm2 start "npx next start -p 3000" --name TML-Website
+          cd /var/www/TML-Website
+          npm install --production
+          pm2 delete TML-Website || true
+          pm2 start npm --name "TML-Website" -- start -- -H 127.0.0.1
