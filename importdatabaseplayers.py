@@ -28,6 +28,14 @@ db_host = "localhost"
 db_port = "5432"
 db_name = "tennis"
 
+
+db_user = "postgres"
+db_pass = "Matlab1985911"
+db_host = "87.106.40.188"
+db_port = "5432"
+db_name = "tennis"
+
+
 # Percorso del CSV
 csv_file = "ATP_Database.csv"
 table_name = "Player"

@@ -27,6 +27,13 @@ db_host = "localhost"
 db_port = "5432"
 db_name = "tennis"
 
+db_user = "postgres"
+db_pass = "Matlab1985911"
+db_host = "87.106.40.188"
+db_port = "5432"
+db_name = "tennis"
+
+
 # Percorso del JSON
 json_file = "tournaments.json"
 

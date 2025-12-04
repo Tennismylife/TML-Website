@@ -20,7 +20,7 @@ ensure_package("openpyxl")
 ensure_package("psycopg2-binary")
 
 # === Percorsi ===
-BASE_PATH = r"C:\Users\andre\OneDrive - Università degli Studi di Catania\Documents\GitHub\TennisMyLife Website\ATP Rankings for Website"
+BASE_PATH = r"C:\Users\andre\OneDrive - Università degli Studi di Catania\Documents\GitHub\TML-Website\ATP Rankings for Website"
 EXCEL_FILE = os.path.join(BASE_PATH, "Collection.xlsx")
 OUTPUT_FILE = os.path.join(BASE_PATH, "collection.csv")
 ALL_MATCHES_FILE = os.path.join(BASE_PATH, "allmatches.csv")  # aggiornato
@@ -35,13 +35,15 @@ TARGET_COLUMNS = {
 }
 OUTPUT_ORDER = ["year", "tournament", "start_date", "prize_money", "atp_category"]
 
-# === Parametri Postgres ===
+
+
 DB_USER = "postgres"
-DB_PASS = "postgres"
-DB_HOST = "localhost"
+DB_PASS = "Matlab1985911"
+DB_HOST = "87.106.40.188"
 DB_PORT = "5432"
 DB_NAME = "tennis"
 TABLE_NAME = "RankingTable"
+
 
 # === Funzioni di utilità ===
 def normalize_headers(cols):

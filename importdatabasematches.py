@@ -27,6 +27,12 @@ db_host = "localhost"
 db_port = "5432"
 db_name = "tennis"
 
+db_user = "postgres"
+db_pass = "Matlab1985911"
+db_host = "87.106.40.188"
+db_port = "5432"
+db_name = "tennis"
+
 # Percorso del CSV dei match
 csv_file = "allmatches.csv"
 
@@ -86,7 +92,7 @@ except Exception as e:
 if 'tourney_id' in df.columns:
     df['tourney_id'] = df['tourney_id'].apply(lambda x: str(int(float(x))) if pd.notna(x) else '')
 
-# Pulizia eventuali virgolette residue (versione veloce)
+# Pulizia eventuali virgolette residue
 for col in df.select_dtypes(include='object').columns:
     df[col] = df[col].str.replace('"', '', regex=False)
 
@@ -118,27 +124,54 @@ logging.basicConfig()
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 # ---------------------------
+# Funzione per creare la tabella se non esiste
+def create_table_if_not_exists():
+    try:
+        with engine.begin() as conn:
+            print(f"Verifico esistenza tabella '{table_name}'...")
+
+            conn.execute(text(f'''
+                CREATE TABLE IF NOT EXISTS "{table_name}" (
+                    temp_id SERIAL PRIMARY KEY
+                )
+            '''))
+
+            # Ora provo a far creare lo schema corretto da pandas (solo se vuota)
+            empty = pd.read_sql(text(f'SELECT COUNT(*) AS c FROM "{table_name}"'), conn)['c'][0] == 0
+
+            if empty:
+                print("Tabella vuota: creo schema reale con to_sql()...")
+                df.head(0).to_sql(table_name, conn, if_exists='replace', index=False)
+                print(f"Struttura tabella '{table_name}' creata correttamente.")
+            else:
+                print(f"La tabella '{table_name}' esiste già.")
+    except Exception as e:
+        print(f"Errore nella creazione della tabella: {e}")
+        sys.exit(1)
+
+# ---------------------------
+# CREA TABElLA (prima esecuzione)
+create_table_if_not_exists()
+
+# ---------------------------
 # Sostituzione dati senza cancellare la tabella
 try:
     with engine.begin() as conn:
-        # Svuota la tabella (TRUNCATE) mantenendo la struttura e le materialized view
         conn.execute(text(f'TRUNCATE TABLE "{table_name}" RESTART IDENTITY CASCADE'))
         print(f"Tabella '{table_name}' svuotata correttamente.")
 
-        # Inserisci i dati dal DataFrame
         df.to_sql(table_name, conn, if_exists='append', index=False, method='multi', chunksize=1000)
         print(f"Dati importati con successo nella tabella '{table_name}'!")
 
-        # Controlla il numero di righe importate
         result = conn.execute(text(f'SELECT COUNT(*) FROM "{table_name}"'))
         count = result.scalar()
         print(f"Numero di righe nella tabella '{table_name}': {count}")
 
-        # Mostra le prime 5 righe
         result = conn.execute(text(f'SELECT * FROM "{table_name}" LIMIT 5'))
         print("Prime 5 righe della tabella:")
         for row in result:
             print(row)
+
 except Exception as e:
     print(f"Errore durante l'importazione nel DB: {e}")
     sys.exit(1)

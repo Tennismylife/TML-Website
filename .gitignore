@@ -5,3 +5,10 @@ node_modules
 .dev.db
 .next_build
 ServerCommands.txt
+importrankingtables.py
+importdatabasetournaments.py
+importdatabaserankings.py
+importdatabaseplayers.py
+importdatabasematches.py
+importdatabaseevents.py
+ATP Rankings for Website/collection.csv
