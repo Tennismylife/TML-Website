@@ -23,39 +23,43 @@ jobs:
         with:
           node-version: 20
 
-      # 3?? Pulizia completa e installazione Prisma 6
+      # 3?? Cache node_modules e Next.js cache per build più veloce
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            .next/cache
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      # 4?? Pulizia completa e installazione Prisma 6
       - name: Clean install Prisma 6
         run: |
-          # Rimuovi node_modules e lock file per partire puliti
           rm -rf node_modules package-lock.json
-
-          # Disinstalla eventuale Prisma 7
+          rm -rf node_modules/.prisma || true
           npm uninstall prisma @prisma/client || true
-
-          # Installa Prisma CLI 6 e Client 6
           npm install prisma@6 --save-dev
           npm install @prisma/client@6
-
-          # Installa tutte le altre dipendenze
           npm install
-
-          # Verifica versione
           npx prisma --version
 
-      # 4?? Test database connection
+      # 5?? Test database connection
       - name: Test PostgreSQL connection
         run: npx prisma db pull
 
-      # 5?? Aggiorna binaryTargets e genera client Prisma 
+      # 6?? Aggiorna binaryTargets e genera Prisma Client
       - name: Generate Prisma Client for RHEL
         run: |
           sed -i '/binaryTargets/c\  binaryTargets = ["native","rhel-openssl-3.0.x"]' prisma/schema.prisma
+          npx prisma generate
 
-      # 6?? Build Next.js
+      # 7?? Build Next.js
       - name: Build project
         run: npm run build
 
-      # 7?? Copia sul VPS tutti i file pronti
+      # 8?? Copia sul VPS tutti i file pronti
       - name: Copy project to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -66,7 +70,7 @@ jobs:
           source: ".next/**,node_modules/**,public/**,package.json,package-lock.json,prisma/**"
           target: "/var/www/TML-Website/"
 
-      # 8?? Riavvia PM2 sul VPS
+      # 9?? Riavvia PM2 sul VPS
       - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
@@ -75,4 +79,4 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           script: |
             cd /var/www/TML-Website
-            pm2 restart TML-Website || pm2 start npm --name TML-Website -- run start -- -H 0.0.0.0 -p 3000
+            pm2 start "npx next start -p 3000" --name TML-Website || pm2 restart TML-Website
