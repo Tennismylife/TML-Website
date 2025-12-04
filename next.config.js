@@ -1,11 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true, // Abilita React Strict Mode
+  reactStrictMode: true,
   experimental: {
-    appDir: true, // Abilita la nuova app directory
+    appDir: true,
   },
-  distDir: '.next_build', // Cartella build personalizzata
-  output: 'standalone', // ? Necessario per deploy su VPS
+  output: 'standalone',
 };
 
 module.exports = nextConfig;
