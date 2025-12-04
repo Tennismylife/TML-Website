@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 20
 
-      # 3?? Cache node modules
+      # 3?? Cache npm
       - name: Cache node modules
         uses: actions/cache@v3
         with:
@@ -32,7 +32,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      # 4?? Install dependencies
+      # 4?? Install dependencies (tutte, dev incluse)
       - name: Install dependencies
         run: npm install
 
@@ -44,7 +44,7 @@ jobs:
       - name: Build project
         run: npm run build
 
-      # 7?? Copy files to VPS
+      # 7?? Copy build e node_modules sul VPS
       - name: Copy build to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -52,11 +52,11 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           port: 22
-          source: ".next/**,public/**,package.json,package-lock.json,prisma/**"
+          source: ".next/**,node_modules/**,public/**,package.json,package-lock.json,prisma/**"
           target: "/var/www/TML-Website/"
 
-      # 8?? Install dependencies e restart PM2 sul VPS
-      - name: Install dependencies & Restart PM2
+      # 8?? Restart PM2 sul VPS
+      - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -64,5 +64,4 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           script: |
             cd /var/www/TML-Website
-            npm install --production
             pm2 restart TML-Website || pm2 start npm --name TML-Website -- run start
