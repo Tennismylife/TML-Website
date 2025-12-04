@@ -13,7 +13,7 @@ jobs:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     steps:
-      # 1?? Checkout repository
+      # 1?? Checkout repository 
       - name: Checkout repository
         uses: actions/checkout@v3
 
