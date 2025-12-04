@@ -1,4 +1,4 @@
-name: Build & Deploy Next.js Project (Zero Install VPS)
+name: Build & Deploy Next.js Project (Prisma 6)
 
 on:
   push:
@@ -23,19 +23,35 @@ jobs:
         with:
           node-version: 20
 
-      # 3?? Install dependencies sul runner 
-      - name: Install dependencies
-        run: npm install
+      # 3?? Forza installazione Prisma 6 e tutte le dipendenze
+      - name: Install dependencies and Prisma 6
+        run: |
+          # Rimuovi eventuale Prisma 7
+          npm uninstall prisma @prisma/client || true
+
+          # Installa Prisma CLI e Client versione 6
+          npm install prisma@6 --save-dev
+          npm install @prisma/client@6
+
+          # Installa tutte le altre dipendenze
+          npm install
 
       # 4?? Test database connection
       - name: Test PostgreSQL connection
         run: npx prisma db pull
 
-      # 5?? Build Next.js
+      # 5?? Genera Prisma Client specifico per AlmaLinux/RHEL
+      - name: Generate Prisma Client for RHEL
+        run: |
+          # Aggiorna binaryTargets
+          sed -i '/binaryTargets/c\  binaryTargets = ["native","rhel-openssl-3.0.x"]' prisma/schema.prisma
+          npx prisma generate
+
+      # 6?? Build Next.js
       - name: Build project
         run: npm run build
 
-      # 6?? Copia sul VPS tutti i file necessari
+      # 7?? Copia sul VPS tutti i file pronti (Zero Install)
       - name: Copy project to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -43,11 +59,10 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           port: 22
-          # Copia build, node_modules, public, package.json, prisma
           source: ".next/**,node_modules/**,public/**,package.json,package-lock.json,prisma/**"
           target: "/var/www/TML-Website/"
 
-      # 7?? Riavvia PM2 sul VPS
+      # 8?? Riavvia PM2 sul VPS
       - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
@@ -56,4 +71,4 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           script: |
             cd /var/www/TML-Website
-            pm2 restart TML-Website || pm2 start npm --name TML-Website -- run start
+            pm2 restart TML-Website || pm2 start npm --name TML-Website -- run start -- -H 0.0.0.0 -p 3000
