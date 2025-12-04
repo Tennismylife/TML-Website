@@ -49,17 +49,11 @@ jobs:
       - name: Test PostgreSQL connection
         run: npx prisma db pull
 
-      # 6?? Aggiorna binaryTargets e genera Prisma Client
-      - name: Generate Prisma Client for RHEL
-        run: |
-          sed -i '/binaryTargets/c\  binaryTargets = ["native","rhel-openssl-3.0.x"]' prisma/schema.prisma
-          npx prisma generate
-
-      # 7?? Build Next.js
+      # 6?? Build Next.js
       - name: Build project
         run: npm run build
 
-      # 8?? Copia sul VPS tutti i file pronti
+      # 7?? Copia sul VPS tutti i file pronti
       - name: Copy project to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -70,7 +64,7 @@ jobs:
           source: ".next/**,node_modules/**,public/**,package.json,package-lock.json,prisma/**"
           target: "/var/www/TML-Website/"
 
-      # 9?? Riavvia PM2 sul VPS
+      # 8?? Riavvia PM2 sul VPS
       - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
