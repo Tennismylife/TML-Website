@@ -1,4 +1,4 @@
-name: Build & Deploy Next.js Project (Light Version)
+name: Build & Deploy Next.js Project (Zero Install VPS)
 
 on:
   push:
@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 20
 
-      # 3?? Install dependencies (tutte)
+      # 3?? Install dependencies sul runner
       - name: Install dependencies
         run: npm install
 
@@ -35,19 +35,20 @@ jobs:
       - name: Build project
         run: npm run build
 
-      # 6?? Copy build e file essenziali sul VPS
-      - name: Copy build to VPS
+      # 6?? Copia sul VPS tutti i file necessari
+      - name: Copy project to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           port: 22
-          source: ".next/**,public/**,package.json,package-lock.json,prisma/**"
+          # Copia build, node_modules, public, package.json, prisma
+          source: ".next/**,node_modules/**,public/**,package.json,package-lock.json,prisma/**"
           target: "/var/www/TML-Website/"
 
-      # 7?? Install production dependencies & restart PM2 sul VPS
-      - name: Install production dependencies & Restart PM2
+      # 7?? Riavvia PM2 sul VPS
+      - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -55,5 +56,4 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           script: |
             cd /var/www/TML-Website
-            npm install --omit=dev
             pm2 restart TML-Website || pm2 start npm --name TML-Website -- run start
