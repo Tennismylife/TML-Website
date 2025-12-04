@@ -1,6 +1,5 @@
 name: Build & Deploy Next.js Project
 
-# Trigger ad ogni push sul branch main
 on:
   push:
     branches:
@@ -11,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}  # Postgres URL
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     steps:
       # 1?? Checkout repository
@@ -38,7 +37,7 @@ jobs:
       - name: Build project
         run: npm run build
 
-      # 6?? Copy build (.next) and public to VPS via SCP
+      # 6?? Copy build (.next), public, package.json e prisma schema al VPS
       - name: Copy build to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -46,10 +45,10 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           port: 22
-          source: ".next/**,public/**,package.json,server.js"  # includi anche server.js e package.json
+          source: ".next/**,public/**,package.json,prisma/**"
           target: "/var/www/TML-Website/"
 
-      # 7?? Restart PM2 on VPS 
+      # 7?? Start/Restart Next.js con PM2
       - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
@@ -59,4 +58,4 @@ jobs:
           script: |
             cd /var/www/TML-Website
             npm install --production
-            pm2 restart server.js || pm2 start server.js --name TML-Website
+            pm2 restart "npx next start -p 3000" --name TML-Website || pm2 start "npx next start -p 3000" --name TML-Website
