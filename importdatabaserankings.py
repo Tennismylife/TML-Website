@@ -17,12 +17,6 @@ DBNAME = "tennis"
 HOST = "localhost"
 PORT = 5432
 
-USER = "postgres"
-PASSWORD = "Matlab1985911"
-HOST = "87.106.40.188"
-PORT = 5432
-DBNAME = "tennis"
-
 # ---------------------------
 # Connessione PostgreSQL
 def get_connection():

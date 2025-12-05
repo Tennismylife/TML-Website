@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
   };
 
   try {
-    const matches = await prisma.Match.findMany({ where });
+    const matches = await prisma.match.findMany({ where });
     return NextResponse.json(matches);
   } catch (error) {
     console.error("Error fetching matches:", error);

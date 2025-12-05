@@ -33,7 +33,7 @@ function uniqueByName(tournaments: any[]): any[] {
 
 export async function GET() {
   try {
-    const tournaments = await prisma.Tournament.findMany({
+    const tournaments = await prisma.tournament.findMany({
       orderBy: { id: "asc" },
     });
 

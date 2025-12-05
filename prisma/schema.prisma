@@ -27,8 +27,6 @@ model Player {
 
   tournaments PlayerTournament[]
   rankings   Ranking[]
-  
-  @@map("Player") // questo mantiene la tabella reale "player" in Postgres
 }
 
 model Match {
@@ -89,7 +87,6 @@ model Match {
 
   player1            Player?   @relation("P1", fields: [winner_id], references: [id])
   player2            Player?   @relation("P2", fields: [loser_id], references: [id])
-  @@map("Match") // questo mantiene la tabella reale "match" in Postgres
 }
 
 model PlayerTournament {
@@ -109,7 +106,6 @@ model PlayerTournament {
   @@unique([player_id, event_id])
   @@index([player_id])
   @@index([event_id])
-  @@map("playerTournament")
 }
 
 enum TournamentCategory {
@@ -141,14 +137,12 @@ model Tournament {
 
   @@index([category])
   @@index([name])
-  @@map("tournament")
 }
 
 model RankingDate {
   id       Int       @id @default(autoincrement())
   date     DateTime      @unique
   rankings Ranking[]
-  
 }
 
 model Ranking {
@@ -160,7 +154,6 @@ model Ranking {
   rankingDate   RankingDate @relation(fields: [rankingDateId], references: [id])
   player        Player?     @relation(fields: [playerId], references: [id])  // <--- rendi opzionale
   @@unique([rankingDateId, playerId])
-  @@map("ranking")
 }
 
 
@@ -174,7 +167,6 @@ model RankingTable {
   atp_category String?
 
   @@unique([id, year])
-  @@map("rankingTable")
 }
 
 //  Wins

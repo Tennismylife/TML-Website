@@ -22,12 +22,6 @@ for module, pip_name in [("pandas", None), ("sqlalchemy", "SQLAlchemy"), ("psyco
 # ---------------------------
 # Parametri di connessione
 db_user = "postgres"
-db_pass = "postgres"
-db_host = "localhost"
-db_port = "5432"
-db_name = "tennis"
-
-db_user = "postgres"
 db_pass = "Matlab1985911"
 db_host = "87.106.40.188"
 db_port = "5432"
@@ -88,9 +82,14 @@ except Exception as e:
     sys.exit(1)
 
 # ---------------------------
+# Escludi la colonna 'indoor' se presente
+if 'indoor' in df.columns:
+    df = df.drop(columns=['indoor'])
+    print("Colonna 'indoor' rimossa dal DataFrame.")
+
 # Forza 'tourney_id' come stringa senza decimali
 if 'tourney_id' in df.columns:
-    df['tourney_id'] = df['tourney_id'].apply(lambda x: str(int(float(x))) if pd.notna(x) else '')
+    df['tourney_id'] = df['tourney_id'].astype('Int64').astype(str).fillna('')
 
 # Pulizia eventuali virgolette residue
 for col in df.select_dtypes(include='object').columns:
@@ -150,7 +149,7 @@ def create_table_if_not_exists():
         sys.exit(1)
 
 # ---------------------------
-# CREA TABElLA (prima esecuzione)
+# CREA TABELLA (prima esecuzione)
 create_table_if_not_exists()
 
 # ---------------------------
