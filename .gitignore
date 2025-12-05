@@ -12,3 +12,4 @@ importdatabaseplayers.py
 importdatabasematches.py
 importdatabaseevents.py
 ATP Rankings for Website/collection.csv
+importdatabaserankings.py
