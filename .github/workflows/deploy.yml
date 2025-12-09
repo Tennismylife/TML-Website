@@ -1,4 +1,4 @@
-name: Build & Deploy Next.js Project (Prisma 6 - Safe for GitHub Actions)
+name: Build & Deploy Next.js Project (Prisma 6 - Safe SCP)
 
 on:
   push:
@@ -44,17 +44,16 @@ jobs:
       - name: Build project
         run: npm run build
 
-      # 6?? Sync only necessary files to VPS via rsync
-      - name: Rsync project to VPS
-        uses: burnett01/rsync-deployments@v4
+      # 6?? Copy only essential files to VPS via SCP
+      - name: Copy project to VPS
+        uses: appleboy/scp-action@v0.1.4
         with:
-          switches: "-avz --delete"
-          path: ".next,public,package.json,package-lock.json,prisma"
-          remote_path: "/var/www/TML-Website"
-          remote_host: ${{ secrets.VPS_HOST }}
-          remote_user: ${{ secrets.VPS_USER }}
-          remote_key: ${{ secrets.VPS_KEY }}
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
           port: 22
+          source: ".next/**,public/**,package.json,package-lock.json,prisma/**"
+          target: "/var/www/TML-Website/"
 
       # 7?? Install dependencies & generate Prisma client on VPS
       - name: Install dependencies & generate Prisma
