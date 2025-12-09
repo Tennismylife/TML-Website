@@ -47,8 +47,13 @@ jobs:
       # 6?? Copy build and project files to VPS using native rsync
       - name: Copy project to VPS via rsync
         run: |
+          # Scrivi la chiave privata su file temporaneo
+          echo "${{ secrets.VPS_KEY }}" > /tmp/vps_key
+          chmod 600 /tmp/vps_key
+
+          # Esegui rsync con il file temporaneo
           rsync -avz --delete \
-            -e "ssh -i ${{ secrets.VPS_KEY }} -o StrictHostKeyChecking=no" \
+            -e "ssh -i /tmp/vps_key -o StrictHostKeyChecking=no" \
             .next public package.json package-lock.json prisma/ \
             ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/TML-Website
 
