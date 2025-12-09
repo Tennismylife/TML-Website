@@ -44,9 +44,9 @@ jobs:
       - name: Build project
         run: npm run build
 
-      # 6?? Copy build and project files to VPS using rsync
+      # 6?? Copy build and project files to VPS using rsync v3
       - name: Copy project to VPS via rsync
-        uses: burnett01/rsync-deployments@v4
+        uses: burnett01/rsync-deployments@v3
         with:
           switches: -avz --delete
           path: ".next,public,package.json,package-lock.json,prisma"
