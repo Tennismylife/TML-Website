@@ -13,18 +13,17 @@ jobs:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     steps:
-      # 1. Checkout repository
+      # 1?? Checkout repository
       - name: Checkout repository
-        uses: actions/checkout@v4  # ? aggiornato per sicurezza
+        uses: actions/checkout@v3
 
-      # 2. Setup Node.js
+      # 2?? Setup Node.js
       - name: Setup Node.js
-        uses: actions/setup-node@v4  # ? aggiornato
+        uses: actions/setup-node@v3
         with:
           node-version: 20
-          cache: 'npm'  # ? cache npm per build più veloci
 
-      # 3. Clean install Prisma 6
+      # 3?? Clean install Prisma 6 
       - name: Clean install Prisma 6
         run: |
           rm -rf node_modules package-lock.json
@@ -37,19 +36,17 @@ jobs:
           npm ls prisma
           npm ls @prisma/client
 
-      # 5. Build Next.js (cartella standard .next)
+      # 4?? Test database connection
+      - name: Test PostgreSQL connection
+        run: npx prisma db pull
+
+      # 5?? Build Next.js (cartella standard .next)
       - name: Build project
         run: npm run build
 
-      # 6. Check dimensione build (opzionale, per debug)
-      - name: Check build size
-        run: |
-          du -sh .next/ || true
-          echo "Dimensione .next/: $(du -sh .next/ 2>/dev/null | cut -f1) – se >2GB, considera di ottimizzare"
-
-      # 7. Copy all files to VPS (ora con fix OOM)
+      # 6?? Copy all files to VPS
       - name: Copy project to VPS
-        uses: appleboy/scp-action@v0.1.7  # ? aggiornato: fix per status 137!
+        uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
@@ -57,11 +54,8 @@ jobs:
           port: 22
           source: ".next/**,node_modules/**,public/**,package.json,package-lock.json,prisma/**"
           target: "/var/www/TML-Website/"
-          tar_tmp_path: /tmp  # ? forza tar su disco, evita RAM overflow
-          strip_components: 1  # ? rimuove prefissi cartelle, pulisce il target
-          overwrite: true  # ? sovrascrive file esistenti
 
-      # 8. Restart PM2 on VPS
+      # 7?? Restart PM2 on VPS
       - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
@@ -70,14 +64,5 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           script: |
             cd /var/www/TML-Website
-            # Installa dipendenze se necessario (per sicurezza)
-            npm ci --production || npm install --production
-            # Gestisci PM2: start se non esiste, altrimenti restart
-            if pm2 describe TML-Website > /dev/null 2>&1; then
-              pm2 restart TML-Website
-            else
-              pm2 start npm --name TML-Website -- start
-            fi
+            pm2 start npm --name TML-Website -- start || pm2 restart TML-Website
             pm2 save
-            # pm2 logs TML-Website --lines 5  # ? opzionale: uncomment per debug logs
-            echo "? PM2 riavviato per TML-Website"
