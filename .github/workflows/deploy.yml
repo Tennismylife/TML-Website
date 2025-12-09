@@ -1,4 +1,4 @@
-name: Build & Deploy Next.js Project (Prisma 6 - Safe SCP)
+name: Build & Deploy Next.js Project (Prisma 6 Only)
 
 on:
   push:
@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 20
 
-      # 3?? Clean install Prisma 6
+      # 3?? Clean install Prisma 6 
       - name: Clean install Prisma 6
         run: |
           rm -rf node_modules package-lock.json
@@ -40,11 +40,11 @@ jobs:
       - name: Test PostgreSQL connection
         run: npx prisma db pull
 
-      # 5?? Build Next.js (cartella .next)
+      # 5?? Build Next.js (cartella standard .next)
       - name: Build project
         run: npm run build
 
-      # 6?? Copy only essential files to VPS via SCP
+      # 6?? Copy all files to VPS
       - name: Copy project to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -52,22 +52,10 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           port: 22
-          source: ".next/**,public/**,package.json,package-lock.json,prisma/**"
+          source: ".next/**,node_modules/**,public/**,package.json,package-lock.json,prisma/**"
           target: "/var/www/TML-Website/"
 
-      # 7?? Install dependencies & generate Prisma client on VPS
-      - name: Install dependencies & generate Prisma
-        uses: appleboy/ssh-action@v0.1.5
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_KEY }}
-          script: |
-            cd /var/www/TML-Website
-            npm install --production
-            npx prisma generate
-
-      # 8?? Restart PM2 on VPS
+      # 7?? Restart PM2 on VPS
       - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
