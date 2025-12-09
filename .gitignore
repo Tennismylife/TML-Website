@@ -17,3 +17,19 @@ importdatabaserankings.py
 PM2.txt
 importdatabaserankings.py
 importdatabasetournaments.py
+Server Commands/.ssh/id_ed25519
+Server Commands/.ssh/id_ed25519.pub
+Server Commands/.ssh/known_hosts
+Server Commands/.ssh/known_hosts.old
+Server Commands/1 Boot.txt
+Server Commands/10 Materialized View.txt
+Server Commands/11 SSL.txt
+Server Commands/2 SSH.txt
+Server Commands/3 Antivirus.txt
+Server Commands/4 Database Postgres.txt
+Server Commands/5 Firewall.txt
+Server Commands/6 PM2.txt
+Server Commands/7 Reboot.txt
+Server Commands/8 Nginx.txt
+Server Commands/9 Prisma.txt
+Server Commands/Altervista.txt
