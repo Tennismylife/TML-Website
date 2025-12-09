@@ -37,12 +37,6 @@ jobs:
           npm ls prisma
           npm ls @prisma/client
 
-      # 4. Test database connection e generate
-      - name: Test PostgreSQL connection
-        run: |
-          npx prisma db pull
-          npx prisma generate  # ? aggiunto: rigenera il client dopo pull
-
       # 5. Build Next.js (cartella standard .next)
       - name: Build project
         run: npm run build
