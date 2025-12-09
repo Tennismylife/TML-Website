@@ -40,11 +40,11 @@ jobs:
       - name: Test PostgreSQL connection
         run: npx prisma db pull
 
-      # 5?? Build Next.js (cartella standard .next)
+      # 5?? Build Next.js (cartella .next)
       - name: Build project
         run: npm run build
 
-      # 6?? Copy all files to VPS
+      # 6?? Copy only necessary files to VPS (avoid node_modules)
       - name: Copy project to VPS
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -52,10 +52,22 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           port: 22
-          source: ".next/**,node_modules/**,public/**,package.json,package-lock.json,prisma/**"
+          source: ".next/**,public/**,package.json,package-lock.json,prisma/**"
           target: "/var/www/TML-Website/"
 
-      # 7?? Restart PM2 on VPS
+      # 7?? Install dependencies and generate Prisma client on VPS
+      - name: Install dependencies & generate Prisma
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
+          script: |
+            cd /var/www/TML-Website
+            npm install --production
+            npx prisma generate
+
+      # 8?? Restart PM2 on VPS
       - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
