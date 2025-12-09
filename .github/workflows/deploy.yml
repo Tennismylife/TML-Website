@@ -15,7 +15,7 @@ jobs:
     steps:
       # 1?? Checkout repository
       - name: Checkout repository
-        uses: actions/checkout
+        uses: actions/checkout@v3
 
       # 2?? Setup Node.js
       - name: Setup Node.js
@@ -44,16 +44,13 @@ jobs:
       - name: Build project
         run: npm run build
 
-      # 6?? Copy build and project files to VPS using rsync v3
+      # 6?? Copy build and project files to VPS using native rsync
       - name: Copy project to VPS via rsync
-        uses: burnett01/rsync-deployments@v7.1.0
-        with:
-          switches: -avz --delete
-          path: ".next,public,package.json,package-lock.json,prisma"
-          remote_path: "/var/www/TML-Website"
-          remote_host: ${{ secrets.VPS_HOST }}
-          remote_user: ${{ secrets.VPS_USER }}
-          private_key: ${{ secrets.VPS_KEY }}
+        run: |
+          rsync -avz --delete \
+            -e "ssh -i ${{ secrets.VPS_KEY }} -o StrictHostKeyChecking=no" \
+            .next public package.json package-lock.json prisma/ \
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/TML-Website
 
       # 7?? Install node_modules on VPS (production only)
       - name: Install Node Modules on VPS
