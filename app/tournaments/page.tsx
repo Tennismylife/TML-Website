@@ -120,7 +120,7 @@ export default function TournamentsPage() {
 
       {/* Search Bar */}
       <div className="sticky top-4 z-50 px-6 -mt-20 mb-12">
-        <motion.div initial={{ y: -50 }} animate={{ y: 0 }} className="max-w-2xl mx-auto">
+        <motion.div initial={{ y: -50 }} animate={{ y: 0 }}>
           <div className="relative group">
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
@@ -128,7 +128,7 @@ export default function TournamentsPage() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search tournament... (Cmd+K)"
+              placeholder="Search tournament"
               aria-label="Search tournaments"
               className="w-full pl-14 pr-12 py-4 rounded-2xl bg-gray-900/90 backdrop-blur-xl border border-gray-800 focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-500/20 focus:shadow-lg focus:shadow-cyan-500/20 transition-all text-lg"
             />
@@ -146,7 +146,7 @@ export default function TournamentsPage() {
       </div>
 
       {/* Tournament grid */}
-      <div className="max-w-5xl mx-auto px-6 pb-24">
+      <div className="px-6 pb-24">
         {loading ? (
           <SkeletonCompact />
         ) : (

@@ -31,7 +31,7 @@ export default function StreakSection({
         />
       )}
 
-      {activeSubTab === 'rounds' && (
+      {activeSubTab === 'round' && (
         <RoundSection
           selectedSurfaces={selectedSurfaces}
           selectedLevels={selectedLevels}

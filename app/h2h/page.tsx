@@ -14,9 +14,7 @@ export default function H2HPage() {
   const pathname = usePathname();
   const initAppliedRef = useRef(false);
 
-  // Stato per URL params lato client
   const [searchParamsClient, setSearchParamsClient] = useState<URLSearchParams | null>(null);
-
   const [player1, setPlayer1] = useState<Player | null>(null);
   const [player2, setPlayer2] = useState<Player | null>(null);
   const [matches, setMatches] = useState<Match[]>([]);
@@ -33,26 +31,21 @@ export default function H2HPage() {
   });
 
   // --- Leggi URL params lato client ---
-  useEffect(() => {
-    setSearchParamsClient(new URLSearchParams(window.location.search));
-  }, []);
+  useEffect(() => setSearchParamsClient(new URLSearchParams(window.location.search)), []);
 
   useEffect(() => {
     if (!searchParamsClient) return;
 
     const p1id = searchParamsClient.get("p1");
     const p2id = searchParamsClient.get("p2");
-
     const qYear = searchParamsClient.get("year");
     const qLevel = searchParamsClient.get("level");
     const qSurface = searchParamsClient.get("surface");
     const qRound = searchParamsClient.get("round");
     const qTourney = searchParamsClient.get("tourney");
-
     const qSort = searchParamsClient.get("sort");
     const qSortDir = searchParamsClient.get("sortDir");
 
-    // --- Imposta filtri ---
     setFilters((prev) => ({
       year: qYear ? (isNaN(Number(qYear)) ? "All" : Number(qYear)) : prev.year,
       level: qLevel ?? prev.level,
@@ -61,11 +54,9 @@ export default function H2HPage() {
       tourney_name: qTourney ?? prev.tourney_name,
     }));
 
-    // --- Imposta sort ---
     if (qSort) setSortKey(qSort as SortKey);
     if (qSortDir && (qSortDir === "asc" || qSortDir === "desc")) setSortDir(qSortDir as SortDirection);
 
-    // --- Fetch player dai rispettivi ID ---
     const fetchPlayerById = async (id?: string | null) => {
       if (!id) return null;
       try {
@@ -125,16 +116,13 @@ export default function H2HPage() {
     if (!pathname) return;
 
     const params = new URLSearchParams();
-
     if (player1) params.set("p1", String(player1.id));
     if (player2) params.set("p2", String(player2.id));
-
     if (filters.year !== "All") params.set("year", String(filters.year));
     if (filters.level !== "All") params.set("level", filters.level);
     if (filters.surface !== "All") params.set("surface", filters.surface);
     if (filters.round !== "All") params.set("round", filters.round);
     if (filters.tourney_name !== "All") params.set("tourney", filters.tourney_name);
-
     if (sortKey) params.set("sort", sortKey);
     if (sortDir) params.set("sortDir", sortDir);
 
@@ -154,7 +142,6 @@ export default function H2HPage() {
     });
   }, [matches, filters]);
 
-  // --- Calcolo H2H ---
   const wins1 = filteredMatches.filter((m) => m.winner_name === player1?.atpname).length;
   const wins2 = filteredMatches.filter((m) => m.winner_name === player2?.atpname).length;
   const total = wins1 + wins2;
@@ -162,18 +149,16 @@ export default function H2HPage() {
   const perc2 = total > 0 ? (wins2 / total) * 100 : 0;
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
+    <div className="min-h-screen bg-gray-900 text-white p-6">
       <h1 className="text-3xl font-bold mb-8 text-center">Head-to-Head</h1>
 
-      {/* SEARCHERS */}
       <div className="flex flex-col md:flex-row justify-center gap-6 mb-8">
-        <PlayerSearch label="Player 1" onSelect={(player) => setPlayer1(player)} />
-        <PlayerSearch label="Player 2" onSelect={(player) => setPlayer2(player)} />
+        <PlayerSearch label="Player 1" onSelect={setPlayer1} />
+        <PlayerSearch label="Player 2" onSelect={setPlayer2} />
       </div>
 
       {player1 && player2 && (
         <>
-          {/* FILTRI */}
           <H2HPageFilters
             allMatches={matches}
             loading={loading}
@@ -182,7 +167,6 @@ export default function H2HPage() {
             setFilters={(partial) => setFilters((prev) => ({ ...prev, ...partial }))}
           />
 
-          {/* HEADER */}
           <H2HHeader
             wins1={wins1}
             wins2={wins2}
@@ -193,7 +177,6 @@ export default function H2HPage() {
             matches={filteredMatches}
           />
 
-          {/* MATCHES TABLE */}
           <div className="mt-8">
             {loading ? (
               <p className="text-center text-gray-400">Loading matches...</p>
@@ -209,7 +192,6 @@ export default function H2HPage() {
             )}
           </div>
 
-          {/* H2H BARS */}
           <div className="grid md:grid-cols-3 gap-6 mt-10">
             {["wins", "sets", "games"].map((category) => (
               <div key={category} className="bg-gray-800 p-6 rounded-lg shadow-lg">

@@ -241,7 +241,7 @@ export default function FiltersComponent({
               isActive={selectedSurfaces.size === 0}
               onClick={() => setSelectedSurfaces(new Set())}
             >
-              🌍 All
+              All
             </FilterButton>
             {SURFACE_LIST.map(surface => (
               <FilterButton
@@ -264,7 +264,7 @@ export default function FiltersComponent({
               isActive={selectedLevels.size === 0}
               onClick={() => setSelectedLevels(new Set())}
             >
-              🌍 All
+              All
             </FilterButton>
             {filteredLevelList.map(level => (
               <FilterButton
@@ -288,7 +288,7 @@ export default function FiltersComponent({
                 isActive={selectedRounds === ""}
                 onClick={() => setSelectedRounds("")}
               >
-                🌍 All
+                All
               </FilterButton>
             )}
             {ROUND_LIST.map(round => (
@@ -312,7 +312,7 @@ export default function FiltersComponent({
               isActive={selectedBestOf === null}
               onClick={() => setSelectedBestOf(null)}
             >
-              🌍 All
+              All
             </FilterButton>
             {BEST_OF_LIST.map(bestOf => (
               <FilterButton

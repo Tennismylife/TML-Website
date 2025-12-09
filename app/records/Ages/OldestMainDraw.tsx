@@ -29,7 +29,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
-  const perPage = 10;
+  const perPage = 20;
 
   useEffect(() => {
     setPage(1);

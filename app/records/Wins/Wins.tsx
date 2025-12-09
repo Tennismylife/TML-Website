@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { iocToIso2, flagEmoji } from "../../../utils/flags";
 import Pagination from "../../../components/Pagination";
+import { getFlagFromIOC, } from "@/lib/utils";
 
 interface Winner {
   id: string;
@@ -78,7 +78,7 @@ export default function Wins() {
   };
 
   const renderTable = (winnersList: Winner[], startIndex = 0) => (
-    <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
+    <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow mt-0">
       <table className="min-w-full border-collapse">
         <thead>
           <tr className="bg-black">
@@ -90,7 +90,7 @@ export default function Wins() {
         <tbody>
           {winnersList.map((p, idx) => {
             const globalRank = startIndex + idx + 1;
-            const flag = p.ioc ? flagEmoji(iocToIso2(p.ioc)) : null;
+            const flag = getFlagFromIOC(p.ioc) ?? "🏳️";
 
             return (
               <tr key={p.id} className="hover:bg-gray-800 border-b border-white/10">
@@ -151,10 +151,8 @@ export default function Wins() {
   };
 
   return (
-    <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">Players with Most Career Wins</h2>
-
-      <div className="mb-4 flex justify-end">
+    <section className="mb-0">
+      <div className="flex justify-end mb-0">
         <button
           onClick={() => setShowModal(true)}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"

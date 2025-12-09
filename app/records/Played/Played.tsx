@@ -19,7 +19,7 @@ export default function Played() {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
-  const perPage = 10;
+  const perPage = 20;
 
   // Reset page to 1 every time filters change
   useEffect(() => {

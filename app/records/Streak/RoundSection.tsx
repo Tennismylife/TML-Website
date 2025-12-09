@@ -29,43 +29,56 @@ export default function RoundSection({ selectedSurfaces, selectedLevels, selecte
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<any>(null);
 
-  const [showModal, setShowModal] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
-  const [modalTournaments, setModalTournaments] = useState<TournamentInfo[]>([]);
   const [modalPlayer, setModalPlayer] = useState<{ name: string; ioc: string } | null>(null);
+  const [modalTournaments, setModalTournaments] = useState<TournamentInfo[]>([]);
 
+  // Fetch streaks
   useEffect(() => {
-    const query = new URLSearchParams();
-    selectedSurfaces.forEach(s => query.append('surface', s));
-    selectedLevels.forEach(l => query.append('tourney_level', l));
-    if (selectedRounds) query.append('round', selectedRounds);
-    const url = `/api/records/streak/rounds${query.toString() ? '?' + query.toString() : ''}`;
-    setLoading(true);
-    fetch(url)
-      .then(res => res.json())
-      .then(res => setData(res.streaks))
-      .catch(setError)
-      .finally(() => setLoading(false));
+    const fetchStreaks = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const query = new URLSearchParams();
+        selectedSurfaces.forEach(s => query.append('surface', s));
+        selectedLevels.forEach(l => query.append('tourney_level', l));
+        if (selectedRounds) query.append('round', selectedRounds);
+
+        const url = `/api/records/streak/rounds${query.toString() ? '?' + query.toString() : ''}`;
+        const res = await fetch(url);
+        const json = await res.json();
+        setData(json.streaks || []);
+      } catch (err) {
+        console.error(err);
+        setError('Failed to load streaks');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStreaks();
   }, [selectedSurfaces, selectedLevels, selectedRounds]);
 
+  // Fetch tournaments for a player
   const fetchTournaments = async (player: { id: string; name: string; ioc: string }, event_ids: string[]) => {
     try {
       const res = await fetch(`/api/records/streak/streaktournaments/?player_id=${player.id}&event_ids=${event_ids.join(',')}`);
       const tournaments: TournamentInfo[] = await res.json();
       setModalTournaments(tournaments);
-      setModalTitle(`${player.name}'s Tournaments`);
       setModalPlayer(player);
-      setShowModal(true);
+      setModalTitle(`${player.name}'s Tournaments`);
+      setModalOpen(true);
     } catch (err) {
       console.error(err);
       alert('Error fetching tournaments');
     }
   };
 
-  if (error) return <div className="text-red-500">Error loading data</div>;
   if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
 
-  const renderTable = (players: StreakRecord[]) => (
+  const renderTable = (records: StreakRecord[]) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
       <table className="min-w-full border-collapse">
         <thead>
@@ -76,24 +89,24 @@ export default function RoundSection({ selectedSurfaces, selectedLevels, selecte
           </tr>
         </thead>
         <tbody>
-          {players.length === 0 ? (
+          {records.length === 0 ? (
             <tr>
               <td colSpan={3} className="py-2 text-gray-400 text-center">No data</td>
             </tr>
           ) : (
-            players.map((p, index) => (
-              <tr key={index} className="hover:bg-gray-800 border-b border-white/10">
+            records.map((p, idx) => (
+              <tr key={idx} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-lg text-gray-200 flex items-center gap-2">
-                  <span className="text-base">{flagEmoji(iocToIso2(p.player.ioc)) || ""}</span>
-                  <Link href={`/players/${encodeURIComponent(String(p.player.id))}`} className="text-indigo-300 hover:underline">
+                  <span>{flagEmoji(iocToIso2(p.player.ioc)) || ''}</span>
+                  <Link href={`/players/${encodeURIComponent(p.player.id)}`} className="text-indigo-300 hover:underline">
                     {p.player.name}
                   </Link>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.maxStreak}</td>
                 <td className="border border-white/10 px-4 py-2 text-center">
                   <button
-                    onClick={() => fetchTournaments(p.player, p.event_ids)}
                     className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-500 text-sm"
+                    onClick={() => fetchTournaments(p.player, p.event_ids)}
                   >
                     View Tournaments
                   </button>
@@ -106,12 +119,19 @@ export default function RoundSection({ selectedSurfaces, selectedLevels, selecte
     </div>
   );
 
-  const Modal = ({ show, onClose, title, tournaments }: { show: boolean; onClose: () => void; title: string; tournaments: TournamentInfo[] }) => {
-    if (!show) return null;
+  const Modal = () => {
+    if (!modalOpen || !modalPlayer) return null;
+
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50" onClick={onClose}>
-        <div className="bg-gray-900 text-gray-200 p-4 w-full max-w-7xl max-h-screen overflow-y-auto rounded border border-gray-800" onClick={e => e.stopPropagation()}>
-          <h2 className="text-xl font-bold mb-4">{title}</h2>
+      <div
+        className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
+        onClick={() => setModalOpen(false)}
+      >
+        <div
+          className="bg-gray-900 text-gray-200 p-4 w-full max-w-7xl max-h-screen overflow-y-auto rounded border border-gray-800"
+          onClick={e => e.stopPropagation()}
+        >
+          <h2 className="text-xl font-bold mb-4">{modalTitle}</h2>
           <div className="overflow-x-auto rounded border border-white/30 bg-gray-800">
             <table className="min-w-full border-collapse">
               <thead>
@@ -123,18 +143,23 @@ export default function RoundSection({ selectedSurfaces, selectedLevels, selecte
                 </tr>
               </thead>
               <tbody>
-                {tournaments.map((t, idx) => (
+                {modalTournaments.map((t, idx) => (
                   <tr key={idx} className="hover:bg-gray-700 border-b border-white/10">
-                    <td className="border border-white/10 px-4 py-2 text-gray-200">{t.tourney_name}</td>
-                    <td className="border border-white/10 px-4 py-2 text-gray-200">{t.year}</td>
-                    <td className="border border-white/10 px-4 py-2 text-gray-200">{t.surface}</td>
-                    <td className="border border-white/10 px-4 py-2 text-gray-200">{t.tourney_level}</td>
+                    <td className="border border-white/10 px-4 py-2">{t.tourney_name}</td>
+                    <td className="border border-white/10 px-4 py-2">{t.year}</td>
+                    <td className="border border-white/10 px-4 py-2">{t.surface}</td>
+                    <td className="border border-white/10 px-4 py-2">{t.tourney_level}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <button onClick={onClose} className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500">Close</button>
+          <button
+            className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
+            onClick={() => setModalOpen(false)}
+          >
+            Close
+          </button>
         </div>
       </div>
     );
@@ -146,13 +171,13 @@ export default function RoundSection({ selectedSurfaces, selectedLevels, selecte
       {renderTable(data.slice(0, 10))}
       {data.length > 10 && (
         <button
-          onClick={() => { setModalTournaments([]); setShowModal(true); setModalTitle('All Streaks'); }}
+          onClick={() => { setModalTournaments([]); setModalOpen(true); setModalTitle('All Streaks'); }}
           className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
         >
           View All
         </button>
       )}
-      <Modal show={showModal} onClose={() => setShowModal(false)} title={modalTitle} tournaments={modalTournaments} />
+      <Modal />
     </section>
   );
 }

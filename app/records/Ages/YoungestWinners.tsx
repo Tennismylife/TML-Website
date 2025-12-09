@@ -28,7 +28,7 @@ export default function YoungestWinners({ selectedSurfaces, selectedLevels }: Yo
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
-  const perPage = 10;
+  const perPage = 20;
 
   useEffect(() => {
     setPage(1);

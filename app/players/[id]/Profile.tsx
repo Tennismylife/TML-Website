@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Player } from "@/types";
-import { getFlagFromIOC, countryNames, calculateAge } from "@/lib/utils";
+import { getFlagFromIOC, calculateAge } from "@/lib/utils";
 import { FaTrophy } from "react-icons/fa";
 
 interface PlayerTabsClientProps {
@@ -124,10 +124,6 @@ export default function PlayerTabsClient({ player }: PlayerTabsClientProps) {
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 p-4">
       {/* Player Info */}
       <div className="bg-gray-800/80 text-gray-100 shadow-lg rounded-xl p-6 flex flex-col gap-4 border border-gray-700">
-        <h2 className="text-2xl font-bold flex items-center gap-2">
-          {player.atpname} {player.ioc && getFlagFromIOC(player.ioc)}
-        </h2>
-        <p className="text-gray-300">{player.ioc ? countryNames[player.ioc] || player.ioc : "N/A"}</p>
         <div className="grid grid-cols-2 gap-2 text-sm text-gray-200">
           <div>Age: {calculateAge(player.birthdate)}</div>
           <div>Hand: {player.hand === "R" ? "Right" : player.hand === "L" ? "Left" : "N/A"}</div>

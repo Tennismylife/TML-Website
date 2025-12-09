@@ -29,7 +29,7 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
-  const perPage = 10;
+  const perPage = 20;
 
   useEffect(() => {
     setPage(1);

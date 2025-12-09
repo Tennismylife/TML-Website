@@ -52,7 +52,7 @@ export default function SeasonsPage() {
     );
 
   return (
-    <main className="mx-auto max-w-7xl min-h-screen bg-gray-900 text-gray-100 p-6">
+    <main className="min-h-screen bg-gray-900 text-gray-100 p-6">
       <h1 className="text-3xl font-extrabold mb-6 text-center">Seasons</h1>
 
       {/* Legenda superfici */}

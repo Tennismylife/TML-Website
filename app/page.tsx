@@ -11,13 +11,7 @@ interface Player {
   ioc?: string;
 }
 
-function Card({
-  href,
-  title,
-  subtitle,
-  children,
-  large,
-}: {
+function Card({ href, title, subtitle, children, large }: {
   href: string;
   title: string;
   subtitle?: string;
@@ -30,9 +24,9 @@ function Card({
       aria-label={`Go to ${title}`}
       className={`group flex items-center gap-3 rounded-xl border border-gray-700 bg-gray-800/70 p-4 hover:bg-gray-700/60 transition-all duration-300 backdrop-blur-md shadow-md
         ${large 
-          ? "col-span-full flex-col text-center p-6 hover:scale-105" 
-          : "hover:scale-105"
-        }`}
+          ? "col-span-full flex-col text-center p-6 hover:scale-105 w-full" 
+          : "hover:scale-105"}
+      `}
     >
       <span className={`text-yellow-400 group-hover:text-yellow-300 ${large ? "mb-3" : ""}`}>
         {children}
@@ -59,8 +53,9 @@ export default function HomePage() {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Debounced search
+  // Debounced search with proper cleanup
   useEffect(() => {
+    const controller = new AbortController();
     const timer = setTimeout(() => {
       if (!query.trim()) {
         setResults([]);
@@ -68,7 +63,6 @@ export default function HomePage() {
         return;
       }
 
-      const controller = new AbortController();
       setLoading(true);
 
       fetch(`/api/h2h/search?q=${encodeURIComponent(query)}`, {
@@ -83,11 +77,12 @@ export default function HomePage() {
           if (err.name !== "AbortError") console.error("Search error:", err);
         })
         .finally(() => setLoading(false));
-
-      return () => controller.abort();
     }, 300);
 
-    return () => clearTimeout(timer);
+    return () => {
+      controller.abort();
+      clearTimeout(timer);
+    };
   }, [query]);
 
   const handleSelect = (playerId: string) => {
@@ -105,9 +100,10 @@ export default function HomePage() {
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setSelectedIndex((prev) => (prev - 1 + results.length) % results.length);
-    } else if (e.key === "Enter" && selectedIndex >= 0) {
+    } else if (e.key === "Enter") {
       e.preventDefault();
-      handleSelect(results[selectedIndex].id);
+      const target = results[selectedIndex] ?? results[0];
+      if (target) handleSelect(target.id);
     } else if (e.key === "Escape") {
       setQuery("");
       setResults([]);
@@ -154,12 +150,12 @@ export default function HomePage() {
   ];
 
   return (
-    <main className="mx-auto max-w-6xl p-6">
+    <main className="w-full px-3 sm:px-4 md:px-6">
       {/* Title */}
-      <h1 className="text-3xl sm:text-4xl font-bold mb-8 text-center">Tennis My Life</h1>
+      <h1 className="text-3xl sm:text-4xl font-bold mb-8 text-center w-full">Tennis My Life</h1>
 
-      {/* Featured Records Card - Top Center, Larger */}
-      <div className="max-w-2xl mx-auto mb-8">
+      {/* Featured Records Card - Full Width */}
+      <div className="w-full mb-8">
         <Card href="/records" title="Records" subtitle="All-Time Achievements & Milestones" large>
           <svg viewBox="0 0 24 24" className="w-10 h-10" fill="none" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M8 3h8l-2 4H10L8 3z" />
@@ -168,8 +164,8 @@ export default function HomePage() {
         </Card>
       </div>
 
-      {/* Grid of other cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Grid - full width */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
         {navItems.map((item) => (
           <Card key={item.href} href={item.href} title={item.title} subtitle={item.subtitle}>
             {item.icon}
@@ -178,7 +174,7 @@ export default function HomePage() {
       </div>
 
       {/* Search Player */}
-      <div className="max-w-md mx-auto mt-12 relative">
+      <div className="w-full max-w-md mx-auto mt-12 relative">
         <input
           ref={inputRef}
           type="text"
@@ -223,6 +219,7 @@ export default function HomePage() {
             {results.map((p, index) => (
               <li
                 key={p.id}
+                data-idx={index}
                 onClick={() => handleSelect(p.id)}
                 onMouseEnter={() => setSelectedIndex(index)}
                 className={`px-3 py-2 cursor-pointer flex items-center gap-2 rounded transition-colors ${

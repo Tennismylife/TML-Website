@@ -1,275 +1,161 @@
 export const IOC_TO_ISO: Record<string, string> = {
-  AFG: "AF",
-  ALB: "AL",
-  ALG: "DZ",
-  AND: "AD",
-  ANG: "AO",
-  ANT: "AG",
-  ARG: "AR",
-  ARM: "AM",
-  ARU: "AW",
-  ASA: "AS",
-  AUS: "AU",
-  AUT: "AT",
-  AZE: "AZ",
-  BAH: "BS",
-  BAN: "BD",
-  BAR: "BB",
-  BEL: "BE",
-  BEN: "BJ",
-  BER: "BM",
-  BHU: "BT",
-  BIH: "BA",
-  BIZ: "BZ",
-  BLR: "BY",
-  BOL: "BO",
-  BOT: "BW",
-  BRA: "BR",
-  BRN: "BH",
-  BRU: "BN",
-  BUL: "BG",
-  BUR: "BF",
-  CAF: "CF",
-  CAM: "KH",
-  CAN: "CA",
-  CAY: "KY",
-  CGO: "CG",
-  CHA: "TD",
-  CHI: "CL",
-  CHN: "CN",
-  CIV: "CI",
-  CMR: "CM",
-  COD: "CD",
-  COK: "CK",
-  COL: "CO",
-  COM: "KM",
-  CPV: "CV",
-  CRC: "CR",
-  CRO: "HR",
-  CUB: "CU",
-  CYP: "CY",
-  CZE: "CZ",
-  DEN: "DK",
-  DJI: "DJ",
-  DMA: "DM",
-  DOM: "DO",
-  ECU: "EC",
-  EGY: "EG",
-  ESA: "SV",
-  ESP: "ES",
-  EST: "EE",
-  ETH: "ET",
-  FIJ: "FJ",
-  FIN: "FI",
-  FRA: "FR",
-  FSM: "FM",
-  GBR: "GB",
-  GEO: "GE",
-  GER: "DE",
-  GHA: "GH",
-  GRE: "GR",
-  GUA: "GT",
-  GUI: "GN",
-  GUM: "GU",
-  GUY: "GY",
-  HAI: "HT",
-  HKG: "HK",
-  HON: "HN",
-  HUN: "HU",
-  INA: "ID",
-  IND: "IN",
-  IRI: "IR",
-  IRL: "IE",
-  ISL: "IS",
-  ISR: "IL",
-  ITA: "IT",
-  JAM: "JM",
-  JPN: "JP",
-  JOR: "JO",
-  KAZ: "KZ",
-  KEN: "KE",
-  KGZ: "KG",
-  KOR: "KR",
-  KUW: "KW",
-  LAO: "LA",
-  LAT: "LV",
-  LBA: "LY",
-  LBR: "LR",
-  LBN: "LB",
-  LES: "LS",
-  LIB: "LB",
-  LTU: "LT",
-  LUX: "LU",
-  MAD: "MG",
-  MAS: "MY",
-  MDA: "MD",
-  MDV: "MV",
-  MEX: "MX",
-  MGL: "MN",
-  MON: "MC",
-  MNE: "ME",
-  MRI: "MU",
-  MOZ: "MZ",
-  NAM: "NA",
-  NED: "NL",
-  NGR: "NG",
-  NOR: "NO",
-  NZL: "NZ",
-  OMA: "OM",
-  PAK: "PK",
-  PAN: "PA",
-  PAR: "PY",
-  PER: "PE",
-  PHI: "PH",
-  PLE: "PS",
-  POL: "PL",
-  POR: "PT",
-  PUR: "PR",
-  QAT: "QA",
-  ROU: "RO",
-  RSA: "ZA",
-  RUS: "RU",
-  SAM: "WS",
-  SUI: "CH",
-  SVK: "SK",
-  SVN: "SI",
-  SWE: "SE",
-  TAJ: "TJ",
-  TAN: "TZ",
-  THA: "TH",
-  TPE: "TW",
-  TTO: "TT",
-  TUN: "TN",
-  TUR: "TR",
-  TUV: "TV",
-  UGA: "UG",
-  UKR: "UA",
-  URU: "UY",
-  USA: "US",
-  UZB: "UZ",
-  VEN: "VE",
-  VGB: "VG",
-  VIE: "VN",
-  YEM: "YE",
-  ZAM: "ZM",
-  ZIM: "ZW",
-  // Puoi aggiungere altri codici se li incontri
+  AFG: "AF", // 🇦🇫 Afghanistan
+  ALB: "AL", // 🇦🇱 Albania
+  ALG: "DZ", // 🇩🇿 Algeria
+  AND: "AD", // 🇦🇩 Andorra
+  ANG: "AO", // 🇦🇴 Angola
+  ANT: "AG", // 🇦🇬 Antigua & Barbuda
+  ARG: "AR", // 🇦🇷 Argentina
+  ARM: "AM", // 🇦🇲 Armenia
+  ARU: "AW", // 🇦🇼 Aruba
+  ASA: "AS", // 🇦🇸 American Samoa
+  AUS: "AU", // 🇦🇺 Australia
+  AUT: "AT", // 🇦🇹 Austria
+  AZE: "AZ", // 🇦🇿 Azerbaijan
+  BAH: "BS", // 🇧🇸 Bahamas
+  BAN: "BD", // 🇧🇩 Bangladesh
+  BAR: "BB", // 🇧🇧 Barbados
+  BEL: "BE", // 🇧🇪 Belgium
+  BEN: "BJ", // 🇧🇯 Benin
+  BER: "BM", // 🇧🇲 Bermuda
+  BHU: "BT", // 🇧🇹 Bhutan
+  BIH: "BA", // 🇧🇦 Bosnia & Herzegovina
+  BIZ: "BZ", // 🇧🇿 Belize
+  BLR: "BY", // 🇧🇾 Belarus
+  BOL: "BO", // 🇧🇴 Bolivia
+  BOT: "BW", // 🇧🇼 Botswana
+  BRA: "BR", // 🇧🇷 Brazil
+  BRN: "BH", // 🇧🇭 Bahrain
+  BRU: "BN", // 🇧🇳 Brunei
+  BUL: "BG", // 🇧🇬 Bulgaria
+  BUR: "BF", // 🇧🇫 Burkina Faso
+  CAF: "CF", // 🇨🇫 Central African Republic
+  CAM: "KH", // 🇰🇭 Cambodia
+  CAN: "CA", // 🇨🇦 Canada
+  CAY: "KY", // 🇰🇾 Cayman Islands
+  CGO: "CG", // 🇨🇬 Republic of the Congo
+  CHA: "TD", // 🇹🇩 Chad
+  CHI: "CL", // 🇨🇱 Chile
+  CHN: "CN", // 🇨🇳 China
+  CIV: "CI", // 🇨🇮 Côte d'Ivoire
+  CMR: "CM", // 🇨🇲 Cameroon
+  COD: "CD", // 🇨🇩 DR Congo
+  COK: "CK", // 🇨🇰 Cook Islands
+  COL: "CO", // 🇨🇴 Colombia
+  COM: "KM", // 🇰🇲 Comoros
+  CPV: "CV", // 🇨🇻 Cape Verde
+  CRC: "CR", // 🇨🇷 Costa Rica
+  CRO: "HR", // 🇭🇷 Croatia
+  CUB: "CU", // 🇨🇺 Cuba
+  CYP: "CY", // 🇨🇾 Cyprus
+  CZE: "CZ", // 🇨🇿 Czechia
+  DEN: "DK", // 🇩🇰 Denmark
+  DJI: "DJ", // 🇩🇯 Djibouti
+  DMA: "DM", // 🇩🇲 Dominica
+  DOM: "DO", // 🇩🇴 Dominican Republic
+  ECU: "EC", // 🇪🇨 Ecuador
+  EGY: "EG", // 🇪🇬 Egypt
+  ESA: "SV", // 🇸🇻 El Salvador
+  ESP: "ES", // 🇪🇸 Spain
+  EST: "EE", // 🇪🇪 Estonia
+  ETH: "ET", // 🇪🇹 Ethiopia
+  FIJ: "FJ", // 🇫🇯 Fiji
+  FIN: "FI", // 🇫🇮 Finland
+  FRA: "FR", // 🇫🇷 France
+  FSM: "FM", // 🇫🇲 Micronesia
+  GBR: "GB", // 🇬🇧 United Kingdom
+  GEO: "GE", // 🇬🇪 Georgia
+  GER: "DE", // 🇩🇪 Germany
+  GHA: "GH", // 🇬🇭 Ghana
+  GRE: "GR", // 🇬🇷 Greece
+  GUA: "GT", // 🇬🇹 Guatemala
+  GUI: "GN", // 🇬🇳 Guinea
+  GUM: "GU", // 🇬🇺 Guam
+  GUY: "GY", // 🇬🇾 Guyana
+  HAI: "HT", // 🇭🇹 Haiti
+  HKG: "HK", // 🇭🇰 Hong Kong
+  HON: "HN", // 🇭🇳 Honduras
+  HUN: "HU", // 🇭🇺 Hungary
+  INA: "ID", // 🇮🇩 Indonesia
+  IND: "IN", // 🇮🇳 India
+  IRI: "IR", // 🇮🇷 Iran
+  IRL: "IE", // 🇮🇪 Ireland
+  ISL: "IS", // 🇮🇸 Iceland
+  ISR: "IL", // 🇮🇱 Israel
+  ITA: "IT", // 🇮🇹 Italy
+  JAM: "JM", // 🇯🇲 Jamaica
+  JPN: "JP", // 🇯🇵 Japan
+  JOR: "JO", // 🇯🇴 Jordan
+  KAZ: "KZ", // 🇰🇿 Kazakhstan
+  KEN: "KE", // 🇰🇪 Kenya
+  KGZ: "KG", // 🇰🇬 Kyrgyzstan
+  KOR: "KR", // 🇰🇷 South Korea
+  KUW: "KW", // 🇰🇼 Kuwait
+  LAO: "LA", // 🇱🇦 Laos
+  LAT: "LV", // 🇱🇻 Latvia
+  LBA: "LY", // 🇱🇾 Libya
+  LBR: "LR", // 🇱🇷 Liberia
+  LBN: "LB", // 🇱🇧 Lebanon
+  LES: "LS", // 🇱🇸 Lesotho
+  LIB: "LB", // 🇱🇧 Liberia/duplicate
+  LTU: "LT", // 🇱🇹 Lithuania
+  LUX: "LU", // 🇱🇺 Luxembourg
+  MAD: "MG", // 🇲🇬 Madagascar
+  MAS: "MY", // 🇲🇾 Malaysia
+  MDA: "MD", // 🇲🇩 Moldova
+  MDV: "MV", // 🇲🇻 Maldives
+  MEX: "MX", // 🇲🇽 Mexico
+  MGL: "MN", // 🇲🇳 Mongolia
+  MON: "MC", // 🇲🇨 Monaco
+  MNE: "ME", // 🇲🇪 Montenegro
+  MRI: "MU", // 🇲🇺 Mauritius
+  MOZ: "MZ", // 🇲🇿 Mozambique
+  NAM: "NA", // 🇳🇦 Namibia
+  NED: "NL", // 🇳🇱 Netherlands
+  NGR: "NG", // 🇳🇬 Nigeria
+  NOR: "NO", // 🇳🇴 Norway
+  NZL: "NZ", // 🇳🇿 New Zealand
+  OMA: "OM", // 🇴🇲 Oman
+  PAK: "PK", // 🇵🇰 Pakistan
+  PAN: "PA", // 🇵🇦 Panama
+  PAR: "PY", // 🇵🇾 Paraguay
+  PER: "PE", // 🇵🇪 Peru
+  PHI: "PH", // 🇵🇭 Philippines
+  PLE: "PS", // 🇵🇸 Palestine
+  POL: "PL", // 🇵🇱 Poland
+  POR: "PT", // 🇵🇹 Portugal
+  PUR: "PR", // 🇵🇷 Puerto Rico
+  QAT: "QA", // 🇶🇦 Qatar
+  ROU: "RO", // 🇷🇴 Romania
+  RSA: "ZA", // 🇿🇦 South Africa
+  RUS: "RU", // 🇷🇺 Russia
+  SAM: "WS", // 🇼🇸 Samoa
+  SRB: "RS", // 🇷🇸 Serbia
+  SUI: "CH", // 🇨🇭 Switzerland
+  SVK: "SK", // 🇸🇰 Slovakia
+  SVN: "SI", // 🇸🇮 Slovenia
+  SWE: "SE", // 🇸🇪 Sweden
+  TAJ: "TJ", // 🇹🇯 Tajikistan
+  TAN: "TZ", // 🇹🇿 Tanzania
+  THA: "TH", // 🇹🇭 Thailand
+  TPE: "TW", // 🇹🇼 Taiwan
+  TTO: "TT", // 🇹🇹 Trinidad & Tobago
+  TUN: "TN", // 🇹🇳 Tunisia
+  TUR: "TR", // 🇹🇷 Turkey
+  TUV: "TV", // 🇹🇻 Tuvalu
+  UGA: "UG", // 🇺🇬 Uganda
+  UKR: "UA", // 🇺🇦 Ukraine
+  URU: "UY", // 🇺🇾 Uruguay
+  USA: "US", // 🇺🇸 United States
+  UZB: "UZ", // 🇺🇿 Uzbekistan
+  VEN: "VE", // 🇻🇪 Venezuela
+  VGB: "VG", // 🇻🇬 British Virgin Islands
+  VIE: "VN", // 🇻🇳 Vietnam
+  YEM: "YE", // 🇾🇪 Yemen
+  ZAM: "ZM", // 🇿🇲 Zambia
+  ZIM: "ZW", // 🇿🇼 Zimbabwe
 };
 
-export const countryNames: Record<string, string> = {
-  ITA: "Italy",
-  USA: "United States",
-  ESP: "Spain",
-  FRA: "France",
-  GBR: "United Kingdom",
-  GER: "Germany",
-  AUS: "Australia",
-  ARG: "Argentina",
-  SRB: "Serbia",
-  RUS: "Russia",
-  SWE: "Sweden",
-  CRO: "Croatia",
-  SUI: "Switzerland",
-  AUT: "Austria",
-  CZE: "Czech Republic",
-  SVK: "Slovakia",
-  POL: "Poland",
-  BEL: "Belgium",
-  NED: "Netherlands",
-  DEN: "Denmark",
-  NOR: "Norway",
-  FIN: "Finland",
-  EST: "Estonia",
-  LAT: "Latvia",
-  LTU: "Lithuania",
-  HUN: "Hungary",
-  ROU: "Romania",
-  BUL: "Bulgaria",
-  GRE: "Greece",
-  TUR: "Turkey",
-  ISR: "Israel",
-  EGY: "Egypt",
-  RSA: "South Africa",
-  MAR: "Morocco",
-  TUN: "Tunisia",
-  ALG: "Algeria",
-  NGR: "Nigeria",
-  KEN: "Kenya",
-  ZIM: "Zimbabwe",
-  IND: "India",
-  PAK: "Pakistan",
-  THA: "Thailand",
-  MAS: "Malaysia",
-  INA: "Indonesia",
-  PHI: "Philippines",
-  JPN: "Japan",
-  KOR: "South Korea",
-  CHN: "China",
-  TPE: "Chinese Taipei",
-  HKG: "Hong Kong",
-  SIN: "Singapore",
-  BRN: "Bahrain",
-  UAE: "United Arab Emirates",
-  KUW: "Kuwait",
-  QAT: "Qatar",
-  IRI: "Iran",
-  KAZ: "Kazakhstan",
-  UZB: "Uzbekistan",
-  KGZ: "Kyrgyzstan",
-  TJK: "Tajikistan",
-  GEO: "Georgia",
-  ARM: "Armenia",
-  AZE: "Azerbaijan",
-  UKR: "Ukraine",
-  BLR: "Belarus",
-  MDA: "Moldova",
-  CYP: "Cyprus",
-  MNE: "Montenegro",
-  MKD: "North Macedonia",
-  ALB: "Albania",
-  BIH: "Bosnia and Herzegovina",
-  SLO: "Slovenia",
-  LUX: "Luxembourg",
-  LIE: "Liechtenstein",
-  AND: "Andorra",
-  MON: "Monaco",
-  SMR: "San Marino",
-  MLT: "Malta",
-  ISL: "Iceland",
-  IRL: "Ireland",
-  POR: "Portugal",
-  COL: "Colombia",
-  ECU: "Ecuador",
-  PER: "Peru",
-  CHI: "Chile",
-  URU: "Uruguay",
-  PAR: "Paraguay",
-  BOL: "Bolivia",
-  VEN: "Venezuela",
-  BRA: "Brazil",
-  MEX: "Mexico",
-  CAN: "Canada",
-  JAM: "Jamaica",
-  BAH: "Bahamas",
-  TRI: "Trinidad and Tobago",
-  BAR: "Barbados",
-  DOM: "Dominican Republic",
-  PUR: "Puerto Rico",
-  CUB: "Cuba",
-  HON: "Honduras",
-  GUA: "Guatemala",
-  CRC: "Costa Rica",
-  PAN: "Panama",
-  SLV: "El Salvador",
-  NCA: "Nicaragua",
-  NZL: "New Zealand",
-  FIJ: "Fiji",
-  SAM: "Samoa",
-  TGA: "Tonga",
-  VAN: "Vanuatu",
-  SOL: "Solomon Islands",
-  PNG: "Papua New Guinea",
-};
 
 export function getFlagFromIOC(ioc?: string): string {
   if (!ioc) return "";

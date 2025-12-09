@@ -116,63 +116,64 @@ export default function PlayerVsPlayerPage() {
     return yearOk && levelOk && surfaceOk && roundOk && tourneyOk;
   });
 
-  // --- Render ---
   return (
-    <main className="mx-auto max-w-6xl p-4 text-white">
-      <h1 className="text-2xl font-bold mb-6 text-center">Player vs Player</h1>
+    <main className="w-full min-h-screen bg-gray-900 text-white p-6">
+      <div className="mx-auto max-w-7xl">
+        <h1 className="text-2xl font-bold mb-6 text-center">Player vs Player</h1>
 
-      {/* PLAYER SEARCHERS */}
-      <div className="flex gap-4 mb-8">
-        <PlayerSearch label="Player 1" onSelect={setPlayer1} />
-        <PlayerSearch label="Player 2" onSelect={setPlayer2} />
+        {/* PLAYER SEARCHERS */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-8">
+          <PlayerSearch label="Player 1" onSelect={setPlayer1} />
+          <PlayerSearch label="Player 2" onSelect={setPlayer2} />
+        </div>
+
+        {/* STATISTICS */}
+        {player1 && player2 && stats1 && stats2 && (
+          <>
+            {/* Wins */}
+            <div className="mt-10">
+              <h2 className="text-xl font-semibold mb-4 text-center">Wins</h2>
+              <div className="space-y-4">
+                <BarRow label="All" statKey="winsAll" stats1={stats1} stats2={stats2} type="wins" />
+                <BarRow label="Grand Slam" statKey="winsGrandSlam" stats1={stats1} stats2={stats2} type="wins" />
+                <BarRow label="Masters 1000" statKey="winsMasters1000" stats1={stats1} stats2={stats2} type="wins" />
+                <BarRow label="Hard" statKey="winsHard" stats1={stats1} stats2={stats2} type="wins" />
+                <BarRow label="Grass" statKey="winsGrass" stats1={stats1} stats2={stats2} type="wins" />
+                <BarRow label="Clay" statKey="winsClay" stats1={stats1} stats2={stats2} type="wins" />
+                <BarRow label="Carpet" statKey="winsCarpet" stats1={stats1} stats2={stats2} type="wins" />
+              </div>
+            </div>
+
+            {/* Win Percentages */}
+            <div className="mt-12">
+              <h2 className="text-xl font-semibold mb-4 text-center">Win Percentage</h2>
+              <div className="space-y-4">
+                <PercentageRow label="All" perc1={stats1.percAll} perc2={stats2.percAll} />
+                <PercentageRow label="Grand Slam" perc1={stats1.percGrandSlam} perc2={stats2.percGrandSlam} />
+                <PercentageRow label="Masters 1000" perc1={stats1.percMasters1000} perc2={stats2.percMasters1000} />
+                <PercentageRow label="Hard" perc1={stats1.percHard} perc2={stats2.percHard} />
+                <PercentageRow label="Grass" perc1={stats1.percGrass} perc2={stats2.percGrass} />
+                <PercentageRow label="Clay" perc1={stats1.percClay} perc2={stats2.percClay} />
+                <PercentageRow label="Carpet" perc1={stats1.percCarpet} perc2={stats2.percCarpet} />
+              </div>
+            </div>
+
+            {/* Titles */}
+            <div className="mt-12 mb-10">
+              <h2 className="text-xl font-semibold mb-4 text-center">Titles</h2>
+              <div className="space-y-4">
+                <BarRow label="All" statKey="titlesAll" stats1={stats1} stats2={stats2} type="titles" />
+                <BarRow label="Grand Slam" statKey="titlesGrandSlam" stats1={stats1} stats2={stats2} type="titles" />
+                <BarRow label="Masters 1000" statKey="titlesMasters1000" stats1={stats1} stats2={stats2} type="titles" />
+                <BarRow label="Hard" statKey="titlesHard" stats1={stats1} stats2={stats2} type="titles" />
+                <BarRow label="Grass" statKey="titlesGrass" stats1={stats1} stats2={stats2} type="titles" />
+                <BarRow label="Clay" statKey="titlesClay" stats1={stats1} stats2={stats2} type="titles" />
+                <BarRow label="Carpet" statKey="titlesCarpet" stats1={stats1} stats2={stats2} type="titles" />
+              </div>
+            </div>
+          </>
+        )}
       </div>
-
-      {/* STATISTICS */}
-      {player1 && player2 && stats1 && stats2 && (
-        <>
-          {/* Wins */}
-          <div className="mt-10">
-            <h2 className="text-xl font-semibold mb-4 text-center">Wins</h2>
-            <div className="space-y-4">
-              <BarRow label="All" statKey="winsAll" stats1={stats1} stats2={stats2} type="wins" />
-              <BarRow label="Grand Slam" statKey="winsGrandSlam" stats1={stats1} stats2={stats2} type="wins" />
-              <BarRow label="Masters 1000" statKey="winsMasters1000" stats1={stats1} stats2={stats2} type="wins" />
-              <BarRow label="Hard" statKey="winsHard" stats1={stats1} stats2={stats2} type="wins" />
-              <BarRow label="Grass" statKey="winsGrass" stats1={stats1} stats2={stats2} type="wins" />
-              <BarRow label="Clay" statKey="winsClay" stats1={stats1} stats2={stats2} type="wins" />
-              <BarRow label="Carpet" statKey="winsCarpet" stats1={stats1} stats2={stats2} type="wins" />
-            </div>
-          </div>
-
-          {/* Win Percentages */}
-          <div className="mt-12">
-            <h2 className="text-xl font-semibold mb-4 text-center">Win Percentage</h2>
-            <div className="space-y-4">
-              <PercentageRow label="All" perc1={stats1.percAll} perc2={stats2.percAll} />
-              <PercentageRow label="Grand Slam" perc1={stats1.percGrandSlam} perc2={stats2.percGrandSlam} />
-              <PercentageRow label="Masters 1000" perc1={stats1.percMasters1000} perc2={stats2.percMasters1000} />
-              <PercentageRow label="Hard" perc1={stats1.percHard} perc2={stats2.percHard} />
-              <PercentageRow label="Grass" perc1={stats1.percGrass} perc2={stats2.percGrass} />
-              <PercentageRow label="Clay" perc1={stats1.percClay} perc2={stats2.percClay} />
-              <PercentageRow label="Carpet" perc1={stats1.percCarpet} perc2={stats2.percCarpet} />
-            </div>
-          </div>
-
-          {/* Titles */}
-          <div className="mt-12 mb-10">
-            <h2 className="text-xl font-semibold mb-4 text-center">Titles</h2>
-            <div className="space-y-4">
-              <BarRow label="All" statKey="titlesAll" stats1={stats1} stats2={stats2} type="titles" />
-              <BarRow label="Grand Slam" statKey="titlesGrandSlam" stats1={stats1} stats2={stats2} type="titles" />
-              <BarRow label="Masters 1000" statKey="titlesMasters1000" stats1={stats1} stats2={stats2} type="titles" />
-              <BarRow label="Hard" statKey="titlesHard" stats1={stats1} stats2={stats2} type="titles" />
-              <BarRow label="Grass" statKey="titlesGrass" stats1={stats1} stats2={stats2} type="titles" />
-              <BarRow label="Clay" statKey="titlesClay" stats1={stats1} stats2={stats2} type="titles" />
-              <BarRow label="Carpet" statKey="titlesCarpet" stats1={stats1} stats2={stats2} type="titles" />
-            </div>
-          </div>
-        </>
-      )}
     </main>
   );
 }

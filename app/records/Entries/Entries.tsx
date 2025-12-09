@@ -19,7 +19,7 @@ export default function Entries() {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
-  const perPage = 10;
+  const perPage = 20;
 
   useEffect(() => {
     const fetchEntries = async () => {
