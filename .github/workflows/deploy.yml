@@ -15,7 +15,7 @@ jobs:
     steps:
       # 1?? Checkout repository
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout
 
       # 2?? Setup Node.js
       - name: Setup Node.js
@@ -46,7 +46,7 @@ jobs:
 
       # 6?? Copy build and project files to VPS using rsync v3
       - name: Copy project to VPS via rsync
-        uses: burnett01/rsync-deployments@v3
+        uses: burnett01/rsync-deployments@v7.1.0
         with:
           switches: -avz --delete
           path: ".next,public,package.json,package-lock.json,prisma"
