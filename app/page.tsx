@@ -11,7 +11,13 @@ interface Player {
   ioc?: string;
 }
 
-function Card({ href, title, subtitle, children, large }: {
+function Card({
+  href,
+  title,
+  subtitle,
+  children,
+  large,
+}: {
   href: string;
   title: string;
   subtitle?: string;
@@ -23,15 +29,15 @@ function Card({ href, title, subtitle, children, large }: {
       href={href}
       aria-label={`Go to ${title}`}
       className={`group flex items-center gap-3 rounded-xl border border-gray-700 bg-gray-800/70 p-4 hover:bg-gray-700/60 transition-all duration-300 backdrop-blur-md shadow-md
-        ${large 
-          ? "col-span-full flex-col text-center p-6 hover:scale-105 w-full" 
-          : "hover:scale-105"}
+        ${large
+          ? "col-span-full flex-col text-center p-6 hover:scale-105 w-full"
+          : "w-full flex-col hover:scale-105"}
       `}
     >
       <span className={`text-yellow-400 group-hover:text-yellow-300 ${large ? "mb-3" : ""}`}>
         {children}
       </span>
-      <span className={`flex ${large ? "flex-col items-center" : "flex-col"}`}>
+      <span className={`flex flex-col ${large ? "items-center" : ""}`}>
         <span className={`font-semibold text-gray-100 ${large ? "text-xl" : ""}`}>
           {title}
         </span>
@@ -53,7 +59,7 @@ export default function HomePage() {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Debounced search with proper cleanup
+  // Debounced search
   useEffect(() => {
     const controller = new AbortController();
     const timer = setTimeout(() => {
@@ -102,7 +108,7 @@ export default function HomePage() {
       setSelectedIndex((prev) => (prev - 1 + results.length) % results.length);
     } else if (e.key === "Enter") {
       e.preventDefault();
-      const target = results[selectedIndex] ?? results[0];
+      const target = selectedIndex >= 0 ? results[selectedIndex] : results[0];
       if (target) handleSelect(target.id);
     } else if (e.key === "Escape") {
       setQuery("");
@@ -150,7 +156,7 @@ export default function HomePage() {
   ];
 
   return (
-    <main className="w-full px-3 sm:px-4 md:px-6">
+    <main className="w-full">
       {/* Title */}
       <h1 className="text-3xl sm:text-4xl font-bold mb-8 text-center w-full">Tennis My Life</h1>
 
@@ -165,7 +171,7 @@ export default function HomePage() {
       </div>
 
       {/* Grid - full width */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
         {navItems.map((item) => (
           <Card key={item.href} href={item.href} title={item.title} subtitle={item.subtitle}>
             {item.icon}
@@ -174,7 +180,7 @@ export default function HomePage() {
       </div>
 
       {/* Search Player */}
-      <div className="w-full max-w-md mx-auto mt-12 relative">
+      <div className="w-full mt-12 relative max-w-md mx-auto">
         <input
           ref={inputRef}
           type="text"
@@ -187,7 +193,6 @@ export default function HomePage() {
           className="w-full bg-gray-800 text-gray-100 placeholder-gray-400 border border-gray-700 rounded px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-yellow-400"
         />
 
-        {/* Clear button */}
         {query && (
           <button
             onClick={() => {
@@ -202,7 +207,6 @@ export default function HomePage() {
           </button>
         )}
 
-        {/* Loading */}
         {loading && (
           <ul className="border border-gray-700 mt-1 rounded max-h-60 overflow-y-auto bg-gray-800">
             {[...Array(4)].map((_, i) => (
@@ -213,7 +217,6 @@ export default function HomePage() {
           </ul>
         )}
 
-        {/* Results */}
         {results.length > 0 && !loading && (
           <ul className="border border-gray-700 mt-1 rounded max-h-60 overflow-y-auto bg-gray-800 text-gray-100">
             {results.map((p, index) => (
@@ -234,7 +237,6 @@ export default function HomePage() {
           </ul>
         )}
 
-        {/* No results */}
         {results.length === 0 && query && !loading && (
           <p className="text-sm text-gray-400 mt-1 text-center">No players found</p>
         )}

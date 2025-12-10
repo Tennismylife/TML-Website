@@ -2,10 +2,10 @@ import Link from "next/link";
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-50 bg-gray-800/95 backdrop-blur-md border-b border-gray-700">
-      <div className="container mx-auto px-4 py-3 flex items-center">
+    <header className="sticky top-0 z-50 bg-gray-800/95 backdrop-blur-md border-b border-gray-700 w-full">
+      <div className="flex items-center w-full px-3 py-3">
         <div className="font-bold text-gray-100">🎾 Tennis</div>
-        <nav className="ml-8 space-x-4">
+        <nav className="ml-6 flex flex-wrap gap-4">
           <Link href="/" className="text-gray-100 hover:text-yellow-400 transition-colors">Home</Link>
           <Link href="/tournaments" className="text-gray-100 hover:text-yellow-400 transition-colors">Tournaments</Link>
           <Link href="/seasons" className="text-gray-100 hover:text-yellow-400 transition-colors">Seasons</Link>
