@@ -1,4 +1,4 @@
-name: Build & Deploy Next.js Project (Prisma 6 Only) 
+name: Build & Deploy Next.js Project (Prisma 6 Only)
 
 on:
   push:
@@ -17,13 +17,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2?? Setup Node.js
+      # 2?? Test SSH connection to VPS (pre-deploy)
+      - name: Test SSH connection to VPS
+        run: |
+          echo "${{ secrets.VPS_KEY }}" > /tmp/vps_key
+          chmod 600 /tmp/vps_key
+
+          echo "Testing SSH connection to ${{ secrets.VPS_HOST }}..."
+          ssh -i /tmp/vps_key \
+            -o StrictHostKeyChecking=no \
+            -o ConnectTimeout=5 \
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo 'SSH connection OK' && hostname"
+
+      # 3?? Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
 
-      # 3?? Clean install Prisma 6 
+      # 4?? Clean install Prisma 6 
       - name: Clean install Prisma 6
         run: |
           rm -rf node_modules package-lock.json
@@ -36,28 +48,26 @@ jobs:
           npm ls prisma
           npm ls @prisma/client
 
-      # 4?? Test database connection
+      # 5?? Test database connection
       - name: Test PostgreSQL connection
         run: npx prisma db pull
 
-      # 5?? Build Next.js
+      # 6?? Build Next.js
       - name: Build project
         run: npm run build
 
-      # 6?? Copy build and project files to VPS using native rsync
+      # 7?? Copy build and project files to VPS using native rsync
       - name: Copy project to VPS via rsync
         run: |
-          # Scrivi la chiave privata su file temporaneo
           echo "${{ secrets.VPS_KEY }}" > /tmp/vps_key
           chmod 600 /tmp/vps_key
 
-          # Esegui rsync con il file temporaneo
           rsync -avz --delete \
             -e "ssh -i /tmp/vps_key -o StrictHostKeyChecking=no" \
             .next public package.json package-lock.json prisma/ \
             ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/TML-Website
 
-      # 7?? Install node_modules on VPS (production only)
+      # 8?? Install node_modules on VPS (production only)
       - name: Install Node Modules on VPS
         uses: appleboy/ssh-action@v0.1.5
         with:
@@ -68,7 +78,7 @@ jobs:
             cd /var/www/TML-Website
             npm ci --omit=dev
 
-      # 8?? Restart PM2
+      # 9?? Restart PM2
       - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:
