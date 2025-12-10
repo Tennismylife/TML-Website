@@ -1,4 +1,4 @@
-name: Build & Deploy Next.js Project (Prisma 6 Only)
+name: Build & Deploy Next.js Project (Prisma 6 Only) 
 
 on:
   push:
