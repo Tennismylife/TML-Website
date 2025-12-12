@@ -1,52 +1,34 @@
 DROP MATERIALIZED VIEW IF EXISTS mv_wins_ages;
 
 CREATE MATERIALIZED VIEW mv_wins_ages AS
-WITH base AS (
+WITH ordered_wins AS (
   SELECT
+    m.id,  -- necessario per ROW_NUMBER negli aggregati per dimensione
     m.winner_id,
     ROUND(m.winner_age::numeric, 3) AS age,
     COALESCE(m.surface, 'Unknown') AS surface,
     COALESCE(m.tourney_level, 'Unknown') AS tourney_level,
     COALESCE(m.round, 'Unknown') AS round,
-    COALESCE(m.best_of::text, 'Unknown') AS best_of
+    COALESCE(m.best_of::text, 'Unknown') AS best_of,
+    ROW_NUMBER() OVER (
+      PARTITION BY m.winner_id
+      ORDER BY m.id
+    ) AS win_number
   FROM "Match" m
   WHERE m.status = TRUE
     AND m.winner_age IS NOT NULL
 ),
 
--- 1. Conta vittorie per giocatore ed età
-counts AS (
-  SELECT
-    winner_id,
-    age,
-    COUNT(*) AS wins_at_age
-  FROM base
-  GROUP BY winner_id, age
-),
-
--- 2. Calcola il numero progressivo di vittorie (cumulative)
-progressive AS (
-  SELECT
-    winner_id,
-    age,
-    SUM(wins_at_age) OVER (
-      PARTITION BY winner_id
-      ORDER BY age
-      ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-    ) AS cumulative_wins
-  FROM counts
-),
-
--- 3. Aggrega tutto in JSON
+-- JSON totale
 agg_total AS (
   SELECT
     winner_id,
-    jsonb_object_agg(age::text, cumulative_wins ORDER BY age) AS ages_json
-  FROM progressive
+    jsonb_object_agg(win_number::text, age ORDER BY win_number) AS ages_json
+  FROM ordered_wins
   GROUP BY winner_id
 ),
 
--- 4. Aggregazioni per superficie
+-- JSON per superficie
 agg_surface AS (
   SELECT
     winner_id,
@@ -55,26 +37,24 @@ agg_surface AS (
     SELECT
       winner_id,
       surface,
-      jsonb_object_agg(age::text, cumulative_wins ORDER BY age) AS surface_json
+      jsonb_object_agg(win_number_surface::text, age ORDER BY win_number_surface) AS surface_json
     FROM (
       SELECT
         winner_id,
         surface,
         age,
-        SUM(COUNT(*)) OVER (
+        ROW_NUMBER() OVER (
           PARTITION BY winner_id, surface
-          ORDER BY age
-          ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-        ) AS cumulative_wins
-      FROM base
-      GROUP BY winner_id, surface, age
-    ) x
+          ORDER BY id
+        ) AS win_number_surface
+      FROM ordered_wins
+    ) y
     GROUP BY winner_id, surface
-  ) y
+  ) x
   GROUP BY winner_id
 ),
 
--- 5. Aggregazioni per livello torneo
+-- JSON per livello torneo
 agg_level AS (
   SELECT
     winner_id,
@@ -83,26 +63,24 @@ agg_level AS (
     SELECT
       winner_id,
       tourney_level,
-      jsonb_object_agg(age::text, cumulative_wins ORDER BY age) AS level_json
+      jsonb_object_agg(win_number_level::text, age ORDER BY win_number_level) AS level_json
     FROM (
       SELECT
         winner_id,
         tourney_level,
         age,
-        SUM(COUNT(*)) OVER (
+        ROW_NUMBER() OVER (
           PARTITION BY winner_id, tourney_level
-          ORDER BY age
-          ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-        ) AS cumulative_wins
-      FROM base
-      GROUP BY winner_id, tourney_level, age
-    ) x
+          ORDER BY id
+        ) AS win_number_level
+      FROM ordered_wins
+    ) y
     GROUP BY winner_id, tourney_level
-  ) y
+  ) x
   GROUP BY winner_id
 ),
 
--- 6. Aggregazioni per round
+-- JSON per round
 agg_round AS (
   SELECT
     winner_id,
@@ -111,26 +89,24 @@ agg_round AS (
     SELECT
       winner_id,
       round,
-      jsonb_object_agg(age::text, cumulative_wins ORDER BY age) AS round_json
+      jsonb_object_agg(win_number_round::text, age ORDER BY win_number_round) AS round_json
     FROM (
       SELECT
         winner_id,
         round,
         age,
-        SUM(COUNT(*)) OVER (
+        ROW_NUMBER() OVER (
           PARTITION BY winner_id, round
-          ORDER BY age
-          ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-        ) AS cumulative_wins
-      FROM base
-      GROUP BY winner_id, round, age
-    ) x
+          ORDER BY id
+        ) AS win_number_round
+      FROM ordered_wins
+    ) y
     GROUP BY winner_id, round
-  ) y
+  ) x
   GROUP BY winner_id
 ),
 
--- 7. Aggregazioni per best_of
+-- JSON per best_of
 agg_best_of AS (
   SELECT
     winner_id,
@@ -139,35 +115,33 @@ agg_best_of AS (
     SELECT
       winner_id,
       best_of,
-      jsonb_object_agg(age::text, cumulative_wins ORDER BY age) AS bestof_json
+      jsonb_object_agg(win_number_bestof::text, age ORDER BY win_number_bestof) AS bestof_json
     FROM (
       SELECT
         winner_id,
         best_of,
         age,
-        SUM(COUNT(*)) OVER (
+        ROW_NUMBER() OVER (
           PARTITION BY winner_id, best_of
-          ORDER BY age
-          ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-        ) AS cumulative_wins
-      FROM base
-      GROUP BY winner_id, best_of, age
-    ) x
+          ORDER BY id
+        ) AS win_number_bestof
+      FROM ordered_wins
+    ) y
     GROUP BY winner_id, best_of
-  ) y
+  ) x
   GROUP BY winner_id
 )
 
--- 8. Join finale
+-- Join finale
 SELECT
-  a.winner_id,
-  a.ages_json,
+  t.winner_id,
+  t.ages_json,
   s.ages_by_surface_json,
   l.ages_by_level_json,
   r.ages_by_round_json,
   b.ages_by_best_of_json
-FROM agg_total a
-LEFT JOIN agg_surface s ON s.winner_id = a.winner_id
-LEFT JOIN agg_level l   ON l.winner_id = a.winner_id
-LEFT JOIN agg_round r   ON r.winner_id = a.winner_id
-LEFT JOIN agg_best_of b ON b.winner_id = a.winner_id;
+FROM agg_total t
+LEFT JOIN agg_surface s ON s.winner_id = t.winner_id
+LEFT JOIN agg_level l   ON l.winner_id = t.winner_id
+LEFT JOIN agg_round r   ON r.winner_id = t.winner_id
+LEFT JOIN agg_best_of b ON b.winner_id = t.winner_id;

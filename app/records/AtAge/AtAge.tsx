@@ -24,8 +24,6 @@ export default function AtAge({
 }: AtAgeProps) {
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4">At Age</h2>
-
       {activeSubTab === 'slams' && (
         <InSlamsSection
           selectedSurfaces={Array.from(selectedSurfaces)}
@@ -71,8 +69,6 @@ export default function AtAge({
         <TitlesSection
           selectedSurfaces={Array.from(selectedSurfaces)}
           selectedLevels={Array.from(selectedLevels)}
-          selectedRounds={selectedRounds} // array
-          selectedBestOf={selectedBestOf}
         />
       )}
     </section>

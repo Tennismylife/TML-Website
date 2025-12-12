@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { iocToIso2, flagEmoji } from '../../../utils/flags';
+import { getFlagFromIOC } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
+import Modal from '../Modal';
 
 interface PercentageProps {
   selectedSurfaces: Set<string>;
@@ -27,7 +28,8 @@ export default function Percentage({ selectedSurfaces, selectedLevels, selectedR
   const [error, setError] = useState(null);
   const [minMatches, setMinMatches] = useState(1);
   const [page, setPage] = useState(1);
-  const perPage = 10;
+  const [showModal, setShowModal] = useState(false);
+  const perPage = 20;
   const searchParams = useSearchParams();
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
@@ -84,7 +86,7 @@ export default function Percentage({ selectedSurfaces, selectedLevels, selectedR
             <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Wins</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Losses</th>
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-indigo-300">Percentage</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Percentage</th>
           </tr>
         </thead>
         <tbody>
@@ -94,14 +96,14 @@ export default function Percentage({ selectedSurfaces, selectedLevels, selectedR
             const losses = p.matchesPlayed - wins;
             return (
               <tr key={`${p.id}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
-                <td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-400 font-semibold">{globalIdx}</td>
+                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalIdx}</td>
                 <td className="border border-white/10 px-4 py-2 text-lg text-gray-200 flex items-center gap-2">
-                  <span className="text-base">{flagEmoji(iocToIso2(p.ioc)) || ''}</span>
-                  <Link href={getLink(String(p.id))} className="text-indigo-300 hover:underline">{p.name}</Link>
+                  <span className="text-base">{getFlagFromIOC(p.ioc) || ''}</span>
+                  <Link href={getLink(String(p.id))} className="text-gray-200 hover:underline">{p.name}</Link>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{wins}</td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{losses}</td>
-                <td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300 font-semibold">{p.winPercentage.toFixed(2)}%</td>
+                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.winPercentage.toFixed(2)}%</td>
               </tr>
             );
           })}
@@ -128,9 +130,22 @@ export default function Percentage({ selectedSurfaces, selectedLevels, selectedR
         />
       </div>
 
+      <div className="mb-4 flex justify-end">
+        <button
+          onClick={() => setShowModal(true)}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
+        >
+          View All
+        </button>
+      </div>
+
       {renderTable(currentData, start)}
 
       {totalPages > 1 && <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />}
+
+      <Modal show={showModal} onClose={() => setShowModal(false)} title="Top Win Percentages">
+        {renderTable(filteredData)}
+      </Modal>
     </section>
   );
 }

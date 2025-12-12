@@ -1,153 +1,187 @@
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import Link from 'next/link';
-import { iocToIso2, flagEmoji } from '../../../utils/flags';
-import { formatAgeDisplay } from './ageUtils';
-import Pagination from '../../../components/Pagination';
-import NthInput from './NthInput';
+import { useState } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import Pagination from "../../../components/Pagination";
+import Modal from "../Modal";
+import { getFlagFromIOC } from "@/lib/utils";
 
 interface TitlesSectionProps {
   selectedSurfaces: string[];
   selectedLevels: string[];
 }
 
-interface PlayerInfo {
-  name: string;
-  ioc: string;
-  ages: number[];
-}
-
-interface RowData {
+interface Player {
   id: string;
   name: string;
-  ioc: string;
-  age: number;
+  ioc?: string;
+  age_at_title: string; // già formattata - XXy YYd
+}
+
+function NInput({ value, onChange }: { value: number; onChange: (n: number) => void }) {
+  return (
+    <input
+      type="number"
+      min={1}
+      className="w-24 px-2 py-1 bg-gray-800 text-white border border-gray-600 rounded"
+      value={value}
+      onChange={(e) => onChange(Number(e.target.value))}
+    />
+  );
 }
 
 export default function TitlesSection({ selectedSurfaces, selectedLevels }: TitlesSectionProps) {
-  const [data, setData] = useState<[string, PlayerInfo][]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<any>(null);
-  const [selectedN, setSelectedN] = useState(1);
+  const [data, setData] = useState<Player[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
-  const [showAll, setShowAll] = useState(false);
-  const perPage = 10;
+  const [showModal, setShowModal] = useState(false);
 
-  // Reset pagina quando cambiano filtri o N
-  useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedN]);
+  const [inputN, setInputN] = useState(50);
+  const [selectedN, setSelectedN] = useState(50);
 
-  // Fetch dati
-  useEffect(() => {
-    const query = new URLSearchParams();
-    selectedSurfaces.forEach(s => query.append('surface', s));
-    selectedLevels.forEach(l => query.append('level', l));
-    const url = `/api/records/ageofnth/titles?${query.toString()}`;
-    setLoading(true);
-    setError(null);
+  const searchParams = useSearchParams();
+  const perPage = 20;
 
-    fetch(url)
-      .then(res => res.json() as Promise<[string, PlayerInfo][]>)
-      .then(setData)
-      .catch(err => setError(err))
-      .finally(() => setLoading(false));
-  }, [selectedSurfaces, selectedLevels]);
+  const fetchData = async (n: number) => {
+    try {
+      setLoading(true);
+      setError(null);
 
-  // Costruzione tabella per l’Nth title
-  const filteredData = useMemo(() => {
-    const result: RowData[] = [];
-    const entries: [string, PlayerInfo][] = Array.isArray(data) ? data : Object.entries(data || {});
+      const query = new URLSearchParams();
+      query.append("n", n.toString());
+      selectedSurfaces.forEach((s) => query.append("surface", s));
+      selectedLevels.forEach((l) => query.append("level", l));
 
-    for (const [playerId, info] of entries) {
-      const sortedAges = [...(info?.ages || [])].sort((a, b) => a - b);
-      if (sortedAges.length >= selectedN) {
-        result.push({ id: playerId, name: info.name, ioc: info.ioc, age: sortedAges[selectedN - 1] });
-      }
+      const res = await fetch(`/api/records/ageofnth/titles?${query.toString()}`);
+      const fetchedData = await res.json();
+      setData(fetchedData);
+      setPage(1);
+      setSelectedN(n);
+    } catch (err) {
+      console.error(err);
+      setError(err instanceof Error ? err.message : "Unknown error");
+      setData([]);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    return result.sort((a, b) => a.age - b.age);
-  }, [data, selectedN]);
-
-  const totalPages = Math.max(1, Math.ceil(filteredData.length / perPage));
+  const totalCount = data.length;
+  const totalPages = Math.ceil(totalCount / perPage);
   const start = (page - 1) * perPage;
-  const currentData = showAll ? filteredData : filteredData.slice(start, start + perPage);
+  const playersPage = data.slice(start, start + perPage);
 
-  const formatAge = useCallback((age: number) => formatAgeDisplay(age), []);
+  const getPlayerLink = (playerId: string) => {
+    let link = `/players/${playerId}?tab=matches`;
+    for (const [key, value] of searchParams.entries()) {
+      if (!value || key === "tab") continue;
+      link += `&${key}=${encodeURIComponent(value)}`;
+    }
+    return link;
+  };
 
-  const renderTable = useCallback(
-    (rows: RowData[], startIndex = 0) => (
-      <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
-        <table className="min-w-full border-collapse">
-          <thead>
-            <tr className="bg-black">
-              <th className="border border-white/30 px-4 py-2 text-center text-gray-200">Rank</th>
-              <th className="border border-white/30 px-4 py-2 text-left text-gray-200">Player</th>
-              <th className="border border-white/30 px-4 py-2 text-center text-gray-200">Age</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((p, idx) => {
-              const rank = startIndex + idx + 1;
-              return (
-                <tr key={p.id} className="hover:bg-gray-800 border-b border-white/10">
-                  <td className="border border-white/10 px-4 py-2 text-center text-indigo-400 font-semibold">{rank}</td>
-                  <td className="border border-white/10 px-4 py-2 flex items-center gap-2 text-gray-200">
-                    <span className="text-base">{flagEmoji(iocToIso2(p.ioc)) || ''}</span>
-                    <Link
-                      href={`/players/${encodeURIComponent(p.id)}`}
-                      className="text-indigo-300 hover:underline"
-                    >
+  const renderTable = (players: Player[], startIndex = 0) => (
+    <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow mt-0">
+      <table className="min-w-full border-collapse">
+        <thead>
+          <tr className="bg-black">
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">
+              Rank
+            </th>
+            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">
+              Player
+            </th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">
+              Age at {selectedN}-th title
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {players.map((p, idx) => {
+            const globalRank = startIndex + idx + 1;
+            const flag = getFlagFromIOC(p.ioc) ?? "🏳️";
+
+            return (
+              <tr key={p.id} className="hover:bg-gray-800 border-b border-white/10">
+                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
+                  {globalRank}
+                </td>
+                <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
+                  <div className="flex items-center gap-2">
+                    {flag && <span className="text-base">{flag}</span>}
+                    <Link href={getPlayerLink(p.id)} className="text-indigo-300 hover:underline">
                       {p.name}
                     </Link>
-                  </td>
-                  <td className="border border-white/10 px-4 py-2 text-center text-gray-200">{formatAge(p.age)}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    ),
-    [formatAge]
+                  </div>
+                </td>
+                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
+                  {p.age_at_title || "-"}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
-
-  if (error) return <div className="text-red-600">Error loading data</div>;
-  if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
 
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">Age at Nth Title</h2>
+      <h2 className="text-xl font-semibold mb-4 text-gray-200">
+        Age at N-th Title Won
+      </h2>
 
-      <div className="mb-4 flex justify-end gap-4">
-        <NthInput
-          label="Nth Title:"
-          value={selectedN}
-          onChange={(v) => setSelectedN(Math.max(1, Number(v) || 1))}
-          min={1}
-        />
+      {/* N Input */}
+      <div className="mb-4 flex items-center gap-2">
+        <NInput value={inputN} onChange={setInputN} />
         <button
-          onClick={() => {
-            const newShowAll = !showAll;
-            setShowAll(newShowAll);
-            if (!newShowAll) setPage(1);
-          }}
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+          onClick={() => fetchData(inputN)}
+          disabled={loading}
+          className={`px-4 py-1 rounded ${
+            loading ? "bg-gray-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"
+          }`}
         >
-          {showAll ? 'Show Paginated' : 'Show All'}
+          Apply
         </button>
       </div>
 
-      {filteredData.length === 0 ? (
-        <p className="text-center py-8 text-gray-300">No data available for this N.</p>
-      ) : (
-        renderTable(currentData, showAll ? 0 : start)
-      )}
-
-      {!showAll && filteredData.length > perPage && (
-        <div className="mt-4">
-          <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+      {/* View All Button */}
+      {data.length > perPage && (
+        <div className="mb-4 flex justify-end">
+          <button
+            onClick={() => setShowModal(true)}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
+          >
+            View All
+          </button>
         </div>
       )}
+
+      {/* Loading / Error / No data */}
+      {loading && <div className="text-center py-8 text-gray-300">Loading...</div>}
+      {error && <div className="text-red-600 text-center py-2">{error}</div>}
+      {!loading && !error && data.length === 0 && (
+        <div className="text-center py-8 text-gray-300">No data found.</div>
+      )}
+
+      {/* Table */}
+      {!loading && data.length > 0 && renderTable(playersPage, start)}
+
+      {/* Pagination */}
+      {!loading && totalPages > 1 && (
+        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+      )}
+
+      {/* Modal */}
+      <Modal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        title={`Age at ${selectedN}-th Title`}
+      >
+        {renderTable(data)}
+      </Modal>
     </section>
   );
 }

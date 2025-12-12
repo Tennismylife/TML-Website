@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { iocToIso2, flagEmoji } from '../../../utils/flags';
+import { getFlagFromIOC } from '@/lib/utils';
 import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
+import Modal from '../Modal';
 
 interface EntriesSectionProps {
   selectedSurfaces: string[];
@@ -24,8 +25,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels }: Ent
   const [loading, setLoading] = useState(true);
   const [showModalEntries, setShowModalEntries] = useState(false);
   const [page, setPage] = useState(1);
-  const [showAll, setShowAll] = useState(false);
-  const perPage = 10;
+  const perPage = 20;
   const searchParams = useSearchParams();
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels]);
@@ -51,44 +51,39 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels }: Ent
     fetchData();
   }, [selectedSurfaces, selectedLevels]);
 
-  if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
-  if (!topSeasonEntries.length) return <div className="text-center py-8 text-gray-300">No entries found.</div>;
+  if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
+  if (!topSeasonEntries.length) return <div className="text-center py-8 text-gray-300 text-lg">No entries found.</div>;
 
   const totalPages = Math.ceil(topSeasonEntries.length / perPage);
   const start = (page - 1) * perPage;
-  const currentData = showAll ? topSeasonEntries : topSeasonEntries.slice(start, start + perPage);
+  const currentData = topSeasonEntries.slice(start, start + perPage);
 
-  const getPlayerLink = (playerId: string) => {
-    let link = `/players/${playerId}?tab=matches`;
-    for (const [key, value] of searchParams.entries()) {
-      if (key !== "tab") link += `&${key}=${encodeURIComponent(value)}`;
-    }
-    return link;
-  };
+  const getPlayerLink = (playerId: string) => `/players/${playerId}?tab=matches`;
 
   const renderTable = (data: EntryRecord[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
       <table className="min-w-full border-collapse">
         <thead>
           <tr className="bg-black">
-            <th className="border border-white/30 px-4 py-2 text-center text-gray-200">Rank</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-gray-200">Player</th>
-            <th className="border border-white/30 px-4 py-2 text-center text-gray-200">Entries</th>
-            <th className="border border-white/30 px-4 py-2 text-center text-gray-200">Year</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
+            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Entries</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Year</th>
           </tr>
         </thead>
         <tbody>
           {data.map((p, idx) => {
             const rank = startIndex + idx + 1;
+            const flag = getFlagFromIOC(p.ioc) ?? '';
             return (
               <tr key={`${p.id}-${p.year}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
-                <td className="border border-white/10 px-4 py-2 text-center text-indigo-400 font-semibold">{rank}</td>
-                <td className="border border-white/10 px-4 py-2 flex items-center gap-2 text-gray-200">
-                  <span className="text-base">{flagEmoji(iocToIso2(p.ioc)) || ''}</span>
-                  <Link href={getPlayerLink(p.id)} className="text-indigo-300 hover:underline">{p.player_name}</Link>
+                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-400 font-semibold">{rank}</td>
+                <td className="border border-white/10 px-4 py-2 flex items-center gap-2 text-lg text-gray-200">
+                  {flag && <span className="text-base">{flag}</span>}
+                  <Link href={getPlayerLink(p.id)} className="hover:underline">{p.player_name}</Link>
                 </td>
-                <td className="border border-white/10 px-4 py-2 text-center text-gray-200">{p.total_entries}</td>
-                <td className="border border-white/10 px-4 py-2 text-center text-indigo-300">
+                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.total_entries}</td>
+                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-300">
                   <Link href={`/seasons/${p.year}`} className="hover:underline">{p.year}</Link>
                 </td>
               </tr>
@@ -101,36 +96,26 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels }: Ent
 
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">Top Entries in a Single Season</h2>
-
-      <div className="mb-4 flex justify-end">
+      <div className="flex justify-end mb-4">
         <button
-          onClick={() => { const newShowAll = !showAll; setShowAll(newShowAll); if (!newShowAll) setPage(1); }}
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+          onClick={() => setShowModalEntries(true)}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
         >
-          {showAll ? "Show Paginated" : "Show All"}
+          View All
         </button>
       </div>
 
       {renderTable(currentData, start)}
 
-      {!showAll && totalPages > 1 && <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />}
+      {totalPages > 1 && <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />}
 
-      {/* Modal */}
-      {showModalEntries && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowModalEntries(false)}>
-          <div className="bg-gray-900 p-4 w-full max-w-7xl max-h-screen overflow-y-auto rounded" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-xl font-bold mb-4 text-gray-200">All Top Entries in a Single Season</h2>
-            {renderTable(topSeasonEntries)}
-            <button
-              onClick={() => setShowModalEntries(false)}
-              className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+      <Modal
+        show={showModalEntries}
+        onClose={() => setShowModalEntries(false)}
+        title="Top Entries in a Single Season"
+      >
+        {renderTable(topSeasonEntries)}
+      </Modal>
     </section>
   );
 }

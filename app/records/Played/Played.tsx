@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { iocToIso2, flagEmoji } from "../../../utils/flags";
+import { getFlagFromIOC } from "@/lib/utils";
 import Pagination from "../../../components/Pagination";
+import Modal from "../Modal";
 
 interface Player {
   id: string;
@@ -21,17 +22,16 @@ export default function Played() {
   const searchParams = useSearchParams();
   const perPage = 20;
 
-  // Reset page to 1 every time filters change
-  useEffect(() => {
-    setPage(1);
-  }, [searchParams]);
+  // Reset page when filters change
+  useEffect(() => setPage(1), [searchParams]);
 
+  // Fetch players
   useEffect(() => {
     const fetchPlayers = async () => {
       setLoading(true);
       try {
         const params = new URLSearchParams(Array.from(searchParams.entries()));
-        params.delete("page"); // remove page param since we're fetching all at once
+        params.delete("page"); // remove page param
 
         const res = await fetch(`/api/records/played?${params.toString()}`);
         const data = await res.json();
@@ -57,18 +57,15 @@ export default function Played() {
   const end = start + perPage;
   const players = allPlayers.slice(start, end);
 
+  // Generate player link with filters
   const getLink = (playerId: string) => {
     let link = `/players/${playerId}?tab=matches&result=Played`;
     for (const [key, value] of searchParams.entries()) {
       if (!value || key === "tab") continue;
       if (key === "bestOf") {
         const bestOfValues = value.split(",").filter(Boolean);
-        if (bestOfValues.length === 1) {
-          const bo = bestOfValues[0];
-          if (bo === "3") link += "&set=All+Best+of+3";
-          else if (bo === "5") link += "&set=All+Best+of+5";
-          else if (bo === "1") link += "&set=All+Best+of+1";
-        }
+        const boMap: Record<string, string> = { "1": "All+Best+of+1", "3": "All+Best+of+3", "5": "All+Best+of+5" };
+        if (bestOfValues.length === 1) link += `&set=${boMap[bestOfValues[0]]}`;
       } else {
         link += `&${key}=${encodeURIComponent(value)}`;
       }
@@ -76,6 +73,7 @@ export default function Played() {
     return link;
   };
 
+  // Render table of players
   const renderTable = (playersList: Player[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
       <table className="min-w-full border-collapse">
@@ -89,7 +87,7 @@ export default function Played() {
         <tbody>
           {playersList.map((p, idx) => {
             const globalRank = startIndex + idx + 1;
-            const flag = p.ioc ? flagEmoji(iocToIso2(p.ioc)) : null;
+            const flag = p.ioc ? getFlagFromIOC(p.ioc) : null;
 
             return (
               <tr key={p.id} className="hover:bg-gray-800 border-b border-white/10">
@@ -114,40 +112,6 @@ export default function Played() {
       </table>
     </div>
   );
-
-  const Modal = ({
-    show,
-    onClose,
-    title,
-    children,
-  }: {
-    show: boolean;
-    onClose: () => void;
-    title: string;
-    children: React.ReactNode;
-  }) => {
-    if (!show) return null;
-    return (
-      <div
-        className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
-        onClick={onClose}
-      >
-        <div
-          className="bg-gray-900 text-gray-200 p-4 w-full max-w-7xl max-h-screen overflow-y-auto rounded border border-gray-800"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <h2 className="text-xl font-bold mb-4">{title}</h2>
-          {children}
-          <button
-            onClick={onClose}
-            className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <section className="mb-8">

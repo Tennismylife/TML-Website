@@ -22,11 +22,16 @@ export default function AgeofNth({ selectedSurfaces, selectedLevels, selectedRou
     
     <section className="mb-8">
       {activeSubTab === 'slams' && (
-        <InSlamsSection selectedSurfaces={Array.from(selectedSurfaces)} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf}/>
+        <InSlamsSection 
+        selectedSurfaces={Array.from(selectedSurfaces)} 
+        selectedRounds={selectedRounds}/>
       )}
 
       {activeSubTab === 'round' && (
-        <RoundSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} />
+        <RoundSection 
+        selectedSurfaces={selectedSurfaces} 
+        selectedLevels={selectedLevels} 
+        selectedRounds={selectedRounds} />
       )}
 
       {activeSubTab === 'wins' && (

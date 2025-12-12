@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { iocToIso2, flagEmoji } from '../../../utils/flags';
+import { getFlagFromIOC } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
+import Modal from '../Modal';
 
 interface RoundsProps {
   selectedSurfaces: string[];
@@ -17,7 +18,7 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [page, setPage] = useState(1);
-  const perPage = 10;
+  const perPage = 20;
   const searchParams = useSearchParams();
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds]);
@@ -30,12 +31,11 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
         selectedSurfaces.forEach(s => query.append('surface', s));
         selectedLevels.forEach(l => query.append('level', l));
         if (selectedRounds) query.append('round', selectedRounds);
-        query.set('perPage', '100'); // fetch top 100
-        const url = `/api/records/timespan/rounds?${query.toString()}`;
-        const res = await fetch(url);
+        query.set('perPage', '100'); 
+        const res = await fetch(`/api/records/timespan/rounds?${query.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch rounds timespan');
         const fetchedData = await res.json();
-        setData(fetchedData.data);
+        setData(fetchedData.data || []);
       } catch (err) {
         console.error(err);
         setData([]);
@@ -64,35 +64,35 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
   };
 
   const renderTable = (rows: any[], startIndex = 0) => (
-    <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
+    <div className="overflow-x-auto rounded border border-gray-800 bg-gray-900 shadow">
       <table className="min-w-full border-collapse">
         <thead>
-          <tr className="bg-black">
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">#</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">First Tournament</th>
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">First Date</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Last Tournament</th>
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Last Date</th>
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-indigo-300">Timespan</th>
+          <tr className="bg-gray-800">
+            <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">#</th>
+            <th className="border border-gray-800 px-4 py-2 text-left text-lg text-gray-300">Player</th>
+            <th className="border border-gray-800 px-4 py-2 text-left text-lg text-gray-300">First Tournament</th>
+            <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">First Date</th>
+            <th className="border border-gray-800 px-4 py-2 text-left text-lg text-gray-300">Last Tournament</th>
+            <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">Last Date</th>
+            <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">Timespan</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((p, idx) => {
             const globalIdx = startIndex + idx + 1;
-            const flag = p.ioc ? flagEmoji(iocToIso2(p.ioc)) : null;
+            const flag = p.ioc ? getFlagFromIOC(p.ioc) : null;
             return (
-              <tr key={`${p.id}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
-                <td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-400 font-semibold">{globalIdx}</td>
-                <td className="border border-white/10 px-4 py-2 text-lg text-gray-200 flex items-center gap-2">
+              <tr key={`${p.id}-${idx}`} className="hover:bg-gray-800 border-b border-gray-800">
+                <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300 font-medium">{globalIdx}</td>
+                <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200 flex items-center gap-2">
                   {flag && <span className="text-base">{flag}</span>}
                   <Link href={getLink(p.id)} className="text-indigo-300 hover:underline">{p.name}</Link>
                 </td>
-                <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">{p.firstTourney}</td>
-                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-300">{p.firstDate}</td>
-                <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">{p.lastTourney}</td>
-                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-300">{p.lastDate}</td>
-                <td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300 font-semibold">{p.spanDays}</td>
+                <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200">{p.firstTourney}</td>
+                <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">{p.firstDate}</td>
+                <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200">{p.lastTourney}</td>
+                <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">{p.lastDate}</td>
+                <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300 font-medium">{p.spanDays}</td>
               </tr>
             );
           })}
@@ -100,20 +100,6 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
       </table>
     </div>
   );
-
-  const Modal = ({ show, onClose, children }: { show: boolean; onClose: () => void; children: React.ReactNode }) => {
-    if (!show) return null;
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50" onClick={onClose}>
-        <div className="bg-gray-900 text-gray-200 p-4 w-full max-w-7xl max-h-screen overflow-y-auto rounded border border-gray-800" onClick={e => e.stopPropagation()}>
-          {children}
-          <div className="mt-4 flex justify-end">
-            <button onClick={onClose} className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500">Close</button>
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <section className="mb-8">

@@ -81,7 +81,8 @@ export async function GET(request: NextRequest) {
 
       // Raggruppa per player_id e calcola streaks consecutive
       const streaksByPlayer: Record<string, any[]> = {};
-      for (const playerId of [...new Set(playerResults.map(r => r.player_id))]) {
+      const playerIds: string[] = Array.from(new Set(playerResults.map(r => String(r.player_id))));
+      for (const playerId of playerIds) {
         const results = playerResults
           .filter(r => r.player_id === playerId)
           .sort((a, b) => a.tourney_date.getTime() - b.tourney_date.getTime());

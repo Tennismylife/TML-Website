@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
         select: { id: true, atpname: true, ioc: true },
       });
       const nameMap = Object.fromEntries(
-        players.map(p => [p.id, { player_name: p.atpname ?? 'Unknown', ioc: p.ioc ?? null }])
+        players.map(p => [p.id, { id: p.id, player_name: p.atpname ?? 'Unknown', ioc: p.ioc ?? null }])
       );
 
       finalData = records
@@ -79,6 +79,7 @@ export async function GET(request: NextRequest) {
 
           return {
             Player: player.player_name,
+            PlayerId: player.id, // ID preso dalla tabella Player
             Wins: wins,
             Total: total,
             Percentage: winRate,
@@ -126,31 +127,34 @@ export async function GET(request: NextRequest) {
         playerYearMap[key].played += l._count.loser_id;
       });
 
-      Object.keys(playerYearMap).forEach(k => {
-        if (playerYearMap[k].played < 10) delete playerYearMap[k];
-      });
+      // Filtra giocatori con meno di 10 match
+      const filteredPlayerYearMap = Object.fromEntries(
+        Object.entries(playerYearMap).filter(([_, v]) => v.played >= 10)
+      );
 
-      const keys = Object.keys(playerYearMap);
+      const keys = Object.keys(filteredPlayerYearMap);
       const playerIds = Array.from(new Set(keys.map(k => k.split('_')[0])));
       const players = await prisma.player.findMany({
         where: { id: { in: playerIds } },
         select: { id: true, atpname: true, ioc: true },
       });
       const nameMap = Object.fromEntries(
-        players.map(p => [p.id, { player_name: p.atpname ?? 'Unknown', ioc: p.ioc ?? null }])
+        players.map(p => [p.id, { id: p.id, player_name: p.atpname ?? 'Unknown', ioc: p.ioc ?? null }])
       );
 
       finalData = keys.map(k => {
         const [pid, yearStr] = k.split('_');
         const year = parseInt(yearStr, 10);
-        const stats = playerYearMap[k];
+        const stats = filteredPlayerYearMap[k];
+        const player = nameMap[pid];
         return {
-          Player: nameMap[pid]?.player_name ?? 'Unknown',
+          Player: player?.player_name ?? 'Unknown',
+          PlayerId: player?.id ?? pid, // ID preso dalla tabella Player
           Wins: stats.wins,
           Total: stats.played,
           Percentage: ((stats.wins / stats.played) * 100).toFixed(2) + '%',
           Year: year,
-          ioc: nameMap[pid]?.ioc ?? null,
+          ioc: player?.ioc ?? null,
         };
       });
     }

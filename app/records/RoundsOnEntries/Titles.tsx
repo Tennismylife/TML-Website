@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { iocToIso2, flagEmoji } from "../../../utils/flags";
+import { getFlagFromIOC } from "@/lib/utils";
 import Pagination from "../../../components/Pagination";
+import Modal from "../Modal";
 
 interface TitlesProps {
   selectedSurfaces: Set<string>;
@@ -25,7 +26,7 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries }:
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
-  const perPage = 10;
+  const perPage = 20; 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,7 +43,7 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries }:
         if (!res.ok) throw new Error("Failed to fetch data");
         const json = await res.json();
         setData(json.FinalWins || []);
-        setPage(1); // reset pagina
+        setPage(1);
       } catch (err) {
         console.error(err);
         setData([]);
@@ -54,8 +55,7 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries }:
     fetchData();
   }, [Array.from(selectedSurfaces).join(","), Array.from(selectedLevels).join(",")]);
 
-  // Filter data based on minEntries
-  const filteredData = data.filter(p => p.entries >= minEntries);
+  const filteredData = data.filter((p) => p.entries >= minEntries);
 
   if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
   if (!filteredData.length) return <div className="text-center py-8 text-gray-300">No data available.</div>;
@@ -74,13 +74,13 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries }:
             <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Titles</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Entries</th>
-            <th className="border border-white/30 px-4 py-2 text-right text-lg text-gray-200">Percentage</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Percentage</th>
           </tr>
         </thead>
         <tbody>
           {players.map((p, idx) => {
             const rank = startIndex + idx + 1;
-            const flag = p.ioc ? flagEmoji(iocToIso2(p.ioc)) : null;
+            const flag = p.ioc ? getFlagFromIOC(p.ioc) : null;
 
             return (
               <tr key={p.id} className="hover:bg-gray-800 border-b border-white/10">
@@ -95,7 +95,7 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries }:
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.wins}</td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.entries}</td>
-                <td className="border border-white/10 px-4 py-2 text-right text-lg text-gray-200">
+                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
                   {p.percentage.toFixed(2)}%
                 </td>
               </tr>
@@ -105,30 +105,6 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries }:
       </table>
     </div>
   );
-
-  const Modal = ({ show, onClose, title, children }: { show: boolean; onClose: () => void; title: string; children: React.ReactNode }) => {
-    if (!show) return null;
-    return (
-      <div
-        className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
-        onClick={onClose}
-      >
-        <div
-          className="bg-gray-900 text-gray-200 p-4 w-full max-w-7xl max-h-screen overflow-y-auto rounded border border-gray-800"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <h2 className="text-xl font-bold mb-4">{title}</h2>
-          {children}
-          <button
-            onClick={onClose}
-            className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <section className="mb-8">

@@ -1,108 +1,126 @@
+
+-- mv_neededto.sql
+-- Calcola i tornei giocati necessari per arrivare al titolo #x
+-- overall, per superficie e per livello. I conteggi ripartono da 1 per ciascun filtro.
+-- Include SOLO i giocatori che hanno almeno un titolo.
+
 DROP MATERIALIZED VIEW IF EXISTS mv_neededto;
 
 CREATE MATERIALIZED VIEW mv_neededto AS
 WITH unique_events AS (
-    SELECT DISTINCT
-        player_id,
-        event_id,
-        surface,
-        tourney_level,
-        MAX(CASE WHEN round = 'W' THEN 1 ELSE 0 END) AS is_title
-    FROM "PlayerTournament"
-    GROUP BY player_id, event_id, surface, tourney_level
-),
-overall_progress AS (
+    -- Una riga per (player, evento, surface, level).
+    -- is_title = 1 se il giocatore ha round 'W' in quell'evento.
     SELECT
-        t1.player_id,
-        t1.event_id,
-        t1.is_title,
-        SUM(t2.is_title) AS title_number,
-        COUNT(t2.event_id) AS num_played_overall
-    FROM unique_events t1
-    JOIN unique_events t2
-      ON t1.player_id = t2.player_id
-     AND t2.event_id <= t1.event_id
-    WHERE t1.is_title = 1
-    GROUP BY t1.player_id, t1.event_id, t1.is_title
+        pt.player_id,
+        pt.event_id,
+        pt.tourney_date,          -- timestamp/date
+        pt.surface,
+        pt.tourney_level,
+        MAX(CASE WHEN pt.round = 'W' THEN 1 ELSE 0 END)::int AS is_title
+    FROM "PlayerTournament" AS pt
+    GROUP BY
+        pt.player_id,
+        pt.event_id,
+        pt.tourney_date,
+        pt.surface,
+        pt.tourney_level
 ),
-surface_progress AS (
+progress AS (
+    -- Contatori cumulativi che ripartono da 1 per ciascun filtro
     SELECT
-        t1.player_id,
-        t1.surface,
-        t1.event_id,
-        t1.is_title,
-        SUM(t2.is_title) AS title_number_surface,
-        COUNT(t2.event_id) AS num_played_surface
-    FROM unique_events t1
-    JOIN unique_events t2
-      ON t1.player_id = t2.player_id
-     AND t1.surface = t2.surface
-     AND t2.event_id <= t1.event_id
-    WHERE t1.is_title = 1
-    GROUP BY t1.player_id, t1.surface, t1.event_id, t1.is_title
+        ue.player_id,
+        ue.event_id,
+        ue.tourney_date,
+        ue.surface,
+        ue.tourney_level,
+        ue.is_title,
+
+        -- Overall
+        COUNT(*)         OVER (PARTITION BY ue.player_id ORDER BY ue.tourney_date) AS played_overall,
+        SUM(ue.is_title) OVER (PARTITION BY ue.player_id ORDER BY ue.tourney_date) AS titles_overall,
+
+        -- Per superficie
+        COUNT(*)         OVER (PARTITION BY ue.player_id, ue.surface ORDER BY ue.tourney_date) AS played_surface,
+        SUM(ue.is_title) OVER (PARTITION BY ue.player_id, ue.surface ORDER BY ue.tourney_date) AS titles_surface,
+
+        -- Per livello
+        COUNT(*)         OVER (PARTITION BY ue.player_id, ue.tourney_level ORDER BY ue.tourney_date) AS played_level,
+        SUM(ue.is_title) OVER (PARTITION BY ue.player_id, ue.tourney_level ORDER BY ue.tourney_date) AS titles_level
+    FROM unique_events AS ue
 ),
-level_progress AS (
-    SELECT
-        t1.player_id,
-        t1.tourney_level,
-        t1.event_id,
-        t1.is_title,
-        SUM(t2.is_title) AS title_number_level,
-        COUNT(t2.event_id) AS num_played_level
-    FROM unique_events t1
-    JOIN unique_events t2
-      ON t1.player_id = t2.player_id
-     AND t1.tourney_level = t2.tourney_level
-     AND t2.event_id <= t1.event_id
-    WHERE t1.is_title = 1
-    GROUP BY t1.player_id, t1.tourney_level, t1.event_id, t1.is_title
+players_with_titles AS (
+    -- SOLO i giocatori che hanno almeno un titolo
+    SELECT DISTINCT player_id
+    FROM progress
+    WHERE is_title = 1
 ),
 overall_json AS (
     SELECT
-        player_id,
-        jsonb_agg(jsonb_build_object(
-            'titles', title_number,
-            'played', num_played_overall
-        ) ORDER BY title_number) AS overall_json
-    FROM overall_progress
-    GROUP BY player_id
+        p.player_id,
+        jsonb_agg(
+            jsonb_build_object(
+                'titles', p.titles_overall,
+                'played', p.played_overall
+            )
+            ORDER BY p.titles_overall
+        )
+        FILTER (WHERE p.is_title = 1) AS overall_json
+    FROM progress AS p
+    JOIN players_with_titles AS w USING (player_id)
+    GROUP BY p.player_id
 ),
 surface_json AS (
     SELECT
-        player_id,
-        jsonb_object_agg(surface, steps_array) AS surface_json
+        s.player_id,
+        jsonb_object_agg(s.surface, s.steps) AS surface_json
     FROM (
         SELECT
-            player_id,
-            surface,
-            array_agg(jsonb_build_object('titles', title_number_surface, 'played', num_played_surface) 
-                      ORDER BY title_number_surface) AS steps_array
-        FROM surface_progress
-        GROUP BY player_id, surface
-    ) sub
-    GROUP BY player_id
+            p.player_id,
+            p.surface,
+            jsonb_agg(
+                jsonb_build_object(
+                    'titles', p.titles_surface,
+                    'played', p.played_surface
+                )
+                ORDER BY p.titles_surface
+            ) AS steps
+        FROM progress AS p
+        JOIN players_with_titles AS w USING (player_id)
+        WHERE p.is_title = 1
+          AND p.surface IS NOT NULL
+        GROUP BY p.player_id, p.surface
+    ) AS s
+    GROUP BY s.player_id
 ),
 level_json AS (
     SELECT
-        player_id,
-        jsonb_object_agg(tourney_level, steps_array) AS level_json
+        l.player_id,
+        jsonb_object_agg(l.tourney_level, l.steps) AS level_json
     FROM (
         SELECT
-            player_id,
-            tourney_level,
-            array_agg(jsonb_build_object('titles', title_number_level, 'played', num_played_level)
-                      ORDER BY title_number_level) AS steps_array
-        FROM level_progress
-        GROUP BY player_id, tourney_level
-    ) sub
-    GROUP BY player_id
+            p.player_id,
+            p.tourney_level,
+            jsonb_agg(
+                jsonb_build_object(
+                    'titles', p.titles_level,
+                    'played', p.played_level
+                )
+                ORDER BY p.titles_level
+            ) AS steps
+        FROM progress AS p
+        JOIN players_with_titles AS w USING (player_id)
+        WHERE p.is_title = 1
+          AND p.tourney_level IS NOT NULL
+        GROUP BY p.player_id, p.tourney_level
+    ) AS l
+    GROUP BY l.player_id
 )
 SELECT
-    o.player_id,
+    w.player_id,
     o.overall_json,
     s.surface_json,
-    l.level_json
-FROM overall_json o
-JOIN surface_json s USING (player_id)
-JOIN level_json l USING (player_id)
-ORDER BY o.player_id;
+       l.level_json
+FROM players_with_titles AS w
+JOIN overall_json AS o USING (player_id)
+JOIN surface_json AS s USING (player_id)
+JOIN level_json AS l USING (player_id)

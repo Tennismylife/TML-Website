@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Pagination from "../../../components/Pagination";
-import { getFlagFromIOC, } from "@/lib/utils";
+import Modal from "../Modal";
+import { getFlagFromIOC } from "@/lib/utils";
 
 interface Winner {
   id: string;
@@ -21,18 +22,17 @@ export default function Wins() {
   const searchParams = useSearchParams();
   const perPage = 20;
 
-  // Reset page to 1 every time filters change
-  useEffect(() => {
-    setPage(1);
-  }, [searchParams]);
+  // Reset page when filters change
+  useEffect(() => setPage(1), [searchParams]);
 
+  // Fetch winners
   useEffect(() => {
     const fetchWinners = async () => {
       setLoading(true);
       try {
         const params = new URLSearchParams(Array.from(searchParams.entries()));
         params.set("perPage", "100"); // fetch first 100
-        params.delete("page"); // remove page param
+        params.delete("page");
 
         const res = await fetch(`/api/records/wins?${params.toString()}`);
         const data = await res.json();
@@ -58,18 +58,15 @@ export default function Wins() {
   const end = start + perPage;
   const winners = allWinners.slice(start, end);
 
+  // Generate player link with filters
   const getLink = (playerId: string) => {
     let link = `/players/${playerId}?tab=matches&result=Win`;
     for (const [key, value] of searchParams.entries()) {
       if (!value || key === "tab") continue;
       if (key === "bestOf") {
         const bestOfValues = value.split(",").filter(Boolean);
-        if (bestOfValues.length === 1) {
-          const bo = bestOfValues[0];
-          if (bo === "3") link += "&set=All+Best+of+3";
-          else if (bo === "5") link += "&set=All+Best+of+5";
-          else if (bo === "1") link += "&set=All+Best+of+1";
-        }
+        const boMap: Record<string, string> = { "1": "All+Best+of+1", "3": "All+Best+of+3", "5": "All+Best+of+5" };
+        if (bestOfValues.length === 1) link += `&set=${boMap[bestOfValues[0]]}`;
       } else {
         link += `&${key}=${encodeURIComponent(value)}`;
       }
@@ -77,6 +74,7 @@ export default function Wins() {
     return link;
   };
 
+  // Render table of winners
   const renderTable = (winnersList: Winner[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow mt-0">
       <table className="min-w-full border-collapse">
@@ -115,40 +113,6 @@ export default function Wins() {
       </table>
     </div>
   );
-
-  const Modal = ({
-    show,
-    onClose,
-    title,
-    children,
-  }: {
-    show: boolean;
-    onClose: () => void;
-    title: string;
-    children: React.ReactNode;
-  }) => {
-    if (!show) return null;
-    return (
-      <div
-        className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
-        onClick={onClose}
-      >
-        <div
-          className="bg-gray-900 text-gray-200 p-4 w-full max-w-7xl max-h-screen overflow-y-auto rounded border border-gray-800"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <h2 className="text-xl font-bold mb-4">{title}</h2>
-          {children}
-          <button
-            onClick={onClose}
-            className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <section className="mb-0">

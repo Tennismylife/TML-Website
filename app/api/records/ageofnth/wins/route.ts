@@ -1,37 +1,66 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { NextRequest, NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 const prisma = globalForPrisma.prisma || new PrismaClient();
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
+// -----------------------------------------------------------------------------
+// Ritorna l’età alla X-esima vittoria usando la MV
+// -----------------------------------------------------------------------------
+function getAgeForNthWin(cumulative: Record<string, number>, x: number): number | null {
+  const entries = Object.entries(cumulative)
+    .map(([winNumber, age]) => [parseInt(winNumber), age] as [number, number])
+    .sort((a, b) => a[0] - b[0]);
+  const entry = entries.find(([winNumber]) => winNumber >= x);
+  return entry ? entry[1] : null;
+}
+
+// -----------------------------------------------------------------------------
+// Formatta l’età in "XXy YYd"
+// -----------------------------------------------------------------------------
+function formatAge(age: number | null): string {
+  if (age == null) return "-";
+  const years = Math.floor(age);
+  const days = Math.round((age - years) * 365);
+  return `${years}y ${days}d`;
+}
+
+// -----------------------------------------------------------------------------
+// GET handler
+// -----------------------------------------------------------------------------
 export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url);
 
+    const x = Number(url.searchParams.get("x"));
+    if (!Number.isInteger(x) || x <= 0) {
+      return NextResponse.json({ error: "Invalid x parameter" }, { status: 400 });
+    }
+
     const getFiltered = (key: string) => url.searchParams.getAll(key).filter(Boolean);
-    const selectedSurfaces = getFiltered('surface');
-    const selectedLevels   = getFiltered('level');
-    const selectedRounds   = getFiltered('round');
-    const selectedBestOf   = url.searchParams
-      .getAll('best_of')
-      .map(b => Number(b))
-      .filter(n => Number.isInteger(n));
 
-    const filtersCount = [
-      selectedSurfaces.length > 0,
-      selectedLevels.length > 0,
-      selectedRounds.length > 0,
-      selectedBestOf.length > 0,
-    ].filter(Boolean).length;
+    const selectedSurfaces = getFiltered("surface");
+    const selectedLevels = getFiltered("level");
+    const selectedRounds = getFiltered("round");
+    const selectedBestOf = url.searchParams
+      .getAll("best_of")
+      .map(Number)
+      .filter(Number.isInteger);
 
-    console.time('Total API');
+    const filtersCount =
+      Number(selectedSurfaces.length > 0) +
+      Number(selectedLevels.length > 0) +
+      Number(selectedRounds.length > 0) +
+      Number(selectedBestOf.length > 0);
 
-    // =====================================================
-    // CASE 1 → 0 o 1 filtro → usa la materialized view
-    // =====================================================
+    console.time("Total API");
+
+    // =========================================================================
+    // CASE 1: 0 o 1 filtro → usa MATERIALIZED VIEW
+    // =========================================================================
     if (filtersCount <= 1) {
-      console.time('Use materialized view mv_wins_ages');
+      console.time("Use MV mv_wins_ages");
 
       const data = await prisma.mvWinsAges.findMany({
         select: {
@@ -45,53 +74,62 @@ export async function GET(request: NextRequest) {
       });
 
       const players = await prisma.player.findMany({
-        where: { id: { in: data.map(d => d.winner_id) } },
+        where: { id: { in: data.map((d) => d.winner_id) } },
         select: { id: true, player: true, ioc: true },
       });
 
-      const dataMap = Object.fromEntries(data.map(d => [d.winner_id, d]));
+      const dataMap = Object.fromEntries(data.map((d) => [d.winner_id, d]));
 
-      const result = players.map(p => {
-        const d = dataMap[p.id];
-        if (!d) return null;
+      let finalResult = players
+        .map((p) => {
+          const d = dataMap[p.id];
+          if (!d) return null;
 
-        let selectedAges: Record<string, number> = (d.ages_json as Record<string, number>) ?? {};
+          let selectedAges: Record<string, number> = d.ages_json as any;
 
-        if (selectedSurfaces.length === 1) {
-          const key = selectedSurfaces[0];
-          selectedAges = (d.ages_by_surface_json as any)?.[key] ?? {};
-        } else if (selectedLevels.length === 1) {
-          const key = selectedLevels[0];
-          selectedAges = (d.ages_by_level_json as any)?.[key] ?? {};
-        } else if (selectedRounds.length === 1) {
-          const key = selectedRounds[0];
-          selectedAges = (d.ages_by_round_json as any)?.[key] ?? {};
-        } else if (selectedBestOf.length === 1) {
-          const key = String(selectedBestOf[0]);
-          selectedAges = (d.ages_by_best_of_json as any)?.[key] ?? {};
-        }
+          if (selectedSurfaces.length === 1) {
+            selectedAges = (d.ages_by_surface_json as any)?.[selectedSurfaces[0]] ?? {};
+          } else if (selectedLevels.length === 1) {
+            selectedAges = (d.ages_by_level_json as any)?.[selectedLevels[0]] ?? {};
+          } else if (selectedRounds.length === 1) {
+            selectedAges = (d.ages_by_round_json as any)?.[selectedRounds[0]] ?? {};
+          } else if (selectedBestOf.length === 1) {
+            selectedAges = (d.ages_by_best_of_json as any)?.[String(selectedBestOf[0])] ?? {};
+          }
 
-        // 🔹 Escludi chi non ha dati nel JSON selezionato
-        if (!selectedAges || Object.keys(selectedAges).length === 0) return null;
+          const ageAtX = getAgeForNthWin(selectedAges, x);
+          if (ageAtX == null) return null; // 🔹 Escludi se età nulla
 
-        return {
-          id: p.id,
-          name: p.player,
-          ioc: p.ioc || '',
-          ages: { ages_json: selectedAges },
-        };
-      }).filter(Boolean);
+          return {
+            id: p.id,
+            name: p.player,
+            ioc: p.ioc || "",
+            age_at_win: ageAtX,
+          };
+        })
+        .filter(Boolean) as { id: string; name: string; ioc: string; age_at_win: number }[];
 
-      console.timeEnd('Use materialized view mv_wins_ages');
-      console.timeEnd('Total API');
+      // Ordina crescente per età
+      finalResult.sort((a, b) => a.age_at_win - b.age_at_win);
 
-      return NextResponse.json(result);
+      // Prendi i primi 100
+      finalResult = finalResult.slice(0, 100);
+
+      // Formatta età
+      const formattedResult = finalResult.map((p) => ({
+        ...p,
+        age_at_win: formatAge(p.age_at_win),
+      }));
+
+      console.timeEnd("Use MV mv_wins_ages");
+      console.timeEnd("Total API");
+      return NextResponse.json(formattedResult);
     }
 
-    // =====================================================
-    // CASE 2 → 2 o più filtri → algoritmo completo (no limiti)
-    // =====================================================
-    console.time('Use dynamic filtered algorithm');
+    // =========================================================================
+    // CASE 2: 2+ filtri → calcolo dinamico
+    // =========================================================================
+    console.time("Use dynamic filtered algorithm");
 
     const where: any = {
       ...(selectedSurfaces.length > 0 && { surface: { in: selectedSurfaces } }),
@@ -100,74 +138,59 @@ export async function GET(request: NextRequest) {
       ...(selectedBestOf.length > 0 && { best_of: { in: selectedBestOf } }),
     };
 
-    console.time('Fetch all filtered matches');
-    const allMatches = await prisma.match.findMany({
+    const matches = await prisma.match.findMany({
       where,
       select: { winner_id: true, winner_age: true },
     });
-    console.timeEnd('Fetch all filtered matches');
 
-    if (allMatches.length === 0) {
-      console.warn('⚠️ Nessun match trovato con questi filtri.');
-      return NextResponse.json([]);
+    if (matches.length === 0) return NextResponse.json([]);
+
+    const map = new Map<string, number[]>();
+    for (const m of matches) {
+      if (!m.winner_id || m.winner_age == null) continue;
+      const age = Number(m.winner_age);
+      if (!map.has(m.winner_id)) map.set(m.winner_id, []);
+      map.get(m.winner_id)!.push(age);
     }
 
-    console.time('Fetch players info');
-    const uniqueIds = [...new Set(allMatches.map(m => m.winner_id).filter(id => id != null))];
-    const playersInfo = await prisma.player.findMany({
-      where: { id: { in: uniqueIds } },
-      select: { id: true, player: true, ioc: true },
-    });
-    console.timeEnd('Fetch players info');
+    let finalResult2: { id: string; name: string; ioc: string; age_at_win: number }[] = [];
 
-    console.time('Build cumulative ages JSON');
-    // Step 1: conta vittorie per età
-    const countsByWinner = new Map<string, Map<string, number>>();
-    for (const row of allMatches) {
-      if (!row.winner_id || row.winner_age == null) continue;
-      const winnerId = row.winner_id;
-      const ageNum = typeof row.winner_age === 'number' ? row.winner_age : Number(row.winner_age);
-      if (!Number.isFinite(ageNum)) continue;
-      const roundedKey = (Math.round(ageNum * 1000) / 1000).toFixed(3);
-      let map = countsByWinner.get(winnerId);
-      if (!map) {
-        map = new Map<string, number>();
-        countsByWinner.set(winnerId, map);
+    for (const [id, ages] of map) {
+      ages.sort((a, b) => a - b);
+      const ageAtX = ages.length < x ? null : ages[x - 1];
+      if (ageAtX == null) continue; // 🔹 Escludi se età nulla
+      const player = await prisma.player.findUnique({
+        where: { id },
+        select: { id: true, player: true, ioc: true },
+      });
+      if (player) {
+        finalResult2.push({
+          id: player.id,
+          name: player.player,
+          ioc: player.ioc || "",
+          age_at_win: ageAtX,
+        });
       }
-      map.set(roundedKey, (map.get(roundedKey) || 0) + 1);
     }
 
-    // Step 2: rendi progressivo (cumulativo)
-    const cumulativeByWinner = new Map<string, Record<string, number>>();
-    for (const [winnerId, ageMap] of countsByWinner.entries()) {
-      const sorted = Array.from(ageMap.entries())
-        .map(([age, cnt]) => [parseFloat(age), cnt] as [number, number])
-        .sort((a, b) => a[0] - b[0]);
+    // Ordina crescente
+    finalResult2.sort((a, b) => a.age_at_win - b.age_at_win);
 
-      const cumulativeObj: Record<string, number> = {};
-      let cumulative = 0;
-      for (const [age, cnt] of sorted) {
-        cumulative += cnt;
-        cumulativeObj[age.toFixed(3)] = cumulative;
-      }
-      cumulativeByWinner.set(winnerId, cumulativeObj);
-    }
+    // Prendi i primi 100
+    finalResult2 = finalResult2.slice(0, 100);
 
-    // Step 3: costruisci risultato coerente
-    const result = playersInfo.map(p => ({
-      id: p.id,
-      name: p.player,
-      ioc: p.ioc || '',
-      ages: { ages_json: cumulativeByWinner.get(p.id) || {} },
+    // Formatta età
+    const formattedResult2 = finalResult2.map((p) => ({
+      ...p,
+      age_at_win: formatAge(p.age_at_win),
     }));
-    console.timeEnd('Build cumulative ages JSON');
-    console.timeEnd('Use dynamic filtered algorithm');
-    console.timeEnd('Total API');
 
-    return NextResponse.json(result);
+    console.timeEnd("Use dynamic filtered algorithm");
+    console.timeEnd("Total API");
 
+    return NextResponse.json(formattedResult2);
   } catch (error) {
-    console.error('API Error:', error instanceof Error ? error.message : error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    console.error("API Error:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

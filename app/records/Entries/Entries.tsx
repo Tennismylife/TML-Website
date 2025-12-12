@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { iocToIso2, flagEmoji } from "../../../utils/flags";
+import { getFlagFromIOC } from "@/lib/utils";
 import Pagination from "../../../components/Pagination";
+import Modal from "../Modal";
 
 interface Entry {
   id: string;
@@ -26,8 +27,8 @@ export default function Entries() {
       setLoading(true);
       try {
         const params = new URLSearchParams(searchParams as any);
-        params.set("perPage", "100"); // fetch first 100
-        params.delete("page"); // remove page param since we're fetching all at once
+        params.set("perPage", "100");
+        params.delete("page");
 
         const res = await fetch(`/api/records/entries?${params.toString()}`);
         const data = await res.json();
@@ -42,23 +43,17 @@ export default function Entries() {
     fetchEntries();
   }, [searchParams]);
 
-  if (loading)
-    return <div className="text-center py-8 text-gray-300">Loading...</div>;
-  if (!allEntries.length)
-    return <div className="text-center py-8 text-gray-300">No data available.</div>;
+  if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
+  if (!allEntries.length) return <div className="text-center py-8 text-gray-300">No data available.</div>;
 
   const totalCount = allEntries.length;
   const totalPages = Math.ceil(totalCount / perPage);
   const start = (page - 1) * perPage;
-  const end = start + perPage;
-  const entries = allEntries.slice(start, end);
+  const currentEntries = allEntries.slice(start, start + perPage);
 
-  const getLink = (playerId: string) => {
-    let link = `/players/${playerId}?tab=matches`;
-    return link;
-  };
+  const getLink = (playerId: string) => `/players/${playerId}?tab=matches`;
 
-  const renderTable = (entriesList: Entry[]) => (
+  const renderTable = (entriesList: Entry[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-gray-800 bg-gray-900 shadow">
       <table className="min-w-full border-collapse">
         <thead>
@@ -70,8 +65,8 @@ export default function Entries() {
         </thead>
         <tbody>
           {entriesList.map((p, idx) => {
-            const globalRank = entriesList === allEntries ? idx + 1 : start + idx + 1;
-            const flag = flagEmoji(iocToIso2(p.ioc));
+            const globalRank = startIndex + idx + 1;
+            const flag = p.ioc ? getFlagFromIOC(p.ioc) : null;
 
             return (
               <tr key={p.id} className="hover:bg-gray-800 border-b border-gray-800">
@@ -79,14 +74,12 @@ export default function Entries() {
                 <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200">
                   <div className="flex items-center gap-2">
                     {flag && <span className="text-base">{flag}</span>}
-                    <Link href={getLink(p.id)} className="text-indigo-300 hover:underline">
-                      {p.name}
-                    </Link>
+                    <Link href={getLink(p.id)} className="text-indigo-300 hover:underline">{p.name}</Link>
                   </div>
                 </td>
                 <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-200">
                   <Link href={`/players/${p.id}?tab=tournaments`} className="text-indigo-300 hover:underline">
-                    {p.entries} {/* Entries ora puntano alla tab tornei */}
+                    {p.entries}
                   </Link>
                 </td>
               </tr>
@@ -96,40 +89,6 @@ export default function Entries() {
       </table>
     </div>
   );
-
-  const Modal = ({
-    show,
-    onClose,
-    title,
-    children,
-  }: {
-    show: boolean;
-    onClose: () => void;
-    title: string;
-    children: React.ReactNode;
-  }) => {
-    if (!show) return null;
-    return (
-      <div
-        className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
-        onClick={onClose}
-      >
-        <div
-          className="bg-gray-900 text-gray-200 p-4 w-full max-w-7xl max-h-screen overflow-y-auto rounded border border-gray-800"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <h2 className="text-xl font-bold mb-4">{title}</h2>
-          {children}
-          <button
-            onClick={onClose}
-            className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <section className="mb-8">
@@ -144,7 +103,7 @@ export default function Entries() {
         </button>
       </div>
 
-      {renderTable(entries)}
+      {renderTable(currentEntries, start)}
 
       {totalPages > 1 && (
         <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />

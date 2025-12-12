@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { iocToIso2, flagEmoji } from '@/utils/flags';
+import { getFlagFromIOC } from "@/lib/utils";
 import { useSearchParams } from 'next/navigation';
 import Pagination from '../../../components/Pagination';
+import Modal from '..//Modal';
 
 interface TimespanEntry {
   player_id: string;
@@ -25,7 +26,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels }: Ent
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
-  const perPage = 10;
+  const perPage = 20;
   const searchParams = useSearchParams();
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels]);
@@ -77,17 +78,17 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels }: Ent
   const formatDate = (dateStr: string) => new Date(dateStr).toISOString().slice(0, 10);
 
   const renderTable = (data: TimespanEntry[], startIndex = 0) => (
-    <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
+    <div className="overflow-x-auto rounded border border-gray-800 bg-gray-900 shadow">
       <table className="min-w-full border-collapse">
         <thead>
-          <tr className="bg-black">
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">#</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">First Tournament</th>
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">First Date</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Last Tournament</th>
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Last Date</th>
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Timespan</th>
+          <tr className="bg-gray-800">
+            <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">#</th>
+            <th className="border border-gray-800 px-4 py-2 text-left text-lg text-gray-300">Player</th>
+            <th className="border border-gray-800 px-4 py-2 text-left text-lg text-gray-300">First Tournament</th>
+            <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">First Date</th>
+            <th className="border border-gray-800 px-4 py-2 text-left text-lg text-gray-300">Last Tournament</th>
+            <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">Last Date</th>
+            <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">Timespan</th>
           </tr>
         </thead>
         <tbody>
@@ -96,21 +97,21 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels }: Ent
             const timespans = getTimespans(entry);
 
             return timespans.map((ts, tsIdx) => (
-              <tr key={`${entry.player_id}-${tsIdx}`} className="hover:bg-gray-800 border-b border-white/10">
+              <tr key={`${entry.player_id}-${tsIdx}`} className="hover:bg-gray-800 border-b border-gray-800">
                 {tsIdx === 0 && (
                   <>
-                    <td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-400 font-semibold" rowSpan={timespans.length}>{globalRank}</td>
-                    <td className="border border-white/10 px-4 py-2 text-lg text-gray-200 flex items-center gap-2 font-medium" rowSpan={timespans.length}>
-                      {entry.ioc && <span className="text-base">{flagEmoji(iocToIso2(entry.ioc))}</span>}
-                      <Link href={getLink(entry.player_id)} className="text-indigo-300 hover:underline">{entry.player_name}</Link>
+                    <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300 font-medium" rowSpan={timespans.length}>{globalRank}</td>
+                    <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200 flex items-center gap-2 font-medium" rowSpan={timespans.length}>
+                      {entry.ioc && <span className="text-base">{getFlagFromIOC(entry.ioc)}</span>}
+                      <Link href={getLink(entry.player_id)} className="text-gray-300 hover:underline">{entry.player_name}</Link>
                     </td>
                   </>
                 )}
-                <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">{ts.first_tourney_name}</td>
-                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-300">{formatDate(ts.first_tourney_date)}</td>
-                <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">{ts.last_tourney_name}</td>
-                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-300">{formatDate(ts.last_tourney_date)}</td>
-                <td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300 font-semibold">{ts.days_between}</td>
+                <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200">{ts.first_tourney_name}</td>
+                <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-200">{formatDate(ts.first_tourney_date)}</td>
+                <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200">{ts.last_tourney_name}</td>
+                <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-200">{formatDate(ts.last_tourney_date)}</td>
+                <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300 font-medium">{ts.days_between}</td>
               </tr>
             ));
           })}
@@ -118,19 +119,6 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels }: Ent
       </table>
     </div>
   );
-
-  const Modal = ({ show, onClose, title, children }: { show: boolean; onClose: () => void; title: string; children: React.ReactNode }) => {
-    if (!show) return null;
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50" onClick={onClose}>
-        <div className="bg-gray-900 text-gray-200 p-4 w-full max-w-7xl max-h-screen overflow-y-auto rounded border border-gray-800" onClick={e => e.stopPropagation()}>
-          <h2 className="text-xl font-bold mb-4">{title}</h2>
-          {children}
-          <button onClick={onClose} className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500">Close</button>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <section className="mb-8">

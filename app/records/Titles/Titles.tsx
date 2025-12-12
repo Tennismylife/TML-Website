@@ -2,12 +2,20 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { iocToIso2, flagEmoji } from '../../../utils/flags';
-import Pagination from '../../../components/Pagination';
 import { useSearchParams } from "next/navigation";
+import { getFlagFromIOC } from "@/lib/utils";
+import Pagination from '../../../components/Pagination';
+import Modal from "../Modal";
+
+interface PlayerData {
+  name: string;
+  ioc: string;
+  count: number;
+  id: string;
+}
 
 interface TitlesProps {
-  topTitles: { name: string; ioc: string; count: number; id: string }[];
+  topTitles: PlayerData[];
 }
 
 export default function Titles({ topTitles }: TitlesProps) {
@@ -16,17 +24,15 @@ export default function Titles({ topTitles }: TitlesProps) {
   const searchParams = useSearchParams();
   const perPage = 20;
 
-  useEffect(() => {
-    setPage(1);
-  }, [topTitles]);
+  useEffect(() => setPage(1), [topTitles]);
 
-  if (!topTitles || topTitles.length === 0)
+  if (!topTitles || topTitles.length === 0) {
     return <div className="text-center py-8 text-gray-300">No data available.</div>;
+  }
 
   const totalPages = Math.ceil(topTitles.length / perPage);
   const start = (page - 1) * perPage;
-  const end = start + perPage;
-  const currentData = topTitles.slice(start, end);
+  const currentData = topTitles.slice(start, start + perPage);
 
   const getLink = (playerId: string) => {
     let link = `/players/${playerId}?tab=tournaments&round=W`;
@@ -36,7 +42,7 @@ export default function Titles({ topTitles }: TitlesProps) {
     return link;
   };
 
-  const renderTable = (data: typeof topTitles, startIndex = 0) => (
+  const renderTable = (data: PlayerData[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
       <table className="min-w-full border-collapse">
         <thead>
@@ -49,7 +55,7 @@ export default function Titles({ topTitles }: TitlesProps) {
         <tbody>
           {data.map((p, idx) => {
             const globalRank = startIndex + idx + 1;
-            const flag = p.ioc ? flagEmoji(iocToIso2(p.ioc)) : null;
+            const flag = p.ioc ? getFlagFromIOC(p.ioc) : null;
             return (
               <tr key={p.id} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
@@ -73,40 +79,6 @@ export default function Titles({ topTitles }: TitlesProps) {
       </table>
     </div>
   );
-
-  const Modal = ({
-    show,
-    onClose,
-    title,
-    children,
-  }: {
-    show: boolean;
-    onClose: () => void;
-    title: string;
-    children: React.ReactNode;
-  }) => {
-    if (!show) return null;
-    return (
-      <div
-        className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
-        onClick={onClose}
-      >
-        <div
-          className="bg-gray-900 text-gray-200 p-4 w-full max-w-7xl max-h-screen overflow-y-auto rounded border border-gray-800"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <h2 className="text-xl font-bold mb-4">{title}</h2>
-          {children}
-          <button
-            onClick={onClose}
-            className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <section className="mb-8">

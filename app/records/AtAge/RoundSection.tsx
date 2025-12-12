@@ -1,122 +1,106 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import { iocToIso2, flagEmoji } from '../../../utils/flags';
-import { useSearchParams } from 'next/navigation';
+import { getFlagFromIOC } from '@/lib/utils';
+import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
+import Modal from '../Modal';
+import AgeInput from './AgeInput';
 
-interface RoundSectionProps {
+interface RoundAppearancesProps {
   selectedSurfaces: Set<string>;
   selectedLevels: Set<string>;
   selectedRound: string;
 }
 
-interface PlayerRound {
+interface PlayerData {
   id: string;
   name: string;
-  ioc: string;
-  ages: number[];
-  count: number;
+  ioc?: string;
+  appearances_at_age: number;
 }
 
-export default function RoundSection({ selectedSurfaces, selectedLevels, selectedRound }: RoundSectionProps) {
-  const [playerAges, setPlayerAges] = useState<Record<string, number[]>>({});
-  const [playerInfo, setPlayerInfo] = useState<Record<string, { name: string; ioc: string }>>({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<any>(null);
+export default function RoundAppearancesSection({ selectedSurfaces, selectedLevels, selectedRound }: RoundAppearancesProps) {
+  const [data, setData] = useState<PlayerData[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
-  const [showAll, setShowAll] = useState(false);
-  const [selectedAgeDays, setSelectedAgeDays] = useState(25 * 365 + 23);
-  const perPage = 10;
+  const [showModal, setShowModal] = useState(false);
+  const [inputAge, setInputAge] = useState(25.0);
+  const [selectedAge, setSelectedAge] = useState(25.0);
+
+  const perPage = 20;
   const searchParams = useSearchParams();
 
-  const formatAge = (ageDecimal: number) => {
-    const years = Math.floor(ageDecimal);
-    const months = Math.floor((ageDecimal - years) * 12);
-    return { years, months };
+  const fetchData = async (age: number) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const query = new URLSearchParams();
+      query.append('age', age.toFixed(3));
+      query.append('round', selectedRound);
+      selectedSurfaces.forEach(s => query.append('surface', s));
+      selectedLevels.forEach(l => query.append('level', l));
+
+      const url = `/api/records/atage/rounds?${query.toString()}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Failed to fetch: ${res.statusText}`);
+      const fetchedData: PlayerData[] = await res.json();
+      setData(fetchedData);
+      setPage(1);
+      setSelectedAge(age);
+    } catch (err) {
+      console.error(err);
+      setError(err instanceof Error ? err.message : "Unknown error");
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedAgeDays]);
-
-  useEffect(() => {
-    const query = new URLSearchParams();
-    selectedSurfaces.forEach(s => query.append('surface', s));
-    selectedLevels.forEach(l => query.append('level', l));
-    query.append('round', selectedRound);
-
-    const url = `/api/records/atage/rounds?${query.toString()}`;
-    setLoading(true);
-
-    fetch(url)
-      .then(res => res.json())
-      .then(json => {
-        setPlayerAges(json.playerAges || {});
-        setPlayerInfo(json.playerInfo || {});
-      })
-      .catch(err => { console.error(err); setError(err); })
-      .finally(() => setLoading(false));
-  }, [selectedSurfaces, selectedLevels, selectedRound]);
-
-  const maxAgeFromData = useMemo(() => {
-    const allAges = Object.values(playerAges).flatMap(arr => arr);
-    return allAges.length > 0 ? Math.ceil(Math.max(...allAges) * 365) : 50 * 365;
-  }, [playerAges]);
-
-  const maxAge = selectedAgeDays / 365;
-
-  const filteredData: PlayerRound[] = useMemo(() => {
-    return Object.entries(playerAges)
-      .map(([id, ages]) => {
-        const agesInRange = ages.filter(a => a <= maxAge);
-        const count = agesInRange.length;
-        if (count === 0) return null;
-        const info = playerInfo[id] || { name: id, ioc: '' };
-        return { id, name: info.name, ioc: info.ioc, ages, count };
-      })
-      .filter(Boolean) as PlayerRound[];
-  }, [playerAges, playerInfo, maxAge]);
-
-  const sortedData = useMemo(() => filteredData.sort((a, b) => b.count - a.count), [filteredData]);
-
-  const totalPages = Math.max(1, Math.ceil(sortedData.length / perPage));
+  const totalCount = data.length;
+  const totalPages = Math.ceil(totalCount / perPage);
   const start = (page - 1) * perPage;
-  const currentData = showAll ? sortedData : sortedData.slice(start, start + perPage);
+  const currentPlayers = data.slice(start, start + perPage);
 
-  const { years, months } = formatAge(maxAge);
-
-  const getLink = (playerId: string) => {
-    let link = `/players/${playerId}?tab=rounds`;
+  const getPlayerLink = (playerId: string) => {
+    let link = `/players/${playerId}?tab=matches`;
     for (const [key, value] of searchParams.entries()) {
-      if (key !== 'tab') link += `&${key}=${encodeURIComponent(value)}`;
+      if (!value || key === "tab") continue;
+      link += `&${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
     }
     return link;
   };
 
-  if (error) return <div className="text-red-600">Error loading data</div>;
-  if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
-
-  const renderTable = (dataToRender: PlayerRound[]) => (
-    <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
+  const renderTable = (players: PlayerData[], startIndex = 0) => (
+    <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow mt-0">
       <table className="min-w-full border-collapse">
         <thead>
           <tr className="bg-black">
-            <th className="border border-white/30 px-4 py-2 text-center text-gray-200">Rank</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-gray-200">Player</th>
-            <th className="border border-white/30 px-4 py-2 text-center text-gray-200">Rounds</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
+            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">
+              Appearances at {selectedRound} ≤ {selectedAge.toFixed(3)}
+            </th>
           </tr>
         </thead>
         <tbody>
-          {dataToRender.map((p, idx) => {
-            const rank = showAll ? idx + 1 : start + idx + 1;
+          {players.map((p, idx) => {
+            const globalRank = startIndex + idx + 1;
+            const flag = getFlagFromIOC(p.ioc) ?? "🏳️";
+
             return (
               <tr key={p.id} className="hover:bg-gray-800 border-b border-white/10">
-                <td className="border border-white/10 px-4 py-2 text-center text-indigo-400 font-semibold">{rank}</td>
-                <td className="border border-white/10 px-4 py-2 flex items-center gap-2 text-gray-200">
-                  <span className="text-base">{flagEmoji(iocToIso2(p.ioc)) || ""}</span>
-                  <Link href={getLink(p.id)} className="text-indigo-300 hover:underline">{p.name}</Link>
+                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
+                <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
+                  <div className="flex items-center gap-2">
+                    {flag && <span className="text-base">{flag}</span>}
+                    <Link href={getPlayerLink(p.id)} className="text-indigo-300 hover:underline">{p.name}</Link>
+                  </div>
                 </td>
-                <td className="border border-white/10 px-4 py-2 text-center text-gray-200">{p.count}</td>
+                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.appearances_at_age}</td>
               </tr>
             );
           })}
@@ -127,36 +111,53 @@ export default function RoundSection({ selectedSurfaces, selectedLevels, selecte
 
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">Rounds at Age ({selectedRound})</h2>
+      <h2 className="text-xl font-semibold mb-4 text-gray-200">Top Appearances at Round {selectedRound}</h2>
 
-      <div className="mb-4 flex gap-4 items-center">
-        <label className="flex items-center gap-2 flex-1 text-gray-200">
-          Max Age: {years}y {months}m
-          <input
-            type="range"
-            min={0}
-            max={maxAgeFromData}
-            value={selectedAgeDays}
-            onChange={e => setSelectedAgeDays(Number(e.target.value))}
-            className="w-full"
-          />
-        </label>
-      </div>
-
-      <div className="mb-4 flex justify-end">
+      {/* Age Input */}
+      <div className="mb-4 flex items-center gap-2">
+        <AgeInput value={inputAge} onChange={setInputAge} />
         <button
-          onClick={() => { const newShowAll = !showAll; setShowAll(newShowAll); if (!newShowAll) setPage(1); }}
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+          onClick={() => fetchData(inputAge)}
+          disabled={loading}
+          className={`px-4 py-1 rounded ${loading ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
         >
-          {showAll ? "Show Paginated" : "Show All"}
+          Apply
         </button>
       </div>
 
-      {renderTable(currentData)}
+      {/* View All Button */}
+      {data.length > perPage && (
+        <div className="mb-4 flex justify-end">
+          <button
+            onClick={() => setShowModal(true)}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
+          >
+            View All
+          </button>
+        </div>
+      )}
 
-      {!showAll && sortedData.length > perPage && (
+      {/* Loading / Error / No data */}
+      {loading && <div className="text-center py-8 text-gray-300">Loading...</div>}
+      {error && <div className="text-red-600 text-center py-2">{error}</div>}
+      {!loading && !error && data.length === 0 && <div className="text-center py-8 text-gray-300">No data found.</div>}
+
+      {/* Table */}
+      {!loading && data.length > 0 && renderTable(currentPlayers, start)}
+
+      {/* Pagination */}
+      {!loading && totalPages > 1 && (
         <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       )}
+
+      {/* Modal */}
+      <Modal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        title={`Top Appearances at Round ${selectedRound} ≤ ${selectedAge.toFixed(3)}`}
+      >
+        {renderTable(data)}
+      </Modal>
     </section>
   );
 }

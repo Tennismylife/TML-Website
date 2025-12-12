@@ -1,30 +1,32 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { NextRequest, NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
 
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient }
-const prisma = globalForPrisma.prisma || new PrismaClient()
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
+const prisma = globalForPrisma.prisma || new PrismaClient();
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 export async function GET(request: NextRequest) {
   try {
-    const url = new URL(request.url)
+    const url = new URL(request.url);
 
-    const selectedSurfaces = url.searchParams.getAll('surface').filter(Boolean)
-    const selectedLevels   = url.searchParams.getAll('level').filter(Boolean)
+    // ----------- age parameter -----------
+    const ageParam = url.searchParams.get('age');
+    if (!ageParam) return NextResponse.json({ error: 'Age parameter required' }, { status: 400 });
+    const targetAge = Number(ageParam);
+    if (isNaN(targetAge)) return NextResponse.json({ error: 'Invalid age parameter' }, { status: 400 });
 
-    const filtersCount = [
-      selectedSurfaces.length > 0,
-      selectedLevels.length > 0,
-    ].filter(Boolean).length
+    // ----------- filters -----------
+    const selectedSurfaces = url.searchParams.getAll('surface').filter(Boolean);
+    const selectedLevels   = url.searchParams.getAll('level').filter(Boolean);
 
-    console.time('Total API')
+    const filtersCount = [selectedSurfaces.length > 0, selectedLevels.length > 0].filter(Boolean).length;
+
+    let playersData: Array<{ id: string, name: string, ioc: string, participations_at_age: number }> = [];
 
     // =====================================================
-    // CASE 1 → 0 o 1 filtro → usa la materialized view mv_player_entries
+    // CASE 1 → 0 o 1 filtro → usa la materialized view
     // =====================================================
     if (filtersCount <= 1) {
-      console.time('Use materialized view mv_player_entries')
-
       const data = await prisma.mVEntriesAges.findMany({
         select: {
           player_id: true,
@@ -32,127 +34,117 @@ export async function GET(request: NextRequest) {
           ages_by_surface_json: true,
           ages_by_level_json: true,
         },
-      })
+      });
 
       const players = await prisma.player.findMany({
         where: { id: { in: data.map(d => d.player_id) } },
         select: { id: true, player: true, ioc: true },
-      })
+      });
 
-      const result = players.map(p => {
-        const mv = data.find(d => d.player_id === p.id)
-        let entries = mv?.ages_json ?? {}
+      playersData = players.map(p => {
+        const d = data.find(x => x.player_id === p.id);
+        if (!d) return null;
 
-        if (selectedSurfaces.length === 1)
-          entries = mv?.ages_by_surface_json?.[selectedSurfaces[0]] ?? {}
-        else if (selectedLevels.length === 1)
-          entries = mv?.ages_by_level_json?.[selectedLevels[0]] ?? {}
+        // selezione età in base al filtro
+        let selectedAges: Record<string, number> = (d.ages_json as Record<string, number>) ?? {};
+        if (selectedSurfaces.length === 1) selectedAges = (d.ages_by_surface_json as any)?.[selectedSurfaces[0]] ?? {};
+        else if (selectedLevels.length === 1) selectedAges = (d.ages_by_level_json as any)?.[selectedLevels[0]] ?? {};
+
+        // trova l'età più vicina <= targetAge
+        const ageKeys = Object.keys(selectedAges)
+          .map(k => parseFloat(k))
+          .filter(a => a <= targetAge);
+        if (ageKeys.length === 0) return null;
+
+        const closestAge = Math.max(...ageKeys);
+        const participations = selectedAges[closestAge.toFixed(3)];
 
         return {
           id: p.id,
           name: p.player,
           ioc: p.ioc || '',
-          entries,
+          participations_at_age: participations,
+        };
+      }).filter(Boolean) as typeof playersData;
+    }
+
+    // =====================================================
+    // CASE 2 → 2 o più filtri → fetch dinamico dai match
+    // =====================================================
+    else {
+      const where: any = {
+        ...(selectedSurfaces.length > 0 && { surface: { in: selectedSurfaces } }),
+        ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),
+      };
+
+      // recupera tutte le partite filtrate
+      const allMatches = await prisma.match.findMany({
+        where,
+        select: { winner_id: true, winner_age: true, loser_id: true, loser_age: true, event_id: true },
+      });
+
+      const participationsMap = new Map<string, number[]>();
+      const firstMatchPerPlayerEvent = new Map<string, Set<string>>();
+
+      for (const m of allMatches) {
+        // Winner
+        if (m.winner_id && m.winner_age != null) {
+          const key = String(m.winner_id);
+          if (!firstMatchPerPlayerEvent.has(key)) firstMatchPerPlayerEvent.set(key, new Set());
+          if (!firstMatchPerPlayerEvent.get(key)?.has(String(m.event_id))) {
+            firstMatchPerPlayerEvent.get(key)?.add(String(m.event_id));
+            if (!participationsMap.has(key)) participationsMap.set(key, []);
+            participationsMap.get(key)?.push(Number(m.winner_age));
+          }
         }
-      })
-
-      console.timeEnd('Use materialized view mv_player_entries')
-      console.timeEnd('Total API')
-      return NextResponse.json(result)
-    }
-
-    // =====================================================
-    // CASE 2 → 2 o più filtri → query dinamica completa
-    // =====================================================
-    console.time('Use dynamic filtered algorithm')
-
-    const where = {
-      status: true as const,
-      team_event: false,
-      ...(selectedSurfaces.length > 0 && { surface: { in: selectedSurfaces } }),
-      ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),
-    }
-
-    console.time('FindMany matches (entries)')
-    const matches = await prisma.match.findMany({
-      where,
-      select: {
-        winner_id: true,
-        loser_id: true,
-        winner_age: true,
-        loser_age: true,
-        event_id: true, // serve per player_id-event_id unici
-      },
-    })
-    console.timeEnd('FindMany matches (entries)')
-
-    const tempAgeMap = new Map<string, number[]>()
-    const ageMap = new Map<string, Record<number, number>>()
-    const seenEntries = new Set<string>() // player_id-event_id unici
-
-    for (const m of matches) {
-      if (m.winner_id && m.winner_age != null) {
-        const key = `${m.winner_id}-${m.event_id}`
-        if (!seenEntries.has(key)) {
-          const ageNum = Number(m.winner_age)
-          if (Number.isFinite(ageNum)) {
-            const arr = tempAgeMap.get(m.winner_id) ?? []
-            arr.push(ageNum)
-            tempAgeMap.set(m.winner_id, arr)
-            seenEntries.add(key)
+        // Loser
+        if (m.loser_id && m.loser_age != null) {
+          const key = String(m.loser_id);
+          if (!firstMatchPerPlayerEvent.has(key)) firstMatchPerPlayerEvent.set(key, new Set());
+          if (!firstMatchPerPlayerEvent.get(key)?.has(String(m.event_id))) {
+            firstMatchPerPlayerEvent.get(key)?.add(String(m.event_id));
+            if (!participationsMap.has(key)) participationsMap.set(key, []);
+            participationsMap.get(key)?.push(Number(m.loser_age));
           }
         }
       }
 
-      if (m.loser_id && m.loser_age != null) {
-        const key = `${m.loser_id}-${m.event_id}`
-        if (!seenEntries.has(key)) {
-          const ageNum = Number(m.loser_age)
-          if (Number.isFinite(ageNum)) {
-            const arr = tempAgeMap.get(m.loser_id) ?? []
-            arr.push(ageNum)
-            tempAgeMap.set(m.loser_id, arr)
-            seenEntries.add(key)
-          }
+      if (participationsMap.size > 0) {
+        const uniqueIds = Array.from(participationsMap.keys());
+        const playersInfo = await prisma.player.findMany({
+          where: { id: { in: uniqueIds } },
+          select: { id: true, player: true, ioc: true },
+        });
+
+        for (const p of playersInfo) {
+          const ages = participationsMap.get(p.id);
+          if (!ages) continue;
+
+          const validAges = ages.filter(a => a <= targetAge);
+          if (validAges.length === 0) continue;
+
+          const closestAge = Math.max(...validAges);
+
+          playersData.push({
+            id: p.id,
+            name: p.player,
+            ioc: p.ioc || '',
+            participations_at_age: validAges.filter(a => a <= closestAge).length,
+          });
         }
       }
     }
 
-    // cumulativo per età, mantenendo l'associazione age → count
-    for (const [id, arr] of tempAgeMap) {
-      arr.sort((a, b) => a - b)
-      const cumulative: Record<number, number> = {}
-      let total = 0
-      for (const age of arr) {
-        total += 1
-        cumulative[age] = total
-      }
-      ageMap.set(id, cumulative)
-    }
+    // =====================================================
+    // ORDINA DECRESCENTE PER NUMERO DI PARTECIPAZIONI
+    // =====================================================
+    playersData.sort((a, b) => b.participations_at_age - a.participations_at_age);
+    const topPlayers = playersData.slice(0, 100);
 
-    const playerIds = Array.from(ageMap.keys()).map(id => String(id))
-
-    console.time('FindMany playersInfo')
-    const playersInfo = await prisma.player.findMany({
-      where: { id: { in: playerIds } },
-      select: { id: true, player: true, ioc: true },
-    })
-    console.timeEnd('FindMany playersInfo')
-
-    const result = playersInfo.map(p => ({
-      id: p.id,
-      name: p.player,
-      ioc: p.ioc || '',
-      entries: ageMap.get(String(p.id)) ?? {},
-    }))
-
-    console.timeEnd('Use dynamic filtered algorithm')
-    console.timeEnd('Total API')
-
-    return NextResponse.json(result)
+    return NextResponse.json(topPlayers);
 
   } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+    console.error(error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

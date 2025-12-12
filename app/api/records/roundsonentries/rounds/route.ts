@@ -38,9 +38,13 @@ export async function GET(request: NextRequest) {
       where: { ...baseFilters, round: targetRound },
       _count: { event_id: true },
     });
-    const roundMap = new Map(roundData.map(r => [r.player_id, r._count.event_id]));
+    const roundMap: Map<string, number> = new Map<string, number>(
+      roundData.map(r => [String(r.player_id), Number(r._count.event_id)])
+    );
 
-    const playerIds = Array.from(new Set([...entriesCountMap.keys(), ...roundMap.keys()]));
+    const playerIds: string[] = Array.from(
+      new Set<string>([...entriesCountMap.keys(), ...roundMap.keys()].map(String))
+    );
 
     // Recupera info giocatori
     const playersData = await prisma.player.findMany({
@@ -48,15 +52,16 @@ export async function GET(request: NextRequest) {
       select: { id: true, atpname: true, ioc: true },
     });
 
-    const playerInfoMap = new Map(playersData.map(p => [
-      p.id,
+    type PlayerInfo = { name: string; ioc: string };
+    const playerInfoMap = new Map<string, PlayerInfo>(playersData.map(p => [
+      String(p.id),
       { name: p.atpname || '(Unknown)', ioc: p.ioc || '' }
     ]));
 
     // Costruisci array finale
     const allPlayers = playerIds.map(player_id => {
-      const entries = entriesCountMap.get(player_id) || 0;
-      const wins = roundMap.get(player_id) || 0;
+      const entries: number = entriesCountMap.get(player_id) || 0;
+      const wins: number = roundMap.get(player_id) || 0;
       const percentage = entries > 0 ? Math.round((wins / entries) * 1000) / 10 : 0;
       const info = playerInfoMap.get(player_id) || { name: '(Unknown)', ioc: '' };
       return { id: player_id, name: info.name, ioc: info.ioc, entries, wins, percentage };

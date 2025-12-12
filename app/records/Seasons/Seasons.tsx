@@ -41,11 +41,8 @@ export default function Seasons({ selectedSurfaces, selectedLevels, selectedRoun
   if (error) return <div>Error loading data</div>;
   if (loading) return <div>Loading...</div>;
 
-  const { topSeasonPercentage, topSeasonRounds } = data || {};
-
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4">Seasons</h2>
       {activeSubTab === 'wins' && (
         <WinsSection
           selectedSurfaces={Array.from(selectedSurfaces)}

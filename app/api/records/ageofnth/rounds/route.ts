@@ -1,81 +1,79 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient };
-const prisma =
-  globalForPrisma.prisma || new PrismaClient({ log: ['error', 'warn'] });
+// --- Prisma client reuse ---
+const globalForPrisma = global as unknown as { prisma?: PrismaClient };
+const prisma = globalForPrisma.prisma || new PrismaClient({ log: ['error', 'warn'] });
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url);
-    const selectedRounds = url.searchParams.getAll('round'); // es. ["F"]
+
+    // --- Parametri ---
+    const nParam = url.searchParams.get('n');
+    const n = nParam ? parseInt(nParam, 10) : 1;
+    if (isNaN(n) || n < 1) return NextResponse.json({ error: 'Invalid parameter n' }, { status: 400 });
+
     const selectedSurfaces = url.searchParams.getAll('surface');
+    const selectedRounds = url.searchParams.get('round');
     const selectedLevels = url.searchParams.getAll('level');
 
-    // --- Query matches ---
+    // --- Filtro base ---
+    const where: any = { status: true };
+    if (selectedSurfaces.length > 0) where.surface = { in: selectedSurfaces };
+    if (selectedRounds) where.round = selectedRounds;
+    if (selectedLevels.length > 0) where.tourney_level = { in: selectedLevels };
+
+    // --- Prendi tutte le partite vincenti ---
     const matches = await prisma.match.findMany({
-      where: {
-        team_event: false,
-        ...(selectedSurfaces.length > 0 && { surface: { in: selectedSurfaces } }),
-        ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),
-        ...(selectedRounds.length > 0 && { 
-          round: { in: selectedRounds.map(r => r.toUpperCase()) } 
-        }),
-      },
+      where,
       select: {
         winner_id: true,
+        winner_name: true,
+        winner_ioc: true,
         winner_age: true,
-        loser_id: true,
-        loser_age: true,
+      },
+      orderBy: {
+        winner_age: 'asc', // ordiniamo per età crescente
       },
     });
 
-    // --- Costruisco playerAges per vincitori e perdenti ---
-    const playerAges: Record<string, number[]> = {};
-    const playerIds = new Set<string>();
+    // --- Raggruppa vittorie per giocatore ---
+    const playerWins = new Map<string, { name: string; ioc: string; ages: number[] }>();
 
     for (const m of matches) {
-      const entries: [string | null, number | null][] = [
-        [m.winner_id, m.winner_age],
-        [m.loser_id, m.loser_age],
-      ];
-
-      for (const [id, age] of entries) {
-        if (id != null && age != null) {
-          const key = String(id);
-          if (!playerAges[key]) playerAges[key] = [];
-          playerAges[key].push(typeof age === 'string' ? parseFloat(age) : age);
-          playerIds.add(id);
-        }
+      if (!m.winner_id || m.winner_age == null) continue;
+      const playerId = String(m.winner_id);
+      if (!playerWins.has(playerId)) {
+        playerWins.set(playerId, { name: m.winner_name, ioc: m.winner_ioc ?? '', ages: [] });
       }
+      playerWins.get(playerId)!.ages.push(m.winner_age);
     }
 
-    // Ordino le età per giocatore
-    for (const id in playerAges) {
-      playerAges[id].sort((a, b) => a - b);
-    }
-
-    // --- Recupero info giocatori ---
-    const players = await prisma.player.findMany({
-      where: { id: { in: Array.from(playerIds) } },
-      select: { id: true, atpname: true, ioc: true },
+    // --- Calcola età alla N-esima vittoria ---
+    const results: any[] = [];
+    playerWins.forEach((info, id) => {
+      if (info.ages.length >= n) {
+        const ageNthWin = info.ages[n - 1];
+        results.push({
+          id,
+          name: info.name,
+          ioc: info.ioc,
+          age_nth_round: ageNthWin,
+        });
+      }
     });
 
-    const playerInfo: Record<string, { name: string; ioc: string }> = {};
-    for (const p of players) {
-      playerInfo[String(p.id)] = { name: p.atpname, ioc: p.ioc };
-    }
+    // --- Ordina per età crescente ---
+    results.sort((a, b) => a.age_nth_round - b.age_nth_round);
 
-    return NextResponse.json({
-      rounds: selectedRounds,
-      surfaces: selectedSurfaces,
-      levels: selectedLevels,
-      playerAges,
-      playerInfo,
-    });
+    // --- Limita a primi 100 ---
+    const topResults = results.slice(0, 100);
+
+    return NextResponse.json(topResults);
   } catch (error) {
-    console.error(error);
+    if (process.env.NODE_ENV !== 'production') console.error(error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

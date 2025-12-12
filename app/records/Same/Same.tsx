@@ -17,7 +17,6 @@ interface SameProps {
 export default function Same({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeSubTab }: SameProps) {
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4">Same Tournament</h2>
       {activeSubTab === 'wins' && (
         <WinsSection
           selectedSurfaces={Array.from(selectedSurfaces)}

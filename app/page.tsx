@@ -157,6 +157,15 @@ export default function HomePage() {
 
   return (
     <main className="w-full">
+      {/* Under Construction Image */}
+      <div className="w-full mb-8 flex justify-center">
+        <img
+          src="/UnderCostruction.png"
+          alt="Under Construction"
+          className="w-full max-w-lg h-auto rounded-xl shadow-lg object-cover"
+        />
+      </div>
+
       {/* Title */}
       <h1 className="text-3xl sm:text-4xl font-bold mb-8 text-center w-full">Tennis My Life</h1>
 

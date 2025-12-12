@@ -69,9 +69,10 @@ export async function GET(request: NextRequest) {
       select: { id: true, player: true, atpname: true, ioc: true },
     });
 
-    const playerMap = new Map(players.map(p => [
+    type PlayerInfo = { name: string; ioc: string | null };
+    const playerMap = new Map<string, PlayerInfo>(players.map(p => [
       p.id,
-      { name: p.atpname ?? p.player ?? "(Unknown)", ioc: p.ioc }
+      { name: p.atpname ?? p.player ?? "(Unknown)", ioc: p.ioc ?? null }
     ]));
 
     topEntries = entriesData.map(e => ({

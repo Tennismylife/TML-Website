@@ -123,20 +123,6 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
     <main className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
       <TournamentHeader id={parseInt(tournamentId)} />
 
-      {/* Hall of Champions */}
-      <section className="max-w-7xl mx-auto px-6 py-12">
-        <h2 className="text-3xl font-bold text-yellow-400 mb-6">Hall of Champions</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-          {mostTitles.map((player) => (
-            <div key={player.player_id} className="bg-gray-800 rounded-xl p-4 flex flex-col items-center">
-              <span className="text-3xl">{getFlagFromIOC(player.player_ioc)}</span>
-              <span className="font-medium text-gray-200 mt-2 text-center">{player.player_name}</span>
-              <span className="text-yellow-400 font-bold mt-1">{player.wins} titles</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* CTA Records */}
       <div className="flex justify-center my-12">
         <Link

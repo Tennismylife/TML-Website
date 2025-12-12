@@ -29,7 +29,9 @@ export async function GET(request: NextRequest) {
     });
 
     // Map per accesso veloce
-    const winsMap = new Map(winsData.map(w => [w.player_id, w._count.id]));
+    const winsMap: Map<string, number> = new Map<string, number>(
+      winsData.map(w => [String(w.player_id), Number(w._count.id)])
+    );
 
     const playerIds = entriesData.map(e => e.player_id);
 
@@ -39,15 +41,17 @@ export async function GET(request: NextRequest) {
       select: { id: true, atpname: true, ioc: true },
     });
 
-    const playerInfoMap = new Map(playersData.map(p => [
-      p.id, 
-      { name: p.atpname || '(Unknown)', ioc: p.ioc || '' }
-    ]));
+    const playerInfoMap: Map<string, { name: string; ioc: string }> = new Map(
+      playersData.map(p => [
+        p.id,
+        { name: p.atpname || '(Unknown)', ioc: p.ioc || '' }
+      ])
+    );
 
     // 3️⃣ Costruisci array finale
     const allPlayers = entriesData.map(e => {
-      const entries = e._count.event_id;
-      const wins = winsMap.get(e.player_id) || 0;
+      const entries = Number(e._count.event_id) || 0;
+      const wins = winsMap.get(String(e.player_id)) || 0;
       const percentage = entries > 0 ? Math.round((wins / entries) * 1000) / 10 : 0;
       const info = playerInfoMap.get(e.player_id) || { name: '(Unknown)', ioc: '' };
       return {

@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { iocToIso2, flagEmoji } from "../../../utils/flags";
+import { getFlagFromIOC } from "@/lib/utils";
 import Pagination from "../../../components/Pagination";
+import Modal from "../Modal";
 
 interface Player {
   id: number;
@@ -88,7 +89,7 @@ export default function OldestWinners({ selectedSurfaces, selectedLevels }: Olde
         <tbody>
           {playersList.map((p, idx) => {
             const globalRank = startIndex + idx + 1;
-            const flag = p.ioc ? flagEmoji(iocToIso2(p.ioc)) : null;
+            const flag = p.ioc ? getFlagFromIOC(p.ioc) : null;
             const year =
               p.year ||
               (typeof p.tourney_id === "string" ? p.tourney_id.split("-")[1] : "unknown");
@@ -119,40 +120,6 @@ export default function OldestWinners({ selectedSurfaces, selectedLevels }: Olde
     </div>
   );
 
-  const Modal = ({
-    show,
-    onClose,
-    title,
-    children,
-  }: {
-    show: boolean;
-    onClose: () => void;
-    title: string;
-    children: React.ReactNode;
-  }) => {
-    if (!show) return null;
-    return (
-      <div
-        className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
-        onClick={onClose}
-      >
-        <div
-          className="bg-gray-900 text-gray-200 p-4 w-full max-w-7xl max-h-screen overflow-y-auto rounded border border-gray-800"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <h2 className="text-xl font-bold mb-4">{title}</h2>
-          {children}
-          <button
-            onClick={onClose}
-            className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    );
-  };
-
   if (loading)
     return <div className="text-center py-8 text-gray-300">Loading...</div>;
   if (!data.length)
@@ -160,8 +127,7 @@ export default function OldestWinners({ selectedSurfaces, selectedLevels }: Olde
 
   const totalPages = Math.ceil(data.length / perPage);
   const start = (page - 1) * perPage;
-  const end = start + perPage;
-  const currentPlayers = data.slice(start, end);
+  const currentPlayers = data.slice(start, start + perPage);
 
   return (
     <section className="mb-8">
