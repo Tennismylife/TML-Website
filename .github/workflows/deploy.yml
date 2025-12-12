@@ -48,10 +48,6 @@ jobs:
           npm ls prisma
           npm ls @prisma/client
 
-      # 5?? Test database connection
-      - name: Test PostgreSQL connection
-        run: npx prisma db pull
-
       # 6?? Build Next.js
       - name: Build project
         run: npm run build
