@@ -7,7 +7,7 @@ import Pagination from "../../../components/Pagination";
 import Modal from "../Modal";
 import { getFlagFromIOC } from "@/lib/utils";
 
-interface TitlesSectionProps {
+interface EntriesSectionProps {
   selectedSurfaces: string[];
   selectedLevels: string[];
 }
@@ -16,7 +16,7 @@ interface Player {
   id: string;
   name: string;
   ioc?: string;
-  age_at_title: string; // già formattata XXy YYd
+  age_at_entry: string; // già formattata XXy YYd
 }
 
 function NInput({ value, onChange }: { value: number; onChange: (n: number) => void }) {
@@ -27,11 +27,12 @@ function NInput({ value, onChange }: { value: number; onChange: (n: number) => v
       className="w-24 px-2 py-1 bg-gray-800 text-white border border-gray-600 rounded"
       value={value}
       onChange={(e) => onChange(Number(e.target.value))}
+      onKeyDown={(e) => e.key === 'Enter' && onChange(Number(e.currentTarget.value))}
     />
   );
 }
 
-export default function TitlesSection({ selectedSurfaces, selectedLevels }: TitlesSectionProps) {
+export default function EntriesSection({ selectedSurfaces, selectedLevels }: EntriesSectionProps) {
   const [data, setData] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,7 +55,8 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels }: Titl
       selectedSurfaces.forEach((s) => query.append("surface", s));
       selectedLevels.forEach((l) => query.append("level", l));
 
-      const res = await fetch(`/api/records/ageofnth/titles?${query.toString()}`);
+      const res = await fetch(`/api/records/ageofnth/entries?${query.toString()}`);
+      if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
       const fetchedData = await res.json();
       setData(fetchedData);
       setPage(1);
@@ -94,7 +96,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels }: Titl
               Player
             </th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">
-              Age at {selectedN}-th title
+              Age at {selectedN}-th entry
             </th>
           </tr>
         </thead>
@@ -117,7 +119,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels }: Titl
                   </div>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
-                  {p.age_at_title || "-"}
+                  {p.age_at_entry || "-"}
                 </td>
               </tr>
             );
@@ -130,14 +132,14 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels }: Titl
   return (
     <section className="mb-8">
       <h2 className="text-xl font-semibold mb-4 text-gray-200">
-        Age at N-th Title
+        Age at N-th Entry
       </h2>
 
       {/* N Input */}
       <div className="mb-4 flex items-center gap-2">
         <NInput value={inputN} onChange={setInputN} />
         <button
-          onClick={() => fetchData(inputN)}
+          onClick={() => inputN !== selectedN && fetchData(inputN)}
           disabled={loading}
           className={`px-4 py-1 rounded ${
             loading ? "bg-gray-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"
@@ -178,7 +180,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels }: Titl
       <Modal
         show={showModal}
         onClose={() => setShowModal(false)}
-        title={`Age at ${selectedN}-th Title`}
+        title={`Age at ${selectedN}-th Entry`}
       >
         {renderTable(data)}
       </Modal>

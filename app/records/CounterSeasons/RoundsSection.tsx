@@ -53,7 +53,7 @@ export default function RoundsSection({
     }
   };
 
-  const perPage = 10;
+  const perPage = 20;
   const topPlayers = players.slice(0, perPage);
 
   const renderTable = (list: Player[]) => (

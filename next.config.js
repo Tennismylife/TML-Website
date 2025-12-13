@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
 
-  // QUESTO È OBBLIGATORIO per far funzionare node .next/standalone/server.js con PM2
+  // OBBLIGATORIO per node .next/standalone/server.js con PM2
   output: 'standalone',
 
   // Opzionale ma fortemente consigliato in produzione
