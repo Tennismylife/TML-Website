@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export async function GET(request: NextRequest, context: any) {
+export async function GET(request: Request, context: { params: Promise<{ year: string }> }) {
   try {
-    // Recupera parametri dal contesto
-    const params = context?.params ?? {};
-    const yearRaw = String(params.year ?? "");
+    // await params (required in App Router)
+    const p = await context.params;
+    const yearRaw = String(p?.year ?? "");
     const year = parseInt(yearRaw, 10);
     if (isNaN(year)) {
       return NextResponse.json({ error: "Invalid year parameter" }, { status: 400 });

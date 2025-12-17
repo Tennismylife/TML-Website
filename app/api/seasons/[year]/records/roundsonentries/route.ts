@@ -1,20 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export async function GET(request: NextRequest, context: any) {
+export async function GET(request: Request, context: { params: Promise<{ year: string }> }) {
   try {
-    // Recupera parametri dal contesto
-    const params = context?.params ?? {};
-    const yearRaw = String(params.year ?? "");
+    // await params (required in App Router)
+    const p = await context.params;
+    const yearRaw = String(p?.year ?? "");
     const year = parseInt(yearRaw, 10);
     if (isNaN(year)) {
       return NextResponse.json({ error: "Invalid year parameter" }, { status: 400 });
     }
-    const url = new URL(request.url);
+
+    const { searchParams } = new URL(request.url);
 
     // Filtri opzionali
-    const selectedSurfaces = (url.searchParams.get('surfaces')?.split(',').filter(Boolean)) || [];
-    const selectedLevels = (url.searchParams.get('levels')?.split(',').filter(Boolean)) || [];
+    const selectedSurfaces = (searchParams.get('surfaces')?.split(',').filter(Boolean)) || [];
+    const selectedLevels = (searchParams.get('levels')?.split(',').filter(Boolean)) || [];
 
     // Ordine dei round di interesse
     const roundOrder = ["W", "F", "SF", "QF", "R16", "R32"];

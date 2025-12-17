@@ -1,7 +1,7 @@
 "use client";
 
 import { use, useState, useEffect } from "react";
-import Link from "next/link"; // Add this import
+import Link from "next/link";
 import TourneyCard from "./TourneyCard";
 
 interface TourneyTile {
@@ -27,25 +27,32 @@ export default function SeasonPage({ params }: { params: Promise<{ year: string 
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const controller = new AbortController();
+    let isMounted = true; // evita setState su component unmounted
 
     async function load() {
       try {
         setLoading(true);
         setError(null);
-        const res = await fetch(`/api/seasons/${year}`, { signal: controller.signal });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data: TourneyTile[] = await res.json();
-        setTournaments(data);
+
+        // fetch verso il tuo endpoint API
+        const res = await fetch(`/api/seasons/${year}`);
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+
+        const data = (await res.json()) as TourneyTile[];
+        if (isMounted) setTournaments(data);
       } catch (e: any) {
-        if (e.name !== "AbortError") setError("Errore caricamento dati");
+        if (isMounted) setError(e.message || "Loading error");
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     }
 
     load();
-    return () => controller.abort();
+    return () => {
+      isMounted = false;
+    };
   }, [year]);
 
   if (loading) return <div>Loading...</div>;
@@ -67,11 +74,15 @@ export default function SeasonPage({ params }: { params: Promise<{ year: string 
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {tournaments.map((t) => (
-          <TourneyCard key={t.key} tourney={t} />
-        ))}
-      </div>
+      {tournaments.length === 0 ? (
+        <p>No tournaments found for {year}</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {tournaments.map((t) => (
+            <TourneyCard key={t.key} tourney={t} />
+          ))}
+        </div>
+      )}
     </main>
   );
 }
