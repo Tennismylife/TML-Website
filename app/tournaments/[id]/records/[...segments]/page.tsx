@@ -1,6 +1,11 @@
 import RecordsPage from "../page";
 
-export default function RecordsCatchAllPage({ params }: { params: { id: string; segments?: string[] } }) {
-  // Rende la page esistente; il client component legge pathname e seleziona tab/subtab corretti
-  return <RecordsPage params={Promise.resolve({ id: params.id })} />;
+export default function RecordsCatchAllPage({
+  params,
+}: {
+  params: Promise<{ id: string; segments?: string[] }>;
+}) {
+  // params è un Promise; creiamo un Promise che risolve solo con { id }
+  const idPromise = params.then(p => ({ id: p.id }));
+  return <RecordsPage params={idPromise} />;
 }

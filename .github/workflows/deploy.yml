@@ -1,4 +1,4 @@
-name: Build & Deploy Next.js Project (Prisma 6 Only) 
+name: Build & Deploy Next.js Project (Prisma 6)
 
 on:
   push:
@@ -17,53 +17,44 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2?? Test SSH connection to VPS (pre-deploy)
-      - name: Test SSH connection to VPS
-        run: |
-          echo "${{ secrets.VPS_KEY }}" > /tmp/vps_key
-          chmod 600 /tmp/vps_key
-
-          echo "Testing SSH connection to ${{ secrets.VPS_HOST }}..."
-          ssh -i /tmp/vps_key \
-            -o StrictHostKeyChecking=no \
-            -o ConnectTimeout=5 \
-            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo 'SSH connection OK' && hostname"
-
-      # 3?? Setup Node.js
+      # 2?? Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
 
-      # 4?? Clean install Prisma 6 
-      - name: Clean install Prisma 6
+      # 3?? Clean install Prisma 6 e Next.js aggiornato
+      - name: Install dependencies
         run: |
           rm -rf node_modules package-lock.json
-          rm -rf node_modules/.prisma || true
-          npm uninstall prisma @prisma/client || true
+          npm uninstall prisma @prisma/client next || true
           npm install prisma@6 --save-dev
           npm install @prisma/client@6
+          npm install next@latest
           npm install
-          echo "? Prisma CLI e Client versione 6 installati"
+          npx prisma generate
           npm ls prisma
           npm ls @prisma/client
+          npm ls next
 
-      # 6?? Build Next.js
+      # 4?? Build Next.js
       - name: Build project
         run: npm run build
 
-      # 7?? Copy build and project files to VPS using native rsync
-      - name: Copy project to VPS via rsync
+      # 5?? Copy project to VPS via rsync
+      - name: Deploy files to VPS
         run: |
           echo "${{ secrets.VPS_KEY }}" > /tmp/vps_key
           chmod 600 /tmp/vps_key
 
           rsync -avz --delete \
+            --exclude "node_modules" \
+            --exclude ".git" \
             -e "ssh -i /tmp/vps_key -o StrictHostKeyChecking=no" \
             .next public package.json package-lock.json prisma/ \
             ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/TML-Website
 
-      # 8?? Install node_modules on VPS (production only)
+      # 6?? Install node_modules on VPS (production only)
       - name: Install Node Modules on VPS
         uses: appleboy/ssh-action@v0.1.5
         with:
@@ -73,8 +64,9 @@ jobs:
           script: |
             cd /var/www/TML-Website
             npm ci --omit=dev
+            npx prisma generate
 
-      # 9?? Restart PM2
+      # 7?? Restart PM2
       - name: Restart PM2
         uses: appleboy/ssh-action@v0.1.5
         with:

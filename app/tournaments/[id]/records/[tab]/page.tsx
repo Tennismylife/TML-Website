@@ -1,7 +1,10 @@
 import RecordsPage from "../page";
 
-export default function RecordsTabPage({ params }: { params: { id: string; tab: string } }) {
-  // Rende la page esistente (client) con lo stesso id;
-  // il componente client legge il pathname e seleziona il tab corretto.
-  return <RecordsPage params={Promise.resolve({ id: params.id })} />;
+export default function RecordsTabPage({
+  params,
+}: {
+  params: Promise<{ id: string; tab: string }>;
+}) {
+  const idPromise = params.then(p => ({ id: p.id }));
+  return <RecordsPage params={idPromise} />;
 }
