@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { createPortal } from 'react-dom';
-import { iocToIso2, flagEmoji } from '../../../../utils/flags';
+import { getFlagFromIOC } from "@/lib/utils";
+import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 
 interface PlayerStat {
   id: string | number;
@@ -65,16 +65,6 @@ export default function RoundsSection({
     fetchRounds();
   }, [year, selectedSurfaces, selectedLevels]);
 
-  // Block scroll while modal open
-  useEffect(() => {
-    if (modalData) {
-      document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = '';
-      };
-    }
-  }, [modalData]);
-
   if (loading) return <div className="text-white text-center py-10">Loading...</div>;
   if (error) return <div className="text-red-500 text-center py-10">Error: {error}</div>;
   if (!roundData || !Array.isArray(roundData.allRoundItems)) return <div className="text-white text-center py-10">No data available</div>;
@@ -98,7 +88,7 @@ export default function RoundsSection({
         {data.map((item) => (
           <tr key={item.id} className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors">
             <td className="py-1 flex items-center gap-2 text-white">
-              <span className="text-base">{flagEmoji(iocToIso2(item.ioc)) || ''}</span>
+              <span className="text-base">{getFlagFromIOC(item.ioc) || ''}</span>
               <Link href={`/players/${encodeURIComponent(String(item.id))}`} className="text-blue-400 hover:underline">
                 {item.name}
               </Link>
@@ -110,31 +100,7 @@ export default function RoundsSection({
     </table>
   );
 
-  const Modal = ({ title, data, onClose }: { title: string; data: PlayerStat[]; onClose: () => void }) => {
-    useEffect(() => {
-      document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = '';
-      };
-    }, []);
-
-    return createPortal(
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90" onClick={onClose}>
-        <div
-          className="bg-card p-6 rounded-lg shadow-lg max-h-[80vh] overflow-y-auto relative"
-          style={{ width: 'min(90%, 600px)' }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <h2 className="text-xl font-bold mb-4 text-white">All Reaches for {title}</h2>
-          {renderTable(data, title)}
-          <button onClick={onClose} className="mt-4 px-4 py-2 bg-red-500 text-white rounded">
-            Close
-          </button>
-        </div>
-      </div>,
-      document.body
-    );
-  };
+  // Rimossa definizione inline del Modal
 
   // Lazy load full list for View All
   const handleViewAll = async (title: string) => {
@@ -182,7 +148,11 @@ export default function RoundsSection({
         ))}
       </div>
 
-      {modalData && <Modal title={modalData.title} data={modalData.list} onClose={() => setModalData(null)} />}
+      {modalData && (
+        <ModalTournamentsSeasons title={`All Reaches for ${modalData.title}`} onClose={() => setModalData(null)}>
+          {renderTable(modalData.list, modalData.title)}
+        </ModalTournamentsSeasons>
+      )}
     </section>
   );
 }

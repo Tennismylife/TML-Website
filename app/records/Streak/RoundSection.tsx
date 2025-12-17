@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { iocToIso2, flagEmoji } from '../../../utils/flags';
+import { getFlagFromIOC } from "@/lib/utils";
 
 interface RoundSectionProps {
   selectedSurfaces: Set<string>;
@@ -97,7 +97,7 @@ export default function RoundSection({ selectedSurfaces, selectedLevels, selecte
             records.map((p, idx) => (
               <tr key={idx} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-lg text-gray-200 flex items-center gap-2">
-                  <span>{flagEmoji(iocToIso2(p.player.ioc)) || ''}</span>
+                  <span>{getFlagFromIOC(p.player.ioc) || ''}</span>
                   <Link href={`/players/${encodeURIComponent(p.player.id)}`} className="text-indigo-300 hover:underline">
                     {p.player.name}
                   </Link>

@@ -2,15 +2,15 @@ DROP MATERIALIZED VIEW IF EXISTS mv_all_consecutive_win_streaks;
 
 CREATE MATERIALIZED VIEW mv_all_consecutive_win_streaks AS
 WITH all_matches AS (
-    SELECT id, winner_id AS player_id, loser_id, tourney_date, surface, tourney_level, best_of
+    SELECT id, winner_id AS player_id, loser_id, tourney_date, surface, tourney_level, best_of, round
     FROM "Match"
     WHERE status = true
 ),
 player_results AS (
-    SELECT player_id, id, tourney_date, surface, tourney_level, best_of, 1 AS win
+    SELECT player_id, id, tourney_date, surface, tourney_level, best_of, round, 1 AS win
     FROM all_matches
     UNION ALL
-    SELECT loser_id AS player_id, id, tourney_date, surface, tourney_level, best_of, 0 AS win
+    SELECT loser_id AS player_id, id, tourney_date, surface, tourney_level, best_of, round, 0 AS win
     FROM all_matches
 ),
 ordered_results AS (
@@ -93,6 +93,46 @@ best_of_ranked AS (
     SELECT *, ROW_NUMBER() OVER (PARTITION BY best_of ORDER BY total_wins DESC) AS rn
     FROM best_of_prep
 ),
+-- Gruppi per round (solo vittorie consecutive nello stesso round)
+round_islands AS (
+    SELECT 
+        player_id,
+        round,
+        id,
+        tourney_date,
+        win,
+        ROW_NUMBER() OVER (PARTITION BY player_id, round ORDER BY tourney_date, id) AS rn1,
+        ROW_NUMBER() OVER (PARTITION BY player_id, round, win ORDER BY tourney_date, id) AS rn2
+    FROM ordered_results
+    WHERE round IS NOT NULL
+),
+round_grouped AS (
+    SELECT
+        player_id,
+        COALESCE(round, 'Unknown') AS round,
+        win,
+        id,
+        tourney_date,
+        (rn1 - rn2) AS island_id
+    FROM round_islands
+),
+round_prep AS (
+    SELECT
+        player_id,
+        round,
+        island_id AS grp,
+        COUNT(*) AS total_wins,
+        JSON_AGG(id ORDER BY tourney_date, id) AS match_ids
+    FROM round_grouped
+    WHERE win = 1
+    GROUP BY player_id, round, island_id
+),
+round_ranked AS (
+    SELECT
+        *,
+        ROW_NUMBER() OVER (PARTITION BY round ORDER BY total_wins DESC) AS rn
+    FROM round_prep
+),
 -- JSON finale con top 100 per gruppo
 global_json AS (
     SELECT JSON_AGG(obj) AS global_streak
@@ -142,12 +182,26 @@ best_of_json AS (
         GROUP BY best_of
     ) t
 ),
+round_json AS (
+    SELECT JSON_OBJECT_AGG(round, streaks) AS rounds_streak
+    FROM (
+        SELECT round,
+               JSON_AGG(obj ORDER BY obj.total_wins DESC) AS streaks
+        FROM (
+            SELECT round, player_id, total_wins, match_ids
+            FROM round_ranked
+            WHERE rn <= 100
+        ) obj
+        GROUP BY round
+    ) t
+),
 final_row AS (
     SELECT 
         1 AS id,
         (SELECT global_streak FROM global_json) AS global,
         (SELECT surfaces_streak FROM surfaces_json) AS surfaces,
         (SELECT levels_streak FROM levels_json) AS levels,
-        (SELECT best_of_streak FROM best_of_json) AS best_of
+        (SELECT best_of_streak FROM best_of_json) AS best_of,
+        (SELECT rounds_streak FROM round_json) AS rounds
 )
 SELECT * FROM final_row;

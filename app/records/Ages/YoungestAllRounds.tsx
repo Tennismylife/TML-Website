@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { iocToIso2, flagEmoji } from '../../../utils/flags';
+import { getFlagFromIOC } from "@/lib/utils";
 import Pagination from '../../../components/Pagination';
 
 function formatAge(age: number): string {
@@ -71,7 +71,7 @@ export default function YoungestAllRounds({ selectedSurfaces, selectedLevels }: 
               <tr key={`${p.id}-${p.tourney_id}-${idx}`} className="hover:bg-gray-800">
                 <td className="border border-gray-700 px-4 py-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm">{flagEmoji(iocToIso2(p.ioc)) || ""}</span>
+                    <span className="text-sm">{getFlagFromIOC(p.ioc) || ""}</span>
                     <Link href={`/players/${encodeURIComponent(String(p.id))}`} className="text-blue-400 hover:underline">
                       {p.name}
                     </Link>
@@ -175,7 +175,7 @@ function Modal({ title, data, onClose }: { title: string; data: any[]; onClose: 
                   <tr key={`${p.id}-${p.tourney_id}-${idx}`} className="hover:bg-gray-800">
                     <td className="border border-gray-700 px-4 py-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm">{flagEmoji(iocToIso2(p.ioc)) || ""}</span>
+                        <span className="text-sm">{getFlagFromIOC(p.ioc) || ""}</span>
                         <Link href={`/players/${encodeURIComponent(String(p.id))}`} className="text-blue-400 hover:underline">
                           {p.name}
                         </Link>

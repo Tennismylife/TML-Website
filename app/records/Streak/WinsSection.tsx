@@ -1,14 +1,17 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { iocToIso2, flagEmoji } from '../../../utils/flags';
 import Pagination from '../../../components/Pagination';
+import Modal from '@/components/Modal';
+import { getFlagFromIOC } from "@/lib/utils";
 
 interface WinsSectionProps {
   selectedSurfaces: Set<string>;
   selectedLevels: Set<string>;
   selectedBestOf: number | null;
+  selectedRounds?: string;
 }
 
 interface Streak {
@@ -20,18 +23,38 @@ interface Streak {
   match_ids: number[];
 }
 
+interface Match {
+  id: number;
+  tourney_date: string;
+  tourney_name: string;
+  round: string;
+  opponent_name: string;
+  loser_ioc?: string;
+  score: string;
+}
+
 export default function WinsSection({
   selectedSurfaces,
   selectedLevels,
   selectedBestOf,
+  selectedRounds,
 }: WinsSectionProps) {
+  const searchParams = useSearchParams();
   const [streaks, setStreaks] = useState<Streak[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
-  const perPage = 10;
+  const [showModal, setShowModal] = useState(false);
 
-  useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedBestOf]);
+  // Matches modal state
+  const [showMatchesModal, setShowMatchesModal] = useState(false);
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [matchesLoading, setMatchesLoading] = useState(false);
+  const [matchesError, setMatchesError] = useState<string | null>(null);
+
+  const perPage = 20;
+
+  useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedBestOf, selectedRounds]);
 
   useEffect(() => {
     setLoading(true);
@@ -43,32 +66,38 @@ export default function WinsSection({
         selectedSurfaces.forEach(s => query.append('surface', s));
         selectedLevels.forEach(l => query.append('level', l));
         if (selectedBestOf !== null) query.append('bestOf', selectedBestOf.toString());
+        // Round filter: use only explicit round params from URL (external filter) — do NOT add rounds here
+        const roundsFromQS = searchParams.getAll('round');
+        if (roundsFromQS.length) {
+          roundsFromQS.forEach(r => query.append('round', r));
+        } else if (selectedRounds) {
+          if (selectedRounds === 'All') {
+            ['R128','R64','R32','R16','QF','SF','F'].forEach(r => query.append('round', r));
+          } else {
+            query.append('round', selectedRounds);
+          }
+        }
 
-        const url = `/api/records/streak/wins${query.toString() ? '?' + query.toString() : ''}`;
+        const url = `/api/records/streak/wins${query.toString() ? `?${query}` : ''}`;
         const res = await fetch(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const rawData = await res.json();
-        console.log('Raw API data:', rawData); // DEBUG
-
-        // Appiattiamo tutto in un unico array senza controlli
         let streakList: Streak[] = [];
 
         if (Array.isArray(rawData)) {
           streakList = rawData;
         } else if (rawData && typeof rawData === 'object') {
-          const allValues = Object.values(rawData)
-            .map(v => Array.isArray(v) ? v : Object.values(v))
-            .flat(2);
-          streakList = allValues as Streak[];
+          streakList = Object.values(rawData)
+            .flatMap((v: any) => (Array.isArray(v) ? v : Object.values(v)))
+            .flat() as Streak[];
         }
 
-        // Ordina per total_wins
         streakList.sort((a, b) => b.total_wins - a.total_wins);
         setStreaks(streakList);
       } catch (err) {
         console.error(err);
-        setError('Errore durante il caricamento delle streak.');
+        setError('Error while loading win streaks.');
         setStreaks([]);
       } finally {
         setLoading(false);
@@ -76,49 +105,156 @@ export default function WinsSection({
     };
 
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedBestOf]);
+  }, [selectedSurfaces, selectedLevels, selectedBestOf, selectedRounds, searchParams]);
 
   const totalPages = Math.ceil(streaks.length / perPage);
-  const start = (page - 1) * perPage;
-  const end = start + perPage;
-  const currentData = useMemo(() => streaks.slice(start, end), [streaks, start, end]);
 
-  const getLink = (playerId: string) => `/players/${encodeURIComponent(playerId)}`;
+  const currentData = useMemo(() => {
+    const start = (page - 1) * perPage;
+    return streaks.slice(start, start + perPage);
+  }, [streaks, page]);
 
-  if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
-  if (error) return <div className="text-red-500">{error}</div>;
-  if (!streaks.length) return <div className="text-center py-8 text-gray-300">Nessuna streak trovata.</div>;
+  // Open matches modal
+  const openMatchesModal = async (matchIds: number[]) => {
+    setShowMatchesModal(true);
+    setMatches([]);
+    setMatchesError(null);
+    setMatchesLoading(true);
+
+    try {
+      const res = await fetch(`/api/records/streak/streakwins?ids=${matchIds.join(',')}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setMatches(data);
+    } catch (err) {
+      console.error(err);
+      setMatchesError('Error while loading matches.');
+    } finally {
+      setMatchesLoading(false);
+    }
+  };
+
+  const renderTable = (list: Streak[], startIndex = 0) => (
+    <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow mt-0">
+      <table className="min-w-full border-collapse">
+        <thead>
+          <tr className="bg-black">
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
+            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Wins</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Matches</th>
+          </tr>
+        </thead>
+        <tbody>
+          {list.length === 0 ? (
+            <tr>
+              <td colSpan={4} className="py-8 text-center text-gray-300">No data available.</td>
+            </tr>
+          ) : (
+            list.map((s, idx) => {
+              const globalRank = startIndex + idx + 1;
+              const flag = getFlagFromIOC(s.player_ioc || '') ?? '🏳️';
+
+              return (
+                <tr key={`${s.player_id}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
+                  <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
+                  <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
+                    <div className="flex items-center gap-2">
+                      <span className="text-base">{flag}</span>
+                      <Link href={`/players/${encodeURIComponent(s.player_id)}`} className="text-indigo-300 hover:underline">
+                        {s.player_name || `Player ${s.player_id}`}
+                      </Link>
+                    </div>
+                  </td>
+                  <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{s.total_wins}</td>
+                  <td className="border border-white/10 px-4 py-2 text-center">
+                    <button
+                      onClick={() => openMatchesModal(s.match_ids)}
+                      className="px-3 py-1 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-500"
+                    >
+                      View Matches
+                    </button>
+                  </td>
+                </tr>
+              );
+            })
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
 
   return (
-    <section className="mb-8">
+    <section className="mb-0">
       <h2 className="text-xl font-semibold mb-4 text-gray-200">Top Consecutive Win Streaks</h2>
-      <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
-        <table className="min-w-full border-collapse">
-          <thead>
-            <tr className="bg-black">
-              <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
-              <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
-              <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Wins</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentData.map((s, idx) => (
-              <tr key={`${s.player_id}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
-                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{start + idx + 1}</td>
-                <td className="border border-white/10 px-4 py-2 text-lg text-gray-200 flex items-center gap-2">
-                  <span className="text-base">{flagEmoji(iocToIso2(s.player_ioc || ""))}</span>
-                  <Link href={getLink(s.player_id)} className="text-indigo-300 hover:underline">
-                    {s.player_name || `Player ${s.player_id}`}
-                  </Link>
-                </td>
-                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{s.total_wins}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+
+      <div className="flex justify-end mb-0">
+        {streaks.length > perPage && (
+          <button onClick={() => setShowModal(true)} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500">
+            View All
+          </button>
+        )}
       </div>
 
-      {totalPages > 1 && <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />}
+      {loading ? (
+        <div className="text-center py-8 text-gray-300">Loading...</div>
+      ) : error ? (
+        <div className="text-center py-8 text-red-500">{error}</div>
+      ) : streaks.length === 0 ? (
+        <div className="text-center py-8 text-gray-300">No win streaks found.</div>
+      ) : (
+        <>
+          {renderTable(currentData, (page - 1) * perPage)}
+          {totalPages > 1 && <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />}
+        </>
+      )}
+
+      {/* Modal "View All" */}
+      <Modal show={showModal} onClose={() => setShowModal(false)} title="Top Consecutive Win Streaks">
+        {renderTable(streaks, 0)}
+      </Modal>
+
+      {/* Modal Matches */}
+      <Modal show={showMatchesModal} onClose={() => setShowMatchesModal(false)} title="Matches in Win Streak">
+        {matchesLoading ? (
+          <div className="text-center py-8 text-gray-300">Loading matches...</div>
+        ) : matchesError ? (
+          <div className="text-center py-8 text-red-500">{matchesError}</div>
+        ) : matches.length === 0 ? (
+          <div className="text-center py-8 text-gray-300">No matches found.</div>
+        ) : (
+          <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow mt-0">
+            <table className="min-w-full border-collapse">
+              <thead>
+                <tr className="bg-black">
+                  <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Date</th>
+                  <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Tournament</th>
+                  <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Round</th>
+                  <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Opponent</th>
+                  <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Score</th>
+                </tr>
+              </thead>
+              <tbody>
+                {matches.map((m, idx) => {
+                  const opponentFlag = getFlagFromIOC(m.loser_ioc || '') ?? '🏳️';
+                  return (
+                    <tr key={`${m.id}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
+                      <td className="border border-white/10 px-4 py-2 text-center text-gray-200">{m.tourney_date}</td>
+                      <td className="border border-white/10 px-4 py-2 text-gray-200">{m.tourney_name}</td>
+                      <td className="border border-white/10 px-4 py-2 text-gray-200">{m.round}</td>
+                      <td className="border border-white/10 px-4 py-2 text-gray-200 flex items-center gap-2">
+                        <span className="text-base">{opponentFlag}</span>
+                        {m.opponent_name}
+                      </td>
+                      <td className="border border-white/10 px-4 py-2 text-center text-gray-200">{m.score}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Modal>
     </section>
   );
 }

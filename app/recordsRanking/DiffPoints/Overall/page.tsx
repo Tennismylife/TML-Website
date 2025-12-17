@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { flagEmoji, iocToIso2 } from "@/utils/flags";
+import { getFlagFromIOC } from "@/lib/utils";
+import Modal from "@/components/Modal";
 
 interface MaxDiffItem {
   rank: number;
@@ -65,7 +66,7 @@ export default function MaxDifferenceNo1No2() {
                 <div className="flex items-center gap-2">
                   {r.country && (
                     <span className="text-base" aria-hidden="true">
-                      {flagEmoji(iocToIso2(r.country))}
+                      {getFlagFromIOC(r.country)}
                     </span>
                   )}
                   <span>{r.name}</span>
@@ -77,7 +78,7 @@ export default function MaxDifferenceNo1No2() {
                 <div className="flex items-center gap-2">
                   {r.country_no2 && (
                     <span className="text-base" aria-hidden="true">
-                      {flagEmoji(iocToIso2(r.country_no2))}
+                      {getFlagFromIOC(r.country_no2)}
                     </span>
                   )}
                   <span>{r.no2}</span>
@@ -126,28 +127,9 @@ export default function MaxDifferenceNo1No2() {
       )}
 
       {/* Modal con tabella completa */}
-      {showModal && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
-          onClick={() => setShowModal(false)}
-        >
-          <div
-            className="bg-gray-900 text-gray-200 p-4 w-full max-w-7xl max-h-screen overflow-y-auto rounded border border-gray-800"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="text-xl font-bold mb-4">Full Ranking</h2>
-            {renderTable(rows)}
-            <button
-              onClick={() => setShowModal(false)}
-              className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+      <Modal show={showModal} onClose={() => setShowModal(false)} title={`Full Ranking`}>
+        {renderTable(rows)}
+      </Modal>
     </section>
   );
 }

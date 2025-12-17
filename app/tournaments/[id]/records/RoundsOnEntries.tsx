@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { iocToIso2, flagEmoji } from '../../../../utils/flags';
-import Modal from './Modal';
+import { getFlagFromIOC } from "@/lib/utils";
+import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 
 interface PlayerRoundEntry {
   id: string | number;
@@ -88,7 +88,7 @@ export default function RoundsOnEntries({ id }: { id: string }) {
         {data.map((item) => (
           <tr key={`${item.id}-${item.reaches}`} className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors">
             <td className="py-1 flex items-center gap-2 text-white">
-              <span className="text-base">{flagEmoji(iocToIso2(item.ioc)) || ""}</span>
+              <span className="text-base">{getFlagFromIOC(item.ioc) || ""}</span>
               <Link href={`/players/${encodeURIComponent(String(item.id))}`} className="text-blue-400 hover:underline">
                 {item.name}
               </Link>
@@ -150,9 +150,9 @@ export default function RoundsOnEntries({ id }: { id: string }) {
       </div>
 
       {modalData && (
-        <Modal title={`${modalData.title}s reached on entries`} onClose={() => setModalData(null)}>
+        <ModalTournamentsSeasons title={`${modalData.title}s reached on entries`} onClose={() => setModalData(null)}>
           <PlayerTable data={modalData.list} />
-        </Modal>
+        </ModalTournamentsSeasons>
       )}
     </section>
   );

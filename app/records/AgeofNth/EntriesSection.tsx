@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import Pagination from "../../../components/Pagination";
 import Modal from "../Modal";
 import { getFlagFromIOC } from "@/lib/utils";
+import { playerMatchesUrl } from "../nav";
 
 interface EntriesSectionProps {
   selectedSurfaces: string[];
@@ -76,7 +77,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels }: Ent
   const playersPage = data.slice(start, start + perPage);
 
   const getPlayerLink = (playerId: string) => {
-    let link = `/players/${playerId}?tab=matches`;
+    let link = playerMatchesUrl(playerId);
     for (const [key, value] of searchParams.entries()) {
       if (!value || key === "tab") continue;
       link += `&${key}=${encodeURIComponent(value)}`;

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
 import { useSearchParams } from 'next/navigation';
 import Pagination from '../../../components/Pagination';
-import Modal from '..//Modal';
+import Modal from '@/components/Modal';
 
 interface TimespanEntry {
   player_id: string;

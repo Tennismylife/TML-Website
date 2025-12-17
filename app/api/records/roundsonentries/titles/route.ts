@@ -10,52 +10,56 @@ export async function GET(request: NextRequest) {
     const selectedSurfaces = url.searchParams.getAll('surface');
     const selectedLevels = url.searchParams.getAll('level');
 
-    const filters = {
-      ...(selectedSurfaces.length > 0 && { surface: { in: selectedSurfaces } }),
-      ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),
-    };
+    // 1️⃣ Costruzione filtri dinamici
+    const filters: any = {};
+    if (selectedSurfaces.length) filters.surface = { in: selectedSurfaces };
+    if (selectedLevels.length) filters.tourney_level = { in: selectedLevels };
 
-    // 1️⃣ Conta entries e wins con groupBy
-    const entriesData = await prisma.playerTournament.groupBy({
-      by: ['player_id'],
+    // 2️⃣ Recupero entries uniche per player
+    const entriesRaw = await prisma.playerTournament.findMany({
       where: filters,
-      _count: { event_id: true },
+      distinct: ['player_id', 'event_id'], // ogni coppia unica
+      select: { player_id: true },
     });
 
-    const winsData = await prisma.playerTournament.groupBy({
-      by: ['player_id'],
+    const entriesMap = new Map<string, number>();
+    for (const e of entriesRaw) {
+      entriesMap.set(e.player_id, (entriesMap.get(e.player_id) || 0) + 1);
+    }
+
+    // 3️⃣ Recupero wins uniche per player
+    const winsRaw = await prisma.playerTournament.findMany({
       where: { ...filters, round: 'W' },
-      _count: { id: true },
+      distinct: ['player_id', 'event_id'], // ogni torneo vinto unico
+      select: { player_id: true },
     });
 
-    // Map per accesso veloce
-    const winsMap: Map<string, number> = new Map<string, number>(
-      winsData.map(w => [String(w.player_id), Number(w._count.id)])
-    );
+    const winsMap = new Map<string, number>();
+    for (const w of winsRaw) {
+      winsMap.set(w.player_id, (winsMap.get(w.player_id) || 0) + 1);
+    }
 
-    const playerIds = entriesData.map(e => e.player_id);
-
-    // 2️⃣ Recupera nome e IOC dei giocatori
+    // 4️⃣ Recupero info giocatori
+    const playerIds = Array.from(new Set([...entriesMap.keys(), ...winsMap.keys()]));
     const playersData = await prisma.player.findMany({
       where: { id: { in: playerIds } },
       select: { id: true, atpname: true, ioc: true },
     });
 
-    const playerInfoMap: Map<string, { name: string; ioc: string }> = new Map(
+    const playerInfoMap = new Map<string, { name: string; ioc: string }>(
       playersData.map(p => [
         p.id,
         { name: p.atpname || '(Unknown)', ioc: p.ioc || '' }
       ])
     );
 
-    // 3️⃣ Costruisci array finale
-    const allPlayers = entriesData.map(e => {
-      const entries = Number(e._count.event_id) || 0;
-      const wins = winsMap.get(String(e.player_id)) || 0;
+    // 5️⃣ Costruzione array finale
+    const allPlayers = Array.from(entriesMap.entries()).map(([player_id, entries]) => {
+      const wins = winsMap.get(player_id) || 0;
       const percentage = entries > 0 ? Math.round((wins / entries) * 1000) / 10 : 0;
-      const info = playerInfoMap.get(e.player_id) || { name: '(Unknown)', ioc: '' };
+      const info = playerInfoMap.get(player_id) ?? { name: '(Unknown)', ioc: '' };
       return {
-        id: e.player_id,
+        id: player_id,
         name: info.name,
         ioc: info.ioc,
         entries,
@@ -64,7 +68,7 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    // 4️⃣ Ordina e top 10
+    // 6️⃣ Ordinamento top 100
     const result = allPlayers
       .sort((a, b) => b.percentage - a.percentage || b.wins - a.wins)
       .slice(0, 100);
@@ -76,6 +80,9 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('[GET /api/final-wins] Error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json(
+      { error: process.env.NODE_ENV !== 'production' ? error.message : 'Internal Server Error' },
+      { status: 500 }
+    );
   }
 }

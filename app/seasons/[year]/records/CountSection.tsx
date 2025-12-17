@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { createPortal } from 'react-dom';
-import { iocToIso2, flagEmoji } from '../../../../utils/flags';
+import { getFlagFromIOC } from "@/lib/utils";
+import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 
 interface PlayerStat {
   id: string | number;
@@ -37,6 +37,9 @@ export default function CountSection({ year, selectedSurfaces, selectedLevels }:
 
   const [modalData, setModalData] = useState<{ title: string; list: PlayerStat[] } | null>(null);
   const [modalLoading, setModalLoading] = useState<string | null>(null);
+
+  const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [loadingModal, setLoadingModal] = useState(false);
 
   const cardStyle = {
     backgroundColor: 'rgba(31,41,55,0.95)',
@@ -73,9 +76,9 @@ export default function CountSection({ year, selectedSurfaces, selectedLevels }:
     else document.body.style.overflow = '';
   }, [modalData]);
 
-  const fetchFullList = async (title: string) => {
+  const fetchFullList = async (label: string) => {
     try {
-      setModalLoading(title);
+      setLoadingModal(true);
       const surfaces = Array.from(selectedSurfaces).join(',');
       const query = new URLSearchParams();
       if (surfaces) query.set('surfaces', surfaces);
@@ -85,25 +88,23 @@ export default function CountSection({ year, selectedSurfaces, selectedLevels }:
       const res = await fetch(`/api/seasons/${year}/records/count?${query}`);
       const data: Stats = await res.json();
 
-      switch (title) {
-        case 'Titles':
-          setModalData({ title, list: data.topTitles.fullList || [] });
-          break;
-        case 'Wins':
-          setModalData({ title, list: data.topWins.fullList || [] });
-          break;
-        case 'Played':
-          setModalData({ title, list: data.topPlayed.fullList || [] });
-          break;
-        case 'Entries':
-          setModalData({ title, list: data.topEntries.fullList || [] });
-          break;
+      // Mappa label a key
+      const keyMap: Record<string, keyof Stats> = {
+        Titles: 'topTitles',
+        Wins: 'topWins',
+        Played: 'topPlayed',
+        Entries: 'topEntries',
+      };
+      const key = keyMap[label];
+      if (key) {
+        setStats(prev => prev ? { ...prev, [key]: { ...prev[key], fullList: data[key].fullList || [] } } : null);
+        setActiveModal(key);
       }
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
-      setModalLoading(null);
+      setLoadingModal(false);
     }
   };
 
@@ -130,7 +131,7 @@ export default function CountSection({ year, selectedSurfaces, selectedLevels }:
         {data.map((p) => (
           <tr key={p.id} className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors">
             <td className="py-1 flex items-center gap-2 text-white">
-              <span>{flagEmoji(iocToIso2(p.ioc)) || ''}</span>
+              <span>{getFlagFromIOC(p.ioc) || ''}</span>
               <Link href={`/players/${p.id}`} className="text-blue-400 hover:underline">{p.name}</Link>
             </td>
             <td className="py-1 text-white">{p.count}</td>
@@ -140,26 +141,19 @@ export default function CountSection({ year, selectedSurfaces, selectedLevels }:
     </table>
   );
 
-  const Modal = ({ title, list, onClose }: { title: string; list: PlayerStat[]; onClose: () => void }) => {
-    useEffect(() => {
-      document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = ''; };
-    }, []);
-    return createPortal(
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90" onClick={onClose}>
-        <div
-          className="bg-card p-6 rounded-lg shadow-lg max-h-[80vh] overflow-y-auto relative"
-          style={{ width: 'min(90%, 600px)' }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <h2 className="text-xl font-bold mb-4 text-white">{title}</h2>
-          <PlayerTable data={list} />
-          <button onClick={onClose} className="mt-4 px-4 py-2 bg-red-500 text-white rounded">Close</button>
-        </div>
-      </div>,
-      document.body
-    );
-  };
+  const renderTable = (data: PlayerStat[], title: string) => (
+    <div>
+      <h2 className="text-lg font-semibold text-white mb-2">{title}</h2>
+      <PlayerTable data={data} />
+    </div>
+  );
+
+  const sectionsArr = [
+    { key: 'topTitles', title: 'Top Titles' },
+    { key: 'topWins', title: 'Top Wins' },
+    { key: 'topPlayed', title: 'Top Played' },
+    { key: 'topEntries', title: 'Top Entries' },
+  ];
 
   return (
     <section className="rounded border p-4" style={cardStyle}>
@@ -187,7 +181,21 @@ export default function CountSection({ year, selectedSurfaces, selectedLevels }:
         ))}
       </div>
 
-      {modalData && <Modal title={modalData.title} list={modalData.list} onClose={() => setModalData(null)} />}
+      {activeModal && (
+        <ModalTournamentsSeasons
+          title={sectionsArr.find((s) => s.key === activeModal)?.title || ''}
+          onClose={() => setActiveModal(null)}
+        >
+          {loadingModal ? (
+            <p className="text-white text-center">Loading...</p>
+          ) : (
+            renderTable(
+              stats?.[activeModal as keyof Stats]?.fullList ?? [],
+              sectionsArr.find((s) => s.key === activeModal)?.title || ''
+            )
+          )}
+        </ModalTournamentsSeasons>
+      )}
     </section>
   );
 }

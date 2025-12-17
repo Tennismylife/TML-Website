@@ -76,7 +76,7 @@ export default function FiltersComponent({
             isActive={selectedSurfaces.size === 0}
             onClick={() => setSelectedSurfaces(new Set())}
           >
-            🌍 All
+            All
           </FilterButton>
 
           {surfaceList.map((surface) => (
@@ -107,7 +107,7 @@ export default function FiltersComponent({
             isActive={selectedLevels === ""}
             onClick={() => setSelectedLevels("")}
           >
-            🌍 All
+            All
           </FilterButton>
           {levelList.map((level) => (
             <FilterButton

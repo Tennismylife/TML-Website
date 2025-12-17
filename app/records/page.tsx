@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, useEffect } from 'react';
+import { Suspense, useState, useEffect, useRef } from 'react';
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
@@ -51,6 +51,7 @@ function RecordsMain() {
   const [selectedLevels, setSelectedLevels] = useState<Set<string>>(new Set());
   const [selectedRounds, setSelectedRounds] = useState<string>('');
   const [selectedBestOf, setSelectedBestOf] = useState<number | null>(null);
+  const lastUrlRecordRef = useRef<string | null>(null);
 
   // --- Sub-tabs state ---
   const [activeSubTabs, setActiveSubTabs] = useState<Record<string, string>>({
@@ -62,7 +63,7 @@ function RecordsMain() {
     atage: 'wins',
     ageofnth: 'wins',
     neededto: 'titles',
-    counterseasons: 'rounds',
+    counterseasons: 'round',
     streak: 'wins',
     h2h: 'count',
   });
@@ -136,7 +137,7 @@ function RecordsMain() {
     ],
     neededto: [{ key: "titles", label: "Titles" }],
     counterseasons: [
-      { key: "rounds", label: "Rounds" },
+      { key: "round", label: "Rounds" },
       { key: "titles", label: "Titles" },
     ],
     streak: [
@@ -158,12 +159,50 @@ function RecordsMain() {
     const levelParams = searchParams.getAll("level");
     const roundParam = searchParams.get("round");
     const bestOfParam = searchParams.get("bestOf");
+    const subtabParam = searchParams.get("subtab");
 
     if (surfaceParams.length) setSelectedSurfaces(new Set(surfaceParams));
     if (levelParams.length) setSelectedLevels(new Set(levelParams));
     if (roundParam) setSelectedRounds(roundParam);
     if (bestOfParam) setSelectedBestOf(Number(bestOfParam));
+    if (recordParam && subtabParam) setActiveSubTabs(prev => ({ ...prev, [recordParam]: subtabParam }));
   }, [searchParams]);
+
+  // Reset filters when selected record changes (covers programmatic/tab changes)
+  useEffect(() => {
+    // Track previous 'record' query param and only reset when it actually changes
+    const urlRecord = searchParams.get("record");
+    const urlSubtab = searchParams.get("subtab");
+
+    if (!selectedRecord) {
+      lastUrlRecordRef.current = urlRecord;
+      return;
+    }
+
+    // Reset only when the record param changed after initial load
+    if (lastUrlRecordRef.current !== null && lastUrlRecordRef.current !== urlRecord) {
+      setSelectedSurfaces(new Set());
+      setSelectedLevels(new Set());
+      setSelectedRounds("");
+      setSelectedBestOf(null);
+
+      if (!(urlRecord === selectedRecord && urlSubtab)) {
+        const defaultSub = subTabs[selectedRecord]?.[0]?.key;
+        if (defaultSub) setActiveSubTabs(prev => ({ ...prev, [selectedRecord]: defaultSub }));
+      }
+
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('records:reset', { detail: { resetPage: true } }));
+      }
+    } else {
+      // preserve explicit subtab from URL for current record
+      if (urlRecord === selectedRecord && urlSubtab) {
+        setActiveSubTabs(prev => ({ ...prev, [selectedRecord]: urlSubtab }));
+      }
+    }
+
+    lastUrlRecordRef.current = urlRecord;
+  }, [selectedRecord, searchParams]);
 
   // --- Update URL query ---
   useEffect(() => {
@@ -174,8 +213,10 @@ function RecordsMain() {
     Array.from(selectedLevels).forEach(l => query.append("level", l));
     if (selectedRounds) query.set("round", selectedRounds);
     if (selectedBestOf) query.set("bestOf", String(selectedBestOf));
+    const sub = activeSubTabs[selectedRecord ?? ""];
+    if (sub) query.set("subtab", sub);
     router.push(`/records?${query.toString()}`, { scroll: false });
-  }, [selectedRecord, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, router]);
+  }, [selectedRecord, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeSubTabs, router]);
 
   // --- Fetch data ---
   useEffect(() => {
@@ -236,7 +277,15 @@ function RecordsMain() {
         {tabs.map(tab => (
           <div key={tab.key} className="relative">
             <button
-              onClick={() => { setSelectedRecord(tab.key); setActiveTab(tab.key); }}
+              onClick={() => {
+                // Select tab and reset filters
+                setSelectedRecord(tab.key);
+                setActiveTab(tab.key);
+                setSelectedSurfaces(new Set());
+                setSelectedLevels(new Set());
+                setSelectedRounds("");
+                setSelectedBestOf(null);
+              }}
               className={`relative px-4 py-2 rounded-xl font-medium transition-colors duration-200 ${activeTab === tab.key ? 'text-white' : 'text-gray-300 hover:text-white'}`}
             >
               {activeTab === tab.key && (

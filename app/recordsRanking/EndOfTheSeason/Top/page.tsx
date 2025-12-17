@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { flagEmoji, iocToIso2 } from "@/utils/flags";
+import { getFlagFromIOC } from "@/lib/utils";
 import Pagination from "@/components/Pagination";
+import Modal from "@/components/Modal"; 
 
 interface PlayerTopX {
   id: string;
@@ -71,7 +72,7 @@ export default function RecordsTopX() {
               </td>
               <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                 <div className="flex items-center gap-2">
-                  {p.ioc && <span className="text-base">{flagEmoji(iocToIso2(p.ioc))}</span>}
+                  {p.ioc && <span className="text-base">{getFlagFromIOC(p.ioc)}</span>}
                   <span>{p.name}</span>
                 </div>
               </td>
@@ -88,42 +89,7 @@ export default function RecordsTopX() {
     </div>
   );
 
-  const Modal = ({
-    show,
-    onClose,
-    title,
-    children,
-  }: {
-    show: boolean;
-    onClose: () => void;
-    title: string;
-    children: React.ReactNode;
-  }) => {
-    if (!show) return null;
-    return (
-      <div
-        role="dialog"
-        aria-modal="true"
-        className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
-        onClick={onClose}
-      >
-        <div
-          className="bg-gray-900 text-gray-200 p-4 w-full max-w-7xl max-height-screen overflow-y-auto rounded border border-gray-800"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <h2 className="text-xl font-bold mb-4">{title}</h2>
-          {children}
-          <button
-            onClick={onClose}
-            aria-label="Close modal"
-            className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    );
-  };
+  
 
   return (
     <section className="mb-8">
@@ -142,7 +108,9 @@ export default function RecordsTopX() {
           ))}
         </select>
       </div>
-
+      <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">
+        Seasons at Year-End Top {top}
+      </h2>
       {/* Pulsante View All */}
       <div className="mb-4 flex justify-end">
         <button

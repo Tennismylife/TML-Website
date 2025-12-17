@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
+import { playerMatchesUrl } from "../nav";
 import Pagination from '../../../components/Pagination';
-import Modal from '../Modal';
+import Modal from '@/components/Modal';
+import { useSearchParams } from 'next/navigation';
 
 interface PlayedSectionProps {
   selectedSurfaces: string[];
@@ -27,6 +29,7 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
+  const searchParams = useSearchParams();
   const perPage = 20;
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
@@ -62,7 +65,14 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
   const start = (page - 1) * perPage;
   const currentData = allPlayed.slice(start, start + perPage);
 
-  const getLink = (playerId: string) => `/players/${playerId}?tab=matches`;
+  const getLink = (playerId: string) => {
+    const params: Record<string, string> = {};
+    for (const [key, value] of searchParams.entries()) {
+      if (key === 'tab') continue;
+      params[key] = value;
+    }
+    return playerMatchesUrl(playerId, params as any);
+  }; 
 
   const renderTable = (data: PlayedRecord[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">

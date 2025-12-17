@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { iocToIso2, flagEmoji } from '../../../utils/flags';
+import { getFlagFromIOC } from "@/lib/utils";
 
 interface SameTournamentSectionProps {
   selectedSurfaces: Set<string>;
@@ -85,13 +85,13 @@ export default function SameTournamentSection({ selectedSurfaces, selectedLevels
             players.map((p) => (
               <tr key={`${p.player1.id}-${p.player2.id}-${p.tourney_id}`} className="border-b">
                 <td className="py-1">
-                  <span className="text-base mr-1">{flagEmoji(iocToIso2(p.player1.ioc)) || ""}</span>
+                  <span className="text-base mr-1">{getFlagFromIOC(p.player1.ioc) || ""}</span>
                   <Link href={`/players/${encodeURIComponent(p.player1.id ?? '')}`} className="text-blue-700 hover:underline">
                     {p.player1.name}
                   </Link>
                 </td>
                 <td className="py-1">
-                  <span className="text-base mr-1">{flagEmoji(iocToIso2(p.player2.ioc)) || ""}</span>
+                  <span className="text-base mr-1">{getFlagFromIOC(p.player2.ioc) || ""}</span>
                   <Link href={`/players/${encodeURIComponent(p.player2.id ?? '')}`} className="text-blue-700 hover:underline">
                     {p.player2.name}
                   </Link>

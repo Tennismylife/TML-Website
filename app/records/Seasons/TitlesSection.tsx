@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { iocToIso2, flagEmoji } from '../../../utils/flags';
+import { getFlagFromIOC } from "@/lib/utils";
+import { playerMatchesUrl } from "../nav";
 import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
 
@@ -59,7 +60,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels }: Titl
   const currentData = showAll ? topSeasonTitles : topSeasonTitles.slice(start, start + perPage);
 
   const getPlayerLink = (playerId: string) => {
-    let link = `/players/${playerId}?tab=matches`;
+    let link = playerMatchesUrl(playerId);
     for (const [key, value] of searchParams.entries()) {
       if (key !== "tab") link += `&${key}=${encodeURIComponent(value)}`;
     }
@@ -84,7 +85,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels }: Titl
               <tr key={`${p.id}-${p.year}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-indigo-400 font-semibold">{rank}</td>
                 <td className="border border-white/10 px-4 py-2 flex items-center gap-2 text-gray-200">
-                  <span className="text-base">{flagEmoji(iocToIso2(p.ioc)) || ''}</span>
+                  <span className="text-base">{getFlagFromIOC(p.ioc) || ''}</span>
                   <Link href={getPlayerLink(p.id)} className="text-indigo-300 hover:underline">{p.player_name}</Link>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-gray-200">{p.total_titles}</td>

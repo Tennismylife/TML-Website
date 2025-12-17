@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { iocToIso2, flagEmoji } from '../../../utils/flags';
+import { getFlagFromIOC } from "@/lib/utils";
 
 interface MinutesSectionProps {
   selectedSurfaces: Set<string>;
@@ -61,7 +61,7 @@ export default function MinutesSection({ selectedSurfaces, selectedLevels }: Min
           records.map((r, index) => (
             <tr key={index} className="border-b">
               <td className="py-1">
-                <span className="text-base mr-1">{flagEmoji(iocToIso2(r.player.ioc)) || ""}</span>
+                <span className="text-base mr-1">{getFlagFromIOC(r.player.ioc) || ""}</span>
                 <Link href={`/players/${encodeURIComponent(String(r.player.id))}`} className="text-blue-700 hover:underline">
                   {r.player.name}
                 </Link>

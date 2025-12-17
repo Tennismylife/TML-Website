@@ -60,7 +60,15 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels }: Ent
   const start = (page - 1) * perPage;
   const currentData = allEntries.slice(start, start + perPage);
 
-  const getLink = (playerId: string) => `/players/${playerId}?tab=matches`;
+  const getLink = (playerId: string) => {
+    const params: Record<string, string> = {};
+    for (const [key, value] of searchParams.entries()) {
+      if (key === 'tab') continue;
+      params[key] = value;
+    }
+    const qs = new URLSearchParams(params).toString();
+    return `/players/${playerId}/matches${qs ? `?${qs}` : ''}`;
+  }; 
 
   const renderTable = (data: EntryRecord[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { iocToIso2, flagEmoji } from '../../../utils/flags';
+import { getFlagFromIOC } from "@/lib/utils";
 
 interface SetsSectionProps {
   selectedSurfaces: Set<string>;
@@ -103,7 +103,7 @@ export default function SetsSection({ selectedSurfaces, selectedLevels }: SetsSe
             setsArray && setsArray.map((p: SetRecord, index: number) => (
               <tr key={index} className="border-b">
                 <td className="py-1">
-                  <span className="text-base mr-1">{flagEmoji(iocToIso2(p.player.ioc)) || ""}</span>
+                  <span className="text-base mr-1">{getFlagFromIOC(p.player.ioc) || ""}</span>
                   <Link href={`/players/${encodeURIComponent(String(p.player.id))}`} className="text-blue-700 hover:underline">
                     {p.player.name}
                   </Link>

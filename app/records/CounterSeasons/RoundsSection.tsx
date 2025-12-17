@@ -1,8 +1,9 @@
-'use client'
+'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { iocToIso2, flagEmoji } from '../../../utils/flags';
+import Modal from '@/components/Modal';
+import { getFlagFromIOC } from "@/lib/utils";
 
 interface RoundsSectionProps {
   selectedSurfaces: string[];
@@ -29,10 +30,14 @@ export default function RoundsSection({
   const [showModal, setShowModal] = useState(false);
   const [minRoundPerSeason, setMinRoundPerSeason] = useState(1);
 
+  const perPage = 20;
+
   const fetchPlayers = async () => {
     if (!selectedRound) return;
+
     setLoading(true);
     setError(null);
+
     try {
       const q = new URLSearchParams();
       selectedSurfaces.forEach((s) => q.append('surface', s));
@@ -40,59 +45,90 @@ export default function RoundsSection({
       q.append('round', selectedRound);
       q.append('min', String(minRoundPerSeason));
 
-      const res = await fetch(`/api/records/counterseasons/rounds?${q.toString()}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+      const res = await fetch(
+        `/api/records/counterseasons/rounds?${q.toString()}`
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
       const data = await res.json();
-      const sortedPlayers = (data.players || []).sort((a, b) => b.totalSeasons - a.totalSeasons);
-      setPlayers(sortedPlayers);
+      const sorted = (data.players || []).sort(
+        (a: Player, b: Player) => b.totalSeasons - a.totalSeasons
+      );
+
+      setPlayers(sorted);
     } catch (err) {
       setError(err as Error);
+      setPlayers([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const perPage = 20;
   const topPlayers = players.slice(0, perPage);
 
-  const renderTable = (list: Player[]) => (
-    <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
+  const renderTable = (list: Player[], startIndex = 0) => (
+    <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow mt-0">
       <table className="min-w-full border-collapse">
         <thead>
           <tr className="bg-black">
-            <th className="border border-white/30 px-4 py-2 text-center text-gray-200">Rank</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-gray-200">Player</th>
-            <th className="border border-white/30 px-4 py-2 text-center text-gray-200">#</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-gray-200">Seasons</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">
+              Rank
+            </th>
+            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">
+              Player
+            </th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">
+              #
+            </th>
+            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">
+              Seasons
+            </th>
           </tr>
         </thead>
         <tbody>
           {list.length === 0 ? (
             <tr>
-              <td colSpan={4} className="py-8 text-center text-gray-300">
-                No results found
+              <td
+                colSpan={4}
+                className="py-8 text-center text-gray-300"
+              >
+                No data available.
               </td>
             </tr>
           ) : (
-            list.map((p, idx) => (
-              <tr key={p.id} className="hover:bg-gray-800 border-b border-white/10">
-                <td className="border border-white/10 px-4 py-2 text-center text-indigo-400 font-semibold">
-                  {idx + 1}
-                </td>
-                <td className="border border-white/10 px-4 py-2 flex items-center gap-2 text-gray-200">
-                  <span>{flagEmoji(iocToIso2(p.ioc)) || ''}</span>
-                  <Link
-                    href={`/players/${encodeURIComponent(p.id)}`}
-                    className="text-indigo-300 hover:underline"
-                  >
-                    {p.name || 'Unknown Player'}
-                  </Link>
-                </td>
-                <td className="border border-white/10 px-4 py-2 text-center text-gray-200">{p.totalSeasons}</td>
-                <td className="border border-white/10 px-4 py-2 text-gray-200">{p.seasonsList.join(', ')}</td>
-              </tr>
-            ))
+            list.map((p, idx) => {
+              const globalRank = startIndex + idx + 1;
+              const flag =
+                getFlagFromIOC(p.ioc) ?? '🏳️';
+
+              return (
+                <tr
+                  key={p.id}
+                  className="hover:bg-gray-800 border-b border-white/10"
+                >
+                  <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
+                    {globalRank}
+                  </td>
+                  <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
+                    <div className="flex items-center gap-2">
+                      <span className="text-base">{flag}</span>
+                      <Link
+                        href={`/players/${encodeURIComponent(p.id)}`}
+                        className="text-indigo-300 hover:underline"
+                      >
+                        {p.name || 'Unknown Player'}
+                      </Link>
+                    </div>
+                  </td>
+                  <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
+                    {p.totalSeasons}
+                  </td>
+                  <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
+                    {p.seasonsList.join(', ')}
+                  </td>
+                </tr>
+              );
+            })
           )}
         </tbody>
       </table>
@@ -100,78 +136,67 @@ export default function RoundsSection({
   );
 
   return (
-    <section className="mb-8">
+    <section className="mb-0">
       <h2 className="text-xl font-semibold mb-4 text-gray-200">
         {selectedRound} per Season
       </h2>
 
-      {/* --- Controls --- */}
-      <div className="mb-4 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <label htmlFor="minRoundPerSeason" className="text-gray-200">Min rounds per season:</label>
-          <input
-            id="minRoundPerSeason"
-            type="number"
-            min={1}
-            value={minRoundPerSeason}
-            onChange={(e) =>
-              setMinRoundPerSeason(Math.max(1, parseInt(e.target.value, 10) || 1))
-            }
-            className="w-20 rounded border border-white/30 bg-gray-800 px-2 py-1 text-sm text-gray-200"
-          />
-          <button
-            onClick={fetchPlayers}
-            disabled={loading || !selectedRound}
-            className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {loading ? 'Loading…' : 'Apply'}
-          </button>
-        </div>
+      {/* Controls */}
+      <div className="mb-4 flex items-center gap-2">
+        <label
+          htmlFor="minRoundPerSeason"
+          className="text-gray-200"
+        >
+          Min rounds per season:
+        </label>
+        <input
+          id="minRoundPerSeason"
+          type="number"
+          min={1}
+          value={minRoundPerSeason}
+          onChange={(e) =>
+            setMinRoundPerSeason(
+              Math.max(1, parseInt(e.target.value, 10) || 1)
+            )
+          }
+          className="w-20 rounded border border-white/30 bg-gray-800 px-2 py-1 text-sm text-gray-200"
+        />
+        <button
+          onClick={fetchPlayers}
+          disabled={loading || !selectedRound}
+          className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-500 disabled:opacity-50"
+        >
+          {loading ? 'Loading…' : 'Apply'}
+        </button>
+      </div>
 
+      {error && (
+        <p className="mb-2 text-sm text-red-500">
+          Error loading data: {error.message}
+        </p>
+      )}
+
+      {/* View All button (same as Wins) */}
+      <div className="flex justify-end mb-0">
         {players.length > perPage && (
           <button
             onClick={() => setShowModal(true)}
-            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
           >
-            View all ({players.length})
+            View All
           </button>
         )}
       </div>
 
-      {error && <p className="mb-2 text-sm text-red-500">Error loading data: {error.message}</p>}
+      {renderTable(topPlayers, 0)}
 
-      {/* --- Table showing top 10 --- */}
-      {renderTable(topPlayers)}
-
-      {/* --- Modal showing all --- */}
-      {showModal && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="modal-title"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
-          onClick={() => setShowModal(false)}
-        >
-          <div
-            className="flex max-h-[90vh] w-full max-w-7xl flex-col overflow-hidden rounded-lg bg-gray-900 shadow-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="relative border-b border-white/30 bg-gray-800 p-4">
-              <h2 id="modal-title" className="text-lg font-semibold text-gray-300">
-                {selectedRound} per season per player
-              </h2>
-              <button
-                onClick={() => setShowModal(false)}
-                className="absolute right-4 top-4 rounded bg-red-500 px-3 py-1 text-sm text-white hover:bg-red-600"
-                aria-label="Close modal"
-              >
-                Close
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto p-4">{renderTable(players)}</div>
-          </div>
-        </div>
-      )}
+      <Modal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        title={`${selectedRound} per season per player`}
+      >
+        {renderTable(players, 0)}
+      </Modal>
     </section>
   );
 }

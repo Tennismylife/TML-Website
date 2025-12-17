@@ -64,7 +64,15 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
   const start = (page - 1) * perPage;
   const currentData = topSameTournamentWins.slice(start, start + perPage);
 
-  const getPlayerLink = (playerId: string) => `/players/${playerId}?tab=matches`;
+  const getPlayerLink = (playerId: string) => {
+    const params: Record<string, string> = {};
+    for (const [key, value] of searchParams.entries()) {
+      if (key === 'tab') continue;
+      params[key] = value;
+    }
+    const query = new URLSearchParams(params).toString();
+    return `/players/${playerId}/matches${query ? `?${query}` : ''}`;
+  };
 
   const renderTable = (data: WinRecord[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">

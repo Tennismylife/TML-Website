@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { flagEmoji, iocToIso2 } from "@/utils/flags";
+import { getFlagFromIOC } from "@/lib/utils";
 import Pagination from "@/components/Pagination";
 import Link from "next/link";
 
@@ -58,9 +58,9 @@ export default function StreakCount() {
         <tbody>
           {paginatedPlayers.map((p, idx) => {
             const globalRank = start + idx + 1;
-            const flag = p.ioc ? flagEmoji(iocToIso2(p.ioc)) : null;
+            const flag = p.ioc ? getFlagFromIOC(p.ioc) : null;
             return (
-              <tr key={p.id ?? `${p.name}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
+              <tr key={`${p.id ?? p.name}-${start + idx}`} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
                 <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                   <div className="flex items-center gap-2">
@@ -92,7 +92,7 @@ export default function StreakCount() {
   return (
     <section className="mb-8">
       <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">
-        Consecutive Weeks at Rank
+        Consecutive Weeks at No. {rank}
       </h2>
 
       {/* Dropdown per selezionare rank a sinistra */}

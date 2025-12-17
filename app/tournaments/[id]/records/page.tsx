@@ -1,7 +1,7 @@
 'use client'
 
-import { use, useState, useEffect } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { use, useState, useEffect, useRef } from "react";
+import { useRouter, usePathname } from "next/navigation";
 
 import CountSection from "./CountSection";
 import AgesSection from "./AgesSection";
@@ -18,10 +18,13 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
   const { id } = use(params);
   const tournamentId = Number(id);
 
-  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+
   const [tournament, setTournament] = useState<any>(null);
   const [loadingTournament, setLoadingTournament] = useState(true);
 
+  // default tab is 'count'
   const [activeTab, setActiveTab] = useState('count');
   const [activeAgeSubTab, setActiveAgeSubTab] = useState<'main' | 'winners' | 'titles' | 'youngestrounds' | 'oldestrounds'>('main');
   type PercentageSubTabState = 'overall' | 'per-round';
@@ -31,7 +34,7 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
 
   const percentageActiveSubTab: PercentageSubTabProp = activePercentageSubTab === 'per-round' ? 'rounds' : 'overall';
 
-  const [tabsInitialized, setTabsInitialized] = useState(false); // <-- evita risincronizzazione continua
+  const didReplaceRef = useRef(false); // evita replace infinito a /records/count
 
   // Fetch tournament data
   useEffect(() => {
@@ -44,14 +47,60 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
       .catch(() => setLoadingTournament(false));
   }, [id]);
 
-  // Leggi tab iniziale solo una volta dai query params
+  // Sync activeTab and subtab from pathname (supports /records, /records/<tab>, /records/<tab>/<subtab>)
   useEffect(() => {
-    if (!tabsInitialized) {
-      const tab = searchParams.get("tab");
-      if (tab) setActiveTab(tab);
-      setTabsInitialized(true);
+    if (!pathname) return;
+    const parts = pathname.split('/').filter(Boolean);
+    const recordsIndex = parts.indexOf('records');
+    const tabFromPath = recordsIndex >= 0 && parts.length > recordsIndex + 1 ? parts[recordsIndex + 1] : null;
+    const subFromPath = recordsIndex >= 0 && parts.length > recordsIndex + 2 ? parts[recordsIndex + 2] : null;
+
+    if (tabFromPath) {
+      setActiveTab(tabFromPath);
+
+      // sync subtabs for specific tabs
+      if (tabFromPath === 'percentage') {
+        setActivePercentageSubTab(subFromPath === 'rounds' ? 'per-round' : 'overall');
+      } else if (tabFromPath === 'ages') {
+        // map accepted age subtabs, fallback to 'main'
+        const validAges = new Set(['main', 'winners', 'titles', 'youngestrounds', 'oldestrounds']);
+        setActiveAgeSubTab(validAges.has(subFromPath || '') ? (subFromPath as any) : 'main');
+      }
+
+      return;
     }
-  }, [searchParams, tabsInitialized]);
+
+    // if path is exactly /tournaments/{id}/records, do a single replace to /records/count
+    const expectedBase = `/tournaments/${id}/records`;
+    const currentPath = (typeof window !== 'undefined' ? window.location.pathname : pathname).replace(/\/$/, '');
+    if (currentPath === expectedBase && !didReplaceRef.current) {
+      didReplaceRef.current = true;
+      router.replace(`${expectedBase}/count`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+  // Navigation handler: naviga a /records/:tab or /records/:tab/:sub
+  const navigateToTab = (tab: string, sub?: string) => {
+    const subSegment = sub ? `/${encodeURIComponent(sub)}` : '';
+    const newPath = `/tournaments/${id}/records/${encodeURIComponent(tab)}${subSegment}`;
+    if (typeof window !== 'undefined' && newPath !== window.location.pathname) {
+      router.push(newPath);
+    } else {
+      // if nothing changes in path, still update local state immediately
+      setActiveTab(tab);
+      if (tab === 'percentage' && sub) setActivePercentageSubTab(sub === 'rounds' ? 'per-round' : 'overall');
+      if (tab === 'ages' && sub) {
+        const validAges = new Set(['main', 'winners', 'titles', 'youngestrounds', 'oldestrounds']);
+        setActiveAgeSubTab(validAges.has(sub) ? (sub as any) : 'main');
+      }
+    }
+  };
+
+  // specific handlers for subtabs (pass to TournamentTabs)
+  const navigateToPercentageSub = (sub: PercentageSubTabProp) => navigateToTab('percentage', sub);
+  const navigateToAgeSub = (sub: 'main' | 'winners' | 'titles' | 'youngestrounds' | 'oldestrounds') =>
+    navigateToTab('ages', sub);
 
   if (loadingTournament) {
     return (
@@ -73,11 +122,11 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
 
       <TournamentTabs
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={(t: string) => navigateToTab(t)}             // naviga al tab
         activeAgeSubTab={activeAgeSubTab}
-        setActiveAgeSubTab={setActiveAgeSubTab}
+        setActiveAgeSubTab={navigateToAgeSub}                      // naviga subtab ages via path
         activePercentageSubTab={activePercentageSubTab}
-        setActivePercentageSubTab={setActivePercentageSubTab}
+        setActivePercentageSubTab={navigateToPercentageSub}        // naviga subtab percentage via path
       />
 
       <div className="rounded-2xl bg-gray-900/50 p-4 shadow-inner">

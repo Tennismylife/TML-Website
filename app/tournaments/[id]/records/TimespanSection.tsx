@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { iocToIso2, flagEmoji } from '../../../../utils/flags';
-import Modal from './Modal';
+import { getFlagFromIOC } from "@/lib/utils";
+import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 
 function fmtDate(d: Date | string | null | undefined) {
   if (!d) return '';
@@ -73,7 +73,7 @@ export default function TimespanSection({ id }: { id: string }) {
         {data.map((item, idx) => (
           <tr key={`${item.id}-${idx}`} className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors">
             <td className="py-1 flex items-center gap-2 text-white">
-              <span className="text-base">{flagEmoji(iocToIso2(item.ioc)) || ''}</span>
+              <span className="text-base">{getFlagFromIOC(item.ioc) || ''}</span>
               <Link href={`/players/${encodeURIComponent(String(item.id))}`} className="text-blue-400 hover:underline">
                 {item.name}
               </Link>
@@ -164,12 +164,12 @@ export default function TimespanSection({ id }: { id: string }) {
       </div>
 
       {modalData && (
-        <Modal
+        <ModalTournamentsSeasons
           title={`All Timespans for ${modalData.title}`}
           onClose={() => setModalData(null)}
         >
           <PlayerTable data={modalData.list} />
-        </Modal>
+        </ModalTournamentsSeasons>
       )}
     </section>
   );

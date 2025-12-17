@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { getFlagFromIOC } from "@/lib/utils";
 import Pagination from '../../../components/Pagination';
-import Modal from "../Modal";
+import Modal from "@/components/Modal";
 
 interface PlayerData {
   name: string;
@@ -25,6 +25,12 @@ export default function Count({ selectedRounds, top }: CountProps) {
   const searchParams = useSearchParams();
   const perPage = 20;
 
+  useEffect(() => {
+    const handler = (e: Event) => { if ((e as CustomEvent)?.detail?.resetPage) setPage(1); };
+    window.addEventListener('records:reset', handler as EventListener);
+    return () => window.removeEventListener('records:reset', handler as EventListener);
+  }, []);
+
   useEffect(() => setPage(1), [top]);
 
   if (!top || top.length === 0) {
@@ -35,10 +41,15 @@ export default function Count({ selectedRounds, top }: CountProps) {
   const start = (page - 1) * perPage;
   const currentData = top.slice(start, start + perPage);
 
+  const playerTournamentsUrl = (playerId: string) => `/players/${playerId}?tab=tournaments`;
+
   const getLink = (playerId: string) => {
-    let link = `/players/${playerId}?tab=tournaments`;
+    let link = playerTournamentsUrl(playerId);
     for (const [key, value] of searchParams.entries()) {
-      if (key !== "tab") link += `&${key}=${encodeURIComponent(value)}`;
+      if (key !== "tab") {
+        const separator = link.includes("?") ? "&" : "?";
+        link += `${separator}${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+      }
     }
     return link;
   };

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
-import Modal from '../Modal';
+import Modal from '@/components/Modal';
 
 interface TitlesSectionProps {
   selectedSurfaces: string[];
@@ -60,7 +60,15 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels }: Titl
   const start = (page - 1) * perPage;
   const currentData = allTitles.slice(start, start + perPage);
 
-  const getPlayerLink = (playerId: string) => `/players/${playerId}?tab=matches`;
+  const getPlayerLink = (playerId: string) => {
+    const params: Record<string, string> = {};
+    for (const [key, value] of searchParams.entries()) {
+      if (key === 'tab') continue;
+      params[key] = value;
+    }
+    const query = new URLSearchParams(params).toString();
+    return `/players/${encodeURIComponent(playerId)}${query ? `?${query}` : ''}`;
+  };
 
   const renderTable = (data: TitleRecord[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">

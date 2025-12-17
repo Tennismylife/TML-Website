@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
+import { playerMatchesUrl } from "../nav";
 import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
-import Modal from '../Modal';
+import Modal from '@/components/Modal';
 
 interface PercentageProps {
   selectedSurfaces: Set<string>;
@@ -66,7 +67,7 @@ export default function Percentage({ selectedSurfaces, selectedLevels, selectedR
   const currentData = filteredData.slice(start, start + perPage);
 
   const getLink = (playerId: string) => {
-    let link = `/players/${playerId}?tab=matches`;
+    let link = playerMatchesUrl(playerId);
     for (const [key, value] of searchParams.entries()) {
       if (key !== "tab") link += `&${key}=${encodeURIComponent(value)}`;
     }

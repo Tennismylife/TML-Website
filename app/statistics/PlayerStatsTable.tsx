@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Dispatch, SetStateAction } from "react";
-import { iocToIso2, flagEmoji } from "../../utils/flags";
+import { getFlagFromIOC } from "@/lib/utils";
 interface PlayerStatsTableProps {
   stat: string;
   playerStats: any[];
@@ -57,7 +57,7 @@ export default function PlayerStatsTable({
           </thead>
           <tbody>
             {paginatedPlayers.map((p, idx) => {
-              const flag = flagEmoji(iocToIso2(p.ioc)) ?? "🏳️";
+              const flag = getFlagFromIOC(p.ioc) ?? "🏳️";
               return (
                 <tr key={p.id} className="hover:bg-gray-700 border-b border-gray-600">
                   <td className="border border-gray-600 px-2 py-2 text-center w-16 text-white">

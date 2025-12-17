@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { getFlagFromIOC } from '@/lib/utils';
 import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
-import Modal from '../Modal';
+import Modal from '@/components/Modal';
 
 interface RoundsSectionProps {
   selectedSurfaces: string[];
@@ -61,7 +61,15 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
   const start = (page - 1) * perPage;
   const currentData = topSeasonRounds.slice(start, start + perPage);
 
-  const getPlayerLink = (playerId: string) => `/players/${playerId}?tab=matches`;
+  const getPlayerLink = (playerId: string) => {
+    const params: Record<string, string> = {};
+    for (const [key, value] of searchParams.entries()) {
+      if (key === 'tab') continue;
+      params[key] = value;
+    }
+    const query = new URLSearchParams(params).toString();
+    return `/players/${playerId}/matches${query ? `?${query}` : ''}`;
+  };
 
   const renderTable = (data: SeasonRoundRecord[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">

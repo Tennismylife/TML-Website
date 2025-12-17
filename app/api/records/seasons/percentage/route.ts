@@ -129,7 +129,7 @@ export async function GET(request: NextRequest) {
 
       // Filtra giocatori con meno di 10 match
       const filteredPlayerYearMap = Object.fromEntries(
-        Object.entries(playerYearMap).filter(([_, v]) => v.played >= 10)
+        Object.entries(playerYearMap).filter(([_, v]) => v.played >= 1)
       );
 
       const keys = Object.keys(filteredPlayerYearMap);

@@ -72,6 +72,8 @@ export async function GET(req: Request) {
     const bestByPlayer = new Map<string, MinRec>();
 
     for (const r of rankings) {
+      // Skip ranking rows without a related player (data inconsistency)
+      if (!r.player) continue;
       const id = String(r.playerId);
       const birth = r.player.birthdate;
       if (!birth) continue; // senza birthdate, non calcolabile

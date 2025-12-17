@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { getFlagFromIOC } from "@/lib/utils";
+import { playerMatchesUrl } from "../nav";
 import Pagination from "../../../components/Pagination";
-import Modal from "../Modal";
+import Modal from "@/components/Modal";
 
 interface Entry {
   id: string;
@@ -21,6 +22,12 @@ export default function Entries() {
   const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
   const perPage = 20;
+
+  useEffect(() => {
+    const handler = (e: Event) => { if ((e as CustomEvent)?.detail?.resetPage) setPage(1); };
+    window.addEventListener('records:reset', handler as EventListener);
+    return () => window.removeEventListener('records:reset', handler as EventListener);
+  }, []);
 
   useEffect(() => {
     const fetchEntries = async () => {
@@ -51,7 +58,14 @@ export default function Entries() {
   const start = (page - 1) * perPage;
   const currentEntries = allEntries.slice(start, start + perPage);
 
-  const getLink = (playerId: string) => `/players/${playerId}?tab=matches`;
+  const getLink = (playerId: string) => {
+    const params: Record<string, string> = {};
+    for (const [key, value] of searchParams.entries()) {
+      if (key === 'tab') continue;
+      params[key] = value;
+    }
+    return playerMatchesUrl(playerId, params as any);
+  }; 
 
   const renderTable = (entriesList: Entry[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-gray-800 bg-gray-900 shadow">

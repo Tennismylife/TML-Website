@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Pagination from "@/components/Pagination";
-import { flagEmoji, iocToIso2 } from "@/utils/flags";
+import { getFlagFromIOC } from "@/lib/utils";
+import Modal from "@/components/Modal";
 
 interface No1MaxPointsItem {
   name: string;
@@ -60,7 +61,7 @@ export default function No1MaxPointsRanking() {
               </td>
               <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                 <div className="flex items-center gap-2">
-                  {r.country && <span className="text-base">{flagEmoji(iocToIso2(r.country))}</span>}
+                  {r.country && <span className="text-base">{getFlagFromIOC(r.country)}</span>}
                   <span>{r.name}</span>
                 </div>
               </td>
@@ -103,28 +104,9 @@ export default function No1MaxPointsRanking() {
       )}
 
       {/* Modal */}
-      {showModal && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
-          onClick={() => setShowModal(false)}
-        >
-          <div
-            className="bg-gray-900 text-gray-200 p-4 w-full max-w-7xl max-h-screen overflow-y-auto rounded border border-gray-800"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="text-xl font-bold mb-4">Full Ranking</h2>
-            {renderTable(rows)}
-            <button
-              onClick={() => setShowModal(false)}
-              className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+      <Modal show={showModal} onClose={() => setShowModal(false)} title={`Full Ranking`}>
+        {renderTable(rows)}
+      </Modal>
     </section>
   );
 }

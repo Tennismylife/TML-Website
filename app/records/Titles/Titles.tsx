@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { getFlagFromIOC } from "@/lib/utils";
 import Pagination from '../../../components/Pagination';
-import Modal from "../Modal";
+import { playerTournamentsUrl } from "../nav";
+import Modal from "@/components/Modal";
 
 interface PlayerData {
   name: string;
@@ -24,6 +25,15 @@ export default function Titles({ topTitles }: TitlesProps) {
   const searchParams = useSearchParams();
   const perPage = 20;
 
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const d = (e as CustomEvent)?.detail;
+      if (d?.resetPage) setPage(1);
+    };
+    window.addEventListener('records:reset', handler as EventListener);
+    return () => window.removeEventListener('records:reset', handler as EventListener);
+  }, []);
+
   useEffect(() => setPage(1), [topTitles]);
 
   if (!topTitles || topTitles.length === 0) {
@@ -35,11 +45,11 @@ export default function Titles({ topTitles }: TitlesProps) {
   const currentData = topTitles.slice(start, start + perPage);
 
   const getLink = (playerId: string) => {
-    let link = `/players/${playerId}?tab=tournaments&round=W`;
+    const params: Record<string, string> = { tab: 'tournaments', round: 'W' };
     for (const [key, value] of searchParams.entries()) {
-      if (key !== "tab" && key !== "round") link += `&${key}=${encodeURIComponent(value)}`;
+      if (key !== 'tab' && key !== 'round') params[key] = value;
     }
-    return link;
+    return playerTournamentsUrl(playerId, params as any);
   };
 
   const renderTable = (data: PlayerData[], startIndex = 0) => (

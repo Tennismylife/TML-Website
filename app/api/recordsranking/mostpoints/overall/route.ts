@@ -13,6 +13,14 @@ export async function GET(_req: Request) {
 
     const playerIds = grouped.map(g => g.playerId);
 
+    // In some DB states player relation may be missing on ranking rows.
+    // Fetch players directly as a fallback to avoid returning "Unknown" names.
+    const players = await prisma.player.findMany({
+      where: { id: { in: playerIds } },
+      select: { id: true, atpname: true, ioc: true },
+    });
+    const playersMap = new Map(players.map((p) => [p.id, p]));
+
     // 2) Recupera un record con quei punti (per avere nome, paese e data)
     const candidates = await prisma.ranking.findMany({
       where: {
@@ -37,15 +45,9 @@ export async function GET(_req: Request) {
       }
     }
 
-    const result = grouped.map(g => {
-      const row = candidateMap.get(g.playerId);
-      return {
-        name: row?.player?.atpname ?? "Unknown",
-        country: row?.player?.ioc ?? "UNK",
-        points: g._max.points ?? 0,
-        date: row?.rankingDate.date.toISOString().slice(0, 10) ?? "N/A",
-      };
-    });
+    // Delegate to pure helper for building the result
+    const { default: buildMostPointsResult } = await import("./utils");
+    const result = buildMostPointsResult(grouped, candidates, players);
 
     return NextResponse.json(result);
   } catch (error) {

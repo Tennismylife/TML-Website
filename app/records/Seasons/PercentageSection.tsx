@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getFlagFromIOC } from '@/lib/utils';
-import { useSearchParams } from 'next/navigation';
+import { getFlagFromIOC } from '@/lib/utils';import { playerMatchesUrl } from "../nav";import { useSearchParams } from 'next/navigation';
 import Pagination from '../../../components/Pagination';
-import Modal from '../Modal';
+import Modal from '@/components/Modal';
 
 interface PercentageSectionProps {
   selectedSurfaces: string[];
@@ -66,7 +65,7 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
   const start = (page - 1) * perPage;
   const currentData = seasonPercentageData.slice(start, start + perPage);
 
-  const getPlayerLink = (playerId: string | number) => `/players/${playerId}?tab=matches`;
+  const getPlayerLink = (playerId: string | number) => playerMatchesUrl(String(playerId));
 
   const renderTable = (data: PercentageRecord[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">

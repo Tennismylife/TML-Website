@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { getFlagFromIOC } from "@/lib/utils";
+import { playerMatchesUrl } from "../nav";
 import Pagination from "../../../components/Pagination";
-import Modal from "../Modal";
+import Modal from "@/components/Modal";
 
 interface Player {
   id: number;
@@ -67,7 +68,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
   };
 
   const getLink = (playerId: string) => {
-    let link = `/players/${playerId}?tab=matches`;
+    let link = playerMatchesUrl(playerId);
     for (const [key, value] of searchParams.entries()) {
       if (!value || key === "tab") continue;
       link += `&${key}=${encodeURIComponent(value)}`;

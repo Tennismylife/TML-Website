@@ -98,15 +98,30 @@ export async function GET(req: Request) {
     if (rows.length === 0) return NextResponse.json([]);
 
     // 3) Aggrega: per ciascun player, prima e ultima data in Top X
+    // Recupera i dettagli dalla tabella `player` come fallback
+    const allPlayerIds = Array.from(new Set(rows.map(r => String(r.playerId))));
+    const players = await prisma.player.findMany({ where: { id: { in: allPlayerIds } }, select: { id: true, atpname: true, ioc: true } });
+    const playerMap = Object.fromEntries(players.map(p => [p.id, p]));
+
     type Agg = { name: string; ioc: string | null; min: Date; max: Date };
     const byPlayer = new Map<string, Agg>();
 
     for (const r of rows) {
       const id = String(r.playerId);
-      const d  = r.rankingDate.date;
+      const d = r.rankingDate.date;
+
+      // preferisci il nome dalla join `r.player`, altrimenti fallback alla tabella `player`
+      const name = r.player?.atpname ?? playerMap[id]?.atpname ?? null;
+      if (!name) {
+        // Non abbiamo un nome reale: salta l'entry per evitare placeholder "Player <id>"
+        console.warn("Timespan Top: missing player name for id", id);
+        continue;
+      }
+      const ioc = r.player?.ioc ?? playerMap[id]?.ioc ?? null;
+
       const prev = byPlayer.get(id);
       if (!prev) {
-        byPlayer.set(id, { name: r.player.atpname, ioc: r.player.ioc, min: d, max: d });
+        byPlayer.set(id, { name, ioc, min: d, max: d });
       } else {
         if (d < prev.min) prev.min = d;
         if (d > prev.max) prev.max = d;

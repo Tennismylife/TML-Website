@@ -1,9 +1,10 @@
+
 'use client'
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { iocToIso2, flagEmoji } from '../../../../utils/flags';
-import Modal from './Modal'; // <-- usa il tuo nuovo Modal
+import { getFlagFromIOC } from "@/lib/utils";
+import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 
 interface Player {
   id: string | number;
@@ -13,7 +14,7 @@ interface Player {
 
 interface RoundData {
   year: number;
-  minGamesLost: number;
+  minGamesLost: number; // ✅ allineato alla signature originale dell'endpoint
   player: Player;
 }
 
@@ -90,11 +91,12 @@ export default function LeastSection({ id }: { id: string }) {
             className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors"
           >
             <td className="py-1 flex items-center gap-2 text-white">
-              <span className="text-base">{flagEmoji(iocToIso2(item.player.ioc)) || ""}</span>
+              <span className="text-base">{getFlagFromIOC(item.player.ioc) || ""}</span>
               <Link href={`/players/${encodeURIComponent(String(item.player.id))}`} className="text-blue-400 hover:underline">
                 {item.player.name}
               </Link>
             </td>
+            {/* ✅ usa minGamesLost per compatibilità con l'endpoint */}
             <td className="py-1 text-white">{item.minGamesLost}</td>
             <td className="py-1 text-white">
               <Link href={`/tournaments/${id}/${item.year}`} className="text-blue-400 hover:underline">
@@ -162,15 +164,15 @@ export default function LeastSection({ id }: { id: string }) {
         ))}
       </div>
 
-      {/* --- nuovo modal esterno --- */}
+           {/* --- nuovo modal esterno --- */}
       {modalData && (
-        <Modal
+        <ModalTournamentsSeasons
           title={`Details for ${modalData.round}`}
           onClose={() => setModalData(null)}
         >
           <PlayerTable data={modalData.data} />
-        </Modal>
+        </ModalTournamentsSeasons>
       )}
     </section>
   );
-}
+};

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { iocToIso2, flagEmoji } from "@/utils/flags";
+import { getFlagFromIOC } from "@/lib/utils";
 import Pagination from "@/components/Pagination";
 
 export interface Ranking {
@@ -43,7 +43,7 @@ export default function RankingTable({ rankings, perPage = 20 }: RankingTablePro
         <tbody>
           {list.map((p, idx) => {
             const globalRank = startIndex + idx + 1;
-            const flag = p.ioc ? flagEmoji(iocToIso2(p.ioc)) : null;
+            const flag = p.ioc ? getFlagFromIOC(p.ioc) : null;
 
             return (
               <tr key={p.id} className="hover:bg-gray-800 border-b border-white/10">

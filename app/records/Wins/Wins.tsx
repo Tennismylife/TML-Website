@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Pagination from "../../../components/Pagination";
-import Modal from "../Modal";
+import Modal from "@/components/Modal";
 import { getFlagFromIOC } from "@/lib/utils";
+import { playerUrl } from "../nav";
 
 interface Winner {
   id: string;
@@ -21,6 +22,12 @@ export default function Wins() {
   const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
   const perPage = 20;
+
+  useEffect(() => {
+    const handler = (e: Event) => { if ((e as CustomEvent)?.detail?.resetPage) setPage(1); };
+    window.addEventListener('records:reset', handler as EventListener);
+    return () => window.removeEventListener('records:reset', handler as EventListener);
+  }, []);
 
   // Reset page when filters change
   useEffect(() => setPage(1), [searchParams]);
@@ -131,13 +138,28 @@ export default function Wins() {
         <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       )}
 
-      <Modal
-        show={showModal}
-        onClose={() => setShowModal(false)}
-        title="Players with Most Career Wins"
-      >
-        {renderTable(allWinners)}
-      </Modal>
+      {showModal && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
+          onClick={() => setShowModal(false)}
+        >
+          <div
+            className="bg-gray-900 text-gray-200 p-4 w-full max-w-7xl max-h-screen overflow-y-auto rounded border border-gray-800"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-xl font-bold mb-4">Players with Most Career Wins</h2>
+            {renderTable(allWinners)}
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

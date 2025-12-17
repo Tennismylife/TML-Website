@@ -22,7 +22,7 @@ export default function CounterSeason({ selectedSurfaces, selectedLevels, select
           selectedLevels={Array.from(selectedLevels)}
         />
       )}
-      {activeSubTab === 'rounds' && (
+      {activeSubTab === 'round' && (
         <RoundsSection
           selectedSurfaces={Array.from(selectedSurfaces)}
           selectedLevels={Array.from(selectedLevels)}

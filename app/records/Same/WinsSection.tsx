@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Pagination from "../../../components/Pagination";
-import Modal from "../Modal";
+import Modal from "@/components/Modal";
 import { getFlagFromIOC } from "@/lib/utils";
 
 interface WinsSectionProps {
@@ -28,6 +29,7 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const perPage = 20;
+  const searchParams = useSearchParams();
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
 
@@ -63,7 +65,15 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
   const start = (page - 1) * perPage;
   const currentData = allWinners.slice(start, start + perPage);
 
-  const getPlayerLink = (playerId: string) => `/players/${playerId}?tab=matches`;
+  const getPlayerLink = (playerId: string) => {
+    const params: string[] = [];
+    for (const [key, value] of searchParams.entries()) {
+      if (key === 'tab') continue;
+      params.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
+    }
+    const queryString = params.length ? `?${params.join('&')}` : '';
+    return `/players/${playerId}/matches${queryString}`;
+  };
 
   const renderTable = (data: Winner[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">

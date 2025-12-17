@@ -1,9 +1,9 @@
 'use client'
 
-import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
-import { createPortal } from 'react-dom';
-import { iocToIso2, flagEmoji } from '../../../../utils/flags';
+import { getFlagFromIOC } from "@/lib/utils";
+import ModalTournamentsSeasons from "@/components/ModalTournamentsSeasons";
 
 function formatAge(age: number): string {
   const years = Math.floor(age);
@@ -56,6 +56,7 @@ export default function AgeSection({ year, selectedSurfaces, selectedLevels, act
   const [error, setError] = useState<string | null>(null);
   const [modalData, setModalData] = useState<{ title: string; list: Player[] } | null>(null);
   const [modalLoadingTitle, setModalLoadingTitle] = useState<string | null>(null);
+  const [activeModal, setActiveModal] = useState<string | null>(null);
 
   const queryString = useMemo(() => {
     const surfaces = Array.from(selectedSurfaces).join(',');
@@ -119,7 +120,7 @@ export default function AgeSection({ year, selectedSurfaces, selectedLevels, act
             return (
               <tr key={`${p.id}-${p.tourney_id}`} className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors">
                 <td className="py-1 flex items-center gap-2 text-white">
-                  <span className="text-base">{flagEmoji(iocToIso2(p.ioc)) || ""}</span>
+                  <span className="text-base">{getFlagFromIOC(p.ioc) || ""}</span>
                   <Link href={`/players/${encodeURIComponent(String(p.id))}`} className="text-blue-400 hover:underline">{p.name}</Link>
                 </td>
                 <td className="py-1 text-white">{displayAge}</td>
@@ -134,45 +135,6 @@ export default function AgeSection({ year, selectedSurfaces, selectedLevels, act
     </div>
   ), []);
 
-  const Modal = ({ title, list, onClose }: { title: string; list: Player[]; onClose: () => void }) => {
-    const modalRef = useRef<HTMLDivElement>(null);
-
-    React.useEffect(() => {
-      document.body.style.overflow = 'hidden';
-      const handleEscape = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
-      document.addEventListener('keydown', handleEscape);
-
-      if (modalRef.current) modalRef.current.scrollTop = 0;
-
-      return () => {
-        document.body.style.overflow = '';
-        document.removeEventListener('keydown', handleEscape);
-      };
-    }, [onClose]);
-
-    return createPortal(
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90" onClick={onClose}>
-        <div
-          ref={modalRef}
-          className="bg-gray-800/95 backdrop-blur-sm p-6 max-h-[80vh] overflow-y-auto rounded shadow-lg w-[min(90%,600px)]"
-          onClick={e => e.stopPropagation()}
-        >
-          <h2 className="text-xl font-bold mb-4 text-white">All {title}</h2>
-          {renderTable(list, title)}
-          <button
-            onClick={onClose}
-            className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-            autoFocus
-          >
-            Close
-          </button>
-        </div>
-      </div>,
-      document.body
-    );
-  };
-
-  // Lazy load "View All" corretto
   const handleViewAll = async (title: string, turn?: string) => {
     try {
       setModalLoadingTitle(title);
@@ -192,13 +154,13 @@ export default function AgeSection({ year, selectedSurfaces, selectedLevels, act
       if (activeSubTab === 'main') {
         fullList = title.includes('Oldest') ? data.sortedOldest ?? [] : data.sortedYoungest ?? [];
       } else if (activeSubTab === 'youngest' || activeSubTab === 'oldest') {
-        // qui prendiamo direttamente fullList restituito dall'API
         fullList = data.fullList ?? [];
       } else if (activeSubTab === 'titles') {
         fullList = title.includes('Oldest') ? data.topOldestTitles ?? [] : data.topYoungestTitles ?? [];
       }
 
       setModalData({ title, list: fullList });
+      setActiveModal(title);
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : 'Unknown error');
@@ -226,13 +188,15 @@ export default function AgeSection({ year, selectedSurfaces, selectedLevels, act
             {mainOldest.length ? (
               <>
                 {renderTable(mainOldest, "Oldest")}
-                <button
-                  onClick={() => handleViewAll("Oldest Players")}
-                  className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                  disabled={modalLoadingTitle === "Oldest Players"}
-                >
-                  {modalLoadingTitle === "Oldest Players" ? "Loading..." : "View All"}
-                </button>
+                <div className="mt-2 flex gap-2">
+                  <button
+                    onClick={() => handleViewAll("Oldest Players")}
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    disabled={modalLoadingTitle === "Oldest Players"}
+                  >
+                    {modalLoadingTitle === "Oldest Players" ? "Loading..." : "View All"}
+                  </button>
+                </div>
               </>
             ) : <p className="text-gray-400">No data available.</p>}
           </section>
@@ -242,13 +206,15 @@ export default function AgeSection({ year, selectedSurfaces, selectedLevels, act
             {mainYoungest.length ? (
               <>
                 {renderTable(mainYoungest, "Youngest")}
-                <button
-                  onClick={() => handleViewAll("Youngest Players")}
-                  className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                  disabled={modalLoadingTitle === "Youngest Players"}
-                >
-                  {modalLoadingTitle === "Youngest Players" ? "Loading..." : "View All"}
-                </button>
+                <div className="mt-2 flex gap-2">
+                  <button
+                    onClick={() => handleViewAll("Youngest Players")}
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    disabled={modalLoadingTitle === "Youngest Players"}
+                  >
+                    {modalLoadingTitle === "Youngest Players" ? "Loading..." : "View All"}
+                  </button>
+                </div>
               </>
             ) : <p className="text-gray-400">No data available.</p>}
           </section>
@@ -264,13 +230,15 @@ export default function AgeSection({ year, selectedSurfaces, selectedLevels, act
               {item.list.length ? (
                 <>
                   {renderTable(item.list, item.title)}
-                  <button
-                    onClick={() => handleViewAll(item.title, item.title)}
-                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    disabled={modalLoadingTitle === item.title}
-                  >
-                    {modalLoadingTitle === item.title ? "Loading..." : "View All"}
-                  </button>
+                  <div className="mt-2 flex gap-2">
+                    <button
+                      onClick={() => handleViewAll(item.title, item.title)}
+                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                      disabled={modalLoadingTitle === item.title}
+                    >
+                      {modalLoadingTitle === item.title ? "Loading..." : "View All"}
+                    </button>
+                  </div>
                 </>
               ) : <p className="text-gray-400">No data available.</p>}
             </section>
@@ -287,13 +255,15 @@ export default function AgeSection({ year, selectedSurfaces, selectedLevels, act
               {item.list.length ? (
                 <>
                   {renderTable(item.list, item.title)}
-                  <button
-                    onClick={() => handleViewAll(item.title, item.title)}
-                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    disabled={modalLoadingTitle === item.title}
-                  >
-                    {modalLoadingTitle === item.title ? "Loading..." : "View All"}
-                  </button>
+                  <div className="mt-2 flex gap-2">
+                    <button
+                      onClick={() => handleViewAll(item.title, item.title)}
+                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                      disabled={modalLoadingTitle === item.title}
+                    >
+                      {modalLoadingTitle === item.title ? "Loading..." : "View All"}
+                    </button>
+                  </div>
                 </>
               ) : <p className="text-gray-400">No data available.</p>}
             </section>
@@ -309,13 +279,15 @@ export default function AgeSection({ year, selectedSurfaces, selectedLevels, act
             {topOldestTitles?.length ? (
               <>
                 {renderTable(topOldestTitles, "Oldest")}
-                <button
-                  onClick={() => handleViewAll("Oldest Title Winners")}
-                  className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                  disabled={modalLoadingTitle === "Oldest Title Winners"}
-                >
-                  {modalLoadingTitle === "Oldest Title Winners" ? "Loading..." : "View All"}
-                </button>
+                <div className="mt-2 flex gap-2">
+                  <button
+                    onClick={() => handleViewAll("Oldest Title Winners")}
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    disabled={modalLoadingTitle === "Oldest Title Winners"}
+                  >
+                    {modalLoadingTitle === "Oldest Title Winners" ? "Loading..." : "View All"}
+                  </button>
+                </div>
               </>
             ) : <p className="text-gray-400">No data available.</p>}
           </section>
@@ -325,20 +297,33 @@ export default function AgeSection({ year, selectedSurfaces, selectedLevels, act
             {topYoungestTitles?.length ? (
               <>
                 {renderTable(topYoungestTitles, "Youngest")}
-                <button
-                  onClick={() => handleViewAll("Youngest Title Winners")}
-                  className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                  disabled={modalLoadingTitle === "Youngest Title Winners"}
-                >
-                  {modalLoadingTitle === "Youngest Title Winners" ? "Loading..." : "View All"}
-                </button>
+                <div className="mt-2 flex gap-2">
+                  <button
+                    onClick={() => handleViewAll("Youngest Title Winners")}
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    disabled={modalLoadingTitle === "Youngest Title Winners"}
+                  >
+                    {modalLoadingTitle === "Youngest Title Winners" ? "Loading..." : "View All"}
+                  </button>
+                </div>
               </>
             ) : <p className="text-gray-400">No data available.</p>}
           </section>
         </div>
       )}
 
-      {modalData && <Modal title={modalData.title} list={modalData.list} onClose={() => setModalData(null)} />}
+      {activeModal && modalData && (
+        <ModalTournamentsSeasons
+          title={modalData.title}
+          onClose={() => setActiveModal(null)}
+        >
+          {modalLoadingTitle ? (
+            <p className="text-white text-center">Loading...</p>
+          ) : (
+            renderTable(modalData.list, modalData.title)
+          )}
+        </ModalTournamentsSeasons>
+      )}
     </section>
   );
 }

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { getFlagFromIOC } from "@/lib/utils";
 import Pagination from "../../../components/Pagination";
-import Modal from "..//Modal";
+import Modal from "@/components/Modal";
 
 interface RoundsProps {
   selectedSurfaces: Set<string>;

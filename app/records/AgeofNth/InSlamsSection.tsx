@@ -91,7 +91,7 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds }: InS
   const playersPage = Array.isArray(data) ? data.slice(start, start + perPage) : [];
 
   const getPlayerLink = (playerId: string) => {
-    let link = `/players/${playerId}?tab=matches`;
+    let link = `/players/${encodeURIComponent(playerId)}/matches?`;
     for (const [key, value] of searchParams.entries()) {
       if (!value || key === "tab") continue;
       link += `&${key}=${encodeURIComponent(value)}`;

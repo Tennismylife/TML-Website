@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { iocToIso2, flagEmoji } from '../../../utils/flags';
+import { getFlagFromIOC } from "@/lib/utils";
 
 interface CountSectionProps {
   selectedSurfaces: Set<string>;
@@ -120,7 +120,7 @@ export default function CountSection({ selectedSurfaces, selectedLevels }: Count
         {data.map(p => (
           <tr key={p.id} className="border-b">
             <td className="py-1 flex items-center gap-2 w-1/2">
-              <span className="text-base">{flagEmoji(iocToIso2(p.ioc)) || ''}</span>
+              <span className="text-base">{getFlagFromIOC(p.ioc) || ''}</span>
               <Link href={`/players/${encodeURIComponent(p.id)}`} className="text-blue-700 hover:underline">
                 {p.name}
               </Link>

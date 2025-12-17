@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Pagination from "@/components/Pagination";
-import { flagEmoji, iocToIso2 } from "@/utils/flags";
+import { getFlagFromIOC } from "@/lib/utils";
+import Modal from "@/components/Modal"; 
 
 interface EoyRankTimespanItem {
   id: string;
@@ -10,15 +11,15 @@ interface EoyRankTimespanItem {
   ioc?: string | null;
   firstYear: number;
   lastYear: number;
-  spanYears: number; // differenza in anni
+  spanYears: number;
 }
 
 export default function EoyRankTimespan() {
   const [rank, setRank] = useState<number>(1);
   const [rows, setRows] = useState<EoyRankTimespanItem[]>([]);
   const [loading, setLoading] = useState(false);
-
   const [page, setPage] = useState(1);
+  const [modalItem, setModalItem] = useState<EoyRankTimespanItem[] | null>(null);
   const perPage = 20;
 
   const fetchRows = async () => {
@@ -44,72 +45,84 @@ export default function EoyRankTimespan() {
   const start = (page - 1) * perPage;
   const pageRows = rows.slice(start, start + perPage);
 
+  const renderTable = (list: EoyRankTimespanItem[], startIndex = 0) => (
+    <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
+      <table className="min-w-full border-collapse">
+        <thead>
+          <tr className="bg-black">
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
+            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Timespan (years)</th>
+            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">First year</th>
+            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Last year</th>
+          </tr>
+        </thead>
+        <tbody>
+          {list.map((r, idx) => (
+            <tr
+              key={`${r.id}-${r.firstYear}-${r.lastYear}`}
+              className="hover:bg-gray-800 border-b border-white/10 cursor-pointer"
+              onClick={() => setModalItem([r])}
+            >
+              <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
+                {startIndex + idx + 1}
+              </td>
+              <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
+                <div className="flex items-center gap-2">
+                  {r.ioc && <span className="text-base">{getFlagFromIOC(r.ioc)}</span>}
+                  <span>{r.name}</span>
+                </div>
+              </td>
+              <td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">
+                {r.spanYears}
+              </td>
+              <td className="border border-white/10 px-4 py-2 text-gray-300">{r.firstYear}</td>
+              <td className="border border-white/10 px-4 py-2 text-gray-300">{r.lastYear}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
+
   return (
     <section className="mb-8">
-      {/* Controls */}
-      <div className="flex items-center gap-4 mb-4">
-        <label className="text-gray-200 font-medium">Rank (EOY):</label>
-        <select
-          value={rank}
-          onChange={(e) => setRank(Number(e.target.value))}
-          className="px-2 py-1 rounded bg-gray-800 text-gray-200 border border-gray-600"
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <label className="text-gray-200 font-medium mr-2">Rank (EOY):</label>
+          <select
+            value={rank}
+            onChange={(e) => setRank(Number(e.target.value))}
+            className="px-2 py-1 rounded bg-gray-800 text-gray-200 border border-gray-600"
+          >
+            {[...Array(10)].map((_, i) => (
+              <option key={i + 1} value={i + 1}>No. {i + 1}</option>
+            ))}
+          </select>
+        </div>
+        <h2 className="text-xl font-semibold text-gray-200 text-center flex-1">
+          Timespan at EOY Rank {rank}
+        </h2>
+        <button
+          onClick={() => setModalItem(rows)}
+          className="ml-auto px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
         >
-          {[...Array(10)].map((_, i) => (
-            <option key={i + 1} value={i + 1}>No. {i + 1}</option>
-          ))}
-        </select>
+          View All
+        </button>
       </div>
 
-      {/* Table */}
       {loading && <div className="text-gray-400 py-4 text-center">Loading...</div>}
-      {!loading && pageRows.length > 0 && (
-        <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
-          <table className="min-w-full border-collapse">
-            <thead>
-              <tr className="bg-black">
-                <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
-                <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
-                <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Timespan (years)</th>
-                <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">First year</th>
-                <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Last year</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pageRows.map((r, idx) => (
-                <tr key={`${r.id}-${r.firstYear}-${r.lastYear}`} className="hover:bg-gray-800 border-b border-white/10">
-                  <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
-                    {start + idx + 1}
-                  </td>
-                  <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
-                    <div className="flex items-center gap-2">
-                      {r.ioc && <span className="text-base">{flagEmoji(iocToIso2(r.ioc))}</span>}
-                      <span>{r.name}</span>
-                    </div>
-                  </td>
-                  <td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">
-                    {r.spanYears}
-                  </td>
-                  <td className="border border-white/10 px-4 py-2 text-gray-300">
-                    {r.firstYear}
-                  </td>
-                  <td className="border border-white/10 px-4 py-2 text-gray-300">
-                    {r.lastYear}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      {!loading && pageRows.length > 0 && renderTable(pageRows, start)}
+      {!loading && pageRows.length === 0 && <div className="text-gray-400 py-4 text-center">No data available.</div>}
 
-      {!loading && pageRows.length === 0 && (
-        <div className="text-gray-400 py-4 text-center">No data available.</div>
-      )}
-
-      {/* Pagination */}
       {totalPages > 1 && !loading && (
         <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       )}
+
+      <Modal show={!!modalItem} onClose={() => setModalItem(null)} title={`Timespan Details`}>
+        {renderTable(modalItem || [])}
+      </Modal>
     </section>
   );
 }

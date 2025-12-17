@@ -5,7 +5,8 @@ import { useState, useEffect } from "react";
 import { getFlagFromIOC } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
-import Modal from '../Modal';
+import Modal from '@/components/Modal';
+import { playerMatchesUrl } from "../nav";
 
 interface TitlesProps {
   selectedSurfaces: string[];
@@ -53,7 +54,7 @@ export default function Titles({ selectedSurfaces, selectedLevels }: TitlesProps
   const currentData = data.slice(start, start + perPage);
 
   const getLink = (playerId: string) => {
-    let link = `/players/${playerId}?tab=matches`;
+    let link = playerMatchesUrl(playerId);
     for (const [key, value] of searchParams.entries()) {
       if (key !== "tab") link += `&${key}=${encodeURIComponent(value)}`;
     }

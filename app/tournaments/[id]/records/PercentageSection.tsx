@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { iocToIso2, flagEmoji } from '../../../../utils/flags';
-import Modal from './Modal'; // <--- IMPORT DEL NUOVO COMPONENT
-// rimosso createPortal perché non serve più
+import { getFlagFromIOC } from "@/lib/utils";
+import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 
 interface PlayerPercentage {
   id: string | number;
@@ -95,7 +94,7 @@ export default function PercentageSection({ id, activeSubTab }: { id: string; ac
         {data.map(item => (
           <tr key={item.id} className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors">
             <td className="py-1 flex items-center gap-2 text-white">
-              <span className="text-base">{flagEmoji(iocToIso2(item.ioc)) || ""}</span>
+              <span className="text-base">{getFlagFromIOC(item.ioc) || ""}</span>
               <Link href={`/players/${encodeURIComponent(String(item.id))}`} className="text-blue-400 hover:underline">{item.name}</Link>
             </td>
             <td className="py-1 text-white">{item.wins}</td>
@@ -157,9 +156,9 @@ export default function PercentageSection({ id, activeSubTab }: { id: string; ac
 
       {/* --- USA IL NUOVO MODAL QUI --- */}
       {modalData && (
-        <Modal title={modalData.title} onClose={() => setModalData(null)}>
+        <ModalTournamentsSeasons title={modalData.title} onClose={() => setModalData(null)}>
           <PlayerTable data={modalData.list} />
-        </Modal>
+        </ModalTournamentsSeasons>
       )}
     </section>
   );

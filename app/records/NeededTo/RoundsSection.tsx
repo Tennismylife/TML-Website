@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { iocToIso2, flagEmoji } from '../../../utils/flags';
+import { getFlagFromIOC } from "@/lib/utils";
 import Pagination from '../../../components/Pagination';
 
 interface RoundsSectionProps {
@@ -82,7 +82,7 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
                 <td className="border px-4 py-2 text-center">{rank}</td>
                 <td className="border px-4 py-2">
                   <div className="flex items-center gap-2">
-                    <span>{flagEmoji(iocToIso2(p.ioc)) || ''}</span>
+                    <span>{getFlagFromIOC(p.ioc) || ''}</span>
                     <Link href={`/players/${encodeURIComponent(p.player_id)}`} className="text-blue-700 hover:underline">
                       {p.player_name}
                     </Link>

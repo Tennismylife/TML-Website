@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { createPortal } from 'react-dom';
-import { iocToIso2, flagEmoji } from '../../../../utils/flags';
+import { getFlagFromIOC } from "@/lib/utils";
+import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 
 interface PlayerPercentage {
   id: string | number;
@@ -119,7 +119,7 @@ export default function PercentageSection({ year, selectedSurfaces, selectedLeve
         {data.map((item) => (
           <tr key={item.id} className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors">
             <td className="py-1 flex items-center gap-2 text-white">
-              <span className="text-base">{flagEmoji(iocToIso2(item.ioc)) || ""}</span>
+              <span className="text-base">{getFlagFromIOC(item.ioc) || ""}</span>
               <Link href={`/players/${encodeURIComponent(String(item.id))}`} className="text-blue-400 hover:underline">
                 {item.name}
               </Link>
@@ -135,50 +135,6 @@ export default function PercentageSection({ year, selectedSurfaces, selectedLeve
 
   const handleMinMatchesChange = (round: string, value: number) => {
     setMinMatchesPerRound(prev => ({ ...prev, [round]: value }));
-  };
-
-  // Modal con overlay totale
-  const Modal = ({ title, data, onClose, minMatches }: { title: string; data: PlayerPercentage[]; onClose: () => void; minMatches?: number }) => {
-    const modalRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-      document.body.style.overflow = 'hidden';
-      const handleEscape = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
-      document.addEventListener('keydown', handleEscape);
-
-      if (modalRef.current) modalRef.current.scrollTop = 0;
-
-      return () => {
-        document.body.style.overflow = '';
-        document.removeEventListener('keydown', handleEscape);
-      };
-    }, [onClose]);
-
-    return createPortal(
-      <div
-        className="fixed inset-0 z-[9999] flex items-start justify-center bg-black/90 p-4"
-        role="dialog"
-        aria-modal="true"
-        onClick={onClose}
-      >
-        <div
-          ref={modalRef}
-          className="bg-gray-800/95 backdrop-blur-sm p-6 rounded shadow-lg max-h-[90vh] w-[min(90%,600px)] overflow-y-auto"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <h2 className="text-xl font-bold mb-4 text-white">{title} {minMatches ? `(Min Matches: ${minMatches})` : ''}</h2>
-          <PlayerTable data={data} />
-          <button
-            onClick={onClose}
-            className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-            autoFocus
-          >
-            Close
-          </button>
-        </div>
-      </div>,
-      document.body
-    );
   };
 
   return (
@@ -251,20 +207,14 @@ export default function PercentageSection({ year, selectedSurfaces, selectedLeve
 
       {/* Modali */}
       {showOverallModal && (
-        <Modal
-          title="All Overall Win Percentages"
-          data={filteredOverall}
-          onClose={() => setShowOverallModal(false)}
-          minMatches={minMatchesOverall}
-        />
+        <ModalTournamentsSeasons title="All Overall Win Percentages" onClose={() => setShowOverallModal(false)}>
+          <PlayerTable data={filteredOverall} />
+        </ModalTournamentsSeasons>
       )}
       {modalData && (
-        <Modal
-          title={`All Win Percentages for ${modalData.title}`}
-          data={modalData.list}
-          onClose={() => setModalData(null)}
-          minMatches={minMatchesPerRound[modalData.title] || 1}
-        />
+        <ModalTournamentsSeasons title={modalData.title} onClose={() => setModalData(null)}>
+          <PlayerTable data={modalData.list} />
+        </ModalTournamentsSeasons>
       )}
     </section>
   );

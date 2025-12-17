@@ -25,13 +25,20 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
 
   useEffect(() => {
     const fetchData = async () => {
+      // The API requires a `round` parameter — avoid calling it when none is selected
+      if (!selectedRounds) {
+        setData([]);
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       try {
         const query = new URLSearchParams();
         selectedSurfaces.forEach(s => query.append('surface', s));
         selectedLevels.forEach(l => query.append('level', l));
-        if (selectedRounds) query.append('round', selectedRounds);
-        query.set('perPage', '100'); 
+        query.append('round', selectedRounds);
+        query.set('perPage', '100');
         const res = await fetch(`/api/records/timespan/rounds?${query.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch rounds timespan');
         const fetchedData = await res.json();
@@ -43,10 +50,12 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
         setLoading(false);
       }
     };
+
     fetchData();
   }, [selectedSurfaces, selectedLevels, selectedRounds]);
 
   if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
+  if (!selectedRounds) return <div className="text-center py-8 text-gray-300">Please select rounds in the filters to view results.</div>;
   if (!data.length) return <div className="text-center py-8 text-gray-300">No data available.</div>;
 
   const totalPages = Math.ceil(data.length / perPage);
@@ -55,8 +64,12 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
 
   const getTitle = () => `Biggest timespan between ${selectedRounds} rounds`;
 
+  const playerMatchesUrl = (playerId: string) => {
+    return `/players/${encodeURIComponent(playerId)}?tab=matches`;
+  };
+
   const getLink = (playerId: string) => {
-    let link = `/players/${playerId}?tab=matches`;
+    let link = playerMatchesUrl(playerId);
     for (const [key, value] of searchParams.entries()) {
       if (key !== "tab") link += `&${key}=${encodeURIComponent(value)}`;
     }

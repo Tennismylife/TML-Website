@@ -6,15 +6,36 @@ import { motion, AnimatePresence } from "framer-motion";
 import Count from "./Count/page";
 import Top from "./Top/page";
 import Streak from "./Streak/page";
+import StreakCount from "./Streak/Count/page";
+import StreakTop from "./Streak/Top/page";
 import EndSeason from "./EndOfTheSeason/page";
+import EndSeasonCount from "./EndOfTheSeason/Count/page";
+import EndSeasonTop from "./EndOfTheSeason/Top/page";
+import EndSeasonStreakCount from "./EndOfTheSeason/StreakCount/page";
+import EndSeasonStreakTop from "./EndOfTheSeason/StreakTop/page";
 import Ages from "./Ages/page";
 import AgesEndofTheSeason from "./AgesEndOfTheSeason/page";
+import AgesYoungestCount from "./Ages/YoungestCount/page";
+import AgesOldestCount from "./Ages/OldestCount/page";
+import AgesYoungestTop from "./Ages/YoungestTop/page";
+import AgesOldestTop from "./Ages/OldestTop/page";
+import AgesEOYYoungestCount from "./AgesEndOfTheSeason/YoungestCount/page";
+import AgesEOYOldestCount from "./AgesEndOfTheSeason/OldestCount/page";
+import AgesEOYYoungestTop from "./AgesEndOfTheSeason/YoungestTop/page";
+import AgesEOYOldestTop from "./AgesEndOfTheSeason/OldestTop/page";
 import Timespan from "./Timespan/page";
-import TimespanEndOfTheSeason from "./TimespanEndOfTheSeason/page";
-import MostPoints from "./MostPoints/page";
-import DiffPoints from "./DiffPoints/page";
+import TimespanCount from "./Timespan/TimespanCount/page";
+import TimespanTop from "./Timespan/TimespanTop/page";
 
-// Tipi principali
+import TimespanCountEndOfTheSeason from "./TimespanEndOfTheSeason/TimespanCountEndOfTheSeason/page";
+import TimespanTopEndOfTheSeason from "./TimespanEndOfTheSeason/TimespanTopEndOfTheSeason/page";
+import MostPoints from "./MostPoints/page";
+import MostPointsOverall from "./MostPoints/Overall/page";
+import MostPointsEndOfTheSeason from "./MostPoints/EndOfTheSeason/page";
+import DiffPointsOverall from "./DiffPoints/Overall/page";
+import DiffPointsEndOfTheSeason from "./DiffPoints/EndOfTheSeason/page";
+
+// --- Tipi principali ---
 interface Tab {
   key: string;
   label: string;
@@ -33,6 +54,7 @@ type SubTabMap = {
   DiffPoints: "Overall" | "EndOfTheSeason";
 };
 
+// --- Tabs principali ---
 const tabs: Tab[] = [
   { key: "Count", label: "No." },
   { key: "Top", label: "Top" },
@@ -46,6 +68,7 @@ const tabs: Tab[] = [
   { key: "DiffPoints", label: "Diff Points", hasSubTabs: true },
 ];
 
+// --- Sub-tabs ---
 const subTabsOptions: { [K in keyof SubTabMap]: { key: SubTabMap[K]; label: string }[] } = {
   Streak: [
     { key: "Count", label: "Count" },
@@ -87,7 +110,7 @@ const subTabsOptions: { [K in keyof SubTabMap]: { key: SubTabMap[K]; label: stri
   ],
 };
 
-// SubTabs component
+// --- SubTabs component ---
 function SubTabs<K extends keyof SubTabMap>({
   items,
   active,
@@ -120,13 +143,17 @@ function SubTabs<K extends keyof SubTabMap>({
   );
 }
 
-// Componente principale
+// --- Componente principale ---
 export default function RecordsRankingPage() {
-  const [activeTab, setActiveTab] = useState<keyof typeof subTabsOptions | "Count" | "Top" | "MostPoints">("Count");
-  const [activeSubTab, setActiveSubTab] = useState<SubTabMap[keyof SubTabMap]>("Count");
+  type MainTabKey = typeof tabs[number]["key"];
+  const [activeTab, setActiveTab] = useState<MainTabKey>("Count");
+
+  // Stato sub-tab per ogni tab
+  const [activeSubTabs, setActiveSubTabs] = useState<Partial<Record<keyof SubTabMap, string>>>({});
   const [hoverTab, setHoverTab] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Gestione click fuori
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -137,11 +164,33 @@ export default function RecordsRankingPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Sub-tab corrente del tab attivo
+  const currentSubTab =
+    (activeTab in activeSubTabs ? activeSubTabs[activeTab as keyof SubTabMap] : null) ||
+    (subTabsOptions[activeTab as keyof SubTabMap]?.[0]?.key) ||
+    activeTab;
+
+  // Mappatura dinamica componenti
+  const componentsMap: Record<string, Record<string, React.FC>> = {
+    Count: { Count },
+    Top: { Top },
+    Streak: { Count: StreakCount, Top: StreakTop },
+    EndSeason: { Count: EndSeasonCount, Top: EndSeasonTop, StreakCount: EndSeasonStreakCount, StreakTop: EndSeasonStreakTop },
+    Ages: { YoungestCount: AgesYoungestCount, OldestCount: AgesOldestCount, YoungestTop: AgesYoungestTop, OldestTop: AgesOldestTop },
+    AgesEndofTheSeason: { YoungestCount: AgesEOYYoungestCount, OldestCount: AgesEOYOldestCount, YoungestTop: AgesEOYYoungestTop, OldestTop: AgesEOYOldestTop },
+    Timespan: { Count: TimespanCount, Top: TimespanTop },
+    TimespanEndOfTheSeason: { Count: TimespanCountEndOfTheSeason, Top: TimespanTopEndOfTheSeason },
+    MostPoints: { Overall: MostPointsOverall, EndOfTheSeason: MostPointsEndOfTheSeason },
+    DiffPoints: { Overall: DiffPointsOverall, EndOfTheSeason: DiffPointsEndOfTheSeason },
+  };
+
+  const ActiveComponent = componentsMap[activeTab]?.[currentSubTab] || Count;
+
   return (
     <main ref={containerRef} className="w-full px-8 py-8 text-white bg-gray-900">
       <h1 className="mb-8 text-3xl font-bold text-center text-gray-100">Records Ranking</h1>
 
-      {/* Barra dei tab allargata */}
+      {/* Barra dei tab */}
       <div className="relative mb-8 flex flex-wrap gap-3 bg-gray-800/40 rounded-2xl p-4 shadow-lg w-full justify-center">
         {tabs.map((tab) => (
           <div
@@ -151,7 +200,12 @@ export default function RecordsRankingPage() {
             onMouseLeave={() => tab.hasSubTabs && setHoverTab(null)}
           >
             <button
-              onClick={() => setActiveTab(tab.key as any)}
+              onClick={() => {
+                setActiveTab(tab.key);
+                if (tab.hasSubTabs) setHoverTab(tab.key);
+              }}
+              onFocus={() => tab.hasSubTabs && setHoverTab(tab.key)}
+              onBlur={() => tab.hasSubTabs && setHoverTab(null)}
               className={`relative px-4 py-2 rounded-2xl font-medium transition-colors duration-200 ${
                 activeTab === tab.key ? "text-white" : "text-gray-300 hover:text-white"
               }`}
@@ -170,12 +224,10 @@ export default function RecordsRankingPage() {
               {tab.hasSubTabs && hoverTab === tab.key && (
                 <SubTabs
                   items={subTabsOptions[tab.key as keyof SubTabMap]}
-                  active={activeSubTab as any}
-                  setActive={(subKey) => {
-                    setActiveTab(tab.key as any);
-                    setActiveSubTab(subKey);
-                    setHoverTab(null);
-                  }}
+                  active={currentSubTab as any}
+                  setActive={(subKey) =>
+                    setActiveSubTabs((prev) => ({ ...prev, [tab.key]: subKey }))
+                  }
                 />
               )}
             </AnimatePresence>
@@ -183,18 +235,9 @@ export default function RecordsRankingPage() {
         ))}
       </div>
 
-      {/* Contenuti full-width */}
+      {/* Contenuto */}
       <div className="mt-6 w-full overflow-x-auto">
-        {activeTab === "Count" && <Count />}
-        {activeTab === "Top" && <Top />}
-        {activeTab === "Streak" && <Streak />}
-        {activeTab === "EndSeason" && <EndSeason />}
-        {activeTab === "Ages" && <Ages />}
-        {activeTab === "AgesEndofTheSeason" && <AgesEndofTheSeason />}
-        {activeTab === "Timespan" && <Timespan/>}
-        {activeTab === "TimespanEndOfTheSeason" && (<TimespanEndOfTheSeason />)}
-        {activeTab === "MostPoints" && <MostPoints />}
-        {activeTab === "DiffPoints" && <DiffPoints />}
+        <ActiveComponent />
       </div>
     </main>
   );

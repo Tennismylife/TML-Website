@@ -1,6 +1,6 @@
 "use client";
 
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const SURFACE_LIST = ["Hard", "Clay", "Grass", "Carpet"];
@@ -56,6 +56,7 @@ export default function FiltersComponent({
 }: FiltersComponentProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const lastAppliedQS = useRef<string | null>(null);
 
   const surfaceEmojis: Record<string, string> = {
     Hard: "🟦",
@@ -152,7 +153,7 @@ export default function FiltersComponent({
     }
 
     // CounterSeasons → rounds subtab
-    if (activeTab === "counterseasons" && activeSubTab === "rounds") {
+    if (activeTab === "counterseasons" && activeSubTab === "round") {
       return ["levels","surfaces","rounds"].includes(filter);
     }
 
@@ -177,7 +178,6 @@ export default function FiltersComponent({
     (activeTab === "roundsonentries" && activeSubTab === "round") ||
     (activeTab === "counterseasons" && activeSubTab === "round") ||
     (activeTab === "streak" && activeSubTab === "round") ||
-    (activeTab === "ages" && (activeSubTab === "oldest" || activeSubTab === "youngest")) ||
     activeTab === "count"
   );
 
@@ -205,8 +205,7 @@ export default function FiltersComponent({
       (activeTab === "timespan" && activeSubTab === "rounds") ||
       (activeTab === "roundsonentries" && activeSubTab === "round") ||
       (activeTab === "counterseasons" && activeSubTab === "round") ||
-      (activeTab === "streak" && activeSubTab === "round") ||
-      (activeTab === "ages" && (activeSubTab === "oldest" || activeSubTab === "youngest"))
+      (activeTab === "streak" && activeSubTab === "round")
     ) {
       defaultRound = "F";
     }
@@ -217,16 +216,42 @@ export default function FiltersComponent({
 
   useEffect(() => {
     const params = new URLSearchParams();
-    selectedSurfaces.forEach(s => params.append("surface", s));
-    selectedLevels.forEach(l => params.append("level", l));
+    Array.from(selectedSurfaces).sort().forEach(s => params.append("surface", s));
+    Array.from(selectedLevels).sort().forEach(l => params.append("level", l));
     if (selectedRounds) params.set("round", selectedRounds);
     if (selectedBestOf !== null) params.set("bestOf", selectedBestOf.toString());
 
-    const newUrl = `/records/${activeTab}?${params.toString()}`;
-    if (newUrl !== window.location.pathname + window.location.search) {
-      router.replace(newUrl);
+    // Use canonical path: /records?record=<activeTab>
+    params.set("record", activeTab);
+
+    // Preserve tab key as-is: do NOT overwrite an existing tab/subtab query param
+    const incomingTabKey = searchParams.has("subtab") ? "subtab" : (searchParams.has("tab") ? "tab" : null);
+    if (incomingTabKey) {
+      const incomingValue = searchParams.get(incomingTabKey);
+      if (incomingValue) {
+        params.set(incomingTabKey, incomingValue);
+        params.set("tab", incomingValue);
+        params.set("subtab", incomingValue);
+      }
     }
-  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeTab]);
+    // NOTE: do NOT write activeSubTab as a default into the URL here,
+    // to avoid overwriting a subtab coming from another client.
+    // The Tabs component should write the subtab when the user explicitly selects one.
+
+    const canonical = (uParams: URLSearchParams) =>
+      Array.from(uParams.entries()).sort().map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join("&");
+
+    const newCanon = canonical(params);
+    const currentCanon = canonical(new URLSearchParams(window.location.search));
+    const newPath = `/records`;
+
+    // Avoid loop: only replace when pathname or canonicalized QS differ,
+    // and skip if we already applied the same canonical QS.
+    if (newPath !== window.location.pathname || (newCanon !== currentCanon && lastAppliedQS.current !== newCanon)) {
+      lastAppliedQS.current = newCanon;
+      router.replace(newPath + (params.toString() ? `?${params.toString()}` : ""));
+    }
+  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeTab, activeSubTab, searchParams, router]);
 
   const selectSurface = (surface: string) => setSelectedSurfaces(new Set([surface]));
   const selectLevel = (level: string) => setSelectedLevels(new Set([level]));

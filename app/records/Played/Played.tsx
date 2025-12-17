@@ -22,6 +22,12 @@ export default function Played() {
   const searchParams = useSearchParams();
   const perPage = 20;
 
+  useEffect(() => {
+    const handler = (e: Event) => { if ((e as CustomEvent)?.detail?.resetPage) setPage(1); };
+    window.addEventListener('records:reset', handler as EventListener);
+    return () => window.removeEventListener('records:reset', handler as EventListener);
+  }, []);
+
   // Reset page when filters change
   useEffect(() => setPage(1), [searchParams]);
 

@@ -83,6 +83,7 @@ export default function PlayedSection({
   const playersPage = data.slice(start, start + perPage);
 
   const getPlayerLink = (playerId: string) => {
+    // build a player matches URL and preserve current search params except 'tab'
     let link = `/players/${playerId}?tab=matches`;
     for (const [key, value] of searchParams.entries()) {
       if (!value || key === "tab") continue;

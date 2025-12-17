@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { iocToIso2, flagEmoji } from '../../../../utils/flags';
-import Modal from './Modal';
+import { getFlagFromIOC } from "@/lib/utils";
+import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 
 interface PlayerStatAge {
   id: string | number;
@@ -103,7 +103,7 @@ export default function AgesSection({ id, activeSubTab }: AgesSectionProps) {
         {data.map((p, index) => (
           <tr key={`${p.id}-${p.year}-${index}`} className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors">
             <td className="py-1 flex items-center gap-2 text-white">
-              <span className="text-base">{flagEmoji(iocToIso2(p.ioc)) || ''}</span>
+              <span className="text-base">{getFlagFromIOC(p.ioc) || ''}</span>
               <Link href={`/players/${encodeURIComponent(String(p.id))}`} className="text-blue-400 hover:underline">{p.name}</Link>
             </td>
             <td className="py-1 text-white">{formatAge(p.age)}</td>
@@ -140,7 +140,7 @@ export default function AgesSection({ id, activeSubTab }: AgesSectionProps) {
           {renderTable(rightData || [])}
           <button onClick={() => handleViewAll(activeSubTab === 'main' ? 'topOldest' : 'topOldestWinners')} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">View All</button>
         </div>
-        {modalData && <Modal title={modalData.title} onClose={() => setModalData(null)}>{renderTable(modalData.list)}</Modal>}
+        {modalData && <ModalTournamentsSeasons title={modalData.title} onClose={() => setModalData(null)}>{renderTable(modalData.list)}</ModalTournamentsSeasons>}
       </section>
     );
   }
@@ -168,7 +168,7 @@ export default function AgesSection({ id, activeSubTab }: AgesSectionProps) {
         ))}
       </div>
 
-      {modalData && <Modal title={modalData.title} onClose={() => setModalData(null)}>{renderTable(modalData.list)}</Modal>}
+      {modalData && <ModalTournamentsSeasons title={modalData.title} onClose={() => setModalData(null)}>{renderTable(modalData.list)}</ModalTournamentsSeasons>}
     </section>
   );
 }
