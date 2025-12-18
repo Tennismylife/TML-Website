@@ -1,21 +1,20 @@
 "use client";
 
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { getFlagFromIOC } from "@/lib/utils";
 import PlayerTabs from "./PlayerTabs";
 import { Player } from "@/types";
 
 export default function PlayerPage(props: any) {
-  // props.params potrebbe essere una Promise in alcune versioni di Next.js.
-  // Usiamo React.use (se presente) per "unwrap" la Promise, altrimenti fallback a props.params.
-  // Questo rimuove l'avviso e mantiene compatibilità col passato.
   const params = (React as any).use ? (React as any).use(props.params) : props.params;
   const playerId = params?.id ?? props.params?.id;
 
   const [player, setPlayer] = useState<Player | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -24,12 +23,27 @@ export default function PlayerPage(props: any) {
       try {
         setLoading(true);
         setError(null);
-        const res = await fetch(`/api/players?id=${encodeURIComponent(playerId)}`, {
-          signal: controller.signal,
-        });
+
+        // ⬇️ API URL LASCIATO IDENTICO
+        const res = await fetch(
+          `/api/players?id=${encodeURIComponent(playerId)}&slug=${encodeURIComponent(playerId)}`,
+          { signal: controller.signal }
+        );
+
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
         const data: Player = await res.json();
         setPlayer(data);
+
+        // slug SOLO per l'URL del browser
+        const slug = (data.atpname || data.player || data.id)
+          .toString()
+          .toLowerCase()
+          .trim()
+          .replace(/\s+/g, "-");
+
+        const desired = `/players/${encodeURIComponent(slug)}${window.location.search}`;
+        window.history.replaceState(null, "", desired);
       } catch (err) {
         if (!(err instanceof DOMException && err.name === "AbortError")) {
           setError("Errore nel caricamento del giocatore.");
@@ -40,9 +54,9 @@ export default function PlayerPage(props: any) {
     })();
 
     return () => controller.abort();
-  }, [playerId]);
+  }, [playerId, router]);
 
-  if (loading) return <p className="p-4 text-gray-400">Loading...</p>;
+  if (loading) return <p className="p-4 text-gray-400">Loading…</p>;
   if (error) return <p className="p-4 text-red-400">{error}</p>;
   if (!player) return null;
 
@@ -57,15 +71,19 @@ export default function PlayerPage(props: any) {
   ];
 
   return (
-    <div className="min-h-screen w-screen flex flex-col bg-gray-900 text-gray-100">
+    <main className="min-h-screen w-full bg-gray-900 text-gray-100">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-gray-800/95 backdrop-blur-md border-b border-gray-700 p-4 flex items-center gap-2">
-        {player.ioc && getFlagFromIOC(player.ioc) && <span>{getFlagFromIOC(player.ioc)}</span>}
-        <h1 className="text-2xl font-bold">{player.atpname}</h1>
-      </div>
+      <header className="sticky top-0 z-20 bg-gray-800/95 backdrop-blur-md border-b border-gray-700 py-3 px-0">
+        <div className="w-full flex items-center gap-2">
+          {player.ioc && getFlagFromIOC(player.ioc) && (
+            <span>{getFlagFromIOC(player.ioc)}</span>
+          )}
+          <h1 className="text-2xl font-bold">{player.atpname}</h1>
+        </div>
+      </header>
 
       {/* Tabs */}
       <PlayerTabs player={player} tabs={tabs} />
-    </div>
+    </main>
   );
 }

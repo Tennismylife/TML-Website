@@ -62,22 +62,32 @@ export default function PlayerTabsClient({ player }: PlayerTabsClientProps) {
           const isWinner = m.winner_id === player.id;
           const isFinal = m.round === "F";
           const surface = m.surface;
+          // Matches with status === false should not count towards wins/losses and surface W-L.
+          // They still count for titles in case of a final where the player is the winner.
+          const isNonCounting = m.status === false;
 
-          if (isWinner) newStats.wins++;
-          else newStats.losses++;
+          // Do NOT count matches with status === false in wins/losses totals or surface W-L counts
+          if (!isNonCounting) {
+            if (isWinner) newStats.wins++;
+            else newStats.losses++;
+          }
 
           // LOGICA TITOLI AGGIORNATA
           if (isFinal) {
             newStats.finals++;
-            if (isWinner && m.team_event !== true) {
+            // Count finals as titles when the player is the winner, even if status === false
+            const wonFinal = m.winner_id === player.id;
+            if (wonFinal && m.team_event !== true) {
               newStats.titles++;
               if (surface && newStats.surfaces[surface]) newStats.surfaces[surface].titles++;
             }
           }
 
           if (surface && newStats.surfaces[surface]) {
-            if (isWinner) newStats.surfaces[surface].w++;
-            else newStats.surfaces[surface].l++;
+            if (!isNonCounting) {
+              if (isWinner) newStats.surfaces[surface].w++;
+              else newStats.surfaces[surface].l++;
+            }
           }
         });
 

@@ -130,8 +130,8 @@ export function filterBySetScore(
   scoreFilter?: string,
   isWinner?: boolean
 ): boolean {
-  if (m.status === false) return false;
-
+  // Show all matches, even those with status !== true (e.g., W/O, walkovers). Matches that shouldn't affect W-L
+  // are handled at display/counting level (MatchesFilterPanel counts only status === true).
   const setsParsed = parseSets(m.score ?? "");
   const bestOf = m.best_of;
 

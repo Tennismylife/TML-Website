@@ -106,11 +106,11 @@ export default function MatchTable({
 
   if (!matches || matches.length === 0) return <p className="m-0 p-0">No matches found.</p>;
 
-  const thBase = "border border-white/30 px-2 py-1 text-gray-200 text-sm text-center";
+  const thBase = "px-2 py-1 text-gray-200 text-sm text-center";
   const tdBase = "px-2 py-1 text-sm text-center";
 
   return (
-    <div className="h-full w-full overflow-hidden bg-gray-900 border border-white/30 rounded shadow flex flex-col">
+    <div className="h-full w-full overflow-hidden flex flex-col">
       {/* Toggle Winner/Loser stats */}
       <div className="flex justify-end p-2 pb-0">
         <button
@@ -125,30 +125,32 @@ export default function MatchTable({
       <div ref={topScrollRef} className="overflow-x-auto flex-shrink-0">
         <table className="min-w-full border-collapse">
           <thead>
-            <tr className="bg-black">
-              {[
-                { id: "tourney_date", label: "Date", key: "tourney_date" as SortKey },
-                { id: "tourney_name", label: "Tourney", key: "tourney_name" as SortKey },
-                { id: "surface", label: "Surface", key: "surface" as SortKey },
-                { id: "round", label: "Round", key: "round" as SortKey },
-                { id: "winner_rank", label: "Wrk", key: "winner_rank" as SortKey },
-                { id: "winner_name", label: "Winner", key: "winner_name" as SortKey },
-                { id: "loser_rank", label: "Lrk", key: "loser_rank" as SortKey },
-                { id: "loser_name", label: "Loser", key: "loser_name" as SortKey },
-                { id: "score", label: "Score", key: "score" as SortKey },
-                { id: "best_of", label: "BoF", key: "best_of" as SortKey },
-                { id: "minutes", label: "Min", key: "minutes" as SortKey },
-                ...statsColumns.map(c => ({ ...c, key: c.id as SortKey })),
-              ].map(col => (
-                <th
-                  key={col.id}
-                  className={`${thBase} cursor-pointer select-none`}
-                  onClick={() => col.key && handleSort(col.key)}
-                  title={'title' in col ? col.title : col.label}
-                >
-                  {col.label} {sortKey === col.key ? (sortDir === "asc" ? "▲" : "▼") : ""}
-                </th>
-              ))}
+            <tr>
+              {
+                [
+                  { id: "tourney_date", label: "Date", key: "tourney_date" as SortKey },
+                  { id: "tourney_name", label: "Tourney", key: "tourney_name" as SortKey },
+                  { id: "surface", label: "Surface", key: "surface" as SortKey },
+                  { id: "round", label: "Round", key: "round" as SortKey },
+                  { id: "winner_rank", label: "Wrk", key: "winner_rank" as SortKey },
+                  { id: "winner_name", label: "Winner", key: "winner_name" as SortKey },
+                  { id: "loser_rank", label: "Lrk", key: "loser_rank" as SortKey },
+                  { id: "loser_name", label: "Loser", key: "loser_name" as SortKey },
+                  { id: "score", label: "Score", key: "score" as SortKey },
+                  { id: "best_of", label: "BoF", key: "best_of" as SortKey },
+                  { id: "minutes", label: "Min", key: "minutes" as SortKey },
+                  ...statsColumns.map(c => ({ ...c, key: c.id as SortKey })),
+                ].map(col => (
+                  <th
+                    key={col.id}
+                    className={`${thBase} cursor-pointer select-none`}
+                    onClick={() => col.key && handleSort(col.key)}
+                    title={'title' in col ? col.title : col.label}
+                  >
+                    {col.label} {sortKey === col.key ? (sortDir === "asc" ? "▲" : "▼") : ""}
+                  </th>
+                ))
+              }
             </tr>
           </thead>
 

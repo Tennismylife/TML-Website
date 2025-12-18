@@ -22,16 +22,6 @@ export async function GET(request: NextRequest) {
   if (round) where.round = round;
   if (surface) where.surface = surface;
 
-  // Escludi walkover, defaults, e FINALI con WEA (titoli non validi)
-  where.NOT = {
-    OR: [
-      { score: { contains: "DEF", mode: "insensitive" } },
-      { score: { contains: "W/O", mode: "insensitive" } },
-      // Escludiamo finali con WEA
-      { AND: [{ round: "F" }, { score: { contains: "WEA", mode: "insensitive" } }] },
-    ],
-  };
-
   try {
     const matches = await prisma.match.findMany({ where });
     return NextResponse.json(matches);

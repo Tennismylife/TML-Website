@@ -63,9 +63,10 @@ interface FilterBarProps {
   setFirstSetFilter: (val: string) => void;
   scoreFilter: string;
   setScoreFilter: (val: string) => void;
+  onExplicitChange?: (key: string, value: string) => void;
 }
 
-function Category({ category }: { category: CategoryNode }) {
+function Category({ category, onExplicitChange }: { category: CategoryNode, onExplicitChange?: (key: string, value: string) => void }) {
   const [open, setOpen] = useState(false);
   const hasSelected = category.selectedValue !== "All";
 
@@ -101,7 +102,33 @@ function Category({ category }: { category: CategoryNode }) {
                 name={category.label}
                 value={filter.value}
                 checked={category.selectedValue === filter.value}
-                onChange={() => filter.setter?.(filter.value!)}
+                onChange={() => {
+                  const labelToKey: Record<string,string> = {
+                    Season: 'year',
+                    Tourney: 'tourney',
+                    Level: 'level',
+                    Surface: 'surface',
+                    Round: 'round',
+                    Result: 'result',
+                    'Opponent Rank': 'vsRank',
+                    'Opponent Age': 'vsAge',
+                    'Opponent Hand': 'vsHand',
+                    'Opponent Backhand': 'vsBackhand',
+                    'Opponent Entry': 'vsEntry',
+                    'Player Rank': 'asRank',
+                    'Player Entry': 'asEntry',
+                    'Sets': 'set',
+                    'First Sets': 'firstSet',
+                    'Score': 'score'
+                  };
+                  const key = labelToKey[category.label] || category.label.toLowerCase().replace(/\s+/g, '');
+                  const explicitValue = filter.value === 'All' ? '' : filter.value!;
+                  console.debug('[FilterBar] onChange', { category: category.label, key, filterValue: filter.value, explicitValue });
+                  onExplicitChange?.(key, explicitValue);
+                  // then update local selection
+                  filter.setter?.(filter.value!);
+                  console.debug('[FilterBar] setter called for', { category: category.label, newValue: filter.value });
+                }}
                 className="mr-2"
               />
               {filter.label}
@@ -177,7 +204,7 @@ export default function FilterBar(props: FilterBarProps) {
 
   return (
     <div className="p-4 bg-gray-900 bg-opacity-80 backdrop-blur-md rounded-md w-full">
-      {categories.map(cat => <Category key={cat.label} category={cat} />)}
+      {categories.map(cat => <Category key={cat.label} category={cat} onExplicitChange={props.onExplicitChange} />)}
     </div>
   );
 }

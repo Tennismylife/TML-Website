@@ -84,7 +84,8 @@ export default function Tournaments({ playerId }: TournamentsProps) {
   const [surface, setSurface] = useState<string>(searchParams.get('surface') || "All");
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || "");
   const [round, setRound] = useState<string>(searchParams.get('round') || "All");
-  const [season, setSeason] = useState<string>(searchParams.get('season') || "All");
+  // support both 'season' and 'year' query params (prefer 'season' then 'year')
+  const [season, setSeason] = useState<string>(searchParams.get('season') || searchParams.get('year') || "All");
 
   const [subTab, setSubTab] = useState<"events" | "summary">(
     (searchParams.get("sub") as "events" | "summary") || "events"
@@ -234,11 +235,12 @@ export default function Tournaments({ playerId }: TournamentsProps) {
   // --- Sync URL ---
   useEffect(() => {
     const url = new URL(window.location.href);
-    url.searchParams.set('tourney', selectedTourney);
+    if (selectedTourney) url.searchParams.set('tourney', selectedTourney); else url.searchParams.delete('tourney');
     if (level !== "All") url.searchParams.set('level', LABEL_TO_CODE[level] || level); else url.searchParams.delete('level');
     if (surface !== "All") url.searchParams.set('surface', surface); else url.searchParams.delete('surface');
     if (round !== "All") url.searchParams.set('round', round); else url.searchParams.delete('round');
-    if (season !== "All") url.searchParams.set('season', season); else url.searchParams.delete('season');
+    // reflect as 'year' so external links using ?year=... are preserved
+    if (season !== "All") url.searchParams.set('year', season); else url.searchParams.delete('year');
     if (searchTerm.trim()) url.searchParams.set('search', searchTerm); else url.searchParams.delete('search');
     url.searchParams.set('sub', subTab);
     router.replace(url.pathname + url.search, { scroll: false });

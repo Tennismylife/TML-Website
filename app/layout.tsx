@@ -10,7 +10,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         {/* GA Listener */}
         <GAListener />
         <Header />
-        <main className="container mx-auto px-4 py-6">
+        <main className="w-full px-0 py-6">
           {children}
         </main>
       </body>

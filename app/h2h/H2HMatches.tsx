@@ -114,7 +114,13 @@ export default function H2HMatches({
     };
 
     const syncWidth = () => {
-      bottomInnerRef.current!.style.width = `${top.scrollWidth}px`;
+      const bottomInner = bottomInnerRef.current;
+      try {
+        if (!bottomInner || !top) return;
+        bottomInner.style.width = `${top.scrollWidth}px`;
+      } catch (err) {
+        console.debug('[H2HMatches] syncWidth failed', err);
+      }
     };
 
     top.addEventListener("scroll", onScroll);
