@@ -1,5 +1,4 @@
-// test-cache.js
-import fetch from "node-fetch";
+const fetch = require("node-fetch");
 
 const URLS = [
   "https://stats.tennismylife.org/tournaments/580",
@@ -9,7 +8,7 @@ const URLS = [
 async function testCache() {
   for (const URL of URLS) {
     console.log(`\n=== Testing URL: ${URL} ===`);
-    
+
     for (let i = 1; i <= 10; i++) {
       const start = Date.now();
 
@@ -31,7 +30,6 @@ async function testCache() {
         console.error(`#${i} ? Errore:`, err);
       }
 
-      // Piccola pausa per non sovraccaricare il server
       await new Promise(r => setTimeout(r, 500));
     }
   }
