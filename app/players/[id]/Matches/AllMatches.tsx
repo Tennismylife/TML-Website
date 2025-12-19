@@ -181,12 +181,16 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
         url.searchParams.set(key, String(value));
       }
     });
-    // Use a relative path (pathname + search) to avoid full-page reloads
+    // Build a relative path and use history.replaceState to avoid a full page reload
     const pathname = window.location.pathname;
     const searchString = url.searchParams.toString();
     const newPath = pathname + (searchString ? '?' + searchString : '');
-    console.debug('[AllMatches] replace ->', newPath);
-    router.replace(newPath, { scroll: false });
+    console.debug('[AllMatches] replace ->', newPath, '(using history.replaceState)');
+    if (typeof window !== 'undefined' && window.history && typeof window.history.replaceState === 'function') {
+      window.history.replaceState(null, '', newPath);
+    } else {
+      router.replace(newPath, { scroll: false });
+    }
   };
 
   // explicit change handler: used when user explicitly clicks a filter (will force delete even if it existed initially)
@@ -211,7 +215,11 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
     }
     const newSearch = searchParams.toString();
     const newUrl = pathname + (newSearch ? '?' + newSearch : '');
-    router.replace(newUrl, { scroll: false });
+    if (typeof window !== 'undefined' && window.history && typeof window.history.replaceState === 'function') {
+      window.history.replaceState(null, '', newUrl);
+    } else {
+      router.replace(newUrl, { scroll: false });
+    }
   };
 
   return (
