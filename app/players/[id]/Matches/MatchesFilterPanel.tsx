@@ -243,54 +243,52 @@ useEffect(() => {
   }, {} as Record<string,string>);
 
   return (
-    <div className="mb-4">
-      <div className="mb-2 font-semibold text-lg">
-        W-L: {wins}-{losses} ({winPercentage}%)
-      </div>
-
+    <div className="mb-0 text-sm pr-0">
       {tourneyIds.length > 0 && (
-        <FilterBar
-          years={availableYears}
-          selectedYear={selectedYear}
-          setSelectedYear={setSelectedYear}
-          tourneyLevels={tourneyLevels}
-          tourneyLevelLabels={tourneyLevelLabels}
-          selectedLevel={tourneyLevelFilter}
-          setSelectedLevel={setTourneyLevelFilter}
-          tourneyIds={tourneyIds}
-          tourneyNames={tourneyNames}
-          selectedTourneyId={tourneyIdFilter}
-          setSelectedTourneyId={setTourneyIdFilter}
-          surfaces={surfaces}
-          selectedSurface={surfaceFilter}
-          setSelectedSurface={setSurfaceFilter}
-          rounds={rounds}
-          selectedRound={roundFilter}
-          setSelectedRound={setRoundFilter}
-          resultFilter={resultFilter}
-          setResultFilter={setResultFilter}
-          vsRankFilter={vsRankFilter}
-          setVsRankFilter={setVsRankFilter}
-          vsAgeFilter={vsAgeFilter}
-          setVsAgeFilter={setVsAgeFilter}
-          vsHandFilter={vsHandFilter}
-          setVsHandFilter={setVsHandFilter}
-          vsBackhandFilter={vsBackhandFilter}
-          setVsBackhandFilter={setVsBackhandFilter}
-          vsEntryFilter={vsEntryFilter}
-          setVsEntryFilter={setVsEntryFilter}
-          asRankFilter={asRankFilter}
-          setAsRankFilter={setAsRankFilter}
-          asEntryFilter={asEntryFilter}
-          setAsEntryFilter={setAsEntryFilter}
-          setFilter={matchSetFilter}
-          setSetFilter={setMatchSetFilter}
-          firstSetFilter={firstSetFilter}
-          setFirstSetFilter={setFirstSetFilter}
-          scoreFilter={scoreFilter}
-          setScoreFilter={setScoreFilter}
-          onExplicitChange={onExplicitChange}
-        />
+        <div className="mt-0 pr-0">
+          <FilterBar
+            years={availableYears}
+            selectedYear={selectedYear}
+            setSelectedYear={setSelectedYear}
+            tourneyLevels={tourneyLevels}
+            tourneyLevelLabels={tourneyLevelLabels}
+            selectedLevel={tourneyLevelFilter}
+            setSelectedLevel={setTourneyLevelFilter}
+            tourneyIds={tourneyIds}
+            tourneyNames={tourneyNames}
+            selectedTourneyId={tourneyIdFilter}
+            setSelectedTourneyId={setTourneyIdFilter}
+            surfaces={surfaces}
+            selectedSurface={surfaceFilter}
+            setSelectedSurface={setSurfaceFilter}
+            rounds={rounds}
+            selectedRound={roundFilter}
+            setSelectedRound={setRoundFilter}
+            resultFilter={resultFilter}
+            setResultFilter={setResultFilter}
+            vsRankFilter={vsRankFilter}
+            setVsRankFilter={setVsRankFilter}
+            vsAgeFilter={vsAgeFilter}
+            setVsAgeFilter={setVsAgeFilter}
+            vsHandFilter={vsHandFilter}
+            setVsHandFilter={setVsHandFilter}
+            vsBackhandFilter={vsBackhandFilter}
+            setVsBackhandFilter={setVsBackhandFilter}
+            vsEntryFilter={vsEntryFilter}
+            setVsEntryFilter={setVsEntryFilter}
+            asRankFilter={asRankFilter}
+            setAsRankFilter={setAsRankFilter}
+            asEntryFilter={asEntryFilter}
+            setAsEntryFilter={setAsEntryFilter}
+            setFilter={matchSetFilter}
+            setSetFilter={setMatchSetFilter}
+            firstSetFilter={firstSetFilter}
+            setFirstSetFilter={setFirstSetFilter}
+            scoreFilter={scoreFilter}
+            setScoreFilter={setScoreFilter}
+            onExplicitChange={onExplicitChange}
+          />
+        </div>
       )}
     </div>
   );

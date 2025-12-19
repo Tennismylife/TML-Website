@@ -26,16 +26,27 @@ export default function PlayerTabs({ player, tabs, initialTab }: PlayerTabsProps
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  const tabParam = searchParams.get("tab");
+
   const activeTab = useMemo(() => {
-    const tab = searchParams.get("tab") || initialTab || "profile";
+    const tab = tabParam || initialTab || "profile";
     return tabs.some(t => t.id === tab) ? tab : "profile";
-  }, [searchParams, initialTab, tabs]);
+  }, [tabParam, initialTab, tabs]);
 
   const handleTabClick = (tabId: string) => {
-    const url = new URL(window.location.href);
-    url.searchParams.set("tab", tabId);
-    if (tabId !== "tournaments") url.searchParams.delete("sub");
-    router.push(url.toString(), { scroll: false });
+    // Build a new query string based on current search params
+    const params = new URLSearchParams(Array.from(searchParams.entries()));
+    params.set("tab", tabId);
+    if (tabId !== "tournaments") params.delete("sub");
+
+    const newQs = params.toString();
+    const currentQs = typeof window !== "undefined" ? window.location.search.replace(/^\?/, "") : "";
+
+    // Avoid triggering navigation if nothing actually changed
+    if (newQs === currentQs) return;
+
+    const newUrl = `${window.location.pathname}${newQs ? `?${newQs}` : ""}`;
+    router.push(newUrl, { scroll: false });
   };
 
   const content = useMemo(() => {
@@ -76,10 +87,10 @@ export default function PlayerTabs({ player, tabs, initialTab }: PlayerTabsProps
     <div className="flex flex-col w-full h-full">
       {/* Tab bar */}
       <div
-        className="sticky top-16 z-10 w-full bg-gray-800/95 backdrop-blur-md border-b border-gray-700 py-2 px-0"
+        className="sticky top-16 z-10 w-full bg-gray-800/95 backdrop-blur-md border-b border-gray-700 py-2 px-4"
         onKeyDown={handleKeyDown}
       >
-        <div className="w-full flex gap-2" role="tablist">
+        <div className="flex flex-wrap gap-2" role="tablist">
           {tabs.map(({ id, label }) => {
             const selected = activeTab === id;
             return (

@@ -19,6 +19,15 @@ export async function GET(request: Request, { params }: { params: Promise<{ year
         tourney_level: selectedLevels.length ? { in: selectedLevels } : undefined,
         team_event: false,
         round: 'F', // solo vincitori titoli
+        // Exclude finals where score contains "WEA" (e.g., walkover) but keep null scores
+        AND: [
+          {
+            OR: [
+              { score: null },
+              { score: { not: { contains: 'WEA' } } }
+            ]
+          }
+        ]
       },
       select: {
         year: true,
@@ -49,8 +58,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ year
 
     const allWinners = Array.from(winnersMap.values());
 
-    const sortedOldest = allWinners.sort((a,b) => b.age - a.age);
-    const sortedYoungest = allWinners.sort((a,b) => a.age - b.age);
+    // Clone before sorting because sort() mutates the array
+    const sortedOldest = [...allWinners].sort((a, b) => b.age - a.age);
+    const sortedYoungest = [...allWinners].sort((a, b) => a.age - b.age);
 
     if (full) {
       return NextResponse.json({

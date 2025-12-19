@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Match, SortKey, SortDirection } from "@/types";
 import { getFlagFromIOC } from "@/lib/utils";
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 
 interface MatchTableProps {
   matches: Match[];
@@ -12,6 +12,7 @@ interface MatchTableProps {
   setSortKey: (key: SortKey) => void;
   setSortDir: (dir: SortDirection) => void;
   playerId: string;
+  onHeaderHeightChange?: (h: number) => void;
 }
 
 function renderNameWithSeedEntry(name: string, seed?: number | null, entry?: string | null) {
@@ -43,8 +44,20 @@ export default function MatchTable({
   setSortKey,
   setSortDir,
   playerId,
+  onHeaderHeightChange,
 }: MatchTableProps) {
   const [showWinnerStats, setShowWinnerStats] = useState(true);
+
+  const theadRef = useRef<HTMLTableSectionElement | null>(null);
+  useEffect(() => {
+    if (!onHeaderHeightChange) return;
+    const el = theadRef.current;
+    if (!el) return;
+    const report = () => onHeaderHeightChange(el.getBoundingClientRect().height);
+    report();
+    window.addEventListener('resize', report);
+    return () => window.removeEventListener('resize', report);
+  }, [onHeaderHeightChange, matches]);
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) setSortDir(sortDir === "asc" ? "desc" : "asc");
@@ -52,38 +65,10 @@ export default function MatchTable({
       setSortKey(key);
       setSortDir("asc");
     }
-  };
-
-  const topScrollRef = useRef<HTMLDivElement | null>(null);
-  const bottomScrollRef = useRef<HTMLDivElement | null>(null);
-  const bottomInnerRef = useRef<HTMLDivElement | null>(null);
+  }; 
 
   useEffect(() => {
-    const top = topScrollRef.current;
-    const bottom = bottomScrollRef.current;
-    const inner = bottomInnerRef.current;
-    if (!top || !bottom || !inner) return;
-
-    const syncWidths = () => { inner.style.width = `${top.scrollWidth}px`; };
-    syncWidths();
-
-    const onTopScroll = () => (bottom.scrollLeft = top.scrollLeft);
-    const onBottomScroll = () => (top.scrollLeft = bottom.scrollLeft);
-
-    top.addEventListener("scroll", onTopScroll);
-    bottom.addEventListener("scroll", onBottomScroll);
-
-    const ro = new ResizeObserver(syncWidths);
-    ro.observe(top);
-
-    window.addEventListener("resize", syncWidths);
-
-    return () => {
-      top.removeEventListener("scroll", onTopScroll);
-      bottom.removeEventListener("scroll", onBottomScroll);
-      ro.disconnect();
-      window.removeEventListener("resize", syncWidths);
-    };
+    // no-op: kept for parity if needed later
   }, [matches]);
 
   const statsColumns = useMemo(() => showWinnerStats
@@ -106,25 +91,26 @@ export default function MatchTable({
 
   if (!matches || matches.length === 0) return <p className="m-0 p-0">No matches found.</p>;
 
-  const thBase = "px-2 py-1 text-gray-200 text-sm text-center";
-  const tdBase = "px-2 py-1 text-sm text-center";
+  // Compact mobile styles: tiny paddings and font so the full table can fit in one viewport
+  const thBase = "first:pl-0 px-1 py-0.5 text-gray-200 text-[10px] text-center whitespace-nowrap sm:first:pl-0 sm:px-2 sm:py-1 sm:text-sm";
+  const tdBase = "first:pl-0 px-1 py-0.5 text-[10px] text-center whitespace-nowrap sm:first:pl-0 sm:px-2 sm:py-1 sm:text-sm";
 
   return (
-    <div className="h-full w-full overflow-hidden flex flex-col">
-      {/* Toggle Winner/Loser stats */}
-      <div className="flex justify-end p-2 pb-0">
+    <div className="w-full flex flex-col">
+      {/* Toggle Winner/Loser stats (no extra button) */}
+      <div className="flex justify-end p-0">
         <button
           className="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
           onClick={() => setShowWinnerStats(!showWinnerStats)}
         >
           {showWinnerStats ? "Show Loser Stats" : "Show Winner Stats"}
         </button>
-      </div>
+      </div> 
 
-      {/* Scroll table */}
-      <div ref={topScrollRef} className="overflow-x-auto flex-shrink-0">
-        <table className="min-w-full border-collapse">
-          <thead>
+      {/* Table (no internal scrollbars) */}
+      <div className="min-w-0">
+        <table className="min-w-full border-collapse w-full">
+          <thead ref={theadRef}>
             <tr>
               {
                 [
@@ -140,16 +126,18 @@ export default function MatchTable({
                   { id: "best_of", label: "BoF", key: "best_of" as SortKey },
                   { id: "minutes", label: "Min", key: "minutes" as SortKey },
                   ...statsColumns.map(c => ({ ...c, key: c.id as SortKey })),
-                ].map(col => (
-                  <th
-                    key={col.id}
-                    className={`${thBase} cursor-pointer select-none`}
-                    onClick={() => col.key && handleSort(col.key)}
-                    title={'title' in col ? col.title : col.label}
-                  >
-                    {col.label} {sortKey === col.key ? (sortDir === "asc" ? "▲" : "▼") : ""}
-                  </th>
-                ))
+                ].map(col => {
+                  return (
+                    <th
+                      key={col.id}
+                      className={`${thBase} cursor-pointer select-none`}
+                      onClick={() => col.key && handleSort(col.key)}
+                      title={'title' in col ? col.title : col.label}
+                    >
+                      {col.label} {sortKey === col.key ? (sortDir === "asc" ? "▲" : "▼") : ""}
+                    </th>
+                  );
+                })
               }
             </tr>
           </thead>
@@ -195,26 +183,26 @@ export default function MatchTable({
                     </Link>
                   </td>
                   <td className={tdBase}>{m.score}</td>
-                  <td className={tdBase}>{m.best_of ?? "-"}</td>
-                  <td className={tdBase}>{m.minutes ?? "-"}</td>
+                  <td className={`${tdBase}`}>{m.best_of ?? "-"}</td>
+                  <td className={`${tdBase}`}>{m.minutes ?? "-"}</td>
 
                   {showWinnerStats ? (
                     <>
-                      <td className={tdBase}>{m.w_ace ?? "-"}</td>
-                      <td className={tdBase}>{m.w_df ?? "-"}</td>
-                      <td className={tdBase}>{pct(w1stIn, wSvpt)}</td>
-                      <td className={tdBase}>{pct(m.w_1stWon ?? null, w1stIn)}</td>
-                      <td className={tdBase}>{pct(m.w_2ndWon ?? null, w2ndPts)}</td>
-                      <td className={tdBase}>{ratio(m.w_bpSaved ?? null, m.w_bpFaced ?? null)}</td>
+                      <td className={`${tdBase}`}>{m.w_ace ?? "-"}</td>
+                      <td className={`${tdBase}`}>{m.w_df ?? "-"}</td>
+                      <td className={`${tdBase}`}>{pct(w1stIn, wSvpt)}</td>
+                      <td className={`${tdBase}`}>{pct(m.w_1stWon ?? null, w1stIn)}</td>
+                      <td className={`${tdBase}`}>{pct(m.w_2ndWon ?? null, w2ndPts)}</td>
+                      <td className={`${tdBase}`}>{ratio(m.w_bpSaved ?? null, m.w_bpFaced ?? null)}</td>
                     </>
                   ) : (
                     <>
-                      <td className={tdBase}>{m.l_ace ?? "-"}</td>
-                      <td className={tdBase}>{m.l_df ?? "-"}</td>
-                      <td className={tdBase}>{pct(l1stIn, lSvpt)}</td>
-                      <td className={tdBase}>{pct(m.l_1stWon ?? null, l1stIn)}</td>
-                      <td className={tdBase}>{pct(m.l_2ndWon ?? null, l2ndPts)}</td>
-                      <td className={tdBase}>{ratio(m.l_bpSaved ?? null, m.l_bpFaced ?? null)}</td>
+                      <td className={`${tdBase}`}>{m.l_ace ?? "-"}</td>
+                      <td className={`${tdBase}`}>{m.l_df ?? "-"}</td>
+                      <td className={`${tdBase}`}>{pct(l1stIn, lSvpt)}</td>
+                      <td className={`${tdBase}`}>{pct(m.l_1stWon ?? null, l1stIn)}</td>
+                      <td className={`${tdBase}`}>{pct(m.l_2ndWon ?? null, l2ndPts)}</td>
+                      <td className={`${tdBase}`}>{ratio(m.l_bpSaved ?? null, m.l_bpFaced ?? null)}</td>
                     </>
                   )}
                 </tr>
@@ -222,12 +210,10 @@ export default function MatchTable({
             })}
           </tbody>
         </table>
+ 
       </div>
 
-      {/* Scrollbar inferiore */}
-      <div ref={bottomScrollRef} className="h-4 overflow-x-auto flex-shrink-0" aria-hidden="true">
-        <div ref={bottomInnerRef} className="h-1" />
-      </div>
+      {/* no internal scrollbar - page will scroll if needed */}
     </div>
   );
 }

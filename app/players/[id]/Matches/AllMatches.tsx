@@ -18,8 +18,7 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
   const [matches, setMatches] = useState<Match[]>([]);
   const [sortKey, setSortKey] = useState<SortKey>("tourney_date");
   const [sortDir, setSortDir] = useState<SortDirection>("asc");
-  // show only first 10 matches by default; toggle to show all
-  const [showAll, setShowAll] = useState<boolean>(false);
+  // show all matches by default (allow table to overflow if needed)
 
   const initialFilters: Record<string, string> = useMemo(() => {
     const obj: Record<string, string> = {};
@@ -120,6 +119,40 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
     });
   }, [matches, sortKey, sortDir]);
 
+  // compute W-L for display above the table
+  const { wins, losses, winPercentage } = useMemo(() => {
+    let w = 0; let l = 0;
+    (matches || []).forEach(m => {
+      if (!m.status) return;
+      if (String(m.winner_id) === String(playerId)) w++;
+      else if (String(m.loser_id) === String(playerId)) l++;
+    });
+    const pct = (w + l > 0) ? ((w / (w + l)) * 100).toFixed(2) : "0.00";
+    return { wins: w, losses: l, winPercentage: pct };
+  }, [matches, playerId]);
+
+  // Note: we intentionally allow the table to render all rows and overflow the container
+
+  // Measure W-L block and table header to align filters just below the table header
+  const wlRef = useRef<HTMLDivElement | null>(null);
+  const [wlHeight, setWlHeight] = useState<number>(0);
+  useEffect(() => {
+    const el = wlRef.current;
+    if (!el) return;
+    const report = () => setWlHeight(el.getBoundingClientRect().height);
+    report();
+    window.addEventListener('resize', report);
+    return () => window.removeEventListener('resize', report);
+  }, [wins, losses, winPercentage]);
+
+  const [tableHeaderHeight, setTableHeaderHeight] = useState<number>(0);
+  // extra offset (pixels) to push filters further down; tweak this value if you want larger gap
+  const extraOffsetPx = 24;
+
+  // show only last N matches by default
+  const DEFAULT_INITIAL_COUNT = 10;
+  const [showAll, setShowAll] = useState<boolean>(false);
+
   const updateUrl = (filters: Record<string, string | number>) => {
     const url = new URL(window.location.href);
     url.searchParams.set("tab", "matches");
@@ -178,44 +211,55 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
   };
 
   return (
-    <div className="w-full flex flex-row h-full">
+    <div className="w-full h-full">
+      <div className="w-full bg-gray-900/80 rounded-md p-0 flex gap-0 min-h-0 overflow-visible">
 
-      {/* Filtri */}
-      <aside className="w-[260px] h-full overflow-y-auto p-4">
-        <MatchesFilterPanel
-          playerId={playerId}
-          matches={matches}
-          allMatches={allMatches}
-          displayedMatches={showAll ? sortedMatches : sortedMatches.slice(0, 10)}
-          updateUrl={updateUrl}
-          onExplicitChange={updateUrlExplicit}
-        />
-      </aside>
-
-      {/* Tabella */}
-      <div className="flex-1 h-full min-h-0 overflow-hidden p-4">
-        <div className="w-full h-full">
-          <MatchTable
-            matches={showAll ? sortedMatches : sortedMatches.slice(0, 10)}
-            sortKey={sortKey}
-            sortDir={sortDir}
-            setSortKey={setSortKey}
-            setSortDir={setSortDir}
-            playerId={playerId}
-          />
-          {!showAll && sortedMatches.length > 10 && (
-            <div className="p-4 text-center">
-              <button
-                onClick={() => setShowAll(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              >
-                Show all matches ({sortedMatches.length})
-              </button>
+        {/* Filtri: left panel always visible inside unified container */}
+        <aside className="flex-shrink-0 overflow-visible p-0 pr-0 w-[160px]" style={{ marginTop: (wlHeight + tableHeaderHeight) ? (wlHeight + tableHeaderHeight + extraOffsetPx) + 'px' : undefined }}>
+          <div className="flex flex-col items-stretch w-full pr-0">
+            <div className="w-full pr-0">
+              <MatchesFilterPanel
+                playerId={playerId}
+                matches={matches}
+                allMatches={allMatches}
+                displayedMatches={sortedMatches}
+                updateUrl={updateUrl}
+                onExplicitChange={updateUrlExplicit}
+              />
             </div>
-          )}
-        </div>
-      </div>
+          </div>
+        </aside>
 
+        {/* Tabella inside the same unified container (no internal scroll) */}
+        <div className="flex-1 min-w-0 p-0">
+          <div className="w-full">
+            <div ref={wlRef} className="w-full text-center mb-2">
+              <div className="font-semibold text-xl sm:text-2xl leading-none">W-L: {wins}-{losses} ({winPercentage}%)</div>
+            </div>
+            <MatchTable
+              matches={showAll ? sortedMatches : sortedMatches.slice(0, DEFAULT_INITIAL_COUNT)}
+              sortKey={sortKey}
+              sortDir={sortDir}
+              setSortKey={setSortKey}
+              setSortDir={setSortDir}
+              playerId={playerId}
+              onHeaderHeightChange={setTableHeaderHeight}
+            />
+            {/* table may overflow the viewport so all rows remain visible */}
+            {sortedMatches.length > DEFAULT_INITIAL_COUNT && (
+              <div className="w-full flex justify-center mt-2">
+                <button
+                  className="px-3 py-1 bg-gray-800 border border-gray-700 text-sm text-white rounded hover:bg-gray-700"
+                  onClick={() => setShowAll(!showAll)}
+                >
+                  {showAll ? `Show latest ${DEFAULT_INITIAL_COUNT}` : `Show All matches`}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }

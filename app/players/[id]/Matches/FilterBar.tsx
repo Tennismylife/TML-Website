@@ -75,25 +75,25 @@ function Category({ category, onExplicitChange }: { category: CategoryNode, onEx
   }, [hasSelected]);
 
   return (
-    <div className="mt-2">
+    <div>
       <div
-        className={`flex items-center cursor-pointer select-none p-1 rounded-l-md transition-all ${
+        className={`flex items-center cursor-pointer select-none p-0 transition-all ${
           hasSelected
             ? "bg-yellow-600/20 border-l-4 border-yellow-400 font-bold"
             : "bg-transparent border-l-4 border-transparent font-semibold"
         }`}
         onClick={() => setOpen(!open)}
       >
-        <span className="mr-1">{open ? "▼" : "▶"}</span>
-        {category.label}
+        <span className="text-xs mr-2 leading-none" aria-hidden>{open ? "▼" : "▶"}</span>
+        <span className="ml-0">{category.label}</span>
       </div>
 
       {open && (
-        <div className="ml-4 mt-1">
+        <div className="ml-0 space-y-1">
           {category.children.map(filter => (
             <label
               key={`${category.label}-${filter.label}-${filter.value}`}
-              className={`flex items-center cursor-pointer mb-1 text-white ${
+              className={`flex items-center cursor-pointer text-white py-1 ${
                 category.selectedValue === filter.value ? "font-bold text-yellow-400" : ""
               }`}
             >
@@ -110,11 +110,11 @@ function Category({ category, onExplicitChange }: { category: CategoryNode, onEx
                     Surface: 'surface',
                     Round: 'round',
                     Result: 'result',
-                    'Opponent Rank': 'vsRank',
-                    'Opponent Age': 'vsAge',
-                    'Opponent Hand': 'vsHand',
-                    'Opponent Backhand': 'vsBackhand',
-                    'Opponent Entry': 'vsEntry',
+                    'vs Rank': 'vsRank',
+                    'vs Age': 'vsAge',
+                    'vs Hand': 'vsHand',
+                    'vs Backhand': 'vsBackhand',
+                    'vs Entry': 'vsEntry',
                     'Player Rank': 'asRank',
                     'Player Entry': 'asEntry',
                     'Sets': 'set',
@@ -131,7 +131,7 @@ function Category({ category, onExplicitChange }: { category: CategoryNode, onEx
                 }}
                 className="mr-2"
               />
-              {filter.label}
+              <span>{filter.label}</span>
             </label>
           ))}
         </div>
@@ -190,11 +190,11 @@ export default function FilterBar(props: FilterBarProps) {
     { label: "Surface", children: createChildren(surfaces, setSelectedSurface), selectedValue: selectedSurface },
     { label: "Round", children: createChildren(rounds, setSelectedRound), selectedValue: selectedRound },
     { label: "Result", children: createChildren(["Win","Loss","W by RET","L by RET","W by W/O","L by W/O"], setResultFilter), selectedValue: resultFilter },
-    { label: "Opponent Rank", children: createChildren(["Top1","Top5","Top10","Top20","Top50","Top100","11+","21+","51+","101+","Higher","Lower"], setVsRankFilter), selectedValue: vsRankFilter },
-    { label: "Opponent Age", children: createChildren(["Younger","Older","Under18","Under21","Under23","Over28","Over30","Over40"], setVsAgeFilter), selectedValue: vsAgeFilter },
-    { label: "Opponent Hand", children: createChildren(["Right","Left"], setVsHandFilter), selectedValue: vsHandFilter },
-    { label: "Opponent Backhand", children: createChildren(["One-handed","Two-handed"], setVsBackhandFilter), selectedValue: vsBackhandFilter },
-    { label: "Opponent Entry", children: createChildren(["Seeded","Unseeded","Qualifier","WC","Lucky Loser","Protected Ranking","Special Exempt"], setVsEntryFilter), selectedValue: vsEntryFilter },
+    { label: "vs Rank", children: createChildren(["Top1","Top5","Top10","Top20","Top50","Top100","11+","21+","51+","101+","Higher","Lower"], setVsRankFilter), selectedValue: vsRankFilter },
+    { label: "vs Age", children: createChildren(["Younger","Older","Under18","Under21","Under23","Over28","Over30","Over40"], setVsAgeFilter), selectedValue: vsAgeFilter },
+    { label: "vs Hand", children: createChildren(["Right","Left"], setVsHandFilter), selectedValue: vsHandFilter },
+    { label: "vs Backhand", children: createChildren(["One-handed","Two-handed"], setVsBackhandFilter), selectedValue: vsBackhandFilter },
+    { label: "vs Entry", children: createChildren(["Seeded","Unseeded","Qualifier","WC","Lucky Loser","Protected Ranking","Special Exempt"], setVsEntryFilter), selectedValue: vsEntryFilter },
     { label: "Player Rank", children: createChildren(["Top1","Top5","Top10","Top20","Top50","Top100","11+","21+","51+","101+","Higher","Lower"], setAsRankFilter), selectedValue: asRankFilter },
     { label: "Player Entry", children: createChildren(["Seeded","Unseeded","Qualifier","WC","Lucky Loser","Protected Ranking","Special Exempt"], setAsEntryFilter), selectedValue: asEntryFilter },
     { label: "Sets", children: createChildren(["Straights","Deciders","All Best of 5","3 Sets (of 5)","4-Setters","5-Setters","All Best of 3","2-Setters","3 Sets (of 3)"], setSetFilter), selectedValue: setFilter },
@@ -203,7 +203,7 @@ export default function FilterBar(props: FilterBarProps) {
   ];
 
   return (
-    <div className="p-4 bg-gray-900 bg-opacity-80 backdrop-blur-md rounded-md w-full">
+    <div className="p-0 pr-0 bg-transparent w-full text-sm space-y-2">
       {categories.map(cat => <Category key={cat.label} category={cat} onExplicitChange={props.onExplicitChange} />)}
     </div>
   );

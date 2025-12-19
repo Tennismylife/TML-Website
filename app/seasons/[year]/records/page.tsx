@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, use } from "react"; // Add use to imports
+import React, { useState, useEffect, use } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import CountSection from "./CountSection";
 import RoundsSection from "./RoundsSection";
 import AgesSection from "./AgesSection";
@@ -12,6 +13,10 @@ import { motion } from "framer-motion";
 
 export default function SeasonRecordsPage({ params }: { params: Promise<{ year: string }> }) {
   const { year } = use(params); // Unwrap the Promise
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
 
   const [activeTab, setActiveTab] = useState<
     | "count"
@@ -48,21 +53,62 @@ export default function SeasonRecordsPage({ params }: { params: Promise<{ year: 
     { key: "percentage-rounds", label: "Win % per Round" },
   ];
 
+  // Sync tab state with URL 'tab' param and update URL when tabs change
+  useEffect(() => {
+    const tabParam = searchParams.get("tab");
+    if (!tabParam) return;
+
+    let target = tabParam;
+    if (target === "ages") target = "ages-main";
+    if (target === "percentage") target = "percentage-overall";
+
+    const validKeys = new Set([
+      "count",
+      "rounds",
+      "ages-main",
+      "ages-youngest",
+      "ages-oldest",
+      "ages-titles",
+      "percentage-overall",
+      "percentage-rounds",
+      "rounds-on-entries",
+      "ages",
+      "percentage",
+    ]);
+
+    if (validKeys.has(target)) {
+      setActiveTab(target as typeof activeTab);
+      setShowAgesSubTabs(target.startsWith("ages"));
+      setShowPercentageSubTabs(target.startsWith("percentage"));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  const updateUrl = (tabKey: string) => {
+    const params = new URLSearchParams(Array.from(searchParams.entries()));
+    params.set("tab", tabKey);
+    const qs = params.toString();
+    router.push(`${pathname}${qs ? `?${qs}` : ""}`);
+  }; 
+
   const handleTabClick = (tabKey: string) => {
     if (tabKey === "ages") {
       setActiveTab("ages-main"); // default sub-tab
       setShowAgesSubTabs(true);
       setShowPercentageSubTabs(false);
+      updateUrl("ages-main");
     } else if (tabKey === "percentage") {
       setActiveTab("percentage-overall"); // default sub-tab
       setShowPercentageSubTabs(true);
       setShowAgesSubTabs(false);
+      updateUrl("percentage-overall");
     } else {
       setActiveTab(tabKey as typeof activeTab);
       setShowAgesSubTabs(false);
       setShowPercentageSubTabs(false);
+      updateUrl(tabKey);
     }
-  };
+  }; 
 
   // --- Filtri persistenti ---
   const [selectedSurfaces, setSelectedSurfaces] = useState<Set<string>>(new Set());
@@ -183,12 +229,16 @@ export default function SeasonRecordsPage({ params }: { params: Promise<{ year: 
                   {agesSubTabs.map((subTab) => (
                     <button
                       key={subTab.key}
-                      onClick={() => setActiveTab(subTab.key as typeof activeTab)}
+                      onClick={() => {
+                        setActiveTab(subTab.key as typeof activeTab);
+                        setShowAgesSubTabs(true);
+                        updateUrl(subTab.key);
+                      }}
                       className="block w-full text-left px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded"
                     >
                       {subTab.label}
                     </button>
-                  ))}
+                  ))} 
                 </div>
               )}
 
@@ -198,7 +248,11 @@ export default function SeasonRecordsPage({ params }: { params: Promise<{ year: 
                   {percentageSubTabs.map((subTab) => (
                     <button
                       key={subTab.key}
-                      onClick={() => setActiveTab(subTab.key as typeof activeTab)}
+                      onClick={() => {
+                        setActiveTab(subTab.key as typeof activeTab);
+                        setShowPercentageSubTabs(true);
+                        updateUrl(subTab.key);
+                      }}
                       className="block w-full text-left px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded"
                     >
                       {subTab.label}

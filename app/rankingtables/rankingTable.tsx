@@ -77,7 +77,9 @@ export default function RankingTable({
 
               const safeTournament = r.tournament.replace(/[^a-zA-Z0-9]+/g, "-");
 
-              const key = `t-${tourneyPart}-${r.year}-${safeTournament}`;
+              // Ensure keys are unique even if multiple rows share id/year/name/date
+              // Append the row index to guarantee uniqueness while keeping the key mostly stable
+              const key = `t-${tourneyPart}-${r.year}-${safeTournament}-${r.tourney_date ?? "nodate"}-${idx}`;
               const href = r.tourney_id
                 ? `/tournaments/${r.tourney_id}/${r.year}`
                 : undefined;
