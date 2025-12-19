@@ -181,8 +181,12 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
         url.searchParams.set(key, String(value));
       }
     });
-    console.debug('[AllMatches] replace ->', url.toString());
-    router.replace(url.toString(), { scroll: false });
+    // Use a relative path (pathname + search) to avoid full-page reloads
+    const pathname = window.location.pathname;
+    const searchString = url.searchParams.toString();
+    const newPath = pathname + (searchString ? '?' + searchString : '');
+    console.debug('[AllMatches] replace ->', newPath);
+    router.replace(newPath, { scroll: false });
   };
 
   // explicit change handler: used when user explicitly clicks a filter (will force delete even if it existed initially)
