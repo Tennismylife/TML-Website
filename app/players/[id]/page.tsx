@@ -15,6 +15,40 @@ export default function PlayerPage(props: any) {
   const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
+  const searchParams = (undefined as any); // placeholder for server-safe init
+
+  // Lifted UI state for child tabs (filters)
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    try {
+      return (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('tab')) || 'profile';
+    } catch {
+      return 'profile';
+    }
+  });
+
+  const [tournamentsFilters, setTournamentsFilters] = useState(() => ({
+    tourney: "",
+    level: "All",
+    surface: "All",
+    round: "All",
+    season: "All",
+    search: "",
+    sub: "events",
+  }));
+
+  const [h2hFilters, setH2HFilters] = useState(() => ({
+    year: "All" as number | "All",
+    level: "All",
+    surface: "All",
+    round: "All",
+    tournament: "All",
+    opponent: "",
+  }));
+
+  // URL sync guards
+  const lastAppliedRef = React.useRef<string | null>(null);
+  const replaceTimerRef = React.useRef<number | null>(null);
+
 
   useEffect(() => {
     const controller = new AbortController();
@@ -56,6 +90,84 @@ export default function PlayerPage(props: any) {
     return () => controller.abort();
   }, [playerId, router]);
 
+  // Initialize lifted filters from current URL on mount
+  useEffect(() => {
+    try {
+      const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
+      const t = params.get('tab');
+      if (t) setActiveTab(t);
+
+      // tournaments
+      setTournamentsFilters({
+        tourney: params.get('tourney') || "",
+        level: params.get('level') ? (params.get('level') as string) : "All",
+        surface: params.get('surface') || "All",
+        round: params.get('round') || "All",
+        season: params.get('year') || params.get('season') || "All",
+        search: params.get('search') || "",
+        sub: params.get('sub') || "events",
+      });
+
+      // h2h
+      setH2HFilters({
+        year: params.get('year') ? Number(params.get('year')) : "All",
+        level: params.get('level') || "All",
+        surface: params.get('surface') || "All",
+        round: params.get('round') || "All",
+        tournament: params.get('tourney') || "All",
+        opponent: params.get('opponent') || "",
+      });
+    } catch (err) {
+      // ignore
+    }
+  }, []);
+
+  // Centralized URL sync for lifted state
+  useEffect(() => {
+    const buildAndReplace = () => {
+      const params = new URLSearchParams();
+      params.set('tab', activeTab);
+
+      if (activeTab === 'tournaments') {
+        if (tournamentsFilters.tourney) params.set('tourney', tournamentsFilters.tourney);
+        if (tournamentsFilters.level && tournamentsFilters.level !== 'All') params.set('level', tournamentsFilters.level);
+        if (tournamentsFilters.surface && tournamentsFilters.surface !== 'All') params.set('surface', tournamentsFilters.surface);
+        if (tournamentsFilters.round && tournamentsFilters.round !== 'All') params.set('round', tournamentsFilters.round);
+        if (tournamentsFilters.season && tournamentsFilters.season !== 'All') params.set('year', String(tournamentsFilters.season));
+        if (tournamentsFilters.search && tournamentsFilters.search.trim()) params.set('search', tournamentsFilters.search);
+        if (tournamentsFilters.sub) params.set('sub', tournamentsFilters.sub);
+      }
+
+      if (activeTab === 'h2h') {
+        if (h2hFilters.year && h2hFilters.year !== 'All') params.set('year', String(h2hFilters.year));
+        if (h2hFilters.level && h2hFilters.level !== 'All') params.set('level', h2hFilters.level);
+        if (h2hFilters.surface && h2hFilters.surface !== 'All') params.set('surface', h2hFilters.surface);
+        if (h2hFilters.round && h2hFilters.round !== 'All') params.set('round', h2hFilters.round);
+        if (h2hFilters.tournament && h2hFilters.tournament !== 'All') params.set('tourney', h2hFilters.tournament);
+        if (h2hFilters.opponent && h2hFilters.opponent.trim()) params.set('opponent', h2hFilters.opponent);
+      }
+
+      const newQs = params.toString();
+      const newUrl = `${window.location.pathname}${newQs ? `?${newQs}` : ''}`;
+
+      if (lastAppliedRef.current === newUrl) return;
+      lastAppliedRef.current = newUrl;
+      if (replaceTimerRef.current) clearTimeout(replaceTimerRef.current);
+      replaceTimerRef.current = window.setTimeout(() => {
+        try {
+          router.replace(newUrl, { scroll: false });
+        } catch (err) {
+          // eslint-disable-next-line no-console
+          console.debug('[PlayerPage] router.replace failed:', err);
+          lastAppliedRef.current = null;
+        }
+        replaceTimerRef.current = null;
+      }, 150);
+    };
+
+    buildAndReplace();
+  }, [activeTab, tournamentsFilters, h2hFilters, router]);
+
   if (loading) return <p className="p-4 text-gray-400">Loading…</p>;
   if (error) return <p className="p-4 text-red-400">{error}</p>;
   if (!player) return null;
@@ -83,7 +195,15 @@ export default function PlayerPage(props: any) {
       </header>
 
       {/* Tabs */}
-      <PlayerTabs player={player} tabs={tabs} />
+      <PlayerTabs
+        player={player}
+        tabs={tabs}
+        setTab={(t: string) => setActiveTab(t)}
+        tournamentsFilters={tournamentsFilters}
+        setTournamentsFilters={(f: any) => setTournamentsFilters(prev => ({...prev, ...f}))}
+        h2hFilters={h2hFilters}
+        setH2HFilters={(f: any) => setH2HFilters(prev => ({...prev, ...f}))}
+      />
     </main>
   );
 }

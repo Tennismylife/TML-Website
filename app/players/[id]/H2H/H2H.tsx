@@ -8,21 +8,24 @@ import H2HTable from "./H2HTable";
 interface H2HPageProps {
   playerId: string;
   mainPlayerName: string; // nome completo del giocatore principale
+  filters?: {
+    year: number | "All";
+    level: string;
+    surface: string;
+    round: string;
+    tournament: string;
+    opponent: string;
+  };
+  setFilters?: (f: Partial<H2HPageProps['filters']>) => void;
 }
 
-export default function H2HPage({ playerId, mainPlayerName }: H2HPageProps) {
+export default function H2HPage({ playerId, mainPlayerName, filters = { year: "All", level: "All", surface: "All", round: "All", tournament: "All", opponent: "" }, setFilters }: H2HPageProps) {
   const [allMatches, setAllMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [filters, setFilters] = useState({
-    year: "All" as number | "All",
-    level: "All",
-    surface: "All",
-    round: "All",
-    tournament: "All",
-    opponent: "",
-  });
+  // Use lifted filters (fallback to props)
+  const localFilters = filters;
 
   // Fetch dei match H2H
   useEffect(() => {
@@ -72,15 +75,15 @@ export default function H2HPage({ playerId, mainPlayerName }: H2HPageProps) {
         allMatches={allMatches}
         loading={loading}
         error={error}
-        filters={filters}
-        setFilters={f => setFilters(prev => ({ ...prev, ...f }))}
+        filters={localFilters}
+        setFilters={f => setFilters ? setFilters(f) : undefined}
       />
       <H2HTable
         playerId={playerId}
         allMatches={displayedMatches}
         loading={loading}
         error={error}
-        filters={filters}
+        filters={localFilters}
       />
     </section>
   );

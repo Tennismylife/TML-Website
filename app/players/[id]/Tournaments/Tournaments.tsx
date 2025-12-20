@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import type { Match } from "@/types";
 import TournamentFilters from "./TournamentFilters";
 import TournamentGrid from "../TournamentGrid";
@@ -69,27 +68,22 @@ interface TournamentOption {
 
 interface TournamentsProps {
   playerId: string;
+  filters?: {
+    tourney: string;
+    level: string;
+    surface: string;
+    search: string;
+    round: string;
+    season: string;
+    sub: "events" | "summary";
+  };
+  setFilters?: (f: Partial<{ tourney: string; level: string; surface: string; search: string; round: string; season: string; sub: string; }>) => void;
 }
 
-export default function Tournaments({ playerId }: TournamentsProps) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
+export default function Tournaments({ playerId, filters = { tourney: "", level: "All", surface: "All", search: "", round: "All", season: "All", sub: "events" }, setFilters }: TournamentsProps) {
   const [allMatches, setAllMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const [selectedTourney, setSelectedTourney] = useState<string>("");
-  const [level, setLevel] = useState<string>(CODE_TO_LABEL[searchParams.get('level') || "All"] || "All");
-  const [surface, setSurface] = useState<string>(searchParams.get('surface') || "All");
-  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || "");
-  const [round, setRound] = useState<string>(searchParams.get('round') || "All");
-  // support both 'season' and 'year' query params (prefer 'season' then 'year')
-  const [season, setSeason] = useState<string>(searchParams.get('season') || searchParams.get('year') || "All");
-
-  const [subTab, setSubTab] = useState<"events" | "summary">(
-    (searchParams.get("sub") as "events" | "summary") || "events"
-  );
 
   // --- Fetch matches ---
   useEffect(() => {
@@ -209,16 +203,16 @@ export default function Tournaments({ playerId }: TournamentsProps) {
     return Array.from(map.values())
       .filter(r => r.level !== "D")
       .filter(r =>
-        (selectedTourney === "" ? true : r.tourney_id === selectedTourney) &&
-        (level === "All" ? true : r.level === LABEL_TO_CODE[level]) &&
-        (surface === "All" ? true : r.surface === surface) &&
-        (round === "All" ? true : round === "W" ? r.champion : roundWeight(r.bestRound) >= roundWeight(round)) &&
-        (season === "All" ? true : r.year.toString() === season) &&
-        (searchTerm.trim() === "" ? true : r.tourney_name.toLowerCase().includes(searchTerm.toLowerCase()))
+        (filters.tourney === "" ? true : r.tourney_id === filters.tourney) &&
+        (filters.level === "All" ? true : r.level === LABEL_TO_CODE[filters.level]) &&
+        (filters.surface === "All" ? true : r.surface === filters.surface) &&
+        (filters.round === "All" ? true : filters.round === "W" ? r.champion : roundWeight(r.bestRound) >= roundWeight(filters.round)) &&
+        (filters.season === "All" ? true : r.year.toString() === filters.season) &&
+        (filters.search.trim() === "" ? true : r.tourney_name.toLowerCase().includes(filters.search.toLowerCase()))
       )
       .sort((a, b) => b.year - a.year || a.order - b.order);
 
-  }, [allMatches, selectedTourney, level, surface, round, season, searchTerm]);
+  }, [allMatches, filters.tourney, filters.level, filters.surface, filters.round, filters.season, filters.search]);
 
   const roundOptions = ROUND_ORDER;
 
@@ -232,70 +226,28 @@ export default function Tournaments({ playerId }: TournamentsProps) {
     return allMatches.filter(m => m.tourney_id && tourneyIds.has(m.tourney_id));
   }, [allMatches, rows]);
 
-  // --- Sync URL ---
-  useEffect(() => {
-    // Only sync when the 'tab' query param is this tab to avoid racing with other tab components
-    const currentTab = searchParams.get('tab');
-    if (currentTab && currentTab !== 'tournaments') {
-      // eslint-disable-next-line no-console
-      console.debug('[Tournaments] sync skipped (active tab is not tournaments)');
-      return;
-    }
-
-    const url = new URL(window.location.href);
-    if (selectedTourney) url.searchParams.set('tourney', selectedTourney); else url.searchParams.delete('tourney');
-    if (level !== "All") url.searchParams.set('level', LABEL_TO_CODE[level] || level); else url.searchParams.delete('level');
-    if (surface !== "All") url.searchParams.set('surface', surface); else url.searchParams.delete('surface');
-    if (round !== "All") url.searchParams.set('round', round); else url.searchParams.delete('round');
-    // reflect as 'year' so external links using ?year=... are preserved
-    if (season !== "All") url.searchParams.set('year', season); else url.searchParams.delete('year');
-    if (searchTerm.trim()) url.searchParams.set('search', searchTerm); else url.searchParams.delete('search');
-    url.searchParams.set('sub', subTab);
-
-    const newUrl = url.pathname + url.search;
-    try {
-      if (typeof window !== 'undefined') {
-        const current = window.location.pathname + window.location.search;
-        if (current !== newUrl) {
-          // dev: log navigation
-          // eslint-disable-next-line no-console
-          console.debug('[Tournaments] replace to', newUrl);
-          router.replace(newUrl, { scroll: false });
-        } else {
-          // dev: suppressed
-          // eslint-disable-next-line no-console
-          console.debug('[Tournaments] replace suppressed (no change)');
-        }
-      } else {
-        router.replace(newUrl, { scroll: false });
-      }
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.debug('[Tournaments] router.replace failed:', err);
-    }
-  }, [selectedTourney, level, surface, round, season, searchTerm, subTab, router, searchParams]);
 
   return (
     <div className="h-full w-full p-4 overflow-auto section" style={{ backgroundColor: "rgba(31,41,55,0.95)", backdropFilter: "blur(4px)" }}>
       <div className="mb-4">
         <TournamentFilters
-          tournament={selectedTourney}
-          setTournament={setSelectedTourney}
+          tournament={filters.tourney}
+          setTournament={(t: string) => setFilters && setFilters({ tourney: t })}
           tournamentOptions={[{id:"", name:"All"}, ...tournamentOptions]}
-          level={level}
-          setLevel={setLevel}
+          level={filters.level}
+          setLevel={(lv: string) => setFilters && setFilters({ level: lv })}
           levelOptions={levelOptions}
-          surface={surface}
-          setSurface={setSurface}
+          surface={filters.surface}
+          setSurface={(s: string) => setFilters && setFilters({ surface: s })}
           surfaceOptions={surfaceOptions}
-          round={round}
-          setRound={setRound}
+          round={filters.round}
+          setRound={(r: string) => setFilters && setFilters({ round: r })}
           roundOptions={roundOptions}
-          season={season}
-          setSeason={setSeason}
+          season={filters.season}
+          setSeason={(s: string) => setFilters && setFilters({ season: s })}
           seasonOptions={seasonOptions}
-          search={searchTerm}
-          setSearch={setSearchTerm}
+          search={filters.search}
+          setSearch={(s: string) => setFilters && setFilters({ search: s })}
           loading={loading}
           error={error}
         />
@@ -304,12 +256,12 @@ export default function Tournaments({ playerId }: TournamentsProps) {
       {/* Subtab buttons */}
       <div className="flex gap-4 mb-4 border-b border-gray-700 pb-2">
         <button
-          onClick={() => setSubTab("events")}
-          className={`px-3 py-1 rounded-md ${subTab === "events" ? "text-white border-b-2 border-yellow-400" : "text-gray-400 hover:text-yellow-400"}`}
+          onClick={() => setFilters && setFilters({ sub: 'events' })}
+          className={`px-3 py-1 rounded-md ${filters.sub === "events" ? "text-white border-b-2 border-yellow-400" : "text-gray-400 hover:text-yellow-400"}`}
         >Events</button>
         <button
-          onClick={() => setSubTab("summary")}
-          className={`px-3 py-1 rounded-md ${subTab === "summary" ? "text-white border-b-2 border-yellow-400" : "text-gray-400 hover:text-yellow-400"}`}
+          onClick={() => setFilters && setFilters({ sub: 'summary' })}
+          className={`px-3 py-1 rounded-md ${filters.sub === "summary" ? "text-white border-b-2 border-yellow-400" : "text-gray-400 hover:text-yellow-400"}`}
         >Summary</button>
       </div>
 
@@ -319,7 +271,7 @@ export default function Tournaments({ playerId }: TournamentsProps) {
 
       {!loading && !error && rows.length > 0 && (
         <>
-          {subTab === "events" && (
+          {filters.sub === "events" && (
             <TournamentGrid
               tourneys={rows.map(r => ({
                 key: r.key,
@@ -339,7 +291,7 @@ export default function Tournaments({ playerId }: TournamentsProps) {
             />
           )}
 
-          {subTab === "summary" && <TournamentSummary filteredMatches={filteredMatches} />}
+          {filters.sub === "summary" && <TournamentSummary filteredMatches={filteredMatches} />}
         </>
       )}
     </div>

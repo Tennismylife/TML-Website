@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import type { Match } from "@/types";
 import { getLevelFullName } from "@/lib/utils";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
@@ -32,6 +32,11 @@ export default function H2HFilters({ mainPlayer, allMatches, loading, error, fil
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  // Guards for production race conditions
+  const lastAppliedRef = useRef<string | null>(null);
+  const replaceTimerRef = useRef<number | null>(null);
+  const lastAppliedClearRef = useRef<number | null>(null);
 
   // Debounce opponent search
   useEffect(() => {
@@ -65,14 +70,44 @@ export default function H2HFilters({ mainPlayer, allMatches, loading, error, fil
       if (debouncedOpponent && debouncedOpponent.trim() !== "") params.set("opponent", debouncedOpponent); else params.delete("opponent");
 
       const newUrl = `${pathname}${params.toString() ? `?${params.toString()}` : ""}`;
+
+      const lastAppliedKey = `${newUrl}`;
+      if (lastAppliedRef.current === lastAppliedKey) {
+        // eslint-disable-next-line no-console
+        console.debug('[H2HFilters] replace suppressed (already applied)');
+        return;
+      }
+
       try {
         if (typeof window !== 'undefined') {
           const current = window.location.pathname + window.location.search;
           if (current !== newUrl) {
             // dev: log navigation
-            // eslint-disable-next-line no-console
-            console.debug('[H2HFilters] replace to', newUrl);
-            router.replace(newUrl, { scroll: false });
+            if (process.env.NODE_ENV !== 'production') {
+              // eslint-disable-next-line no-console
+              console.debug('[H2HFilters] replace to', newUrl);
+            }
+
+            // mark in-flight immediately to avoid duplicated scheduling
+            lastAppliedRef.current = lastAppliedKey;
+            if (lastAppliedClearRef.current) clearTimeout(lastAppliedClearRef.current);
+            lastAppliedClearRef.current = window.setTimeout(() => {
+              if (lastAppliedRef.current === lastAppliedKey) lastAppliedRef.current = null;
+              lastAppliedClearRef.current = null;
+            }, 5000);
+
+            if (replaceTimerRef.current) clearTimeout(replaceTimerRef.current);
+            replaceTimerRef.current = window.setTimeout(() => {
+              try {
+                router.replace(newUrl, { scroll: false });
+                // lastAppliedRef remains as the applied marker
+              } catch (err) {
+                // eslint-disable-next-line no-console
+                console.debug('[H2HFilters] router.replace failed:', err);
+                if (lastAppliedRef.current === lastAppliedKey) lastAppliedRef.current = null;
+              }
+              replaceTimerRef.current = null;
+            }, 150);
           } else {
             // dev: suppressed
             // eslint-disable-next-line no-console
