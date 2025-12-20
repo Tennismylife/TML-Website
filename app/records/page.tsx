@@ -54,6 +54,8 @@ export function RecordsMain() {
   const lastUrlRecordRef = useRef<string | null>(null);
   // Avoid triggering an initial URL push that causes a double load
   const skipFirstUrlUpdateRef = useRef(true);
+  // Skip URL update when manually changing tab/subtab to avoid conflicts
+  const skipUrlUpdateRef = useRef(false);
 
   // --- Sub-tabs state ---
   const [activeSubTabs, setActiveSubTabs] = useState<Record<string, string>>({
@@ -149,6 +151,116 @@ export function RecordsMain() {
     h2h: [{ key: "count", label: "Count" }],
   };
 
+  const safeReplace = (url: string) => {
+    // Prefer router.replace so Next's internal router and useSearchParams update correctly
+    try {
+      router.replace(url, { scroll: false });
+      return;
+    } catch (err) {
+      // If router.replace is blocked or fails (e.g., restricted environment), fallback to history.replaceState
+      try {
+        const newUrl = new URL(url);
+        if (newUrl.href !== window.location.href) {
+          window.history.replaceState(null, '', newUrl.href);
+        }
+      } catch (err2) {
+        console.debug('[Records] both router.replace and history.replaceState failed:', err, err2);
+      }
+    }
+  };
+
+  const isFilterValid = (filter: 'surfaces' | 'levels' | 'rounds' | 'bestOf', tab: string, sub: string) => {
+    // Percentage → tutti i filtri attivi
+    if (tab === "percentage") return true;
+
+    // H2H Count → tutti i filtri attivi
+    if (tab === "h2h" && sub === "count") return true;
+
+    // Streak → wins
+    if (tab === "streak" && sub === "wins") return true;
+
+    // Streak → round
+    if (tab === "streak" && sub === "round") {
+      return ["levels", "surfaces", "rounds"].includes(filter);
+    }
+
+    // Ages → oldest / youngest
+    if (tab === "ages" && (sub === "oldest" || sub === "youngest")) {
+      return ["levels", "surfaces", "rounds"].includes(filter);
+    }
+
+    // Wins, Played, Ages, Percentage → tutti i filtri visibili (eccetto subtab che nascondono round/bestOf)
+    const hideRoundAndBestOfSubtabs = ["oldest","youngest","oldestWinners","youngestWinners"];
+    if (
+      ["wins","played"].includes(tab) || 
+      tab === "ages" || 
+      (tab === "seasons" && ["wins","played","percentage"].includes(sub)) ||
+      ((tab === "atage" || tab === "ageofnth") && ["wins","played"].includes(sub))
+    ) {
+      if (hideRoundAndBestOfSubtabs.includes(sub) && (filter === "rounds" || filter === "bestOf")) return false;
+      return true;
+    }
+
+    // Entries / Titles → Level e Surface
+    if (
+      ["entries","titles"].includes(tab) || 
+      ((tab === "same" || tab === "seasons") && ["entries","titles"].includes(sub)) ||
+      ((tab === "atage" || tab === "ageofnth") && ["entries","titles"].includes(sub)) ||
+      (tab === "neededto" && sub === "titles")
+    ) {
+      return ["levels","surfaces"].includes(filter);
+    }
+
+    // Count → Level, Surface, Round
+    if (tab === "count") {
+      return ["levels","surfaces","rounds"].includes(filter);
+    }
+
+    // Timespan
+    if (tab === "timespan") {
+      if (["entries","titles"].includes(sub)) return ["levels","surfaces"].includes(filter);
+      if (sub === "rounds") return ["levels","surfaces","rounds"].includes(filter);
+    }
+
+    // Roundsonentries
+    if (tab === "roundsonentries") {
+      if (sub === "titles") return ["levels","surfaces"].includes(filter);
+      if (sub === "round") return ["levels","surfaces","rounds"].includes(filter);
+    }
+
+    // Same
+    if (tab === "same") {
+      if (["wins","played","entries","titles"].includes(sub)) return ["levels","surfaces"].includes(filter);
+      if (sub === "round") return ["levels","surfaces","rounds"].includes(filter);
+    }
+
+    // Seasons
+    if (tab === "seasons") {
+      if (["wins","played","entries","titles"].includes(sub)) return ["levels","surfaces"].includes(filter);
+      if (sub === "round") return ["levels","surfaces","rounds","bestOf"].includes(filter);
+      if (sub === "percentage") return true;
+    }
+
+    // AtAge / AgeofNth
+    if (tab === "atage" || tab === "ageofnth") {
+      if (["wins","played","entries","titles","slams"].includes(sub)) return ["levels","surfaces"].includes(filter);
+      if (sub === "round") return ["levels","surfaces","rounds","bestOf"].includes(filter);
+    }
+
+    // NeededTo
+    if (tab === "neededto") {
+      if (sub === "titles") return ["levels","surfaces"].includes(filter);
+    }
+
+    // CounterSeasons
+    if (tab === "counterseasons") {
+      if (sub === "round") return ["levels","surfaces","rounds"].includes(filter);
+      if (sub === "titles") return ["levels","surfaces"].includes(filter);
+    }
+
+    return false;
+  };
+
   // --- Init query params ---
   useEffect(() => {
     const recordParam = searchParams.get("record");
@@ -213,6 +325,12 @@ export function RecordsMain() {
     // Skip the first automatic update (initialization from URL should not cause a push)
     if (skipFirstUrlUpdateRef.current) {
       skipFirstUrlUpdateRef.current = false;
+      return;
+    }
+
+    // Skip if manually changing tab/subtab
+    if (skipUrlUpdateRef.current) {
+      skipUrlUpdateRef.current = false;
       return;
     }
 
@@ -345,6 +463,15 @@ export function RecordsMain() {
                 setSelectedLevels(new Set());
                 setSelectedRounds("");
                 setSelectedBestOf(null);
+                // Update URL to reset filters
+                skipUrlUpdateRef.current = true;
+                const url = new URL(window.location.href);
+                url.searchParams.set('record', tab.key);
+                url.searchParams.delete('surface');
+                url.searchParams.delete('level');
+                url.searchParams.delete('round');
+                url.searchParams.delete('bestOf');
+                safeReplace(url.toString());
               }}
               className={`relative px-4 py-2 rounded-xl font-medium transition-colors duration-200 ${activeTab === tab.key ? 'text-white' : 'text-gray-300 hover:text-white'}`}
             >
@@ -364,7 +491,24 @@ export function RecordsMain() {
     {subTabs[tab.key].map(st => (
       <button
         key={st.key}
-        onClick={() => setActiveSubTabs(prev => ({ ...prev, [tab.key]: st.key }))}
+        onClick={() => {
+          // Update URL first
+          skipUrlUpdateRef.current = true;
+          const url = new URL(window.location.href);
+          url.searchParams.set('record', tab.key);
+          url.searchParams.set('subtab', st.key);
+          url.searchParams.delete('surface');
+          url.searchParams.delete('level');
+          url.searchParams.delete('round');
+          url.searchParams.delete('bestOf');
+          safeReplace(url.toString());
+          // Then reset filters
+          setActiveSubTabs(prev => ({ ...prev, [tab.key]: st.key }));
+          setSelectedSurfaces(new Set());
+          setSelectedLevels(new Set());
+          setSelectedRounds("");
+          setSelectedBestOf(null);
+        }}
         className={`px-3 py-1 rounded ${activeSubTabs[tab.key] === st.key ? "bg-gray-700 text-white" : "text-gray-300 hover:text-white hover:bg-gray-600"}`}
       >
         {st.label}
