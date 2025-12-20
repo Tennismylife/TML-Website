@@ -46,6 +46,15 @@ export default function H2HFilters({ mainPlayer, allMatches, loading, error, fil
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (!pathname) return;
+
+      // Only sync if tab query param indicates H2H is active
+      const tabParam = searchParams.get('tab');
+      if (tabParam && tabParam !== 'h2h') {
+        // eslint-disable-next-line no-console
+        console.debug('[H2HFilters] sync skipped (active tab is not h2h)');
+        return;
+      }
+
       const params = new URLSearchParams(searchParams?.toString() ?? "");
 
       if (filters.year !== "All") params.set("year", String(filters.year)); else params.delete("year");
@@ -55,7 +64,27 @@ export default function H2HFilters({ mainPlayer, allMatches, loading, error, fil
       if (filters.tournament !== "All") params.set("tourney", filters.tournament); else params.delete("tourney");
       if (debouncedOpponent && debouncedOpponent.trim() !== "") params.set("opponent", debouncedOpponent); else params.delete("opponent");
 
-      router.replace(`${pathname}${params.toString() ? `?${params.toString()}` : ""}`, { scroll: false });
+      const newUrl = `${pathname}${params.toString() ? `?${params.toString()}` : ""}`;
+      try {
+        if (typeof window !== 'undefined') {
+          const current = window.location.pathname + window.location.search;
+          if (current !== newUrl) {
+            // dev: log navigation
+            // eslint-disable-next-line no-console
+            console.debug('[H2HFilters] replace to', newUrl);
+            router.replace(newUrl, { scroll: false });
+          } else {
+            // dev: suppressed
+            // eslint-disable-next-line no-console
+            console.debug('[H2HFilters] replace suppressed (no change)');
+          }
+        } else {
+          router.replace(newUrl, { scroll: false });
+        }
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.debug('[H2HFilters] router.replace failed:', err);
+      }
     }, 200);
     return () => { clearTimeout(timeout); };
   }, [filters.year, filters.level, filters.surface, filters.round, filters.tournament, debouncedOpponent, router, pathname, searchParams]);

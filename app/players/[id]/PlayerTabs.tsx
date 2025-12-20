@@ -43,9 +43,17 @@ export default function PlayerTabs({ player, tabs, initialTab }: PlayerTabsProps
     const currentQs = typeof window !== "undefined" ? window.location.search.replace(/^\?/, "") : "";
 
     // Avoid triggering navigation if nothing actually changed
-    if (newQs === currentQs) return;
+    if (newQs === currentQs) {
+      // dev: log suppressed navigation
+      // eslint-disable-next-line no-console
+      console.debug('[PlayerTabs] handleTabClick: no-op navigation suppressed (qs unchanged)');
+      return;
+    }
 
     const newUrl = `${window.location.pathname}${newQs ? `?${newQs}` : ""}`;
+    // dev: log navigation
+    // eslint-disable-next-line no-console
+    console.debug('[PlayerTabs] navigate to', newUrl);
     router.push(newUrl, { scroll: false });
   };
 

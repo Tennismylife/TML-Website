@@ -234,6 +234,14 @@ export default function Tournaments({ playerId }: TournamentsProps) {
 
   // --- Sync URL ---
   useEffect(() => {
+    // Only sync when the 'tab' query param is this tab to avoid racing with other tab components
+    const currentTab = searchParams.get('tab');
+    if (currentTab && currentTab !== 'tournaments') {
+      // eslint-disable-next-line no-console
+      console.debug('[Tournaments] sync skipped (active tab is not tournaments)');
+      return;
+    }
+
     const url = new URL(window.location.href);
     if (selectedTourney) url.searchParams.set('tourney', selectedTourney); else url.searchParams.delete('tourney');
     if (level !== "All") url.searchParams.set('level', LABEL_TO_CODE[level] || level); else url.searchParams.delete('level');
@@ -243,8 +251,29 @@ export default function Tournaments({ playerId }: TournamentsProps) {
     if (season !== "All") url.searchParams.set('year', season); else url.searchParams.delete('year');
     if (searchTerm.trim()) url.searchParams.set('search', searchTerm); else url.searchParams.delete('search');
     url.searchParams.set('sub', subTab);
-    router.replace(url.pathname + url.search, { scroll: false });
-  }, [selectedTourney, level, surface, round, season, searchTerm, subTab, router]);
+
+    const newUrl = url.pathname + url.search;
+    try {
+      if (typeof window !== 'undefined') {
+        const current = window.location.pathname + window.location.search;
+        if (current !== newUrl) {
+          // dev: log navigation
+          // eslint-disable-next-line no-console
+          console.debug('[Tournaments] replace to', newUrl);
+          router.replace(newUrl, { scroll: false });
+        } else {
+          // dev: suppressed
+          // eslint-disable-next-line no-console
+          console.debug('[Tournaments] replace suppressed (no change)');
+        }
+      } else {
+        router.replace(newUrl, { scroll: false });
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.debug('[Tournaments] router.replace failed:', err);
+    }
+  }, [selectedTourney, level, surface, round, season, searchTerm, subTab, router, searchParams]);
 
   return (
     <div className="h-full w-full p-4 overflow-auto section" style={{ backgroundColor: "rgba(31,41,55,0.95)", backdropFilter: "blur(4px)" }}>
