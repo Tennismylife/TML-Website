@@ -35,7 +35,7 @@ interface RecordData {
   bestOf?: number[];
 }
 
-function RecordsMain() {
+export function RecordsMain() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -52,6 +52,8 @@ function RecordsMain() {
   const [selectedRounds, setSelectedRounds] = useState<string>('');
   const [selectedBestOf, setSelectedBestOf] = useState<number | null>(null);
   const lastUrlRecordRef = useRef<string | null>(null);
+  // Avoid triggering an initial URL push that causes a double load
+  const skipFirstUrlUpdateRef = useRef(true);
 
   // --- Sub-tabs state ---
   const [activeSubTabs, setActiveSubTabs] = useState<Record<string, string>>({
@@ -204,9 +206,16 @@ function RecordsMain() {
     lastUrlRecordRef.current = urlRecord;
   }, [selectedRecord, searchParams]);
 
-  // --- Update URL query ---
+  // --- Update URL query (use replaceState and skip initial update to avoid double load) ---
   useEffect(() => {
     if (!selectedRecord) return;
+
+    // Skip the first automatic update (initialization from URL should not cause a push)
+    if (skipFirstUrlUpdateRef.current) {
+      skipFirstUrlUpdateRef.current = false;
+      return;
+    }
+
     const query = new URLSearchParams();
     query.set("record", selectedRecord);
     Array.from(selectedSurfaces).forEach(s => query.append("surface", s));
@@ -215,14 +224,54 @@ function RecordsMain() {
     if (selectedBestOf) query.set("bestOf", String(selectedBestOf));
     const sub = activeSubTabs[selectedRecord ?? ""];
     if (sub) query.set("subtab", sub);
-    router.push(`/records?${query.toString()}`, { scroll: false });
+
+    const pathname = '/records';
+    const newPath = pathname + (query.toString() ? '?' + query.toString() : '');
+
+    if (typeof window !== 'undefined' && window.history && typeof window.history.replaceState === 'function') {
+      // Update URL in-place without triggering a navigation
+      window.history.replaceState(null, '', newPath);
+    } else {
+      // Fallback to router.replace if history API is unavailable
+      router.replace(newPath, { scroll: false });
+    }
   }, [selectedRecord, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeSubTabs, router]);
 
-  // --- Fetch data ---
+  // --- Fetch data (debounced + guard) ---
+  const fetchTimerRef = useRef<number | null>(null);
+  const lastFetchKeyRef = useRef<string | null>(null);
+  const FETCH_DEBOUNCE_MS = 200; // ms
+
   useEffect(() => {
     if (!selectedRecord) return;
-    setLoading(true);
-    const fetchData = async () => {
+
+    // Clear any pending scheduled fetch
+    if (fetchTimerRef.current) {
+      clearTimeout(fetchTimerRef.current);
+      fetchTimerRef.current = null;
+    }
+
+    // Build a deterministic key for the current request params
+    const keyObj = {
+      r: selectedRecord,
+      s: Array.from(selectedSurfaces).sort(),
+      l: Array.from(selectedLevels).sort(),
+      round: selectedRounds,
+      bestOf: selectedBestOf,
+      sub: activeSubTabs[selectedRecord ?? ""],
+    };
+    const key = JSON.stringify(keyObj);
+
+    // If the last successful fetch used the same key, don't fetch again
+    if (lastFetchKeyRef.current === key) {
+      // nothing to do — already have the latest data for these params
+      return;
+    }
+
+    // Schedule a debounced fetch to avoid duplicate rapid requests
+    fetchTimerRef.current = window.setTimeout(async () => {
+      fetchTimerRef.current = null;
+      setLoading(true);
       try {
         if (!['percentage','ages','timespan','roundsonentries','same','seasons','atage','ageofnth','neededto','counterseasons','h2h','streak'].includes(selectedRecord)) {
           const query = new URLSearchParams();
@@ -231,25 +280,36 @@ function RecordsMain() {
           if (selectedRounds) query.append('round', selectedRounds);
           if (selectedBestOf) query.set("bestOf", String(selectedBestOf));
 
-          const res = await fetch(`/api/records/${selectedRecord}${query.toString() ? '?' + query.toString() : ''}`);
+          const url = `/api/records/${selectedRecord}${query.toString() ? '?' + query.toString() : ''}`;
+          console.debug('[Records] fetching', url);
+          const res = await fetch(url);
           if (!res.ok) throw new Error('Failed to fetch records');
           const fetchedData = await res.json();
           setData(fetchedData);
           setDisplayData(fetchedData);
+
+          // mark this key as the last successful fetch
+          lastFetchKeyRef.current = key;
         }
       } catch (err: any) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
+    }, FETCH_DEBOUNCE_MS);
+
+    return () => {
+      if (fetchTimerRef.current) {
+        clearTimeout(fetchTimerRef.current);
+        fetchTimerRef.current = null;
+      }
     };
-    fetchData();
-  }, [selectedRecord, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
+  }, [selectedRecord, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeSubTabs]);
 
   const renderTabContent = () => {
     if (loading) return <div className="text-gray-500 italic mb-2">Loading...</div>;
     switch(selectedRecord) {
-      case "wins": return <Wins/>;
+      case "wins": return <Wins topWinners={displayData?.topWinners} />;
       case "played": return <Played/>;
       case "count": return <Count selectedRounds={selectedRounds} top={displayData?.top} />;
       case "titles": return <Titles topTitles={displayData?.topTitles} />;

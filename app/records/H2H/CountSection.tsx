@@ -36,6 +36,7 @@ export default function CountSection({
 }: CountSectionProps) {
   const [h2hData, setH2hData] = useState<H2HRecord[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
 
@@ -50,6 +51,7 @@ export default function CountSection({
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+      setError(null);
       try {
         const query = new URLSearchParams();
         selectedSurfaces.forEach((s) => query.append('surface', s));
@@ -61,12 +63,16 @@ export default function CountSection({
         const res = await fetch(
           `/api/records/h2h/count?${query.toString()}`
         );
-        if (!res.ok) throw new Error('Failed to fetch H2H count');
+        if (!res.ok) {
+          const text = await res.text().catch(() => '');
+          throw new Error(`Failed to fetch H2H count: ${res.status} ${text}`);
+        }
 
         const data = await res.json();
         setH2hData(data.h2h || []);
       } catch (err) {
         console.error(err);
+        setError(err instanceof Error ? err.message : String(err));
         setH2hData([]);
       } finally {
         setLoading(false);
@@ -200,13 +206,11 @@ export default function CountSection({
       </div>
 
       {loading ? (
-        <div className="text-center py-8 text-gray-300">
-          Loading...
-        </div>
+        <div className="text-center py-8 text-gray-300">Loading...</div>
+      ) : error ? (
+        <div className="text-center py-8 text-red-600">{error}</div>
       ) : h2hData.length === 0 ? (
-        <div className="text-center py-8 text-gray-300">
-          No H2H records found for these filters.
-        </div>
+        <div className="text-center py-8 text-gray-300">No H2H records found for these filters.</div>
       ) : (
         <>
           {renderTable(currentData, (page - 1) * perPage)}

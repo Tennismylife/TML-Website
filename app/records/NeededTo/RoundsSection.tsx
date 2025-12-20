@@ -22,6 +22,7 @@ interface Player {
 export default function RoundsSection({ selectedSurfaces, selectedLevels, selectedRounds }: RoundsSectionProps) {
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hasFetched, setHasFetched] = useState(false);
   const [page, setPage] = useState(1);
   const [showAll, setShowAll] = useState(false);
   const [round_number, setRoundNumber] = useState(1);
@@ -56,6 +57,7 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
       console.error(err);
     } finally {
       setLoading(false);
+      setHasFetched(true);
     }
   };
 
@@ -75,23 +77,31 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
           </tr>
         </thead>
         <tbody>
-          {data.map((p, idx) => {
-            const rank = showAll ? idx + 1 : start + idx + 1;
-            return (
-              <tr key={p.player_id} className="hover:bg-gray-50">
-                <td className="border px-4 py-2 text-center">{rank}</td>
-                <td className="border px-4 py-2">
-                  <div className="flex items-center gap-2">
-                    <span>{getFlagFromIOC(p.ioc) || ''}</span>
-                    <Link href={`/players/${encodeURIComponent(p.player_id)}`} className="text-blue-700 hover:underline">
-                      {p.player_name}
-                    </Link>
-                  </div>
-                </td>
-                <td className="border px-4 py-2 text-center">{p.tournaments_played ?? 0}</td>
-              </tr>
-            );
-          })}
+          {data.length === 0 ? (
+            <tr>
+              <td colSpan={3} className="py-8 text-center text-gray-300">
+                {!hasFetched ? 'Select data' : 'No data found.'}
+              </td>
+            </tr>
+          ) : (
+            data.map((p, idx) => {
+              const rank = showAll ? idx + 1 : start + idx + 1;
+              return (
+                <tr key={p.player_id} className="hover:bg-gray-50">
+                  <td className="border px-4 py-2 text-center">{rank}</td>
+                  <td className="border px-4 py-2">
+                    <div className="flex items-center gap-2">
+                      <span>{getFlagFromIOC(p.ioc) || ''}</span>
+                      <Link href={`/players/${encodeURIComponent(p.player_id)}`} className="text-blue-700 hover:underline">
+                        {p.player_name}
+                      </Link>
+                    </div>
+                  </td>
+                  <td className="border px-4 py-2 text-center">{p.tournaments_played ?? 0}</td>
+                </tr>
+              );
+            })
+          )}
         </tbody>
       </table>
     </div>

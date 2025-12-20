@@ -25,6 +25,7 @@ export default function TitlesSection({
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [hasFetched, setHasFetched] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [minTitlesPerSeason, setMinTitlesPerSeason] = useState(1);
 
@@ -56,6 +57,7 @@ export default function TitlesSection({
       setPlayers([]);
     } finally {
       setLoading(false);
+      setHasFetched(true);
     }
   };
 
@@ -87,7 +89,7 @@ export default function TitlesSection({
                 colSpan={4}
                 className="py-8 text-center text-gray-300"
               >
-                No data available.
+                {!hasFetched ? 'Select data' : 'No data found.'}
               </td>
             </tr>
           ) : (

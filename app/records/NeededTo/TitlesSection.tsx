@@ -36,6 +36,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels }: Titl
   const [data, setData] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasFetched, setHasFetched] = useState(false);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
 
@@ -66,6 +67,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels }: Titl
       setData([]);
     } finally {
       setLoading(false);
+      setHasFetched(true);
     }
   };
 
@@ -134,7 +136,8 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels }: Titl
 
       {loading && <div className="text-center py-8 text-gray-300">Loading...</div>}
       {error && <div className="text-red-600 text-center py-2">{error}</div>}
-      {!loading && data.length === 0 && <div className="text-center py-8 text-gray-300">No data found.</div>}
+      {!loading && data.length === 0 && !hasFetched && <div className="text-center py-8 text-gray-300">Select data</div>}
+      {!loading && data.length === 0 && hasFetched && <div className="text-center py-8 text-gray-300">No data found.</div>}
 
       {!loading && data.length > 0 && renderTable(playersPage, start)}
 

@@ -15,8 +15,10 @@ interface Winner {
   wins: number;
 }
 
-export default function Wins() {
-  const [allWinners, setAllWinners] = useState<Winner[]>([]);
+interface WinsProps { topWinners?: Winner[] }
+
+export default function Wins({ topWinners }: WinsProps) {
+  const [allWinners, setAllWinners] = useState<Winner[]>(topWinners || []);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -32,8 +34,13 @@ export default function Wins() {
   // Reset page when filters change
   useEffect(() => setPage(1), [searchParams]);
 
-  // Fetch winners
+  // Fetch winners (skip fetch if parent provided data via `topWinners` prop)
   useEffect(() => {
+    if (topWinners && topWinners.length) {
+      setAllWinners(topWinners);
+      return;
+    }
+
     const fetchWinners = async () => {
       setLoading(true);
       try {
@@ -52,7 +59,7 @@ export default function Wins() {
       }
     };
     fetchWinners();
-  }, [searchParams]);
+  }, [searchParams, topWinners]);
 
   if (loading)
     return <div className="text-center py-8 text-gray-300">Loading...</div>;

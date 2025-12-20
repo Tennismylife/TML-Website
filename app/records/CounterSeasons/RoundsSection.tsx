@@ -27,6 +27,7 @@ export default function RoundsSection({
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [hasFetched, setHasFetched] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [minRoundPerSeason, setMinRoundPerSeason] = useState(1);
 
@@ -61,6 +62,7 @@ export default function RoundsSection({
       setPlayers([]);
     } finally {
       setLoading(false);
+      setHasFetched(true);
     }
   };
 
@@ -92,7 +94,7 @@ export default function RoundsSection({
                 colSpan={4}
                 className="py-8 text-center text-gray-300"
               >
-                No data available.
+                {!hasFetched ? 'Select data' : 'No data found.'}
               </td>
             </tr>
           ) : (
