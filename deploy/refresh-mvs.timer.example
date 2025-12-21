@@ -1,0 +1,25 @@
+# refresh-mvs.timer.example
+# Optional systemd timer that runs the one-shot refresh periodically (fallback to cron).
+# Configure and enable only if you prefer periodic refresh instead of event-driven.
+
+[Unit]
+Description=Run refresh-mvs one-shot periodically
+
+[Timer]
+# Run every 30 minutes
+OnCalendar=*:0/30
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+
+# Example service file to pair with this timer (one-shot):
+# /etc/systemd/system/refresh-mvs-once.service
+# [Unit]
+# Description=Run refresh-mvs once
+#
+# [Service]
+# Type=oneshot
+# EnvironmentFile=-/etc/default/refresh-mvs.env
+# WorkingDirectory=/path/to/your/app
+# ExecStart=/usr/bin/node /path/to/your/app/scripts/refresh-mvs-listener.js --once

@@ -1,0 +1,37 @@
+# refresh-mvs.service.example
+# Example systemd unit for the MV refresh listener.
+# Replace placeholders (WORKING_DIR, NODE_PATH, USER, GROUP) with values for your server.
+# Recommended: store DATABASE_URL in /etc/default/refresh-mvs.env and reference it with EnvironmentFile.
+
+[Unit]
+Description=Refresh materialized views listener
+After=network.target
+
+[Service]
+# Load environment variables from file (optional). Use - to ignore if file missing.
+EnvironmentFile=-/etc/default/refresh-mvs.env
+# Working directory for the service (replace)
+WorkingDirectory=/path/to/your/app
+# ExecStart should point to node and the script path inside your repo
+ExecStart=/usr/bin/node /path/to/your/app/scripts/refresh-mvs-listener.js
+# Alternative (if you prefer npm script):
+# ExecStart=/usr/bin/env bash -lc 'cd /path/to/your/app && npm run start-mvs-listener'
+
+# Run as a dedicated deploy user (replace)
+User=deploy
+Group=deploy
+Restart=always
+RestartSec=5
+# Increase if you need more open files
+LimitNOFILE=4096
+# Optional: set a specific timezone/locale if required
+# Environment=TZ=Europe/Rome
+
+[Install]
+WantedBy=multi-user.target
+
+# Usage (after editing placeholders):
+# sudo cp deploy/refresh-mvs.service.example /etc/systemd/system/refresh-mvs.service
+# sudo systemctl daemon-reload
+# sudo systemctl enable --now refresh-mvs.service
+# sudo journalctl -u refresh-mvs.service -f

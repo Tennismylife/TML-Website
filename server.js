@@ -1,4 +1,6 @@
-// server.js — Redis v4 + Next.js SSR/SSG + API JSON (decompressed + no loop)
+// server.js — Next.js + Redis v4
+// Sicurezza massima: homepage NON cachata, asset statici esclusi
+
 const express = require('express');
 const { createClient } = require('redis');
 const next = require('next');
@@ -13,10 +15,12 @@ const PAGE_TTL_SECONDS = 300;
 const CONTROL_PARAMS = new Set(['nocache', 'x-refresh']);
 
 let redis = null;
+
+/* ---------------- Redis init ---------------- */
 async function initRedis() {
   try {
     redis = createClient({ url: 'redis://127.0.0.1:6379' });
-    redis.on('error', (err) => console.warn('Redis error:', err));
+    redis.on('error', err => console.warn('Redis error:', err));
     await redis.connect();
     console.log('Redis connesso ? Cache attiva');
   } catch {
@@ -25,34 +29,41 @@ async function initRedis() {
   }
 }
 
+/* ---------------- Utils ---------------- */
 function shouldBypassCache(req) {
-  return req.method !== 'GET' || req.query.nocache || req.headers['x-refresh'] === '1';
+  return (
+    req.method !== 'GET' ||
+    req.query.nocache ||
+    req.headers['x-refresh'] === '1'
+  );
 }
 
-function buildCacheKey(req, type = 'page') {
-  const url = new URL(`${req.protocol}://${req.headers.host}${req.originalUrl}`);
+function buildCacheKey(req, type) {
+  const proto = req.headers['x-forwarded-proto'] || req.protocol;
+  const url = new URL(`${proto}://${req.headers.host}${req.originalUrl}`);
   const params = new URLSearchParams(url.search);
   const normalized = new URLSearchParams();
+
   for (const k of [...params.keys()].filter(k => !CONTROL_PARAMS.has(k))) {
     normalized.append(k, params.get(k));
   }
-  const queryString = normalized.toString();
-  return `tennismylife:${type}:${req.path}${queryString ? `?${queryString}` : ''}`;
+
+  const qs = normalized.toString();
+  return `tennismylife:${type}:${req.path}${qs ? `?${qs}` : ''}`;
 }
 
-// decompressione gzip se necessario
 function decompressIfGzip(buffer, headers) {
-  if (buffer && headers['content-encoding'] === 'gzip') {
+  if (headers && headers['content-encoding'] === 'gzip') {
     try {
       return zlib.gunzipSync(buffer);
-    } catch (e) {
-      console.warn('Decompressione gzip fallita, salvo buffer originale');
+    } catch {
       return buffer;
     }
   }
   return buffer;
 }
 
+/* ---------------- Bootstrap ---------------- */
 (async () => {
   await nextApp.prepare();
   await initRedis();
@@ -60,16 +71,15 @@ function decompressIfGzip(buffer, headers) {
   const server = express();
   server.use(express.json());
 
-  // Header X-Cache sempre visibile
+  /* Header sempre presente */
   server.use((req, res, next) => {
     res.setHeader('X-Cache', 'UNCACHED');
     next();
   });
 
-  // ---------- 1) READ Cache ----------
+  /* ---------------- CACHE READ ---------------- */
   server.use(async (req, res, next) => {
-    if (!redis) return next();
-    if (shouldBypassCache(req)) return next();
+    if (!redis || shouldBypassCache(req)) return next();
 
     const type = req.path.startsWith('/api') ? 'api' : 'page';
     const key = buildCacheKey(req, type);
@@ -78,33 +88,37 @@ function decompressIfGzip(buffer, headers) {
       const cachedStr = await redis.get(key);
       if (!cachedStr) return next();
 
-      const cachedBuffer = Buffer.from(cachedStr, 'utf-8'); // già decompresso
-      res.set('Content-Type', type === 'api' ? 'application/json; charset=utf-8' : 'text/html; charset=utf-8');
-      res.set('X-Cache', type.toUpperCase() + '-HIT');
-      res.set('Cache-Control', 'private, max-age=0');
+      const cached = JSON.parse(cachedStr);
+      const body = Buffer.from(cached.body, 'base64');
 
-      // ? Evita che il middleware WRITE scriva di nuovo
+      res.setHeader('Content-Type', cached.type);
+      res.setHeader('Cache-Control', 'private, max-age=0');
+      res.setHeader('X-Cache', `${type.toUpperCase()}-HIT`);
+      res.setHeader('X-SSR-COMPLETE', '1');
+
       res.fromCache = true;
+      console.log('[CACHE HIT]', key, body.length);
 
-      console.log('[CACHE READ]', key, 'HIT | Dimensione:', cachedBuffer.length);
-      return res.send(cachedBuffer);
+      return res.send(body);
     } catch (e) {
       console.error('[CACHE READ ERROR]', e);
       return next();
     }
   });
 
-  // ---------- 2) WRITE Cache ----------
+  /* ---------------- CACHE WRITE ---------------- */
   server.use((req, res, next) => {
-    if (!redis) return next();
-    if (shouldBypassCache(req)) return next();
-
-    // ? Se la risposta proviene già dalla cache, non riscrivere
-    if (res.fromCache) return next();
+    if (!redis || shouldBypassCache(req) || res.fromCache) return next();
 
     const type = req.path.startsWith('/api') ? 'api' : 'page';
-    const key = buildCacheKey(req, type);
 
+    /* Opzione A: homepage "/" NON cachata */
+    if (type === 'page' && req.path === '/') return next();
+
+    /* Escludi asset statici */
+    if (req.path.match(/\.(png|jpg|jpeg|gif|webp|svg|ico|css|js|map)$/i)) return next();
+
+    const key = buildCacheKey(req, type);
     const chunks = [];
     const originalWrite = res.write.bind(res);
     const originalEnd = res.end.bind(res);
@@ -119,20 +133,43 @@ function decompressIfGzip(buffer, headers) {
 
       try {
         if (res.statusCode === 200) {
-          let bodyBuffer = Buffer.concat(chunks);
-          bodyBuffer = decompressIfGzip(bodyBuffer, res.getHeaders()); // decompresso
+          const headers = res.getHeaders();
+          const ct = headers['content-type'] || '';
 
+          /* NO streaming / Flight / RSC */
+          if (
+            headers['transfer-encoding'] === 'chunked' ||
+            ct.includes('text/x-component') ||
+            ct.includes('application/octet-stream')
+          ) {
+            return originalEnd(chunk, ...args);
+          }
+
+          let bodyBuffer = Buffer.concat(chunks);
+          bodyBuffer = decompressIfGzip(bodyBuffer, headers);
+
+          /* HTML incompleto ? skip */
+          if (ct.includes('text/html')) {
+            const html = bodyBuffer.toString('utf-8');
+            if (!html.includes('__NEXT_DATA__')) {
+              console.warn('[CACHE SKIP] HTML incompleto', key);
+              return originalEnd(chunk, ...args);
+            }
+          }
+
+          /* SALVA in Redis */
           redis.setEx(
             key,
             type === 'api' ? API_TTL_SECONDS : PAGE_TTL_SECONDS,
-            bodyBuffer
-          ).then(() => console.log('[CACHE WRITE]', key, 'Dimensione:', bodyBuffer.length))
-           .catch(err => console.error('[CACHE WRITE ERROR]', key, err));
+            JSON.stringify({ body: bodyBuffer.toString('base64'), type: ct })
+          ).then(() => console.log('[CACHE STORED]', key, bodyBuffer.length))
+           .catch(err => console.error('[CACHE WRITE ERROR]', err));
 
           if (res.getHeader('X-Cache') === 'UNCACHED') {
-            res.setHeader('X-Cache', type.toUpperCase() + '-STORED');
+            res.setHeader('X-Cache', `${type.toUpperCase()}-STORED`);
           }
-          if (!res.getHeader('Cache-Control')) res.setHeader('Cache-Control', 'private, max-age=0');
+          res.setHeader('X-SSR-COMPLETE', '1');
+          res.setHeader('Cache-Control', 'private, max-age=0');
         }
       } catch (e) {
         console.error('[CACHE PROCESS ERROR]', e);
@@ -144,25 +181,26 @@ function decompressIfGzip(buffer, headers) {
     next();
   });
 
-  // ---------- 3) Next.js fallback ----------
+  /* ---------------- NEXT.JS FALLBACK ---------------- */
   server.all(/.*/, (req, res) => handle(req, res));
 
-  // ---------- 4) Avvio ----------
+  /* ---------------- START SERVER ---------------- */
   const PORT = process.env.PORT || 3000;
   const srv = server.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server avviato su http://localhost:${PORT}`);
-    console.log(redis ? 'Cache Redis attiva' : 'Cache disattivata');
+    console.log(`Server avviato ? http://localhost:${PORT}`);
+    console.log(redis ? 'Redis cache attiva' : 'Cache disattivata');
   });
 
-  // ---------- 5) Graceful shutdown ----------
+  /* ---------------- GRACEFUL SHUTDOWN ---------------- */
   const shutdown = async () => {
-    console.log('Chiusura server...');
-    srv.close(() => console.log('Server chiuso.'));
+    console.log('Shutdown...');
+    srv.close(() => console.log('Server chiuso'));
     if (redis) {
-      try { await redis.quit(); console.log('Redis chiuso.'); } catch {}
+      try { await redis.quit(); } catch {}
     }
     process.exit(0);
   };
+
   process.on('SIGINT', shutdown);
   process.on('SIGTERM', shutdown);
 })();
