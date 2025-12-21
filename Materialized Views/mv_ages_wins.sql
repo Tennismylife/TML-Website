@@ -1,6 +1,6 @@
-DROP MATERIALIZED VIEW IF EXISTS mv_wins_ages;
+DROP MATERIALIZED VIEW IF EXISTS mv_ages_wins;
 
-CREATE MATERIALIZED VIEW mv_wins_ages AS
+CREATE MATERIALIZED VIEW mv_ages_wins AS
 WITH ordered_wins AS (
   SELECT
     m.id,  -- necessario per ROW_NUMBER negli aggregati per dimensione

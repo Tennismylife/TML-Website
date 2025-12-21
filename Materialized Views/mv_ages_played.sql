@@ -1,6 +1,6 @@
-DROP MATERIALIZED VIEW IF EXISTS mv_played_ages;
+DROP MATERIALIZED VIEW IF EXISTS mv_ages_played;
 
-CREATE MATERIALIZED VIEW mv_played_ages AS
+CREATE MATERIALIZED VIEW mv_ages_played AS
 WITH base AS (
   SELECT
     m.id,  -- aggiunto per ROW_NUMBER

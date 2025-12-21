@@ -29,7 +29,7 @@ const MV_NAMES = [
   'mv_same_season_played',
   'mv_same_season_entries',
   'mv_same_season_titles',
-  'mv_total_entries',
+  'mv_all_entries',
   'mv_stats',
   'mv_streak_rounds',
   'mv_ages_entries',
@@ -42,14 +42,27 @@ const DEBOUNCE_MS = Number(process.env.MV_REFRESH_DEBOUNCE_MS) || 5000;
 async function refreshAll(sql) {
   const refreshConcurrently = process.env.REFRESH_CONCURRENTLY === '1' || false;
   console.log(new Date().toISOString(), 'Refreshing materialized views...');
+  const missing = [];
   for (const mv of MV_NAMES) {
     try {
+      // Check if materialized view exists before attempting refresh
+      const rows = await sql`SELECT to_regclass(${mv}) as reg`; // returns [{ reg: 'mv_name' }] or [{ reg: null }]
+      const exists = rows && rows[0] && rows[0].reg;
+      if (!exists) {
+        console.warn('MV not found, skipping', mv);
+        missing.push(mv);
+        continue;
+      }
+
       const cmd = refreshConcurrently ? `REFRESH MATERIALIZED VIEW CONCURRENTLY ${mv}` : `REFRESH MATERIALIZED VIEW ${mv}`;
       await sql.unsafe(cmd);
       console.log('Refreshed', mv);
     } catch (err) {
       console.error('Failed to refresh', mv, err.message || err);
     }
+  }
+  if (missing.length) {
+    console.warn('Some materialized views were missing and skipped:', missing.join(', '));
   }
   console.log(new Date().toISOString(), 'Refresh complete');
 }

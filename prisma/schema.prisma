@@ -414,7 +414,7 @@ model mvWinsAges {
   ages_by_round_json    Json?
   ages_by_best_of_json  Json?
 
-  @@map("mv_wins_ages") // nome della materialized view nel DB
+  @@map("mv_ages_wins") // nome della materialized view nel DB
   @@id([winner_id])
 }
 
@@ -427,7 +427,7 @@ model mVPlayedAges {
   ages_by_round_json     Json?
   ages_by_best_of_json   Json?
 
- @@map("mv_played_ages") // nome della materialized view nel DB
+ @@map("mv_ages_played") // nome della materialized view nel DB
   @@id([player_id])
 }
 
