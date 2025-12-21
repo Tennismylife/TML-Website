@@ -24,10 +24,13 @@ export async function GET(request: NextRequest, context: any) {
     return Response.json({ error: 'Invalid params' }, { status: 400 });
   }
 
+  const tourneyIdStr = String(id);
+  const yearNum = Number(year);
+
   const matches = await prisma.match.findMany({
     where: { 
-      tourney_id: id,
-      year: year
+      tourney_id: tourneyIdStr,
+      year: yearNum,
     },
   });
 

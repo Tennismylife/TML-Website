@@ -16,8 +16,6 @@ module.exports = {
       max_memory_restart: '200M',
       env: {
         NODE_ENV: 'production',
-        // Replace the DATABASE_URL placeholder with your real connection string
-        DATABASE_URL: 'postgres://user:pass@localhost:5432/tennis',
         MV_REFRESH_DEBOUNCE_MS: '5000',
         REFRESH_CONCURRENTLY: '0'
       },
