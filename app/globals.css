@@ -154,8 +154,13 @@ header {
   transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
+/* Ensure header links are white by default and allow hover to override */
+header a, header a:link, header a:visited {
+  color: #FFFFFF !important;
+}
+
 header a:hover {
-  color: #FBBF24;
+  color: #FBBF24 !important;
 }
 
 /* ----------------------

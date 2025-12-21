@@ -450,6 +450,19 @@ export function RecordsMain() {
 
   return (
     <main className="w-full min-h-screen p-4 bg-gray-900 text-white">
+      {/* Intro / Description */}
+      <section className="mb-6 text-gray-200">
+        <h1 className="text-2xl sm:text-3xl font-semibold mb-2 text-white">Records</h1>
+        <p className="hidden sm:block text-gray-300 leading-relaxed">
+          Welcome to the Records section. This area groups player and tournament records into topics like <strong>Wins</strong>, <strong>Played</strong>, <strong>Titles</strong>, <strong>Entries</strong>, <strong>Ages</strong>, <strong>Timespan</strong>, <strong>Percentage</strong>, <strong>Round-on-Entries</strong>, <strong>Same</strong> (same tournament), <strong>Seasons</strong>, <strong>At Age</strong>, <strong>Age of Nth</strong>, <strong>Needed To</strong>, <strong>Counter Seasons</strong>, <strong>H2H</strong> and <strong>Streak</strong>.
+          Each tab renders the component located under <code>app/records/</code> for that topic (for example, <strong>Wins</strong> uses <code>app/records/Wins/Wins.tsx</code>), and available subtabs refine the query (for example Ages → Oldest / Youngest; Timespan → Entries / Titles / Rounds).
+          Use the <em>surface</em>, <em>level</em>, <em>round</em> and <em>bestOf</em> filters to narrow the results; the UI enforces which filters are valid for each tab/subtab.
+        </p>
+        <p className="block sm:hidden text-gray-300">
+          Records are grouped by tab (Wins, Played, Titles, etc.) with optional subtabs and filters (surface, level, round, bestOf). Tap a tab to view top lists and open "View All" for the complete set.
+        </p>
+      </section>
+
       {/* Tabs */}
       <div className="mb-6 flex flex-wrap gap-2 bg-gray-800/40 rounded-2xl p-2 shadow-lg">
         {tabs.map(tab => (
@@ -520,7 +533,83 @@ export function RecordsMain() {
         ))}
       </div>
 
-      {/* Filters */}
+      {/* Records organization (under tabs) */}
+      {!selectedRecord && (
+      <section className="mt-4 mb-6 p-4 bg-gray-800/20 rounded-lg border border-white/10">
+        <h3 className="text-lg font-semibold mb-2 text-gray-200">How records are organized</h3>
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1 text-gray-300">
+            <ul className="space-y-2">
+              <li><strong>Wins</strong> → Players with the most career wins (see <code>app/records/Wins/Wins.tsx</code>).</li>
+              <li><strong>Played</strong> → Players with the most matches played.</li>
+              <li><strong>Titles / Entries</strong> → Counts for titles and tournament entries.</li>
+              <li><strong>Percentage</strong> → Top win percentages (configurable min matches).</li>
+              <li><strong>Ages / Timespan / Seasons / H2H / Streak</strong> → More specialized reports with subtabs (e.g., Ages → Oldest / Youngest; Timespan → Entries / Titles / Rounds).</li>
+            </ul>
+
+            <p className="mt-3 text-sm text-gray-400">Subtabs refine the query (for example, choose <em>Oldest</em> or <em>Youngest</em> under Ages); filters <code>surface</code>, <code>level</code>, <code>round</code> and <code>bestOf</code> apply where relevant.</p>
+          </div>
+
+          <div className="flex-1 hidden sm:flex items-center justify-center">
+            <svg width="420" height="220" viewBox="0 0 420 220" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Records organization diagram">
+              <defs>
+                <filter id="f1" x="-10%" y="-10%" width="120%" height="120%">
+                  <feDropShadow dx="0" dy="1" stdDeviation="2" floodOpacity="0.15"/>
+                </filter>
+              </defs>
+
+              {/* Left column */}
+              <rect x="10" y="20" width="130" height="28" rx="6" fill="#0f172a" stroke="#374151" strokeWidth="1" filter="url(#f1)"/>
+              <text x="75" y="38" fill="#d1d5db" fontSize="12" textAnchor="middle">Wins</text>
+
+              <rect x="10" y="58" width="130" height="28" rx="6" fill="#0f172a" stroke="#374151" strokeWidth="1"/>
+              <text x="75" y="76" fill="#d1d5db" fontSize="12" textAnchor="middle">Played</text>
+
+              <rect x="10" y="96" width="130" height="28" rx="6" fill="#0f172a" stroke="#374151" strokeWidth="1"/>
+              <text x="75" y="114" fill="#d1d5db" fontSize="12" textAnchor="middle">Titles / Entries</text>
+
+              <rect x="10" y="134" width="130" height="28" rx="6" fill="#0f172a" stroke="#374151" strokeWidth="1"/>
+              <text x="75" y="152" fill="#d1d5db" fontSize="12" textAnchor="middle">Percentage</text>
+
+              {/* Center hub */}
+              <rect x="160" y="60" width="100" height="36" rx="8" fill="#06202a" stroke="#0ea5a4" strokeWidth="1.5"/>
+              <text x="210" y="82" fill="#bbf7d0" fontSize="12" textAnchor="middle">Record Types</text>
+
+              {/* Right column */}
+              <rect x="290" y="20" width="120" height="28" rx="6" fill="#0f172a" stroke="#374151" strokeWidth="1"/>
+              <text x="350" y="38" fill="#d1d5db" fontSize="12" textAnchor="middle">Ages</text>
+
+              <rect x="290" y="58" width="120" height="28" rx="6" fill="#0f172a" stroke="#374151" strokeWidth="1"/>
+              <text x="350" y="76" fill="#d1d5db" fontSize="12" textAnchor="middle">Timespan</text>
+
+              <rect x="290" y="96" width="120" height="28" rx="6" fill="#0f172a" stroke="#374151" strokeWidth="1"/>
+              <text x="350" y="114" fill="#d1d5db" fontSize="12" textAnchor="middle">Seasons</text>
+
+              <rect x="290" y="134" width="120" height="28" rx="6" fill="#0f172a" stroke="#374151" strokeWidth="1"/>
+              <text x="350" y="152" fill="#d1d5db" fontSize="12" textAnchor="middle">H2H / Streak</text>
+
+              {/* Arrows left -> center */}
+              <defs>
+                <marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                  <path d="M0,0 L6,3 L0,6 L2,3 z" fill="#9CA3AF"/>
+                </marker>
+              </defs>
+
+              <line x1="140" y1="34" x2="160" y2="74" stroke="#9CA3AF" strokeWidth="1.5" markerEnd="url(#arrow)"/>
+              <line x1="140" y1="72" x2="160" y2="78" stroke="#9CA3AF" strokeWidth="1.5" markerEnd="url(#arrow)"/>
+              <line x1="140" y1="110" x2="160" y2="82" stroke="#9CA3AF" strokeWidth="1.5" markerEnd="url(#arrow)"/>
+              <line x1="140" y1="148" x2="160" y2="86" stroke="#9CA3AF" strokeWidth="1.5" markerEnd="url(#arrow)"/>
+
+              {/* Arrows center -> right */}
+              <line x1="260" y1="74" x2="290" y2="34" stroke="#9CA3AF" strokeWidth="1.5" markerEnd="url(#arrow)"/>
+              <line x1="260" y1="78" x2="290" y2="72" stroke="#9CA3AF" strokeWidth="1.5" markerEnd="url(#arrow)"/>
+              <line x1="260" y1="82" x2="290" y2="110" stroke="#9CA3AF" strokeWidth="1.5" markerEnd="url(#arrow)"/>
+              <line x1="260" y1="86" x2="290" y2="150" stroke="#9CA3AF" strokeWidth="1.5" markerEnd="url(#arrow)"/>
+            </svg>
+          </div>
+        </div>
+      </section>
+      )}
       {selectedRecord && (
         <FiltersComponent
           selectedSurfaces={selectedSurfaces}

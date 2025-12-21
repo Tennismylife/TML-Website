@@ -13,6 +13,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <main className="w-full px-0 py-6">
           {children}
         </main>
+
+        <footer className="text-sm text-gray-400 py-6 text-center">
+          © 2025 TennisMyLife - Tennis Data Records History
+        </footer>
       </body>
     </html>
   )

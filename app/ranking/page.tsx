@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import RankingTable, { Ranking } from "./RankingTable";
 
@@ -21,8 +21,16 @@ export default function RankingPage() {
 
   const [searchParamsClient, setSearchParamsClient] = useState<URLSearchParams | null>(null);
 
+  // Track last replaced search string to avoid duplicate router.replace calls
+  const lastReplacedSearchRef = React.useRef<string | null>(null);
+  // If there was an initial URL search (user-provided), suppress automatic replaces until the user interacts
+  const skipInitialReplaceRef = React.useRef<boolean>(false);
+  const userInteractedRef = React.useRef<boolean>(false);
+
   useEffect(() => {
-    setSearchParamsClient(new URLSearchParams(window.location.search));
+    const search = window.location.search || "";
+    setSearchParamsClient(new URLSearchParams(search));
+    if (search && search !== "") skipInitialReplaceRef.current = true;
   }, []);
 
   useEffect(() => {
@@ -59,16 +67,23 @@ export default function RankingPage() {
                 (d) => d.toISOString().slice(0, 10) === date.toISOString().slice(0, 10)
               )
             ) {
-              setSelectedYear(year);
-              setSelectedDate(date);
+              // Only update if values differ to avoid triggering loops
+              if (selectedYear !== year) setSelectedYear(year);
+              const selectedDateStr = selectedDate ? selectedDate.toISOString().slice(0,10) : null;
+              const dateStr = date.toISOString().slice(0,10);
+              if (selectedDateStr !== dateStr) setSelectedDate(date);
               return;
             }
           }
         }
 
         if (grouped.length) {
-          setSelectedYear(grouped[0].year);
-          setSelectedDate(grouped[0].dates[0]);
+          const defaultYear = grouped[0].year;
+          const defaultDate = grouped[0].dates[0];
+          if (selectedYear !== defaultYear) setSelectedYear(defaultYear);
+          const selectedDateStr = selectedDate ? selectedDate.toISOString().slice(0,10) : null;
+          const defaultDateStr = defaultDate.toISOString().slice(0,10);
+          if (selectedDateStr !== defaultDateStr) setSelectedDate(defaultDate);
         }
       } catch (err) {
         console.error("Errore fetch dates:", err);
@@ -82,8 +97,27 @@ export default function RankingPage() {
     const params = new URLSearchParams();
     if (selectedYear > 0) params.set("year", String(selectedYear));
     if (selectedDate) params.set("date", selectedDate.toISOString().slice(0, 10));
-    const newUrl = `${pathname}${params.toString() ? `?${params.toString()}` : ""}`;
+    const newSearch = params.toString() ? `?${params.toString()}` : "";
+
+    // Avoid unnecessary replace calls if search did not change or already replaced
+    if (typeof window !== 'undefined') {
+      const currentSearch = window.location.search || "";
+      if (currentSearch === newSearch) return;
+    }
+
+    // If there was an initial user-provided search, skip the first automatic replace to avoid overriding it
+    if (skipInitialReplaceRef.current) {
+      skipInitialReplaceRef.current = false;
+      // Record that we've already 'accepted' the user's search to suppress spurious future replaces
+      lastReplacedSearchRef.current = window.location.search || null;
+      return;
+    }
+
+    if (lastReplacedSearchRef.current === newSearch) return;
+
+    const newUrl = `${pathname}${newSearch}`;
     router.replace(newUrl, { scroll: false });
+    lastReplacedSearchRef.current = newSearch;
   }, [selectedYear, selectedDate, router, pathname]);
 
   useEffect(() => {
@@ -125,6 +159,8 @@ export default function RankingPage() {
             id="year-select"
             value={selectedYear}
             onChange={(e) => {
+              userInteractedRef.current = true;
+              skipInitialReplaceRef.current = false;
               const newYear = Number(e.target.value);
               setSelectedYear(newYear);
               const lastDate = datesByYear.find((d) => d.year === newYear)?.dates[0];
@@ -148,7 +184,7 @@ export default function RankingPage() {
           <select
             id="date-select"
             value={selectedDate?.toISOString().slice(0, 10) || ""}
-            onChange={(e) => setSelectedDate(new Date(e.target.value))}
+            onChange={(e) => { userInteractedRef.current = true; skipInitialReplaceRef.current = false; setSelectedDate(new Date(e.target.value)); }}
             className="w-full bg-gray-800 text-white px-3 py-2 rounded border border-gray-600"
           >
             {currentYearDates.map((date) => {

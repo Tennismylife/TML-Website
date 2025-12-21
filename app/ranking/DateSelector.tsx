@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 export interface DateItem {
   year: number;
@@ -38,8 +38,12 @@ export default function DateSelector({ data = [], selectedDate, onSelectDate }: 
   useEffect(() => {
     if (datesForYear.length) {
       // se la data selezionata non è più nell'anno corrente, prendi l'ultima
-      if (!selectedDate || selectedDate.getFullYear() !== selectedYear) {
-        onSelectDate(datesForYear[0]);
+      const candidate = datesForYear[0];
+      const candidateStr = candidate.toISOString().slice(0, 10);
+      const selectedStr = selectedDate ? selectedDate.toISOString().slice(0, 10) : null;
+      // Avoid calling onSelectDate when the selected date is already the candidate (prevents loops)
+      if (selectedStr !== candidateStr) {
+        onSelectDate(candidate);
       }
     }
   }, [selectedYear, datesForYear, selectedDate, onSelectDate]);
