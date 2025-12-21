@@ -16,10 +16,10 @@ module.exports = {
       max_memory_restart: '200M',
       env: {
         NODE_ENV: 'production',
-        // Replace the DATABASE_URL placeholder with your real connection string
-        DATABASE_URL: 'postgres://user:pass@localhost:5432/tennis',
-        MV_REFRESH_DEBOUNCE_MS: '5000',
-        REFRESH_CONCURRENTLY: '0'
+        // Prefer DATABASE_URL from the environment; fallback to placeholder for local dev
+        DATABASE_URL: process.env.DATABASE_URL || 'postgres://user:pass@localhost:5432/tennis',
+        MV_REFRESH_DEBOUNCE_MS: process.env.MV_REFRESH_DEBOUNCE_MS || '5000',
+        REFRESH_CONCURRENTLY: process.env.REFRESH_CONCURRENTLY || '0'
       },
       out_file: '/var/log/refresh-mvs/out.log',
       error_file: '/var/log/refresh-mvs/error.log',
