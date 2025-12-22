@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Pagination from "../../../components/Pagination";
@@ -13,6 +13,7 @@ interface WinsSectionProps {
   selectedLevels: string[];
   selectedRounds: string;
   selectedBestOf: number | null;
+  fetchEnabled?: boolean; // added
 }
 
 interface Player {
@@ -39,6 +40,7 @@ export default function WinsSection({
   selectedLevels,
   selectedRounds,
   selectedBestOf,
+  fetchEnabled = true, // added with default
 }: WinsSectionProps) {
   const [data, setData] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
@@ -53,7 +55,7 @@ export default function WinsSection({
   const perPage = 20;
 
   const fetchData = async (x: number) => {
-    if (!enabled) return;
+    if (!fetchEnabled) return;
     try {
       setLoading(true);
       setError(null);

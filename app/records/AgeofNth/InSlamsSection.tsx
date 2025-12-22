@@ -10,6 +10,7 @@ import { getFlagFromIOC } from "@/lib/utils";
 interface InSlamsSectionProps {
   selectedSurfaces: string[];
   selectedRounds: string;
+  fetchEnabled?: boolean; // added
 }
 
 interface Player {
@@ -48,7 +49,11 @@ function NInput({ value, onChange }: { value: number; onChange: (n: number) => v
   );
 }
 
-export default function InSlamsSection({ selectedSurfaces, selectedRounds }: InSlamsSectionProps) {
+export default function InSlamsSection({
+  selectedSurfaces,
+  selectedRounds,
+  fetchEnabled = true, // optional default
+}: InSlamsSectionProps) {
   const [data, setData] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -63,7 +68,7 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds }: InS
   const perPage = 20;
 
   const fetchData = async (n: number) => {
-    if (!enabled) return;
+    if (!fetchEnabled) return;
     try {
       setLoading(true);
       setError(null);

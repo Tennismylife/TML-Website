@@ -12,6 +12,7 @@ interface PlayedSectionProps {
   selectedLevels: string[];
   selectedRounds: string;
   selectedBestOf: number | null;
+  fetchEnabled?: boolean;
 }
 
 interface Player {
@@ -38,7 +39,7 @@ export default function PlayedSection({
   selectedLevels,
   selectedRounds,
   selectedBestOf,
-  fetchEnabled,
+  fetchEnabled = false,
 }: PlayedSectionProps) {
   const enabled = !!fetchEnabled;  const [data, setData] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);

@@ -11,6 +11,7 @@ import { playerMatchesUrl } from "../nav";
 interface TitlesSectionProps {
   selectedSurfaces: string[];
   selectedLevels: string[];
+  fetchEnabled?: boolean; // allow enabling/disabling fetching
 }
 
 interface Player {
@@ -32,7 +33,7 @@ function NInput({ value, onChange }: { value: number; onChange: (n: number) => v
   );
 }
 
-export default function TitlesSection({ selectedSurfaces, selectedLevels }: TitlesSectionProps) {
+export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchEnabled = true }: TitlesSectionProps) {
   const [data, setData] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -47,7 +48,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels }: Titl
   const perPage = 20;
 
   const fetchData = async (n: number) => {
-    if (!enabled) return;
+    if (!fetchEnabled) return;
     try {
       setLoading(true);
       setError(null);
