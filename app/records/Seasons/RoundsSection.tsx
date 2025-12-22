@@ -11,6 +11,8 @@ interface RoundsSectionProps {
   selectedSurfaces: string[];
   selectedLevels: string[];
   selectedRounds: string;
+  fetchEnabled?: boolean;
+  setFetchEnabled?: (v: boolean) => void;
 }
 
 interface SeasonRoundRecord {
@@ -21,7 +23,7 @@ interface SeasonRoundRecord {
   total_rounds: number;
 }
 
-export default function RoundsSection({ selectedSurfaces, selectedLevels, selectedRounds }: RoundsSectionProps) {
+export default function RoundsSection({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, setFetchEnabled }: RoundsSectionProps) {
   const [topSeasonRounds, setTopSeasonRounds] = useState<SeasonRoundRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -32,6 +34,8 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds]);
 
   useEffect(() => {
+    if (!fetchEnabled) return;
+
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -40,8 +44,9 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
         selectedLevels.forEach(l => query.append('level', l));
         if (selectedRounds) query.append('round', selectedRounds);
 
-        const res = await fetch(`/api/records/seasons/rounds?${query.toString()}`);
-        if (!res.ok) throw new Error('Failed to fetch rounds');
+        const url = `/api/records/seasons/rounds?${query.toString()}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Failed to fetch rounds')
         const data: SeasonRoundRecord[] = await res.json();
         setTopSeasonRounds(data);
       } catch (err) {
@@ -49,10 +54,11 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
         setTopSeasonRounds([]);
       } finally {
         setLoading(false);
+        setFetchEnabled?.(false);
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedRounds]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, setFetchEnabled]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!topSeasonRounds.length) return <div className="text-center py-8 text-gray-300 text-lg">No rounds found.</div>;

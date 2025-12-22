@@ -11,6 +11,8 @@ interface PlayedSectionProps {
   selectedLevels: string[];
   selectedRounds: string;
   selectedBestOf: number | null;
+  fetchEnabled?: boolean;
+  setFetchEnabled?: (v: boolean) => void;
 }
 
 type PlayedRecord = {
@@ -21,7 +23,7 @@ type PlayedRecord = {
   year: number;
 };
 
-export default function PlayedSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf }: PlayedSectionProps) {
+export default function PlayedSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled }: PlayedSectionProps) {
   const [topSeasonMatches, setTopSeasonMatches] = useState<PlayedRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModalMatches, setShowModalMatches] = useState(false);
@@ -32,6 +34,8 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
 
   useEffect(() => {
+    if (!fetchEnabled) return;
+
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -40,8 +44,9 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
         selectedLevels.forEach(l => query.append('level', l));
         if (selectedRounds) query.append('round', selectedRounds);
         if (selectedBestOf) query.append('best_of', selectedBestOf?.toString() || '');
-        const res = await fetch(`/api/records/seasons/played?${query.toString()}`);
-        if (!res.ok) throw new Error('Failed to fetch matches');
+        const url = `/api/records/seasons/played?${query.toString()}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Failed to fetch matches')
         const data: PlayedRecord[] = await res.json();
         setTopSeasonMatches(data || []);
       } catch (err) {
@@ -49,10 +54,11 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
         setTopSeasonMatches([]);
       } finally {
         setLoading(false);
+        setFetchEnabled?.(false);
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!topSeasonMatches.length) return <div className="text-center py-8 text-gray-300 text-lg">No matches found.</div>;

@@ -21,7 +21,8 @@ interface PlayerStat {
   percentage: number;
 }
 
-export default function Titles({ selectedSurfaces, selectedLevels, minEntries }: TitlesProps) {
+export default function Titles({ selectedSurfaces, selectedLevels, minEntries, fetchEnabled }: TitlesProps & { fetchEnabled?: boolean }) {
+  const enabled = !!fetchEnabled;
   const [data, setData] = useState<PlayerStat[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -39,7 +40,8 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries }:
         const queryString = query.toString();
         const url = `/api/records/roundsonentries/titles${queryString ? `?${queryString}` : ""}`;
 
-        const res = await fetch(url);
+          if (!enabled) return;
+      const res = await fetch(url);
         if (!res.ok) throw new Error("Failed to fetch data");
         const json = await res.json();
         setData(json.FinalWins || []);
@@ -53,7 +55,7 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries }:
     };
 
     fetchData();
-  }, [Array.from(selectedSurfaces).join(","), Array.from(selectedLevels).join(",")]);
+  }, [Array.from(selectedSurfaces).join(","), Array.from(selectedLevels).join("," , enabled)]);
 
   const filteredData = data.filter((p) => p.entries >= minEntries);
 

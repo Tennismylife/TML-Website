@@ -15,9 +15,10 @@ interface Winner {
   wins: number;
 }
 
-interface WinsProps { topWinners?: Winner[] }
+interface WinsProps { topWinners?: Winner[]; fetchEnabled?: boolean }
 
-export default function Wins({ topWinners }: WinsProps) {
+export default function Wins({ topWinners, fetchEnabled }: WinsProps) {
+  const enabled = !!fetchEnabled; // explicit boolean flag (default false) 
   const [allWinners, setAllWinners] = useState<Winner[]>(topWinners || []);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -42,6 +43,7 @@ export default function Wins({ topWinners }: WinsProps) {
     }
 
     const fetchWinners = async () => {
+      if (!enabled) return;
       setLoading(true);
       try {
         const params = new URLSearchParams(Array.from(searchParams.entries()));
@@ -59,7 +61,7 @@ export default function Wins({ topWinners }: WinsProps) {
       }
     };
     fetchWinners();
-  }, [searchParams, topWinners]);
+  }, [searchParams, topWinners, enabled]);
 
   if (loading)
     return <div className="text-center py-8 text-gray-300">Loading...</div>;

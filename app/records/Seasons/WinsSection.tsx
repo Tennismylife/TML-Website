@@ -12,6 +12,8 @@ interface WinsSectionProps {
   selectedLevels: string[];
   selectedRounds: string;
   selectedBestOf: number | null;
+  fetchEnabled?: boolean;
+  setFetchEnabled?: (v: boolean) => void;
 }
 
 type WinRecord = {
@@ -22,7 +24,7 @@ type WinRecord = {
   year: number;
 };
 
-export default function WinsSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf }: WinsSectionProps) {
+export default function WinsSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled }: WinsSectionProps) {
   const [topSameTournamentWins, setTopSameTournamentWins] = useState<WinRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -33,6 +35,8 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
 
   useEffect(() => {
+    if (!fetchEnabled) return;
+
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -42,8 +46,9 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
         if (selectedRounds) query.append('round', selectedRounds);
         if (selectedBestOf) query.append('best_of', selectedBestOf?.toString() || '');
 
-        const res = await fetch(`/api/records/seasons/wins?${query.toString()}`);
-        if (!res.ok) throw new Error('Failed to fetch wins');
+        const url = `/api/records/seasons/wins?${query.toString()}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Failed to fetch wins')
 
         const data: WinRecord[] = await res.json();
         setTopSameTournamentWins(data || []);
@@ -52,10 +57,11 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
         setTopSameTournamentWins([]);
       } finally {
         setLoading(false);
+        setFetchEnabled?.(false);
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!topSameTournamentWins.length) return <div className="text-center py-8 text-gray-300 text-lg">No wins found.</div>;

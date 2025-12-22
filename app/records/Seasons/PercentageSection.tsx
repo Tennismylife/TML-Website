@@ -11,6 +11,8 @@ interface PercentageSectionProps {
   selectedLevels: string[];
   selectedRounds: string;
   selectedBestOf: number | null;
+  fetchEnabled?: boolean;
+  setFetchEnabled?: (v: boolean) => void;
 }
 
 type PercentageRecord = {
@@ -23,7 +25,7 @@ type PercentageRecord = {
   Year: number;
 };
 
-export default function PercentageSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf }: PercentageSectionProps) {
+export default function PercentageSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled }: PercentageSectionProps) {
   const [seasonPercentageData, setSeasonPercentageData] = useState<PercentageRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -34,6 +36,8 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
 
   useEffect(() => {
+    if (!fetchEnabled) return;
+
     const fetchSeasonPercentage = async () => {
       setLoading(true);
       try {
@@ -43,7 +47,8 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
         if (selectedRounds) query.append('round', selectedRounds);
         if (selectedBestOf) query.append('best_of', selectedBestOf?.toString() || '');
 
-        const res = await fetch(`/api/records/seasons/percentage?${query.toString()}`);
+        const url = `/api/records/seasons/percentage?${query.toString()}`;
+        const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch season percentage');
 
         const data: PercentageRecord[] = await res.json();
@@ -53,10 +58,11 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
         setSeasonPercentageData([]);
       } finally {
         setLoading(false);
+        setFetchEnabled?.(false);
       }
     };
     fetchSeasonPercentage();
-  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!seasonPercentageData.length) return <div className="text-center py-8 text-gray-300 text-lg">No data found.</div>;

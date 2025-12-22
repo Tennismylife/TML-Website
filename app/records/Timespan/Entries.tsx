@@ -21,7 +21,8 @@ interface EntriesSectionProps {
   selectedLevels: string[];
 }
 
-export default function EntriesSection({ selectedSurfaces, selectedLevels }: EntriesSectionProps) {
+export default function EntriesSection({ selectedSurfaces, selectedLevels, fetchEnabled }: EntriesSectionProps & { fetchEnabled?: boolean }) {
+  const enabled = !!fetchEnabled;
   const [entries, setEntries] = useState<TimespanEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -33,6 +34,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels }: Ent
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!enabled) return;
       setLoading(true);
       try {
         const query = new URLSearchParams();
@@ -52,7 +54,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels }: Ent
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels]);
+  }, [selectedSurfaces, selectedLevels, enabled]);
 
   if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
   if (!entries.length) return <div className="text-center py-8 text-gray-300">No data available.</div>;

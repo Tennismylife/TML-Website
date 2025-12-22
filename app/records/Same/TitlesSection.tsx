@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
@@ -10,6 +10,8 @@ import Modal from '@/components/Modal';
 interface TitlesSectionProps {
   selectedSurfaces: string[];
   selectedLevels: string[];
+  fetchEnabled?: boolean;
+  setFetchEnabled?: (v: boolean) => void;
 }
 
 interface TitleRecord {
@@ -21,17 +23,23 @@ interface TitleRecord {
   tourney_name: string;
 }
 
-export default function TitlesSection({ selectedSurfaces, selectedLevels }: TitlesSectionProps) {
+export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, fetchRequestId }: TitlesSectionProps & { fetchRequestId?: string | null }) {
   const [allTitles, setAllTitles] = useState<TitleRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const perPage = 20;
   const searchParams = useSearchParams();
+  const lastRequestRef = useRef<string | null>(null);
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels]);
 
   useEffect(() => {
+    if (!fetchEnabled) return;
+    if (!fetchRequestId) return;
+    if (lastRequestRef.current === fetchRequestId) return;
+    lastRequestRef.current = fetchRequestId;
+
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -48,10 +56,11 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels }: Titl
         setAllTitles([]);
       } finally {
         setLoading(false);
+        setFetchEnabled?.(false);
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels]);
+  }, [selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, fetchRequestId]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!allTitles.length) return <div className="text-center py-8 text-gray-300 text-lg">No titles found.</div>;

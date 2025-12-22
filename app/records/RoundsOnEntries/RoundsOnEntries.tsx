@@ -9,9 +9,11 @@ interface RoundsonentriesProps {
   selectedLevels: Set<string>;
   selectedRounds: string;
   activeSubTab: string;
+  fetchEnabled?: boolean;
 }
 
-export default function Roundsonentries({ selectedSurfaces, selectedLevels, selectedRounds, activeSubTab }: RoundsonentriesProps) {
+export default function Roundsonentries({ selectedSurfaces, selectedLevels, selectedRounds, activeSubTab, fetchEnabled }: RoundsonentriesProps) {
+  const enabled = !!fetchEnabled;
   const [minEntries, setMinEntries] = useState(1);
 
   return (
@@ -32,13 +34,14 @@ export default function Roundsonentries({ selectedSurfaces, selectedLevels, sele
       </div>
 
       {activeSubTab === 'titles' ? (
-        <Titles selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} minEntries={minEntries} />
+        <Titles selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} minEntries={minEntries} fetchEnabled={enabled} />
       ) : (
         <Rounds
           selectedSurfaces={selectedSurfaces}
           selectedLevels={selectedLevels}
           selectedRounds={selectedRounds}
           minEntries={minEntries}
+          fetchEnabled={enabled}
         />
       )}
     </section>

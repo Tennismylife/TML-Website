@@ -14,7 +14,8 @@ interface Player {
   totalPlayed: number;
 }
 
-export default function Played() {
+export default function Played({ fetchEnabled }: { fetchEnabled?: boolean }) {
+  const enabled = !!fetchEnabled;
   const [allPlayers, setAllPlayers] = useState<Player[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);

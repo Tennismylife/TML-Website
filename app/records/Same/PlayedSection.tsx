@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
 import { playerMatchesUrl } from "../nav";
@@ -13,6 +13,8 @@ interface PlayedSectionProps {
   selectedLevels: string[];
   selectedRounds: string;
   selectedBestOf: number | null;
+  fetchEnabled?: boolean;
+  setFetchEnabled?: (v: boolean) => void;
 }
 
 interface PlayedRecord {
@@ -24,17 +26,23 @@ interface PlayedRecord {
   ioc: string;
 }
 
-export default function PlayedSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf }: PlayedSectionProps) {
+export default function PlayedSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId }: PlayedSectionProps & { fetchRequestId?: string | null }) {
   const [allPlayed, setAllPlayed] = useState<PlayedRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
   const perPage = 20;
+  const lastRequestRef = useRef<string | null>(null);
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
 
   useEffect(() => {
+    if (!fetchEnabled) return;
+    if (!fetchRequestId) return;
+    if (lastRequestRef.current === fetchRequestId) return;
+    lastRequestRef.current = fetchRequestId;
+
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -53,10 +61,11 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
         setAllPlayed([]);
       } finally {
         setLoading(false);
+        setFetchEnabled?.(false);
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!allPlayed.length) return <div className="text-center py-8 text-gray-300 text-lg">No matches found.</div>;

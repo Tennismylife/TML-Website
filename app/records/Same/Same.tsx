@@ -12,9 +12,12 @@ interface SameProps {
   selectedRounds: string;
   selectedBestOf: number | null;
   activeSubTab: string;
+  fetchEnabled?: boolean;
+  setFetchEnabled?: (v: boolean) => void;
+  fetchRequestId?: string | null;
 }
 
-export default function Same({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeSubTab }: SameProps) {
+export default function Same({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeSubTab, fetchEnabled, setFetchEnabled, fetchRequestId }: SameProps) {
   return (
     <section className="mb-8">
       {activeSubTab === 'wins' && (
@@ -23,6 +26,9 @@ export default function Same({ selectedSurfaces, selectedLevels, selectedRounds,
           selectedLevels={Array.from(selectedLevels)}
           selectedRounds={selectedRounds}
           selectedBestOf={selectedBestOf}
+          fetchEnabled={fetchEnabled}
+          setFetchEnabled={setFetchEnabled}
+          fetchRequestId={fetchRequestId}
         />
       )}
 
@@ -32,6 +38,9 @@ export default function Same({ selectedSurfaces, selectedLevels, selectedRounds,
           selectedLevels={Array.from(selectedLevels)}
           selectedRounds={selectedRounds}
           selectedBestOf={selectedBestOf}
+          fetchEnabled={fetchEnabled}
+          setFetchEnabled={setFetchEnabled}
+          fetchRequestId={fetchRequestId}
         />
       )}
 
@@ -39,6 +48,9 @@ export default function Same({ selectedSurfaces, selectedLevels, selectedRounds,
         <EntriesSection
           selectedSurfaces={Array.from(selectedSurfaces)}
           selectedLevels={Array.from(selectedLevels)}
+          fetchEnabled={fetchEnabled}
+          setFetchEnabled={setFetchEnabled}
+          fetchRequestId={fetchRequestId}
         />
       )}
       {activeSubTab === 'round' && (
@@ -46,6 +58,8 @@ export default function Same({ selectedSurfaces, selectedLevels, selectedRounds,
           selectedSurfaces={Array.from(selectedSurfaces)}
           selectedLevels={Array.from(selectedLevels)}
           selectedRound={selectedRounds}
+          fetchEnabled={fetchEnabled}
+          setFetchEnabled={setFetchEnabled}
         />
       )}
 
@@ -53,6 +67,9 @@ export default function Same({ selectedSurfaces, selectedLevels, selectedRounds,
         <TitlesSection
           selectedSurfaces={Array.from(selectedSurfaces)}
           selectedLevels={Array.from(selectedLevels)}
+          fetchEnabled={fetchEnabled}
+          setFetchEnabled={setFetchEnabled}
+          fetchRequestId={fetchRequestId}
         />
       )}
     </section>

@@ -15,7 +15,8 @@ interface Entry {
   entries: number;
 }
 
-export default function Entries() {
+export default function Entries({ fetchEnabled }: { fetchEnabled?: boolean }) {
+  const enabled = !!fetchEnabled; // default false
   const [allEntries, setAllEntries] = useState<Entry[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -31,6 +32,7 @@ export default function Entries() {
 
   useEffect(() => {
     const fetchEntries = async () => {
+      if (!enabled) return;
       setLoading(true);
       try {
         const params = new URLSearchParams(searchParams as any);
@@ -48,7 +50,7 @@ export default function Entries() {
       }
     };
     fetchEntries();
-  }, [searchParams]);
+  }, [searchParams, enabled]);
 
   if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
   if (!allEntries.length) return <div className="text-center py-8 text-gray-300">No data available.</div>;

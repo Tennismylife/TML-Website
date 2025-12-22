@@ -10,6 +10,8 @@ interface SameRoundSectionProps {
   selectedSurfaces: string[];
   selectedLevels: string[];
   selectedRound: string;
+  fetchEnabled?: boolean;
+  setFetchEnabled?: (enabled: boolean) => void;
 }
 
 type RoundEntryRecord = {
@@ -20,7 +22,7 @@ type RoundEntryRecord = {
   ioc: string | null;
 };
 
-export default function SameRoundSection({ selectedSurfaces, selectedLevels, selectedRound }: SameRoundSectionProps) {
+export default function SameRoundSection({ selectedSurfaces, selectedLevels, selectedRound, fetchEnabled, setFetchEnabled }: SameRoundSectionProps) {
   const [entries, setEntries] = useState<RoundEntryRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -31,6 +33,8 @@ export default function SameRoundSection({ selectedSurfaces, selectedLevels, sel
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRound]);
 
   useEffect(() => {
+    if (!fetchEnabled) return;
+
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -39,7 +43,8 @@ export default function SameRoundSection({ selectedSurfaces, selectedLevels, sel
         selectedLevels.forEach(l => query.append('level', l));
         if (selectedRound) query.append('round', selectedRound);
 
-        const res = await fetch(`/api/records/same/rounds?${query.toString()}`);
+        const url = `/api/records/same/rounds?${query.toString()}`;
+        const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch rounds');
         const data: RoundEntryRecord[] = await res.json();
         setEntries(data || []);
@@ -48,10 +53,11 @@ export default function SameRoundSection({ selectedSurfaces, selectedLevels, sel
         setEntries([]);
       } finally {
         setLoading(false);
+        setFetchEnabled?.(false);
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedRound]);
+  }, [selectedSurfaces, selectedLevels, selectedRound, fetchEnabled, setFetchEnabled]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!entries.length) return <div className="text-center py-8 text-gray-300 text-lg">No players found.</div>;

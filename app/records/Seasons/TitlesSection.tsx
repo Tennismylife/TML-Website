@@ -11,6 +11,8 @@ import Modal from '../Modal';
 interface TitlesSectionProps {
   selectedSurfaces: string[];
   selectedLevels: string[];
+  fetchEnabled?: boolean;
+  setFetchEnabled?: (v: boolean) => void;
 }
 
 type TitleRecord = {
@@ -21,7 +23,7 @@ type TitleRecord = {
   year: number;
 };
 
-export default function TitlesSection({ selectedSurfaces, selectedLevels }: TitlesSectionProps) {
+export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled }: TitlesSectionProps) {
   const [topSeasonTitles, setTopSeasonTitles] = useState<TitleRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModalTitles, setShowModalTitles] = useState(false);
@@ -32,14 +34,17 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels }: Titl
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels]);
 
   useEffect(() => {
+    if (!fetchEnabled) return;
+
     const fetchData = async () => {
       setLoading(true);
       try {
         const query = new URLSearchParams();
         selectedSurfaces.forEach(s => query.append('surface', s));
         selectedLevels.forEach(l => query.append('level', l));
-        const res = await fetch(`/api/records/seasons/titles?${query.toString()}`);
-        if (!res.ok) throw new Error('Failed to fetch titles');
+        const url = `/api/records/seasons/titles?${query.toString()}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Failed to fetch titles')
         const data: TitleRecord[] = await res.json();
         setTopSeasonTitles(data || []);
       } catch (err) {
@@ -47,10 +52,11 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels }: Titl
         setTopSeasonTitles([]);
       } finally {
         setLoading(false);
+        setFetchEnabled?.(false);
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels]);
+  }, [selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!topSeasonTitles.length) return <div className="text-center py-8 text-gray-300 text-lg">No titles found.</div>;

@@ -144,4 +144,23 @@ describe('Records - single fetch on filter change', () => {
     await userEvent.click(winsBtn);
     expect(screen.getByText('Wins')).toBeInTheDocument();
   });
+
+  it('hovering tabs does not trigger fetch; clicking activates fetch', async () => {
+    const fetchSpy = vi.fn();
+    global.fetch = fetchSpy as any;
+
+    render(<RecordsMain />);
+
+    const timespanBtn = screen.getByRole('button', { name: /Timespan/i });
+
+    // Hover and unhover without clicking — should NOT trigger fetch
+    await userEvent.hover(timespanBtn);
+    await userEvent.unhover(timespanBtn);
+    await new Promise((r) => setTimeout(r, 300)); // give debounce window
+    expect(fetchSpy).not.toHaveBeenCalled();
+
+    // Click should enable fetch and cause network call
+    await userEvent.click(timespanBtn);
+    await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+  });
 });

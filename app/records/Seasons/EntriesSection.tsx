@@ -9,6 +9,8 @@ import Modal from '../Modal';
 interface EntriesSectionProps {
   selectedSurfaces: string[];
   selectedLevels: string[];
+  fetchEnabled?: boolean;
+  setFetchEnabled?: (v: boolean) => void;
 }
 
 type EntryRecord = {
@@ -19,7 +21,7 @@ type EntryRecord = {
   year: number;
 };
 
-export default function EntriesSection({ selectedSurfaces, selectedLevels }: EntriesSectionProps) {
+export default function EntriesSection({ selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled }: EntriesSectionProps) {
   const [topSeasonEntries, setTopSeasonEntries] = useState<EntryRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModalEntries, setShowModalEntries] = useState(false);
@@ -30,14 +32,17 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels }: Ent
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels]);
 
   useEffect(() => {
+    if (!fetchEnabled) return;
+
     const fetchData = async () => {
       setLoading(true);
       try {
         const query = new URLSearchParams();
         selectedSurfaces.forEach(s => query.append('surface', s));
         selectedLevels.forEach(l => query.append('level', l));
-        const res = await fetch(`/api/records/seasons/entries?${query.toString()}`);
-        if (!res.ok) throw new Error('Failed to fetch entries');
+        const url = `/api/records/seasons/entries?${query.toString()}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Failed to fetch entries')
         const data: EntryRecord[] = await res.json();
         setTopSeasonEntries(data || []);
       } catch (err) {
@@ -45,10 +50,11 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels }: Ent
         setTopSeasonEntries([]);
       } finally {
         setLoading(false);
+        setFetchEnabled?.(false);
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels]);
+  }, [selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!topSeasonEntries.length) return <div className="text-center py-8 text-gray-300 text-lg">No entries found.</div>;

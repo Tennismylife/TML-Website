@@ -51,11 +51,21 @@ export function RecordsMain() {
   const [selectedLevels, setSelectedLevels] = useState<Set<string>>(new Set());
   const [selectedRounds, setSelectedRounds] = useState<string>('');
   const [selectedBestOf, setSelectedBestOf] = useState<number | null>(null);
+
+  // Only allow fetching records after the user explicitly activates a tab (or if the URL set the record)
+  const [fetchEnabled, setFetchEnabled] = useState(false);
+  const [fetchRequestId, setFetchRequestId] = useState<string | null>(null); // unique id per explicit fetch request (click/filter)
   const lastUrlRecordRef = useRef<string | null>(null);
   // Avoid triggering an initial URL push that causes a double load
   const skipFirstUrlUpdateRef = useRef(true);
   // Skip URL update when manually changing tab/subtab to avoid conflicts
   const skipUrlUpdateRef = useRef(false);
+
+  // Track the last user action reason so we only fetch on click/filter (not hover)
+  const lastUserActionRef = useRef<'none' | 'click' | 'filter'>('none');
+  const prevSelectedRecordRef = useRef<string | null>(null);
+
+
 
   // --- Sub-tabs state ---
   const [activeSubTabs, setActiveSubTabs] = useState<Record<string, string>>({
@@ -270,6 +280,10 @@ export function RecordsMain() {
     if (recordParam) {
       setSelectedRecord(recordParam);
       setActiveTab(recordParam);
+      // if page was loaded with ?record=..., enable fetch so initial view loads
+      setFetchEnabled(true);
+      lastUserActionRef.current = 'click';
+      prevSelectedRecordRef.current = recordParam;
     }
 
     const surfaceParams = searchParams.getAll("surface");
@@ -366,6 +380,9 @@ export function RecordsMain() {
   useEffect(() => {
     if (!selectedRecord) return;
 
+    // Don't fetch unless the user explicitly enabled fetches
+    if (!fetchEnabled) return;
+
     // Clear any pending scheduled fetch
     if (fetchTimerRef.current) {
       clearTimeout(fetchTimerRef.current);
@@ -392,6 +409,12 @@ export function RecordsMain() {
     // Schedule a debounced fetch to avoid duplicate rapid requests
     fetchTimerRef.current = window.setTimeout(async () => {
       fetchTimerRef.current = null;
+
+      // If no user action (click/filter) triggered this, and the record didn't change, skip fetching
+      if (lastUserActionRef.current === 'none' && prevSelectedRecordRef.current === selectedRecord) {
+        return;
+      }
+
       setLoading(true);
       try {
         if (!['percentage','ages','timespan','roundsonentries','same','seasons','atage','ageofnth','neededto','counterseasons','h2h','streak'].includes(selectedRecord)) {
@@ -411,11 +434,18 @@ export function RecordsMain() {
 
           // mark this key as the last successful fetch
           lastFetchKeyRef.current = key;
+          // remember which record we fetched for
+          prevSelectedRecordRef.current = selectedRecord;
+          // reset last user action (successful path)
+          lastUserActionRef.current = 'none';
+          console.debug('[Records] fetch completed for', selectedRecord, 'key', key);
         }
       } catch (err: any) {
         setError(err.message);
       } finally {
         setLoading(false);
+        // Always reset lastUserAction so transient errors do not cause repeated fetch attempts on hover
+        lastUserActionRef.current = 'none';
       }
     }, FETCH_DEBOUNCE_MS);
 
@@ -425,22 +455,22 @@ export function RecordsMain() {
         fetchTimerRef.current = null;
       }
     };
-  }, [selectedRecord, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeSubTabs]);
+  }, [selectedRecord, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeSubTabs, fetchEnabled]);
 
   const renderTabContent = () => {
     if (loading) return <div className="text-gray-500 italic mb-2">Loading...</div>;
     switch(selectedRecord) {
-      case "wins": return <Wins topWinners={displayData?.topWinners} />;
-      case "played": return <Played/>;
+      case "wins": return <Wins topWinners={displayData?.topWinners} fetchEnabled={fetchEnabled} />;
+      case "played": return <Played fetchEnabled={fetchEnabled} />;
       case "count": return <Count selectedRounds={selectedRounds} top={displayData?.top} />;
       case "titles": return <Titles topTitles={displayData?.topTitles} />;
-      case "entries": return <Entries />;
+      case "entries": return <Entries fetchEnabled={fetchEnabled} />;
       case "ages": return <Ages selectedSurfaces={Array.from(selectedSurfaces)} selectedLevels={Array.from(selectedLevels)} selectedRounds={selectedRounds} activeSubTab={activeSubTabs.ages} />;
-      case "timespan": return <Timespan selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedTab={activeSubTabs.timespan} onTabChange={(tab) => setActiveSubTabs(prev => ({...prev, timespan: tab}))} />;
+      case "timespan": return <Timespan selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedTab={activeSubTabs.timespan} onTabChange={(tab) => setActiveSubTabs(prev => ({...prev, timespan: tab}))} fetchEnabled={fetchEnabled} />;
       case "percentage": return <Percentage selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} />;
-      case "roundsonentries": return <Roundsonentries selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={activeSubTabs.roundsonentries} />;
-      case "same": return <Same selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.same} />;
-      case "seasons": return <Seasons selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.seasons} />;
+      case "roundsonentries": return <Roundsonentries selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={activeSubTabs.roundsonentries} fetchEnabled={fetchEnabled} />;
+      case "same": return <Same selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.same} fetchEnabled={fetchEnabled} setFetchEnabled={setFetchEnabled} fetchRequestId={fetchRequestId} />;
+      case "seasons": return <Seasons selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.seasons} fetchEnabled={fetchEnabled} setFetchEnabled={setFetchEnabled} />;
       case "atage": return <AtAge selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.atage} />;
       case "ageofnth": return <AgeofNth selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.ageofnth} />;
       case "neededto": return <NeededToSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={activeSubTabs.neededto} />;
@@ -480,7 +510,11 @@ export function RecordsMain() {
           >
             <button
               onClick={() => {
-                // Select tab and reset filters
+                // User clicked main tab: enable fetching and select tab
+                const requestId = String(Date.now());
+                setFetchEnabled(true);
+                setFetchRequestId(requestId);
+                lastUserActionRef.current = 'click';
                 setSelectedRecord(tab.key);
                 setActiveTab(tab.key);
                 setSelectedSurfaces(new Set());
@@ -516,7 +550,11 @@ export function RecordsMain() {
     {subTabs[tab.key].map(st => (
       <button
         key={st.key}
-        onClick={() => {
+        onClick={() => {          // User clicked a subtab: enable fetching and activate parent tab
+          const requestId = String(Date.now());
+          setFetchEnabled(true);
+          setFetchRequestId(requestId);
+          lastUserActionRef.current = 'click';
           // Update URL first
           skipUrlUpdateRef.current = true;
           const url = new URL(window.location.href);
@@ -625,13 +663,13 @@ export function RecordsMain() {
       {selectedRecord && (
         <FiltersComponent
           selectedSurfaces={selectedSurfaces}
-          setSelectedSurfaces={setSelectedSurfaces}
+          setSelectedSurfaces={(s) => { lastUserActionRef.current = 'filter'; setSelectedSurfaces(s); if (['same','seasons','atage','ageofnth','counterseasons','timespan'].includes(selectedRecord ?? '')) { const requestId = String(Date.now()); setFetchEnabled(true); setFetchRequestId(requestId); } }}
           selectedLevels={selectedLevels}
-          setSelectedLevels={setSelectedLevels}
+          setSelectedLevels={(l) => { lastUserActionRef.current = 'filter'; setSelectedLevels(l); if (['same','seasons','atage','ageofnth','counterseasons','timespan'].includes(selectedRecord ?? '')) { const requestId = String(Date.now()); setFetchEnabled(true); setFetchRequestId(requestId); } }}
           selectedRounds={selectedRounds}
-          setSelectedRounds={setSelectedRounds}
+          setSelectedRounds={(r) => { lastUserActionRef.current = 'filter'; setSelectedRounds(r); if (['same','seasons','atage','ageofnth','counterseasons','timespan'].includes(selectedRecord ?? '')) { const requestId = String(Date.now()); setFetchEnabled(true); setFetchRequestId(requestId); } }}
           selectedBestOf={selectedBestOf}
-          setSelectedBestOf={setSelectedBestOf}
+          setSelectedBestOf={(b) => { lastUserActionRef.current = 'filter'; setSelectedBestOf(b); if (['same','seasons','atage','ageofnth','counterseasons','timespan'].includes(selectedRecord ?? '')) { const requestId = String(Date.now()); setFetchEnabled(true); setFetchRequestId(requestId); } }}
           activeTab={activeTab ?? ""}
           activeSubTab={activeSubTabs[activeTab ?? ""] ?? ""}
         />

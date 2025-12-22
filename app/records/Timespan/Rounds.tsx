@@ -13,7 +13,8 @@ interface RoundsProps {
   selectedRounds: string;
 }
 
-export default function Rounds({ selectedSurfaces, selectedLevels, selectedRounds }: RoundsProps) {
+export default function Rounds({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled }: RoundsProps & { fetchEnabled?: boolean }) {
+  const enabled = !!fetchEnabled;
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -32,6 +33,7 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
         return;
       }
 
+        if (!enabled) return;
       setLoading(true);
       try {
         const query = new URLSearchParams();

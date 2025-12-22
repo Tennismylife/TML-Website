@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Pagination from "../../../components/Pagination";
@@ -12,6 +12,8 @@ interface WinsSectionProps {
   selectedLevels: string[];
   selectedRounds: string;
   selectedBestOf: number | null;
+  fetchEnabled?: boolean;
+  setFetchEnabled?: (v: boolean) => void;
 }
 
 interface Winner {
@@ -23,17 +25,23 @@ interface Winner {
   tourney_name: string;
 }
 
-export default function WinsSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf }: WinsSectionProps) {
+export default function WinsSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId }: WinsSectionProps & { fetchRequestId?: string | null }) {
   const [allWinners, setAllWinners] = useState<Winner[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const perPage = 20;
   const searchParams = useSearchParams();
+  const lastRequestRef = useRef<string | null>(null);
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
 
   useEffect(() => {
+    if (!fetchEnabled) return;
+    if (!fetchRequestId) return;
+    if (lastRequestRef.current === fetchRequestId) return;
+    lastRequestRef.current = fetchRequestId;
+
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -53,10 +61,11 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
         setAllWinners([]);
       } finally {
         setLoading(false);
+        setFetchEnabled?.(false);
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!allWinners.length) return <div className="text-center py-8 text-gray-300 text-lg">No wins found.</div>;

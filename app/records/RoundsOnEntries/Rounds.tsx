@@ -22,7 +22,8 @@ interface PlayerStat {
   percentage: number;
 }
 
-export default function Rounds({ selectedSurfaces, selectedLevels, selectedRounds, minEntries }: RoundsProps) {
+export default function Rounds({ selectedSurfaces, selectedLevels, selectedRounds, minEntries, fetchEnabled }: RoundsProps & { fetchEnabled?: boolean }) {
+  const enabled = !!fetchEnabled;
   const [data, setData] = useState<PlayerStat[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -45,7 +46,8 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
           `/api/records/roundsonentries/rounds?round=${selectedRounds}` +
           (queryString ? `&${queryString}` : "");
 
-        const res = await fetch(url);
+          if (!enabled) return;
+      const res = await fetch(url);
         if (!res.ok) throw new Error("Failed to fetch data");
         const json = await res.json();
         setData(json.FinalWins || []);
@@ -59,7 +61,7 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
     };
 
     fetchData();
-  }, [selectedRounds, Array.from(selectedSurfaces).join(","), Array.from(selectedLevels).join(",")]);
+  }, [selectedRounds, Array.from(selectedSurfaces).join(","), Array.from(selectedLevels).join(","), enabled]);
 
   const filteredData = data.filter(p => p.entries >= minEntries);
 
