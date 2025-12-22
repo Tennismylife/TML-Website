@@ -10,7 +10,7 @@ import { getFlagFromIOC } from "@/lib/utils";
 interface InSlamsSectionProps {
   selectedSurfaces: string[];
   selectedRounds: string;
-  fetchEnabled?: boolean; // added
+  fetchEnabled?: boolean;
 }
 
 interface Player {
@@ -49,11 +49,7 @@ function NInput({ value, onChange }: { value: number; onChange: (n: number) => v
   );
 }
 
-export default function InSlamsSection({
-  selectedSurfaces,
-  selectedRounds,
-  fetchEnabled = true, // optional default
-}: InSlamsSectionProps) {
+export default function InSlamsSection({ selectedSurfaces, selectedRounds, fetchEnabled = true }: InSlamsSectionProps) {
   const [data, setData] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -67,14 +63,14 @@ export default function InSlamsSection({
   const searchParams = useSearchParams();
   const perPage = 20;
 
-  const fetchData = async (n: number) => {
+  const fetchData = async () => {
     if (!fetchEnabled) return;
     try {
       setLoading(true);
       setError(null);
 
       const query = new URLSearchParams();
-      query.append("n", n.toString());
+      query.append("n", selectedN.toString());
       selectedSurfaces.forEach((s) => query.append("surface", s));
       if (selectedRounds) query.append("round", selectedRounds);
 
@@ -82,7 +78,6 @@ export default function InSlamsSection({
       const fetchedData = await res.json();
       setData(fetchedData);
       setPage(1);
-      setSelectedN(n);
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "Unknown error");
@@ -156,7 +151,7 @@ export default function InSlamsSection({
       <div className="mb-4 flex items-center gap-2">
         <NInput value={inputN} onChange={setInputN} />
         <button
-          onClick={() => fetchData(inputN)}
+          onClick={() => fetchData()}
           disabled={loading}
           className={`px-4 py-1 rounded ${
             loading ? "bg-gray-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"
