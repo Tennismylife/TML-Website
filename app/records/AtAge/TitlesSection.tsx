@@ -10,6 +10,7 @@ import { getFlagFromIOC } from '@/lib/utils';import { playerMatchesUrl } from ".
 interface TitlesSectionProps {
   selectedSurfaces: string[];
   selectedLevels: string[];
+  fetchEnabled?: boolean;
 }
 
 interface Player {
@@ -19,7 +20,7 @@ interface Player {
   titles_at_age: number;
 }
 
-export default function TitlesSection({ selectedSurfaces, selectedLevels }: TitlesSectionProps) {
+export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchEnabled = true }: TitlesSectionProps) {
   const [data, setData] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,6 +34,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels }: Titl
   const searchParams = useSearchParams();
 
   const fetchData = async (age: number) => {
+    if (!fetchEnabled) return;
     try {
       setLoading(true);
       setError(null);
@@ -115,8 +117,8 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels }: Titl
         <AgeInput value={inputAge} onChange={setInputAge} />
         <button
           onClick={() => fetchData(inputAge)}
-          disabled={loading}
-          className={`px-4 py-1 rounded ${loading ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+          disabled={loading || !fetchEnabled}
+          className={`px-4 py-1 rounded ${loading || !fetchEnabled ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
         >
           Apply
         </button>

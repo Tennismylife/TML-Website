@@ -12,6 +12,7 @@ interface RoundAppearancesProps {
   selectedSurfaces: Set<string>;
   selectedLevels: Set<string>;
   selectedRound: string;
+  fetchEnabled?: boolean;
 }
 
 interface PlayerData {
@@ -21,7 +22,7 @@ interface PlayerData {
   appearances_at_age: number;
 }
 
-export default function RoundAppearancesSection({ selectedSurfaces, selectedLevels, selectedRound }: RoundAppearancesProps) {
+export default function RoundAppearancesSection({ selectedSurfaces, selectedLevels, selectedRound, fetchEnabled = true }: RoundAppearancesProps) {
   const [data, setData] = useState<PlayerData[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);  const [hasFetched, setHasFetched] = useState(false);  const [page, setPage] = useState(1);
@@ -33,6 +34,7 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
   const searchParams = useSearchParams();
 
   const fetchData = async (age: number) => {
+    if (!fetchEnabled) return;
     try {
       setLoading(true);
       setError(null);
@@ -118,8 +120,8 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
         <AgeInput value={inputAge} onChange={setInputAge} />
         <button
           onClick={() => fetchData(inputAge)}
-          disabled={loading}
-          className={`px-4 py-1 rounded ${loading ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+          disabled={loading || !fetchEnabled}
+          className={`px-4 py-1 rounded ${loading || !fetchEnabled ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
         >
           Apply
         </button>

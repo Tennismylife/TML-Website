@@ -25,7 +25,7 @@ interface PlayerData {
   total: number;
 }
 
-export default function InSlamsSection({ selectedSurfaces, selectedRounds, selectedBestOf, fetchEnabled }: InSlamsSectionProps) {
+export default function InSlamsSection({ selectedSurfaces, selectedRounds, selectedBestOf, fetchEnabled = true }: InSlamsSectionProps) {
   const [data, setData] = useState<PlayerData[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);  const [hasFetched, setHasFetched] = useState(false);  const [page, setPage] = useState(1);
@@ -37,6 +37,7 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
   const searchParams = useSearchParams();
 
   const fetchData = async (age: number) => {
+    if (!fetchEnabled) return;
     try {
       setLoading(true);
       setError(null);
@@ -128,8 +129,8 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
         <AgeInput value={inputAge} onChange={setInputAge} />
         <button
           onClick={() => fetchData(inputAge)}
-          disabled={loading}
-          className={`px-4 py-1 rounded ${loading ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+          disabled={loading || !fetchEnabled}
+          className={`px-4 py-1 rounded ${loading || !fetchEnabled ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
         >
           Apply
         </button>

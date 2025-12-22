@@ -10,6 +10,7 @@ import { getFlagFromIOC } from '@/lib/utils';import { playerMatchesUrl } from ".
 interface EntriesSectionProps {
   selectedSurfaces: string[];
   selectedLevels: string[];
+  fetchEnabled?: boolean;
 }
 
 interface Player {
@@ -19,7 +20,7 @@ interface Player {
   participations_at_age: number;
 }
 
-export default function EntriesSection({ selectedSurfaces, selectedLevels }: EntriesSectionProps) {
+export default function EntriesSection({ selectedSurfaces, selectedLevels, fetchEnabled = true }: EntriesSectionProps) {
   const [data, setData] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,6 +34,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels }: Ent
   const searchParams = useSearchParams();
 
   const fetchData = async (age: number) => {
+    if (!fetchEnabled) return;
     try {
       setLoading(true);
       setError(null);

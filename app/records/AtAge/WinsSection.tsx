@@ -14,6 +14,7 @@ interface WinsSectionProps {
   selectedLevels: string[];
   selectedRounds: string;
   selectedBestOf: number | null;
+  fetchEnabled?: boolean;
 }
 
 interface Player {
@@ -28,6 +29,7 @@ export default function WinsSection({
   selectedLevels,
   selectedRounds,
   selectedBestOf,
+  fetchEnabled = true,
 }: WinsSectionProps) {
   const [data, setData] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
@@ -40,6 +42,7 @@ export default function WinsSection({
   const perPage = 20;
 
   const fetchData = async (age: number) => {
+    if (!fetchEnabled) return;
     try {
       setLoading(true);
       setError(null);
@@ -134,9 +137,9 @@ export default function WinsSection({
         <AgeInput value={inputAge} onChange={setInputAge} />
         <button
           onClick={() => fetchData(inputAge)}
-          disabled={loading}
+          disabled={loading || !fetchEnabled}
           className={`px-4 py-1 rounded ${
-            loading ? "bg-gray-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"
+            loading || !fetchEnabled ? "bg-gray-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"
           }`}
         >
           Apply
