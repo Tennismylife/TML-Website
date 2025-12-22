@@ -28,7 +28,11 @@ export default function Timespan({
       {selectedTab === "entries" ? (
         <Entries selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} />
       ) : selectedTab === "titles" ? (
-        <Titles selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} />
+        <Titles
+          selectedSurfaces={selectedSurfaces}
+          selectedLevels={selectedLevels}
+          fetchEnabled={fetchEnabled}
+        />
       ) : (
         <Rounds
           selectedSurfaces={selectedSurfaces}
@@ -40,4 +44,4 @@ export default function Timespan({
       )}
     </section>
   );
-} 
+}

@@ -9,8 +9,8 @@ import Modal from '@/components/Modal';
 import { playerMatchesUrl } from "../nav";
 
 interface TitlesProps {
-  selectedSurfaces: Set<string>;
-  selectedLevels: Set<string>;
+  selectedSurfaces: Set<string> | string[];
+  selectedLevels: Set<string> | string[];
   fetchEnabled?: boolean;
   fetchRequestId?: string | null;
 }
