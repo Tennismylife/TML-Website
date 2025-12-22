@@ -12,7 +12,7 @@ interface RoundsonentriesProps {
 }
 
 export default function Roundsonentries({ selectedSurfaces, selectedLevels, selectedRounds, activeSubTab }: RoundsonentriesProps) {
-  const [minEntries, setMinEntries] = useState(0);
+  const [minEntries, setMinEntries] = useState(1);
 
   return (
     <section className="mb-8">

@@ -72,6 +72,9 @@ export function RecordsMain() {
     h2h: 'count',
   });
 
+  // Keep track of which main tab is hovered so subtabs can appear on mouse-over
+  const [hoveredTab, setHoveredTab] = useState<string | null>(null);
+
   const tabs = [
     { key: 'wins', label: 'Wins' },
     { key: 'played', label: 'Played' },
@@ -466,7 +469,15 @@ export function RecordsMain() {
       {/* Tabs */}
       <div className="mb-6 flex flex-wrap gap-2 bg-gray-800/40 rounded-2xl p-2 shadow-lg">
         {tabs.map(tab => (
-          <div key={tab.key} className="relative">
+          <div
+            key={tab.key}
+            className="relative"
+            onMouseEnter={() => setHoveredTab(tab.key)}
+            onMouseLeave={() => setHoveredTab(null)}
+            onFocus={() => setHoveredTab(tab.key)}
+            onBlur={() => setHoveredTab(null)}
+            tabIndex={-1}
+          >
             <button
               onClick={() => {
                 // Select tab and reset filters
@@ -486,10 +497,11 @@ export function RecordsMain() {
                 url.searchParams.delete('bestOf');
                 safeReplace(url.toString());
               }}
-              className={`relative px-4 py-2 rounded-xl font-medium transition-colors duration-200 ${activeTab === tab.key ? 'text-white' : 'text-gray-300 hover:text-white'}`}
+              className={`relative px-4 py-2 rounded-xl font-medium transition-colors duration-200 ${(activeTab === tab.key || hoveredTab === tab.key) ? 'text-white' : 'text-gray-300 hover:text-white'}`}
             >
-              {activeTab === tab.key && (
+              {(activeTab === tab.key || hoveredTab === tab.key) && (
                 <motion.div
+                  data-testid="active-tab-bg"
                   layoutId="active-tab"
                   className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl shadow-md"
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
@@ -499,7 +511,7 @@ export function RecordsMain() {
             </button>
 
             {/* Sub-tabs */}
-{subTabs[tab.key] && activeTab === tab.key && (
+{subTabs[tab.key] && (activeTab === tab.key || hoveredTab === tab.key) && (
   <div className="mt-2 flex flex-col gap-1">
     {subTabs[tab.key].map(st => (
       <button

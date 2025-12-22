@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 /** @vitest-environment jsdom */
 import React from 'react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { RecordsMain } from '../app/records/page';
 
 // Mock next/navigation
 vi.mock('next/navigation', () => ({
@@ -94,5 +95,53 @@ describe('Records - single fetch on filter change', () => {
 
     // Wait and assert exactly one additional fetch occurs
     await waitFor(() => expect(fetchSpy.mock.calls.length).toBe(initialCalls + 1), { timeout: 2000 });
+  });
+
+  it('shows subtabs on hover', async () => {
+    // Render the RecordsMain component (child components are mocked above)
+    const { container } = render(<RecordsMain />);
+
+    // Find a tab that has subtabs (Timespan -> Entries/Titles/Rounds)
+    const timespanBtn = screen.getByRole('button', { name: /Timespan/i });
+
+    // Subtabs should not be visible initially
+    expect(screen.queryByRole('button', { name: /Entries/i })).toBeNull();
+
+    // Hover the tab and ensure subtabs appear
+    await userEvent.hover(timespanBtn);
+    expect(screen.getByRole('button', { name: /Entries/i })).toBeInTheDocument();
+
+    // Unhover and confirm subtabs hide again
+    await userEvent.unhover(timespanBtn);
+    await waitFor(() => expect(screen.queryByRole('button', { name: /Entries/i })).toBeNull());
+  });
+
+  it('hover highlights tab but does not activate its component; click activates it', async () => {
+    render(<RecordsMain />);
+
+    const timespanBtn = screen.getByRole('button', { name: /Timespan/i });
+
+    // Ensure active background is absent initially
+    expect(screen.queryByTestId('active-tab-bg')).toBeNull();
+
+    // Hover highlights the tab (background appears)
+    await userEvent.hover(timespanBtn);
+    expect(screen.getByTestId('active-tab-bg')).toBeInTheDocument();
+
+    // But hovering alone should not render the Timespan component
+    expect(screen.queryByText('Timespan')).toBeNull();
+
+    // Click activates the tab and renders the component
+    await userEvent.click(timespanBtn);
+    expect(screen.getByText('Timespan')).toBeInTheDocument();
+
+    // Unhover should keep the highlight because tab is active
+    await userEvent.unhover(timespanBtn);
+    expect(screen.getByTestId('active-tab-bg')).toBeInTheDocument();
+
+    // If we click another tab, highlight should move
+    const winsBtn = screen.getByRole('button', { name: /Wins/i });
+    await userEvent.click(winsBtn);
+    expect(screen.getByText('Wins')).toBeInTheDocument();
   });
 });

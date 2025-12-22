@@ -78,7 +78,7 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
             <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Wins</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Reaches</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Entries</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Percentage</th>
           </tr>
@@ -94,7 +94,7 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
                 <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                   <div className="flex items-center gap-2">
                     {flag && <span className="text-base">{flag}</span>}
-                    <Link href={`/players/${p.id}`} className="text-gray-200 hover:underline">
+                    <Link href={`/players/${p.id}`} className="text-indigo-300 hover:underline">
                       {p.name}
                     </Link>
                   </div>
