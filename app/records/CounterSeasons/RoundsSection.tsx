@@ -9,6 +9,7 @@ interface RoundsSectionProps {
   selectedSurfaces: string[];
   selectedLevels: string[];
   selectedRound: string;
+  fetchEnabled?: boolean;
 }
 
 interface Player {
@@ -23,6 +24,7 @@ export default function RoundsSection({
   selectedSurfaces,
   selectedLevels,
   selectedRound,
+  fetchEnabled = true,
 }: RoundsSectionProps) {
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
@@ -34,7 +36,7 @@ export default function RoundsSection({
   const perPage = 20;
 
   const fetchPlayers = async () => {
-    if (!selectedRound) return;
+    if (!fetchEnabled || !selectedRound) return;
 
     setLoading(true);
     setError(null);
@@ -165,7 +167,7 @@ export default function RoundsSection({
         />
         <button
           onClick={fetchPlayers}
-          disabled={loading || !selectedRound}
+          disabled={loading || !selectedRound || !fetchEnabled}
           className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-500 disabled:opacity-50"
         >
           {loading ? 'Loading…' : 'Apply'}

@@ -8,6 +8,7 @@ import { getFlagFromIOC } from "@/lib/utils";
 interface TitlesSectionProps {
   selectedSurfaces: string[];
   selectedLevels: string[];
+  fetchEnabled?: boolean;
 }
 
 interface Player {
@@ -21,6 +22,7 @@ interface Player {
 export default function TitlesSection({
   selectedSurfaces,
   selectedLevels,
+  fetchEnabled = true,
 }: TitlesSectionProps) {
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
@@ -32,6 +34,7 @@ export default function TitlesSection({
   const perPage = 20;
 
   const fetchPlayers = async () => {
+    if (!fetchEnabled) return;
     setLoading(true);
     setError(null);
 
@@ -160,7 +163,7 @@ export default function TitlesSection({
         />
         <button
           onClick={fetchPlayers}
-          disabled={loading}
+          disabled={loading || !fetchEnabled}
           className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-500 disabled:opacity-50"
         >
           {loading ? 'Loading…' : 'Apply'}
