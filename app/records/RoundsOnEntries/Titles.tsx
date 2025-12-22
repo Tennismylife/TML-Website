@@ -7,9 +7,11 @@ import Pagination from "../../../components/Pagination";
 import Modal from "@/components/Modal";
 
 interface TitlesProps {
-  selectedSurfaces: Set<string>;
-  selectedLevels: Set<string>;
+  // Accept both Set<string> and string[] to be more flexible with callers
+  selectedSurfaces: Set<string> | string[];
+  selectedLevels: Set<string> | string[];
   minEntries: number;
+  fetchEnabled?: boolean;
 }
 
 interface PlayerStat {
@@ -21,7 +23,7 @@ interface PlayerStat {
   percentage: number;
 }
 
-export default function Titles({ selectedSurfaces, selectedLevels, minEntries, fetchEnabled }: TitlesProps & { fetchEnabled?: boolean }) {
+export default function Titles({ selectedSurfaces, selectedLevels, minEntries, fetchEnabled }: TitlesProps) {
   const enabled = !!fetchEnabled;
   const [data, setData] = useState<PlayerStat[]>([]);
   const [loading, setLoading] = useState(false);
@@ -30,8 +32,8 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries, f
   const perPage = 20; 
 
   useEffect(() => {
-    // Do nothing when fetch is not enabled
-    if (!enabled) {
+    // Allow fetch when explicitly enabled or when the modal is opened
+    if (!enabled && !showModal) {
       setData([]);
       setLoading(false);
       return;
@@ -60,7 +62,7 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries, f
     };
 
     fetchData();
-  }, [Array.from(selectedSurfaces).join(","), Array.from(selectedLevels).join(","), enabled]);
+  }, [selectedSurfaces, selectedLevels, enabled, showModal]);
 
   const filteredData = data.filter((p) => p.entries >= minEntries);
 

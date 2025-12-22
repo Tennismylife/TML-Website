@@ -33,7 +33,8 @@ export default function SameRoundSection({ selectedSurfaces, selectedLevels, sel
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRound]);
 
   useEffect(() => {
-    if (!fetchEnabled) return;
+    const enabled = !!fetchEnabled;
+    if (!enabled && !showModal) return;
 
     const fetchData = async () => {
       setLoading(true);
@@ -57,7 +58,7 @@ export default function SameRoundSection({ selectedSurfaces, selectedLevels, sel
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedRound, fetchEnabled, setFetchEnabled]);
+  }, [selectedSurfaces, selectedLevels, selectedRound, fetchEnabled, setFetchEnabled, showModal]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!entries.length) return <div className="text-center py-8 text-gray-300 text-lg">No players found.</div>;

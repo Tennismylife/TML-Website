@@ -54,7 +54,11 @@ export function RecordsMain() {
 
   // Only allow fetching records after the user explicitly activates a tab (or if the URL set the record)
   const [fetchEnabled, setFetchEnabled] = useState(false);
-  const [fetchRequestId, setFetchRequestId] = useState<string | null>(null); // unique id per explicit fetch request (click/filter)
+  const [fetchRequestId, setFetchRequestId] = useState<string | null>(null);
+
+  useEffect(() => {
+    console.debug('[Records] fetchEnabled changed ->', fetchEnabled);
+  }, [fetchEnabled]); // unique id per explicit fetch request (click/filter)
   const lastUrlRecordRef = useRef<string | null>(null);
   // Avoid triggering an initial URL push that causes a double load
   const skipFirstUrlUpdateRef = useRef(true);
@@ -378,10 +382,11 @@ export function RecordsMain() {
   const FETCH_DEBOUNCE_MS = 200; // ms
 
   useEffect(() => {
+    console.debug('[Records] fetch effect triggered', { selectedRecord, fetchEnabled, lastUserAction: lastUserActionRef.current, prevSelectedRecord: prevSelectedRecordRef.current });
     if (!selectedRecord) return;
 
     // Don't fetch unless the user explicitly enabled fetches
-    if (!fetchEnabled) return;
+    if (!fetchEnabled) { console.debug('[Records] fetch blocked: fetchEnabled false'); return; }
 
     // Clear any pending scheduled fetch
     if (fetchTimerRef.current) {
@@ -403,6 +408,7 @@ export function RecordsMain() {
     // If the last successful fetch used the same key, don't fetch again
     if (lastFetchKeyRef.current === key) {
       // nothing to do — already have the latest data for these params
+      console.debug('[Records] skip fetch: lastFetchKey equals key');
       return;
     }
 
@@ -410,8 +416,10 @@ export function RecordsMain() {
     fetchTimerRef.current = window.setTimeout(async () => {
       fetchTimerRef.current = null;
 
-      // If no user action (click/filter) triggered this, and the record didn't change, skip fetching
-      if (lastUserActionRef.current === 'none' && prevSelectedRecordRef.current === selectedRecord) {
+      console.debug('[Records] scheduled fetch running', { selectedRecord, lastUserAction: lastUserActionRef.current, prevSelectedRecord: prevSelectedRecordRef.current });
+      // Only fetch when a user action (click/filter) triggered it. Prevent fetches on hover or transient states.
+      if (lastUserActionRef.current === 'none') {
+        console.debug('[Records] scheduled fetch skipped: no user action');
         return;
       }
 
@@ -465,18 +473,18 @@ export function RecordsMain() {
       case "count": return <Count selectedRounds={selectedRounds} top={displayData?.top} />;
       case "titles": return <Titles topTitles={displayData?.topTitles} />;
       case "entries": return <Entries fetchEnabled={fetchEnabled} />;
-      case "ages": return <Ages selectedSurfaces={Array.from(selectedSurfaces)} selectedLevels={Array.from(selectedLevels)} selectedRounds={selectedRounds} activeSubTab={activeSubTabs.ages} />;
-      case "timespan": return <Timespan selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedTab={activeSubTabs.timespan} onTabChange={(tab) => setActiveSubTabs(prev => ({...prev, timespan: tab}))} fetchEnabled={fetchEnabled} />;
-      case "percentage": return <Percentage selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} />;
+      case "ages": return <Ages selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={activeSubTabs.ages} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} />;
+      case "timespan": return <Timespan selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedTab={activeSubTabs.timespan} onTabChange={(tab) => setActiveSubTabs(prev => ({...prev, timespan: tab}))} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} />;
+      case "percentage": return <Percentage selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} fetchEnabled={fetchEnabled} />;
       case "roundsonentries": return <Roundsonentries selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={activeSubTabs.roundsonentries} fetchEnabled={fetchEnabled} />;
       case "same": return <Same selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.same} fetchEnabled={fetchEnabled} setFetchEnabled={setFetchEnabled} fetchRequestId={fetchRequestId} />;
       case "seasons": return <Seasons selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.seasons} fetchEnabled={fetchEnabled} setFetchEnabled={setFetchEnabled} />;
-      case "atage": return <AtAge selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.atage} />;
-      case "ageofnth": return <AgeofNth selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.ageofnth} />;
-      case "neededto": return <NeededToSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={activeSubTabs.neededto} />;
-      case "counterseasons": return <CounterSeasonsSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={activeSubTabs.counterseasons} />;
-      case "streak": return <StreakSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.streak} />;
-      case "h2h": return <H2HSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.h2h} />;
+      case "atage": return <AtAge selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.atage} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} />;
+      case "ageofnth": return <AgeofNth selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.ageofnth} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} />;
+      case "neededto": return <NeededToSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={activeSubTabs.neededto} fetchEnabled={fetchEnabled} />;
+      case "counterseasons": return <CounterSeasonsSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={activeSubTabs.counterseasons} fetchEnabled={fetchEnabled} />;
+      case "streak": return <StreakSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.streak} fetchEnabled={fetchEnabled} />;
+      case "h2h": return <H2HSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.h2h} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} />; 
       default: return null;
     }
   };
@@ -502,18 +510,21 @@ export function RecordsMain() {
           <div
             key={tab.key}
             className="relative"
-            onMouseEnter={() => setHoveredTab(tab.key)}
-            onMouseLeave={() => setHoveredTab(null)}
-            onFocus={() => setHoveredTab(tab.key)}
-            onBlur={() => setHoveredTab(null)}
+            onMouseEnter={() => { console.debug('[Records] hover enter', tab.key); setHoveredTab(tab.key); }}
+            onMouseLeave={() => { console.debug('[Records] hover leave', tab.key); setHoveredTab(null); }}
+            onFocus={() => { console.debug('[Records] focus', tab.key); setHoveredTab(tab.key); }}
+            onBlur={() => { console.debug('[Records] blur', tab.key); setHoveredTab(null); }}
             tabIndex={-1}
           >
             <button
               onClick={() => {
-                // User clicked main tab: enable fetching and select tab
+                // User clicked main tab: select tab and enable fetching only for tabs without subtabs
                 const requestId = String(Date.now());
-                setFetchEnabled(true);
-                setFetchRequestId(requestId);
+                if (!subTabs[tab.key] || subTabs[tab.key].length === 0) {
+                  // This tab has no subtabs — enable fetch immediately
+                  setFetchEnabled(true);
+                  setFetchRequestId(requestId);
+                }
                 lastUserActionRef.current = 'click';
                 setSelectedRecord(tab.key);
                 setActiveTab(tab.key);

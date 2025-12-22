@@ -22,10 +22,13 @@ interface H2HRecord {
 }
 
 interface CountSectionProps {
-  selectedSurfaces: string[];
-  selectedLevels: string[];
+  selectedSurfaces: Set<string>;
+  selectedLevels: Set<string>;
   selectedRounds: string | null;
   selectedBestOf: number | null;
+  fetchEnabled?: boolean;
+  fetchRequestId?: string | null;
+  parentShowModal?: boolean;
 }
 
 export default function CountSection({
@@ -33,7 +36,11 @@ export default function CountSection({
   selectedLevels,
   selectedRounds,
   selectedBestOf,
+  fetchEnabled,
+  fetchRequestId,
+  parentShowModal,
 }: CountSectionProps) {
+  const enabled = !!fetchEnabled;
   const [h2hData, setH2hData] = useState<H2HRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,7 +56,16 @@ export default function CountSection({
   );
 
   useEffect(() => {
+    console.debug('[CountSection] effect start', { enabled, showModal, parentShowModal, fetchRequestId });
     const fetchData = async () => {
+      // Only proceed when explicitly requested (fetchRequestId from page) or when modal opens
+      if (!((enabled && fetchRequestId) || showModal || parentShowModal)) {
+        console.debug('[CountSection] skipped fetch: no fetchRequestId and not modal');
+        setH2hData([]);
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       setError(null);
       try {
@@ -80,7 +96,7 @@ export default function CountSection({
     };
 
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, enabled, showModal, parentShowModal, fetchRequestId]);
 
   const totalPages = Math.ceil(h2hData.length / perPage);
 

@@ -20,13 +20,16 @@ interface Player {
 }
 
 interface OldestWinnersProps {
-  selectedSurfaces: string[];
-  selectedLevels: string[];
+  selectedSurfaces: Set<string>;
+  selectedLevels: Set<string>;
+  fetchEnabled?: boolean;
+  fetchRequestId?: string | null;
 }
 
-export default function OldestWinners({ selectedSurfaces, selectedLevels }: OldestWinnersProps) {
+export default function OldestWinners({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRequestId }: OldestWinnersProps) {
+  const enabled = !!fetchEnabled;
   const [data, setData] = useState<Player[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
@@ -39,6 +42,13 @@ export default function OldestWinners({ selectedSurfaces, selectedLevels }: Olde
   useEffect(() => {
     const controller = new AbortController();
     const fetchData = async () => {
+      if (!((enabled && fetchRequestId) || showModal)) {
+        console.debug('[OldestWinners] skipped fetch: no fetchRequestId and not modal', { enabled, fetchRequestId, showModal });
+        setData([]);
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       try {
         const query = new URLSearchParams();
@@ -59,7 +69,7 @@ export default function OldestWinners({ selectedSurfaces, selectedLevels }: Olde
     };
     fetchData();
     return () => controller.abort();
-  }, [selectedSurfaces, selectedLevels]);
+  }, [selectedSurfaces, selectedLevels, enabled, showModal, fetchRequestId]);
 
   const formatAge = (age: number) => {
     const years = Math.floor(age);

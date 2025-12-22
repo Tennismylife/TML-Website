@@ -34,7 +34,8 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels]);
 
   useEffect(() => {
-    if (!fetchEnabled) return;
+    const enabled = !!fetchEnabled;
+    if (!enabled && !showModalTitles) return;
 
     const fetchData = async () => {
       setLoading(true);
@@ -56,7 +57,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled]);
+  }, [selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, showModalTitles]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!topSeasonTitles.length) return <div className="text-center py-8 text-gray-300 text-lg">No titles found.</div>;

@@ -26,6 +26,7 @@ export default function BreakPointsSection({ selectedSurfaces, selectedLevels, s
   const [subModalMatches, setSubModalMatches] = useState<BreakPointRecord['matches']>([]);
 
   useEffect(() => {
+    if (!enabled) { setData(null); setLoading(false); return; }
     setLoading(true);
     setError(null);
 
@@ -40,7 +41,7 @@ export default function BreakPointsSection({ selectedSurfaces, selectedLevels, s
       .then((data) => setData(data))
       .catch(setError)
       .finally(() => setLoading(false));
-  }, [selectedSurfaces, selectedLevels, selectedRounds]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, enabled]);
 
   if (error) return <div>Error loading data</div>;
   if (loading) return <div>Loading...</div>;

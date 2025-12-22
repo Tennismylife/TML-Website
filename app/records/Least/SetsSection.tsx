@@ -26,6 +26,8 @@ export default function SetsSection({ selectedSurfaces, selectedLevels }: SetsSe
   const [subModalMatches, setSubModalMatches] = useState<SetRecord['matches']>([]);
 
   useEffect(() => {
+    if (!enabled) { setData(null); setLoading(false); return; }
+
     setLoading(true);
     setError(null);
 
@@ -39,7 +41,7 @@ export default function SetsSection({ selectedSurfaces, selectedLevels }: SetsSe
       .then((data) => setData(data))
       .catch(setError)
       .finally(() => setLoading(false));
-  }, [selectedSurfaces, selectedLevels]);
+  }, [selectedSurfaces, selectedLevels, enabled]);
 
   if (error) return <div>Error loading data</div>;
   if (loading) return <div>Loading...</div>;

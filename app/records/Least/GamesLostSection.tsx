@@ -17,15 +17,21 @@ interface GamesLostRecord {
   date: string;
 }
 
-export default function GamesLostSection({ selectedSurfaces, selectedLevels }: GamesLostSectionProps) {
+export default function GamesLostSection({ selectedSurfaces, selectedLevels, fetchEnabled }: GamesLostSectionProps) {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<any>(null);
   const [showModal, setShowModal] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalRecords, setModalRecords] = useState<GamesLostRecord[]>([]);
-
+  const enabled = !!fetchEnabled;
   useEffect(() => {
+    if (!enabled) {
+      setData(null);
+      setLoading(false);
+      return;
+    }
+
     const query = new URLSearchParams();
     selectedSurfaces.forEach(s => query.append('surface', s));
     selectedLevels.forEach(l => query.append('level', l));
@@ -35,7 +41,7 @@ export default function GamesLostSection({ selectedSurfaces, selectedLevels }: G
       .then(setData)
       .catch(setError)
       .finally(() => setLoading(false));
-  }, [selectedSurfaces, selectedLevels]);
+  }, [selectedSurfaces, selectedLevels, enabled]);
 
   if (error) return <div>Error loading data</div>;
   if (loading) return <div>Loading...</div>;

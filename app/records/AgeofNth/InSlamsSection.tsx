@@ -63,6 +63,7 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds }: InS
   const perPage = 20;
 
   const fetchData = async (n: number) => {
+    if (!enabled) return;
     try {
       setLoading(true);
       setError(null);

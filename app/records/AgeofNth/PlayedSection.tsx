@@ -38,8 +38,9 @@ export default function PlayedSection({
   selectedLevels,
   selectedRounds,
   selectedBestOf,
+  fetchEnabled,
 }: PlayedSectionProps) {
-  const [data, setData] = useState<Player[]>([]);
+  const enabled = !!fetchEnabled;  const [data, setData] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasFetched, setHasFetched] = useState(false);
@@ -53,6 +54,7 @@ export default function PlayedSection({
   const perPage = 20;
 
   const fetchData = async (x: number) => {
+    if (!enabled) return;
     try {
       setLoading(true);
       setError(null);

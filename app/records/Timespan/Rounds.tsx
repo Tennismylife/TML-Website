@@ -8,12 +8,12 @@ import Pagination from '../../../components/Pagination';
 import Modal from '../Modal';
 
 interface RoundsProps {
-  selectedSurfaces: string[];
-  selectedLevels: string[];
+  selectedSurfaces: Set<string>;
+  selectedLevels: Set<string>;
   selectedRounds: string;
 }
 
-export default function Rounds({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled }: RoundsProps & { fetchEnabled?: boolean }) {
+export default function Rounds({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, fetchRequestId }: RoundsProps & { fetchEnabled?: boolean, fetchRequestId?: string | null }) {
   const enabled = !!fetchEnabled;
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -33,7 +33,13 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
         return;
       }
 
-        if (!enabled) return;
+      if (!((enabled && fetchRequestId) || fetchRequestId)) {
+        console.debug('[Timespan Rounds] skipped fetch: no fetchRequestId', { enabled, fetchRequestId });
+        setData([]);
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       try {
         const query = new URLSearchParams();
@@ -41,7 +47,9 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
         selectedLevels.forEach(l => query.append('level', l));
         query.append('round', selectedRounds);
         query.set('perPage', '100');
-        const res = await fetch(`/api/records/timespan/rounds?${query.toString()}`);
+        const url = `/api/records/timespan/rounds?${query.toString()}`;
+        console.debug('[Timespan Rounds] fetching', url, { enabled, selectedRounds, fetchRequestId });
+        const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch rounds timespan');
         const fetchedData = await res.json();
         setData(fetchedData.data || []);
@@ -54,7 +62,7 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
     };
 
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedRounds]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, enabled, fetchRequestId]);
 
   if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
   if (!selectedRounds) return <div className="text-center py-8 text-gray-300">Please select rounds in the filters to view results.</div>;

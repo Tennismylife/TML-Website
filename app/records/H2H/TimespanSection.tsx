@@ -7,7 +7,10 @@ import { getFlagFromIOC } from "@/lib/utils";
 interface TimespanSectionProps {
   selectedSurfaces: Set<string>;
   selectedLevels: Set<string>;
-  selectedRounds: string; // può essere "All"
+  selectedRounds: string;
+  fetchEnabled?: boolean;
+  parentShowModal?: boolean;
+  fetchRequestId?: string;
 }
 
 interface H2HTimespanRecord {
@@ -25,15 +28,24 @@ interface H2HTimespanResponse {
   h2hTimespans: H2HTimespanRecord[];
 }
 
-export default function TimespanSection({ selectedSurfaces, selectedLevels, selectedRounds }: TimespanSectionProps) {
+export default function TimespanSection({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, parentShowModal, fetchRequestId }: TimespanSectionProps) {
+  const enabled = !!fetchEnabled;
   const [data, setData] = useState<H2HTimespanResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>(null);
   const [showModal, setShowModal] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalPlayers, setModalPlayers] = useState<H2HTimespanRecord[]>([]);
 
   useEffect(() => {
+    console.debug('[TimespanSection] effect start', { enabled, showModal, parentShowModal });
+    if (!enabled && !showModal && !parentShowModal) {
+      console.debug('[TimespanSection] skipped fetch: not enabled and no modal');
+      setData(null);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -45,12 +57,13 @@ export default function TimespanSection({ selectedSurfaces, selectedLevels, sele
     }
 
     const url = `/api/records/h2h/timespan${query.toString() ? '?' + query.toString() : ''}`;
+    console.debug('[TimespanSection] fetching', url);
     fetch(url)
       .then(res => res.json())
       .then(setData)
       .catch(setError)
       .finally(() => setLoading(false));
-  }, [selectedSurfaces, selectedLevels, selectedRounds]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, enabled, showModal, parentShowModal]);
 
   if (error) return <div>Error loading data</div>;
   if (loading) return <div>Loading...</div>;

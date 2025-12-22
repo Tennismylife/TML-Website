@@ -14,19 +14,29 @@ function formatAge(age: number): string {
 }
 
 interface OldestAllRoundsProps {
-  selectedSurfaces: string[];
-  selectedLevels: string[];
+  selectedSurfaces: Set<string>;
+  selectedLevels: Set<string>;
+  fetchEnabled?: boolean;
+  fetchRequestId?: string | null;
 }
 
-export default function OldestAllRounds({ selectedSurfaces, selectedLevels }: OldestAllRoundsProps) {
+export default function OldestAllRounds({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRequestId }: OldestAllRoundsProps) {
+  const enabled = !!fetchEnabled;
   const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [modalData, setModalData] = useState<{ title: string; list: any[] } | null>(null);
   const [page, setPage] = useState(1);
   const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!((enabled && fetchRequestId) || showAll)) {
+        console.debug('[OldestAllRounds] skipped fetch: no fetchRequestId and not showAll', { enabled, fetchRequestId, showAll });
+        setData(null);
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       try {
         const query = new URLSearchParams();
@@ -45,7 +55,7 @@ export default function OldestAllRounds({ selectedSurfaces, selectedLevels }: Ol
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels]);
+  }, [selectedSurfaces, selectedLevels, enabled, showAll, fetchRequestId]);
 
   const { allOldestItems } = data || {};
 

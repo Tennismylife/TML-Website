@@ -13,6 +13,7 @@ interface PercentageProps {
   selectedLevels: Set<string>;
   selectedRounds: string;
   selectedBestOf: number | null;
+  fetchEnabled?: boolean;
 }
 
 interface PlayerPercentage {
@@ -23,9 +24,10 @@ interface PlayerPercentage {
   matchesPlayed: number;
 }
 
-export default function Percentage({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf }: PercentageProps) {
+export default function Percentage({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled }: PercentageProps) {
+  const enabled = !!fetchEnabled;
   const [data, setData] = useState<PlayerPercentage[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [minMatches, setMinMatches] = useState(1);
   const [page, setPage] = useState(1);
@@ -37,6 +39,12 @@ export default function Percentage({ selectedSurfaces, selectedLevels, selectedR
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!enabled && !showModal) {
+        setData([]);
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       try {
         const query = new URLSearchParams();
@@ -58,7 +66,7 @@ export default function Percentage({ selectedSurfaces, selectedLevels, selectedR
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, enabled, showModal]);
 
   const filteredData = data.filter(p => p.matchesPlayed >= minMatches);
 

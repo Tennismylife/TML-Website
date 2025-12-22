@@ -10,6 +10,7 @@ interface StreakSectionProps {
   selectedRounds: string;
   selectedBestOf: number | null;
   activeSubTab: string;
+  fetchEnabled?: boolean;
 }
 
 export default function StreakSection({
@@ -17,9 +18,9 @@ export default function StreakSection({
   selectedLevels,
   selectedRounds,
   selectedBestOf,
-  activeSubTab
+  activeSubTab,
+  fetchEnabled
 }: StreakSectionProps) {
-
 
   return (
     <section className="rounded p-4">
@@ -28,6 +29,7 @@ export default function StreakSection({
           selectedSurfaces={selectedSurfaces}
           selectedLevels={selectedLevels}
           selectedBestOf={selectedBestOf}
+          fetchEnabled={fetchEnabled}
         />
       )}
 
@@ -36,6 +38,7 @@ export default function StreakSection({
           selectedSurfaces={selectedSurfaces}
           selectedLevels={selectedLevels}
           selectedRounds={selectedRounds}
+          fetchEnabled={fetchEnabled}
         />
       )}
     </section>

@@ -47,6 +47,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels }: Titl
   const perPage = 20;
 
   const fetchData = async (n: number) => {
+    if (!enabled) return;
     try {
       setLoading(true);
       setError(null);

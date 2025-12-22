@@ -8,6 +8,7 @@ interface SetsProps {
   selectedSurfaces: Set<string>;
   selectedLevels: Set<string>;
   selectedRounds: string;
+  fetchEnabled?: boolean;
 }
 
 interface SetsRecord {
@@ -18,7 +19,8 @@ interface SetsRecord {
   losses?: number;
 }
 
-export default function Sets({ selectedSurfaces, selectedLevels, selectedRounds }: SetsProps) {
+export default function Sets({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled }: SetsProps) {
+  const enabled = !!fetchEnabled;
   const [data, setData] = useState<SetsRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>(null);
@@ -41,6 +43,12 @@ export default function Sets({ selectedSurfaces, selectedLevels, selectedRounds 
 
   // --- Fetch data based on activeTab ---
   useEffect(() => {
+    if (!enabled) {
+      setData([]);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -91,7 +99,7 @@ export default function Sets({ selectedSurfaces, selectedLevels, selectedRounds 
       .then(resp => setData(resp.records || []))
       .catch(setError)
       .finally(() => setLoading(false));
-  }, [selectedSurfaces, selectedLevels, selectedBestOf, activeTab, selectedRounds]);
+  }, [selectedSurfaces, selectedLevels, selectedBestOf, activeTab, selectedRounds, enabled]);
 
   const renderTable = () => (
     <table className="w-full text-sm border-collapse">

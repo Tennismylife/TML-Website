@@ -9,6 +9,7 @@ interface RoundsSectionProps {
   selectedSurfaces: string[];
   selectedLevels: string[];
   selectedRounds: string;
+  fetchEnabled?: boolean;
 }
 
 interface Player {
@@ -19,7 +20,7 @@ interface Player {
   tournaments_played: number;
 }
 
-export default function RoundsSection({ selectedSurfaces, selectedLevels, selectedRounds }: RoundsSectionProps) {
+export default function RoundsSection({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled }: RoundsSectionProps) {
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasFetched, setHasFetched] = useState(false);
@@ -27,7 +28,7 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
   const [showAll, setShowAll] = useState(false);
   const [round_number, setRoundNumber] = useState(1);
   const [roundInput, setRoundInput] = useState(1);
-
+  const enabled = !!fetchEnabled;
   const perPage = 10;
 
   useEffect(() => {
@@ -35,8 +36,9 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
   }, [selectedSurfaces, selectedLevels, selectedRounds, round_number]);
 
   useEffect(() => {
+    if (!enabled && !showAll) return;
     fetchPlayers();
-  }, [selectedSurfaces, selectedLevels, selectedRounds, round_number]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, round_number, enabled, showAll]);
 
   const fetchPlayers = async () => {
     setLoading(true);

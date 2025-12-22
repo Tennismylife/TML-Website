@@ -32,7 +32,8 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels]);
 
   useEffect(() => {
-    if (!fetchEnabled) return;
+    const enabled = !!fetchEnabled;
+    if (!enabled && !showModal) return;
 
     const fetchData = async () => {
       setLoading(true);
@@ -54,7 +55,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled]);
+  }, [selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, showModal]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!topSeasonEntries.length) return <div className="text-center py-8 text-gray-300 text-lg">No entries found.</div>;

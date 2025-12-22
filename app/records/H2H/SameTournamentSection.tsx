@@ -8,6 +8,8 @@ interface SameTournamentSectionProps {
   selectedSurfaces: Set<string>;
   selectedLevels: Set<string>;
   selectedRounds: string; // può essere "All"
+  parentShowModal?: boolean;
+  fetchRequestId?: string | null;
 }
 
 interface Player {
@@ -28,16 +30,25 @@ interface H2HTournamentResponse {
   h2h_tourney: H2HTournamentRecord[];
 }
 
-export default function SameTournamentSection({ selectedSurfaces, selectedLevels, selectedRounds }: SameTournamentSectionProps) {
+export default function SameTournamentSection({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, fetchRequestId, parentShowModal }: SameTournamentSectionProps & { fetchEnabled?: boolean, fetchRequestId?: string | null, parentShowModal?: boolean }) {
+  const enabled = !!fetchEnabled;
   const [data, setData] = useState<H2HTournamentResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>(null);
   const [showModal, setShowModal] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalPlayers, setModalPlayers] = useState<H2HTournamentRecord[]>([]);
 
   useEffect(() => {
+    console.debug('[SameTournamentSection] effect start', { enabled, showModal, parentShowModal, fetchRequestId });
     const fetchData = async () => {
+      if (!((enabled && fetchRequestId) || showModal || parentShowModal)) {
+        console.debug('[SameTournamentSection] skipped fetch: not enabled and no modal and no fetchRequestId');
+        setData(null);
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       setError(null);
       try {
@@ -47,6 +58,7 @@ export default function SameTournamentSection({ selectedSurfaces, selectedLevels
         query.append('round', selectedRounds && selectedRounds !== 'All' ? selectedRounds : 'All');
 
         const url = `/api/records/h2h/sametournament?${query.toString()}`;
+        console.debug('[SameTournamentSection] fetching', url);
         const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch');
         const json: H2HTournamentResponse = await res.json();
@@ -58,7 +70,7 @@ export default function SameTournamentSection({ selectedSurfaces, selectedLevels
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedRounds]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, enabled, showModal, parentShowModal, fetchRequestId]);
 
   if (error) return <div>Error loading data</div>;
   if (loading) return <div>Loading...</div>;

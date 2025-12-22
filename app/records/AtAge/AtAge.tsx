@@ -13,6 +13,7 @@ interface AtAgeProps {
   selectedRounds: string; // singolare per RoundSection
   selectedBestOf: number | null;
   activeSubTab: string;
+  fetchEnabled?: boolean;
 }
 
 export default function AtAge({
@@ -21,6 +22,7 @@ export default function AtAge({
   selectedRounds,
   selectedBestOf,
   activeSubTab,
+  fetchEnabled,
 }: AtAgeProps) {
   return (
     <section className="mb-8">
@@ -29,6 +31,7 @@ export default function AtAge({
           selectedSurfaces={Array.from(selectedSurfaces)}
           selectedRounds={selectedRounds} // InSlamsSection sembra usare singolare
           selectedBestOf={selectedBestOf}
+          fetchEnabled={fetchEnabled}
         />
       )}
 
@@ -37,6 +40,7 @@ export default function AtAge({
           selectedSurfaces={selectedSurfaces}
           selectedLevels={selectedLevels}
           selectedRound={selectedRounds} // singolare corretto
+          fetchEnabled={fetchEnabled}
         />
       )}
 
@@ -46,6 +50,7 @@ export default function AtAge({
           selectedLevels={Array.from(selectedLevels)}
           selectedRounds={selectedRounds} // array
           selectedBestOf={selectedBestOf}
+          fetchEnabled={fetchEnabled}
         />
       )}
 
@@ -55,6 +60,7 @@ export default function AtAge({
           selectedLevels={Array.from(selectedLevels)}
           selectedRounds={selectedRounds} // array
           selectedBestOf={selectedBestOf}
+          fetchEnabled={fetchEnabled}
         />
       )}
 
@@ -62,6 +68,7 @@ export default function AtAge({
         <EntriesSection
           selectedSurfaces={Array.from(selectedSurfaces)}
           selectedLevels={Array.from(selectedLevels)}
+          fetchEnabled={fetchEnabled}
         />
       )}
 
@@ -69,6 +76,7 @@ export default function AtAge({
         <TitlesSection
           selectedSurfaces={Array.from(selectedSurfaces)}
           selectedLevels={Array.from(selectedLevels)}
+          fetchEnabled={fetchEnabled}
         />
       )}
     </section>

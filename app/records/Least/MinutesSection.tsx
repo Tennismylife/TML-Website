@@ -26,6 +26,7 @@ export default function MinutesSection({ selectedSurfaces, selectedLevels }: Min
   const [modalRecords, setModalRecords] = useState<MinutesRecord[]>([]);
 
   useEffect(() => {
+    if (!enabled) { setData(null); setLoading(false); return; }
     const query = new URLSearchParams();
     selectedSurfaces.forEach(s => query.append('surface', s));
     selectedLevels.forEach(l => query.append('level', l));
@@ -35,7 +36,7 @@ export default function MinutesSection({ selectedSurfaces, selectedLevels }: Min
       .then(setData)
       .catch(setError)
       .finally(() => setLoading(false));
-  }, [selectedSurfaces, selectedLevels]);
+  }, [selectedSurfaces, selectedLevels, enabled]);
 
   if (error) return <div>Error loading data</div>;
   if (loading) return <div>Loading...</div>;

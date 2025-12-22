@@ -36,7 +36,8 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
 
   useEffect(() => {
-    if (!fetchEnabled) return;
+    const enabled = !!fetchEnabled;
+    if (!enabled && !showModal) return;
 
     const fetchSeasonPercentage = async () => {
       setLoading(true);
@@ -62,7 +63,7 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
       }
     };
     fetchSeasonPercentage();
-  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, showModal]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!seasonPercentageData.length) return <div className="text-center py-8 text-gray-300 text-lg">No data found.</div>;

@@ -48,6 +48,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels }: Ent
   const perPage = 20;
 
   const fetchData = async (n: number) => {
+    if (!enabled) return;
     try {
       setLoading(true);
       setError(null);

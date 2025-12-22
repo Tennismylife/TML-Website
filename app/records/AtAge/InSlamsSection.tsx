@@ -11,6 +11,7 @@ interface InSlamsSectionProps {
   selectedSurfaces: string[];
   selectedRounds: string;
   selectedBestOf: number | null;
+  fetchEnabled?: boolean;
 }
 
 interface PlayerData {
@@ -24,7 +25,7 @@ interface PlayerData {
   total: number;
 }
 
-export default function InSlamsSection({ selectedSurfaces, selectedRounds, selectedBestOf }: InSlamsSectionProps) {
+export default function InSlamsSection({ selectedSurfaces, selectedRounds, selectedBestOf, fetchEnabled }: InSlamsSectionProps) {
   const [data, setData] = useState<PlayerData[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);  const [hasFetched, setHasFetched] = useState(false);  const [page, setPage] = useState(1);

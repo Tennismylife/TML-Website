@@ -34,7 +34,8 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
 
   useEffect(() => {
-    if (!fetchEnabled) return;
+    const enabled = !!fetchEnabled;
+    if (!enabled && !showModalMatches) return;
 
     const fetchData = async () => {
       setLoading(true);
@@ -58,7 +59,7 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, showModalMatches]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!topSeasonMatches.length) return <div className="text-center py-8 text-gray-300 text-lg">No matches found.</div>;

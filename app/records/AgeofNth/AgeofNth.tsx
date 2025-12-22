@@ -15,23 +15,28 @@ interface AgeofNthProps {
   selectedRounds: string;
   selectedBestOf: number | null;
   activeSubTab: string;
+  fetchEnabled?: boolean;
 }
 
-export default function AgeofNth({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeSubTab }: AgeofNthProps) {
+export default function AgeofNth({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeSubTab, fetchEnabled }: AgeofNthProps) {
   return (
     
     <section className="mb-8">
       {activeSubTab === 'slams' && (
         <InSlamsSection 
         selectedSurfaces={Array.from(selectedSurfaces)} 
-        selectedRounds={selectedRounds}/>
+        selectedRounds={selectedRounds}
+        fetchEnabled={fetchEnabled}
+        />
       )}
 
       {activeSubTab === 'round' && (
         <RoundSection 
         selectedSurfaces={selectedSurfaces} 
         selectedLevels={selectedLevels} 
-        selectedRounds={selectedRounds} />
+        selectedRounds={selectedRounds}
+        fetchEnabled={fetchEnabled}
+        />
       )}
 
       {activeSubTab === 'wins' && (
@@ -40,6 +45,7 @@ export default function AgeofNth({ selectedSurfaces, selectedLevels, selectedRou
           selectedLevels={Array.from(selectedLevels)}
           selectedRounds={selectedRounds}
           selectedBestOf={selectedBestOf}
+          fetchEnabled={fetchEnabled}
         />
       )}
 
@@ -49,6 +55,7 @@ export default function AgeofNth({ selectedSurfaces, selectedLevels, selectedRou
           selectedLevels={Array.from(selectedLevels)}
           selectedRounds={selectedRounds}
           selectedBestOf={selectedBestOf}
+          fetchEnabled={fetchEnabled}
         />
       )}
 
@@ -56,6 +63,7 @@ export default function AgeofNth({ selectedSurfaces, selectedLevels, selectedRou
         <EntriesSection
           selectedSurfaces={Array.from(selectedSurfaces)}
           selectedLevels={Array.from(selectedLevels)}
+          fetchEnabled={fetchEnabled}
         />
       )}
 
@@ -63,6 +71,7 @@ export default function AgeofNth({ selectedSurfaces, selectedLevels, selectedRou
         <TitlesSection
           selectedSurfaces={Array.from(selectedSurfaces)}
           selectedLevels={Array.from(selectedLevels)}
+          fetchEnabled={fetchEnabled}
         />
       )}
     </section>

@@ -9,11 +9,18 @@ import Modal from '@/components/Modal';
 import { playerMatchesUrl } from "../nav";
 
 interface TitlesProps {
-  selectedSurfaces: string[];
-  selectedLevels: string[];
+  selectedSurfaces: Set<string>;
+  selectedLevels: Set<string>;
+  fetchEnabled?: boolean;
+  fetchRequestId?: string | null;
 }
 
-export default function Titles({ selectedSurfaces, selectedLevels }: TitlesProps) {
+export default function Titles({
+  selectedSurfaces,
+  selectedLevels,
+  fetchEnabled,
+  fetchRequestId
+}: TitlesProps) {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -23,7 +30,17 @@ export default function Titles({ selectedSurfaces, selectedLevels }: TitlesProps
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels]);
 
+  // Only fetch when explicitly requested (fetchRequestId) or when the modal is opened (lazy load on "View All")
+  const enabled = !!fetchEnabled;
+
   useEffect(() => {
+    if (!((enabled && fetchRequestId) || showModal)) {
+      console.debug('[Timespan Titles] skipped fetch: no fetchRequestId and not modal', { enabled, fetchRequestId, showModal });
+      setData([]);
+      setLoading(false);
+      return;
+    }
+
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -32,6 +49,7 @@ export default function Titles({ selectedSurfaces, selectedLevels }: TitlesProps
         selectedLevels.forEach(l => query.append('level', l));
         query.set('perPage', '100');
         const url = `/api/records/timespan/titles?${query.toString()}`;
+        console.debug('[Timespan Titles] fetching', url, { enabled, showModal, fetchRequestId });
         const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch titles');
         const fetchedData = await res.json();
@@ -44,8 +62,25 @@ export default function Titles({ selectedSurfaces, selectedLevels }: TitlesProps
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels]);
+  }, [selectedSurfaces, selectedLevels, enabled, fetchRequestId, showModal]);
 
+  // If fetching is disabled and modal is closed, show a hint instead of "No data"
+  if (!enabled && !showModal) {
+    return (
+      <section className="mb-8">
+        <h2 className="text-xl font-semibold mb-4 text-gray-200">Biggest Timespan Between 2 Titles</h2>
+        <div className="mb-4 flex justify-end">
+          <button
+            onClick={() => setShowModal(true)}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
+          >
+            View All
+          </button>
+        </div>
+        <div className="text-center py-8 text-gray-300">Clicca "View All" per caricare i dati.</div>
+      </section>
+    );
+  }
   if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
   if (!data.length) return <div className="text-center py-8 text-gray-300">No data available.</div>;
 

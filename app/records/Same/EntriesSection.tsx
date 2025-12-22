@@ -35,10 +35,12 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels]);
 
   useEffect(() => {
-    if (!fetchEnabled) return;
-    if (!fetchRequestId) return;
-    if (lastRequestRef.current === fetchRequestId) return;
-    lastRequestRef.current = fetchRequestId;
+    const enabled = !!fetchEnabled;
+    if (!enabled && !showModal) return;
+    if (fetchRequestId) {
+      if (lastRequestRef.current === fetchRequestId) return;
+      lastRequestRef.current = fetchRequestId;
+    }
 
     const fetchData = async () => {
       setLoading(true);
@@ -60,7 +62,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, fetchRequestId]);
+  }, [selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, fetchRequestId, showModal]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!allEntries.length) return <div className="text-center py-8 text-gray-300 text-lg">No entries found.</div>;

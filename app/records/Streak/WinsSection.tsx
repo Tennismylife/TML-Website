@@ -38,7 +38,9 @@ export default function WinsSection({
   selectedLevels,
   selectedBestOf,
   selectedRounds,
-}: WinsSectionProps) {
+  fetchEnabled,
+}: WinsSectionProps & { fetchEnabled?: boolean }) {
+  const enabled = !!fetchEnabled;
   const searchParams = useSearchParams();
   const [streaks, setStreaks] = useState<Streak[]>([]);
   const [loading, setLoading] = useState(false);
@@ -57,6 +59,12 @@ export default function WinsSection({
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedBestOf, selectedRounds]);
 
   useEffect(() => {
+    if (!enabled && !showModal && !showMatchesModal) {
+      setStreaks([]);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -105,7 +113,7 @@ export default function WinsSection({
     };
 
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedBestOf, selectedRounds, searchParams]);
+  }, [selectedSurfaces, selectedLevels, selectedBestOf, selectedRounds, searchParams, enabled, showModal, showMatchesModal]);
 
   const totalPages = Math.ceil(streaks.length / perPage);
 

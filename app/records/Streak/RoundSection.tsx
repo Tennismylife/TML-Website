@@ -24,9 +24,10 @@ interface TournamentInfo {
   tourney_level: string;
 }
 
-export default function RoundSection({ selectedSurfaces, selectedLevels, selectedRounds }: RoundSectionProps) {
+export default function RoundSection({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled }: RoundSectionProps & { fetchEnabled?: boolean }) {
+  const enabled = !!fetchEnabled;
   const [data, setData] = useState<StreakRecord[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>(null);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -37,6 +38,12 @@ export default function RoundSection({ selectedSurfaces, selectedLevels, selecte
   // Fetch streaks
   useEffect(() => {
     const fetchStreaks = async () => {
+      if (!enabled && !modalOpen) {
+        setData([]);
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       setError(null);
       try {
@@ -58,7 +65,7 @@ export default function RoundSection({ selectedSurfaces, selectedLevels, selecte
     };
 
     fetchStreaks();
-  }, [selectedSurfaces, selectedLevels, selectedRounds]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, enabled, modalOpen]);
 
   // Fetch tournaments for a player
   const fetchTournaments = async (player: { id: string; name: string; ioc: string }, event_ids: string[]) => {

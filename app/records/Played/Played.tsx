@@ -35,6 +35,12 @@ export default function Played({ fetchEnabled }: { fetchEnabled?: boolean }) {
   // Fetch players
   useEffect(() => {
     const fetchPlayers = async () => {
+      if (!enabled && !showModal) {
+        setAllPlayers([]);
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       try {
         const params = new URLSearchParams(Array.from(searchParams.entries()));
@@ -51,7 +57,7 @@ export default function Played({ fetchEnabled }: { fetchEnabled?: boolean }) {
       }
     };
     fetchPlayers();
-  }, [searchParams]);
+  }, [searchParams, enabled, showModal]);
 
   if (loading)
     return <div className="text-center py-8 text-gray-300">Loading...</div>;

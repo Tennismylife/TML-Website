@@ -12,6 +12,7 @@ interface RoundSectionProps {
   selectedSurfaces: Set<string>;
   selectedLevels: Set<string>;
   selectedRounds: string;
+  fetchEnabled?: boolean;
 }
 
 interface Player {
@@ -33,7 +34,7 @@ function NInput({ value, onChange }: { value: number; onChange: (n: number) => v
   );
 }
 
-export default function RoundSection({ selectedSurfaces, selectedRounds, selectedLevels }: RoundSectionProps) {
+export default function RoundSection({ selectedSurfaces, selectedRounds, selectedLevels, fetchEnabled }: RoundSectionProps) {
   const [data, setData] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +57,10 @@ export default function RoundSection({ selectedSurfaces, selectedRounds, selecte
     return `${years}y ${days}d`;
   };
 
+  const enabled = !!fetchEnabled;
+
   const fetchData = async (n: number) => {
+    if (!enabled && !showModal) return;
     try {
       setLoading(true);
       setError(null);

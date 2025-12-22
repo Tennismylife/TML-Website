@@ -32,7 +32,10 @@ export default function Entries({ fetchEnabled }: { fetchEnabled?: boolean }) {
 
   useEffect(() => {
     const fetchEntries = async () => {
-      if (!enabled) return;
+      if (!enabled) {
+        console.debug('[Entries] skipped fetch: enabled=false');
+        return;
+      }
       setLoading(true);
       try {
         const params = new URLSearchParams(searchParams as any);

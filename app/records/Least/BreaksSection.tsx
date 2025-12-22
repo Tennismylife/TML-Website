@@ -18,14 +18,20 @@ interface BreakRecord {
   matches: { opponent: string; date: string; tournament: string; round: string; breaksSuffered: number }[];
 }
 
-export default function BreaksSection({ selectedSurfaces, selectedLevels, selectedRounds }: BreaksSectionProps) {
+export default function BreaksSection({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled }: BreaksSectionProps) {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<any>(null);
   const [showSubModal, setShowSubModal] = useState(false);
   const [subModalMatches, setSubModalMatches] = useState<BreakRecord['matches']>([]);
-
+  const enabled = !!fetchEnabled;
   useEffect(() => {
+    if (!enabled) {
+      setData(null);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -40,7 +46,7 @@ export default function BreaksSection({ selectedSurfaces, selectedLevels, select
       .then((data) => setData(data))
       .catch(setError)
       .finally(() => setLoading(false));
-  }, [selectedSurfaces, selectedLevels, selectedRounds]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, enabled]);
 
   if (error) return <div>Error loading data</div>;
   if (loading) return <div>Loading...</div>;

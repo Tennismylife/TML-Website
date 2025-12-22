@@ -7,7 +7,10 @@ import { getFlagFromIOC } from "@/lib/utils";
 interface SeasonsSectionProps {
   selectedSurfaces: Set<string>;
   selectedLevels: Set<string>;
-  selectedRounds: string; // può essere "All"
+  selectedRounds: string;
+  fetchEnabled?: boolean;
+  parentShowModal?: boolean;
+  fetchRequestId?: string;
 }
 
 interface H2HSeasonRecord {
@@ -21,27 +24,44 @@ interface H2HSeasonResponse {
   h2h_season: H2HSeasonRecord[];
 }
 
-export default function SeasonsSection({ selectedSurfaces, selectedLevels, selectedRounds }: SeasonsSectionProps) {
+export default function SeasonsSection({
+  selectedSurfaces,
+  selectedLevels,
+  selectedRounds,
+  fetchEnabled,
+  parentShowModal,
+  fetchRequestId,
+}: SeasonsSectionProps) {
+  const enabled = !!fetchEnabled;
   const [data, setData] = useState<H2HSeasonResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>(null);
   const [showModal, setShowModal] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalPlayers, setModalPlayers] = useState<H2HSeasonRecord[]>([]);
 
   useEffect(() => {
+    console.debug('[SeasonsSection] effect start', { enabled, showModal, parentShowModal });
+    if (!enabled && !showModal && !parentShowModal) {
+      console.debug('[SeasonsSection] skipped fetch: not enabled and no modal');
+      setData(null);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     // Costruisco l'URL senza filtro per anno
     const url = '/api/records/h2h/seasons';
+    console.debug('[SeasonsSection] fetching', url);
 
     fetch(url)
       .then(res => res.json())
       .then(setData)
       .catch(setError)
       .finally(() => setLoading(false));
-  }, [selectedSurfaces, selectedLevels, selectedRounds]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, enabled, showModal, parentShowModal]);
 
   if (error) return <div>Error loading data</div>;
   if (loading) return <div>Loading...</div>;

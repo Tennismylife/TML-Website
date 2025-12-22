@@ -53,6 +53,7 @@ export default function WinsSection({
   const perPage = 20;
 
   const fetchData = async (x: number) => {
+    if (!enabled) return;
     try {
       setLoading(true);
       setError(null);

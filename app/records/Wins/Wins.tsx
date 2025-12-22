@@ -35,19 +35,20 @@ export default function Wins({ topWinners, fetchEnabled }: WinsProps) {
   // Reset page when filters change
   useEffect(() => setPage(1), [searchParams]);
 
-  // Fetch winners (skip fetch if parent provided data via `topWinners` prop)
+  // Fetch winners (skip fetch if parent provided data via `topWinners` prop, but allow 'View All' to fetch)
   useEffect(() => {
-    if (topWinners && topWinners.length) {
-      setAllWinners(topWinners);
-      return;
-    }
-
     const fetchWinners = async () => {
-      if (!enabled) return;
+      if (!enabled && !showModal) return;
       setLoading(true);
       try {
         const params = new URLSearchParams(Array.from(searchParams.entries()));
-        params.set("perPage", "100"); // fetch first 100
+        // If parent provided topWinners and we are not in 'View All' modal, use it
+        if (!showModal && topWinners && topWinners.length) {
+          setAllWinners(topWinners);
+          setLoading(false);
+          return;
+        }
+        params.set("perPage", showModal ? "1000" : "100"); // fetch more on View All
         params.delete("page");
 
         const res = await fetch(`/api/records/wins?${params.toString()}`);
@@ -61,7 +62,7 @@ export default function Wins({ topWinners, fetchEnabled }: WinsProps) {
       }
     };
     fetchWinners();
-  }, [searchParams, topWinners, enabled]);
+  }, [searchParams, topWinners, enabled, showModal]);
 
   if (loading)
     return <div className="text-center py-8 text-gray-300">Loading...</div>;

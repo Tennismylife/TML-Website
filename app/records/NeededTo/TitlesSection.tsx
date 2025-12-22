@@ -10,6 +10,7 @@ import { getFlagFromIOC } from "@/lib/utils";
 interface TitlesSectionProps {
   selectedSurfaces: string[];
   selectedLevels: string[];
+  fetchEnabled?: boolean;
 }
 
 interface Player {
@@ -32,14 +33,14 @@ function NInput({ value, onChange }: { value: number; onChange: (n: number) => v
   );
 }
 
-export default function TitlesSection({ selectedSurfaces, selectedLevels }: TitlesSectionProps) {
+export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchEnabled }: TitlesSectionProps) {
   const [data, setData] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasFetched, setHasFetched] = useState(false);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
-
+  const enabled = !!fetchEnabled;
   const [inputN, setInputN] = useState(1);
   const [selectedN, setSelectedN] = useState(1);
 
@@ -47,6 +48,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels }: Titl
   const perPage = 20;
 
   const fetchData = async (n: number) => {
+    if (!enabled) return;
     try {
       setLoading(true);
       setError(null);

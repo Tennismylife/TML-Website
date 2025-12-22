@@ -34,7 +34,8 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds]);
 
   useEffect(() => {
-    if (!fetchEnabled) return;
+    const enabled = !!fetchEnabled;
+    if (!enabled && !showModalRounds) return;
 
     const fetchData = async () => {
       setLoading(true);
@@ -58,7 +59,7 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, setFetchEnabled]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, setFetchEnabled, showModalRounds]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!topSeasonRounds.length) return <div className="text-center py-8 text-gray-300 text-lg">No rounds found.</div>;

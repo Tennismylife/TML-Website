@@ -37,10 +37,12 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
 
   useEffect(() => {
-    if (!fetchEnabled) return;
-    if (!fetchRequestId) return;
-    if (lastRequestRef.current === fetchRequestId) return;
-    lastRequestRef.current = fetchRequestId;
+    const enabled = !!fetchEnabled;
+    if (!enabled && !showModal) return;
+    if (fetchRequestId) {
+      if (lastRequestRef.current === fetchRequestId) return;
+      lastRequestRef.current = fetchRequestId;
+    }
 
     const fetchData = async () => {
       setLoading(true);
@@ -65,7 +67,7 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId, showModal]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!allWinners.length) return <div className="text-center py-8 text-gray-300 text-lg">No wins found.</div>;
