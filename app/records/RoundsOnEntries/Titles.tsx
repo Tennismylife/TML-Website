@@ -30,6 +30,13 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries, f
   const perPage = 20; 
 
   useEffect(() => {
+    // Do nothing when fetch is not enabled
+    if (!enabled) {
+      setData([]);
+      setLoading(false);
+      return;
+    }
+
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -39,9 +46,7 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries, f
 
         const queryString = query.toString();
         const url = `/api/records/roundsonentries/titles${queryString ? `?${queryString}` : ""}`;
-
-          if (!enabled) return;
-      const res = await fetch(url);
+        const res = await fetch(url);
         if (!res.ok) throw new Error("Failed to fetch data");
         const json = await res.json();
         setData(json.FinalWins || []);
@@ -55,7 +60,7 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries, f
     };
 
     fetchData();
-  }, [Array.from(selectedSurfaces).join(","), Array.from(selectedLevels).join("," , enabled)]);
+  }, [Array.from(selectedSurfaces).join(","), Array.from(selectedLevels).join(","), enabled]);
 
   const filteredData = data.filter((p) => p.entries >= minEntries);
 
