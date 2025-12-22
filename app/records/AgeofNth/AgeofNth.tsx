@@ -63,6 +63,7 @@ export default function AgeofNth({ selectedSurfaces, selectedLevels, selectedRou
         <EntriesSection
           selectedSurfaces={Array.from(selectedSurfaces)}
           selectedLevels={Array.from(selectedLevels)}
+          fetchEnabled={fetchEnabled}
         />
       )}
 
