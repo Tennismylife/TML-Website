@@ -4,8 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Pagination from "../../../components/Pagination";
-import Modal from "../Modal";
-import { getFlagFromIOC } from "@/lib/utils";
+import Modal from "@/components/Modal";
+import { getFlagFromIOC, toOrdinal } from "@/lib/utils";
 import { playerMatchesUrl } from "../nav";
 
 interface RoundSectionProps {
@@ -13,6 +13,7 @@ interface RoundSectionProps {
   selectedLevels: Set<string>;
   selectedRounds: string;
   fetchEnabled?: boolean;
+  description?: string;
 }
 
 interface Player {
@@ -34,7 +35,7 @@ function NInput({ value, onChange }: { value: number; onChange: (n: number) => v
   );
 }
 
-export default function RoundSection({ selectedSurfaces, selectedRounds, selectedLevels, fetchEnabled }: RoundSectionProps) {
+export default function RoundSection({ selectedSurfaces, selectedRounds, selectedLevels, fetchEnabled, description }: RoundSectionProps) {
   const [data, setData] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,6 +45,8 @@ export default function RoundSection({ selectedSurfaces, selectedRounds, selecte
 
   const [inputN, setInputN] = useState(1);
   const [selectedN, setSelectedN] = useState(1);
+  // allow parent to know applied nth
+  const [appliedNth, setAppliedNth] = useState<number | null>(null);
 
   const searchParams = useSearchParams();
   const perPage = 20;
@@ -117,7 +120,7 @@ export default function RoundSection({ selectedSurfaces, selectedRounds, selecte
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
             <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">
-              Age at {selectedN}-th Round
+              {selectedRounds ? `Age of ${toOrdinal(selectedN)} ${selectedRounds}` : `Age of ${toOrdinal(selectedN)} Round`}
             </th>
           </tr>
         </thead>
@@ -150,17 +153,42 @@ export default function RoundSection({ selectedSurfaces, selectedRounds, selecte
     </div>
   );
 
+  const levelNames: Record<string, string> = {
+    G: "Slams",
+    M: "Masters 1000",
+    F: "ATP Finals",
+    "500": "500",
+    "250": "250",
+    A: "Others",
+    D: "Davis Cup",
+  };
+
+  const filters: string[] = [];
+  if (selectedLevels && selectedLevels.size > 0) {
+    const levels = Array.from(selectedLevels).map(l => levelNames[l] || l);
+    filters.push(`in ${levels.join(' or ')}`);
+  }
+  if (selectedSurfaces && selectedSurfaces.size > 0) {
+    const surfaces = Array.from(selectedSurfaces).map(s => s);
+    filters.push(`on ${surfaces.join(' or ')}`);
+  }
+  const filterText = filters.length ? ' ' + filters.join(' ') : '';
+
+  const headerText = hasFetched ? (selectedRounds ? `Age of ${toOrdinal(selectedN)} ${selectedRounds}${filterText}` : `Age of ${toOrdinal(selectedN)} Round${filterText}`) : (description ?? '');
+
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">Age at N-th Round</h2>
+      {headerText && <div className="text-center text-4xl font-bold text-white mb-6">{headerText}</div>} 
 
       <div className="mb-4 flex items-center gap-2">
         <NInput value={inputN} onChange={setInputN} />
         <button
-          onClick={() => fetchData(inputN)}
-          disabled={loading}
+          onClick={() => Number.isFinite(inputN) && fetchData(inputN)}
+          disabled={loading || !Number.isFinite(inputN) || inputN <= 0}
           className={`px-4 py-1 rounded ${
-            loading ? "bg-gray-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"
+            loading || !Number.isFinite(inputN) || inputN <= 0
+              ? "bg-gray-600 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700 text-white"
           }`}
         >
           Apply
@@ -196,7 +224,7 @@ export default function RoundSection({ selectedSurfaces, selectedRounds, selecte
         <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       )}
 
-      <Modal show={showModal} onClose={() => setShowModal(false)} title={`Age at ${selectedN}-th Round`}>
+      <Modal show={showModal} onClose={() => setShowModal(false)} title={selectedRounds ? `Age of ${toOrdinal(selectedN)} ${selectedRounds}${filterText}` : `Age of ${toOrdinal(selectedN)} Round${filterText}`}>
         {renderTable(data)}
       </Modal>
     </section>

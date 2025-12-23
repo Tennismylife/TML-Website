@@ -5,15 +5,16 @@ import { useState, useEffect } from "react";
 import { getFlagFromIOC } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
-import Modal from '../Modal';
+import Modal from '@/components/Modal';
 
 interface RoundsProps {
   selectedSurfaces: Set<string>;
   selectedLevels: Set<string>;
   selectedRounds: string;
+  description?: string;
 }
 
-export default function Rounds({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, fetchRequestId }: RoundsProps & { fetchEnabled?: boolean, fetchRequestId?: string | null }) {
+const Rounds = ({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, fetchRequestId, description }: RoundsProps & { fetchEnabled?: boolean, fetchRequestId?: string | null, description?: string }) => {
   const enabled = !!fetchEnabled;
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -126,7 +127,11 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
 
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">{getTitle()}</h2>
+      {description && (
+        <div className="text-center text-4xl font-bold text-white mb-6">
+          {description}
+        </div>
+      )}
 
       <div className="mb-4 flex justify-end">
         <button
@@ -141,9 +146,11 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
 
       {totalPages > 1 && <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />}
 
-      <Modal show={showModal} onClose={() => setShowModal(false)}>
+      <Modal show={showModal} onClose={() => setShowModal(false)} title={description || "All Timespans"}>
         {renderTable(data)}
       </Modal>
     </section>
   );
-}
+};
+
+export default Rounds;

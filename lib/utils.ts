@@ -317,6 +317,21 @@ export function toDate(d: string | Date) {
   return Number.isFinite(dt.getTime()) ? dt : null;
 }  
 
+export const toOrdinal = (n: number) => {
+  if (!Number.isFinite(n)) return String(n);
+  const v = Math.abs(n) % 100;
+  if (v >= 11 && v <= 13) return `${n}th`;
+  switch (n % 10) {
+    case 1: return `${n}st`;
+    case 2: return `${n}nd`;
+    case 3: return `${n}rd`;
+    default: return `${n}th`;
+  }
+};
+
+// Backwards-compatible default shape
+export default { toOrdinal };
+
 export const getTourneyLink = (tourneyId?: string) => {
     if (!tourneyId) return '#';
     const parts = tourneyId.split('-');

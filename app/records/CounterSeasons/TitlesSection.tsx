@@ -9,6 +9,7 @@ interface TitlesSectionProps {
   selectedSurfaces: string[];
   selectedLevels: string[];
   fetchEnabled?: boolean;
+  description?: string;
 }
 
 interface Player {
@@ -23,6 +24,7 @@ export default function TitlesSection({
   selectedSurfaces,
   selectedLevels,
   fetchEnabled = true,
+  description,
 }: TitlesSectionProps) {
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
@@ -135,11 +137,33 @@ export default function TitlesSection({
     </div>
   );
 
+  const levelNames: Record<string, string> = {
+    G: "Slams",
+    M: "Masters 1000",
+    F: "ATP Finals",
+    "500": "500",
+    "250": "250",
+    A: "Others",
+    D: "Davis Cup",
+  };
+
+  const filters: string[] = [];
+  if (selectedLevels.length > 0) {
+    const levels = selectedLevels.map(l => levelNames[l] || l);
+    filters.push(`in ${levels.join(' or ')}`);
+  }
+  if (selectedSurfaces.length > 0) {
+    const surfaces = selectedSurfaces.map(s => s);
+    filters.push(`on ${surfaces.join(' or ')}`);
+  }
+  const filterText = filters.length ? ' ' + filters.join(' ') : '';
+
+  const titleLabel = minTitlesPerSeason === 1 ? 'Title' : 'Titles';
+  const headerText = hasFetched ? `Seasons with at least ${minTitlesPerSeason} ${titleLabel}${filterText}` : (description ?? '');
+
   return (
     <section className="mb-0">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">
-        Title-winning Seasons
-      </h2>
+      {headerText && <div className="text-center text-4xl font-bold text-white mb-6">{headerText}</div>}
 
       {/* Controls */}
       <div className="mb-4 flex items-center gap-2">
@@ -193,7 +217,7 @@ export default function TitlesSection({
       <Modal
         show={showModal}
         onClose={() => setShowModal(false)}
-        title="Title-winning seasons per player"
+        title={`Seasons with at least ${minTitlesPerSeason} Titles${filterText}`}
       >
         {renderTable(players, 0)}
       </Modal>

@@ -12,6 +12,7 @@ interface TitlesProps {
   selectedLevels: Set<string> | string[];
   minEntries: number;
   fetchEnabled?: boolean;
+  description?: string;
 }
 
 interface PlayerStat {
@@ -23,7 +24,7 @@ interface PlayerStat {
   percentage: number;
 }
 
-export default function Titles({ selectedSurfaces, selectedLevels, minEntries, fetchEnabled }: TitlesProps) {
+export default function Titles({ selectedSurfaces, selectedLevels, minEntries, fetchEnabled, description }: TitlesProps) {
   const enabled = !!fetchEnabled;
   const [data, setData] = useState<PlayerStat[]>([]);
   const [loading, setLoading] = useState(false);

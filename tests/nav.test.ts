@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { playerMatchesUrl, playerTournamentsUrl } from './nav';
+import { playerMatchesUrl, playerTournamentsUrl } from '../app/records/nav';
 
 describe('records/nav helpers', () => {
   it('includes subtab in playerMatchesUrl when provided', () => {

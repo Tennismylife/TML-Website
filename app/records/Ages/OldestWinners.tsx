@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { getFlagFromIOC } from "@/lib/utils";
 import { playerMatchesUrl } from "../nav";
 import Pagination from "../../../components/Pagination";
-import Modal from "../Modal";
+import Modal from "@/components/Modal";
 
 interface Player {
   id: number;
@@ -24,9 +24,10 @@ interface OldestWinnersProps {
   selectedLevels: Set<string>;
   fetchEnabled?: boolean;
   fetchRequestId?: string | null;
+  description?: string;
 }
 
-export default function OldestWinners({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRequestId }: OldestWinnersProps) {
+const OldestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRequestId, description }: OldestWinnersProps) => {
   const enabled = !!fetchEnabled;
   const [data, setData] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
@@ -142,7 +143,7 @@ export default function OldestWinners({ selectedSurfaces, selectedLevels, fetchE
 
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">Oldest Winners</h2>
+      {description && <div className="text-center text-4xl font-bold text-white mb-6">{description}</div>}
 
       <div className="mb-4 flex justify-end">
         <button
@@ -159,9 +160,11 @@ export default function OldestWinners({ selectedSurfaces, selectedLevels, fetchE
         <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       )}
 
-      <Modal show={showModal} onClose={() => setShowModal(false)} title="Oldest Winners">
+      <Modal show={showModal} onClose={() => setShowModal(false)} title="Oldest Title Winners">
         {renderTable(data)}
       </Modal>
     </section>
   );
-}
+};
+
+export default OldestWinners;

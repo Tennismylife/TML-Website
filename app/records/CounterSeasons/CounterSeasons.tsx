@@ -12,9 +12,10 @@ interface NeededToSectionProps {
   selectedRounds: string;
   activeSubTab: string;
   fetchEnabled?: boolean;
+  description?: string;
 }
 
-export default function CounterSeason({ selectedSurfaces, selectedLevels, selectedRounds, activeSubTab, fetchEnabled }: NeededToSectionProps) {
+export default function CounterSeason({ selectedSurfaces, selectedLevels, selectedRounds, activeSubTab, fetchEnabled, description }: NeededToSectionProps) {
   return (
     <section className="mb-8">
       {activeSubTab === 'titles' && (
@@ -22,6 +23,7 @@ export default function CounterSeason({ selectedSurfaces, selectedLevels, select
           selectedSurfaces={Array.from(selectedSurfaces)}
           selectedLevels={Array.from(selectedLevels)}
           fetchEnabled={fetchEnabled}
+          description={description}
         />
       )}
       {activeSubTab === 'round' && (
@@ -30,6 +32,7 @@ export default function CounterSeason({ selectedSurfaces, selectedLevels, select
           selectedLevels={Array.from(selectedLevels)}
           selectedRound={selectedRounds || 'F'}
           fetchEnabled={fetchEnabled}
+          description={description}
         />
       )}
     </section>

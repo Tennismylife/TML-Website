@@ -13,6 +13,8 @@ interface RoundsSectionProps {
   selectedRounds: string;
   fetchEnabled?: boolean;
   setFetchEnabled?: (v: boolean) => void;
+  fetchRequestId?: string | null;
+  description?: string;
 }
 
 interface SeasonRoundRecord {
@@ -23,7 +25,7 @@ interface SeasonRoundRecord {
   total_rounds: number;
 }
 
-export default function RoundsSection({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, setFetchEnabled }: RoundsSectionProps) {
+export default function RoundsSection({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, setFetchEnabled, fetchRequestId, description }: RoundsSectionProps) {
   const [topSeasonRounds, setTopSeasonRounds] = useState<SeasonRoundRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -114,6 +116,12 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
 
   return (
     <section className="mb-8">
+      {description && (
+        <div className="text-center text-4xl font-bold text-white mb-6">
+          {description}
+        </div>
+      )}
+
       <div className="flex justify-end mb-4">
         <button
           onClick={() => setShowModalRounds(true)}

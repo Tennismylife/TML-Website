@@ -15,6 +15,7 @@ interface PlayedSectionProps {
   selectedBestOf: number | null;
   fetchEnabled?: boolean;
   setFetchEnabled?: (v: boolean) => void;
+  description?: string;
 }
 
 interface PlayedRecord {
@@ -26,7 +27,7 @@ interface PlayedRecord {
   ioc: string;
 }
 
-export default function PlayedSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId }: PlayedSectionProps & { fetchRequestId?: string | null }) {
+export default function PlayedSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId, description }: PlayedSectionProps & { fetchRequestId?: string | null }) {
   const [allPlayed, setAllPlayed] = useState<PlayedRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -123,6 +124,12 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
 
   return (
     <section className="mb-8">
+      {description && (
+        <div className="text-center text-4xl font-bold text-white mb-6">
+          {description}
+        </div>
+      )}
+
       <div className="flex justify-end mb-4">
         <button
           onClick={() => setShowModal(true)}

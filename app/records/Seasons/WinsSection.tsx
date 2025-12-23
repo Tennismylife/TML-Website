@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { getFlagFromIOC } from '@/lib/utils';
 import { useSearchParams } from 'next/navigation';
 import Pagination from '../../../components/Pagination';
-import Modal from '..//Modal';
+import Modal from '@/components/Modal';
 
 interface WinsSectionProps {
   selectedSurfaces: string[];
@@ -14,6 +14,8 @@ interface WinsSectionProps {
   selectedBestOf: number | null;
   fetchEnabled?: boolean;
   setFetchEnabled?: (v: boolean) => void;
+  fetchRequestId?: string | null;
+  description?: string;
 }
 
 type WinRecord = {
@@ -24,21 +26,33 @@ type WinRecord = {
   year: number;
 };
 
-export default function WinsSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled }: WinsSectionProps) {
+export default function WinsSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId, description }: WinsSectionProps) {
   const [topSameTournamentWins, setTopSameTournamentWins] = useState<WinRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const perPage = 20;
   const searchParams = useSearchParams();
+  const lastRequestRef = useRef<string | null>(null);
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
 
   useEffect(() => {
+    console.debug('[Seasons Wins] effect', { fetchEnabled, showModal, fetchRequestId, selectedSurfaces: Array.from(selectedSurfaces), selectedLevels: Array.from(selectedLevels), selectedRounds, selectedBestOf });
     const enabled = !!fetchEnabled;
-    if (!enabled && !showModal) return;
+    if (!enabled && !showModal) { console.debug('[Seasons Wins] skipped: not enabled and not modal'); return; }
+
+    if (fetchRequestId) {
+      if (lastRequestRef.current === fetchRequestId) {
+        console.debug('[Seasons Wins] duplicate fetchRequestId, ignoring', fetchRequestId);
+        return;
+      }
+      console.debug('[Seasons Wins] accepting fetchRequestId', fetchRequestId);
+      lastRequestRef.current = fetchRequestId;
+    }
 
     const fetchData = async () => {
+      console.debug('[Seasons Wins] fetch start', { fetchRequestId });
       setLoading(true);
       try {
         const query = new URLSearchParams();
@@ -52,17 +66,19 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
         if (!res.ok) throw new Error('Failed to fetch wins')
 
         const data: WinRecord[] = await res.json();
+        console.debug('[Seasons Wins] fetched count', data?.length ?? 0);
         setTopSameTournamentWins(data || []);
       } catch (err) {
-        console.error(err);
+        console.error('[Seasons Wins] error fetching', err);
         setTopSameTournamentWins([]);
       } finally {
         setLoading(false);
+        console.debug('[Seasons Wins] fetch complete, clearing fetchEnabled');
         setFetchEnabled?.(false);
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, showModal]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId, showModal]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!topSameTournamentWins.length) return <div className="text-center py-8 text-gray-300 text-lg">No wins found.</div>;
@@ -115,6 +131,11 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
 
   return (
     <section className="mb-8">
+      {description && (
+        <div className="text-center text-4xl font-bold text-gray-200 mb-6">
+          {description}
+        </div>
+      )}
       <div className="flex justify-end mb-4">
         <button
           onClick={() => setShowModal(true)}

@@ -11,6 +11,7 @@ interface RoundsProps {
   selectedLevels: Set<string>;
   selectedRounds: string;
   minEntries: number;
+  description?: string;
 }
 
 interface PlayerStat {
@@ -22,7 +23,7 @@ interface PlayerStat {
   percentage: number;
 }
 
-export default function Rounds({ selectedSurfaces, selectedLevels, selectedRounds, minEntries, fetchEnabled }: RoundsProps & { fetchEnabled?: boolean }) {
+export default function Rounds({ selectedSurfaces, selectedLevels, selectedRounds, minEntries, fetchEnabled, description }: RoundsProps & { fetchEnabled?: boolean; description?: string }) {
   const enabled = !!fetchEnabled;
   const [data, setData] = useState<PlayerStat[]>([]);
   const [loading, setLoading] = useState(false);
@@ -116,7 +117,6 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
 
   return (
     <section className="mb-8">
-
       {/* VIEW ALL BUTTON */}
       <div className="mb-4 flex justify-end">
         <button

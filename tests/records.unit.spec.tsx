@@ -109,7 +109,7 @@ describe('Records - single fetch on filter change', () => {
 
     // Hover the tab and ensure subtabs appear
     await userEvent.hover(timespanBtn);
-    expect(screen.getByRole('button', { name: /Entries/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Entries/i })).toBeTruthy();
 
     // Unhover and confirm subtabs hide again
     await userEvent.unhover(timespanBtn);
@@ -126,23 +126,23 @@ describe('Records - single fetch on filter change', () => {
 
     // Hover highlights the tab (background appears)
     await userEvent.hover(timespanBtn);
-    expect(screen.getByTestId('active-tab-bg')).toBeInTheDocument();
+    expect(screen.getByTestId('active-tab-bg')).toBeTruthy();
 
     // But hovering alone should not render the Timespan component
     expect(screen.queryByText('Timespan')).toBeNull();
 
     // Click activates the tab and renders the component
     await userEvent.click(timespanBtn);
-    expect(screen.getByText('Timespan')).toBeInTheDocument();
+    expect(screen.getByText('Timespan')).toBeTruthy();
 
     // Unhover should keep the highlight because tab is active
     await userEvent.unhover(timespanBtn);
-    expect(screen.getByTestId('active-tab-bg')).toBeInTheDocument();
+    expect(screen.getByTestId('active-tab-bg')).toBeTruthy();
 
     // If we click another tab, highlight should move
     const winsBtn = screen.getByRole('button', { name: /Wins/i });
     await userEvent.click(winsBtn);
-    expect(screen.getByText('Wins')).toBeInTheDocument();
+    expect(screen.getByText('Wins')).toBeTruthy();
   });
 
   it('hovering tabs does not trigger fetch; clicking activates fetch', async () => {
@@ -162,5 +162,182 @@ describe('Records - single fetch on filter change', () => {
     // Click should enable fetch and cause network call
     await userEvent.click(timespanBtn);
     await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+  });
+
+  it('renders the correct component when a tab is clicked', async () => {
+    render(<RecordsMain />);
+
+    // Click Wins tab
+    const winsBtn = screen.getByRole('button', { name: /Wins/i });
+    await userEvent.click(winsBtn);
+    expect(screen.getByText('Wins')).toBeTruthy();
+
+    // Click another tab, e.g., Played
+    const playedBtn = screen.getByRole('button', { name: /Played/i });
+    await userEvent.click(playedBtn);
+    expect(screen.getByText('Played')).toBeTruthy();
+    // Ensure previous component is not rendered
+    expect(screen.queryByText('Wins')).toBeNull();
+  });
+
+  it('shows and hides subtabs for Timespan correctly', async () => {
+    render(<RecordsMain />);
+
+    const timespanBtn = screen.getByRole('button', { name: /Timespan/i });
+
+    // Subtabs not visible initially
+    expect(screen.queryByRole('button', { name: /Entries/i })).toBeNull();
+    expect(screen.queryByRole('button', { name: /Titles/i })).toBeNull();
+
+    // Hover to show subtabs
+    await userEvent.hover(timespanBtn);
+    expect(screen.getByRole('button', { name: /Entries/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Titles/i })).toBeTruthy();
+
+    // Unhover to hide
+    await userEvent.unhover(timespanBtn);
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: /Entries/i })).toBeNull();
+      expect(screen.queryByRole('button', { name: /Titles/i })).toBeNull();
+    });
+  });
+
+  it('clicking a subtab activates it and renders the sub-component', async () => {
+    render(<RecordsMain />);
+
+    const timespanBtn = screen.getByRole('button', { name: /Timespan/i });
+    await userEvent.hover(timespanBtn);
+
+    // Click Entries subtab
+    const entriesBtn = screen.getByRole('button', { name: /Entries/i });
+    await userEvent.click(entriesBtn);
+
+    // Assuming Entries component is rendered; adjust based on actual implementation
+    expect(screen.getByText('Entries')).toBeTruthy();
+  });
+
+  it('only one tab is active at a time', async () => {
+    render(<RecordsMain />);
+
+    const winsBtn = screen.getByRole('button', { name: /Wins/i });
+    const playedBtn = screen.getByRole('button', { name: /Played/i });
+
+    await userEvent.click(winsBtn);
+    expect(screen.getByText('Wins')).toBeTruthy();
+
+    await userEvent.click(playedBtn);
+    expect(screen.getByText('Played')).toBeTruthy();
+    expect(screen.queryByText('Wins')).toBeNull();
+  });
+
+  it('fetch is called when clicking different tabs', async () => {
+    const fetchSpy = vi.fn();
+    global.fetch = fetchSpy as any;
+
+    render(<RecordsMain />);
+
+    const winsBtn = screen.getByRole('button', { name: /Wins/i });
+    await userEvent.click(winsBtn);
+    await waitFor(() => expect(fetchSpy).toHaveBeenCalledWith('/api/records/wins'));
+
+    const playedBtn = screen.getByRole('button', { name: /Played/i });
+    await userEvent.click(playedBtn);
+    await waitFor(() => expect(fetchSpy).toHaveBeenCalledWith('/api/records/played'));
+  });
+
+  it('handles fetch errors gracefully', async () => {
+    const fetchSpy = vi.fn(async () => {
+      throw new Error('Network error');
+    });
+    global.fetch = fetchSpy as any;
+
+    render(<RecordsMain />);
+
+    const winsBtn = screen.getByRole('button', { name: /Wins/i });
+    await userEvent.click(winsBtn);
+
+    // Assuming error handling renders an error message; adjust based on implementation
+    await waitFor(() => expect(screen.getByText(/error/i)).toBeTruthy());
+  });
+
+  it('initially renders no active component', () => {
+    render(<RecordsMain />);
+
+    expect(screen.queryByText('Wins')).toBeNull();
+    expect(screen.queryByText('Played')).toBeNull();
+    expect(screen.queryByText('Timespan')).toBeNull();
+    expect(screen.queryByTestId('active-tab-bg')).toBeNull();
+  });
+
+  it('clicking a subtab triggers fetch for the subtab endpoint', async () => {
+    const fetchSpy = vi.fn();
+    global.fetch = fetchSpy as any;
+
+    render(<RecordsMain />);
+
+    const timespanBtn = screen.getByRole('button', { name: /Timespan/i });
+    await userEvent.hover(timespanBtn);
+
+    const titlesBtn = screen.getByRole('button', { name: /Titles/i });
+    await userEvent.click(titlesBtn);
+
+    await waitFor(() => expect(fetchSpy).toHaveBeenCalledWith('/api/records/timespan/titles'));
+  });
+
+  it('rapid clicks on tabs only activate the last one', async () => {
+    render(<RecordsMain />);
+
+    const winsBtn = screen.getByRole('button', { name: /Wins/i });
+    const playedBtn = screen.getByRole('button', { name: /Played/i });
+    const countBtn = screen.getByRole('button', { name: /Count/i });
+
+    await userEvent.click(winsBtn);
+    await userEvent.click(playedBtn);
+    await userEvent.click(countBtn);
+
+    expect(screen.getByText('Count')).toBeTruthy();
+    expect(screen.queryByText('Wins')).toBeNull();
+    expect(screen.queryByText('Played')).toBeNull();
+  });
+
+  it('displays error for failed subtab fetch', async () => {
+    const fetchSpy = vi.fn(async () => {
+      throw new Error('Fetch failed');
+    });
+    global.fetch = fetchSpy as any;
+
+    render(<RecordsMain />);
+
+    const timespanBtn = screen.getByRole('button', { name: /Timespan/i });
+    await userEvent.hover(timespanBtn);
+
+    const entriesBtn = screen.getByRole('button', { name: /Entries/i });
+    await userEvent.click(entriesBtn);
+
+    await waitFor(() => expect(screen.getByText(/error/i)).toBeTruthy());
+  });
+
+  it('renders component for non-subtab tabs like Ages', async () => {
+    render(<RecordsMain />);
+
+    const agesBtn = screen.getByRole('button', { name: /Ages/i });
+    await userEvent.click(agesBtn);
+
+    expect(screen.getByText('Ages')).toBeTruthy();
+  });
+
+  it('fetch is not called on repeated clicks of the same tab', async () => {
+    const fetchSpy = vi.fn();
+    global.fetch = fetchSpy as any;
+
+    render(<RecordsMain />);
+
+    const winsBtn = screen.getByRole('button', { name: /Wins/i });
+    await userEvent.click(winsBtn);
+    await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(1));
+
+    await userEvent.click(winsBtn);
+    await new Promise((r) => setTimeout(r, 100));
+    expect(fetchSpy).toHaveBeenCalledTimes(1); // Assuming no refetch on same tab
   });
 });

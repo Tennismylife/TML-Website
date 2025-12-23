@@ -12,6 +12,7 @@ interface TimespanProps {
   onTabChange: (tab: string) => void;
   fetchEnabled?: boolean;
   fetchRequestId?: string | null;
+  description?: string;
 }
 
 export default function Timespan({
@@ -21,17 +22,20 @@ export default function Timespan({
   selectedTab,
   onTabChange,
   fetchEnabled,
-  fetchRequestId
+  fetchRequestId,
+  description
 }: TimespanProps) {
   return (
     <section className="mb-8">
       {selectedTab === "entries" ? (
-        <Entries selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} />
+        <Entries selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} description={description} />
       ) : selectedTab === "titles" ? (
         <Titles
           selectedSurfaces={selectedSurfaces}
           selectedLevels={selectedLevels}
           fetchEnabled={fetchEnabled}
+          fetchRequestId={fetchRequestId}
+          description={description}
         />
       ) : (
         <Rounds
@@ -40,6 +44,7 @@ export default function Timespan({
           selectedRounds={selectedRounds}
           fetchEnabled={fetchEnabled}
           fetchRequestId={fetchRequestId}
+          description={description}
         />
       )}
     </section>

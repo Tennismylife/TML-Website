@@ -10,6 +10,7 @@ interface RoundsSectionProps {
   selectedLevels: string[];
   selectedRounds: string;
   fetchEnabled?: boolean;
+  description?: string;
 }
 
 interface Player {
@@ -20,7 +21,7 @@ interface Player {
   tournaments_played: number;
 }
 
-export default function RoundsSection({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled }: RoundsSectionProps) {
+export default function RoundsSection({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, description }: RoundsSectionProps) {
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasFetched, setHasFetched] = useState(false);
@@ -113,7 +114,7 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
 
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4">Tournaments Played to Reach N Rounds</h2>
+      {description && <div className="text-center text-4xl font-bold text-white mb-6">{description}</div>}
 
       <div className="mb-4 flex justify-between items-center gap-4">
         <div className="flex items-center gap-2">

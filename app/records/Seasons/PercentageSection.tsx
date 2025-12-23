@@ -13,6 +13,8 @@ interface PercentageSectionProps {
   selectedBestOf: number | null;
   fetchEnabled?: boolean;
   setFetchEnabled?: (v: boolean) => void;
+  fetchRequestId?: string | null;
+  description?: string;
 }
 
 type PercentageRecord = {
@@ -25,7 +27,7 @@ type PercentageRecord = {
   Year: number;
 };
 
-export default function PercentageSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled }: PercentageSectionProps) {
+export default function PercentageSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId, description }: PercentageSectionProps) {
   const [seasonPercentageData, setSeasonPercentageData] = useState<PercentageRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -116,6 +118,12 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
 
   return (
     <section className="mb-8">
+      {description && (
+        <div className="text-center text-4xl font-bold text-white mb-6">
+          {description}
+        </div>
+      )}
+
       <div className="flex justify-end mb-4">
         <button
           onClick={() => setShowModal(true)}

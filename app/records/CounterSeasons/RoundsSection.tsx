@@ -10,6 +10,7 @@ interface RoundsSectionProps {
   selectedLevels: string[];
   selectedRound: string;
   fetchEnabled?: boolean;
+  description?: string;
 }
 
 interface Player {
@@ -25,6 +26,7 @@ export default function RoundsSection({
   selectedLevels,
   selectedRound,
   fetchEnabled = true,
+  description,
 }: RoundsSectionProps) {
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
@@ -139,11 +141,43 @@ export default function RoundsSection({
     </div>
   );
 
+  // Build filter text to mirror other sections
+  const roundAbbreviations: Record<string, string> = {
+    R128: "R128s",
+    R64: "R64s",
+    R32: "R32s",
+    R16: "R16s",
+    QF: "QFs",
+    SF: "SFs",
+    F: "Fs",
+  };
+
+  const levelNames: Record<string, string> = {
+    G: "Slams",
+    M: "Masters 1000",
+    F: "ATP Finals",
+    "500": "500",
+    "250": "250",
+    A: "Others",
+    D: "Davis Cup",
+  };
+
+  const filters: string[] = [];
+  if (selectedLevels.length > 0) {
+    const levels = selectedLevels.map(l => levelNames[l] || l);
+    filters.push(`in ${levels.join(' or ')}`);
+  }
+  if (selectedSurfaces.length > 0) {
+    const surfaces = selectedSurfaces.map(s => s);
+    filters.push(`on ${surfaces.join(' or ')}`);
+  }
+  const filterText = filters.length ? ' ' + filters.join(' ') : '';
+
+  const headerText = hasFetched && selectedRound ? `Seasons with at least ${minRoundPerSeason} ${roundAbbreviations[selectedRound] ?? `${selectedRound}s`}${filterText}` : (description ?? '');
+
   return (
     <section className="mb-0">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">
-        {selectedRound} per Season
-      </h2>
+      {headerText && <div className="text-center text-4xl font-bold text-white mb-6">{headerText}</div>}
 
       {/* Controls */}
       <div className="mb-4 flex items-center gap-2">
@@ -197,7 +231,7 @@ export default function RoundsSection({
       <Modal
         show={showModal}
         onClose={() => setShowModal(false)}
-        title={`${selectedRound} per season per player`}
+        title={`Seasons with at least ${minRoundPerSeason} ${roundAbbreviations[selectedRound] ?? `${selectedRound}s`}${filterText}`}
       >
         {renderTable(players, 0)}
       </Modal>

@@ -196,21 +196,7 @@ export default function FiltersComponent({
     setSelectedSurfaces(new Set(surfaces));
     setSelectedLevels(new Set(levels));
 
-    // Default Round
-    let defaultRound = "";
-    if (
-      (isAtAgeLike && activeSubTab === "round") || 
-      ((activeTab === "same" || activeTab === "seasons") && activeSubTab === "round") ||
-      (activeTab === "count") ||
-      (activeTab === "timespan" && activeSubTab === "rounds") ||
-      (activeTab === "roundsonentries" && activeSubTab === "round") ||
-      (activeTab === "counterseasons" && activeSubTab === "round") ||
-      (activeTab === "streak" && activeSubTab === "round")
-    ) {
-      defaultRound = "F";
-    }
-
-    setSelectedRounds(rounds || defaultRound);
+    setSelectedRounds(rounds || "");
     setSelectedBestOf(bestOf);
   }, [searchParams, activeTab, activeSubTab]);
 
@@ -224,13 +210,13 @@ export default function FiltersComponent({
     // Use canonical path: /records?record=<activeTab>
     params.set("record", activeTab);
 
-    // Preserve tab key as-is: do NOT overwrite an existing tab/subtab query param
+    // Preserve incoming tab/subtab value but normalize to use only `subtab` in the URL
+    // If an older client provided `tab` we convert it to `subtab` and do NOT write `tab`.
     const incomingTabKey = searchParams.has("subtab") ? "subtab" : (searchParams.has("tab") ? "tab" : null);
     if (incomingTabKey) {
       const incomingValue = searchParams.get(incomingTabKey);
       if (incomingValue) {
-        params.set(incomingTabKey, incomingValue);
-        params.set("tab", incomingValue);
+        // Normalize to canonical `subtab` key only
         params.set("subtab", incomingValue);
       }
     }

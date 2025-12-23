@@ -19,9 +19,10 @@ interface TimespanEntry {
 interface EntriesSectionProps {
   selectedSurfaces: Set<string>;
   selectedLevels: Set<string>;
+  description?: string;
 }
 
-export default function EntriesSection({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRequestId }: EntriesSectionProps & { fetchEnabled?: boolean, fetchRequestId?: string | null }) {
+export default function EntriesSection({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRequestId, description }: EntriesSectionProps & { fetchEnabled?: boolean, fetchRequestId?: string | null, description?: string }) {
   const enabled = !!fetchEnabled;
   const [entries, setEntries] = useState<TimespanEntry[]>([]);
   const [loading, setLoading] = useState(false);
@@ -130,6 +131,12 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
 
   return (
     <section className="mb-8">
+      {description && (
+        <div className="text-center text-4xl font-bold text-white mb-6">
+          {description}
+        </div>
+      )}
+
       <div className="mb-4 flex justify-end">
         <button
           onClick={() => setShowModal(true)}

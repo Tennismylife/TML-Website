@@ -437,7 +437,7 @@ model mVEntriesAges {
   ages_by_surface_json   Json?
   ages_by_level_json     Json?
 
- @@map("mv_entries_ages") // nome della materialized view nel DB
+ @@map("mv_ages_entries") // nome della materialized view nel DB
  @@id([player_id])
 }
 

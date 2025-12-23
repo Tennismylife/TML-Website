@@ -29,6 +29,7 @@ interface CountSectionProps {
   fetchEnabled?: boolean;
   fetchRequestId?: string | null;
   parentShowModal?: boolean;
+  description?: string;
 }
 
 export default function CountSection({
@@ -39,6 +40,7 @@ export default function CountSection({
   fetchEnabled,
   fetchRequestId,
   parentShowModal,
+  description,
 }: CountSectionProps) {
   const enabled = !!fetchEnabled;
   const [h2hData, setH2hData] = useState<H2HRecord[]>([]);
@@ -205,9 +207,7 @@ export default function CountSection({
 
   return (
     <section className="mb-0">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">
-        Top H2H Counts
-      </h2>
+      {description && <div className="text-center text-4xl font-bold text-white mb-6">{description}</div>}
 
       {/* View All button (same as Wins) */}
       <div className="flex justify-end mb-0">

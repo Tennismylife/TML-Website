@@ -11,6 +11,7 @@ interface StreakSectionProps {
   selectedBestOf: number | null;
   activeSubTab: string;
   fetchEnabled?: boolean;
+  description?: string;
 }
 
 export default function StreakSection({
@@ -19,7 +20,8 @@ export default function StreakSection({
   selectedRounds,
   selectedBestOf,
   activeSubTab,
-  fetchEnabled
+  fetchEnabled,
+  description
 }: StreakSectionProps) {
 
   return (
@@ -30,6 +32,7 @@ export default function StreakSection({
           selectedLevels={selectedLevels}
           selectedBestOf={selectedBestOf}
           fetchEnabled={fetchEnabled}
+          description={description}
         />
       )}
 
@@ -39,6 +42,7 @@ export default function StreakSection({
           selectedLevels={selectedLevels}
           selectedRounds={selectedRounds}
           fetchEnabled={fetchEnabled}
+          description={description}
         />
       )}
     </section>

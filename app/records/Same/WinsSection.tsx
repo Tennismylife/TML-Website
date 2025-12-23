@@ -14,6 +14,7 @@ interface WinsSectionProps {
   selectedBestOf: number | null;
   fetchEnabled?: boolean;
   setFetchEnabled?: (v: boolean) => void;
+  description?: string;
 }
 
 interface Winner {
@@ -25,7 +26,7 @@ interface Winner {
   tourney_name: string;
 }
 
-export default function WinsSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId }: WinsSectionProps & { fetchRequestId?: string | null }) {
+export default function WinsSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId, description }: WinsSectionProps & { fetchRequestId?: string | null }) {
   const [allWinners, setAllWinners] = useState<Winner[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -124,6 +125,12 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
 
   return (
     <section className="mb-8">
+      {description && (
+        <div className="text-center text-4xl font-bold text-white mb-6">
+          {description}
+        </div>
+      )}
+
       <div className="flex justify-end mb-4">
         <button
           onClick={() => setShowModal(true)}

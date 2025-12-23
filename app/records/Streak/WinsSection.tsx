@@ -12,6 +12,7 @@ interface WinsSectionProps {
   selectedLevels: Set<string>;
   selectedBestOf: number | null;
   selectedRounds?: string;
+  description?: string;
 }
 
 interface Streak {
@@ -39,7 +40,8 @@ export default function WinsSection({
   selectedBestOf,
   selectedRounds,
   fetchEnabled,
-}: WinsSectionProps & { fetchEnabled?: boolean }) {
+  description,
+}: WinsSectionProps & { fetchEnabled?: boolean, description?: string }) {
   const enabled = !!fetchEnabled;
   const searchParams = useSearchParams();
   const [streaks, setStreaks] = useState<Streak[]>([]);
@@ -194,7 +196,7 @@ export default function WinsSection({
 
   return (
     <section className="mb-0">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">Top Consecutive Win Streaks</h2>
+      {description && <div className="text-center text-4xl font-bold text-white mb-6">{description}</div>}
 
       <div className="flex justify-end mb-0">
         {streaks.length > perPage && (

@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
 import Pagination from '../../../components/Pagination';
+import Modal from "@/components/Modal";
 
 function formatAge(age: number): string {
   const years = Math.floor(age);
@@ -152,68 +153,44 @@ export default function OldestAllRounds({ selectedSurfaces, selectedLevels, fetc
         />
       )}
 
-      {modalData && <Modal title={modalData.title} data={modalData.list} onClose={() => setModalData(null)} />}
-    </section>
-  );
-}
-
-// --- Modal ---
-function Modal({ title, data, onClose }: { title: string; data: any[]; onClose: () => void }) {
-  return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
-      onClick={onClose}
-    >
-      <div
-        className="bg-gray-900 text-gray-200 p-6 w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded shadow-xl border border-gray-700"
-        onClick={e => e.stopPropagation()}
-      >
-        <h2 className="text-lg font-semibold mb-4">{title}</h2>
-
-        <div className="overflow-x-auto rounded border border-gray-700 bg-gray-900">
-          <table className="min-w-full border-collapse text-sm text-gray-200">
-            <thead>
-              <tr className="bg-gray-800 text-gray-100">
-                <th className="border border-gray-700 px-4 py-2 text-left">Player</th>
-                <th className="border border-gray-700 px-4 py-2 text-center">Age</th>
-                <th className="border border-gray-700 px-4 py-2 text-left">Tournament</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((p, idx) => {
-                const tourneyId = String(p.tourney_id).split('-')[1];
-                return (
-                  <tr key={`${p.id}-${p.tourney_id}-${idx}`} className="hover:bg-gray-800">
-                    <td className="border border-gray-700 px-4 py-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm">{getFlagFromIOC(p.ioc) || ""}</span>
-                        <Link href={`/players/${encodeURIComponent(String(p.id))}`} className="text-blue-400 hover:underline">
-                          {p.name}
+      {modalData && (
+        <Modal show={true} onClose={() => setModalData(null)} title={modalData.title}>
+          <div className="overflow-x-auto rounded border border-gray-700 bg-gray-900">
+            <table className="min-w-full border-collapse text-sm text-gray-200">
+              <thead>
+                <tr className="bg-gray-800 text-gray-100">
+                  <th className="border border-gray-700 px-4 py-2 text-left">Player</th>
+                  <th className="border border-gray-700 px-4 py-2 text-center">Age</th>
+                  <th className="border border-gray-700 px-4 py-2 text-left">Tournament</th>
+                </tr>
+              </thead>
+              <tbody>
+                {modalData.list.map((p, idx) => {
+                  const tourneyId = String(p.tourney_id).split('-')[1];
+                  return (
+                    <tr key={`${p.id}-${p.tourney_id}-${idx}`} className="hover:bg-gray-800">
+                      <td className="border border-gray-700 px-4 py-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm">{getFlagFromIOC(p.ioc) || ""}</span>
+                          <Link href={`/players/${encodeURIComponent(String(p.id))}`} className="text-blue-400 hover:underline">
+                            {p.name}
+                          </Link>
+                        </div>
+                      </td>
+                      <td className="border border-gray-700 px-4 py-2 text-center">{formatAge(p.age)}</td>
+                      <td className="border border-gray-700 px-4 py-2">
+                        <Link href={`/tournaments/${encodeURIComponent(tourneyId)}/${p.year}`} className="text-blue-400 hover:underline">
+                          {p.tourney_name} {p.year}
                         </Link>
-                      </div>
-                    </td>
-                    <td className="border border-gray-700 px-4 py-2 text-center">{formatAge(p.age)}</td>
-                    <td className="border border-gray-700 px-4 py-2">
-                      <Link href={`/tournaments/${encodeURIComponent(tourneyId)}/${p.year}`} className="text-blue-400 hover:underline">
-                        {p.tourney_name} {p.year}
-                      </Link>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="mt-6 text-center">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </Modal>
+      )}
+    </section>
   );
 }

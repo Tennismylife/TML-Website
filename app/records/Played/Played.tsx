@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { getFlagFromIOC } from "@/lib/utils";
 import Pagination from "../../../components/Pagination";
-import Modal from "../Modal";
+import Modal from "@/components/Modal";
 
 interface Player {
   id: string;
@@ -14,7 +14,7 @@ interface Player {
   totalPlayed: number;
 }
 
-export default function Played({ fetchEnabled }: { fetchEnabled?: boolean }) {
+export default function Played({ fetchEnabled, description }: { fetchEnabled?: boolean; description?: string }) {
   const enabled = !!fetchEnabled;
   const [allPlayers, setAllPlayers] = useState<Player[]>([]);
   const [page, setPage] = useState(1);
@@ -128,7 +128,11 @@ export default function Played({ fetchEnabled }: { fetchEnabled?: boolean }) {
 
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">Players with Most Career Matches Played</h2>
+      {description && (
+        <div className="text-center text-4xl font-bold text-white mb-6">
+          {description}
+        </div>
+      )}
 
       <div className="mb-4 flex justify-end">
         <button

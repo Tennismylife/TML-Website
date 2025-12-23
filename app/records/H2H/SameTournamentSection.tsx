@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
+import Modal from "@/components/Modal";
 
 interface SameTournamentSectionProps {
   selectedSurfaces: Set<string>;
@@ -10,6 +11,7 @@ interface SameTournamentSectionProps {
   selectedRounds: string; // può essere "All"
   parentShowModal?: boolean;
   fetchRequestId?: string | null;
+  description?: string;
 }
 
 interface Player {
@@ -30,7 +32,7 @@ interface H2HTournamentResponse {
   h2h_tourney: H2HTournamentRecord[];
 }
 
-export default function SameTournamentSection({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, fetchRequestId, parentShowModal }: SameTournamentSectionProps & { fetchEnabled?: boolean, fetchRequestId?: string | null, parentShowModal?: boolean }) {
+export default function SameTournamentSection({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, fetchRequestId, parentShowModal, description }: SameTournamentSectionProps & { fetchEnabled?: boolean, fetchRequestId?: string | null, parentShowModal?: boolean, description?: string }) {
   const enabled = !!fetchEnabled;
   const [data, setData] = useState<H2HTournamentResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -118,24 +120,11 @@ export default function SameTournamentSection({ selectedSurfaces, selectedLevels
     </div>
   );
 
-  const Modal = ({ show, onClose, title, children }: { show: boolean; onClose: () => void; title: string; children: React.ReactNode }) => {
-    if (!show) return null;
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
-        <div className="bg-white p-4 w-full max-w-7xl max-h-screen overflow-y-auto rounded" onClick={(e) => e.stopPropagation()}>
-          <h2 className="text-xl font-bold mb-4">{title}</h2>
-          {children}
-          <button onClick={onClose} className="mt-4 px-4 py-2 bg-red-500 text-white rounded">Close</button>
-        </div>
-      </div>
-    );
-  };
-
   const previewPlayers = h2hTournamentArray.slice(0, 10);
 
   return (
     <section className="rounded border bg-white p-4">
-      <h2 className="text-lg font-bold mb-4">H2H in Same Tournament</h2>
+      {description && <div className="text-center text-4xl font-bold text-white mb-6">{description}</div>}
       {renderTable(previewPlayers)}
       {h2hTournamentArray.length > 10 && (
         <button

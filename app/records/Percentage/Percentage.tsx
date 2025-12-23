@@ -14,6 +14,7 @@ interface PercentageProps {
   selectedRounds: string;
   selectedBestOf: number | null;
   fetchEnabled?: boolean;
+  description?: string;
 }
 
 interface PlayerPercentage {
@@ -24,7 +25,7 @@ interface PlayerPercentage {
   matchesPlayed: number;
 }
 
-export default function Percentage({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled }: PercentageProps) {
+const Percentage = ({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, description }: PercentageProps) => {
   const enabled = !!fetchEnabled;
   const [data, setData] = useState<PlayerPercentage[]>([]);
   const [loading, setLoading] = useState(false);
@@ -66,7 +67,7 @@ export default function Percentage({ selectedSurfaces, selectedLevels, selectedR
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, enabled, showModal]);
+  }, [Array.from(selectedSurfaces).sort().join(','), Array.from(selectedLevels).sort().join(','), selectedRounds, selectedBestOf, enabled, showModal]);
 
   const filteredData = data.filter(p => p.matchesPlayed >= minMatches);
 
@@ -123,7 +124,11 @@ export default function Percentage({ selectedSurfaces, selectedLevels, selectedR
 
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">Top Win Percentages</h2>
+      {description && (
+        <div className="text-center text-4xl font-bold text-white mb-6">
+          {description}
+        </div>
+      )}
 
       <div className="mb-4">
         <label className="block text-sm font-medium mb-1 text-gray-200">
@@ -157,4 +162,6 @@ export default function Percentage({ selectedSurfaces, selectedLevels, selectedR
       </Modal>
     </section>
   );
-}
+};
+
+export default Percentage;

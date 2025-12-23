@@ -4,8 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Pagination from "../../../components/Pagination";
-import Modal from "../Modal";
-import { getFlagFromIOC } from "@/lib/utils";
+import Modal from "@/components/Modal";
+import { getFlagFromIOC, toOrdinal } from "@/lib/utils";
 
 interface PlayedSectionProps {
   selectedSurfaces: string[];
@@ -13,6 +13,7 @@ interface PlayedSectionProps {
   selectedRounds: string;
   selectedBestOf: number | null;
   fetchEnabled?: boolean;
+  description?: string;
 }
 
 interface Player {
@@ -40,6 +41,7 @@ export default function PlayedSection({
   selectedRounds,
   selectedBestOf,
   fetchEnabled = false,
+  description,
 }: PlayedSectionProps) {
   const enabled = !!fetchEnabled;  const [data, setData] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
@@ -109,7 +111,7 @@ export default function PlayedSection({
               Player
             </th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">
-              Age at {selectedX}-th Game
+              Age of {toOrdinal(selectedX)} match
             </th>
           </tr>
         </thead>
@@ -142,20 +144,43 @@ export default function PlayedSection({
     </div>
   );
 
+  const levelNames: Record<string, string> = {
+    G: "Slams",
+    M: "Masters 1000",
+    F: "ATP Finals",
+    "500": "500",
+    "250": "250",
+    A: "Others",
+    D: "Davis Cup",
+  };
+
+  const filters: string[] = [];
+  if (selectedLevels.length > 0) {
+    const levels = selectedLevels.map(l => levelNames[l] || l);
+    filters.push(`in ${levels.join(' or ')}`);
+  }
+  if (selectedSurfaces.length > 0) {
+    const surfaces = selectedSurfaces.map(s => s);
+    filters.push(`on ${surfaces.join(' or ')}`);
+  }
+  const filterText = filters.length ? ' ' + filters.join(' ') : '';
+
+  const headerText = hasFetched ? `Age of ${toOrdinal(selectedX)} match${filterText}` : (description ?? '');
+
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">
-        Age at N-th Career Game
-      </h2>
+      {headerText && <div className="text-center text-4xl font-bold text-white mb-6">{headerText}</div>} 
 
       {/* X Input */}
       <div className="mb-4 flex items-center gap-2">
         <XInput value={inputX} onChange={setInputX} />
         <button
-          onClick={() => fetchData(inputX)}
-          disabled={loading}
+          onClick={() => Number.isFinite(inputX) && fetchData(inputX)}
+          disabled={loading || !Number.isFinite(inputX) || inputX <= 0}
           className={`px-4 py-1 rounded ${
-            loading ? "bg-gray-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"
+            loading || !Number.isFinite(inputX) || inputX <= 0
+              ? "bg-gray-600 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700 text-white"
           }`}
         >
           Apply
@@ -199,7 +224,7 @@ export default function PlayedSection({
       <Modal
         show={showModal}
         onClose={() => setShowModal(false)}
-        title={`Age at ${selectedX}-th Game`}
+        title={`Age of ${toOrdinal(selectedX)} match${filterText}`}
       >
         {renderTable(data)}
       </Modal>

@@ -10,15 +10,20 @@ interface RoundsonentriesProps {
   selectedRounds: string;
   activeSubTab: string;
   fetchEnabled?: boolean;
+  description?: string;
 }
 
-export default function Roundsonentries({ selectedSurfaces, selectedLevels, selectedRounds, activeSubTab, fetchEnabled }: RoundsonentriesProps) {
+export default function Roundsonentries({ selectedSurfaces, selectedLevels, selectedRounds, activeSubTab, fetchEnabled, description }: RoundsonentriesProps) {
   const enabled = !!fetchEnabled;
   const [minEntries, setMinEntries] = useState(1);
 
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-white">Rounds on Entries</h2>
+      {description && (
+        <div className="text-center text-4xl font-bold text-white mb-6">
+          {description}
+        </div>
+      )}
 
       {/* Minimum Entries Filter */}
       <div className="mb-4">
@@ -34,7 +39,7 @@ export default function Roundsonentries({ selectedSurfaces, selectedLevels, sele
       </div>
 
       {activeSubTab === 'titles' ? (
-        <Titles selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} minEntries={minEntries} fetchEnabled={enabled} />
+        <Titles selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} minEntries={minEntries} fetchEnabled={enabled} description={description} />
       ) : (
         <Rounds
           selectedSurfaces={selectedSurfaces}
@@ -42,6 +47,7 @@ export default function Roundsonentries({ selectedSurfaces, selectedLevels, sele
           selectedRounds={selectedRounds}
           minEntries={minEntries}
           fetchEnabled={enabled}
+          description={description}
         />
       )}
     </section>

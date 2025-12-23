@@ -15,10 +15,12 @@ interface AgeofNthProps {
   selectedRounds: string;
   selectedBestOf: number | null;
   activeSubTab: string;
-  fetchEnabled?: boolean;
+  fetchEnabled: boolean;
+  fetchRequestId: string;  // Add this line to include the missing prop
+  description?: string;
 }
 
-export default function AgeofNth({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeSubTab, fetchEnabled }: AgeofNthProps) {
+export default function AgeofNth({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeSubTab, fetchEnabled, description }: AgeofNthProps) {
   return (
     
     <section className="mb-8">
@@ -27,6 +29,7 @@ export default function AgeofNth({ selectedSurfaces, selectedLevels, selectedRou
         selectedSurfaces={Array.from(selectedSurfaces)} 
         selectedRounds={selectedRounds}
         fetchEnabled={fetchEnabled}
+        description={description}
         />
       )}
 
@@ -36,6 +39,7 @@ export default function AgeofNth({ selectedSurfaces, selectedLevels, selectedRou
         selectedLevels={selectedLevels} 
         selectedRounds={selectedRounds}
         fetchEnabled={fetchEnabled}
+        description={description}
         />
       )}
 
@@ -46,6 +50,7 @@ export default function AgeofNth({ selectedSurfaces, selectedLevels, selectedRou
           selectedRounds={selectedRounds}
           selectedBestOf={selectedBestOf}
           fetchEnabled={fetchEnabled}
+          description={description}
         />
       )}
 
@@ -56,6 +61,7 @@ export default function AgeofNth({ selectedSurfaces, selectedLevels, selectedRou
           selectedRounds={selectedRounds}
           selectedBestOf={selectedBestOf}
           fetchEnabled={fetchEnabled}
+          description={description}
         />
       )}
 
@@ -64,6 +70,7 @@ export default function AgeofNth({ selectedSurfaces, selectedLevels, selectedRou
           selectedSurfaces={Array.from(selectedSurfaces)}
           selectedLevels={Array.from(selectedLevels)}
           fetchEnabled={fetchEnabled}
+          description={description}
         />
       )}
 
@@ -72,6 +79,7 @@ export default function AgeofNth({ selectedSurfaces, selectedLevels, selectedRou
           selectedSurfaces={Array.from(selectedSurfaces)}
           selectedLevels={Array.from(selectedLevels)}
           fetchEnabled={fetchEnabled}
+          description={description}
         />
       )}
     </section>

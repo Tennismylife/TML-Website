@@ -15,9 +15,9 @@ interface Winner {
   wins: number;
 }
 
-interface WinsProps { topWinners?: Winner[]; fetchEnabled?: boolean }
+interface WinsProps { topWinners?: Winner[]; fetchEnabled?: boolean; description?: string }
 
-export default function Wins({ topWinners, fetchEnabled }: WinsProps) {
+export default function Wins({ topWinners, fetchEnabled, description }: WinsProps) {
   const enabled = !!fetchEnabled; // explicit boolean flag (default false) 
   const [allWinners, setAllWinners] = useState<Winner[]>(topWinners || []);
   const [page, setPage] = useState(1);
@@ -133,6 +133,11 @@ export default function Wins({ topWinners, fetchEnabled }: WinsProps) {
 
   return (
     <section className="mb-0">
+      {description && (
+        <div className="text-center text-4xl font-bold text-white mb-6">
+          {description}
+        </div>
+      )}
       <div className="flex justify-end mb-0">
         <button
           onClick={() => setShowModal(true)}
@@ -148,28 +153,13 @@ export default function Wins({ topWinners, fetchEnabled }: WinsProps) {
         <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       )}
 
-      {showModal && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
-          onClick={() => setShowModal(false)}
-        >
-          <div
-            className="bg-gray-900 text-gray-200 p-4 w-full max-w-7xl max-h-screen overflow-y-auto rounded border border-gray-800"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="text-xl font-bold mb-4">Players with Most Career Wins</h2>
-            {renderTable(allWinners)}
-            <div className="flex justify-end mt-4">
-              <button
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <Modal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        title="Players with Most Career Wins"
+      >
+        {renderTable(allWinners)}
+      </Modal>
     </section>
   );
 }

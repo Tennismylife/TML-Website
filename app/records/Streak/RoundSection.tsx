@@ -3,11 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
+import Modal from "@/components/Modal";
 
 interface RoundSectionProps {
   selectedSurfaces: Set<string>;
   selectedLevels: Set<string>;
   selectedRounds: string;
+  description?: string;
 }
 
 interface StreakRecord {
@@ -24,7 +26,7 @@ interface TournamentInfo {
   tourney_level: string;
 }
 
-export default function RoundSection({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled }: RoundSectionProps & { fetchEnabled?: boolean }) {
+export default function RoundSection({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, description }: RoundSectionProps & { fetchEnabled?: boolean, description?: string }) {
   const enabled = !!fetchEnabled;
   const [data, setData] = useState<StreakRecord[]>([]);
   const [loading, setLoading] = useState(false);
@@ -92,7 +94,7 @@ export default function RoundSection({ selectedSurfaces, selectedLevels, selecte
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Streak</th>
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Actions</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Tournaments</th>
           </tr>
         </thead>
         <tbody>
@@ -126,19 +128,20 @@ export default function RoundSection({ selectedSurfaces, selectedLevels, selecte
     </div>
   );
 
-  const Modal = () => {
-    if (!modalOpen || !modalPlayer) return null;
-
-    return (
-      <div
-        className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
-        onClick={() => setModalOpen(false)}
-      >
-        <div
-          className="bg-gray-900 text-gray-200 p-4 w-full max-w-7xl max-h-screen overflow-y-auto rounded border border-gray-800"
-          onClick={e => e.stopPropagation()}
+  return (
+    <section className="mb-8">
+      {description && <div className="text-center text-4xl font-bold text-white mb-6">{description}</div>}
+      {renderTable(data.slice(0, 10))}
+      {data.length > 10 && (
+        <button
+          onClick={() => { setModalTournaments([]); setModalOpen(true); setModalTitle('All Streaks'); }}
+          className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
         >
-          <h2 className="text-xl font-bold mb-4">{modalTitle}</h2>
+          View All
+        </button>
+      )}
+      {modalOpen && (
+        <Modal onClose={() => setModalOpen(false)} title={modalTitle}>
           <div className="overflow-x-auto rounded border border-white/30 bg-gray-800">
             <table className="min-w-full border-collapse">
               <thead>
@@ -161,30 +164,8 @@ export default function RoundSection({ selectedSurfaces, selectedLevels, selecte
               </tbody>
             </table>
           </div>
-          <button
-            className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
-            onClick={() => setModalOpen(false)}
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    );
-  };
-
-  return (
-    <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">Round Streaks</h2>
-      {renderTable(data.slice(0, 10))}
-      {data.length > 10 && (
-        <button
-          onClick={() => { setModalTournaments([]); setModalOpen(true); setModalTitle('All Streaks'); }}
-          className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
-        >
-          View All
-        </button>
+        </Modal>
       )}
-      <Modal />
     </section>
   );
 }

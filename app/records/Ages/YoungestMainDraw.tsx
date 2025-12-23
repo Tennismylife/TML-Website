@@ -25,9 +25,10 @@ interface YoungestMainDrawProps {
   selectedRounds: string;
   fetchEnabled?: boolean;
   fetchRequestId?: string | null;
+  description?: string;
 }
 
-export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, fetchRequestId }: YoungestMainDrawProps) {
+export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, fetchRequestId, description }: YoungestMainDrawProps) {
   const enabled = !!fetchEnabled;
   const [data, setData] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
@@ -136,7 +137,7 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
 
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">Youngest Players in Main Draw</h2>
+      {description && <div className="text-3xl font-bold text-white mb-6 text-center">{description}</div>}
 
       <div className="mb-4 flex justify-end">
         <button
@@ -153,7 +154,7 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
         <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       )}
 
-      <Modal show={showModal} onClose={() => setShowModal(false)} title="Youngest Players in Main Draw">
+      <Modal show={showModal} onClose={() => setShowModal(false)} title="Youngest Player in Main Draw">
         {renderTable(data)}
       </Modal>
     </section>

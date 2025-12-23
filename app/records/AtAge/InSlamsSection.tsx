@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
-import Modal from '../Modal';
+import Modal from '@/components/Modal';
 import AgeInput from './AgeInput';
 import { getFlagFromIOC } from '@/lib/utils';import { playerMatchesUrl } from "../nav";
 interface InSlamsSectionProps {
@@ -12,6 +12,7 @@ interface InSlamsSectionProps {
   selectedRounds: string;
   selectedBestOf: number | null;
   fetchEnabled?: boolean;
+  description?: string;
 }
 
 interface PlayerData {
@@ -25,13 +26,29 @@ interface PlayerData {
   total: number;
 }
 
-export default function InSlamsSection({ selectedSurfaces, selectedRounds, selectedBestOf, fetchEnabled = true }: InSlamsSectionProps) {
+export default function InSlamsSection({ selectedSurfaces, selectedRounds, selectedBestOf, fetchEnabled = true, description }: InSlamsSectionProps) {
   const [data, setData] = useState<PlayerData[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);  const [hasFetched, setHasFetched] = useState(false);  const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [inputAge, setInputAge] = useState(25.0);
   const [selectedAge, setSelectedAge] = useState(25.0);
+
+  const formatAge = (age: number) => {
+    const years = Math.floor(age);
+    const days = Math.round((age - years) * 365);
+    return `${years}y ${days}d`;
+  };
+
+  const roundAbbreviations: Record<string, string> = {
+    R128: "R128s",
+    R64: "R64s",
+    R32: "R32s",
+    R16: "R16s",
+    QF: "QFs",
+    SF: "SFs",
+    F: "Fs",
+  };
 
   const perPage = 20;
   const searchParams = useSearchParams();
@@ -120,17 +137,28 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
     </div>
   );
 
+  const filters: string[] = [];
+  if (selectedSurfaces.length > 0) {
+    filters.push(`on ${selectedSurfaces.join(' or ')}`);
+  }
+  const filterText = filters.length ? ' ' + filters.join(' ') : '';
+  const headerText = hasFetched ? (selectedRounds ? `Players with most wins in ${roundAbbreviations[selectedRounds] || selectedRounds + 's'} in Slams${filterText} at ${formatAge(selectedAge)}` : `Players with most wins in Slams${filterText} at ${formatAge(selectedAge)}`) : (description ?? '');
+
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">Wins in Slams at Age</h2>
+      {headerText && (
+        <div className="text-center text-4xl font-bold text-white mb-6">
+          {headerText}
+        </div>
+      )}
 
       {/* Age Input */}
       <div className="mb-4 flex items-center gap-2">
         <AgeInput value={inputAge} onChange={setInputAge} />
         <button
           onClick={() => fetchData(inputAge)}
-          disabled={loading || !fetchEnabled}
-          className={`px-4 py-1 rounded ${loading || !fetchEnabled ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+          disabled={loading || !fetchEnabled || !Number.isFinite(inputAge)}
+          className={`px-4 py-1 rounded ${loading || !fetchEnabled || !Number.isFinite(inputAge) ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
         >
           Apply
         </button>
@@ -166,7 +194,7 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
       <Modal
         show={showModal}
         onClose={() => setShowModal(false)}
-        title={`Wins in Slams at Age ${selectedAge.toFixed(3)}`}
+        title={selectedRounds ? `Wins in ${roundAbbreviations[selectedRounds] || selectedRounds + 's'} in Slams${filterText} at ${formatAge(selectedAge)}` : `Wins in Slams${filterText} at ${formatAge(selectedAge)}`}
       >
         {renderTable(data)}
       </Modal>

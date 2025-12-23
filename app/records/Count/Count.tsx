@@ -17,9 +17,10 @@ interface PlayerData {
 interface CountProps {
   selectedRounds: string;
   top: PlayerData[];
+  description?: string;
 }
 
-export default function Count({ selectedRounds, top }: CountProps) {
+export default function Count({ selectedRounds, top, description }: CountProps) {
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
@@ -95,9 +96,11 @@ export default function Count({ selectedRounds, top }: CountProps) {
 
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">
-        Players with Most Appearances{selectedRounds ? ` in ${selectedRounds}s` : ''}
-      </h2>
+      {description && (
+        <div className="text-center text-4xl font-bold text-white mb-6">
+          {description}
+        </div>
+      )}
 
       <div className="mb-4 flex justify-end">
         <button

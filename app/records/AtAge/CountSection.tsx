@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
+import Modal from "@/components/Modal";
 
 interface CountSectionProps {
   selectedSurfaces: Set<string>;
@@ -43,6 +44,12 @@ export default function CountSection({ selectedSurfaces, selectedLevels }: Count
   const [selectedPlayedAgeDays, setSelectedPlayedAgeDays] = useState(25 * 365 + 23);
   const [selectedEntriesAgeDays, setSelectedEntriesAgeDays] = useState(25 * 365 + 23);
   const [selectedTitlesAgeDays, setSelectedTitlesAgeDays] = useState(25 * 365 + 23);
+
+  const formatAgeDays = (daysTotal: number) => {
+    const years = Math.floor(daysTotal / 365);
+    const days = daysTotal % 365;
+    return `${years}y ${days}d`;
+  }; 
 
   const [showModal, setShowModal] = useState<null | 'wins' | 'played' | 'entries' | 'titles'>(null);
 
@@ -132,19 +139,6 @@ export default function CountSection({ selectedSurfaces, selectedLevels }: Count
     </table>
   );
 
-  const Modal = ({ show, onClose, title, children }: { show: boolean; onClose: () => void; title: string; children: React.ReactNode }) => {
-    if (!show) return null;
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
-        <div className="bg-white p-4 w-full max-w-7xl max-h-screen overflow-y-auto rounded" onClick={(e) => e.stopPropagation()}>
-          <h2 className="text-xl font-bold mb-4">{title}</h2>
-          {children}
-          <button onClick={onClose} className="mt-4 px-4 py-2 bg-red-500 text-white rounded">Close</button>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <section className="rounded border bg-white p-4">
       <div className="grid grid-cols-1 gap-4">
@@ -160,7 +154,7 @@ export default function CountSection({ selectedSurfaces, selectedLevels }: Count
             <div key={label} className="border rounded p-4 bg-gray-50">
               <div className="mb-4 flex gap-4 items-center">
                 <label className="flex items-center gap-2 flex-1">
-                  Max Age for {label}: {years}y {days}d
+                  Max Age for {label}: {formatAgeDays(selectedAgeDays)}
                   <input
                     type="range"
                     min={0}
@@ -187,16 +181,16 @@ export default function CountSection({ selectedSurfaces, selectedLevels }: Count
         })}
       </div>
 
-      <Modal show={showModal === 'wins'} onClose={() => setShowModal(null)} title={`Wins at Age`}>
+      <Modal show={showModal === 'wins'} onClose={() => setShowModal(null)} title={`Wins at ${formatAgeDays(selectedWinsAgeDays)}`}>
         {renderTable(filteredWins, 'Wins')}
       </Modal>
-      <Modal show={showModal === 'played'} onClose={() => setShowModal(null)} title={`Played at Age`}>
+      <Modal show={showModal === 'played'} onClose={() => setShowModal(null)} title={`Played at ${formatAgeDays(selectedPlayedAgeDays)}`}>
         {renderTable(filteredPlayed, 'Played')}
       </Modal>
-      <Modal show={showModal === 'entries'} onClose={() => setShowModal(null)} title={`Entries at Age`}>
+      <Modal show={showModal === 'entries'} onClose={() => setShowModal(null)} title={`Entries at ${formatAgeDays(selectedEntriesAgeDays)}`}>
         {renderTable(filteredEntries, 'Entries')}
       </Modal>
-      <Modal show={showModal === 'titles'} onClose={() => setShowModal(null)} title={`Titles at Age`}>
+      <Modal show={showModal === 'titles'} onClose={() => setShowModal(null)} title={`Titles at ${formatAgeDays(selectedTitlesAgeDays)}`}>
         {renderTable(filteredTitles, 'Titles')}
       </Modal>
     </section>

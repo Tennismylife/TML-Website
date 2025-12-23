@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
+import Modal from "@/components/Modal";
 
 interface SeasonsSectionProps {
   selectedSurfaces: Set<string>;
@@ -11,6 +12,7 @@ interface SeasonsSectionProps {
   fetchEnabled?: boolean;
   parentShowModal?: boolean;
   fetchRequestId?: string;
+  description?: string;
 }
 
 interface H2HSeasonRecord {
@@ -31,6 +33,7 @@ export default function SeasonsSection({
   fetchEnabled,
   parentShowModal,
   fetchRequestId,
+  description,
 }: SeasonsSectionProps) {
   const enabled = !!fetchEnabled;
   const [data, setData] = useState<H2HSeasonResponse | null>(null);
@@ -109,24 +112,11 @@ export default function SeasonsSection({
     </div>
   );
 
-  const Modal = ({ show, onClose, title, children }: { show: boolean; onClose: () => void; title: string; children: React.ReactNode }) => {
-    if (!show) return null;
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
-        <div className="bg-white p-4 w-full max-w-7xl max-h-screen overflow-y-auto rounded" onClick={(e) => e.stopPropagation()}>
-          <h2 className="text-xl font-bold mb-4">{title}</h2>
-          {children}
-          <button onClick={onClose} className="mt-4 px-4 py-2 bg-red-500 text-white rounded">Close</button>
-        </div>
-      </div>
-    );
-  };
-
   const previewPlayers = h2hSeasonArray.slice(0, 10);
 
   return (
     <section className="rounded border bg-white p-4">
-      <h2 className="text-lg font-bold mb-4">H2H in Same Season</h2>
+      {description && <div className="text-center text-4xl font-bold text-white mb-6">{description}</div>}
       {renderTable(previewPlayers)}
       {h2hSeasonArray.length > 10 && (
         <button

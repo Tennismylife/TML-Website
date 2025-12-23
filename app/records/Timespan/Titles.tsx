@@ -13,13 +13,15 @@ interface TitlesProps {
   selectedLevels: Set<string> | string[];
   fetchEnabled?: boolean;
   fetchRequestId?: string | null;
+  description?: string;
 }
 
 export default function Titles({
   selectedSurfaces,
   selectedLevels,
   fetchEnabled,
-  fetchRequestId
+  fetchRequestId,
+  description
 }: TitlesProps) {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -30,12 +32,12 @@ export default function Titles({
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels]);
 
-  // Only fetch when explicitly requested (fetchRequestId) or when the modal is opened (lazy load on "View All")
+  // Only fetch when explicitly requested (enabled) or when the modal is opened (lazy load on "View All")
   const enabled = !!fetchEnabled;
 
   useEffect(() => {
-    if (!((enabled && fetchRequestId) || showModal)) {
-      console.debug('[Timespan Titles] skipped fetch: no fetchRequestId and not modal', { enabled, fetchRequestId, showModal });
+    if (!(enabled || showModal)) {
+      console.debug('[Timespan Titles] skipped fetch: not enabled and not modal', { enabled, showModal });
       setData([]);
       setLoading(false);
       return;
@@ -49,7 +51,7 @@ export default function Titles({
         selectedLevels.forEach(l => query.append('level', l));
         query.set('perPage', '100');
         const url = `/api/records/timespan/titles?${query.toString()}`;
-        console.debug('[Timespan Titles] fetching', url, { enabled, showModal, fetchRequestId });
+        console.debug('[Timespan Titles] fetching', url, { enabled, showModal });
         const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch titles');
         const fetchedData = await res.json();
@@ -62,7 +64,7 @@ export default function Titles({
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, enabled, fetchRequestId, showModal]);
+  }, [selectedSurfaces, selectedLevels, enabled, showModal]);
 
   // If fetching is disabled and modal is closed, show a hint instead of "No data"
   if (!enabled && !showModal) {
@@ -136,7 +138,11 @@ export default function Titles({
 
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">Biggest Timespan Between 2 Titles</h2>
+      {description && (
+        <div className="text-center text-4xl font-bold text-white mb-6">
+          {description}
+        </div>
+      )}
 
       <div className="mb-4 flex justify-end">
         <button
@@ -151,7 +157,7 @@ export default function Titles({
 
       {totalPages > 1 && <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />}
 
-      <Modal show={showModal} onClose={() => setShowModal(false)}>
+      <Modal show={showModal} onClose={() => setShowModal(false)} title={description ?? 'Biggest Timespan Between 2 Titles'}>
         {renderTable(data)}
       </Modal>
     </section>

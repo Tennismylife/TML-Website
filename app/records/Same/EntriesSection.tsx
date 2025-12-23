@@ -5,13 +5,14 @@ import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
-import Modal from '../Modal';
+import Modal from '@/components/Modal';
 
 interface EntriesSectionProps {
   selectedSurfaces: string[];
   selectedLevels: string[];
   fetchEnabled?: boolean;
   setFetchEnabled?: (v: boolean) => void;
+  description?: string;
 }
 
 interface EntryRecord {
@@ -23,7 +24,7 @@ interface EntryRecord {
   tourney_name: string;
 }
 
-export default function EntriesSection({ selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, fetchRequestId }: EntriesSectionProps & { fetchRequestId?: string | null }) {
+export default function EntriesSection({ selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, fetchRequestId, description }: EntriesSectionProps & { fetchRequestId?: string | null }) {
   const [allEntries, setAllEntries] = useState<EntryRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -117,6 +118,12 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
 
   return (
     <section className="mb-8">
+      {description && (
+        <div className="text-center text-4xl font-bold text-white mb-6">
+          {description}
+        </div>
+      )}
+
       <div className="flex justify-end mb-4">
         <button
           onClick={() => setShowModal(true)}

@@ -15,7 +15,7 @@ interface Entry {
   entries: number;
 }
 
-export default function Entries({ fetchEnabled }: { fetchEnabled?: boolean }) {
+export default function Entries({ fetchEnabled, description }: { fetchEnabled?: boolean; description?: string }) {
   const enabled = !!fetchEnabled; // default false
   const [allEntries, setAllEntries] = useState<Entry[]>([]);
   const [page, setPage] = useState(1);
@@ -111,7 +111,11 @@ export default function Entries({ fetchEnabled }: { fetchEnabled?: boolean }) {
 
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">Players with Most Entries</h2>
+      {description && (
+        <div className="text-center text-4xl font-bold text-white mb-6">
+          {description}
+        </div>
+      )}
 
       <div className="mb-4 flex justify-end">
         <button

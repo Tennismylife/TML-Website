@@ -4,13 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Pagination from "../../../components/Pagination";
-import Modal from "../Modal";
-import { getFlagFromIOC } from "@/lib/utils";
+import Modal from "@/components/Modal";
+import { getFlagFromIOC, toOrdinal } from "@/lib/utils";
 
 interface InSlamsSectionProps {
   selectedSurfaces: string[];
   selectedRounds: string;
   fetchEnabled?: boolean;
+  description?: string;
 }
 
 interface Player {
@@ -37,6 +38,16 @@ function formatAge(ageDecimal: string | number): string {
   return `${years}y ${days}d`;
 }
 
+const roundAbbreviations: Record<string, string> = {
+  R128: "R128s",
+  R64: "R64s",
+  R32: "R32s",
+  R16: "R16s",
+  QF: "QFs",
+  SF: "SFs",
+  F: "Fs",
+};
+
 function NInput({ value, onChange }: { value: number; onChange: (n: number) => void }) {
   return (
     <input
@@ -49,7 +60,7 @@ function NInput({ value, onChange }: { value: number; onChange: (n: number) => v
   );
 }
 
-export default function InSlamsSection({ selectedSurfaces, selectedRounds, fetchEnabled = true }: InSlamsSectionProps) {
+export default function InSlamsSection({ selectedSurfaces, selectedRounds, fetchEnabled = true, description }: InSlamsSectionProps) {
   const [data, setData] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -109,7 +120,7 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, fetch
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
             <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Age at {selectedN}-th Win</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">{selectedRounds ? `Age of ${toOrdinal(selectedN)} Win in ${roundAbbreviations[selectedRounds] || selectedRounds + 's'} in Slams` : `Age of ${toOrdinal(selectedN)} Win in Slams`}</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Australian Open</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Roland Garros</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Wimbledon</th>
@@ -143,18 +154,32 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, fetch
     </div>
   );
 
+  const filters: string[] = [];
+  if (selectedSurfaces.length > 0) {
+    filters.push(`on ${selectedSurfaces.join(' or ')}`);
+  }
+  const filterText = filters.length ? ' ' + filters.join(' ') : '';
+
+  const headerText = hasFetched ? (selectedRounds ? `Age of ${toOrdinal(selectedN)} Win in ${roundAbbreviations[selectedRounds] || selectedRounds + 's'} in Slams${filterText}` : `Age of ${toOrdinal(selectedN)} Win in Slams${filterText}`) : (description ?? '');
+
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">Age at N-th Slam Win</h2>
+      {headerText && <div className="text-center text-4xl font-bold text-white mb-6">{headerText}</div>}
 
       {/* N Input */}
       <div className="mb-4 flex items-center gap-2">
         <NInput value={inputN} onChange={setInputN} />
         <button
-          onClick={() => fetchData()}
-          disabled={loading}
+          onClick={() => {
+            if (!Number.isFinite(inputN) || inputN <= 0) return;
+            setSelectedN(inputN);
+            fetchData();
+          }}
+          disabled={loading || !Number.isFinite(inputN) || inputN <= 0}
           className={`px-4 py-1 rounded ${
-            loading ? "bg-gray-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"
+            loading || !Number.isFinite(inputN) || inputN <= 0
+              ? "bg-gray-600 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700 text-white"
           }`}
         >
           Apply
@@ -198,7 +223,7 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, fetch
       <Modal
         show={showModal}
         onClose={() => setShowModal(false)}
-        title={`Age at ${selectedN}-th Slam Win`}
+        title={selectedRounds ? `Age of ${toOrdinal(selectedN)} Win in ${roundAbbreviations[selectedRounds] || selectedRounds + 's'} in Slams${filterText}` : `Age of ${toOrdinal(selectedN)} Win in Slams${filterText}`}
       >
         {renderTable(data)}
       </Modal>

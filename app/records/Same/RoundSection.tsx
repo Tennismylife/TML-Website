@@ -12,6 +12,7 @@ interface SameRoundSectionProps {
   selectedRound: string;
   fetchEnabled?: boolean;
   setFetchEnabled?: (enabled: boolean) => void;
+  description?: string;
 }
 
 type RoundEntryRecord = {
@@ -22,7 +23,7 @@ type RoundEntryRecord = {
   ioc: string | null;
 };
 
-export default function SameRoundSection({ selectedSurfaces, selectedLevels, selectedRound, fetchEnabled, setFetchEnabled }: SameRoundSectionProps) {
+export default function SameRoundSection({ selectedSurfaces, selectedLevels, selectedRound, fetchEnabled, setFetchEnabled, description }: SameRoundSectionProps) {
   const [entries, setEntries] = useState<RoundEntryRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -110,6 +111,12 @@ export default function SameRoundSection({ selectedSurfaces, selectedLevels, sel
 
   return (
     <section className="mb-8">
+      {description && (
+        <div className="text-center text-4xl font-bold text-white mb-6">
+          {description}
+        </div>
+      )}
+
       <div className="flex justify-end mb-4">
         <button
           onClick={() => setShowModal(true)}

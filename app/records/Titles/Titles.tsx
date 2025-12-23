@@ -17,9 +17,10 @@ interface PlayerData {
 
 interface TitlesProps {
   topTitles: PlayerData[];
+  description?: string;
 }
 
-export default function Titles({ topTitles }: TitlesProps) {
+export default function Titles({ topTitles, description }: TitlesProps) {
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
@@ -92,7 +93,11 @@ export default function Titles({ topTitles }: TitlesProps) {
 
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">Players with Most Titles</h2>
+      {description && (
+        <div className="text-center text-4xl font-bold text-white mb-6">
+          {description}
+        </div>
+      )}
 
       <div className="mb-4 flex justify-end">
         <button

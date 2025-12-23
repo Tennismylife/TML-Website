@@ -13,6 +13,7 @@ interface RoundAppearancesProps {
   selectedLevels: Set<string>;
   selectedRound: string;
   fetchEnabled?: boolean;
+  description?: string;
 }
 
 interface PlayerData {
@@ -22,13 +23,29 @@ interface PlayerData {
   appearances_at_age: number;
 }
 
-export default function RoundAppearancesSection({ selectedSurfaces, selectedLevels, selectedRound, fetchEnabled = true }: RoundAppearancesProps) {
+export default function RoundAppearancesSection({ selectedSurfaces, selectedLevels, selectedRound, fetchEnabled = true, description }: RoundAppearancesProps) {
   const [data, setData] = useState<PlayerData[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);  const [hasFetched, setHasFetched] = useState(false);  const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [inputAge, setInputAge] = useState(25.0);
   const [selectedAge, setSelectedAge] = useState(25.0);
+
+  const formatAge = (age: number) => {
+    const years = Math.floor(age);
+    const days = Math.round((age - years) * 365);
+    return `${years}y ${days}d`;
+  };
+
+  const roundAbbreviations: Record<string, string> = {
+    R128: "R128s",
+    R64: "R64s",
+    R32: "R32s",
+    R16: "R16s",
+    QF: "QFs",
+    SF: "SFs",
+    F: "Fs",
+  };
 
   const perPage = 20;
   const searchParams = useSearchParams();
@@ -84,7 +101,7 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
             <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">
-              Appearances at {selectedRound} ≤ {selectedAge.toFixed(3)}
+              {roundAbbreviations[selectedRound] ? `${roundAbbreviations[selectedRound]} appearances ≤ ${formatAge(selectedAge)}` : `Appearances at ${selectedRound} ≤ ${formatAge(selectedAge)}`}
             </th>
           </tr>
         </thead>
@@ -111,17 +128,44 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
     </div>
   );
 
+  const levelNames: Record<string, string> = {
+    G: "Slams",
+    M: "Masters 1000",
+    F: "ATP Finals",
+    "500": "500",
+    "250": "250",
+    A: "Others",
+    D: "Davis Cup",
+  };
+
+  const filters: string[] = [];
+  if (selectedLevels && selectedLevels.size > 0) {
+    const levels = Array.from(selectedLevels).map(l => levelNames[l] || l);
+    filters.push(`in ${levels.join(' or ')}`);
+  }
+  if (selectedSurfaces && selectedSurfaces.size > 0) {
+    const surfaces = Array.from(selectedSurfaces).map(s => s);
+    filters.push(`on ${surfaces.join(' or ')}`);
+  }
+  const filterText = filters.length ? ' ' + filters.join(' ') : '';
+
+  const headerText = hasFetched ? `Players with most ${roundAbbreviations[selectedRound] ?? `${selectedRound}s`}${filterText} at ${formatAge(selectedAge)}` : (description ?? '');
+
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">Top Appearances at Round {selectedRound}</h2>
+      {headerText && (
+        <div className="text-center text-4xl font-bold text-white mb-6">
+          {headerText}
+        </div>
+      )} 
 
       {/* Age Input */}
       <div className="mb-4 flex items-center gap-2">
         <AgeInput value={inputAge} onChange={setInputAge} />
         <button
           onClick={() => fetchData(inputAge)}
-          disabled={loading || !fetchEnabled}
-          className={`px-4 py-1 rounded ${loading || !fetchEnabled ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+          disabled={loading || !fetchEnabled || !Number.isFinite(inputAge)}
+          className={`px-4 py-1 rounded ${loading || !fetchEnabled || !Number.isFinite(inputAge) ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
         >
           Apply
         </button>
@@ -157,7 +201,7 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
       <Modal
         show={showModal}
         onClose={() => setShowModal(false)}
-        title={`Top Appearances at Round ${selectedRound} ≤ ${selectedAge.toFixed(3)}`}
+        title={roundAbbreviations[selectedRound] ? `Top ${roundAbbreviations[selectedRound]} appearances${filterText} ≤ ${formatAge(selectedAge)}` : `Top Appearances at Round ${selectedRound}${filterText} ≤ ${formatAge(selectedAge)}`}
       >
         {renderTable(data)}
       </Modal>

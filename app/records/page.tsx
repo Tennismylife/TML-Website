@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
 import FiltersComponent from './FiltersComponent';
+import { generateRecordDescription } from '../../lib/generateRecordDescription';
 import Wins from './Wins/Wins';
 import Played from './Played/Played';
 import Count from './Count/Count';
@@ -35,7 +36,7 @@ interface RecordData {
   bestOf?: number[];
 }
 
-export function RecordsMain() {
+function RecordsMain() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -75,7 +76,7 @@ export function RecordsMain() {
   const [activeSubTabs, setActiveSubTabs] = useState<Record<string, string>>({
     ages: 'oldest',
     timespan: 'entries',
-    roundsonentries: 'rounds',
+    roundsonentries: 'titles',
     same: 'wins',
     seasons: 'wins',
     atage: 'wins',
@@ -98,11 +99,11 @@ export function RecordsMain() {
     { key: 'ages', label: 'Ages' },
     { key: 'timespan', label: 'Timespan' },
     { key: 'percentage', label: 'Percentage' },
-    { key: 'roundsonentries', label: 'Round on Entries' },
+    { key: 'roundsonentries', label: 'Rounds on Entries' },
     { key: 'same', label: 'Same' },
     { key: 'seasons', label: 'Seasons' },
     { key: 'atage', label: 'At Age' },
-    { key: 'ageofnth', label: 'Age of Nth' },
+    { key: 'ageofnth', label: 'Age at Nth' },
     { key: 'neededto', label: 'Needed To' },
     { key: 'counterseasons', label: 'Counter Seasons' },
     { key: 'h2h', label: 'H2H' },
@@ -285,6 +286,8 @@ export function RecordsMain() {
       setSelectedRecord(recordParam);
       setActiveTab(recordParam);
       // if page was loaded with ?record=..., enable fetch so initial view loads
+      const requestId = String(Date.now());
+      setFetchRequestId(requestId);
       setFetchEnabled(true);
       lastUserActionRef.current = 'click';
       prevSelectedRecordRef.current = recordParam;
@@ -301,7 +304,23 @@ export function RecordsMain() {
     if (roundParam) setSelectedRounds(roundParam);
     if (bestOfParam) setSelectedBestOf(Number(bestOfParam));
     if (recordParam && subtabParam) setActiveSubTabs(prev => ({ ...prev, [recordParam]: subtabParam }));
+
+    // Clean up redundant 'tab' parameter if present
+    if (searchParams.get("tab")) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('tab');
+      safeReplace(url.toString());
+    }
   }, [searchParams]);
+
+  // Clean up 'tab' parameter on mount if present
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.has('tab')) {
+      url.searchParams.delete('tab');
+      safeReplace(url.toString());
+    }
+  }, []);
 
   // Reset filters when selected record changes (covers programmatic/tab changes)
   useEffect(() => {
@@ -467,24 +486,25 @@ export function RecordsMain() {
 
   const renderTabContent = () => {
     if (loading) return <div className="text-gray-500 italic mb-2">Loading...</div>;
+    const description = generateRecordDescription(selectedRecord, activeSubTabs, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf);
     switch(selectedRecord) {
-      case "wins": return <Wins topWinners={displayData?.topWinners} fetchEnabled={fetchEnabled} />;
-      case "played": return <Played fetchEnabled={fetchEnabled} />;
-      case "count": return <Count selectedRounds={selectedRounds} top={displayData?.top} />;
-      case "titles": return <Titles topTitles={displayData?.topTitles} />;
-      case "entries": return <Entries fetchEnabled={fetchEnabled} />;
-      case "ages": return <Ages selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={activeSubTabs.ages} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} />;
-      case "timespan": return <Timespan selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedTab={activeSubTabs.timespan} onTabChange={(tab) => setActiveSubTabs(prev => ({...prev, timespan: tab}))} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} />;
-      case "percentage": return <Percentage selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} fetchEnabled={fetchEnabled} />;
-      case "roundsonentries": return <Roundsonentries selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={activeSubTabs.roundsonentries} fetchEnabled={fetchEnabled} />;
-      case "same": return <Same selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.same} fetchEnabled={fetchEnabled} setFetchEnabled={setFetchEnabled} fetchRequestId={fetchRequestId} />;
-      case "seasons": return <Seasons selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.seasons} fetchEnabled={fetchEnabled} setFetchEnabled={setFetchEnabled} />;
-      case "atage": return <AtAge selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.atage} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} />;
-      case "ageofnth": return <AgeofNth selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.ageofnth} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} />;
-      case "neededto": return <NeededToSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={activeSubTabs.neededto} fetchEnabled={fetchEnabled} />;
-      case "counterseasons": return <CounterSeasonsSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={activeSubTabs.counterseasons} fetchEnabled={fetchEnabled} />;
-      case "streak": return <StreakSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.streak} fetchEnabled={fetchEnabled} />;
-      case "h2h": return <H2HSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.h2h} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} />; 
+      case "wins": return <Wins topWinners={displayData?.topWinners} fetchEnabled={fetchEnabled} description={description} />;
+      case "played": return <Played fetchEnabled={fetchEnabled} description={description} />;
+      case "count": return <Count selectedRounds={selectedRounds} top={displayData?.top} description={description} />;
+      case "titles": return <Titles topTitles={displayData?.topTitles} description={description} />;
+      case "entries": return <Entries fetchEnabled={fetchEnabled} description={description} />;
+      case "ages": return <Ages selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={activeSubTabs.ages} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} description={description} />;
+      case "timespan": return <Timespan selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedTab={activeSubTabs.timespan} onTabChange={(tab) => setActiveSubTabs(prev => ({...prev, timespan: tab}))} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} description={description} />;
+      case "percentage": return <Percentage selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} fetchEnabled={fetchEnabled} description={description} />;
+      case "roundsonentries": return <Roundsonentries selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={activeSubTabs.roundsonentries} fetchEnabled={fetchEnabled} description={description} />;
+      case "same": return <Same selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.same} fetchEnabled={fetchEnabled} setFetchEnabled={setFetchEnabled} fetchRequestId={fetchRequestId} description={description} />;
+      case "seasons": return <Seasons selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.seasons} fetchEnabled={fetchEnabled} setFetchEnabled={setFetchEnabled} fetchRequestId={fetchRequestId} description={description} />;
+      case "atage": return <AtAge selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.atage} fetchEnabled={fetchEnabled} description={description} />;
+      case "ageofnth": return <AgeofNth selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.ageofnth} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} description={description} />;
+      case "neededto": return <NeededToSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={activeSubTabs.neededto} fetchEnabled={fetchEnabled} description={description} />;
+      case "counterseasons": return <CounterSeasonsSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={activeSubTabs.counterseasons} fetchEnabled={fetchEnabled} description={description} />;
+      case "streak": return <StreakSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.streak} fetchEnabled={fetchEnabled} description={description} />;
+      case "h2h": return <H2HSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabs.h2h} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} description={description} />; 
       default: return null;
     }
   };
@@ -495,7 +515,7 @@ export function RecordsMain() {
       <section className="mb-6 text-gray-200">
         <h1 className="text-2xl sm:text-3xl font-semibold mb-2 text-white">Records</h1>
         <p className="hidden sm:block text-gray-300 leading-relaxed">
-          Welcome to the Records section. This area groups player and tournament records into topics like <strong>Wins</strong>, <strong>Played</strong>, <strong>Titles</strong>, <strong>Entries</strong>, <strong>Ages</strong>, <strong>Timespan</strong>, <strong>Percentage</strong>, <strong>Round-on-Entries</strong>, <strong>Same</strong> (same tournament), <strong>Seasons</strong>, <strong>At Age</strong>, <strong>Age of Nth</strong>, <strong>Needed To</strong>, <strong>Counter Seasons</strong>, <strong>H2H</strong> and <strong>Streak</strong>.
+          Welcome to the Records section. This area groups player and tournament records into topics like <strong>Wins</strong>, <strong>Played</strong>, <strong>Titles</strong>, <strong>Entries</strong>, <strong>Ages</strong>, <strong>Timespan</strong>, <strong>Percentage</strong>, <strong>Round-on-Entries</strong>, <strong>Same</strong> (same tournament), <strong>Seasons</strong>, <strong>At Age</strong>, <strong>Age at Nth</strong>, <strong>Needed To</strong>, <strong>Counter Seasons</strong>, <strong>H2H</strong> and <strong>Streak</strong>.
           Each tab renders the component located under <code>app/records/</code> for that topic (for example, <strong>Wins</strong> uses <code>app/records/Wins/Wins.tsx</code>), and available subtabs refine the query (for example Ages → Oldest / Youngest; Timespan → Entries / Titles / Rounds).
           Use the <em>surface</em>, <em>level</em>, <em>round</em> and <em>bestOf</em> filters to narrow the results; the UI enforces which filters are valid for each tab/subtab.
         </p>
@@ -519,12 +539,6 @@ export function RecordsMain() {
             <button
               onClick={() => {
                 // User clicked main tab: select tab and enable fetching only for tabs without subtabs
-                const requestId = String(Date.now());
-                if (!subTabs[tab.key] || subTabs[tab.key].length === 0) {
-                  // This tab has no subtabs — enable fetch immediately
-                  setFetchEnabled(true);
-                  setFetchRequestId(requestId);
-                }
                 lastUserActionRef.current = 'click';
                 setSelectedRecord(tab.key);
                 setActiveTab(tab.key);
@@ -532,10 +546,23 @@ export function RecordsMain() {
                 setSelectedLevels(new Set());
                 setSelectedRounds("");
                 setSelectedBestOf(null);
+
+                // If this tab has no subtabs, enable fetch after state updates so children are mounted
+                if (!subTabs[tab.key] || subTabs[tab.key].length === 0) {
+                  const requestId = String(Date.now());
+                  // wait for the next animation frame so React can mount children before fetching
+                  requestAnimationFrame(() => {
+                    setFetchEnabled(true);
+                    setFetchRequestId(requestId);
+                  });
+                }
+
                 // Update URL to reset filters
                 skipUrlUpdateRef.current = true;
                 const url = new URL(window.location.href);
+                url.searchParams.delete('tab');
                 url.searchParams.set('record', tab.key);
+                url.searchParams.delete('subtab');
                 url.searchParams.delete('surface');
                 url.searchParams.delete('level');
                 url.searchParams.delete('round');
@@ -561,27 +588,35 @@ export function RecordsMain() {
     {subTabs[tab.key].map(st => (
       <button
         key={st.key}
-        onClick={() => {          // User clicked a subtab: enable fetching and activate parent tab
-          const requestId = String(Date.now());
-          setFetchEnabled(true);
-          setFetchRequestId(requestId);
+        onClick={() => {          // User clicked a subtab: activate parent tab immediately, then trigger fetch
+          console.debug('[Records] subtab click activate', st.key);
           lastUserActionRef.current = 'click';
-          // Update URL first
-          skipUrlUpdateRef.current = true;
+          // Activate the subtab locally first so child mounts
+          setActiveSubTabs(prev => ({ ...prev, [tab.key]: st.key }));
+          setSelectedSurfaces(new Set());
+          setSelectedLevels(new Set());
+          setSelectedRounds("");
+          setSelectedBestOf(null);
+          // Small delay to ensure the child has mounted before triggering the fetch and updating the URL
+          const requestId = String(Date.now());
           const url = new URL(window.location.href);
+          url.searchParams.delete('tab');
           url.searchParams.set('record', tab.key);
           url.searchParams.set('subtab', st.key);
           url.searchParams.delete('surface');
           url.searchParams.delete('level');
           url.searchParams.delete('round');
           url.searchParams.delete('bestOf');
-          safeReplace(url.toString());
-          // Then reset filters
-          setActiveSubTabs(prev => ({ ...prev, [tab.key]: st.key }));
-          setSelectedSurfaces(new Set());
-          setSelectedLevels(new Set());
-          setSelectedRounds("");
-          setSelectedBestOf(null);
+
+          // wait for the next animation frame so React can mount children before fetching
+          requestAnimationFrame(() => {
+            console.debug('[Records] subtab trigger fetch + url replace', requestId);
+            setFetchEnabled(true);
+            setFetchRequestId(requestId);
+            // Update URL after child mount to avoid race with mounting
+            skipUrlUpdateRef.current = true;
+            safeReplace(url.toString());
+          });
         }}
         className={`px-3 py-1 rounded ${activeSubTabs[tab.key] === st.key ? "bg-gray-700 text-white" : "text-gray-300 hover:text-white hover:bg-gray-600"}`}
       >

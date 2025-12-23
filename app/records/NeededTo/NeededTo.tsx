@@ -10,9 +10,10 @@ interface NeededToSectionProps {
   selectedRounds: string;
   activeSubTab: string;
   fetchEnabled?: boolean;
+  description?: string;
 }
 
-export default function NeededToSection({ selectedSurfaces, selectedLevels, selectedRounds, activeSubTab, fetchEnabled }: NeededToSectionProps) {
+export default function NeededToSection({ selectedSurfaces, selectedLevels, selectedRounds, activeSubTab, fetchEnabled, description }: NeededToSectionProps) {
   return (
     <section className="mb-8">
       {activeSubTab === 'titles' && (
@@ -20,6 +21,7 @@ export default function NeededToSection({ selectedSurfaces, selectedLevels, sele
           selectedSurfaces={Array.from(selectedSurfaces)}
           selectedLevels={Array.from(selectedLevels)}
           fetchEnabled={fetchEnabled}
+          description={description}
         />
       )}
       {activeSubTab === 'rounds' && (
@@ -28,6 +30,7 @@ export default function NeededToSection({ selectedSurfaces, selectedLevels, sele
           selectedLevels={Array.from(selectedLevels)}
           selectedRounds={selectedRounds}
           fetchEnabled={fetchEnabled}
+          description={description}
         />
       )}
     </section>

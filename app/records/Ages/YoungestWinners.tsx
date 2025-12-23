@@ -24,9 +24,10 @@ interface YoungestWinnersProps {
   selectedLevels: Set<string>;
   fetchEnabled?: boolean;
   fetchRequestId?: string | null;
+  description?: string;
 }
 
-export default function YoungestWinners({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRequestId }: YoungestWinnersProps) {
+const YoungestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRequestId, description }: YoungestWinnersProps) => {
   const enabled = !!fetchEnabled;
   const [data, setData] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
@@ -142,7 +143,7 @@ export default function YoungestWinners({ selectedSurfaces, selectedLevels, fetc
 
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">Youngest Winners</h2>
+      {description && <div className="text-center text-4xl font-bold text-white mb-6">{description}</div>}
 
       <div className="mb-4 flex justify-end">
         <button
@@ -159,9 +160,11 @@ export default function YoungestWinners({ selectedSurfaces, selectedLevels, fetc
         <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       )}
 
-      <Modal show={showModal} onClose={() => setShowModal(false)} title="Youngest Winners">
+      <Modal show={showModal} onClose={() => setShowModal(false)} title="Youngest Title Winners">
         {renderTable(data)}
       </Modal>
     </section>
   );
-}
+};
+
+export default YoungestWinners;

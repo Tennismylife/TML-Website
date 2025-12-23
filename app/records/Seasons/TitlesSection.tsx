@@ -6,13 +6,15 @@ import { getFlagFromIOC } from "@/lib/utils";
 import { playerMatchesUrl } from "../nav";
 import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
-import Modal from '../Modal';
+import Modal from '@/components/Modal';
 
 interface TitlesSectionProps {
   selectedSurfaces: string[];
   selectedLevels: string[];
   fetchEnabled?: boolean;
   setFetchEnabled?: (v: boolean) => void;
+  fetchRequestId?: string | null;
+  description?: string;
 }
 
 type TitleRecord = {
@@ -23,7 +25,7 @@ type TitleRecord = {
   year: number;
 };
 
-export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled }: TitlesSectionProps) {
+export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, fetchRequestId, description }: TitlesSectionProps) {
   const [topSeasonTitles, setTopSeasonTitles] = useState<TitleRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModalTitles, setShowModalTitles] = useState(false);
@@ -104,6 +106,12 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
 
   return (
     <section className="mb-8">
+      {description && (
+        <div className="text-center text-4xl font-bold text-white mb-6">
+          {description}
+        </div>
+      )}
+
       <div className="flex justify-end mb-4">
         <button
           onClick={() => setShowModalTitles(true)}

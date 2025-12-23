@@ -4,13 +4,15 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getFlagFromIOC } from '@/lib/utils';import { playerMatchesUrl } from "../nav";import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
-import Modal from '../Modal';
+import Modal from '@/components/Modal';
 
 interface EntriesSectionProps {
   selectedSurfaces: string[];
   selectedLevels: string[];
   fetchEnabled?: boolean;
   setFetchEnabled?: (v: boolean) => void;
+  fetchRequestId?: string | null;
+  description?: string;
 }
 
 type EntryRecord = {
@@ -21,7 +23,7 @@ type EntryRecord = {
   year: number;
 };
 
-export default function EntriesSection({ selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled }: EntriesSectionProps) {
+export default function EntriesSection({ selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, fetchRequestId, description }: EntriesSectionProps) {
   const [topSeasonEntries, setTopSeasonEntries] = useState<EntryRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModalEntries, setShowModalEntries] = useState(false);
@@ -33,7 +35,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
 
   useEffect(() => {
     const enabled = !!fetchEnabled;
-    if (!enabled && !showModal) return;
+    if (!enabled && !showModalEntries) return;
 
     const fetchData = async () => {
       setLoading(true);
@@ -55,7 +57,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, showModal]);
+  }, [selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, showModalEntries]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!topSeasonEntries.length) return <div className="text-center py-8 text-gray-300 text-lg">No entries found.</div>;
@@ -102,6 +104,12 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
 
   return (
     <section className="mb-8">
+      {description && (
+        <div className="text-center text-4xl font-bold text-white mb-6">
+          {description}
+        </div>
+      )}
+
       <div className="flex justify-end mb-4">
         <button
           onClick={() => setShowModalEntries(true)}

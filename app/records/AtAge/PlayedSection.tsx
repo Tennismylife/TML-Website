@@ -13,6 +13,7 @@ interface PlayedSectionProps {
   selectedRounds: string;
   selectedBestOf: number | null;
   fetchEnabled?: boolean;
+  description?: string;
 }
 
 interface Player {
@@ -28,6 +29,7 @@ export default function PlayedSection({
   selectedRounds,
   selectedBestOf,
   fetchEnabled = true,
+  description,
 }: PlayedSectionProps) {
   const [data, setData] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
@@ -37,6 +39,12 @@ export default function PlayedSection({
   const [showModal, setShowModal] = useState(false);
   const [inputAge, setInputAge] = useState(25.0);
   const [selectedAge, setSelectedAge] = useState(25.0);
+
+  const formatAge = (age: number) => {
+    const years = Math.floor(age);
+    const days = Math.round((age - years) * 365);
+    return `${years}y ${days}d`;
+  };  
 
   const searchParams = useSearchParams();
   const perPage = 20;
@@ -91,7 +99,7 @@ export default function PlayedSection({
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
             <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Played at {selectedAge.toFixed(3)}</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Played at {formatAge(selectedAge)}</th>
           </tr>
         </thead>
         <tbody>
@@ -117,18 +125,45 @@ export default function PlayedSection({
     </div>
   );
 
+  const levelNames: Record<string, string> = {
+    G: "Slams",
+    M: "Masters 1000",
+    F: "ATP Finals",
+    "500": "500",
+    "250": "250",
+    A: "Others",
+    D: "Davis Cup",
+  };
+
+  const filters: string[] = [];
+  if (selectedLevels.length > 0) {
+    const levels = selectedLevels.map(l => levelNames[l] || l);
+    filters.push(`in ${levels.join(' or ')}`);
+  }
+  if (selectedSurfaces.length > 0) {
+    const surfaces = selectedSurfaces.map(s => s);
+    filters.push(`on ${surfaces.join(' or ')}`);
+  }
+  const filterText = filters.length ? ' ' + filters.join(' ') : '';
+
+  const headerText = hasFetched ? `Players with most played${filterText} at ${formatAge(selectedAge)}` : (description ?? '');
+
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">Top Matches Played at Age</h2>
+      {headerText && (
+        <div className="text-center text-4xl font-bold text-white mb-6">
+          {headerText}
+        </div>
+      )} 
 
       {/* Age Input */}
       <div className="mb-4 flex items-center gap-2">
         <AgeInput value={inputAge} onChange={setInputAge} />
         <button
           onClick={() => fetchData(inputAge)}
-          disabled={loading || !fetchEnabled}
+          disabled={loading || !fetchEnabled || !Number.isFinite(inputAge)}
           className={`px-4 py-1 rounded ${
-            loading || !fetchEnabled ? "bg-gray-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"
+            loading || !fetchEnabled || !Number.isFinite(inputAge) ? "bg-gray-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"
           }`}
         >
           Apply
@@ -172,7 +207,7 @@ export default function PlayedSection({
       <Modal
         show={showModal}
         onClose={() => setShowModal(false)}
-        title={`Top Matches Played at Age ${selectedAge.toFixed(3)}`}
+        title={`Top Played${filterText} at ${formatAge(selectedAge)}`}
       >
         {renderTable(data)}
       </Modal>

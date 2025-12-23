@@ -1,46 +1,95 @@
-"use client";
+'use client';
 
-import React from "react";
+import { useEffect, ReactNode } from 'react';
+import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X } from 'lucide-react';
 
 interface ModalProps {
-  show: boolean;
+  title: string;
+  children: ReactNode;
   onClose: () => void;
-  title?: string;
-  children: React.ReactNode;
+  showCloseButton?: boolean;
+  show?: boolean;
 }
 
-export default function Modal({ show, onClose, title, children }: ModalProps) {
+export default function Modal({
+  title,
+  children,
+  onClose,
+  showCloseButton = true,
+  show = true,
+}: ModalProps) {
   if (!show) return null;
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
 
-  // Close on Escape
-  React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
   }, [onClose]);
 
-  return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
-      onClick={onClose}
-    >
-      <div
-        className="bg-gray-900 text-gray-200 p-4 w-full max-w-7xl max-h-screen overflow-y-auto rounded border border-gray-800"
-        onClick={(e) => e.stopPropagation()}
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
+    <AnimatePresence mode="wait">
+      <motion.div
+        className="fixed inset-0 z-[9999] flex items-center justify-center bg-black p-4"
+        onClick={onClose}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
       >
-        {title && <h2 className="text-xl font-bold mb-4">{title}</h2>}
-        {children}
-        <div className="flex justify-end mt-4">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
+        <motion.div
+          className="bg-card border border-white/10 rounded-xl shadow-2xl max-h-full w-full max-w-4xl overflow-y-auto"
+          onClick={e => e.stopPropagation()}
+          initial={{ scale: 0.92, y: 30, opacity: 0 }}
+          animate={{ scale: 1, y: 0, opacity: 1 }}
+          exit={{ scale: 0.92, y: 30, opacity: 0 }}
+          transition={{ type: 'spring', stiffness: 330, damping: 30 }}
+        >
+          {/* Header */}
+          <div className="sticky top-0 bg-card/95 backdrop-blur border-b border-white/10 p-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl md:text-3xl font-bold text-white">{title}</h2>
+              {showCloseButton && (
+                <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/10 transition" aria-label="Chiudi">
+                  <X className="w-7 h-7" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* CONTENUTO – celle compatte + tabella stretta */}
+          <div className="p-6 pt-4">
+            <div className="
+              text-base md:text-lg leading-snug
+
+              /* Forza testo leggibile (vince su text-sm) */
+              [&_*]:!text-base [&_*]:md:!text-lg
+
+              /* Tabella stretta e centrata */
+              [&_table]:w-full [&_table]:max-w-2xl [&_table]:mx-auto
+
+              /* Celle MOLTO compatte */
+              [&_th]:py-3 [&_th]:px-4 [&_th]:font-semibold [&_th]:text-left [&_th]:bg-white/5
+              [&_td]:py-3 [&_td]:px-4 [&_td]:border-t [&_td]:border-white/10
+
+              /* Righe zebra leggere */
+              [&_tbody_tr:nth-child(even)]:bg-white/3
+
+              /* Bordi arrotondati tabella */
+              [&_table]:rounded-lg [&_table]:overflow-hidden
+            ">
+              {children}
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>,
+    document.body
   );
 }

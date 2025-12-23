@@ -25,9 +25,10 @@ interface OldestMainDrawProps {
   selectedRounds: string;
   fetchEnabled?: boolean;
   fetchRequestId?: string | null;
+  description?: string;
 }
 
-export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, fetchRequestId }: OldestMainDrawProps) {
+export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, fetchRequestId, description }: OldestMainDrawProps) {
   const enabled = !!fetchEnabled;
   const [data, setData] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
@@ -136,7 +137,11 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
 
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200">Oldest Players in Main Draw</h2>
+      {description && (
+        <div className="text-center text-4xl font-bold text-white mb-6">
+          {description}
+        </div>
+      )}
 
       <div className="mb-4 flex justify-end">
         <button
@@ -153,7 +158,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
         <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       )}
 
-      <Modal show={showModal} onClose={() => setShowModal(false)} title="Oldest Players in Main Draw">
+      <Modal show={showModal} onClose={() => setShowModal(false)} title="Oldest Player in Main Draw">
         {renderTable(data)}
       </Modal>
     </section>

@@ -18,10 +18,15 @@ export default function NthInput({ label = 'Nth', value, onChange, min = 1, clas
         <input
           type="number"
           min={min}
-          value={value}
+          value={Number.isFinite(value) ? value : ''}
           onChange={(e) => {
-            const v = Number(e.target.value);
-            onChange(Number.isNaN(v) ? min : v);
+            // Allow clearing the input on mobile (empty string)
+            if (e.currentTarget.value === '') {
+              onChange(Number.NaN);
+              return;
+            }
+            const v = Number(e.currentTarget.value);
+            onChange(Number.isNaN(v) ? Number.NaN : v);
           }}
           className="ml-2 bg-gray-800 text-white border border-gray-700 rounded px-2 py-1 w-20 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />

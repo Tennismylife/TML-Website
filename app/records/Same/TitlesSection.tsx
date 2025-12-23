@@ -12,6 +12,7 @@ interface TitlesSectionProps {
   selectedLevels: string[];
   fetchEnabled?: boolean;
   setFetchEnabled?: (v: boolean) => void;
+  description?: string;
 }
 
 interface TitleRecord {
@@ -23,7 +24,7 @@ interface TitleRecord {
   tourney_name: string;
 }
 
-export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, fetchRequestId }: TitlesSectionProps & { fetchRequestId?: string | null }) {
+export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, fetchRequestId, description }: TitlesSectionProps & { fetchRequestId?: string | null }) {
   const [allTitles, setAllTitles] = useState<TitleRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -117,6 +118,12 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
 
   return (
     <section className="mb-8">
+      {description && (
+        <div className="text-center text-4xl font-bold text-white mb-6">
+          {description}
+        </div>
+      )}
+
       <div className="flex justify-end mb-4">
         <button
           onClick={() => setShowModal(true)}

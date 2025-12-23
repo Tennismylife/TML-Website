@@ -15,6 +15,7 @@ interface H2HSectionProps {
   activeSubTab: string;
   fetchEnabled?: boolean;
   fetchRequestId?: string | number;
+  description?: string;
 }
 
 export default function H2HSection({ 
@@ -24,7 +25,8 @@ export default function H2HSection({
   selectedBestOf, 
   activeSubTab,
   fetchEnabled,
-  fetchRequestId
+  fetchRequestId,
+  description
 }: H2HSectionProps) {
   const [showModal, setShowModal] = React.useState(false);
   const enabled = !!fetchEnabled;
@@ -58,6 +60,7 @@ export default function H2HSection({
           fetchEnabled={fetchEnabled}
           fetchRequestId={fetchRequestId != null ? String(fetchRequestId) : undefined}
           parentShowModal={showModal}
+          description={description}
         />
       )}
       {activeSubTab === 'seasons' && (
@@ -68,6 +71,7 @@ export default function H2HSection({
           fetchEnabled={fetchEnabled}
           fetchRequestId={fetchRequestId != null ? String(fetchRequestId) : undefined}
           parentShowModal={showModal}
+          description={description}
         />
       )}
       {activeSubTab === 'tournament' && (
@@ -78,6 +82,7 @@ export default function H2HSection({
           fetchEnabled={fetchEnabled}
           fetchRequestId={fetchRequestId != null ? String(fetchRequestId) : undefined}
           parentShowModal={showModal}
+          description={description}
         />
       )}
       {activeSubTab === 'timespan' && (
@@ -88,6 +93,7 @@ export default function H2HSection({
           fetchEnabled={fetchEnabled}
           fetchRequestId={fetchRequestId != null ? String(fetchRequestId) : undefined}
           parentShowModal={showModal}
+          description={description}
         />
       )} 
 
@@ -102,6 +108,7 @@ export default function H2HSection({
             fetchEnabled={true}
             fetchRequestId={fetchRequestId != null ? String(fetchRequestId) : undefined}
             parentShowModal={true}
+            description={description}
           />
         )}
         {activeSubTab === 'seasons' && (
@@ -112,6 +119,7 @@ export default function H2HSection({
             fetchEnabled={true}
             fetchRequestId={fetchRequestId != null ? String(fetchRequestId) : undefined}
             parentShowModal={true}
+            description={description}
           />
         )}
         {activeSubTab === 'tournament' && (
@@ -122,6 +130,7 @@ export default function H2HSection({
             fetchEnabled={true}
             fetchRequestId={fetchRequestId != null ? String(fetchRequestId) : undefined}
             parentShowModal={true}
+            description={description}
           />
         )}
         {activeSubTab === 'timespan' && (
@@ -132,6 +141,7 @@ export default function H2HSection({
             fetchEnabled={true}
             fetchRequestId={fetchRequestId != null ? String(fetchRequestId) : undefined}
             parentShowModal={true}
+            description={description}
           />
         )}
       </Modal>
