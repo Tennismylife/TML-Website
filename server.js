@@ -1,4 +1,4 @@
-// server.js — Next.js + Redis v4
+// server.js ï¿½ Next.js + Redis v4
 // Sicurezza massima: homepage NON cachata, asset statici esclusi
 
 const express = require('express');
@@ -112,8 +112,8 @@ function decompressIfGzip(buffer, headers) {
 
     const type = req.path.startsWith('/api') ? 'api' : 'page';
 
-    /* Opzione A: homepage "/" NON cachata */
-    if (type === 'page' && req.path === '/') return next();
+    /* Opzione A: homepage "/" NON cachata by default. Set env CACHE_HOME=1 to allow caching homepage. */
+    if (type === 'page' && req.path === '/' && process.env.CACHE_HOME !== '1') return next();
 
     /* Escludi asset statici */
     if (req.path.match(/\.(png|jpg|jpeg|gif|webp|svg|ico|css|js|map)$/i)) return next();

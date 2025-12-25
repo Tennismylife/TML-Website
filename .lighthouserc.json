@@ -1,0 +1,17 @@
+{
+  "ci": {
+    "collect": {
+      "numberOfRuns": 3,
+      "url": [
+        "http://localhost:3000/",
+        "http://localhost:3000/records",
+        "http://localhost:3000/players/novak-djokovic"
+      ],
+      "startServerCommand": "node .next/standalone/server.js",
+      "startServerReadyPattern": "Ready"
+    },
+    "upload": {
+      "target": "temporary-public-storage"
+    }
+  }
+}

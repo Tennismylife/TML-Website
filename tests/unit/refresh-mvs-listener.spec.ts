@@ -16,7 +16,8 @@ describe('refresh-mvs-listener', () => {
     const { refreshAll } = require(MODULE_PATH);
 
     const unsafe = vi.fn().mockResolvedValue(undefined);
-    const sql = { unsafe } as any;
+    // Mock the tagged-template call sql`...` by providing a callable function that returns a row
+    const sql = Object.assign(async () => [{ reg: 'mv_top_winners' }], { unsafe });
 
     await refreshAll(sql);
 
@@ -31,7 +32,7 @@ describe('refresh-mvs-listener', () => {
     const { refreshAll } = require(MODULE_PATH);
 
     const unsafe = vi.fn().mockResolvedValue(undefined);
-    const sql = { unsafe } as any;
+    const sql = Object.assign(async () => [{ reg: 'mv_top_winners' }], { unsafe });
 
     await refreshAll(sql);
 
@@ -42,7 +43,7 @@ describe('refresh-mvs-listener', () => {
   it('one-shot refresh can be invoked programmatically', async () => {
     const unsafe = vi.fn().mockResolvedValue(undefined);
     const end = vi.fn().mockResolvedValue(undefined);
-    const sql = { unsafe, end } as any;
+    const sql = Object.assign(async () => [{ reg: 'mv_top_winners' }], { unsafe, end });
 
     const { refreshAll } = require(MODULE_PATH);
 

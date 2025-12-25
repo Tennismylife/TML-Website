@@ -2,7 +2,7 @@
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { createRoot } from 'react-dom/client';
-import Modal from '../Modal';
+import Modal from '../components/Modal';
 import { describe, it, beforeEach, afterEach } from 'vitest';
 
 describe('Modal', () => {

@@ -1,6 +1,8 @@
-"use client";
+﻿"use client";
 
+import React from 'react';
 import { Suspense, useState, useEffect, useRef } from 'react';
+import type { Metadata } from 'next';
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
@@ -90,7 +92,8 @@ function RecordsMain() {
   // Keep track of which main tab is hovered so subtabs can appear on mouse-over
   const [hoveredTab, setHoveredTab] = useState<string | null>(null);
 
-  const tabs = [
+
+const tabs = [
     { key: 'wins', label: 'Wins' },
     { key: 'played', label: 'Played' },
     { key: 'count', label: 'Count' },

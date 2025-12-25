@@ -42,11 +42,12 @@ export default function Header() {
         {/* LOGO */}
         <Link href="/" className="flex-shrink-0">
           <Image
-            src="/logo.png"
+            src="/logo.webp"
             alt="Site logo"
             width={140}
             height={40}
             priority
+            unoptimized
             className="object-contain"
           />
         </Link>

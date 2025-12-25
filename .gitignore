@@ -33,3 +33,24 @@ Server Commands/7 Reboot.txt
 Server Commands/8 Nginx.txt
 Server Commands/9 Prisma.txt
 Server Commands/Altervista.txt
+
+# Generated reports, build and temp artifacts (keep out of repo)
+/reports/
+.lighthouseci/
+lighthouse-*.json
+lhr*.json
+temp-lhr*.json
+lh-report*.json
+chunk*.json
+*.log
+*.tmp
+*.cache
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+coverage/
+.env*
+npm-debug.log*
+.yarn-debug.log*
+.yarn-integrity

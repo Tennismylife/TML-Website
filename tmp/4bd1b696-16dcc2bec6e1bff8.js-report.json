@@ -1,0 +1,12 @@
+{
+  "map": "4bd1b696-16dcc2bec6e1bff8.js.map",
+  "totalBytes": 530233,
+  "topCount": 1,
+  "top": [
+    {
+      "source": "webpack://_N_E/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.production.js",
+      "bytes": 530233,
+      "percent": 100
+    }
+  ]
+}

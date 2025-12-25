@@ -1,10 +1,8 @@
-"use client";
-
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import Image from 'next/image'
 import { getFlagFromIOC } from "@/lib/utils";
 import Link from "next/link";
-import LatestMatches from "@/components/LatestMatches";
+import LatestMatchesClient from '@/components/LatestMatchesClient'
+import SearchPlayerLoaderClient from '@/components/SearchPlayerLoaderClient'
 
 interface Player {
   id: string;
@@ -12,155 +10,11 @@ interface Player {
   ioc?: string;
 }
 
-function Card({
-  href,
-  title,
-  subtitle,
-  children,
-  large,
-  description,
-  colorClass,
-  accentColor,
-}: {
-  href: string;
-  title: string;
-  subtitle?: string;
-  children: React.ReactNode;
-  large?: boolean;
-  description?: string;
-  colorClass?: string;
-  accentColor?: string;
-}) {
-  // Extract base color (e.g. 'text-rose-400') if provided for use on the title
-  const baseColorClass = colorClass ? colorClass.split(" ")[0] : "text-yellow-400";
-
-  const iconRef = useRef<HTMLSpanElement | null>(null);
-  const titleRef = useRef<HTMLSpanElement | null>(null);
-
-  useEffect(() => {
-    if (!accentColor) return;
-    if (iconRef.current) iconRef.current.style.setProperty("color", accentColor, "important");
-    if (titleRef.current) titleRef.current.style.setProperty("color", accentColor, "important");
-  }, [accentColor]);
-
-  const wrapperClass = `group flex items-center gap-3 rounded-xl border border-gray-700 bg-gray-800/70 p-4 hover:bg-gray-700/60 transition-all duration-300 backdrop-blur-md shadow-md
-    ${large
-      ? "col-span-full flex-col text-center p-6 hover:scale-105 w-full"
-      : "w-full flex-col hover:scale-105"}
-  `;
-
-  const content = (
-    <>
-      <span ref={iconRef} className={`${colorClass ?? "text-yellow-400 group-hover:text-yellow-300"} ${large ? "mb-3 text-4xl" : ""}`}>{children}</span>
-      <span className={`flex flex-col items-center`}>
-        <span ref={titleRef} className={`font-extrabold ${large ? "text-3xl sm:text-4xl" : "text-lg"} text-center ${baseColorClass}`}>
-          {title}
-        </span>
-        {subtitle && (
-          <span className={`${large ? "text-base mt-2 text-gray-300" : "text-xs text-gray-400 mt-1"} text-center`}>
-            {subtitle}
-          </span>
-        )}
-        {description && (
-          <span className={`text-sm text-gray-300 ${large ? "mt-2 max-w-xl" : "mt-2"} text-center`}>
-            {description}
-          </span>
-        )}
-      </span>
-    </>
-  );
-
-  const isExternal = href && href.toLowerCase().startsWith("http");
-
-  return isExternal ? (
-    <a href={href} target="_blank" rel="noopener noreferrer" aria-label={`Go to ${title}`} className={wrapperClass}>
-      {content}
-    </a>
-  ) : (
-    <Link href={href} aria-label={`Go to ${title}`} className={wrapperClass}>
-      {content}
-    </Link>
-  );
-}
+import Card from '@/components/Card'
 
 export default function HomePage() {
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState<Player[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(-1);
-  const [recentMatches, setRecentMatches] = useState<any[]>([]);
-  const [matchesLoading, setMatchesLoading] = useState(false);
-  const router = useRouter();
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    // Fetch latest 10 matches once on mount
-    setMatchesLoading(true);
-    fetch('/api/matches/latest')
-      .then((res) => res.json())
-      .then((data) => {
-        setRecentMatches(Array.isArray(data) ? data : []);
-      })
-      .catch((err) => console.error('Error fetching latest matches:', err))
-      .finally(() => setMatchesLoading(false));
-  }, []);
-
-  // Debounced search
-  useEffect(() => {
-    const controller = new AbortController();
-    const timer = setTimeout(() => {
-      if (!query.trim()) {
-        setResults([]);
-        setSelectedIndex(-1);
-        return;
-      }
-
-      setLoading(true);
-
-      fetch(`/api/h2h/search?q=${encodeURIComponent(query)}`, {
-        signal: controller.signal,
-      })
-        .then((res) => res.json())
-        .then((data: Player[]) => {
-          setResults(data);
-          setSelectedIndex(-1);
-        })
-        .catch((err) => {
-          if (err.name !== "AbortError") console.error("Search error:", err);
-        })
-        .finally(() => setLoading(false));
-    }, 300);
-
-    return () => {
-      controller.abort();
-      clearTimeout(timer);
-    };
-  }, [query]);
-
-  const handleSelect = (playerId: string) => {
-    router.push(`/players/${playerId}`);
-    setQuery("");
-    setResults([]);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (!results.length) return;
-
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setSelectedIndex((prev) => (prev + 1) % results.length);
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setSelectedIndex((prev) => (prev - 1 + results.length) % results.length);
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      const target = selectedIndex >= 0 ? results[selectedIndex] : results[0];
-      if (target) handleSelect(target.id);
-    } else if (e.key === "Escape") {
-      setQuery("");
-      setResults([]);
-    }
-  };
+  // All interactive logic was moved to client components to keep this page a Server Component.
+  // Client widgets are loaded lazily to reduce initial hydration and TBT.
 
   const navItems = [
     { href: "/tournaments", title: "Tournaments", subtitle: "Calendar & Results", description: "Browse upcoming and past tournaments with full draws, schedules, surfaces, and final results. Filter by level (Grand Slam, ATP 1000/500/250) and view match-by-match details.", colorClass: "text-rose-400 group-hover:text-rose-300", accentColor: "#fb7185", icon: (
@@ -211,15 +65,58 @@ export default function HomePage() {
     )}, 
   ];
 
+  const criticalCss = `
+    /* Critical CSS: above-the-fold minimal styles for homepage */
+    html,body{background:#0f1720;color:#e5e7eb}
+    main{padding:0 1rem}
+    @media(min-width:640px){main{padding:0 1.5rem}}
+
+    /* Header / nav (above the fold) */
+    header{background:transparent;border-bottom:none}
+    header nav a{color:#fff}
+    header nav a.text-yellow-400{color:#facc15}
+
+    .hero-wrapper{width:100%;margin-bottom:2rem;display:flex;justify-content:center}
+    .hero-img{width:100%;max-width:768px;height:auto;border-radius:.75rem;box-shadow:0 10px 15px rgba(2,6,23,.6);object-fit:cover}
+
+    h1{font-weight:800;font-size:2rem;text-align:center;margin-bottom:1.25rem}
+    @media(min-width:640px){h1{font-size:2.25rem}}
+
+    /* Search input */
+    .search-input{width:100%;background:#111827;color:#fff;border:1px solid #374151;border-radius:.375rem;padding:.5rem .75rem;outline:none}
+
+    .card-cta{transition:transform .3s ease}
+    `;
+
+  // Small inline SVG placeholder (LQIP) painted immediately to speed up LCP
+  const heroLQIP = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'><rect width='800' height='500' fill='%230f1720'/></svg>`;
+
   return (
     <main className="w-full px-4 sm:px-6">
-        {/* Under Construction Image */}
-        <div className="w-full mb-8 flex justify-center">
-          <img
-            src="/UnderCostruction.png"
-            alt="Under Construction"
-            className="w-full max-w-lg h-auto rounded-xl shadow-lg object-cover"
-          />
+      <style dangerouslySetInnerHTML={{ __html: criticalCss }} />
+        {/* Under Construction Image (LQIP placeholder to speed LCP) */}
+        <div
+          className="w-full mb-8 flex justify-center hero-wrapper"
+          style={{
+            backgroundImage: `url("${heroLQIP}")`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            width: '100%'
+          }}
+        >
+          {/* LCP image: use Next/Image with blur placeholder for LQIP and priority preload */}
+        <Image
+          src="/UnderCostruction.avif"
+          alt="Under Construction"
+          width={768}
+          height={480}
+          className="w-full max-w-lg h-auto rounded-xl shadow-lg object-cover"
+          priority
+          placeholder="blur"
+          blurDataURL={heroLQIP}
+          sizes="(max-width: 400px) 320px, (max-width: 640px) 480px, 768px"
+        />
         </div>
 
       {/* Title */}
@@ -228,72 +125,8 @@ export default function HomePage() {
         Welcome to Tennis My Life — a comprehensive tennis statistics site. Explore tournament calendars, match results, player head-to-head records, season summaries, rankings, and advanced metrics to follow players' careers and compare performances.
       </p>
 
-      {/* Search Player (full width, placed above Records) */}
-      <div className="w-full mb-8">
-        <div className="w-full">
-          <div className="w-full relative">
-            <input
-              ref={inputRef}
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Search for a player..."
-              aria-label="Search for an ATP player"
-              autoComplete="off"
-              className="w-full bg-gray-800 text-gray-100 placeholder-gray-400 border border-gray-700 rounded px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            />
-
-            {query && (
-              <button
-                onClick={() => {
-                  setQuery("");
-                  setResults([]);
-                  inputRef.current?.focus();
-                }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200"
-                aria-label="Clear search"
-              >
-                ✕
-              </button>
-            )}
-
-            {loading && (
-              <ul className="border border-gray-700 mt-1 rounded max-h-60 overflow-y-auto bg-gray-800">
-                {[...Array(4)].map((_, i) => (
-                  <li key={i} className="px-3 py-2 animate-pulse">
-                    <div className="h-4 bg-gray-700 rounded w-3/4"></div>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            {results.length > 0 && !loading && (
-              <ul className="border border-gray-700 mt-1 rounded max-h-60 overflow-y-auto bg-gray-800 text-gray-100">
-                {results.map((p, index) => (
-                  <li
-                    key={p.id}
-                    data-idx={index}
-                    onClick={() => handleSelect(p.id)}
-                    onMouseEnter={() => setSelectedIndex(index)}
-                    className={`px-3 py-2 cursor-pointer flex items-center gap-2 rounded transition-colors ${
-                      index === selectedIndex
-                        ? "bg-yellow-600 text-white"
-                        : "hover:bg-gray-700"
-                    }`}
-                  >
-                    {getFlagFromIOC(p.ioc)} {p.atpname}
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            {results.length === 0 && query && !loading && (
-              <p className="text-sm text-gray-400 mt-1 text-center">No players found</p>
-            )}
-          </div>
-        </div>
-      </div>
+      {/* Search Player (client-loaded lazily to reduce initial hydration / TBT) */}
+      <SearchPlayerLoaderClient />
 
       {/* Featured Records Card - Full Width */}
       <div className="w-full mb-8">
@@ -306,7 +139,7 @@ export default function HomePage() {
       </div>
 
       {/* Latest Matches (moved to component) */}
-      <LatestMatches />
+      <LatestMatchesClient />
 
       {/* Grid - full width */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">

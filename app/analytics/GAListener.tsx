@@ -19,12 +19,56 @@ export default function GAListener() {
   useEffect(() => {
     if (!pathname) return;
 
-    if (!window.GA_INITIALIZED) {
-      ReactGA.initialize(GA_ID, { gaOptions: { cookie_domain: "auto" } });
-      window.GA_INITIALIZED = true;
-    }
+    // Defer GA loading until idle or user interaction to avoid blocking LCP/TBT
+    const injectGtag = () => {
+      if (document.querySelector(`script[src*="gtag/js?id=${GA_ID}"]`)) return Promise.resolve();
+      return new Promise<void>((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+        s.async = true;
+        s.onload = () => resolve();
+        s.onerror = (e) => reject(e);
+        document.head.appendChild(s);
+      });
+    };
 
-    ReactGA.send({ hitType: "pageview", page: pathname });
+    const initGA = async () => {
+      try {
+        await injectGtag();
+        if (!window.GA_INITIALIZED) {
+          ReactGA.initialize(GA_ID, { gaOptions: { cookie_domain: 'auto' } });
+          window.GA_INITIALIZED = true;
+        }
+        ReactGA.send({ hitType: 'pageview', page: pathname });
+      } catch (e) {
+        // Non-fatal: GA failed to load
+        console.warn('GA load failed', e);
+      }
+    };
+
+    const idleCallback = (window as any).requestIdleCallback
+      ? (window as any).requestIdleCallback(() => initGA(), { timeout: 3000 })
+      : (setTimeout(() => initGA(), 3000) as unknown as number);
+
+    // If user interacts within the first 3s, initialize earlier
+    const interactionHandler = () => {
+      initGA();
+      window.removeEventListener('keydown', interactionHandler);
+      window.removeEventListener('pointerdown', interactionHandler);
+    };
+
+    window.addEventListener('keydown', interactionHandler, { passive: true });
+    window.addEventListener('pointerdown', interactionHandler, { passive: true });
+
+    return () => {
+      if ((window as any).cancelIdleCallback && idleCallback && typeof idleCallback === 'number') {
+        (window as any).cancelIdleCallback(idleCallback);
+      } else if (typeof idleCallback === 'number') {
+        clearTimeout(idleCallback as unknown as number);
+      }
+      window.removeEventListener('keydown', interactionHandler);
+      window.removeEventListener('pointerdown', interactionHandler);
+    };
   }, [pathname]);
 
   return null;
