@@ -12,9 +12,28 @@ interface Player {
 
 import Card from '@/components/Card'
 
+export const metadata = {
+  title: 'Tennis My Life — Tennis Stats, Records & Match Database',
+  description: "Explore tournament calendars, match results, player head-to-head records, rankings and advanced tennis metrics on Tennis My Life.",
+  openGraph: {
+    title: 'Tennis My Life — Tennis Stats, Records & Match Database',
+    description: "Explore tournament calendars, match results, player head-to-head records, rankings and advanced tennis metrics on Tennis My Life.",
+    images: [
+      {
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/og-home.avif`,
+        width: 1200,
+        height: 630,
+        alt: 'Tennis My Life - tennis statistics and records'
+      }
+    ],
+  },
+  twitter: { card: 'summary_large_image' },
+  alternates: { canonical: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000' }
+} as const;
+
 export default function HomePage() {
   // All interactive logic was moved to client components to keep this page a Server Component.
-  // Client widgets are loaded lazily to reduce initial hydration and TBT.
+  // Client widgets are loaded lazily to reduce initial hydration and TBT
 
   const navItems = [
     { href: "/tournaments", title: "Tournaments", subtitle: "Calendar & Results", description: "Browse upcoming and past tournaments with full draws, schedules, surfaces, and final results. Filter by level (Grand Slam, ATP 1000/500/250) and view match-by-match details.", colorClass: "text-rose-400 group-hover:text-rose-300", accentColor: "#fb7185", icon: (
@@ -124,6 +143,20 @@ export default function HomePage() {
       <p className="text-left text-gray-300 mb-6 max-w-2xl mx-auto">
         Welcome to Tennis My Life — a comprehensive tennis statistics site. Explore tournament calendars, match results, player head-to-head records, season summaries, rankings, and advanced metrics to follow players' careers and compare performances.
       </p>
+
+      {/* Page JSON-LD for homepage (WebPage) to help search engines) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebPage',
+            'url': process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+            'name': 'Tennis My Life',
+            'description': 'Comprehensive tennis statistics, match results, player profiles and historical rankings.'
+          }),
+        }}
+      />
 
       {/* Search Player (client-loaded lazily to reduce initial hydration / TBT) */}
       <SearchPlayerLoaderClient />

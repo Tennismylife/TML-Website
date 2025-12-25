@@ -7,10 +7,12 @@ function humanizeId(id: string) {
 }
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const name = humanizeId(params.id);  const title = `${name} — Player Profile | TML`;
+  const resolvedParams = await params;
+  const name = humanizeId(resolvedParams.id);
+  const title = `${name} — Player Profile | TML`;
   const description = `Player profile and statistics for ${name} on TML.`;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-  const url = `${siteUrl}/players/${params.id}`;
+  const url = `${siteUrl}/players/${resolvedParams.id}`;
 
   return {
     title,
@@ -25,8 +27,8 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   };
 }
 
-export default function PlayerPage(props: any) {
-  const params = props?.params ?? {};
+export default async function PlayerPage(props: any) {
+  const params = (await props.params) ?? {};
   const name = humanizeId(params.id ?? '');
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
   const url = `${siteUrl}/players/${params.id}`;

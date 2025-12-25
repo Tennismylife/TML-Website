@@ -3,6 +3,13 @@ import './globals.css'
 import { ReactNode } from 'react'
 import Header from '../components/Header'
 import GAListener from './analytics/GAListener' // importa il listener
+import { Montserrat } from 'next/font/google'
+
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-montserrat',
+})
 
 
 const siteTitle = 'TML — Tennis Records Data History Rankings, Matches & GOAT'
@@ -42,16 +49,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <html lang="it">
+    <html lang="it" className={montserrat.variable}>
       <head>
         {/* Favicon */}
         <link rel="icon" href="/favicon.png" />
 
-        {/* Preload self-hosted fonts */}
-        <link rel="preload" href="/fonts/Inter-latin-400-subset.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-        <link rel="preload" href="/fonts/Poppins-latin-600-subset.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-        <link rel="preload" href="/fonts/Poppins-latin-700-subset.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         
+
+        {/* Preconnects for third-party origins (do this early but sparingly) */}
+        <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://www.google-analytics.com" crossOrigin="anonymous" />
 
         {/* Preload hero image (mobile-focused small AVIF to speed LCP on mobile emulation) */}
         <link rel="preload" href="/UnderCostruction-480.avif" as="image" type="image/avif" />

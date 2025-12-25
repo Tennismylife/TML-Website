@@ -2,29 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Self-hosted fonts */
-@font-face {
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400;
-  src: url('/fonts/Inter-latin-400-subset.woff2') format('woff2');
-  font-display: swap;
+:root {
+  --font-montserrat: 'Montserrat', sans-serif;
 }
 
-@font-face {
-  font-family: 'Poppins';
-  font-style: normal;
-  font-weight: 600;
-  src: url('/fonts/Poppins-latin-600-subset.woff2') format('woff2');
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Poppins';
-  font-style: normal;
-  font-weight: 700;
-  src: url('/fonts/Poppins-latin-700-subset.woff2') format('woff2');
-  font-display: swap;
+body {
+  font-family: var(--font-montserrat);
 }
 
 
