@@ -34,14 +34,18 @@ export async function GET(request: NextRequest, context: any) {
   try {
     const params = await context?.params;
     const id = String(params?.id ?? '');
-    
+
+    // resolve slug or numeric id to tourney ids
+    const tourneyIds = await (await import('@/lib/tournament')).resolveTourneyIds(id);
+    if (!tourneyIds) return NextResponse.json({ error: 'Tournament not found' }, { status: 404 });
+
     const { searchParams } = new URL(request.url);
     const full = searchParams.get("full") === "true";  // fullList se true
     const filterRound = searchParams.get("round") || null;
 
     // Fetch all matches for the tournament
     const matches = await prisma.match.findMany({
-      where: { tourney_id: id },
+      where: { tourney_id: { in: tourneyIds } },
       select: {
         tourney_id: true,
         tourney_name: true,
@@ -152,7 +156,6 @@ export async function GET(request: NextRequest, context: any) {
 
     return NextResponse.json({ allRoundItems });
   } catch (error) {
-    console.error("Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

@@ -4,51 +4,51 @@ import TournamentClient from './TournamentClient';
 import { prisma } from '../../../lib/prisma';
 import { redirect } from 'next/navigation';
 
-// Function to create URL-friendly slug from text
-function createSlug(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .replace(/-+/g, '-') // Replace multiple hyphens with single
-    .trim()
-    .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+
+// Funzione per rendere il nome leggibile (accetta qualsiasi valore e lo converte in stringa)
+function humanizeName(name: any) {
+  const s = String(name || '');
+  return s.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-// Function to extract name from Json field
+// Funzione per estrarre il primo nome dal JSON (solo per visualizzazione)
 function extractName(nameField: any): string {
+  if (!nameField) return '';
   if (typeof nameField === 'string') return nameField;
-  if (nameField && typeof nameField === 'object') {
-    // Try to get English name first, then any available name
-    return nameField.en || nameField.default || Object.values(nameField)[0] || '';
+  if (typeof nameField === 'number' || typeof nameField === 'boolean') return String(nameField);
+  if (Array.isArray(nameField)) {
+    for (const v of nameField) {
+      const r = extractName(v);
+      if (r) return r;
+    }
+    return '';
+  }
+  if (typeof nameField === 'object') {
+    for (const v of Object.values(nameField)) {
+      const r = extractName(v);
+      if (r) return r;
+    }
+    return '';
   }
   return '';
 }
 
-function humanizeName(name: string) {
-  return name.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const resolvedParams = await params;
-  const param = resolvedParams.id;
+  const { id: param } = await params;
 
-  // Find tournament by ID or slug
-  let tournament;
-  if (!param.includes('-')) {
-    // It's an ID (no hyphens) - find by ID
+  // Trova torneo per ID o slug
+  let tournament = null;
+  if (/^\d+$/.test(param)) {
+    // ID numerico → trova torneo
+    const idNum = parseInt(param, 10);
+    // fetch full row to access DB slug
     tournament = await prisma.tournament.findUnique({
-      where: { id: param },
-      select: { id: true, name: true },
+      where: { id: idNum },
     });
   } else {
-    // It's a slug (contains hyphens) - find by slug
-    const allTournaments = await prisma.tournament.findMany({
-      select: { id: true, name: true },
-    });
-    tournament = allTournaments.find(t => {
-      const name = extractName(t.name);
-      return name && createSlug(name) === param;
+    // Treat param as slug: find by DB slug
+    tournament = await prisma.tournament.findUnique({
+      where: { slug: param },
     });
   }
 
@@ -59,20 +59,23 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     };
   }
 
-  const name = extractName(tournament.name) || `Tournament ${tournament.id}`;
-  const humanizedName = humanizeName(name);
-  const slug = createSlug(name);
-  const title = `${humanizedName} — Tournament | TML`;
-  const description = `Tournament page for ${humanizedName} — results, past champions and records.`;
+  const humanizedName = humanizeName(tournament.slug);
+  const slug = tournament.slug;
+  if (!slug) {
+    return {
+      title: 'Tournament Not Found | TML',
+      description: 'Tournament slug missing.',
+    };
+  }
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
   const url = `${siteUrl}/tournaments/${slug}`;
 
   return {
-    title,
-    description,
+    title: `${humanizedName} — Tournament | TML`,
+    description: `Tournament page for ${humanizedName} — results, past champions and records.`,
     openGraph: {
-      title,
-      description,
+      title: `${humanizedName} — Tournament | TML`,
+      description: `Tournament page for ${humanizedName} — results, past champions and records.`,
       url,
       type: 'website',
     },
@@ -80,42 +83,35 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   };
 }
 
-export default async function TournamentPage(props: any) {
-  const params = (await props.params) ?? {};
-  const param = params.id;
+export default async function TournamentPage({ params }: any) {
+  const { id: param } = await params;
 
-  // Find tournament by ID or slug
-  let tournament;
-  if (!param.includes('-')) {
-    // It's an ID (no hyphens) - find by ID and redirect to slug
+  // Trova torneo per ID o slug
+  let tournament = null;
+  if (/^\d+$/.test(param)) {
+    // ID numerico → redirect a slug read from DB
+    const idNum = parseInt(param, 10);
     tournament = await prisma.tournament.findUnique({
-      where: { id: param },
-      select: { id: true, name: true },
+      where: { id: idNum },
     });
-
-    if (tournament) {
-      const name = extractName(tournament.name);
-      const slug = createSlug(name);
-      redirect(`/tournaments/${slug}`);
+    if (tournament && tournament.slug) {
+      redirect(`/tournaments/${tournament.slug}`);
+    } else if (tournament && !tournament.slug) {
+      return <div>Tournament not found</div>;
     }
   } else {
-    // It's a slug (contains hyphens) - find by slug
-    const allTournaments = await prisma.tournament.findMany({
-      select: { id: true, name: true },
-    });
-    tournament = allTournaments.find(t => {
-      const name = extractName(t.name);
-      return name && createSlug(name) === param;
+    // Treat param as slug: find by DB slug
+    tournament = await prisma.tournament.findUnique({
+      where: { slug: param },
     });
   }
 
-  if (!tournament) {
-    return <div>Tournament not found</div>;
-  }
+  if (!tournament) return <div>Tournament not found</div>;
 
   const name = extractName(tournament.name) || `Tournament ${tournament.id}`;
   const humanizedName = humanizeName(name);
-  const slug = createSlug(name);
+  const slug = tournament.slug;
+  if (!slug) return <div>Tournament not found</div>;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
   const url = `${siteUrl}/tournaments/${slug}`;
 

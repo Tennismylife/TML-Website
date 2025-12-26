@@ -5,6 +5,7 @@ import type { Match } from "@/types";
 import TournamentFilters from "./TournamentFilters";
 import TournamentGrid from "../TournamentGrid";
 import TournamentSummary from "./TournamentSummary";
+import { getTourneyHref } from "@/lib/utils";
 
 const ROUND_ORDER = ["R256","R128","R64","R32","R16","QF","SF","BR","F","W"];
 const LEVEL_ORDER = ["G","M","500","250","A","O","D","F"];
@@ -217,8 +218,8 @@ export default function Tournaments({ playerId, filters = { tourney: "", level: 
   const roundOptions = ROUND_ORDER;
 
   const getTourneyLink = (tourneyId?: string, year?: number) => {
-    if (!tourneyId || !year) return "#";
-    return `/tournaments/${encodeURIComponent(tourneyId)}/${year}`;
+    if (!tourneyId) return "#";
+    return getTourneyHref({ id: tourneyId, year });
   };
 
   const filteredMatches = useMemo(() => {

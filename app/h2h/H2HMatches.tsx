@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Match, SortKey, SortDirection } from "@/types";
-import { getFlagFromIOC } from "@/lib/utils";
+import { getFlagFromIOC, getTourneyHref, extractUniqueSurfaces } from "@/lib/utils";
 import { useEffect, useRef, useState, useMemo } from "react";
 
 interface H2HMatchesProps {
@@ -269,13 +269,13 @@ export default function H2HMatches({
                   </td>
                   <td className="px-3 py-2">
                     <Link
-                      href={`/tournaments/${m.tourney_id}/${m.year}`}
+                      href={getTourneyHref({ id: m.tourney_id, name: m.tourney_name, year: m.year })}
                       className="text-blue-400 hover:underline"
                     >
                       {m.tourney_name}
                     </Link>
                   </td>
-                  <td className="px-3 py-2 text-center">{m.surface ?? "-"}</td>
+                  <td className="px-3 py-2 text-center">{extractUniqueSurfaces(m.surface).join(', ') || (m.surface ?? "-")}</td>
                   <td className="px-3 py-2 text-center">{m.round}</td>
                   <td className="px-3 py-2 text-center">{m.winner_rank ?? "-"}</td>
                   <td className="px-3 py-2">

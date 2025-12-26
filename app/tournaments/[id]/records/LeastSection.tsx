@@ -127,7 +127,6 @@ export default function LeastSection({ id }: { id: string }) {
 
       setModalData({ round, data: fullList });
     } catch (err) {
-      console.error(err);
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setModalLoadingRound(null);

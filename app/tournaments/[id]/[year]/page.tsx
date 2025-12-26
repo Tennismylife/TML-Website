@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import type { Match, SortKey, SortDirection } from "@/types";
 import MatchTable from "./EditionMatchesTable";
 import EditionHeader from "./EditionHeader";
@@ -32,6 +33,32 @@ export default function TournamentEditionPage(props: any) {
   // finché non ho params, non faccio fetch
   const id = resolvedParams?.id ?? "";
   const year = resolvedParams?.year ?? "";
+  const router = useRouter();
+
+  // Se l'ID è numerico, richiedi lo slug dal server e sostituisci la rotta mantenendo `year`
+  useEffect(() => {
+    if (!id || !year) return;
+    if (!/^\d+$/.test(id)) return;
+    let cancelled = false;
+    async function maybeRedirect() {
+      try {
+        const res = await fetch(`/api/tournaments/${id}/header`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const slug = data?.slug;
+        if (slug && !cancelled) {
+          const newPath = `/tournaments/${slug}/${encodeURIComponent(year)}`;
+          if (typeof window !== 'undefined' && window.location.pathname !== newPath) {
+            router.replace(newPath);
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+    maybeRedirect();
+    return () => { cancelled = true; };
+  }, [id, year, router]);
 
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);

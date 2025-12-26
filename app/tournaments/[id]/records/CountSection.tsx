@@ -91,7 +91,7 @@ export default function CountSection({ tournamentId }: { tournamentId: string })
 
       setActiveModal(sectionKey);
     } catch (err) {
-      console.error(err);
+      setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoadingModal(false);
     }

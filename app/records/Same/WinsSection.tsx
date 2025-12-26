@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Pagination from "../../../components/Pagination";
 import Modal from "@/components/Modal";
-import { getFlagFromIOC } from "@/lib/utils";
+import { getFlagFromIOC, getTourneyHref } from "@/lib/utils";
 
 interface WinsSectionProps {
   selectedSurfaces: string[];
@@ -113,7 +113,7 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.total_wins}</td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
-                  <Link href={`/tournaments/${p.tourney_id}`} className="hover:underline">{p.tourney_name}</Link>
+                  <Link href={getTourneyHref({ id: p.tourney_id, name: p.tourney_name })} className="hover:underline">{p.tourney_name}</Link>
                 </td>
               </tr>
             );

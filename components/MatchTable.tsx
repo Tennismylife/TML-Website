@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Match, SortKey, SortDirection } from "@/types";
-import { getFlagFromIOC } from "@/lib/utils";
+import { getFlagFromIOC, getTourneyHref, extractUniqueSurfaces } from "@/lib/utils";
 import { useEffect, useState, useMemo, useRef } from "react";
 
 interface MatchTableProps {
@@ -156,11 +156,11 @@ export default function MatchTable({
                 <tr key={index} className="hover:bg-gray-800/50">
                   <td className={tdBase}>{new Date(m.tourney_date as unknown as string).toLocaleDateString()}</td>
                   <td className={tdBase}>
-                    <Link href={`/tournaments/${m.tourney_id}/${m.year}`} className="text-blue-600 hover:underline">
+                    <Link href={getTourneyHref({ id: m.tourney_id, name: m.tourney_name, year: m.year })} className="text-blue-600 hover:underline">
                       {m.tourney_name}
                     </Link>
                   </td>
-                  <td className={tdBase}>{m.surface}</td>
+                  <td className={tdBase}>{extractUniqueSurfaces(m.surface).join(', ') || m.surface || "-"}</td>
                   <td className={tdBase}>{m.round}</td>
                   <td className={tdBase}>{m.winner_rank ?? "-"}</td>
                   <td className={tdBase}>

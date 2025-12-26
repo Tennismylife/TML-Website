@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
-import { getFlagFromIOC } from "@/lib/utils";
+import { getFlagFromIOC, getTourneyHref } from "@/lib/utils";
 import ModalTournamentsSeasons from "@/components/ModalTournamentsSeasons";
 
 function formatAge(age: number): string {
@@ -125,7 +125,7 @@ export default function AgeSection({ year, selectedSurfaces, selectedLevels, act
                 </td>
                 <td className="py-1 text-white">{displayAge}</td>
                 <td className="py-1 text-white">
-                  <Link href={`/tournaments/${encodeURIComponent(tourneyId)}/${p.year}`} className="text-blue-400 hover:underline">{p.tourney_name}</Link>
+                  <Link href={getTourneyHref({ id: p.tourney_id, name: p.tourney_name, year: p.year })} className="text-blue-400 hover:underline">{p.tourney_name}</Link>
                 </td>
               </tr>
             );

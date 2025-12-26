@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, Globe, ChevronDown } from "lucide-react";
 import type { Tournament as TournamentDTO, TournamentGroups } from "@/types/tournament";
 import { getSurfaceColor } from "@/lib/colors";
+import { getTourneyHref } from "@/lib/utils";
 
 const EMPTY: TournamentGroups = { grandSlams: [], masters1000: [], finals: [], olympics: [], others: [] };
 
@@ -265,7 +266,7 @@ function TournamentGroup({
                 transition={{ delay: i * 0.03 }}
               >
                 <Link
-                  href={`/tournaments/${t.id}`}
+                  href={getTourneyHref({ id: t.id })}
                   className="block px-5 py-4 hover:bg-white/5 transition"
                 >
                   <div className="flex items-center justify-between">
@@ -273,7 +274,8 @@ function TournamentGroup({
                       {Array.isArray(t.name) ? t.name[0] : t.name}
                     </span>
                     <div className="flex gap-2">
-                      {(t.surfaces || []).map(s => (
+                      {/* Surfaces (filtered to remove any indoor tokens) */}
+                      {(t.surfaces || []).filter(s => !/indoor/i.test(String(s))).map(s => (
                         <Badge
                           key={s}
                           text={s}
@@ -281,7 +283,6 @@ function TournamentGroup({
                           textColor="#000"
                         />
                       ))}
-                      {t.indoor && <Badge text="Indoor" bgColor="#444" textColor="#fff" />}
                     </div>
                   </div>
                 </Link>

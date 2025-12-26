@@ -104,7 +104,7 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
         setModalData({ title: roundTitle, list: fullRound.fullList });
       }
     } catch (err) {
-      console.error(err);
+      setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoadingRounds(prev => ({ ...prev, [roundTitle]: false }));
     }

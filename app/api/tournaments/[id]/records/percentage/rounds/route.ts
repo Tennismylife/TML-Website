@@ -13,8 +13,11 @@ export async function GET(request: NextRequest, context: any) {
     const params = await context?.params;
     const id = String(params?.id ?? '');
 
+    const tourneyIds = await (await import('@/lib/tournament')).resolveTourneyIds(id);
+    if (!tourneyIds) return NextResponse.json({ allRoundItems: [] });
+
     const matches = await prisma.match.findMany({
-      where: { tourney_id: id },
+      where: { tourney_id: { in: tourneyIds } },
       select: {
         round: true,
         winner_id: true,
@@ -83,7 +86,6 @@ export async function GET(request: NextRequest, context: any) {
 
     return NextResponse.json({ allRoundItems });
   } catch (error) {
-    console.error(error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

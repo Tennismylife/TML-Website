@@ -7,14 +7,11 @@ export async function GET(request: NextRequest, context: any) {
     const params = await context?.params;
     const id = String(params?.id ?? '');
 
-  const tournamentId = parseInt(id);
-
-  if (isNaN(tournamentId)) {
-    return NextResponse.json({ error: "ID non valido" }, { status: 400 });
+  // resolve id param (supports numeric id or slug)
+  const tourneyIds = await (await import('@/lib/tournament')).resolveTourneyIds(id);
+  if (!tourneyIds) {
+    return NextResponse.json({ error: "Tournament not found" }, { status: 404 });
   }
-    // AO 1977: due edizioni speciali
-    const tourneyIds =
-      tournamentId === 580 ? ["580", "581"] : [tournamentId.toString()];
 
     const matchSelect = {
       year: true,
@@ -49,7 +46,6 @@ export async function GET(request: NextRequest, context: any) {
 
     return NextResponse.json({ editionsData: editionsWithNumericId });
   } catch (e: any) {
-    console.error("GET /api/tournaments/[id] error:", e);
     return NextResponse.json(
       { error: e.message || "Server error" },
       { status: 500 }

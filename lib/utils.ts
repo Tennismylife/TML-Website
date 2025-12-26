@@ -166,8 +166,10 @@ export function getFlagFromIOC(ioc?: string): string {
   );
 }
 
-export function getLevelFullName(level?: string | null) {
-  const l = (level ?? "").toUpperCase();
+export function getLevelFullName(level?: any) {
+  // Support nested formats (string | string[] | object). Use first string found.
+  const s = (typeof level === 'string') ? level : (Array.isArray(level) ? level[0] : (level && typeof level === 'object' ? Object.values(level)[0] : '')) || '';
+  const l = String(s).toUpperCase();
   switch (l) {
     case "G": return "Grand Slam";
     case "M": return "Masters 1000";
@@ -175,7 +177,7 @@ export function getLevelFullName(level?: string | null) {
     case "O": return "Olympics";
     case "D": return "Davis Cup";
     case "F": return "Finals";
-    default: return level ?? "Unknown";
+    default: return s || "Unknown";
   }
 }
 
@@ -343,6 +345,42 @@ export const getTourneyLink = (tourneyId?: string) => {
     return `/tournaments/${tourneyId}`;
   };
 
+// Create a URL-friendly slug from text. Reused across the app.
+export function createSlug(text?: string | null): string {
+  if (!text) return '';
+  const s = String(text || '');
+  return s
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim()
+    .replace(/^-|-$/g, '');
+}
+
+// Build a tournament href using available info. Prefer ID for links, then fallback to slug/name.
+export function getTourneyHref({ id, name, slug, year }: { id?: string | number | null; name?: any; slug?: string | null; year?: string | number | null }) {
+  const y = year ? `/${year}` : '';
+  // Prefer ID links (always use ID when available)
+  if (id != null) {
+    const sid = String(id);
+    const parts = sid.split('-');
+    if (parts.length === 2) {
+      // legacy composite id like "2023-123" -> /tournaments/123/2023
+      const yearPart = parts[0];
+      const idPart = parts[1];
+      return `/tournaments/${idPart}/${yearPart}`;
+    }
+    return `/tournaments/${sid}${y}`;
+  }
+
+  // Fallback to explicit slug if no id
+  if (slug) return `/tournaments/${slug}${y}`;
+
+  // Do NOT create slug from name; require slug or id to build canonical links
+  return '#';
+}
+
 
   // Parse dei set a partire dallo score del match.
   // Regole:
@@ -439,3 +477,32 @@ export const getSurfaceColor = (surface: string): string => {
     default: return "#9CA3AF";      // Gray
   }
 };
+// 🧩 Estrae tutte le stringhe valide (ricorsivamente) da vari formati (string, array, object)
+export function extractNames(field: any): string[] {
+  if (!field) return [];
+  if (typeof field === 'string') return [field];
+  if (Array.isArray(field)) return field.flatMap(f => extractNames(f));
+  if (typeof field === 'object') return Object.values(field).flatMap(v => extractNames(v));
+  return [];
+}
+
+// 🧩 Estrae superfici uniche e normalizza rimuovendo token "indoor" (preserva ordine)
+export function extractUniqueSurfaces(field: any): string[] {
+  const raw = extractNames(field).map(s => (s || '').trim()).filter(Boolean);
+  const out: string[] = [];
+  const seen = new Set<string>();
+  for (const s of raw) {
+    let cleaned = String(s)
+      .replace(/\(.*indoor.*\)/i, '')
+      .replace(/\bindoor\b/ig, '')
+      .replace(/[\/\(\)\[\],]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    if (!cleaned) continue;
+    const key = cleaned.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(cleaned);
+  }
+  return out;
+}

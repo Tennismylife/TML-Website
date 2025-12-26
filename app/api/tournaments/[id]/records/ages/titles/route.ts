@@ -7,10 +7,13 @@ export async function GET(request: NextRequest, context: any) {
     const id = String(params?.id ?? '');
     const full = request.nextUrl.searchParams.get('full') === 'true';
 
+    const tourneyIds = await (await import('@/lib/tournament')).resolveTourneyIds(id);
+    if (!tourneyIds) return NextResponse.json({ error: 'Tournament not found' }, { status: 404 });
+
     // Recupera solo le finali
     const matches = await prisma.match.findMany({
       where: {
-        tourney_id: id,
+        tourney_id: { in: tourneyIds },
         round: 'F', // solo finali
         status: true,
       },
@@ -50,7 +53,6 @@ export async function GET(request: NextRequest, context: any) {
       topOldestWinners: oldestWinners.slice(0, 10),
     });
   } catch (error) {
-    console.error(error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

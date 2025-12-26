@@ -41,9 +41,12 @@ export async function GET(request: NextRequest, context: any) {
     const full = searchParams.get('full') === 'true';
     const specificRound = searchParams.get('round'); // opzionale: 'R32'|'R16'|'QF'|'SF'|'F'|'W'
 
+    const tourneyIds = await (await import('@/lib/tournament')).resolveTourneyIds(id);
+    if (!tourneyIds) return Response.json({ error: 'Tournament not found' }, { status: 404 });
+
     // Carico tutti i match del torneo (multi-anno)
     const tournamentMatches = await prisma.match.findMany({
-      where: { tourney_id: id },
+      where: { tourney_id: { in: tourneyIds } },
       select: {
         year: true,
         tourney_id: true,

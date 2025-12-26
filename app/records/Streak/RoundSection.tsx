@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getFlagFromIOC } from "@/lib/utils";
+import { getFlagFromIOC, extractUniqueSurfaces } from "@/lib/utils";
 import Modal from "@/components/Modal";
 
 interface RoundSectionProps {
@@ -157,7 +157,7 @@ export default function RoundSection({ selectedSurfaces, selectedLevels, selecte
                   <tr key={idx} className="hover:bg-gray-700 border-b border-white/10">
                     <td className="border border-white/10 px-4 py-2">{t.tourney_name}</td>
                     <td className="border border-white/10 px-4 py-2">{t.year}</td>
-                    <td className="border border-white/10 px-4 py-2">{t.surface}</td>
+                    <td className="border border-white/10 px-4 py-2">{extractUniqueSurfaces(t.surface).join(', ') || t.surface}</td>
                     <td className="border border-white/10 px-4 py-2">{t.tourney_level}</td>
                   </tr>
                 ))}

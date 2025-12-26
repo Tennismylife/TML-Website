@@ -14,7 +14,7 @@ import RoundsSection from "./RoundsSection";
 import TournamentHeader from "../TournamentHeader";
 import TournamentTabs from "./TournamentTabs";
 
-export default function TournamentPage({ params }: { params: Promise<{ id: string }> }) {
+export default function RecordsPageClient({ params }: { params: Promise<{ id: string }> } ) {
   const { id } = use(params);
   const tournamentId = Number(id);
 

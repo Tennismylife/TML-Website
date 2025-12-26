@@ -2,7 +2,7 @@
 
 import React, { useRef } from "react";
 import Link from "next/link";
-import { getFlagFromIOC, getLevelFullName } from "@/lib/utils";
+import { getFlagFromIOC, getLevelFullName, getTourneyHref, extractUniqueSurfaces } from "@/lib/utils";
 import { getSurfaceColor, getLevelColor } from "@/lib/colors";
 
 interface TourneyTile {
@@ -40,12 +40,14 @@ export default function TourneyCard({ tourney }: { tourney: TourneyTile }) {
     }
   };
 
-  const surfaceColor = getSurfaceColor(tourney.surface ?? "");
+  const surfaces = extractUniqueSurfaces(tourney.surface);
+  const displaySurface = surfaces.length ? surfaces[0] : (tourney.surface ?? 'Unknown');
+  const surfaceColor = getSurfaceColor(displaySurface ?? "");
   const levelColor = getLevelColor(tourney.level ?? "");
 
   return (
     <Link
-      href={`/tournaments/${tourney.extractedId}/${new Date(tourney.date).getFullYear()}`}
+      href={getTourneyHref({ id: tourney.extractedId, name: tourney.name, year: new Date(tourney.date).getFullYear() })}
       aria-label={`View details for ${tourney.name} tournament`}
       className="group"
     >
@@ -72,7 +74,7 @@ export default function TourneyCard({ tourney }: { tourney: TourneyTile }) {
               className="text-xs px-2 py-0.5 rounded font-semibold"
               style={{ backgroundColor: surfaceColor, color: "#FFFFFF" }}
             >
-              {tourney.surface ?? "Unknown"}
+              {displaySurface ?? "Unknown"}
             </span>
             <span className="text-xs px-2 py-0.5 rounded font-medium bg-gray-600 text-white">
               {tourney.draw_size}

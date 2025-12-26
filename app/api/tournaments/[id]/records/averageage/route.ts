@@ -8,10 +8,13 @@ export async function GET(request: NextRequest, context: any) {
     // support both Next.js versions where params can be a Promise or an object
     const params = await context?.params;
     const id = String(params?.id ?? '');
+
+    const tourneyIds = await (await import('@/lib/tournament')).resolveTourneyIds(id);
+    if (!tourneyIds) return NextResponse.json({ error: 'Tournament not found' }, { status: 404 });
     
     // Fetch all matches for the tournament
     const matches = await prisma.match.findMany({
-      where: { tourney_id: id },
+      where: { tourney_id: { in: tourneyIds } },
       select: {
         year: true,
         winner_age: true,
@@ -44,7 +47,6 @@ export async function GET(request: NextRequest, context: any) {
 
     return NextResponse.json({ chartData, overallAverage });
   } catch (error) {
-    console.error('Error fetching average age data:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

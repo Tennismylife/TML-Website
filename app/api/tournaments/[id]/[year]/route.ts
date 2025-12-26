@@ -18,18 +18,19 @@ export async function GET(request: NextRequest, context: any) {
   const yearRaw = String(params?.year ?? "");
   const year = Number.parseInt(yearRaw, 10);
 
-  const tournamentId = parseInt(id);
-
-  if (isNaN(tournamentId) || isNaN(year)) {
+  if (isNaN(year)) {
     return Response.json({ error: 'Invalid params' }, { status: 400 });
   }
 
-  const tourneyIdStr = String(id);
+  // resolve id param (supports numeric id or slug)
+  const tourneyIds = await (await import('@/lib/tournament')).resolveTourneyIds(id);
+  if (!tourneyIds) return Response.json({ error: 'Tournament not found' }, { status: 404 });
+
   const yearNum = Number(year);
 
   const matches = await prisma.match.findMany({
     where: { 
-      tourney_id: tourneyIdStr,
+      tourney_id: { in: tourneyIds },
       year: yearNum,
     },
   });

@@ -7,9 +7,12 @@ export async function GET(request: NextRequest, context: any) {
     const params = await context?.params;
     const id = String(params?.id ?? '');
 
+    const tourneyIds = await (await import('@/lib/tournament')).resolveTourneyIds(id);
+    if (!tourneyIds) return NextResponse.json({ error: 'Tournament not found' }, { status: 404 });
+
     // Trova tutte le partite del torneo
     const tournamentMatches = await prisma.match.findMany({
-      where: { tourney_id: id },
+      where: { tourney_id: { in: tourneyIds } },
       select: {
         year: true,
         round: true,

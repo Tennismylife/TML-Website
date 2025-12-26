@@ -12,17 +12,20 @@ export async function GET(request: NextRequest, context: any) {
     const params = await context?.params;
     const id = String(params?.id ?? '');
 
+    const tourneyIds = await (await import('@/lib/tournament')).resolveTourneyIds(id);
+    if (!tourneyIds) return NextResponse.json({ sortedOverall: [] });
+
     // Conteggio vittorie
     const winners = await prisma.match.groupBy({
       by: ['winner_id', 'winner_name', 'winner_ioc'],
-      where: { tourney_id: id },
+      where: { tourney_id: { in: tourneyIds } },
       _count: { winner_id: true },
     });
 
     // Conteggio sconfitte
     const losers = await prisma.match.groupBy({
       by: ['loser_id', 'loser_name', 'loser_ioc'],
-      where: { tourney_id: id },
+      where: { tourney_id: { in: tourneyIds } },
       _count: { loser_id: true },
     });
 
@@ -62,7 +65,6 @@ export async function GET(request: NextRequest, context: any) {
 
     return NextResponse.json({ sortedOverall });
   } catch (error) {
-    console.error(error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

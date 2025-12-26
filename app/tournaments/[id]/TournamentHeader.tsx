@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {getLevelFullName} from "@/lib/utils";
+import {getLevelFullName, extractUniqueSurfaces} from "@/lib/utils";
 import {
   getSurfaceColor,
   getLevelColor,
@@ -9,7 +9,7 @@ import {
 } from "@/lib/colors";
 
 interface TournamentHeaderProps {
-  id: number;
+  id?: number;
 }
 
 interface TournamentData {
@@ -52,7 +52,7 @@ export default function TournamentHeader({ id }: TournamentHeaderProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id) return;
+    if (typeof id === 'undefined' || id === null) return;
     const controller = new AbortController();
 
     const fetchHeader = async () => {
@@ -99,10 +99,8 @@ export default function TournamentHeader({ id }: TournamentHeaderProps) {
     ? [tournament.category]
     : [];
 
-  // Superfici
-  const surfaces = Array.isArray(tournament.surfaces)
-    ? tournament.surfaces
-    : [tournament.surfaces || "Unknown"];
+  // Superfici (normalize and remove any 'indoor' tokens)
+  const surfaces = extractUniqueSurfaces(tournament.surfaces);
 
   // Edizioni
   const editionRanges =

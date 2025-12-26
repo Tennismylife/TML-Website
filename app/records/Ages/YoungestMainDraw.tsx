@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { getFlagFromIOC } from "@/lib/utils";
+import { getFlagFromIOC, getTourneyHref } from "@/lib/utils";
 import { playerMatchesUrl } from "../nav";
 import Pagination from "../../../components/Pagination";
 import Modal from "@/components/Modal";
@@ -116,7 +116,7 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{formatAge(p.age)}</td>
                 <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
-                  <Link href={`/tournaments/${encodeURIComponent(tourneyId)}/${year}`} className="text-indigo-300 hover:underline">
+                  <Link href={getTourneyHref({ id: p.tourney_id, name: p.tourney_name, year })} className="text-indigo-300 hover:underline">
                     {p.tourney_name} {year}
                   </Link>
                 </td>

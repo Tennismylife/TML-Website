@@ -12,9 +12,12 @@ export async function GET(
     const fullRequested = url.searchParams.get('full') === 'true';
     const requestedRound = url.searchParams.get('round'); // es. "R16"
 
+    const tourneyIds = await (await import('@/lib/tournament')).resolveTourneyIds(String(id));
+    if (!tourneyIds) return NextResponse.json({ roundItems: [] });
+
     // Recupera tutte le partite del torneo
     const matches = await prisma.match.findMany({
-      where: { tourney_id: id },
+      where: { tourney_id: { in: tourneyIds } },
       select: {
         round: true,
         winner_id: true,
@@ -105,7 +108,6 @@ export async function GET(
 
     return NextResponse.json({ roundItems });
   } catch (error) {
-    console.error('Error fetching rounds records:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

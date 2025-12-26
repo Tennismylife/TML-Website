@@ -18,7 +18,7 @@ export async function generateMetadata({ params, searchParams }: any): Promise<M
   let player = null;
   if (!slugParam.includes('-')) {
     player = await prisma.player.findUnique({
-      where: { id: slugParam },
+      where: { id: String(slugParam) },
       select: { id: true, player: true, atpname: true, slug: true },
     });
   } else {
@@ -63,7 +63,7 @@ export default async function PlayerPage({ params, searchParams }: any) {
   let player = null;
   if (!slugParam.includes('-')) {
     player = await prisma.player.findUnique({
-      where: { id: slugParam },
+      where: { id: String(slugParam) },
       select: { id: true, player: true, atpname: true, slug: true },
     });
     if (player) {

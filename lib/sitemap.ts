@@ -1,51 +1,22 @@
 ﻿import { prisma } from './prisma';
 
-// Function to create URL-friendly slug from text
-function createSlug(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .replace(/-+/g, '-') // Replace multiple hyphens with single
-    .trim()
-    .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
-}
-
-// Function to extract name from Json field
-function extractName(nameField: any): string {
-  if (typeof nameField === 'string') return nameField;
-  if (nameField && typeof nameField === 'object') {
-    // Try to get English name first, then any available name
-    return nameField.en || nameField.default || Object.values(nameField)[0] || '';
-  }
-  return '';
-}
-
 export async function generateSitemapXml() {
   const base = process.env.SITE_URL || 'https://stats.tennismylife.org';
 
   // Static routes
   const staticRoutes = ['/', '/records', '/ranking', '/players', '/tournaments', '/h2h', '/player-vs-player', '/statistics', '/seasons', '/forecasts', '/rankingtables'];
 
-  // Dynamic routes for players - use slugs instead of IDs
-  const players = await prisma.player.findMany({
-    select: { id: true, player: true, atpname: true },
-  });
-  const playerUrls = players.map(p => {
-    const name = p.atpname || p.player || p.id;
-    const slug = createSlug(name);
-    return `/players/${slug}`;
-  });
+  // Dynamic routes for players - include only those with DB slug
+  const players = await prisma.player.findMany({ select: { id: true, player: true, atpname: true, slug: true } });
+  const playerUrls = players
+    .filter(p => !!p.slug)
+    .map(p => `/players/${p.slug}`);
 
-  // Dynamic routes for tournaments - use slugs instead of IDs
-  const tournaments = await prisma.tournament.findMany({
-    select: { id: true, name: true },
-  });
-  const tournamentUrls = tournaments.map(t => {
-    const name = extractName(t.name) || `tournament-${t.id}`;
-    const slug = createSlug(name);
-    return `/tournaments/${slug}`;
-  });
+  // Dynamic routes for tournaments - include only those with DB slug
+  const tournaments = await prisma.tournament.findMany({ select: { id: true, name: true, slug: true } });
+  const tournamentUrls = tournaments
+    .filter(t => !!t.slug)
+    .map(t => `/tournaments/${t.slug}`);
 
   // Combine all routes
   const allRoutes = [...staticRoutes, ...playerUrls, ...tournamentUrls];
@@ -58,22 +29,18 @@ export async function getSitemapUrls() {
   const staticRoutes = ['/', '/records', '/ranking', '/players', '/tournaments', '/h2h', '/player-vs-player', '/statistics', '/seasons', '/forecasts', '/rankingtables'];
 
   const players = await prisma.player.findMany({
-    select: { id: true, player: true, atpname: true },
+    select: { id: true, player: true, atpname: true, slug: true },
   });
-  const playerUrls = players.map(p => {
-    const name = p.atpname || p.player || p.id;
-    const slug = createSlug(name);
-    return `/players/${slug}`;
-  });
+  const playerUrls = players
+    .filter(p => !!p.slug)
+    .map(p => `/players/${p.slug}`);
 
   const tournaments = await prisma.tournament.findMany({
-    select: { id: true, name: true },
+    select: { id: true, name: true, slug: true },
   });
-  const tournamentUrls = tournaments.map(t => {
-    const name = extractName(t.name) || `tournament-${t.id}`;
-    const slug = createSlug(name);
-    return `/tournaments/${slug}`;
-  });
+  const tournamentUrls = tournaments
+    .filter(t => !!t.slug)
+    .map(t => `/tournaments/${t.slug}`);
 
   return [...staticRoutes, ...playerUrls, ...tournamentUrls];
 }

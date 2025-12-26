@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { Row, sortRows, getCategoryStyle, normalizeCategory, SortConfig } from "./rankingUtils";
 import { useRouter } from "next/navigation";
+import { getTourneyHref } from "@/lib/utils";
 
 interface RankingTableProps {
   rows: Row[];
@@ -81,7 +82,7 @@ export default function RankingTable({
               // Append the row index to guarantee uniqueness while keeping the key mostly stable
               const key = `t-${tourneyPart}-${r.year}-${safeTournament}-${r.tourney_date ?? "nodate"}-${idx}`;
               const href = r.tourney_id
-                ? `/tournaments/${r.tourney_id}/${r.year}`
+                ? getTourneyHref({ id: r.tourney_id, year: r.year })
                 : undefined;
 
               const clickable = Boolean(href);

@@ -32,7 +32,7 @@ export default function AverageAgeSection({ id }: { id: string }) {
         if (json.error) throw new Error(json.error);
         setData(json);
       })
-      .catch(console.error)
+      .catch(() => { /* ignore fetch error for UI */ })
       .finally(() => setLoading(false));
   }, [id]);
 

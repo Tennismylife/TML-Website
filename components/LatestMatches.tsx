@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { getFlagFromIOC } from "@/lib/utils";
+import { getFlagFromIOC, getTourneyHref } from "@/lib/utils";
 
 interface Match {
   id: string | number;
@@ -118,14 +118,12 @@ export default function LatestMatches() {
                       <td className="border border-white/10 px-3 py-1.5 text-gray-200">
                         {m.tourney_name ? (
                           tourneyId ? (
-                            <a
-                              href={`/tournaments/${encodeURIComponent(
-                                tourneyId
-                              )}/${m.year}`}
+                            <Link
+                              href={getTourneyHref({ id: tourneyId, name: m.tourney_name, year: m.year })}
                               className="text-indigo-300 hover:underline"
                             >
                               {m.tourney_name}
-                            </a>
+                            </Link>
                           ) : (
                             m.tourney_name
                           )

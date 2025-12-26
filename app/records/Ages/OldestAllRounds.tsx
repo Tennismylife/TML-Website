@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getFlagFromIOC } from "@/lib/utils";
+import { getFlagFromIOC, getTourneyHref } from "@/lib/utils";
 import Pagination from '../../../components/Pagination';
 import Modal from "@/components/Modal";
 
@@ -85,7 +85,7 @@ export default function OldestAllRounds({ selectedSurfaces, selectedLevels, fetc
                 </td>
                 <td className="border border-gray-700 px-4 py-2 text-center">{formatAge(p.age)}</td>
                 <td className="border border-gray-700 px-4 py-2">
-                  <Link href={`/tournaments/${encodeURIComponent(tourneyId)}/${p.year}`} className="text-blue-400 hover:underline">
+                  <Link href={getTourneyHref({ id: p.tourney_id, name: p.tourney_name, year: p.year })} className="text-blue-400 hover:underline">
                     {p.tourney_name} {p.year}
                   </Link>
                 </td>
@@ -179,7 +179,7 @@ export default function OldestAllRounds({ selectedSurfaces, selectedLevels, fetc
                       </td>
                       <td className="border border-gray-700 px-4 py-2 text-center">{formatAge(p.age)}</td>
                       <td className="border border-gray-700 px-4 py-2">
-                        <Link href={`/tournaments/${encodeURIComponent(tourneyId)}/${p.year}`} className="text-blue-400 hover:underline">
+                        <Link href={getTourneyHref({ id: p.tourney_id, name: p.tourney_name, year: p.year })} className="text-blue-400 hover:underline">
                           {p.tourney_name} {p.year}
                         </Link>
                       </td>
