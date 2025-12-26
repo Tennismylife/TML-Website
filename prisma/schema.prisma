@@ -12,6 +12,7 @@ model Player {
   id         String    @id @default(cuid())
   player     String
   atpname    String?
+  slug       String    @unique          // ? aggiunto
   birthdate  DateTime?
   weight     Int?
   height     Int?
@@ -28,6 +29,7 @@ model Player {
   tournaments PlayerTournament[]
   rankings   Ranking[]
 }
+
 
 model Match {
   id                 Int       @id

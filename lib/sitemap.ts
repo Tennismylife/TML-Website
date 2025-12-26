@@ -1,4 +1,4 @@
-﻿﻿import { prisma } from './prisma';
+﻿import { prisma } from './prisma';
 
 // Function to create URL-friendly slug from text
 function createSlug(text: string): string {
@@ -50,7 +50,7 @@ export async function generateSitemapXml() {
   // Combine all routes
   const allRoutes = [...staticRoutes, ...playerUrls, ...tournamentUrls];
 
-  const urls = allRoutes.map((p) => `  <url><loc>${base}${p}</loc><changefreq>weekly</changefreq></url>`).join('\n');
+  const urls = allRoutes.map((p) => `  <url><loc>${base}${p}</loc><changefreq>daily</changefreq></url>`).join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`;
 }
 
