@@ -1,4 +1,4 @@
-﻿import { prisma } from './prisma';
+﻿﻿import { prisma } from './prisma';
 
 // Function to create URL-friendly slug from text
 function createSlug(text: string): string {
@@ -30,7 +30,6 @@ export async function generateSitemapXml() {
   // Dynamic routes for players - use slugs instead of IDs
   const players = await prisma.player.findMany({
     select: { id: true, player: true, atpname: true },
-    take: 1000, // Limit to avoid huge sitemap
   });
   const playerUrls = players.map(p => {
     const name = p.atpname || p.player || p.id;
@@ -41,7 +40,6 @@ export async function generateSitemapXml() {
   // Dynamic routes for tournaments - use slugs instead of IDs
   const tournaments = await prisma.tournament.findMany({
     select: { id: true, name: true },
-    take: 500, // Limit
   });
   const tournamentUrls = tournaments.map(t => {
     const name = extractName(t.name) || `tournament-${t.id}`;
@@ -61,7 +59,6 @@ export async function getSitemapUrls() {
 
   const players = await prisma.player.findMany({
     select: { id: true, player: true, atpname: true },
-    take: 1000,
   });
   const playerUrls = players.map(p => {
     const name = p.atpname || p.player || p.id;
@@ -71,7 +68,6 @@ export async function getSitemapUrls() {
 
   const tournaments = await prisma.tournament.findMany({
     select: { id: true, name: true },
-    take: 500,
   });
   const tournamentUrls = tournaments.map(t => {
     const name = extractName(t.name) || `tournament-${t.id}`;
