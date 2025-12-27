@@ -59,6 +59,64 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
     fetchTop10();
   }, [tournamentId]);
 
+  // detect mobile (tailwind md breakpoint ~768px)
+  useEffect(() => {
+    const m = window.matchMedia('(max-width: 767.98px)');
+    const handler = (e: MediaQueryListEvent | MediaQueryList) => setIsMobile((e as MediaQueryListEvent).matches ?? (e as MediaQueryList).matches);
+    setIsMobile(m.matches);
+    m.addEventListener('change', handler as any);
+    return () => m.removeEventListener('change', handler as any);
+  }, []);
+
+  // IntersectionObserver: when sentinel enters viewport on mobile, load more rows (fetch full list if needed)
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(async entry => {
+        if (!entry.isIntersecting) return;
+        const round = (entry.target as HTMLElement).dataset.round;
+        if (!round) return;
+        // prevent concurrent fetches
+        if (loadingRounds[round]) return;
+
+        const roundItem = roundItems.find(r => r.title === round);
+        if (!roundItem) return;
+
+        const current = visibleCounts[round] ?? 10;
+
+        if (roundItem.fullList?.length) {
+          const max = roundItem.fullList.length;
+          const next = Math.min(current + 10, max);
+          if (next > current) setVisibleCounts(prev => ({ ...prev, [round]: next }));
+        } else {
+          // fetch full list lazily
+          setLoadingRounds(prev => ({ ...prev, [round]: true }));
+          try {
+            const res = await fetch(`/api/tournaments/${tournamentId}/records/rounds?round=${encodeURIComponent(round)}&full=true`);
+            if (!res.ok) throw new Error('Failed to fetch full round');
+            const data = await res.json();
+            const fullRound = data.roundItems?.[0];
+            if (fullRound) {
+              setRoundItems(prev => prev.map(r => r.title === round ? { ...r, fullList: fullRound.fullList } : r));
+              const max = fullRound.fullList.length;
+              const next = Math.min(current + 10, max);
+              setVisibleCounts(prev => ({ ...prev, [round]: next }));
+            }
+          } catch (err) {
+            setError(err instanceof Error ? err.message : 'Unknown error');
+          } finally {
+            setLoadingRounds(prev => ({ ...prev, [round]: false }));
+          }
+        }
+      });
+    }, { rootMargin: '200px' });
+
+    const sentinels = Array.from(document.querySelectorAll<HTMLElement>('.round-sentinel'));
+    sentinels.forEach(s => observer.observe(s));
+    return () => observer.disconnect();
+  }, [isMobile, roundItems, visibleCounts, loadingRounds, tournamentId]);
+
   if (loading) return <div className="text-white">Loading...</div>;
   if (error) return <div className="text-white">Error: {error}</div>;
 
@@ -121,63 +179,7 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
     }
   };
 
-  // detect mobile (tailwind md breakpoint ~768px)
-  useEffect(() => {
-    const m = window.matchMedia('(max-width: 767.98px)');
-    const handler = (e: MediaQueryListEvent | MediaQueryList) => setIsMobile((e as MediaQueryListEvent).matches ?? (e as MediaQueryList).matches);
-    setIsMobile(m.matches);
-    m.addEventListener('change', handler as any);
-    return () => m.removeEventListener('change', handler as any);
-  }, []);
 
-  // IntersectionObserver: when sentinel enters viewport on mobile, load more rows (fetch full list if needed)
-  useEffect(() => {
-    if (!isMobile) return;
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(async entry => {
-        if (!entry.isIntersecting) return;
-        const round = (entry.target as HTMLElement).dataset.round;
-        if (!round) return;
-        // prevent concurrent fetches
-        if (loadingRounds[round]) return;
-
-        const roundItem = roundItems.find(r => r.title === round);
-        if (!roundItem) return;
-
-        const current = visibleCounts[round] ?? 10;
-
-        if (roundItem.fullList?.length) {
-          const max = roundItem.fullList.length;
-          const next = Math.min(current + 10, max);
-          if (next > current) setVisibleCounts(prev => ({ ...prev, [round]: next }));
-        } else {
-          // fetch full list lazily
-          setLoadingRounds(prev => ({ ...prev, [round]: true }));
-          try {
-            const res = await fetch(`/api/tournaments/${tournamentId}/records/rounds?round=${encodeURIComponent(round)}&full=true`);
-            if (!res.ok) throw new Error('Failed to fetch full round');
-            const data = await res.json();
-            const fullRound = data.roundItems?.[0];
-            if (fullRound) {
-              setRoundItems(prev => prev.map(r => r.title === round ? { ...r, fullList: fullRound.fullList } : r));
-              const max = fullRound.fullList.length;
-              const next = Math.min(current + 10, max);
-              setVisibleCounts(prev => ({ ...prev, [round]: next }));
-            }
-          } catch (err) {
-            setError(err instanceof Error ? err.message : 'Unknown error');
-          } finally {
-            setLoadingRounds(prev => ({ ...prev, [round]: false }));
-          }
-        }
-      });
-    }, { rootMargin: '200px' });
-
-    const sentinels = Array.from(document.querySelectorAll<HTMLElement>('.round-sentinel'));
-    sentinels.forEach(s => observer.observe(s));
-    return () => observer.disconnect();
-  }, [isMobile, roundItems, visibleCounts, loadingRounds, tournamentId]);
 
   const cardStyle = {
     backgroundColor: 'rgba(31,41,55,0.95)',
