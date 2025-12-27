@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
@@ -29,6 +29,7 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
   // how many round cards to show (initially 1 on mobile, all on desktop)
   const [visibleCards, setVisibleCards] = useState<number>(1);
   const [isMobile, setIsMobile] = useState<boolean>(false);
+  const isLoadingMoreRef = useRef<boolean>(false);
 
   // ─── Primo fetch: top10 per round ───
   useEffect(() => {
@@ -77,13 +78,23 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
     if (!isMobile) return;
     if (visibleCards >= roundItems.length) return;
 
-    const observer = new IntersectionObserver((entries) => {
+    const observer = new IntersectionObserver((entries, obs) => {
       entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          setVisibleCards(prev => Math.min(prev + 1, roundItems.length));
-        }
+        if (!entry.isIntersecting) return;
+        // prevent rapid repeat triggers
+        if (isLoadingMoreRef.current) return;
+        isLoadingMoreRef.current = true;
+
+        // unobserve the current sentinel to avoid multiple callbacks before DOM updates
+        try { obs.unobserve(entry.target); } catch (e) { /* no-op */ }
+
+        // reveal next card
+        setVisibleCards(prev => Math.min(prev + 1, roundItems.length));
+
+        // allow next increment after a short delay to avoid jank
+        setTimeout(() => { isLoadingMoreRef.current = false; }, 250);
       });
-    }, { rootMargin: '200px' });
+    }, { rootMargin: '200px', threshold: 0.1 });
 
     const sentinel = document.querySelector('.cards-sentinel');
     if (sentinel) observer.observe(sentinel);
