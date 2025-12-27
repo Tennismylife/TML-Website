@@ -145,7 +145,7 @@ export default function TimespanSection({ id }: { id: string }) {
   if (!timespanData) return <div className="text-white text-center py-10">No data available</div>;
 
   return (
-    <section className="rounded border p-4" style={cardStyle}>
+    <div>
       <h3 className="font-medium mb-4 text-white">Longest Timespan per Round</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -185,6 +185,6 @@ export default function TimespanSection({ id }: { id: string }) {
           <PlayerTable data={modalData.list} />
         </ModalTournamentsSeasons>
       )}
-    </section>
+    </div>
   );
 }

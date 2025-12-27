@@ -102,15 +102,15 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
 
   const renderTable = (data: PlayerStatAge[], showYear = true) => (    <table className="w-full text-sm border-collapse table-fixed">
       <colgroup>
-        <col style={{ width: '60%' }} />
-        <col style={{ width: showYear ? '20%' : '40%' }} />
-        {showYear && <col style={{ width: '20%' }} />}
+        <col style={{ width: 'var(--col-1)' }} />
+        <col style={{ width: showYear ? 'var(--col-2)' : 'var(--col-2-alt)' }} />
+        {showYear && <col style={{ width: 'var(--col-3)' }} />}
       </colgroup>
-      <thead>
+      <thead className="bg-gray-900">
         <tr className="border-b border-gray-600">
           <th className="text-left py-1 text-white">Player</th>
-          <th className="text-left py-1 text-white">Age</th>
-          {showYear && <th className="text-left py-1 text-white">Year</th>}
+          <th className="text-right py-1 text-white whitespace-nowrap">Age</th>
+          {showYear && <th className="text-right py-1 text-white whitespace-nowrap">Year</th>}
         </tr>
       </thead>
       <tbody>
@@ -145,40 +145,48 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
     const rightTitle = activeSubTab === 'main' ? "Oldest Players" : "Oldest Winners";
 
     return (
-      <section className="rounded border p-4 grid md:grid-cols-2 gap-4" style={cardStyle}>
-        <div className="border rounded p-4" style={cardStyle}>
-          <h3 className="text-white font-medium mb-2">{leftTitle}</h3>
-          {renderTable(leftData || [])}
-          <button onClick={() => handleViewAll(activeSubTab === 'main' ? 'topYoungest' : 'topYoungestWinners')} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">View All</button>
+      <div className="grid md:grid-cols-2 gap-4" style={{ ['--col-1' as any]: '60%', ['--col-2' as any]: '20%', ['--col-2-alt' as any]: '40%', ['--col-3' as any]: '20%' }}>
+        <div className="p-1 border border-gray-700 bg-gray-800 rounded">
+          <div className="p-3">
+            <h3 className="text-white font-medium mb-2">{leftTitle}</h3>
+            {renderTable(leftData || [])}
+            <button onClick={() => handleViewAll(activeSubTab === 'main' ? 'topYoungest' : 'topYoungestWinners')} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">View All</button>
+          </div>
         </div>
-        <div className="border rounded p-4" style={cardStyle}>
-          <h3 className="text-white font-medium mb-2">{rightTitle}</h3>
-          {renderTable(rightData || [])}
-          <button onClick={() => handleViewAll(activeSubTab === 'main' ? 'topOldest' : 'topOldestWinners')} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">View All</button>
+
+        <div className="p-1 border border-gray-700 bg-gray-800 rounded">
+          <div className="p-3">
+            <h3 className="text-white font-medium mb-2">{rightTitle}</h3>
+            {renderTable(rightData || [])}
+            <button onClick={() => handleViewAll(activeSubTab === 'main' ? 'topOldest' : 'topOldestWinners')} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">View All</button>
+          </div>
         </div>
+
         {modalData && <ModalTournamentsSeasons title={modalData.title} onClose={() => setModalData(null)}>{renderTable(modalData.list)}</ModalTournamentsSeasons>}
-      </section>
+      </div>
     );
   }
 
   // --- Rounds ---
   return (
-    <section className="rounded border p-4" style={cardStyle}>
+    <div>
       <h3 className="text-white font-bold mb-4 text-lg">
         {activeSubTab === 'youngestrounds' ? 'Youngest per Round' : 'Oldest per Round'}
       </h3>
 
       <div className="grid md:grid-cols-2 gap-4">
         {visibleItems.map(item => (
-          <div key={item.title} className="border rounded p-4" style={cardStyle}>
-            <h4 className="text-white font-medium mb-2">{item.title}</h4>
-            {renderTable(item.list)}
-            <button
-              onClick={() => handleViewAll(activeSubTab === 'youngestrounds' ? 'allYoungestItems' : 'allOldestItems', item.title)}
-              className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
-            >
-              View All
-            </button>
+          <div key={item.title} className="p-1 border border-gray-700 bg-gray-800 rounded" style={{ ['--col-1' as any]: '60%', ['--col-2' as any]: '20%', ['--col-2-alt' as any]: '40%', ['--col-3' as any]: '20%' }}>
+            <div className="p-3">
+              <h4 className="text-white font-medium mb-2">{item.title}</h4>
+              {renderTable(item.list)}
+              <button
+                onClick={() => handleViewAll(activeSubTab === 'youngestrounds' ? 'allYoungestItems' : 'allOldestItems', item.title)}
+                className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+              >
+                View All
+              </button>
+            </div>
           </div>
         ))}
 
@@ -188,6 +196,6 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
       </div>
 
       {modalData && <ModalTournamentsSeasons title={modalData.title} onClose={() => setModalData(null)}>{renderTable(modalData.list)}</ModalTournamentsSeasons>}
-    </section>
+    </div>
   );
 }

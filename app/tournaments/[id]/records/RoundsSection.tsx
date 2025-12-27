@@ -242,7 +242,7 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
   };
 
   return (
-    <section className="rounded border p-4" style={cardStyle}>
+    <div>
       <h3 className="font-medium mb-4 text-white">Reaches per Round</h3>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {roundItems.slice(0, visibleCards).map((item) => (
@@ -260,6 +260,6 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
           {renderTable(modalData.list, 'Reaches')}
         </ModalTournamentsSeasons>
       )}
-    </section>
+    </div>
   );
 }

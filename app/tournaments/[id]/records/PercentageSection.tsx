@@ -98,17 +98,17 @@ export default function PercentageSection({ id, activeSubTab }: { id: string; ac
   const PlayerTable = ({ data }: { data: PlayerPercentage[] }) => (
     <table className="w-full text-sm border-collapse table-fixed">
       <colgroup>
-        <col style={{ width: '40%' }} />
-        <col style={{ width: '20%' }} />
-        <col style={{ width: '20%' }} />
-        <col style={{ width: '20%' }} />
+        <col style={{ width: 'var(--pcol-1)' }} />
+        <col style={{ width: 'var(--pcol-2)' }} />
+        <col style={{ width: 'var(--pcol-3)' }} />
+        <col style={{ width: 'var(--pcol-4)' }} />
       </colgroup>
-      <thead>
+      <thead className="bg-gray-900">
         <tr className="border-b border-gray-600">
           <th className="text-left py-1 text-white">Player</th>
-          <th className="text-left py-1 text-white">Wins</th>
-          <th className="text-left py-1 text-white">Losses</th>
-          <th className="text-left py-1 text-white">Percentage</th>
+          <th className="text-right py-1 text-white whitespace-nowrap">Wins</th>
+          <th className="text-right py-1 text-white whitespace-nowrap">Losses</th>
+          <th className="text-right py-1 text-white whitespace-nowrap">Percentage</th>
         </tr>
       </thead>
       <tbody>
@@ -140,48 +140,47 @@ export default function PercentageSection({ id, activeSubTab }: { id: string; ac
   const cardStyle = { backgroundColor: 'rgba(31,41,55,0.95)', backdropFilter: 'blur(4px)' };
 
   return (
-    <section className="rounded border p-4" style={cardStyle}>
+    <div>
       {activeSubTab === 'overall' ? (
-        <div className="border rounded p-4" style={cardStyle}>
-          <h3 className="font-medium mb-2 text-white">Overall Win Percentage</h3>
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1 text-white">Minimum Matches: {minMatchesOverall}</label>
-            <input type="range" min="1" max="50" value={minMatchesOverall} onChange={e => setMinMatchesOverall(Number(e.target.value))} className="w-full" />
+        <div className="p-1 border border-gray-700 bg-gray-800 rounded">
+          <div className="p-3">
+            <h3 className="font-medium mb-2 text-white">Overall Win Percentage</h3>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1 text-white">Minimum Matches: {minMatchesOverall}</label>
+              <input type="range" min="1" max="50" value={minMatchesOverall} onChange={e => setMinMatchesOverall(Number(e.target.value))} className="w-full" />
+            </div>
+            {topOverall.length > 0 ? (
+              <>
+                <PlayerTable data={topOverall} />
+                <button onClick={() => handleViewAll(filteredOverall, 'Overall Win Percentage')} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">View All</button>
+              </>
+            ) : (<p className="text-gray-400">No data available.</p>)}
           </div>
-          {topOverall.length > 0 ? (
-            <>
-              <PlayerTable data={topOverall} />
-              <button onClick={() => handleViewAll(filteredOverall, 'Overall Win Percentage')} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">View All</button>
-            </>
-          ) : (<p className="text-gray-400">No data available.</p>)}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {visibleRoundItems.map(item => (
-            <div key={item.title} className="border rounded p-4" style={cardStyle}>
-              <div className="mb-3">
-                <label className="block text-sm font-medium mb-1 text-white">
-                  Minimum Matches ({item.title}): {item.minMatches}
-                </label>
-                <input type="range" min="1" max="50" value={item.minMatches} onChange={e => handleMinMatchesChange(item.title, Number(e.target.value))} className="w-full" />
+            <div key={item.title} className="p-1 border border-gray-700 bg-gray-800 rounded" style={{ ['--pcol-1' as any]: '40%', ['--pcol-2' as any]: '20%', ['--pcol-3' as any]: '20%', ['--pcol-4' as any]: '20%' }}>
+              <div className="p-3">
+                <div className="mb-3">
+                  <label className="block text-sm font-medium mb-1 text-white">
+                    Minimum Matches ({item.title}): {item.minMatches}
+                  </label>
+                  <input type="range" min="1" max="50" value={item.minMatches} onChange={e => handleMinMatchesChange(item.title, Number(e.target.value))} className="w-full" />
+                </div>
+
+                <h4 className="font-medium mb-2 text-white">{item.title}</h4>
+                <PlayerTable data={item.list} />
+
+                <button onClick={() => handleViewAll(item.fullFilteredList, item.title)} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">
+                  View All
+                </button>
               </div>
-
-              <h4 className="font-medium mb-2 text-white">{item.title}</h4>
-              <PlayerTable data={item.list} />
-
-              <button onClick={() => handleViewAll(item.fullFilteredList, item.title)} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">
-                View All
-              </button>
             </div>
           ))}
-
           {isMobile && visibleCount < updatedRoundItems.length && (
             <div ref={sentinelRef} className="cards-sentinel h-4" />
           )}
-
-        {isMobile && visibleCount < updatedRoundItems.length && (
-          <div ref={sentinelRef} className="cards-sentinel h-4" />
-        )}
         </div>
       )}
 
@@ -191,6 +190,6 @@ export default function PercentageSection({ id, activeSubTab }: { id: string; ac
           <PlayerTable data={modalData.list} />
         </ModalTournamentsSeasons>
       )}
-    </section>
+    </div>
   );
 }

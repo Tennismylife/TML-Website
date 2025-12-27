@@ -82,17 +82,17 @@ export default function RoundsOnEntries({ id }: { id: string }) {
   const PlayerTable = ({ data }: { data: PlayerRoundEntry[] }) => (
     <table className="w-full text-sm border-collapse table-fixed">
       <colgroup>
-        <col style={{ width: '40%' }} />
-        <col style={{ width: '20%' }} />
-        <col style={{ width: '20%' }} />
-        <col style={{ width: '20%' }} />
+        <col style={{ width: 'var(--pcol-1)' }} />
+        <col style={{ width: 'var(--pcol-2)' }} />
+        <col style={{ width: 'var(--pcol-3)' }} />
+        <col style={{ width: 'var(--pcol-4)' }} />
       </colgroup>
-      <thead>
+      <thead className="bg-gray-900">
         <tr className="border-b border-gray-600">
           <th className="text-left py-1 text-white">Player</th>
-          <th className="text-left py-1 text-white">Reaches</th>
-          <th className="text-left py-1 text-white">Total Entries</th>
-          <th className="text-left py-1 text-white">Percentage</th>
+          <th className="text-right py-1 text-white whitespace-nowrap">Reaches</th>
+          <th className="text-right py-1 text-white whitespace-nowrap">Entries</th>
+          <th className="text-right py-1 text-white whitespace-nowrap">Percentage</th>
         </tr>
       </thead>
       <tbody>
@@ -121,15 +121,16 @@ export default function RoundsOnEntries({ id }: { id: string }) {
   };
 
   return (
-    <section className="rounded border p-4" style={cardStyle}>
+    <div>
       <h3 className="font-medium mb-4 text-white">
-        Percentage of Round Reached out of Total Entries
+        Percentage of Round Reached out of Entries
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {visibleRoundItems.map(item => (
-          <div key={item.title} className="border rounded p-4" style={cardStyle}>
-            <h4 className="font-medium mb-2 text-white">{item.title}</h4>
+          <div key={item.title} className="p-1 border border-gray-700 bg-gray-800 rounded" style={{ ...(cardStyle as any), ['--pcol-1' as any]: '40%', ['--pcol-2' as any]: '20%', ['--pcol-3' as any]: '20%', ['--pcol-4' as any]: '20%' }}>
+            <div className="p-3">
+              <h4 className="font-medium mb-2 text-white">{item.title}</h4>
 
             <div className="mb-4">
               <label className="block text-sm font-medium mb-1 text-white">
@@ -158,6 +159,7 @@ export default function RoundsOnEntries({ id }: { id: string }) {
             ) : (
               <p className="text-gray-400">No data available.</p>
             )}
+            </div>
           </div>
         ))}
 
@@ -168,9 +170,11 @@ export default function RoundsOnEntries({ id }: { id: string }) {
 
       {modalData && (
         <ModalTournamentsSeasons title={`${modalData.title}s reached on entries`} onClose={() => setModalData(null)}>
-          <PlayerTable data={modalData.list} />
+          <div style={{ ['--pcol-1' as any]: '40%', ['--pcol-2' as any]: '20%', ['--pcol-3' as any]: '20%', ['--pcol-4' as any]: '20%' }}>
+            <PlayerTable data={modalData.list} />
+          </div>
         </ModalTournamentsSeasons>
       )}
-    </section>
+    </div>
   );
 }

@@ -84,15 +84,15 @@ export default function LeastSection({ id, linkId }: { id: string; linkId?: stri
   const PlayerTable = ({ data }: { data: RoundData[] }) => (
     <table className="w-full text-sm border-collapse table-fixed">
       <colgroup>
-        <col style={{ width: '60%' }} />
-        <col style={{ width: '20%' }} />
-        <col style={{ width: '20%' }} />
+        <col style={{ width: 'var(--col-1)' }} />
+        <col style={{ width: 'var(--col-2)' }} />
+        <col style={{ width: 'var(--col-3)' }} />
       </colgroup>
-      <thead>
+      <thead className="bg-gray-900">
         <tr className="border-b border-gray-600">
           <th className="text-left py-1 text-white">Player</th>
-          <th className="text-left py-1 text-white">Games</th>
-          <th className="text-left py-1 text-white">Year</th>
+          <th className="text-right py-1 text-white whitespace-nowrap">Games</th>
+          <th className="text-right py-1 text-white whitespace-nowrap">Year</th>
         </tr>
       </thead>
       <tbody>
@@ -147,13 +147,14 @@ export default function LeastSection({ id, linkId }: { id: string; linkId?: stri
   };
 
   return (
-    <section className="rounded border p-4" style={cardStyle}>
+    <div>
       <h3 className="font-medium mb-4 text-white">Min Cumulative Games Lost to reach a round</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {visibleRoundItems.map((item) => (
-          <div key={item.round} className="border rounded p-4" style={cardStyle}>
-            <h4 className="font-medium mb-2 text-white">{item.round}</h4>
+          <div key={item.round} className="p-1 border border-gray-700 bg-gray-800 rounded" style={{ ...(cardStyle as any), ['--col-1' as any]: '60%', ['--col-2' as any]: '20%', ['--col-3' as any]: '20%' }}>
+            <div className="p-3">
+              <h4 className="font-medium mb-2 text-white">{item.round}</h4>
 
             {item.data.length > 0 ? (
               <>
@@ -172,6 +173,7 @@ export default function LeastSection({ id, linkId }: { id: string; linkId?: stri
             ) : (
               <p className="text-gray-400">No data available.</p>
             )}
+            </div>
           </div>
         ))}
 
@@ -186,9 +188,11 @@ export default function LeastSection({ id, linkId }: { id: string; linkId?: stri
           title={`Details for ${modalData.round}`}
           onClose={() => setModalData(null)}
         >
-          <PlayerTable data={modalData.data} />
+          <div style={{ ['--col-1' as any]: '60%', ['--col-2' as any]: '20%', ['--col-3' as any]: '20%' }}>
+            <PlayerTable data={modalData.data} />
+          </div>
         </ModalTournamentsSeasons>
       )}
-    </section>
+    </div>
   );
 };

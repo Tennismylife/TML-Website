@@ -29,9 +29,8 @@ const SectionCard = React.memo(function SectionCard({
   onOpen: (key: string) => void;
   loading?: boolean;
 }) {
-  // Card is now content-only; visual wrapper is applied by the parent to avoid nested containers
   return (
-    <>
+    <div className="border rounded p-4 bg-card" style={{ backgroundColor: 'rgba(31,41,55,0.95)' }}>
       <h3 className="font-medium mb-2 text-white">{title}</h3>
       <table className="w-full text-sm border-collapse table-fixed">
         <colgroup>
@@ -66,7 +65,7 @@ const SectionCard = React.memo(function SectionCard({
           {loading ? 'Loading...' : 'View All'}
         </button>
       </div>
-    </>
+    </div>
   );
 });
 
@@ -297,9 +296,7 @@ export default function CountSection({ tournamentId }: { tournamentId: string })
           const list = sectionData.list ?? [];
 
           return (
-            <div key={sec.key}>
-              <SectionCard title={sec.title} data={list} onOpen={openModal} loading={loadingModal && activeModal === sec.key} />
-            </div>
+            <SectionCard key={sec.key} title={sec.title} data={list} onOpen={openModal} loading={loadingModal && activeModal === sec.key} />
           );
         })}
       </div>
