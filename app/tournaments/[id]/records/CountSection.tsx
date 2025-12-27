@@ -29,8 +29,9 @@ const SectionCard = React.memo(function SectionCard({
   onOpen: (key: string) => void;
   loading?: boolean;
 }) {
+  // Card is now content-only; visual wrapper is applied by the parent to avoid nested containers
   return (
-    <div className="border rounded p-4 bg-card" style={{ backgroundColor: 'rgba(31,41,55,0.95)' }}>
+    <>
       <h3 className="font-medium mb-2 text-white">{title}</h3>
       <table className="w-full text-sm border-collapse table-fixed">
         <colgroup>
@@ -65,7 +66,7 @@ const SectionCard = React.memo(function SectionCard({
           {loading ? 'Loading...' : 'View All'}
         </button>
       </div>
-    </div>
+    </>
   );
 });
 
@@ -289,17 +290,16 @@ export default function CountSection({ tournamentId }: { tournamentId: string })
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <section
-      className="rounded border p-4 bg-background"
-      style={{ backgroundColor: 'rgba(31,41,55,0.95)' }}
-    >
+    <div>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
         {sectionsArr.slice(0, visibleCards).map((sec) => {
           const sectionData = sections[sec.key] ?? { list: [] };
           const list = sectionData.list ?? [];
 
           return (
-            <SectionCard key={sec.key} title={sec.title} data={list} onOpen={openModal} loading={loadingModal && activeModal === sec.key} />
+            <div key={sec.key}>
+              <SectionCard title={sec.title} data={list} onOpen={openModal} loading={loadingModal && activeModal === sec.key} />
+            </div>
           );
         })}
       </div>
@@ -325,6 +325,6 @@ export default function CountSection({ tournamentId }: { tournamentId: string })
           )}
         </ModalTournamentsSeasons>
       )}
-    </section>
+    </div>
   );
 }
