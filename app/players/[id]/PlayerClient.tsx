@@ -35,6 +35,11 @@ export default function PlayerClient(props: any) {
     sub: "events",
   }));
 
+  // helpers to allow child components to call setFilters with partial objects (merge)
+  const setTournamentsFiltersPartial = (partial: Partial<typeof tournamentsFilters>) => {
+    setTournamentsFilters(prev => ({ ...prev, ...partial }));
+  };
+
   const [h2hFilters, setH2HFilters] = useState(() => ({
     year: "All" as number | "All",
     level: "All",
@@ -90,6 +95,8 @@ export default function PlayerClient(props: any) {
   }, [playerId, router]);
 
   // Initialize lifted filters from current URL on mount
+  const initializedRef = React.useRef(false);
+
   useEffect(() => {
     try {
       const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
@@ -116,6 +123,9 @@ export default function PlayerClient(props: any) {
         tournament: params.get('tourney') || "All",
         opponent: params.get('opponent') || "",
       });
+
+      // mark initialization complete so the URL-sync effect doesn't overwrite query params
+      initializedRef.current = true;
     } catch (err) {
       // ignore
     }
@@ -164,6 +174,9 @@ export default function PlayerClient(props: any) {
       }, 150);
     };
 
+    // Don't overwrite the URL until initial URL-derived state has been applied
+    if (!initializedRef.current) return;
+
     buildAndReplace();
   }, [activeTab, tournamentsFilters, h2hFilters, router]);
 
@@ -200,9 +213,10 @@ export default function PlayerClient(props: any) {
         initialTab={"profile"}
         setTab={setActiveTab}
         tournamentsFilters={tournamentsFilters}
-        setTournamentsFilters={setTournamentsFilters}
+        // pass partial-setter wrapper so children can call setFilters({ sub: 'events' })
+        setTournamentsFilters={setTournamentsFiltersPartial}
         h2hFilters={h2hFilters}
-        setH2HFilters={setH2HFilters}
+        setH2HFilters={(partial: Partial<typeof h2hFilters>) => setH2HFilters(prev => ({ ...prev, ...partial }))}
       />
 
       {/* Content */}

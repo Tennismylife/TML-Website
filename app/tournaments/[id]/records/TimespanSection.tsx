@@ -65,32 +65,32 @@ export default function TimespanSection({ id }: { id: string }) {
   const PlayerTable = ({ data }: { data: PlayerTimespan[] }) => (
     <table className="w-full text-sm border-collapse table-fixed">
       <colgroup>
-        <col style={{ width: '40%' }} />
-        <col style={{ width: '20%' }} />
-        <col style={{ width: '20%' }} />
-        <col style={{ width: '20%' }} />
+        <col style={{ width: '240px' }} />
+        <col style={{ width: '110px' }} />
+        <col style={{ width: '110px' }} />
+        <col style={{ width: '80px' }} />
       </colgroup>
-      <thead>
+      <thead className="bg-gray-900">
         <tr className="border-b border-gray-600">
-          <th className="text-left py-1 text-white">Player</th>
-          <th className="text-left py-1 text-white">First Date</th>
-          <th className="text-left py-1 text-white">Last Date</th>
-          <th className="text-left py-1 text-white">Timespan</th>
+          <th className="text-left py-1 text-white" style={{ paddingLeft: 0 }}>Player</th>
+          <th className="text-right py-1 text-white whitespace-nowrap">First Date</th>
+          <th className="text-right py-1 text-white whitespace-nowrap">Last Date</th>
+          <th className="text-right py-1 text-white whitespace-nowrap">Timespan</th>
         </tr>
       </thead>
       <tbody>
         {data.map((item, idx) => (
           <tr key={`${item.id}-${idx}`} className="border-b border-gray-700">
-            <td className="py-1 min-w-0">
-              <div className="flex items-center gap-2 truncate">
-                <span className="text-base">{getFlagFromIOC(item.ioc) || ''}</span>
-                <Link href={`/players/${encodeURIComponent(String(item.id))}`} className="text-blue-400 hover:underline truncate">
+            <td className="py-1 min-w-0" style={{ maxWidth: '240px', paddingLeft: 0 }}>
+              <div className="flex items-center gap-2 truncate min-w-0">
+                <span className="text-base shrink-0">{getFlagFromIOC(item.ioc) || ''}</span>
+                <Link href={`/players/${encodeURIComponent(String(item.id))}`} className="text-blue-400 hover:underline truncate block min-w-0 overflow-hidden">
                   {item.name}
                 </Link>
               </div>
             </td>
-            <td className="py-1 text-white whitespace-nowrap">{fmtDate(item.firstDate)}</td>
-            <td className="py-1 text-white whitespace-nowrap">{fmtDate(item.lastDate)}</td>
+            <td className="py-1 text-white text-right whitespace-nowrap">{fmtDate(item.firstDate)}</td>
+            <td className="py-1 text-white text-right whitespace-nowrap">{fmtDate(item.lastDate)}</td>
             <td className="py-1 text-white text-right whitespace-nowrap">{item.days}</td>
           </tr>
         ))}
@@ -150,8 +150,9 @@ export default function TimespanSection({ id }: { id: string }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {timespanData.allRoundItems.slice(0, visibleCount).map((item) => (
-          <div key={item.title} className="border rounded p-4" style={cardStyle}>
-            <h4 className="font-medium mb-2 text-white">{item.title}</h4>
+          <div key={item.title} className="p-1 border border-gray-700 bg-gray-800 rounded" style={{ ...(cardStyle as any), ['--col-1' as any]: '240px', ['--col-2' as any]: '110px', ['--col-3' as any]: '110px', ['--col-4' as any]: '80px' }}>
+            <div className="p-3">
+              <h4 className="font-medium mb-2 text-white">{item.title}</h4>
 
             {item.list && item.list.length > 0 ? (
               <>
@@ -169,6 +170,7 @@ export default function TimespanSection({ id }: { id: string }) {
             ) : (
               <p className="text-gray-400">No data available.</p>
             )}
+            </div>
           </div>
         ))}
 
@@ -182,7 +184,9 @@ export default function TimespanSection({ id }: { id: string }) {
           title={`All Timespans for ${modalData.title}`}
           onClose={() => setModalData(null)}
         >
-          <PlayerTable data={modalData.list} />
+          <div style={{ ['--col-1' as any]: '240px', ['--col-2' as any]: '110px', ['--col-3' as any]: '110px', ['--col-4' as any]: '80px' }}>
+            <PlayerTable data={modalData.list} />
+          </div>
         </ModalTournamentsSeasons>
       )}
     </div>

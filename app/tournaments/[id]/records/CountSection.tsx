@@ -30,40 +30,42 @@ const SectionCard = React.memo(function SectionCard({
   loading?: boolean;
 }) {
   return (
-    <div className="border rounded p-4 bg-card" style={{ backgroundColor: 'rgba(31,41,55,0.95)' }}>
-      <h3 className="font-medium mb-2 text-white">{title}</h3>
-      <table className="w-full text-sm border-collapse table-fixed">
-        <colgroup>
-          <col style={{ width: 'calc(100% - 80px)' }} />
-          <col style={{ width: '80px' }} />
-        </colgroup>
-        <thead>
-          <tr>
-            <th className="text-left py-1 font-medium text-gray-300">Player</th>
-            <th className="text-right py-1 font-medium text-gray-300">{title}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item) => (
-            <tr key={item.id} className="border-b border-gray-700">
-              <td className="py-1 min-w-0">
-                <div className="flex items-center gap-2 truncate">
-                  <span className="text-base">{getFlagFromIOC(item.ioc) || ''}</span>
-                  <Link href={`/players/${encodeURIComponent(String(item.id))}`} prefetch={false} className="text-blue-400 hover:underline truncate">
-                    {item.name}
-                  </Link>
-                </div>
-              </td>
-              <td className="py-1 text-right whitespace-nowrap max-w-[80px]">{item.count}</td>
+    <div className="p-1 border border-gray-700 bg-gray-800 rounded" style={{ backgroundColor: 'rgba(31,41,55,0.95)', ['--col-1' as any]: 'calc(100% - 80px)', ['--col-2' as any]: '80px' }}>
+      <div className="p-3">
+        <h3 className="font-medium mb-2 text-white">{title}</h3>
+        <table className="w-full text-sm border-collapse table-fixed">
+          <colgroup>
+            <col style={{ width: 'var(--col-1)' }} />
+            <col style={{ width: 'var(--col-2)' }} />
+          </colgroup>
+          <thead className="bg-gray-900">
+            <tr>
+              <th className="text-left py-1 font-medium text-gray-300">Player</th>
+              <th className="text-right py-1 font-medium text-gray-300 whitespace-nowrap">{title}</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {data.map((item) => (
+              <tr key={item.id} className="border-b border-gray-700">
+                <td className="py-1 min-w-0">
+                  <div className="flex items-center gap-2 truncate">
+                    <span className="text-base">{getFlagFromIOC(item.ioc) || ''}</span>
+                    <Link href={`/players/${encodeURIComponent(String(item.id))}`} prefetch={false} className="text-blue-400 hover:underline truncate">
+                      {item.name}
+                    </Link>
+                  </div>
+                </td>
+                <td className="py-1 text-right whitespace-nowrap max-w-[80px]">{item.count}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-      <div className="mt-2">
-        <button onClick={() => onOpen(title.toLowerCase())} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-          {loading ? 'Loading...' : 'View All'}
-        </button>
+        <div className="mt-2">
+          <button onClick={() => onOpen(title.toLowerCase())} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+            {loading ? 'Loading...' : 'View All'}
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -259,30 +261,36 @@ export default function CountSection({ tournamentId }: { tournamentId: string })
   }, [sections, tournamentId]);
 
   const renderTable = (data: PlayerItem[], title: string) => (
-    <table className="w-full text-sm border-collapse">
-      <thead>
-        <tr>
-          <th className="text-left py-1 font-medium text-white">Player</th>
-          <th className="text-left py-1 font-medium text-white">{title}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((item) => (
-          <tr key={item.id} className="hover:bg-gray-100">
-            <td className="py-1 flex items-center gap-2">
-              <span className="text-base">{getFlagFromIOC(item.ioc) || ''}</span>
-              <Link
-                href={`/players/${encodeURIComponent(String(item.id))}`}
-                className="text-blue-700 hover:underline"
-              >
-                {item.name}
-              </Link>
-            </td>
-            <td className="py-1">{item.count}</td>
+    <div style={{ ['--col-1' as any]: '70%', ['--col-2' as any]: '30%' }}>
+      <table className="w-full text-sm border-collapse table-fixed">
+        <colgroup>
+          <col style={{ width: 'var(--col-1)' }} />
+          <col style={{ width: 'var(--col-2)' }} />
+        </colgroup>
+        <thead className="bg-gray-900">
+          <tr>
+            <th className="text-left py-1 font-medium text-white">Player</th>
+            <th className="text-right py-1 font-medium text-white whitespace-nowrap">{title}</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {data.map((item) => (
+            <tr key={item.id} className="hover:bg-gray-100">
+              <td className="py-1 flex items-center gap-2">
+                <span className="text-base">{getFlagFromIOC(item.ioc) || ''}</span>
+                <Link
+                  href={`/players/${encodeURIComponent(String(item.id))}`}
+                  className="text-blue-700 hover:underline"
+                >
+                  {item.name}
+                </Link>
+              </td>
+              <td className="py-1 text-right whitespace-nowrap">{item.count}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 
   if (loading) return <div>Loading...</div>;

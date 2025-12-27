@@ -158,7 +158,19 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
         setActivePercentageSubTab={navigateToPercentageSub}        // naviga subtab percentage via path
       />
 
-      <div className="rounded-2xl bg-gray-900/50 p-4 shadow-inner">
+      <div
+        className="rounded-2xl bg-gray-900/50 p-4 shadow-inner"
+        style={{
+          ['--col-1' as any]: '240px',
+          ['--col-2' as any]: '110px',
+          ['--col-3' as any]: '110px',
+          ['--col-4' as any]: '80px',
+          ['--pcol-1' as any]: '240px',
+          ['--pcol-2' as any]: '110px',
+          ['--pcol-3' as any]: '110px',
+          ['--pcol-4' as any]: '80px'
+        }}
+      >
         {activeTab === 'count' && <CountSection tournamentId={id} />}
         {activeTab === 'rounds' && <RoundsSection tournamentId={id} />}
         {activeTab === 'ages' && (
