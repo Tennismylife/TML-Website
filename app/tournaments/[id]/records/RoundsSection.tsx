@@ -26,6 +26,10 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
   const [modalData, setModalData] = useState<{ title: string; list: PlayerStat[] } | null>(null);
   const [loadingRounds, setLoadingRounds] = useState<{ [round: string]: boolean }>({});
 
+  // per-round visible counts for incremental loading on mobile
+  const [visibleCounts, setVisibleCounts] = useState<{ [round: string]: number }>({});
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+
   // ─── Primo fetch: top10 per round ───
   useEffect(() => {
     const fetchTop10 = async () => {
@@ -39,6 +43,13 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
             list: r.list,  // solo top10
           }))
         );
+
+        // initialize visible counts (show 10 rows initially per round)
+        const initialVisible: { [round: string]: number } = {};
+        data.roundItems.forEach((r: any) => {
+          initialVisible[r.title] = 10;
+        });
+        setVisibleCounts(initialVisible);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
@@ -110,6 +121,64 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
     }
   };
 
+  // detect mobile (tailwind md breakpoint ~768px)
+  useEffect(() => {
+    const m = window.matchMedia('(max-width: 767.98px)');
+    const handler = (e: MediaQueryListEvent | MediaQueryList) => setIsMobile((e as MediaQueryListEvent).matches ?? (e as MediaQueryList).matches);
+    setIsMobile(m.matches);
+    m.addEventListener('change', handler as any);
+    return () => m.removeEventListener('change', handler as any);
+  }, []);
+
+  // IntersectionObserver: when sentinel enters viewport on mobile, load more rows (fetch full list if needed)
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(async entry => {
+        if (!entry.isIntersecting) return;
+        const round = (entry.target as HTMLElement).dataset.round;
+        if (!round) return;
+        // prevent concurrent fetches
+        if (loadingRounds[round]) return;
+
+        const roundItem = roundItems.find(r => r.title === round);
+        if (!roundItem) return;
+
+        const current = visibleCounts[round] ?? 10;
+
+        if (roundItem.fullList?.length) {
+          const max = roundItem.fullList.length;
+          const next = Math.min(current + 10, max);
+          if (next > current) setVisibleCounts(prev => ({ ...prev, [round]: next }));
+        } else {
+          // fetch full list lazily
+          setLoadingRounds(prev => ({ ...prev, [round]: true }));
+          try {
+            const res = await fetch(`/api/tournaments/${tournamentId}/records/rounds?round=${encodeURIComponent(round)}&full=true`);
+            if (!res.ok) throw new Error('Failed to fetch full round');
+            const data = await res.json();
+            const fullRound = data.roundItems?.[0];
+            if (fullRound) {
+              setRoundItems(prev => prev.map(r => r.title === round ? { ...r, fullList: fullRound.fullList } : r));
+              const max = fullRound.fullList.length;
+              const next = Math.min(current + 10, max);
+              setVisibleCounts(prev => ({ ...prev, [round]: next }));
+            }
+          } catch (err) {
+            setError(err instanceof Error ? err.message : 'Unknown error');
+          } finally {
+            setLoadingRounds(prev => ({ ...prev, [round]: false }));
+          }
+        }
+      });
+    }, { rootMargin: '200px' });
+
+    const sentinels = Array.from(document.querySelectorAll<HTMLElement>('.round-sentinel'));
+    sentinels.forEach(s => observer.observe(s));
+    return () => observer.disconnect();
+  }, [isMobile, roundItems, visibleCounts, loadingRounds, tournamentId]);
+
   const cardStyle = {
     backgroundColor: 'rgba(31,41,55,0.95)',
     backdropFilter: 'blur(4px)',
@@ -119,24 +188,30 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
     <section className="rounded border p-4" style={cardStyle}>
       <h3 className="font-medium mb-4 text-white">Reaches per Round</h3>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {roundItems.map(item => (
-          <div key={item.title} className="border rounded p-4" style={cardStyle}>
-            <h4 className="font-medium mb-2 text-white">{item.title}</h4>
-            {item.list?.length > 0 ? (
-              <>
-                {renderTable(item.list, 'Reaches')}
-                <button
-                  onClick={() => openModal(item.title)}
-                  className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-                >
-                  {loadingRounds[item.title] ? 'Loading...' : 'View All'}
-                </button>
-              </>
-            ) : (
-              <p className="text-gray-400">No data available</p>
-            )}
-          </div>
-        ))}
+        {roundItems.map(item => {
+          const shown = item.fullList ? item.fullList.slice(0, visibleCounts[item.title] ?? 10) : item.list;
+          return (
+            <div key={item.title} className="border rounded p-4" style={cardStyle}>
+              <h4 className="font-medium mb-2 text-white">{item.title}</h4>
+              {shown?.length > 0 ? (
+                <>
+                  {renderTable(shown, 'Reaches')}
+                  {isMobile && ((item.fullList && shown.length < item.fullList.length) || (!item.fullList && item.list.length === 10)) && (
+                    <div data-round={item.title} className="round-sentinel h-2" />
+                  )}
+                  <button
+                    onClick={() => openModal(item.title)}
+                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                  >
+                    {loadingRounds[item.title] ? 'Loading...' : 'View All'}
+                  </button>
+                </>
+              ) : (
+                <p className="text-gray-400">No data available</p>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {modalData && (
