@@ -39,7 +39,6 @@ export async function GET(request: NextRequest, context: any) {
       const parts = rawTourney.split('-');
       const origNumericTourney = parts[parts.length - 1];
 
-    for (const m of matches) {
       if (m.winner_id && m.winner_name && m.winner_age != null) {
         const age = Number(m.winner_age);
         if (Number.isFinite(age)) {
