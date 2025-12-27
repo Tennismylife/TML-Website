@@ -26,8 +26,8 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
   const [modalData, setModalData] = useState<{ title: string; list: PlayerStat[] } | null>(null);
   const [loadingRounds, setLoadingRounds] = useState<{ [round: string]: boolean }>({});
 
-  // per-round visible counts for incremental loading on mobile
-  const [visibleCounts, setVisibleCounts] = useState<{ [round: string]: number }>({});
+  // how many round cards to show (initially 1 on mobile, all on desktop)
+  const [visibleCards, setVisibleCards] = useState<number>(1);
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
   // ─── Primo fetch: top10 per round ───
@@ -44,12 +44,7 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
           }))
         );
 
-        // initialize visible counts (show 10 rows initially per round)
-        const initialVisible: { [round: string]: number } = {};
-        data.roundItems.forEach((r: any) => {
-          initialVisible[r.title] = 10;
-        });
-        setVisibleCounts(initialVisible);
+
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
@@ -68,54 +63,32 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
     return () => m.removeEventListener('change', handler as any);
   }, []);
 
-  // IntersectionObserver: when sentinel enters viewport on mobile, load more rows (fetch full list if needed)
+  // keep visibleCards in sync with device/available rounds
+  useEffect(() => {
+    if (!isMobile) {
+      setVisibleCards(roundItems.length);
+    } else {
+      setVisibleCards(prev => Math.max(1, Math.min(prev, roundItems.length)));
+    }
+  }, [isMobile, roundItems.length]);
+
+  // observe a single sentinel at the end to progressively reveal one card at a time on mobile
   useEffect(() => {
     if (!isMobile) return;
+    if (visibleCards >= roundItems.length) return;
 
     const observer = new IntersectionObserver((entries) => {
-      entries.forEach(async entry => {
-        if (!entry.isIntersecting) return;
-        const round = (entry.target as HTMLElement).dataset.round;
-        if (!round) return;
-        // prevent concurrent fetches
-        if (loadingRounds[round]) return;
-
-        const roundItem = roundItems.find(r => r.title === round);
-        if (!roundItem) return;
-
-        const current = visibleCounts[round] ?? 10;
-
-        if (roundItem.fullList?.length) {
-          const max = roundItem.fullList.length;
-          const next = Math.min(current + 10, max);
-          if (next > current) setVisibleCounts(prev => ({ ...prev, [round]: next }));
-        } else {
-          // fetch full list lazily
-          setLoadingRounds(prev => ({ ...prev, [round]: true }));
-          try {
-            const res = await fetch(`/api/tournaments/${tournamentId}/records/rounds?round=${encodeURIComponent(round)}&full=true`);
-            if (!res.ok) throw new Error('Failed to fetch full round');
-            const data = await res.json();
-            const fullRound = data.roundItems?.[0];
-            if (fullRound) {
-              setRoundItems(prev => prev.map(r => r.title === round ? { ...r, fullList: fullRound.fullList } : r));
-              const max = fullRound.fullList.length;
-              const next = Math.min(current + 10, max);
-              setVisibleCounts(prev => ({ ...prev, [round]: next }));
-            }
-          } catch (err) {
-            setError(err instanceof Error ? err.message : 'Unknown error');
-          } finally {
-            setLoadingRounds(prev => ({ ...prev, [round]: false }));
-          }
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setVisibleCards(prev => Math.min(prev + 1, roundItems.length));
         }
       });
     }, { rootMargin: '200px' });
 
-    const sentinels = Array.from(document.querySelectorAll<HTMLElement>('.round-sentinel'));
-    sentinels.forEach(s => observer.observe(s));
+    const sentinel = document.querySelector('.cards-sentinel');
+    if (sentinel) observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [isMobile, roundItems, visibleCounts, loadingRounds, tournamentId]);
+  }, [isMobile, roundItems.length, visibleCards]);
 
   if (loading) return <div className="text-white">Loading...</div>;
   if (error) return <div className="text-white">Error: {error}</div>;
@@ -190,30 +163,28 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
     <section className="rounded border p-4" style={cardStyle}>
       <h3 className="font-medium mb-4 text-white">Reaches per Round</h3>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {roundItems.map(item => {
-          const shown = item.fullList ? item.fullList.slice(0, visibleCounts[item.title] ?? 10) : item.list;
-          return (
-            <div key={item.title} className="border rounded p-4" style={cardStyle}>
-              <h4 className="font-medium mb-2 text-white">{item.title}</h4>
-              {shown?.length > 0 ? (
-                <>
-                  {renderTable(shown, 'Reaches')}
-                  {isMobile && ((item.fullList && shown.length < item.fullList.length) || (!item.fullList && item.list.length === 10)) && (
-                    <div data-round={item.title} className="round-sentinel h-2" />
-                  )}
-                  <button
-                    onClick={() => openModal(item.title)}
-                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-                  >
-                    {loadingRounds[item.title] ? 'Loading...' : 'View All'}
-                  </button>
-                </>
-              ) : (
-                <p className="text-gray-400">No data available</p>
-              )}
-            </div>
-          );
-        })}
+        {roundItems.slice(0, visibleCards).map(item => (
+          <div key={item.title} className="border rounded p-4" style={cardStyle}>
+            <h4 className="font-medium mb-2 text-white">{item.title}</h4>
+            {item.list?.length > 0 ? (
+              <>
+                {renderTable(item.list, 'Reaches')}
+                <button
+                  onClick={() => openModal(item.title)}
+                  className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                >
+                  {loadingRounds[item.title] ? 'Loading...' : 'View All'}
+                </button>
+              </>
+            ) : (
+              <p className="text-gray-400">No data available</p>
+            )}
+          </div>
+        ))}
+
+        {isMobile && visibleCards < roundItems.length && (
+          <div className="cards-sentinel h-2" />
+        )}
       </div>
 
       {modalData && (
