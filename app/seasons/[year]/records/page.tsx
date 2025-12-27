@@ -188,7 +188,10 @@ export default function SeasonRecordsPage({ params }: { params: Promise<{ year: 
   };
 
   return (
-    <main className="w-full mx-auto p-8 text-white">
+    <main
+      className="w-full mx-auto p-8 text-white"
+      style={{ ['--col-1' as any]: '240px', ['--col-2' as any]: '110px', ['--col-3' as any]: '110px', ['--col-4' as any]: '80px', ['--pcol-1' as any]: '240px', ['--pcol-2' as any]: '110px', ['--pcol-3' as any]: '110px', ['--pcol-4' as any]: '80px' }}
+    >
       <>
         {/* Tabs */}
         <div className="relative mb-6 flex flex-wrap gap-2 bg-gray-800/40 rounded-2xl p-2 shadow-lg">

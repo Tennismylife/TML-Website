@@ -94,7 +94,7 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
             <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Age</th>
+            <th className="border border-white/30 px-4 py-2 text-right text-lg text-gray-200 whitespace-nowrap">Age</th>
             <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Tournament</th>
           </tr>
         </thead>

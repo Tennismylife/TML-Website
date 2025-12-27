@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
 import ModalTournamentsSeasons from "@/components/ModalTournamentsSeasons";
+import useIncrementalCards from '../../../tournaments/[id]/records/hooks/useIncrementalCards';
 
 interface PlayerEntry {
   id: string | number;
@@ -63,14 +64,22 @@ export default function RoundOnEntriesSection({ year, selectedSurfaces, selected
     setMinEntriesPerRound(prev => ({ ...prev, [round]: value }));
   };
 
+  const { isMobile, visibleCount, sentinelRef } = useIncrementalCards(Object.keys(roundsData).length, { initialVisible: 1, debounceMs: 1000 });
+
   const PlayerTable = ({ data }: { data: PlayerEntry[] }) => (
-    <table className="w-full text-sm border-collapse">
-      <thead>
+    <table className="w-full text-sm border-collapse table-fixed">
+      <colgroup>
+        <col style={{ width: 'var(--col-1)' }} />
+        <col style={{ width: 'var(--col-2)' }} />
+        <col style={{ width: 'var(--col-3)' }} />
+        <col style={{ width: 'var(--col-4)' }} />
+      </colgroup>
+      <thead className="bg-gray-900">
         <tr className="border-b border-gray-600">
           <th className="text-left py-1 text-white">Player</th>
-          <th className="text-left py-1 text-white">Reaches</th>
-          <th className="text-left py-1 text-white">Total Entries</th>
-          <th className="text-left py-1 text-white">Percentage</th>
+          <th className="text-right py-1 text-white whitespace-nowrap">Reaches</th>
+          <th className="text-right py-1 text-white whitespace-nowrap">Entries</th>
+          <th className="text-right py-1 text-white whitespace-nowrap">Percentage</th>
         </tr>
       </thead>
       <tbody>
@@ -80,9 +89,9 @@ export default function RoundOnEntriesSection({ year, selectedSurfaces, selected
               <span>{getFlagFromIOC(p.ioc) || ''}</span>
               <Link href={`/players/${p.id}`} className="text-blue-400 hover:underline">{p.name}</Link>
             </td>
-            <td className="py-1 text-white">{p.reaches}</td>
-            <td className="py-1 text-white">{p.totalEntries}</td>
-            <td className="py-1 text-white">{p.percentage.toFixed(1)}%</td>
+            <td className="py-1 text-white text-right whitespace-nowrap">{p.reaches}</td>
+            <td className="py-1 text-white text-right whitespace-nowrap">{p.totalEntries}</td>
+            <td className="py-1 text-white text-right whitespace-nowrap">{p.percentage.toFixed(1)}%</td>
           </tr>
         ))}
       </tbody>
@@ -99,19 +108,20 @@ export default function RoundOnEntriesSection({ year, selectedSurfaces, selected
   };
 
   return (
-    <section className="rounded border p-4" style={cardStyle}>
+    <section className="mb-4">
       <h3 className="font-medium mb-4 text-white">Percentage of Round Reached out of Total Entries ({year})</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {sortedRounds.map(round => {
+        {sortedRounds.slice(0, visibleCount).map(round => {
           const players = roundsData[round] || [];
           const minEntries = minEntriesPerRound[round] || 1;
           const filtered = players.filter(p => p.totalEntries >= minEntries);
           const maxEntries = Math.max(...players.map(p => p.totalEntries), 1);
 
           return (
-            <div key={round} className="border rounded p-4" style={cardStyle}>
-              <h4 className="font-medium mb-2 text-white">{round}</h4>
-              <div className="mb-4">
+            <div key={round} className="p-1 border border-white bg-transparent rounded-none">
+              <div className="p-3">
+                <h4 className="font-medium mb-2 text-white">{round}</h4>
+                <div className="mb-4">
                 <label className="block text-sm font-medium mb-1 text-white">Minimum Entries: {minEntries}</label>
                 <input
                   type="range"
@@ -141,6 +151,7 @@ export default function RoundOnEntriesSection({ year, selectedSurfaces, selected
                 <p className="text-gray-400">No data available.</p>
               )}
             </div>
+          </div>
           );
         })}
       </div>

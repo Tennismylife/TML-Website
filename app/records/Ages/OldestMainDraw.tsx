@@ -94,7 +94,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
             <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Age</th>
+            <th className="border border-white/30 px-4 py-2 text-right text-lg text-gray-200 whitespace-nowrap">Age</th>
             <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Tournament</th>
           </tr>
         </thead>
@@ -114,7 +114,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
                     <Link href={getLink(p.id.toString())} className="text-indigo-300 hover:underline">{p.name}</Link>
                   </div>
                 </td>
-                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{formatAge(p.age)}</td>
+                <td className="border border-white/10 px-4 py-2 text-right text-lg text-gray-200 whitespace-nowrap">{formatAge(p.age)}</td>
                 <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                   <Link href={getTourneyHref({ id: p.tourney_id, name: p.tourney_name, year })} className="text-indigo-300 hover:underline">
                     {p.tourney_name} {year}

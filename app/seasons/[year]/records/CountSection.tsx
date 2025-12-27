@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import useIncrementalCards from '../../../tournaments/[id]/records/hooks/useIncrementalCards';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
@@ -45,6 +46,9 @@ export default function CountSection({ year, selectedSurfaces, selectedLevels }:
     backgroundColor: 'rgba(31,41,55,0.95)',
     backdropFilter: 'blur(4px)',
   };
+
+  // incremental reveal on mobile
+  const { isMobile, visibleCount, sentinelRef } = useIncrementalCards(4, { initialVisible: 1, debounceMs: 1000 });
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -120,11 +124,15 @@ export default function CountSection({ year, selectedSurfaces, selectedLevels }:
   ];
 
   const PlayerTable = ({ data }: { data: PlayerStat[] }) => (
-    <table className="w-full text-sm border-collapse">
+    <table className="w-full text-sm border-collapse table-fixed">
+      <colgroup>
+        <col style={{ width: 'var(--col-1)' }} />
+        <col style={{ width: 'var(--col-2)' }} />
+      </colgroup>
       <thead>
         <tr className="border-b border-gray-600">
           <th className="text-left py-1 text-white">Player</th>
-          <th className="text-left py-1 text-white">Count</th>
+          <th className="text-right py-1 text-white whitespace-nowrap">Count</th>
         </tr>
       </thead>
       <tbody>
@@ -134,7 +142,7 @@ export default function CountSection({ year, selectedSurfaces, selectedLevels }:
               <span>{getFlagFromIOC(p.ioc) || ''}</span>
               <Link href={`/players/${p.id}`} className="text-blue-400 hover:underline">{p.name}</Link>
             </td>
-            <td className="py-1 text-white">{p.count}</td>
+            <td className="py-1 text-white text-right whitespace-nowrap">{p.count}</td>
           </tr>
         ))}
       </tbody>
@@ -156,29 +164,58 @@ export default function CountSection({ year, selectedSurfaces, selectedLevels }:
   ];
 
   return (
-    <section className="rounded border p-4" style={cardStyle}>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {sections.map((section) => (
-          <div key={section.label} className="border rounded p-4" style={cardStyle}>
-            <h4 className="font-medium mb-2 text-white">{section.label}</h4>
-            {section.data.list.length > 0 ? (
-              <>
-                <PlayerTable data={section.data.list} />
-                <div className="mt-2 flex items-center gap-3">
-                  <button
-                    onClick={() => fetchFullList(section.label)}
-                    className="px-4 py-2 bg-blue-500 text-white rounded"
-                    disabled={modalLoading === section.label}
-                  >
-                    {modalLoading === section.label ? 'Loading...' : 'View All'}
-                  </button>
-                </div>
-              </>
-            ) : (
-              <p className="text-gray-400">No data available</p>
-            )}
+    <div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+        {sections.slice(0, visibleCount).map((section) => (
+          <div key={section.label} className="p-1 border border-white bg-transparent rounded-none" style={{ ['--col-1' as any]: '70%', ['--col-2' as any]: '30%' }}>
+            <div className="p-3">
+              <h4 className="font-medium mb-2 text-white">{section.label}</h4>
+              {section.data.list.length > 0 ? (
+                <>
+                  <table className="w-full text-sm border-collapse table-fixed">
+                    <colgroup>
+                      <col style={{ width: 'var(--col-1)' }} />
+                      <col style={{ width: 'var(--col-2)' }} />
+                    </colgroup>
+                    <thead className="bg-gray-900">
+                      <tr className="border-b border-gray-600">
+                        <th className="text-left py-1 text-white">Player</th>
+                        <th className="text-right py-1 text-white whitespace-nowrap">Count</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {section.data.list.map((p) => (
+                        <tr key={p.id} className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors">
+                          <td className="py-1 flex items-center gap-2 text-white min-w-0">
+                            <span>{getFlagFromIOC(p.ioc) || ''}</span>
+                            <Link href={`/players/${p.id}`} className="text-blue-400 hover:underline truncate block min-w-0">{p.name}</Link>
+                          </td>
+                          <td className="py-1 text-white text-right whitespace-nowrap">{p.count}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  <div className="mt-2 flex items-center gap-3">
+                    <button
+                      onClick={() => fetchFullList(section.label)}
+                      className="px-4 py-2 bg-blue-500 text-white rounded"
+                      disabled={modalLoading === section.label}
+                    >
+                      {modalLoading === section.label ? 'Loading...' : 'View All'}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <p className="text-gray-400">No data available</p>
+              )}
+            </div>
           </div>
         ))}
+
+        {isMobile && visibleCount < sections.length && (
+          <div ref={sentinelRef} className="cards-sentinel h-4" />
+        )}
       </div>
 
       {activeModal && (
@@ -189,13 +226,15 @@ export default function CountSection({ year, selectedSurfaces, selectedLevels }:
           {loadingModal ? (
             <p className="text-white text-center">Loading...</p>
           ) : (
-            renderTable(
-              stats?.[activeModal as keyof Stats]?.fullList ?? [],
-              sectionsArr.find((s) => s.key === activeModal)?.title || ''
-            )
+            <div style={{ ['--col-1' as any]: '70%', ['--col-2' as any]: '30%' }}>
+              {renderTable(
+                stats?.[activeModal as keyof Stats]?.fullList ?? [],
+                sectionsArr.find((s) => s.key === activeModal)?.title || ''
+              )}
+            </div>
           )}
         </ModalTournamentsSeasons>
       )}
-    </section>
+    </div>
   );
 }

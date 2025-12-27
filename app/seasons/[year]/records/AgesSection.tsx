@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { getFlagFromIOC, getTourneyHref } from "@/lib/utils";
 import ModalTournamentsSeasons from "@/components/ModalTournamentsSeasons";
+import useIncrementalCards from '../../../tournaments/[id]/records/hooks/useIncrementalCards';
 
 function formatAge(age: number): string {
   const years = Math.floor(age);
@@ -102,11 +103,16 @@ export default function AgeSection({ year, selectedSurfaces, selectedLevels, act
 
   const renderTable = useCallback((data: Player[], title: string) => (
     <div className="overflow-x-auto">
-      <table className="w-full text-sm border-collapse" role="table" aria-label={`${title} records`}>
+      <table className="w-full text-sm border-collapse table-fixed" role="table" aria-label={`${title} records`}>
+        <colgroup>
+          <col style={{ width: 'var(--col-1)' }} />
+          <col style={{ width: 'var(--col-2)' }} />
+          <col style={{ width: 'var(--col-3)' }} />
+        </colgroup>
         <thead>
           <tr className="border-b border-gray-600">
             <th className="text-left py-1 text-white">Player</th>
-            <th className="text-left py-1 text-white">Age</th>
+            <th className="text-right py-1 text-white whitespace-nowrap">Age</th>
             <th className="text-left py-1 text-white">Tournament</th>
           </tr>
         </thead>
@@ -123,7 +129,7 @@ export default function AgeSection({ year, selectedSurfaces, selectedLevels, act
                   <span className="text-base">{getFlagFromIOC(p.ioc) || ""}</span>
                   <Link href={`/players/${encodeURIComponent(String(p.id))}`} className="text-blue-400 hover:underline">{p.name}</Link>
                 </td>
-                <td className="py-1 text-white">{displayAge}</td>
+                <td className="py-1 text-white text-right whitespace-nowrap">{displayAge}</td>
                 <td className="py-1 text-white">
                   <Link href={getTourneyHref({ id: p.tourney_id, name: p.tourney_name, year: p.year })} className="text-blue-400 hover:underline">{p.tourney_name}</Link>
                 </td>
@@ -169,6 +175,9 @@ export default function AgeSection({ year, selectedSurfaces, selectedLevels, act
     }
   };
 
+  // incremental reveal on mobile (hook must be called unconditionally)
+  const { isMobile, visibleCount, sentinelRef } = useIncrementalCards(agesData?.allYoungestItems?.length ?? agesData?.allOldestItems?.length ?? 0, { initialVisible: 1, debounceMs: 1000 });
+
   if (loading) return <div className="text-white text-center py-10">Loading...</div>;
   if (error) return <div className="text-red-500 text-center py-10">Error: {error}</div>;
   if (!agesData) return <div className="text-white text-center py-10">No data available</div>;
@@ -179,70 +188,80 @@ export default function AgeSection({ year, selectedSurfaces, selectedLevels, act
   const mainYoungest = sortedYoungest.length ? sortedYoungest : topYoungest ?? [];
 
   return (
-    <section className="rounded border p-4 bg-gray-800/95 backdrop-blur-sm">
+    <section className="mb-4">
       {/* MAIN TAB */}
       {activeSubTab === 'main' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <section className="border rounded p-4 bg-gray-800/95 backdrop-blur-sm">
-            <h3 className="font-medium mb-2 text-white">Oldest player in main draw</h3>
-            {mainOldest.length ? (
-              <>
-                {renderTable(mainOldest, "Oldest")}
-                <div className="mt-2 flex gap-2">
-                  <button
-                    onClick={() => handleViewAll("Oldest Players")}
-                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    disabled={modalLoadingTitle === "Oldest Players"}
-                  >
-                    {modalLoadingTitle === "Oldest Players" ? "Loading..." : "View All"}
-                  </button>
-                </div>
-              </>
-            ) : <p className="text-gray-400">No data available.</p>}
-          </section>
+          <div className="p-1 border border-white bg-transparent rounded-none" style={{ ['--col-1' as any]: '60%', ['--col-2' as any]: '20%', ['--col-3' as any]: '20%' }}>
+            <div className="p-3">
+              <h3 className="font-medium mb-2 text-white">Oldest player in main draw</h3>
+              {mainOldest.length ? (
+                <>
+                  {renderTable(mainOldest, "Oldest")}
+                  <div className="mt-2 flex gap-2">
+                    <button
+                      onClick={() => handleViewAll("Oldest Players")}
+                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                      disabled={modalLoadingTitle === "Oldest Players"}
+                    >
+                      {modalLoadingTitle === "Oldest Players" ? "Loading..." : "View All"}
+                    </button>
+                  </div>
+                </>
+              ) : <p className="text-gray-400">No data available.</p>}
+            </div>
+          </div>
 
-          <section className="border rounded p-4 bg-gray-800/95 backdrop-blur-sm">
-            <h3 className="font-medium mb-2 text-white">Youngest player in main draw</h3>
-            {mainYoungest.length ? (
-              <>
-                {renderTable(mainYoungest, "Youngest")}
-                <div className="mt-2 flex gap-2">
-                  <button
-                    onClick={() => handleViewAll("Youngest Players")}
-                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    disabled={modalLoadingTitle === "Youngest Players"}
-                  >
-                    {modalLoadingTitle === "Youngest Players" ? "Loading..." : "View All"}
-                  </button>
-                </div>
-              </>
-            ) : <p className="text-gray-400">No data available.</p>}
-          </section>
+          <div className="p-1 border border-white bg-transparent rounded-none" style={{ ['--col-1' as any]: '60%', ['--col-2' as any]: '20%', ['--col-3' as any]: '20%' }}>
+            <div className="p-3">
+              <h3 className="font-medium mb-2 text-white">Youngest player in main draw</h3>
+              {mainYoungest.length ? (
+                <>
+                  {renderTable(mainYoungest, "Youngest")}
+                  <div className="mt-2 flex gap-2">
+                    <button
+                      onClick={() => handleViewAll("Youngest Players")}
+                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                      disabled={modalLoadingTitle === "Youngest Players"}
+                    >
+                      {modalLoadingTitle === "Youngest Players" ? "Loading..." : "View All"}
+                    </button>
+                  </div>
+                </>
+              ) : <p className="text-gray-400">No data available.</p>}
+            </div>
+          </div>
         </div>
       )}
 
       {/* YOUNGEST TAB */}
       {activeSubTab === 'youngest' && allYoungestItems && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {allYoungestItems.map(item => (
-            <section key={item.title} className="border rounded p-4 bg-gray-800/95 backdrop-blur-sm">
-              <h4 className="font-medium mb-2 text-white">{item.title}</h4>
-              {item.list.length ? (
-                <>
-                  {renderTable(item.list, item.title)}
-                  <div className="mt-2 flex gap-2">
-                    <button
-                      onClick={() => handleViewAll(item.title, item.title)}
-                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                      disabled={modalLoadingTitle === item.title}
-                    >
-                      {modalLoadingTitle === item.title ? "Loading..." : "View All"}
-                    </button>
-                  </div>
-                </>
-              ) : <p className="text-gray-400">No data available.</p>}
-            </section>
+          {allYoungestItems.slice(0, visibleCount).map(item => (
+            <div key={item.title} className="p-1 border border-white bg-transparent rounded-none" style={{ ['--col-1' as any]: '60%', ['--col-2' as any]: '20%', ['--col-3' as any]: '20%' }}>
+              <div className="p-3">
+                <h4 className="font-medium mb-2 text-white">{item.title}</h4>
+                {item.list.length ? (
+                  <>
+                    {renderTable(item.list, item.title)}
+                    <div className="mt-2 flex gap-2">
+                      <button
+                        onClick={() => handleViewAll(item.title, item.title)}
+                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        disabled={modalLoadingTitle === item.title}
+                      >
+                        {modalLoadingTitle === item.title ? "Loading..." : "View All"}
+                      </button>
+                    </div>
+                  </>
+                ) : <p className="text-gray-400">No data available.</p>}
+              </div>
+            </div>
           ))}
+
+          {isMobile && visibleCount < (allYoungestItems?.length ?? 0) && (
+            <div ref={sentinelRef} className="cards-sentinel h-4" />
+          )}
         </div>
       )}
 
@@ -250,9 +269,10 @@ export default function AgeSection({ year, selectedSurfaces, selectedLevels, act
       {activeSubTab === 'oldest' && allOldestItems && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {allOldestItems.map(item => (
-            <section key={item.title} className="border rounded p-4 bg-gray-800/95 backdrop-blur-sm">
-              <h4 className="font-medium mb-2 text-white">{item.title}</h4>
-              {item.list.length ? (
+            <section key={item.title} className="p-1 border border-white bg-transparent rounded-none">
+              <div className="p-3">
+                <h4 className="font-medium mb-2 text-white">{item.title}</h4>
+                {item.list.length ? (
                 <>
                   {renderTable(item.list, item.title)}
                   <div className="mt-2 flex gap-2">
@@ -265,8 +285,7 @@ export default function AgeSection({ year, selectedSurfaces, selectedLevels, act
                     </button>
                   </div>
                 </>
-              ) : <p className="text-gray-400">No data available.</p>}
-            </section>
+              ) : <p className="text-gray-400">No data available.</p>}              </div>            </section>
           ))}
         </div>
       )}
@@ -274,40 +293,44 @@ export default function AgeSection({ year, selectedSurfaces, selectedLevels, act
       {/* TITLES TAB */}
       {activeSubTab === 'titles' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <section className="border rounded p-4 bg-gray-800/95 backdrop-blur-sm">
-            <h3 className="font-medium mb-2 text-white">Oldest title winners</h3>
-            {topOldestTitles?.length ? (
-              <>
-                {renderTable(topOldestTitles, "Oldest")}
-                <div className="mt-2 flex gap-2">
-                  <button
-                    onClick={() => handleViewAll("Oldest Title Winners")}
-                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    disabled={modalLoadingTitle === "Oldest Title Winners"}
-                  >
-                    {modalLoadingTitle === "Oldest Title Winners" ? "Loading..." : "View All"}
-                  </button>
-                </div>
-              </>
-            ) : <p className="text-gray-400">No data available.</p>}
+          <section className="p-1 border border-white bg-transparent rounded-none">
+            <div className="p-3">
+              <h3 className="font-medium mb-2 text-white">Oldest title winners</h3>
+              {topOldestTitles?.length ? (
+                <>
+                  {renderTable(topOldestTitles, "Oldest")}
+                  <div className="mt-2 flex gap-2">
+                    <button
+                      onClick={() => handleViewAll("Oldest Title Winners")}
+                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                      disabled={modalLoadingTitle === "Oldest Title Winners"}
+                    >
+                      {modalLoadingTitle === "Oldest Title Winners" ? "Loading..." : "View All"}
+                    </button>
+                  </div>
+                </>
+              ) : <p className="text-gray-400">No data available.</p>}
+            </div>
           </section>
 
-          <section className="border rounded p-4 bg-gray-800/95 backdrop-blur-sm">
-            <h3 className="font-medium mb-2 text-white">Youngest title winners</h3>
-            {topYoungestTitles?.length ? (
-              <>
-                {renderTable(topYoungestTitles, "Youngest")}
-                <div className="mt-2 flex gap-2">
-                  <button
-                    onClick={() => handleViewAll("Youngest Title Winners")}
-                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    disabled={modalLoadingTitle === "Youngest Title Winners"}
-                  >
-                    {modalLoadingTitle === "Youngest Title Winners" ? "Loading..." : "View All"}
-                  </button>
-                </div>
-              </>
-            ) : <p className="text-gray-400">No data available.</p>}
+          <section className="p-1 border border-white bg-transparent rounded-none">
+            <div className="p-3">
+              <h3 className="font-medium mb-2 text-white">Youngest title winners</h3>
+              {topYoungestTitles?.length ? (
+                <>
+                  {renderTable(topYoungestTitles, "Youngest")}
+                  <div className="mt-2 flex gap-2">
+                    <button
+                      onClick={() => handleViewAll("Youngest Title Winners")}
+                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                      disabled={modalLoadingTitle === "Youngest Title Winners"}
+                    >
+                      {modalLoadingTitle === "Youngest Title Winners" ? "Loading..." : "View All"}
+                    </button>
+                  </div>
+                </>
+              ) : <p className="text-gray-400">No data available.</p>}
+            </div>
           </section>
         </div>
       )}
