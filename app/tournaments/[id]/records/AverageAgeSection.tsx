@@ -12,6 +12,7 @@ import {
 } from 'recharts';
 
 interface ChartDataItem {
+  label: string; // e.g., '1977' or '1977-1' when multiple tournaments exist in same year
   year: number;
   averageAge: number;
 }
@@ -96,7 +97,7 @@ export default function AverageAgeSection({ id }: { id: string }) {
               <CartesianGrid stroke="#374151" strokeDasharray="5 10" opacity={0.6} />
 
               <XAxis
-                dataKey="year"
+                dataKey="label"
                 stroke="#94a3b8"
                 tick={{ fill: '#e2e8f0', fontSize: 13, fontWeight: 600 }}
                 tickLine={false}

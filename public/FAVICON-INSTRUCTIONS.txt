@@ -1,0 +1,8 @@
+Please add your favicon files here (public/):
+
+- favicon.ico  (recommended, required by some crawlers; place a 48x48 or 256x256 .ico)
+- favicon-32x32.png
+- favicon-16x16.png
+- apple-touch-icon.png (180x180)
+
+After adding, deploy and (optionally) request reindexing in Google Search Console.

@@ -49,8 +49,11 @@ export async function GET(request: NextRequest) {
 
     for (const m of matches) {
       if (!m.tourney_id || !m.tourney_name) continue;
-      const tourneyId = m.tourney_id.split('-')[1];
-      const year = parseInt(m.tourney_id.split('-')[0]);
+      const parts = String(m.tourney_id).split('-');
+      const rawTourneyId = parts.length > 1 ? parts[1] : parts[0];
+      // Normalize AO special-case: treat 581 as 580
+      const tourneyId = rawTourneyId === '581' ? '580' : rawTourneyId;
+      const year = parseInt(parts[0]);
 
       // For wins
       if (m.winner_id) {

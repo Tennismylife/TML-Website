@@ -3,12 +3,19 @@ import { prisma } from "@/lib/prisma";
 import { extractUniqueSurfaces } from '@/lib/utils';
 
 async function fetchTournamentData(tourneyIds: string[]) {
-  // If callers pass an array of tourney ids, pick the first numeric id as the canonical tournament record
-  // We'll fetch the tournament record by numeric id when possible
+  // If callers pass an array of tourney ids, pick a canonical numeric id for the tournament record.
+  // Special-case: if both 580 and 581 are present (AO), prefer 580 as the canonical id.
   const firstId = tourneyIds.find(s => /^\d+$/.test(s));
+  let canonicalId: string | null = null;
+  if (tourneyIds.includes('580') && tourneyIds.includes('581')) {
+    canonicalId = '580';
+  } else if (firstId) {
+    canonicalId = firstId;
+  }
+
   let tournament: any = null;
-  if (firstId) {
-    tournament = await prisma.tournament.findUnique({ where: { id: parseInt(firstId, 10) } });
+  if (canonicalId) {
+    tournament = await prisma.tournament.findUnique({ where: { id: parseInt(canonicalId, 10) } });
   } else {
     // fallback: try to find by name-derived slug matching
     const candidates = await prisma.tournament.findMany({ select: { id: true, name: true, city: true, country: true, ioc: true, surfaces: true } });
@@ -28,8 +35,10 @@ async function fetchTournamentData(tourneyIds: string[]) {
     surfaces: extractUniqueSurfaces(Array.isArray(tournament.surfaces) ? tournament.surfaces : [tournament.surfaces]),
   };
 
+  const tourneyIdFilters = tourneyIds.flatMap((tid: string) => [{ tourney_id: tid }, { tourney_id: { endsWith: `-${tid}` } }]);
+
   const allMatches = await prisma.match.findMany({
-    where: { tourney_id: { in: tourneyIds } },
+    where: { OR: tourneyIdFilters },
     select: {
       tourney_id: true,
       tourney_name: true,
@@ -49,11 +58,12 @@ async function fetchTournamentData(tourneyIds: string[]) {
     orderBy: { tourney_date: "desc" },
   });
 
-  // Normalize matches by ensuring tourney_id numeric part matches the tournament id
+  // Normalize matches by ensuring the numeric tourney_id part is one of the provided tourneyIds
+  const numericIdSet = new Set(tourneyIds.map(s => parseInt(s, 10)));
   const tournamentMatches = (allMatches as any[]).filter((m) => {
     const parts = String(m.tourney_id).split('-');
     const matchId = parts.length > 1 ? parseInt(parts[1]) : parseInt(parts[0]);
-    return matchId === tournament.id;
+    return numericIdSet.has(matchId);
   });
 
   const finals = tournamentMatches.filter((m) => ["F", "W", "Final"].includes(m.round));

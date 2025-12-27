@@ -3,7 +3,7 @@ DROP MATERIALIZED VIEW IF EXISTS mv_same_tournament_wins;
 CREATE MATERIALIZED VIEW mv_same_tournament_wins AS
 WITH unique_wins AS (
     SELECT
-        tourney_id,
+        CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END AS tourney_id,
         tourney_name,
         winner_id AS player_id,
         winner_name AS player_name,

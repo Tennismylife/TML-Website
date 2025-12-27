@@ -9,10 +9,15 @@ export async function GET(request: NextRequest, context: any) {
 
     const tourneyIds = await (await import('@/lib/tournament')).resolveTourneyIds(id);
     if (!tourneyIds) return NextResponse.json({ error: 'Tournament not found' }, { status: 404 });
+    const numericIdSet = new Set(tourneyIds.filter(s => /^\d+$/.test(s)).map(s => parseInt(s, 10))); // numeric ids for normalization (580/581)
+
+
+    const tourneyIdFilters = tourneyIds.flatMap((tid: string) => [{ tourney_id: tid }, { tourney_id: { endsWith: `-${tid}` } }]);
 
     const matches = await prisma.match.findMany({
-      where: { tourney_id: { in: tourneyIds } },
+      where: { OR: tourneyIdFilters },
       select: {
+        tourney_id: true,
         year: true,
         winner_id: true,
         winner_name: true,
@@ -26,9 +31,14 @@ export async function GET(request: NextRequest, context: any) {
     });
 
     const oldestPlayersMap = new Map<string, any>();
+    
+
     const youngestPlayersMap = new Map<string, any>();
 
     for (const m of matches) {
+      const rawTourney = String(m.tourney_id || '');
+      const parts = rawTourney.split('-');
+      const origNumericTourney = parts[parts.length - 1];
       const year = m.year;
       if (!year) continue;
 
@@ -43,10 +53,10 @@ export async function GET(request: NextRequest, context: any) {
         const key = String(p.id);
 
         if (!oldestPlayersMap.has(key) || age > oldestPlayersMap.get(key).age) {
-          oldestPlayersMap.set(key, { id: p.id, name: p.name, ioc: p.ioc ?? '', age, year });
+          oldestPlayersMap.set(key, { id: p.id, name: p.name, ioc: p.ioc ?? '', age, year, tourney_id: origNumericTourney });
         }
         if (!youngestPlayersMap.has(key) || age < youngestPlayersMap.get(key).age) {
-          youngestPlayersMap.set(key, { id: p.id, name: p.name, ioc: p.ioc ?? '', age, year });
+          youngestPlayersMap.set(key, { id: p.id, name: p.name, ioc: p.ioc ?? '', age, year, tourney_id: origNumericTourney });
         }
       }
     }

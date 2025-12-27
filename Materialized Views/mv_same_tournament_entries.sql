@@ -3,17 +3,17 @@ DROP MATERIALIZED VIEW IF EXISTS mv_same_tournament_entries;
 CREATE MATERIALIZED VIEW mv_same_tournament_entries AS
 WITH surface_json AS (
     SELECT
-        tourney_id::text AS tourney_id,
+        CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END AS tourney_id,
         player_id,
-        jsonb_object_agg(COALESCE(surface, 'Unknown'), cnt) AS surface_totals
+        jsonb_object_agg(COALESCE(surface, 'Unknown'), cnt) AS surface_entries
     FROM (
         SELECT
-            tourney_id::text AS tourney_id,
+            CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END AS tourney_id,
             player_id,
             surface,
             COUNT(DISTINCT event_id) AS cnt
         FROM "PlayerTournament"
-        GROUP BY tourney_id, player_id, surface
+        GROUP BY CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END, player_id, surface
     ) sub
     GROUP BY tourney_id, player_id
 ),

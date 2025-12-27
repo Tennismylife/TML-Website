@@ -4,7 +4,7 @@ CREATE MATERIALIZED VIEW mv_same_tournament_rounds AS
 WITH unified AS (
     -- Unisco vincitori e perdenti in un'unica CTE
     SELECT
-        tourney_id::text,
+        CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END AS tourney_id,
         tourney_name,
         COALESCE(surface, 'Unknown') AS surface,
         COALESCE(tourney_level, 'Unknown') AS tourney_level,
@@ -14,7 +14,7 @@ WITH unified AS (
     WHERE status = true
     UNION ALL
     SELECT
-        tourney_id::text,
+        CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END AS tourney_id,
         tourney_name,
         COALESCE(surface, 'Unknown') AS surface,
         COALESCE(tourney_level, 'Unknown') AS tourney_level,

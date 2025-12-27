@@ -43,10 +43,14 @@ export async function GET(request: NextRequest, context: any) {
 
     const tourneyIds = await (await import('@/lib/tournament')).resolveTourneyIds(id);
     if (!tourneyIds) return Response.json({ error: 'Tournament not found' }, { status: 404 });
+    const numericIdSet = new Set(tourneyIds.filter(s => /^\d+$/.test(s)).map(s => parseInt(s, 10))); // numeric ids for normalization (580/581)
+
 
     // Carico tutti i match del torneo (multi-anno)
+    const tourneyIdFilters = tourneyIds.flatMap((tid: string) => [{ tourney_id: tid }, { tourney_id: { endsWith: `-${tid}` } }]);
+
     const tournamentMatches = await prisma.match.findMany({
-      where: { tourney_id: { in: tourneyIds } },
+      where: { OR: tourneyIdFilters },
       select: {
         year: true,
         tourney_id: true,
@@ -95,6 +99,7 @@ export async function GET(request: NextRequest, context: any) {
       year: number;
       minGamesLost: number; // ⚠️ per compatibilità: contiene la somma per quel giocatore
       player: { id: string | number; name: string; ioc: string };
+      tourney_id?: string | number;
     };
 
     const roundItems: { round: string; data: RoundItemData[] }[] = exposedRounds.map((round) => ({
@@ -179,11 +184,20 @@ export async function GET(request: NextRequest, context: any) {
               if (idx < targetIdx) sum += lost;
             }
 
+            // try to find the match that identifies this player's arrival (loser at round R)
+            const matchForPlayer = matches.find((mm: any) => String(mm.loser_id) === String(p.id) && mm.round === R) || null;
+            let origNumericTourney: string | undefined = undefined;
+            if (matchForPlayer && matchForPlayer.tourney_id) {
+              const parts = String(matchForPlayer.tourney_id).split('-');
+              origNumericTourney = parts[parts.length - 1];
+            }
+
             const bucket = roundItems.find(x => x.round === R)!;
             bucket.data.push({
               year,
               minGamesLost: sum, // compat: ora è la somma per quel giocatore
               player: { id: p.id, name: p.name, ioc: p.ioc },
+              tourney_id: origNumericTourney,
             });
           }
         } else {
@@ -198,10 +212,18 @@ export async function GET(request: NextRequest, context: any) {
             }
 
             const bucketW = roundItems.find(x => x.round === 'W')!;
+            // find final match to obtain tourney id
+            const finalMatch = matches.find((mm: any) => mm.round === 'F' && String(mm.winner_id) === String(winner.id)) || null;
+            let finalNumericTourney: string | undefined = undefined;
+            if (finalMatch && finalMatch.tourney_id) {
+              const parts = String(finalMatch.tourney_id).split('-');
+              finalNumericTourney = parts[parts.length - 1];
+            }
             bucketW.data.push({
               year,
               minGamesLost: totalToWin, // compat: totale per vincere
               player: { id: winner.id, name: winner.name, ioc: winner.ioc },
+              tourney_id: finalNumericTourney,
             });
           }
         }

@@ -30,9 +30,11 @@ export async function GET(request: NextRequest, context: any) {
     };
 
     // Recupera solo le finali
+    const tourneyIdFilters = tourneyIds.flatMap((tid: string) => [{ tourney_id: tid }, { tourney_id: { endsWith: `-${tid}` } }]);
+
     const editionsData = await prisma.match.findMany({
       where: {
-        tourney_id: { in: tourneyIds },
+        OR: tourneyIdFilters,
         round: "F",
       },
       select: matchSelect,

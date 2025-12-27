@@ -31,13 +31,18 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
   const [activeTab, setActiveTab] = useState('count');
   const [activeAgeSubTab, setActiveAgeSubTab] = useState<'main' | 'winners' | 'titles' | 'youngestrounds' | 'oldestrounds'>('main');
   type PercentageSubTabState = 'overall' | 'per-round';
-  type PercentageSubTabProp = 'overall' | 'rounds';
+  type PercentageURLSub = 'overall' | 'per-round';
+  type PercentageSectionProp = 'overall' | 'rounds';
 
   const [activePercentageSubTab, setActivePercentageSubTab] = useState<PercentageSubTabState>('overall');
 
-  const percentageActiveSubTab: PercentageSubTabProp = activePercentageSubTab === 'per-round' ? 'rounds' : 'overall';
+  // Map local state ('overall' | 'per-round') to the prop expected by PercentageSection ('overall' | 'rounds')
+  const percentageActiveSubTab: PercentageSectionProp = activePercentageSubTab === 'per-round' ? 'rounds' : 'overall';
 
   const didReplaceRef = useRef(false); // evita replace infinito a /records/count
+
+  // linkId: prefer DB numeric id when available (used for edition links to ensure numeric URLs)
+  const linkId = headerId ?? id;
 
   // Fetch tournament header (contains slug) and redirect numeric IDs to slug-preserving paths
   useEffect(() => {
@@ -79,7 +84,8 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
 
       // sync subtabs for specific tabs
       if (tabFromPath === 'percentage') {
-        setActivePercentageSubTab(subFromPath === 'rounds' ? 'per-round' : 'overall');
+        // support both old '/rounds' path and new '/per-round' path
+        setActivePercentageSubTab(subFromPath === 'per-round' || subFromPath === 'rounds' ? 'per-round' : 'overall');
       } else if (tabFromPath === 'ages') {
         // map accepted age subtabs, fallback to 'main'
         const validAges = new Set(['main', 'winners', 'titles', 'youngestrounds', 'oldestrounds']);
@@ -90,7 +96,7 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
     }
 
     // if path is exactly /tournaments/{id}/records, do a single replace to /records/count
-    const expectedBase = `/tournaments/${id}/records`;
+    const expectedBase = `/tournaments/${linkId}/records`;
     const currentPath = (typeof window !== 'undefined' ? window.location.pathname : pathname).replace(/\/$/, '');
     if (currentPath === expectedBase && !didReplaceRef.current) {
       didReplaceRef.current = true;
@@ -102,13 +108,13 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
   // Navigation handler: naviga a /records/:tab or /records/:tab/:sub
   const navigateToTab = (tab: string, sub?: string) => {
     const subSegment = sub ? `/${encodeURIComponent(sub)}` : '';
-    const newPath = `/tournaments/${id}/records/${encodeURIComponent(tab)}${subSegment}`;
+    const newPath = `/tournaments/${linkId}/records/${encodeURIComponent(tab)}${subSegment}`;
     if (typeof window !== 'undefined' && newPath !== window.location.pathname) {
       router.push(newPath);
     } else {
       // if nothing changes in path, still update local state immediately
       setActiveTab(tab);
-      if (tab === 'percentage' && sub) setActivePercentageSubTab(sub === 'rounds' ? 'per-round' : 'overall');
+      if (tab === 'percentage' && sub) setActivePercentageSubTab(sub === 'per-round' ? 'per-round' : 'overall');
       if (tab === 'ages' && sub) {
         const validAges = new Set(['main', 'winners', 'titles', 'youngestrounds', 'oldestrounds']);
         setActiveAgeSubTab(validAges.has(sub) ? (sub as any) : 'main');
@@ -117,7 +123,7 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
   };
 
   // specific handlers for subtabs (pass to TournamentTabs)
-  const navigateToPercentageSub = (sub: PercentageSubTabProp) => navigateToTab('percentage', sub);
+  const navigateToPercentageSub = (sub: PercentageURLSub) => navigateToTab('percentage', sub);
   const navigateToAgeSub = (sub: 'main' | 'winners' | 'titles' | 'youngestrounds' | 'oldestrounds') =>
     navigateToTab('ages', sub);
 
@@ -154,6 +160,7 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
         {activeTab === 'ages' && (
           <AgesSection
             id={id}
+            linkId={linkId}
             activeSubTab={activeAgeSubTab}
           />
         )}
@@ -165,7 +172,7 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
         )}
         {activeTab === 'timespan' && <TimespanSection id={id} />}
         {activeTab === 'rounds-on-entries' && <RoundsOnEntries id={id} />}
-        {activeTab === 'least' && <LeastSection id={id} />}
+        {activeTab === 'least' && <LeastSection id={id} linkId={linkId} />}
         {activeTab === 'average-age' && <AverageAgeSection id={id} />}
       </div>
     </main>

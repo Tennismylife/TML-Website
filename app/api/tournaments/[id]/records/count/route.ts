@@ -10,6 +10,8 @@ export async function GET(
   // resolve slug or id
   const tourneyIds = await (await import('@/lib/tournament')).resolveTourneyIds(id);
   if (!tourneyIds) return NextResponse.json({ error: 'Tournament not found' }, { status: 404 });
+  const numericIdSet = new Set(tourneyIds.filter(s => /^\d+$/.test(s)).map(s => parseInt(s, 10))); // numeric ids for normalization (580/581)
+
 
   try {
     const url = new URL(request.url);

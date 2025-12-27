@@ -14,18 +14,22 @@ export async function GET(request: NextRequest, context: any) {
 
     const tourneyIds = await (await import('@/lib/tournament')).resolveTourneyIds(id);
     if (!tourneyIds) return NextResponse.json({ sortedOverall: [] });
+    const numericIdSet = new Set(tourneyIds.filter(s => /^\d+$/.test(s)).map(s => parseInt(s, 10))); // numeric ids for normalization (580/581)
+
 
     // Conteggio vittorie
+    const tourneyIdFilters = tourneyIds.flatMap((tid: string) => [{ tourney_id: tid }, { tourney_id: { endsWith: `-${tid}` } }]);
+
     const winners = await prisma.match.groupBy({
       by: ['winner_id', 'winner_name', 'winner_ioc'],
-      where: { tourney_id: { in: tourneyIds } },
+      where: { OR: tourneyIdFilters },
       _count: { winner_id: true },
     });
 
     // Conteggio sconfitte
     const losers = await prisma.match.groupBy({
       by: ['loser_id', 'loser_name', 'loser_ioc'],
-      where: { tourney_id: { in: tourneyIds } },
+      where: { OR: tourneyIdFilters },
       _count: { loser_id: true },
     });
 

@@ -11,6 +11,7 @@ interface PlayerStatAge {
   ioc: string;
   age: number;
   year: number;
+  tourney_id?: string | number;
 }
 
 interface AgesData {
@@ -28,10 +29,11 @@ interface AgesData {
 
 interface AgesSectionProps {
   id: string;
+  linkId?: string | number;
   activeSubTab: 'main' | 'winners' | 'titles' | 'youngestrounds' | 'oldestrounds';
 }
 
-export default function AgesSection({ id, activeSubTab }: AgesSectionProps) {
+export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionProps) {
   const [agesData, setAgesData] = useState<AgesData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -108,7 +110,7 @@ export default function AgesSection({ id, activeSubTab }: AgesSectionProps) {
             </td>
             <td className="py-1 text-white">{formatAge(p.age)}</td>
             {showYear && <td className="py-1 text-white">
-              <Link href={`/tournaments/${encodeURIComponent(p.year)}`} className="text-blue-400 hover:underline">{p.year}</Link>
+              <Link href={`/tournaments/${p.tourney_id ?? linkId ?? id}/${p.year}`} className="text-blue-400 hover:underline">{p.year}</Link>
             </td>}
           </tr>
         ))}

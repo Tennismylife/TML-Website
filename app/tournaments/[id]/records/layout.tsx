@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import React from 'react';
+import { resolveCanonicalTourneyId } from '@/lib/tournament';
 
 // Helper to extract name (server-side)
 function extractName(nameField: any): string {
@@ -34,7 +35,9 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 
   let tournament: any = null;
   if (/^\d+$/.test(param)) {
-    const idNum = parseInt(param, 10);
+    const canonicalId = await resolveCanonicalTourneyId(param);
+    if (!canonicalId) return { title: 'Tournament Records | TML' };
+    const idNum = parseInt(canonicalId, 10);
     tournament = await prisma.tournament.findUnique({ where: { id: idNum }, select: { id: true, name: true, slug: true } });
   } else {
     tournament = await prisma.tournament.findUnique({ where: { slug: param }, select: { id: true, name: true, slug: true } });

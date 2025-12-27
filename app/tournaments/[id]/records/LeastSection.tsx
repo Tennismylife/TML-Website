@@ -16,6 +16,7 @@ interface RoundData {
   year: number;
   minGamesLost: number; // ✅ allineato alla signature originale dell'endpoint
   player: Player;
+  tourney_id?: string | number;
 }
 
 interface RoundItem {
@@ -27,7 +28,7 @@ interface LeastData {
   roundItems: RoundItem[];
 }
 
-export default function LeastSection({ id }: { id: string }) {
+export default function LeastSection({ id, linkId }: { id: string; linkId?: string | number }) {
   const [leastData, setLeastData] = useState<LeastData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -99,7 +100,7 @@ export default function LeastSection({ id }: { id: string }) {
             {/* ✅ usa minGamesLost per compatibilità con l'endpoint */}
             <td className="py-1 text-white">{item.minGamesLost}</td>
             <td className="py-1 text-white">
-              <Link href={`/tournaments/${id}/${item.year}`} className="text-blue-400 hover:underline">
+              <Link href={`/tournaments/${item.tourney_id ?? linkId ?? id}/${item.year}`} className="text-blue-400 hover:underline">
                 {item.year}
               </Link>
             </td>

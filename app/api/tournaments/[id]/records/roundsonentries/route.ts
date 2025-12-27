@@ -9,10 +9,14 @@ export async function GET(request: NextRequest, context: any) {
 
     const tourneyIds = await (await import('@/lib/tournament')).resolveTourneyIds(id);
     if (!tourneyIds) return NextResponse.json({ error: 'Tournament not found' }, { status: 404 });
+    const numericIdSet = new Set(tourneyIds.filter(s => /^\d+$/.test(s)).map(s => parseInt(s, 10))); // numeric ids for normalization (580/581)
+
 
     // Trova tutte le partite del torneo
+    const tourneyIdFilters = tourneyIds.flatMap((tid: string) => [{ tourney_id: tid }, { tourney_id: { endsWith: `-${tid}` } }]);
+
     const tournamentMatches = await prisma.match.findMany({
-      where: { tourney_id: { in: tourneyIds } },
+      where: { OR: tourneyIdFilters },
       select: {
         year: true,
         round: true,

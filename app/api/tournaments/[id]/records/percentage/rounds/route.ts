@@ -15,9 +15,13 @@ export async function GET(request: NextRequest, context: any) {
 
     const tourneyIds = await (await import('@/lib/tournament')).resolveTourneyIds(id);
     if (!tourneyIds) return NextResponse.json({ allRoundItems: [] });
+    const numericIdSet = new Set(tourneyIds.filter(s => /^\d+$/.test(s)).map(s => parseInt(s, 10))); // numeric ids for normalization (580/581)
+
+
+    const tourneyIdFilters = tourneyIds.flatMap((tid: string) => [{ tourney_id: tid }, { tourney_id: { endsWith: `-${tid}` } }]);
 
     const matches = await prisma.match.findMany({
-      where: { tourney_id: { in: tourneyIds } },
+      where: { OR: tourneyIdFilters },
       select: {
         round: true,
         winner_id: true,

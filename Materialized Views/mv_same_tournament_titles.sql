@@ -3,47 +3,47 @@ DROP MATERIALIZED VIEW IF EXISTS mv_same_tournament_titles;
 CREATE MATERIALIZED VIEW mv_same_tournament_titles AS
 WITH surface_json AS (
     SELECT
-        tourney_id::text AS tourney_id,
+        CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END AS tourney_id,
         player_id,
         jsonb_object_agg(COALESCE(surface, 'Unknown'), cnt) AS surface_titles
     FROM (
         SELECT
-            tourney_id::text AS tourney_id,
+            CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END AS tourney_id,
             player_id,
             surface,
             COUNT(DISTINCT event_id) AS cnt
         FROM "PlayerTournament"
         WHERE round = 'W'
-        GROUP BY tourney_id, player_id, surface
+        GROUP BY CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END, player_id, surface
     ) sub
     GROUP BY tourney_id, player_id
 ),
 level_json AS (
     SELECT
-        tourney_id::text AS tourney_id,
+        CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END AS tourney_id,
         player_id,
         jsonb_object_agg(COALESCE(tourney_level, 'Unknown'), cnt) AS level_titles
     FROM (
         SELECT
-            tourney_id::text AS tourney_id,
+            CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END AS tourney_id,
             player_id,
             tourney_level,
             COUNT(DISTINCT event_id) AS cnt
         FROM "PlayerTournament"
         WHERE round = 'W'
-        GROUP BY tourney_id, player_id, tourney_level
+        GROUP BY CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END, player_id, tourney_level
     ) sub
     GROUP BY tourney_id, player_id
 ),
 total_titles AS (
     SELECT
-        tourney_id::text AS tourney_id,
+        CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END AS tourney_id,
         player_id,
         COUNT(DISTINCT event_id) AS total_titles,
         MAX(tourney_name) AS tourney_name
     FROM "PlayerTournament"
     WHERE round = 'W'
-    GROUP BY tourney_id, player_id
+    GROUP BY CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END, player_id
 )
 SELECT
     tt.tourney_id,
