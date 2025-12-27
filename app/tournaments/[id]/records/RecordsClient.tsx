@@ -50,17 +50,21 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
     async function loadHeader() {
       try {
         setLoadingTournament(true);
-        const res = await fetch(`/api/tournaments/${id}/header`);
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const data = await res.json();
+        const data = await import('@/lib/tournamentHeaderCache').then(m => m.fetchTournamentHeaderCached(id));
         if (!mounted) return;
         setTournament(data);
         setLoadingTournament(false);
 
-        // Redirect numeric id -> slug preserving /records path
+        // Redirect numeric id -> slug preserving /records path (silent replace)
         if (/^\d+$/.test(id) && data?.slug && pathname && pathname.includes(`/tournaments/${id}`)) {
           const newPath = pathname.replace(`/tournaments/${id}`, `/tournaments/${data.slug}`);
-          if (newPath !== pathname) router.replace(newPath);
+          if (newPath !== pathname) {
+            if (typeof window !== 'undefined' && window.history && typeof window.history.replaceState === 'function') {
+              window.history.replaceState(null, '', newPath);
+            } else {
+              router.replace(newPath);
+            }
+          }
         }
       } catch (e) {
         if (!mounted) return;

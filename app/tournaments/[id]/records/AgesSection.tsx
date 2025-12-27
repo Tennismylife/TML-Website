@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react';
+import useIncrementalCards from './hooks/useIncrementalCards';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
@@ -38,6 +39,10 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [modalData, setModalData] = useState<{ title: string; list: PlayerStatAge[] } | null>(null);
+
+  // call incremental hook at top-level to keep hooks order stable across renders
+  const totalItemsForHook = agesData ? (activeSubTab === 'youngestrounds' ? (agesData.allYoungestItems?.length ?? 0) : (agesData.allOldestItems?.length ?? 0)) : 0;
+  const { isMobile, visibleCount, sentinelRef } = useIncrementalCards(totalItemsForHook, { initialVisible: 1, debounceMs: 1000 });
 
   useEffect(() => {
     const fetchAges = async () => {
@@ -92,8 +97,15 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
     }
   };
 
-  const renderTable = (data: PlayerStatAge[], showYear = true) => (
-    <table className="w-full text-sm border-collapse">
+  const items = activeSubTab === 'youngestrounds' ? agesData.allYoungestItems || [] : agesData.allOldestItems || [];
+  const visibleItems = items.slice(0, visibleCount);
+
+  const renderTable = (data: PlayerStatAge[], showYear = true) => (    <table className="w-full text-sm border-collapse table-fixed">
+      <colgroup>
+        <col style={{ width: '60%' }} />
+        <col style={{ width: showYear ? '20%' : '40%' }} />
+        {showYear && <col style={{ width: '20%' }} />}
+      </colgroup>
       <thead>
         <tr className="border-b border-gray-600">
           <th className="text-left py-1 text-white">Player</th>
@@ -103,13 +115,15 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
       </thead>
       <tbody>
         {data.map((p, index) => (
-          <tr key={`${p.id}-${p.year}-${index}`} className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors">
-            <td className="py-1 flex items-center gap-2 text-white">
-              <span className="text-base">{getFlagFromIOC(p.ioc) || ''}</span>
-              <Link href={`/players/${encodeURIComponent(String(p.id))}`} className="text-blue-400 hover:underline">{p.name}</Link>
+          <tr key={`${p.id}-${p.year}-${index}`} className="border-b border-gray-700">
+            <td className="py-1 min-w-0">
+              <div className="flex items-center gap-2 truncate">
+                <span className="text-base">{getFlagFromIOC(p.ioc) || ''}</span>
+                <Link href={`/players/${encodeURIComponent(String(p.id))}`} className="text-blue-400 hover:underline truncate">{p.name}</Link>
+              </div>
             </td>
-            <td className="py-1 text-white">{formatAge(p.age)}</td>
-            {showYear && <td className="py-1 text-white">
+            <td className="py-1 text-white text-right whitespace-nowrap">{formatAge(p.age)}</td>
+            {showYear && <td className="py-1 text-white text-right whitespace-nowrap">
               <Link href={`/tournaments/${p.tourney_id ?? linkId ?? id}/${p.year}`} className="text-blue-400 hover:underline">{p.year}</Link>
             </td>}
           </tr>
@@ -148,7 +162,6 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
   }
 
   // --- Rounds ---
-  const items = activeSubTab === 'youngestrounds' ? agesData.allYoungestItems || [] : agesData.allOldestItems || [];
   return (
     <section className="rounded border p-4" style={cardStyle}>
       <h3 className="text-white font-bold mb-4 text-lg">
@@ -156,7 +169,7 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
       </h3>
 
       <div className="grid md:grid-cols-2 gap-4">
-        {items.map(item => (
+        {visibleItems.map(item => (
           <div key={item.title} className="border rounded p-4" style={cardStyle}>
             <h4 className="text-white font-medium mb-2">{item.title}</h4>
             {renderTable(item.list)}
@@ -168,6 +181,10 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
             </button>
           </div>
         ))}
+
+        {isMobile && visibleCount < items.length && (
+          <div ref={sentinelRef} className="cards-sentinel h-4" />
+        )}
       </div>
 
       {modalData && <ModalTournamentsSeasons title={modalData.title} onClose={() => setModalData(null)}>{renderTable(modalData.list)}</ModalTournamentsSeasons>}

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react';
+import useIncrementalCards from './hooks/useIncrementalCards';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
@@ -53,11 +54,13 @@ export default function RoundsOnEntries({ id }: { id: string }) {
     fetchRounds();
   }, [id]);
 
+  const { isMobile, visibleCount, sentinelRef } = useIncrementalCards(roundsData?.allRoundItems?.length ?? 0, { initialVisible: 1, debounceMs: 1000 });
+
   if (loading) return <div className="text-white text-center py-10">Loading...</div>;
   if (error) return <div className="text-red-500 text-center py-10">Error: {error}</div>;
   if (!roundsData) return <div className="text-white text-center py-10">No data available</div>;
 
-  const { allRoundItems } = roundsData;
+  const allRoundItems = roundsData?.allRoundItems ?? []; 
 
   const handleMinEntriesChange = (round: string, value: number) => {
     setMinEntriesPerRound(prev => ({ ...prev, [round]: value }));
@@ -65,17 +68,25 @@ export default function RoundsOnEntries({ id }: { id: string }) {
 
   const updatedRoundItems = allRoundItems.map(item => {
     const minEntries = minEntriesPerRound[item.title] || 1;
-    const filtered = item.fullList.filter(p => p.totalEntries >= minEntries);
+    const filtered = (item.fullList ?? []).filter(p => p.totalEntries >= minEntries);
     return {
       ...item,
-      list: filtered.slice(0, 10),
+      list: (filtered.slice(0, 10)),
       fullFilteredList: filtered,
       minEntries,
     };
   });
 
+  const visibleRoundItems = updatedRoundItems.slice(0, visibleCount);
+
   const PlayerTable = ({ data }: { data: PlayerRoundEntry[] }) => (
-    <table className="w-full text-sm border-collapse">
+    <table className="w-full text-sm border-collapse table-fixed">
+      <colgroup>
+        <col style={{ width: '40%' }} />
+        <col style={{ width: '20%' }} />
+        <col style={{ width: '20%' }} />
+        <col style={{ width: '20%' }} />
+      </colgroup>
       <thead>
         <tr className="border-b border-gray-600">
           <th className="text-left py-1 text-white">Player</th>
@@ -86,16 +97,18 @@ export default function RoundsOnEntries({ id }: { id: string }) {
       </thead>
       <tbody>
         {data.map((item) => (
-          <tr key={`${item.id}-${item.reaches}`} className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors">
-            <td className="py-1 flex items-center gap-2 text-white">
+          <tr key={`${item.id}-${item.reaches}`} className="border-b border-gray-700">
+            <td className="py-1 flex items-center gap-2 text-white min-w-0">
               <span className="text-base">{getFlagFromIOC(item.ioc) || ""}</span>
-              <Link href={`/players/${encodeURIComponent(String(item.id))}`} className="text-blue-400 hover:underline">
-                {item.name}
-              </Link>
+              <div className="truncate">
+                <Link href={`/players/${encodeURIComponent(String(item.id))}`} className="text-blue-400 hover:underline">
+                  {item.name}
+                </Link>
+              </div>
             </td>
-            <td className="py-1 text-white">{item.reaches}</td>
-            <td className="py-1 text-white">{item.totalEntries}</td>
-            <td className="py-1 text-white">{item.percentage.toFixed(1)}%</td>
+            <td className="py-1 text-white text-right whitespace-nowrap">{item.reaches}</td>
+            <td className="py-1 text-white text-right whitespace-nowrap">{item.totalEntries}</td>
+            <td className="py-1 text-white text-right whitespace-nowrap">{item.percentage.toFixed(1)}%</td>
           </tr>
         ))}
       </tbody>
@@ -114,7 +127,7 @@ export default function RoundsOnEntries({ id }: { id: string }) {
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {updatedRoundItems.map(item => (
+        {visibleRoundItems.map(item => (
           <div key={item.title} className="border rounded p-4" style={cardStyle}>
             <h4 className="font-medium mb-2 text-white">{item.title}</h4>
 
@@ -137,7 +150,7 @@ export default function RoundsOnEntries({ id }: { id: string }) {
                 <PlayerTable data={item.list} />
                 <button
                   onClick={() => setModalData({ title: item.title, list: item.fullFilteredList })}
-                  className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                  className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                 >
                   View All
                 </button>
@@ -147,6 +160,10 @@ export default function RoundsOnEntries({ id }: { id: string }) {
             )}
           </div>
         ))}
+
+        {isMobile && visibleCount < updatedRoundItems.length && (
+          <div ref={sentinelRef} className="cards-sentinel h-4" />
+        )}
       </div>
 
       {modalData && (

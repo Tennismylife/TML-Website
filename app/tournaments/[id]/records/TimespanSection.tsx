@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react';
+import useIncrementalCards from './hooks/useIncrementalCards';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
@@ -40,6 +41,8 @@ export default function TimespanSection({ id }: { id: string }) {
   const [modalData, setModalData] = useState<{ title: string; list: PlayerTimespan[] } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const { isMobile, visibleCount, sentinelRef } = useIncrementalCards(timespanData?.allRoundItems?.length ?? 0, { initialVisible: 1, debounceMs: 1000 });
+
   // Primo caricamento: solo Top 10
   useEffect(() => {
     const fetchInitial = async () => {
@@ -60,7 +63,13 @@ export default function TimespanSection({ id }: { id: string }) {
   }, [id]);
 
   const PlayerTable = ({ data }: { data: PlayerTimespan[] }) => (
-    <table className="w-full text-sm border-collapse">
+    <table className="w-full text-sm border-collapse table-fixed">
+      <colgroup>
+        <col style={{ width: '40%' }} />
+        <col style={{ width: '20%' }} />
+        <col style={{ width: '20%' }} />
+        <col style={{ width: '20%' }} />
+      </colgroup>
       <thead>
         <tr className="border-b border-gray-600">
           <th className="text-left py-1 text-white">Player</th>
@@ -71,16 +80,18 @@ export default function TimespanSection({ id }: { id: string }) {
       </thead>
       <tbody>
         {data.map((item, idx) => (
-          <tr key={`${item.id}-${idx}`} className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors">
-            <td className="py-1 flex items-center gap-2 text-white">
-              <span className="text-base">{getFlagFromIOC(item.ioc) || ''}</span>
-              <Link href={`/players/${encodeURIComponent(String(item.id))}`} className="text-blue-400 hover:underline">
-                {item.name}
-              </Link>
+          <tr key={`${item.id}-${idx}`} className="border-b border-gray-700">
+            <td className="py-1 min-w-0">
+              <div className="flex items-center gap-2 truncate">
+                <span className="text-base">{getFlagFromIOC(item.ioc) || ''}</span>
+                <Link href={`/players/${encodeURIComponent(String(item.id))}`} className="text-blue-400 hover:underline truncate">
+                  {item.name}
+                </Link>
+              </div>
             </td>
-            <td className="py-1 text-white">{fmtDate(item.firstDate)}</td>
-            <td className="py-1 text-white">{fmtDate(item.lastDate)}</td>
-            <td className="py-1 text-white">{item.days}</td>
+            <td className="py-1 text-white whitespace-nowrap">{fmtDate(item.firstDate)}</td>
+            <td className="py-1 text-white whitespace-nowrap">{fmtDate(item.lastDate)}</td>
+            <td className="py-1 text-white text-right whitespace-nowrap">{item.days}</td>
           </tr>
         ))}
       </tbody>
@@ -138,7 +149,7 @@ export default function TimespanSection({ id }: { id: string }) {
       <h3 className="font-medium mb-4 text-white">Longest Timespan per Round</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {timespanData.allRoundItems.map((item) => (
+        {timespanData.allRoundItems.slice(0, visibleCount).map((item) => (
           <div key={item.title} className="border rounded p-4" style={cardStyle}>
             <h4 className="font-medium mb-2 text-white">{item.title}</h4>
 
@@ -160,6 +171,10 @@ export default function TimespanSection({ id }: { id: string }) {
             )}
           </div>
         ))}
+
+        {isMobile && visibleCount < timespanData.allRoundItems.length && (
+          <div ref={sentinelRef} className="cards-sentinel h-4" />
+        )}
       </div>
 
       {modalData && (

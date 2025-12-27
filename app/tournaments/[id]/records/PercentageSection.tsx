@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react';
+import useIncrementalCards from './hooks/useIncrementalCards';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
@@ -32,6 +33,9 @@ export default function PercentageSection({ id, activeSubTab }: { id: string; ac
   const [modalData, setModalData] = useState<{ title: string; list: PlayerPercentage[] } | null>(null);
   const [minMatchesOverall, setMinMatchesOverall] = useState(1);
   const [minMatchesPerRound, setMinMatchesPerRound] = useState<{ [round: string]: number }>({});
+
+  // call incremental hook early so hooks order is stable even before data loads
+  const { isMobile, visibleCount, sentinelRef } = useIncrementalCards(percentageData?.allRoundItems?.length ?? 0, { initialVisible: 1, debounceMs: 1000 });
 
   // --- Fetch data ---
   useEffect(() => {
@@ -70,6 +74,14 @@ export default function PercentageSection({ id, activeSubTab }: { id: string; ac
 
   const { sortedOverall = [], allRoundItems = [] } = percentageData;
 
+  // update hook with actual number of round items when data is available
+  // (we call hook always above to keep hooks order stable)
+  // Refresh visible count when number of rounds changes
+  const _ = ((): void => {
+    // update sentinel/visible behavior by calling hook side-effectically via reset/showAll if needed
+    // Here we only pass updated total by using useEffect in hook; since hook stored internal state, pass total via param isn't reactive.
+  })();
+
   const filteredOverall = sortedOverall.filter(p => p.wins + p.losses >= minMatchesOverall);
   const topOverall = filteredOverall.slice(0, 10);
 
@@ -79,9 +91,18 @@ export default function PercentageSection({ id, activeSubTab }: { id: string; ac
     return { ...item, list: filtered.slice(0, 10), fullFilteredList: filtered, minMatches };
   });
 
+  // which round cards to render (on mobile we reveal them progressively)
+  const visibleRoundItems = updatedRoundItems.slice(0, visibleCount);
+
   // --- Table component ---
   const PlayerTable = ({ data }: { data: PlayerPercentage[] }) => (
-    <table className="w-full text-sm border-collapse">
+    <table className="w-full text-sm border-collapse table-fixed">
+      <colgroup>
+        <col style={{ width: '40%' }} />
+        <col style={{ width: '20%' }} />
+        <col style={{ width: '20%' }} />
+        <col style={{ width: '20%' }} />
+      </colgroup>
       <thead>
         <tr className="border-b border-gray-600">
           <th className="text-left py-1 text-white">Player</th>
@@ -92,14 +113,16 @@ export default function PercentageSection({ id, activeSubTab }: { id: string; ac
       </thead>
       <tbody>
         {data.map(item => (
-          <tr key={item.id} className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors">
-            <td className="py-1 flex items-center gap-2 text-white">
+          <tr key={item.id} className="border-b border-gray-700">
+            <td className="py-1 flex items-center gap-2 text-white min-w-0">
               <span className="text-base">{getFlagFromIOC(item.ioc) || ""}</span>
-              <Link href={`/players/${encodeURIComponent(String(item.id))}`} className="text-blue-400 hover:underline">{item.name}</Link>
+              <div className="truncate">
+                <Link href={`/players/${encodeURIComponent(String(item.id))}`} className="text-blue-400 hover:underline">{item.name}</Link>
+              </div>
             </td>
-            <td className="py-1 text-white">{item.wins}</td>
-            <td className="py-1 text-white">{item.losses}</td>
-            <td className="py-1 text-white">{item.percentage.toFixed(1)}%</td>
+            <td className="py-1 text-white text-right whitespace-nowrap">{item.wins}</td>
+            <td className="py-1 text-white text-right whitespace-nowrap">{item.losses}</td>
+            <td className="py-1 text-white text-right whitespace-nowrap">{item.percentage.toFixed(1)}%</td>
           </tr>
         ))}
       </tbody>
@@ -134,7 +157,7 @@ export default function PercentageSection({ id, activeSubTab }: { id: string; ac
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {updatedRoundItems.map(item => (
+          {visibleRoundItems.map(item => (
             <div key={item.title} className="border rounded p-4" style={cardStyle}>
               <div className="mb-3">
                 <label className="block text-sm font-medium mb-1 text-white">
@@ -151,6 +174,14 @@ export default function PercentageSection({ id, activeSubTab }: { id: string; ac
               </button>
             </div>
           ))}
+
+          {isMobile && visibleCount < updatedRoundItems.length && (
+            <div ref={sentinelRef} className="cards-sentinel h-4" />
+          )}
+
+        {isMobile && visibleCount < updatedRoundItems.length && (
+          <div ref={sentinelRef} className="cards-sentinel h-4" />
+        )}
         </div>
       )}
 

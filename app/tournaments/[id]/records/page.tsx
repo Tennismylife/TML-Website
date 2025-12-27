@@ -46,17 +46,23 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
     async function loadHeader() {
       try {
         setLoadingTournament(true);
-        const res = await fetch(`/api/tournaments/${id}/header`);
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const data = await res.json();
+        const data = await import('@/lib/tournamentHeaderCache').then(m => m.fetchTournamentHeaderCached(id));
         if (!mounted) return;
         setTournament(data);
         setLoadingTournament(false);
 
-        // Redirect numeric id -> slug preserving /records path
+        // Redirect numeric id -> slug preserving /records path (silent replace to avoid bounce)
         if (/^\d+$/.test(id) && data?.slug && pathname && pathname.includes(`/tournaments/${id}`)) {
           const newPath = pathname.replace(`/tournaments/${id}`, `/tournaments/${data.slug}`);
-          if (newPath !== pathname) router.replace(newPath);
+          if (newPath !== pathname) {
+            if (typeof window !== 'undefined' && window.history && typeof window.history.replaceState === 'function') {
+              // Replace URL without triggering a client navigation — keeps the page loaded once
+              window.history.replaceState(null, '', newPath);
+            } else {
+              // fallback to router.replace if history API not available
+              router.replace(newPath);
+            }
+          }
         }
       } catch (e) {
         if (!mounted) return;
@@ -91,12 +97,20 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
       return;
     }
 
-    // if path is exactly /tournaments/{id}/records, do a single replace to /records/count
+    // if path is exactly /tournaments/{id}/records, do a single silent replace to /records/count (no navigation)
     const expectedBase = `/tournaments/${headerId ?? id}/records`;
     const currentPath = (typeof window !== 'undefined' ? window.location.pathname : pathname).replace(/\/$/, '');
     if (currentPath === expectedBase && !didReplaceRef.current) {
       didReplaceRef.current = true;
-      router.replace(`${expectedBase}/count`);
+      const newCountPath = `${expectedBase}/count`;
+      if (typeof window !== 'undefined' && window.history && typeof window.history.replaceState === 'function') {
+        window.history.replaceState(null, '', newCountPath);
+        // ensure UI state reflects the new path without triggering navigation
+        setActiveTab('count');
+      } else {
+        // fallback if history API not available
+        router.replace(newCountPath);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);

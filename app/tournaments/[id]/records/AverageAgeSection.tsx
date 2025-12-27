@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+
 import {
   LineChart,
   Line,
@@ -25,6 +26,16 @@ interface AverageAgeData {
 export default function AverageAgeSection({ id }: { id: string }) {
   const [data, setData] = useState<AverageAgeData | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // detect mobile to reduce animations and chart height
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const m = window.matchMedia('(max-width: 767.98px)');
+    const handler = (e: MediaQueryListEvent | MediaQueryList) => setIsMobile((e as MediaQueryListEvent).matches ?? (e as MediaQueryList).matches);
+    setIsMobile(m.matches);
+    m.addEventListener('change', handler as any);
+    return () => m.removeEventListener('change', handler as any);
+  }, []);
 
   useEffect(() => {
     fetch(`/api/tournaments/${id}/records/averageage`)
@@ -67,6 +78,7 @@ export default function AverageAgeSection({ id }: { id: string }) {
   const xAngle = dataCount > 25 ? -60 : dataCount > 15 ? -45 : -35;
   const xHeight = dataCount > 25 ? 110 : dataCount > 15 ? 95 : 80;
 
+
   return (
     <div className="relative overflow-hidden rounded-2xl border border-gray-800 bg-gradient-to-br from-gray-950 via-purple-950/40 to-gray-950 p-6 shadow-2xl">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-indigo-600/20 via-purple-600/20 to-pink-600/20 blur-3xl" />
@@ -83,8 +95,8 @@ export default function AverageAgeSection({ id }: { id: string }) {
           </div>
         </div>
 
-        <div className="bg-black/40 backdrop-blur-xl rounded-2xl border border-gray-800 p-4 -m-6 mt-6">
-          <ResponsiveContainer width="100%" height={480}>
+        <div className="bg-black/40 rounded-2xl border border-gray-800 p-4 -m-6 mt-6">
+          <ResponsiveContainer width="100%" height={isMobile ? 320 : 480}>
             <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
               <defs>
                 <linearGradient id="colorLine" x1="0" y1="0" x2="0" y2="1">
@@ -143,10 +155,10 @@ export default function AverageAgeSection({ id }: { id: string }) {
                 dataKey="averageAge"
                 stroke="url(#colorLine)"
                 strokeWidth={5}
-                dot={{ fill: '#c084fc', r: 7, stroke: '#1e1b4b', strokeWidth: 3 }}
-                activeDot={{ r: 10, stroke: '#ddd6fe', strokeWidth: 4 }}
-                animationDuration={1800}
-                isAnimationActive={true}
+                dot={{ fill: '#c084fc', r: isMobile ? 3 : 7, stroke: '#1e1b4b', strokeWidth: isMobile ? 1 : 3 }}
+                activeDot={isMobile ? false : { r: 10, stroke: '#ddd6fe', strokeWidth: 4 }}
+                animationDuration={isMobile ? 0 : 1200}
+                isAnimationActive={!isMobile}
               />
             </LineChart>
           </ResponsiveContainer>

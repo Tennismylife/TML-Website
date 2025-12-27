@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
@@ -18,6 +18,62 @@ interface RoundItem {
   fullList?: PlayerStat[];
 }
 
+// RoundCard with table-like appearance (header, rows, links)
+const RoundCard = React.memo(function RoundCard({
+  item,
+  onOpen,
+  loading
+}: {
+  item: RoundItem;
+  onOpen: (title: string) => void;
+  loading?: boolean;
+}) {
+  return (
+    <div className="border rounded p-4 bg-gray-900 text-white overflow-hidden">
+      <div className="pb-2">
+        <h4 className="font-medium">{item.title}</h4>
+      </div>
+
+      <table className="w-full text-sm border-collapse table-fixed">
+        <colgroup>
+          <col style={{ width: 'calc(100% - 80px)' }} />
+          <col style={{ width: '80px' }} />
+        </colgroup>
+        <thead>
+          <tr className="bg-gray-800">
+            <th className="text-left py-1 text-gray-300">Player</th>
+            <th className="text-right py-1 text-gray-300 whitespace-nowrap">Reaches</th>
+          </tr>
+        </thead>
+        <tbody>
+          {item.list?.map((it, idx) => (
+            <tr key={it.id} className={`border-b border-gray-700 ${idx % 2 === 0 ? 'bg-gray-900' : 'bg-gray-800'}`}>
+              <td className="py-1 flex items-center gap-2 text-white min-w-0">
+                <span className="text-base">{getFlagFromIOC(it.ioc) || ''}</span>
+                <div className="truncate">
+                  <Link href={`/players/${encodeURIComponent(String(it.id))}`} prefetch={false} className="text-blue-400 hover:underline">
+                    {it.name}
+                  </Link>
+                </div>
+              </td>
+              <td className="py-1 text-white text-right whitespace-nowrap overflow-hidden max-w-[80px]">{it.count}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div className="mt-2">
+        <button
+          onClick={() => onOpen(item.title)}
+          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          {loading ? 'Loading...' : 'View All'}
+        </button>
+      </div>
+    </div>
+  );
+});
+
 export default function RoundsSection({ tournamentId }: { tournamentId: string }) {
   const [roundItems, setRoundItems] = useState<RoundItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,6 +86,44 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
   const [visibleCards, setVisibleCards] = useState<number>(1);
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const isLoadingMoreRef = useRef<boolean>(false);
+  // timer handle for scheduled reveals (cleared on cleanup)
+  const loadTimerRef = useRef<number | null>(null);
+  // sentinel ref so we don't query the DOM repeatedly
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  // ─── Open modal: fetch fullList lazy ───
+  const handleOpenModal = useCallback(async (roundTitle: string) => {
+    const round = roundItems.find(r => r.title === roundTitle);
+    if (!round) return;
+
+    if (round.fullList?.length) {
+      setModalData({ title: roundTitle, list: round.fullList });
+      return;
+    }
+
+    setLoadingRounds(prev => ({ ...prev, [roundTitle]: true }));
+    try {
+      const res = await fetch(
+        `/api/tournaments/${tournamentId}/records/rounds?round=${encodeURIComponent(roundTitle)}&full=true`
+      );
+      if (!res.ok) throw new Error('Failed to fetch full round');
+
+      const data = await res.json();
+      const fullRound = data.roundItems[0]; // solo il round richiesto
+      if (fullRound) {
+        setRoundItems(prev =>
+          prev.map(r =>
+            r.title === roundTitle ? { ...r, fullList: fullRound.fullList } : r
+          )
+        );
+        setModalData({ title: roundTitle, list: fullRound.fullList });
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+    } finally {
+      setLoadingRounds(prev => ({ ...prev, [roundTitle]: false }));
+    }
+  }, [roundItems, tournamentId]);
 
   // ─── Primo fetch: top10 per round ───
   useEffect(() => {
@@ -78,27 +172,40 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
     if (!isMobile) return;
     if (visibleCards >= roundItems.length) return;
 
-    const observer = new IntersectionObserver((entries, obs) => {
+    const DEBOUNCE_MS = 1200; // increase debounce to avoid jank on low-end devices
+
+    const scheduleReveal = (cb: () => void) => {
+      if ('requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(cb, { timeout: DEBOUNCE_MS });
+      } else {
+        const t = setTimeout(cb, DEBOUNCE_MS);
+        loadTimerRef.current = t as unknown as number;
+      }
+    };
+
+    const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (!entry.isIntersecting) return;
-        // prevent rapid repeat triggers
         if (isLoadingMoreRef.current) return;
         isLoadingMoreRef.current = true;
 
-        // unobserve the current sentinel to avoid multiple callbacks before DOM updates
-        try { obs.unobserve(entry.target); } catch (e) { /* no-op */ }
-
-        // reveal next card
-        setVisibleCards(prev => Math.min(prev + 1, roundItems.length));
-
-        // allow next increment after a short delay to avoid jank
-        setTimeout(() => { isLoadingMoreRef.current = false; }, 250);
+        scheduleReveal(() => {
+          setVisibleCards(prev => Math.min(prev + 1, roundItems.length));
+          isLoadingMoreRef.current = false;
+        });
       });
-    }, { rootMargin: '200px', threshold: 0.1 });
+    }, { rootMargin: '200px', threshold: 0.6 });
 
-    const sentinel = document.querySelector('.cards-sentinel');
+    const sentinel = sentinelRef.current;
     if (sentinel) observer.observe(sentinel);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (loadTimerRef.current) {
+        clearTimeout(loadTimerRef.current);
+        loadTimerRef.current = null;
+        isLoadingMoreRef.current = false;
+      }
+    };
   }, [isMobile, roundItems.length, visibleCards]);
 
   if (loading) return <div className="text-white">Loading...</div>;
@@ -115,10 +222,10 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
       </thead>
       <tbody>
         {data.map((item) => (
-          <tr key={item.id} className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors">
+          <tr key={item.id} className="border-b border-gray-700">
             <td className="py-1 flex items-center gap-2 text-white">
               <span className="text-base">{getFlagFromIOC(item.ioc) || ''}</span>
-              <Link href={`/players/${encodeURIComponent(String(item.id))}`} className="text-blue-400 hover:underline">
+              <Link href={`/players/${encodeURIComponent(String(item.id))}`} prefetch={false} className="text-blue-400">
                 {item.name}
               </Link>
             </td>
@@ -130,73 +237,23 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
   );
 
   // ─── Open modal: fetch fullList lazy ───
-  const openModal = async (roundTitle: string) => {
-    const round = roundItems.find(r => r.title === roundTitle);
-    if (!round) return;
-
-    if (round.fullList?.length) {
-      setModalData({ title: roundTitle, list: round.fullList });
-      return;
-    }
-
-    setLoadingRounds(prev => ({ ...prev, [roundTitle]: true }));
-    try {
-      const res = await fetch(
-        `/api/tournaments/${tournamentId}/records/rounds?round=${roundTitle}&full=true`
-      );
-      if (!res.ok) throw new Error('Failed to fetch full round');
-
-      const data = await res.json();
-      const fullRound = data.roundItems[0]; // solo il round richiesto
-      if (fullRound) {
-        setRoundItems(prev =>
-          prev.map(r =>
-            r.title === roundTitle ? { ...r, fullList: fullRound.fullList } : r
-          )
-        );
-        setModalData({ title: roundTitle, list: fullRound.fullList });
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-    } finally {
-      setLoadingRounds(prev => ({ ...prev, [roundTitle]: false }));
-    }
-  };
-
-
-
   const cardStyle = {
-    backgroundColor: 'rgba(31,41,55,0.95)',
-    backdropFilter: 'blur(4px)',
+    backgroundColor: 'rgba(31,41,55,0.95)'
   };
 
   return (
     <section className="rounded border p-4" style={cardStyle}>
       <h3 className="font-medium mb-4 text-white">Reaches per Round</h3>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {roundItems.slice(0, visibleCards).map(item => (
-          <div key={item.title} className="border rounded p-4" style={cardStyle}>
-            <h4 className="font-medium mb-2 text-white">{item.title}</h4>
-            {item.list?.length > 0 ? (
-              <>
-                {renderTable(item.list, 'Reaches')}
-                <button
-                  onClick={() => openModal(item.title)}
-                  className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-                >
-                  {loadingRounds[item.title] ? 'Loading...' : 'View All'}
-                </button>
-              </>
-            ) : (
-              <p className="text-gray-400">No data available</p>
-            )}
-          </div>
+        {roundItems.slice(0, visibleCards).map((item) => (
+          <RoundCard key={item.title} item={item} onOpen={handleOpenModal} loading={loadingRounds[item.title]} />
         ))}
-
-        {isMobile && visibleCards < roundItems.length && (
-          <div className="cards-sentinel h-2" />
-        )}
       </div>
+
+      {/* sentinel placed after the grid to avoid layout thrashing while adding cards */}
+      {isMobile && visibleCards < roundItems.length && (
+        <div ref={sentinelRef} className="cards-sentinel h-4" />
+      )}
 
       {modalData && (
         <ModalTournamentsSeasons title={`All Reaches for ${modalData.title}`} onClose={() => setModalData(null)}>
