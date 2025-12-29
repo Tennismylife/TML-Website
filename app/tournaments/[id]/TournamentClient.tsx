@@ -152,9 +152,10 @@ export default function TournamentClient({ id }: { id: string }) {
               <tbody>
                 {editions.map((m, idx) => {
                   const isRecent = idx === 0;
+                  const editionKey = `${m.tourney_id}-${m.year}-${new Date(m.tourney_date).getTime()}-${m.winner_id}-${m.loser_id}-${idx}`;
                   return (
                     <tr
-                      key={`${m.tourney_id}-${m.year}`}
+                      key={editionKey}
                       className={`hover:bg-white/5 transition ${
                         isRecent ? "bg-gradient-to-r from-yellow-500/10 to-amber-500/10" : ""
                       }`}

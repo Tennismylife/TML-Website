@@ -1,8 +1,8 @@
 
 'use client'
 
-import { useState, useEffect } from 'react';
-import useIncrementalCards from './hooks/useIncrementalCards';
+import React, { useState, useEffect } from 'react';
+import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';

@@ -134,28 +134,55 @@ export default function PlayerClient(props: any) {
   // Centralized URL sync for lifted state
   useEffect(() => {
     const buildAndReplace = () => {
-      const params = new URLSearchParams();
+      // Preserve existing query parameters and merge with updated ones for the current tab
+      const params = new URLSearchParams(window.location.search);
       params.set('tab', activeTab);
 
+      // For tournaments tab, explicitly set (or delete) tournament-related params according to state
       if (activeTab === 'tournaments') {
         if (tournamentsFilters.tourney) params.set('tourney', tournamentsFilters.tourney);
+        else params.delete('tourney');
+
         if (tournamentsFilters.level && tournamentsFilters.level !== 'All') params.set('level', tournamentsFilters.level);
+        else params.delete('level');
+
         if (tournamentsFilters.surface && tournamentsFilters.surface !== 'All') params.set('surface', tournamentsFilters.surface);
+        else params.delete('surface');
+
         if (tournamentsFilters.round && tournamentsFilters.round !== 'All') params.set('round', tournamentsFilters.round);
+        else params.delete('round');
+
         if (tournamentsFilters.season && tournamentsFilters.season !== 'All') params.set('year', String(tournamentsFilters.season));
+        else params.delete('year');
+
         if (tournamentsFilters.search && tournamentsFilters.search.trim()) params.set('search', tournamentsFilters.search);
+        else params.delete('search');
+
         if (tournamentsFilters.sub) params.set('sub', tournamentsFilters.sub);
       }
 
+      // For h2h tab, explicitly set / delete relevant params
       if (activeTab === 'h2h') {
         if (h2hFilters.year && h2hFilters.year !== 'All') params.set('year', String(h2hFilters.year));
+        else params.delete('year');
+
         if (h2hFilters.level && h2hFilters.level !== 'All') params.set('level', h2hFilters.level);
+        else params.delete('level');
+
         if (h2hFilters.surface && h2hFilters.surface !== 'All') params.set('surface', h2hFilters.surface);
+        else params.delete('surface');
+
         if (h2hFilters.round && h2hFilters.round !== 'All') params.set('round', h2hFilters.round);
+        else params.delete('round');
+
         if (h2hFilters.tournament && h2hFilters.tournament !== 'All') params.set('tourney', h2hFilters.tournament);
+        else params.delete('tourney');
+
         if (h2hFilters.opponent && h2hFilters.opponent.trim()) params.set('opponent', h2hFilters.opponent);
+        else params.delete('opponent');
       }
 
+      // For other tabs (e.g. matches/profile), we intentionally preserve any existing params
       const newQs = params.toString();
       const newUrl = `${window.location.pathname}${newQs ? `?${newQs}` : ''}`;
 
@@ -164,7 +191,8 @@ export default function PlayerClient(props: any) {
       if (replaceTimerRef.current) clearTimeout(replaceTimerRef.current);
       replaceTimerRef.current = window.setTimeout(() => {
         try {
-          router.replace(newUrl, { scroll: false });
+          console.debug('[PlayerClient] buildAndReplace ->', newUrl);
+      router.replace(newUrl, { scroll: false });
         } catch (err) {
           // eslint-disable-next-line no-console
           console.debug('[PlayerPage] router.replace failed:', err);

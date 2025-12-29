@@ -13,7 +13,7 @@ interface Player {
 import Card from '@/components/Card'
 
 export const metadata = {
-  title: 'Tennis My Life — Tennis Stats, Records & Match Database',
+  title: 'Tennis My Life — Tennis Stats, Records & Matches Database',
   description: "Explore tournament calendars, match results, player head-to-head records, rankings and advanced tennis metrics on Tennis My Life.",
   openGraph: {
     title: 'Tennis My Life — Tennis Stats, Records & Match Database',

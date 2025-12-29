@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
-import useIncrementalCards from '../../../tournaments/[id]/records/hooks/useIncrementalCards';
+import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 
 interface PlayerPercentage {
   id: string | number;

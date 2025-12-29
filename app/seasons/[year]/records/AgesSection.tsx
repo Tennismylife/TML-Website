@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { getFlagFromIOC, getTourneyHref } from "@/lib/utils";
 import ModalTournamentsSeasons from "@/components/ModalTournamentsSeasons";
-import useIncrementalCards from '../../../tournaments/[id]/records/hooks/useIncrementalCards';
+import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 
 function formatAge(age: number): string {
   const years = Math.floor(age);

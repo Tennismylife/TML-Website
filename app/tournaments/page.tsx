@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, Globe, ChevronDown } from "lucide-react";
+import { Globe, ChevronDown } from "lucide-react";
+import TournamentSearch from "./TournamentSearch";
 import type { Tournament as TournamentDTO, TournamentGroups } from "@/types/tournament";
 import { getSurfaceColor } from "@/lib/colors";
 import { getTourneyHref } from "@/lib/utils";
@@ -40,31 +41,42 @@ function Badge({ text, bgColor, textColor }: { text: string; bgColor?: string; t
 export default function TournamentsPage() {
   const [data, setData] = useState<TournamentGroups>(EMPTY);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [showOthers, setShowOthers] = useState(false);
 
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Debounce search
-  useEffect(() => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => setDebouncedSearch(search), 300);
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-  }, [search]);
 
-  // Filter data
+
+
+  // Flat list of all tournaments (useful for suggestions)
+  const allTournaments = useMemo(() => [
+    ...(data.grandSlams || []),
+    ...(data.masters1000 || []),
+    ...(data.finals || []),
+    ...(data.olympics || []),
+    ...(data.others || []),
+  ], [data]);
+
+  // Helper: recursively extract all string values from the `name` JSON field
+  function extractNames(field: any): string[] {
+    if (!field) return [];
+    if (typeof field === 'string') return [field];
+    if (Array.isArray(field)) return field.flatMap(f => extractNames(f));
+    if (typeof field === 'object') return Object.values(field).flatMap(v => extractNames(v));
+    return [];
+  }
+
+
+
+  // Filter data for the main grid (debounced to avoid excessive recalculation)
   const filteredData = useMemo(() => {
     if (!debouncedSearch.trim()) return data;
     const q = debouncedSearch.toLowerCase().trim();
     const filter = (arr: TournamentDTO[]) =>
-      arr.filter(t =>
-        (Array.isArray(t.name) ? t.name.join(" ") : t.name || "")
-          .toLowerCase()
-          .includes(q)
-      );
+      arr.filter(t => {
+        const names = Array.isArray(t.name) ? t.name.flatMap(n => extractNames(n)) : extractNames(t.name);
+        return names.join(' ').toLowerCase().includes(q);
+      });
     return {
       grandSlams: filter(data.grandSlams),
       masters1000: filter(data.masters1000),
@@ -85,17 +97,6 @@ export default function TournamentsPage() {
     return () => controller.abort();
   }, []);
 
-  // Cmd+K / Ctrl+K focus
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault();
-        document.getElementById("tournament-search")?.focus();
-      }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, []);
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -111,40 +112,16 @@ export default function TournamentsPage() {
           className="relative z-10 text-center px-6 motion-reduce:scale-100 motion-reduce:opacity-100"
         >
           <h1 className="text-6xl md:text-8xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500">
-            ATP TOUR
+           OPEN ERA TOURNAMENTS
           </h1>
-          <p className="mt-4 text-lg md:text-xl text-gray-300">
-            All the official ATP tournaments in one place.
+          <p className="mt-2 text-xs text-gray-500">
+            (Individual tournaments are identified by the IDs used by the official ATP website)
           </p>
         </motion.div>
       </div>
 
-      {/* Search Bar */}
-      <div className="sticky top-4 z-50 px-6 -mt-20 mb-12">
-        <motion.div initial={{ y: -50 }} animate={{ y: 0 }}>
-          <div className="relative group">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              id="tournament-search"
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search tournament"
-              aria-label="Search tournaments"
-              className="w-full pl-14 pr-12 py-4 rounded-2xl bg-gray-900/90 backdrop-blur-xl border border-gray-800 focus:border-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-500/20 focus:shadow-lg focus:shadow-cyan-500/20 transition-all text-lg"
-            />
-            {search && (
-              <button
-                onClick={() => setSearch("")}
-                aria-label="Clear search"
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 hover:bg-gray-800 rounded-lg transition"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            )}
-          </div>
-        </motion.div>
-      </div>
+      {/* Search Bar component */}
+      <TournamentSearch onDebouncedSearch={(v) => setDebouncedSearch(v)} />
 
       {/* Tournament grid */}
       <div className="px-6 pb-24">

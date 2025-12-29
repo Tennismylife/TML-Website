@@ -29,16 +29,28 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
   }, [search]);
 
   // Track which query keys were present when the page was opened (external links)
-  const initialQueryKeysRef = useMemo(() => {
+  const initialQueryKeysRef = useRef<Set<string>>(new Set());
+  const initialKeysReadyRef = useRef<boolean>(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
     const s = new Set<string>();
     try {
       const u = new URL(window.location.href);
       u.searchParams.forEach((_, k) => { if (k !== 'tab') s.add(k); });
-      console.debug('[AllMatches] initial query keys:', Array.from(s));
+      initialQueryKeysRef.current = s;
+      initialKeysReadyRef.current = true;
+      console.debug('[AllMatches] initial query keys (client):', Array.from(s));
+      // If there was a queued payload during hydration, apply it now
+      if (queuedPayloadRef.current) {
+        console.debug('[AllMatches] applying queued payload on initialKeysReady', queuedPayloadRef.current);
+        // call updateUrl with the queued payload (it will not re-queue because keysReady is true)
+        updateUrl(queuedPayloadRef.current as Record<string,string>);
+        queuedPayloadRef.current = null;
+      }
     } catch (e) {
-      // noop in SSR or environments without window
+      // noop
     }
-    return s;
   }, []);
 
   // Track explicit deletions performed by the user to avoid them being re-added by automatic sync
@@ -153,24 +165,34 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
   const DEFAULT_INITIAL_COUNT = 10;
   const [showAll, setShowAll] = useState<boolean>(false);
 
+  const queuedPayloadRef = useRef<Record<string,string> | null>(null);
+
   const updateUrl = (filters: Record<string, string | number>) => {
+    // If initial keys haven't been captured yet (race on refresh/hydration), queue the payload
+    if (!initialKeysReadyRef.current) {
+      queuedPayloadRef.current = Object.fromEntries(Object.entries(filters).map(([k,v]) => [k, String(v)]));
+      console.debug('[AllMatches] initial keys not ready, queued updateUrl payload', queuedPayloadRef.current);
+      return;
+    }
+
     const url = new URL(window.location.href);
     url.searchParams.set("tab", "matches");
     Object.entries(filters).forEach(([key, value]) => {
-      const currentHas = new URL(window.location.href).searchParams.has(key);
+      const currentHas = typeof window !== 'undefined' ? new URL(window.location.href).searchParams.has(key) : false;
       const explicitDeleted = explicitDeletedRef.current.has(key);
-      console.debug('[AllMatches] updateUrl handling', { key, value, currentHas, initialHas: initialQueryKeysRef.has(key), explicitDeleted });
+      const initialHas = initialKeysReadyRef.current ? initialQueryKeysRef.current.has(key) : false;
+      console.debug('[AllMatches] updateUrl handling', { key, value, currentHas, initialHas, explicitDeleted, initialKeysReady: initialKeysReadyRef.current });
+
       if (!value || value === "All" || value === "") {
         // Respect explicit deletions performed by the user immediately
         if (explicitDeleted) {
           console.debug('[AllMatches] deleting key (explicit):', key);
           url.searchParams.delete(key);
           explicitDeletedRef.current.delete(key);
-          initialQueryKeysRef.delete(key);
+          initialQueryKeysRef.current.delete(key);
         } else {
-          // If the key exists in the current URL (e.g. opened via external link), do not remove it automatically.
-          // Use explicit user changes (updateUrlExplicit) to remove keys.
-          if (!currentHas && !initialQueryKeysRef.has(key)) {
+          // Since initial keys are ready, we can safely decide whether to remove keys
+          if (!currentHas && !initialHas) {
             console.debug('[AllMatches] deleting key (automatic):', key);
             url.searchParams.delete(key);
           } else {
@@ -204,12 +226,12 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
       // If user explicitly removed a filter, mark it so automatic updates respect it
       explicitDeletedRef.current.add(key);
       // also remove it from the initial-key set so subsequent updateUrl calls can delete it as well.
-      initialQueryKeysRef.delete(key);
+      initialQueryKeysRef.current.delete(key);
     } else {
       console.debug('[AllMatches] explicit set:', key, String(value));
       searchParams.set(key, String(value));
       // ensure the key is considered present going forward
-      initialQueryKeysRef.add(key);
+      initialQueryKeysRef.current.add(key);
       // clear explicit deletion flag if present
       explicitDeletedRef.current.delete(key);
     }

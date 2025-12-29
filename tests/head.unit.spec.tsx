@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 import { describe, it, expect } from 'vitest';
 
-import { metadata as siteMetadata } from '../app/head';
+import { metadata as siteMetadata } from '../app/page';
 import { generateMetadata as playerGen } from '../app/players/[id]/page';
 import { generateMetadata as tournamentGen } from '../app/tournaments/[id]/page';
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useMemo } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import FilterBar from "./FilterBar";
 import { Match } from "@/types";
@@ -79,6 +79,8 @@ export default function MatchesFilterPanel({ playerId, matches, allMatches, disp
 
       const map = new Map<string, Set<string>>();
       allMatches.forEach(m => {
+        // Exclude tournaments with tourney_level === 'D' (e.g., Davis Cup)
+        if (m.tourney_level === 'D') return;
         if (!m.tourney_id || !m.tourney_name) return;
         const name = m.tourney_name.trim();
         if (!map.has(m.tourney_id)) map.set(m.tourney_id, new Set([name]));

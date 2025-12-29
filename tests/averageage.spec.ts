@@ -1,4 +1,4 @@
-import { computeAverageChartData } from '../app/api/tournaments/[id]/records/averageage/route';
+import { computeAverageChartData } from '../lib/records/computeAverageChartData';
 import { expect, it, describe } from 'vitest';
 
 describe('computeAverageChartData', () => {
