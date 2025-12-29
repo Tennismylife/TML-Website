@@ -169,7 +169,9 @@ export function getFlagFromIOC(ioc?: string): string {
 export function getLevelFullName(level?: any) {
   // Support nested formats (string | string[] | object). Use first string found.
   const s = (typeof level === 'string') ? level : (Array.isArray(level) ? level[0] : (level && typeof level === 'object' ? Object.values(level)[0] : '')) || '';
-  const l = String(s).toUpperCase();
+  const l = String(s).toUpperCase().trim();
+
+  // Known short codes
   switch (l) {
     case "G": return "Grand Slam";
     case "M": return "Masters 1000";
@@ -177,8 +179,23 @@ export function getLevelFullName(level?: any) {
     case "O": return "Olympics";
     case "D": return "Davis Cup";
     case "F": return "Finals";
-    default: return s || "Unknown";
   }
+
+  // Numeric codes (e.g. "250", "500", "1000") or variants like "ATP 250"
+  const digitsMatch = l.match(/(\d+)/);
+  if (digitsMatch) {
+    const n = digitsMatch[1];
+    if (n === "1000") return "Masters 1000";
+    return `ATP ${n}`;
+  }
+
+  // Other readable forms
+  if (/GRAND SLAM|SLAM/.test(l)) return "Grand Slam";
+  if (/FINALS/.test(l)) return "Finals";
+  if (/MASTERS|1000/.test(l)) return "Masters 1000";
+  if (/ATP/.test(l)) return l.replace(/\s+/g, " ");
+
+  return s || "Unknown";
 }
 
 export function calculateAge(birthDate?: string | Date) {

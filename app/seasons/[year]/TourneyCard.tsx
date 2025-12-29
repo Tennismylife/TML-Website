@@ -11,7 +11,9 @@ interface TourneyTile {
   surface?: string | null;
   name: string;
   date: string;
+  year?: number | string | null; // use this when available instead of parsing the date
   draw_size: string;
+  hasFinal?: boolean;
   winner_ioc: string;
   winner: string;
   loser_ioc: string;
@@ -47,7 +49,7 @@ export default function TourneyCard({ tourney }: { tourney: TourneyTile }) {
 
   return (
     <Link
-      href={getTourneyHref({ id: tourney.extractedId, name: tourney.name, year: new Date(tourney.date).getFullYear() })}
+      href={getTourneyHref({ id: tourney.extractedId, name: tourney.name, year: Number(tourney.year) })}
       aria-label={`View details for ${tourney.name} tournament`}
       className="group"
     >
@@ -95,19 +97,21 @@ export default function TourneyCard({ tourney }: { tourney: TourneyTile }) {
           </div>
         </div>
 
-        {/* Finale (allineata a sinistra) */}
-        <div className="text-sm text-gray-200 mt-2 pb-1 text-left break-keep px-1">
-          <span className="inline-flex items-center">
-            🏆<Flag ioc={tourney.winner_ioc} />
-            <span className="text-green-400 font-semibold"> {tourney.winner}</span>
-          </span>
-          <span className="text-gray-400 mx-1">def.</span>
-          <span className="inline-flex items-center">
-            <Flag ioc={tourney.loser_ioc} />
-            <span className="text-red-400 font-medium">{tourney.loser}</span>
-          </span>
-          <span className="text-gray-300 ml-1">{tourney.score.replace(/[()]/g, "")}</span>
-        </div>
+        {/* Finale (allineata a sinistra) - show only if final exists */}
+        {tourney.hasFinal && (
+          <div className="text-sm text-gray-200 mt-2 pb-1 text-left break-keep px-1">
+            <span className="inline-flex items-center">
+              🏆<Flag ioc={tourney.winner_ioc} />
+              <span className="text-green-400 font-semibold"> {tourney.winner}</span>
+            </span>
+            <span className="text-gray-400 mx-1">def.</span>
+            <span className="inline-flex items-center">
+              <Flag ioc={tourney.loser_ioc} />
+              <span className="text-red-400 font-medium">{tourney.loser}</span>
+            </span>
+            <span className="text-gray-300 ml-1">{tourney.score}</span>
+          </div>
+        )}
       </div>
     </Link>
   );

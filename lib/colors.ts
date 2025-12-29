@@ -97,10 +97,11 @@ export function getLevelColor(level: unknown): string {
 
   const l = String(level).toLowerCase().trim();
 
-  if (/grand slam|slam|g(?:asters)?/.test(l)) return GRAND_SLAM; // Grand Slam
-  if (/finals|f(?:asters)?/.test(l)) return ATP_FINALS; // Finals
-  if (/masters|masters 1000|m(?:asters)?/.test(l)) return MASTERS_1000; // Masters 1000
-  if (/(250|500)?|^atp\b/.test(l)) return ATP; // ATP
+  if (/grand\s*slam|slam|\bg\b/.test(l)) return GRAND_SLAM; // Grand Slam
+  if (/finals|^f$/.test(l)) return ATP_FINALS; // Finals
+  if (/masters|1000|\bm\b/.test(l)) return MASTERS_1000; // Masters 1000
+  // Numeric codes (250,500,1000...) or explicit "ATP" tokens
+  if (/^\d+$/.test(l) || /^atp\b/.test(l) || /\batp\s*\d+/.test(l)) return ATP; // ATP level
 
   return DEFAULT;
 }

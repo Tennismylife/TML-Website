@@ -17,27 +17,25 @@ export async function GET(request: NextRequest, context: any) {
     if (/^\d+$/.test(tournamentId)) {
       // Try to find the exact tournament row by numeric id first (so /tournaments/581 maps to id 581 if present)
       const idNumExact = parseInt(tournamentId, 10);
-      tournament = await prisma.tournament.findUnique({
-        where: { id: idNumExact },
-        select: {
-          id: true,
-          name: true,
-          city: true,
-          country: true,
-          category: true,
-          surfaces: true,
-          indoor: true,
-          slug: true,
-        },
-      });
-
-      // If not found as exact id, fall back to canonical mapping (e.g. 581 -> 580)
-      if (!tournament) {
-        const canonical = await resolveCanonicalTourneyId(tournamentId);
-        if (!canonical) return NextResponse.json({ error: "Tournament not found" }, { status: 404 });
-        const idNum = parseInt(canonical, 10);
+      // Try to read the tournament and prefer the new `atp_category` field if available.
+      try {
         tournament = await prisma.tournament.findUnique({
-          where: { id: idNum },
+          where: { id: idNumExact },
+          select: {
+            id: true,
+            name: true,
+            city: true,
+            country: true,
+            atp_category: true,
+            surfaces: true,
+            indoor: true,
+            slug: true,
+          },
+        });
+      } catch (err) {
+        // Fallback for older schema: try selecting `category` instead and map to atp_category
+        tournament = await prisma.tournament.findUnique({
+          where: { id: idNumExact },
           select: {
             id: true,
             name: true,
@@ -49,22 +47,77 @@ export async function GET(request: NextRequest, context: any) {
             slug: true,
           },
         });
+        if (tournament && (tournament as any).category) (tournament as any).atp_category = (tournament as any).category;
+      }
+
+      // If not found as exact id, fall back to canonical mapping (e.g. 581 -> 580)
+      if (!tournament) {
+        const canonical = await resolveCanonicalTourneyId(tournamentId);
+        if (!canonical) return NextResponse.json({ error: "Tournament not found" }, { status: 404 });
+        const idNum = parseInt(canonical, 10);
+        try {
+          tournament = await prisma.tournament.findUnique({
+            where: { id: idNum },
+            select: {
+              id: true,
+              name: true,
+              city: true,
+              country: true,
+              atp_category: true,
+              surfaces: true,
+              indoor: true,
+              slug: true,
+            },
+          });
+        } catch (err) {
+          tournament = await prisma.tournament.findUnique({
+            where: { id: idNum },
+            select: {
+              id: true,
+              name: true,
+              city: true,
+              country: true,
+              category: true,
+              surfaces: true,
+              indoor: true,
+              slug: true,
+            },
+          });
+          if (tournament && (tournament as any).category) (tournament as any).atp_category = (tournament as any).category;
+        }
       }
     } else {
       // treat as slug: lookup by DB slug directly
-      tournament = await prisma.tournament.findUnique({
-        where: { slug: tournamentId },
-        select: {
-          id: true,
-          name: true,
-          city: true,
-          country: true,
-          category: true,
-          surfaces: true,
-          indoor: true,
-          slug: true,
-        },
-      });
+      try {
+        tournament = await prisma.tournament.findUnique({
+          where: { slug: tournamentId },
+          select: {
+            id: true,
+            name: true,
+            city: true,
+            country: true,
+            atp_category: true,
+            surfaces: true,
+            indoor: true,
+            slug: true,
+          },
+        });
+      } catch (err) {
+        tournament = await prisma.tournament.findUnique({
+          where: { slug: tournamentId },
+          select: {
+            id: true,
+            name: true,
+            city: true,
+            country: true,
+            category: true,
+            surfaces: true,
+            indoor: true,
+            slug: true,
+          },
+        });
+        if (tournament && (tournament as any).category) (tournament as any).atp_category = (tournament as any).category;
+      }
     }
 
     if (!tournament) {
@@ -93,7 +146,7 @@ export async function GET(request: NextRequest, context: any) {
 
     // 3️⃣ Combina dati torneo + edizioni, normalizza superfici (rimuove token 'indoor')
     //     e restituisce una sola istanza per ciascuna `category` (ordine preservato)
-    const rawCategories = extractNames(tournament.category).map(s => String(s || '').trim()).filter(Boolean);
+    const rawCategories = extractNames(tournament.atp_category).map(s => String(s || '').trim()).filter(Boolean);
     const seenCats = new Set<string>();
     const uniqueCategories: string[] = [];
     for (const c of rawCategories) {

@@ -4,7 +4,7 @@ export type Tournament = {
   id: number;
   name: string;
   slug: string;
-  category: TournamentCategory;
+  atp_category?: any;
   city?: string;
   country?: string;
   ioc?: string;

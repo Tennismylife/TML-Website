@@ -131,7 +131,7 @@ model Tournament {
   name      Json?
   slug      String  @unique
 
-  category  Json?
+  atp_category  Json?
   city      Json?
   country   Json?
   ioc       Json?

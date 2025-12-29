@@ -20,6 +20,8 @@ export async function GET(request: NextRequest, context: any) {
       draw_size: true,
       round: true,
       surface: true,
+      tourney_level: true,
+      tourney_name: true,
       winner_id: true,
       winner_name: true,
       winner_ioc: true,
@@ -46,7 +48,30 @@ export async function GET(request: NextRequest, context: any) {
       tourney_id: parseInt(match.tourney_id),
     }));
 
-    return NextResponse.json({ editionsData: editionsWithNumericId });
+    // Determine if the caller wants categories derived only from matches
+    const useMatchesOnly = request.nextUrl?.searchParams?.get('source') === 'matches';
+
+    // Enrich editions: by default try RankingTable for per-year atp_category, otherwise fall back to match.tourney_level
+    const enriched = await Promise.all(editionsWithNumericId.map(async (m) => {
+      let atpCategory: string | null = m.tourney_level || null;
+      if (!useMatchesOnly) {
+        try {
+          const rt = await prisma.rankingTable.findFirst({
+            where: {
+              tourney_id: String(m.tourney_id),
+              year: String(m.year),
+            },
+            select: { atp_category: true },
+          });
+          if (rt && rt.atp_category) atpCategory = rt.atp_category;
+        } catch (err) {
+          // ignore and keep fallback
+        }
+      }
+      return { ...m, atpCategory };
+    }));
+
+    return NextResponse.json({ editionsData: enriched });
   } catch (e: any) {
     return NextResponse.json(
       { error: e.message || "Server error" },

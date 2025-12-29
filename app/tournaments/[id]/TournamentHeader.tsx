@@ -19,7 +19,7 @@ interface TournamentData {
   indoor: boolean | null;
   city?: string;
   country?: string;
-  category?: string | string[];
+  atp_category?: any;
   editions?: number[];
 }
 
@@ -50,6 +50,8 @@ export default function TournamentHeader({ id }: TournamentHeaderProps) {
   const [tournament, setTournament] = useState<TournamentData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // Fallback: per-edition categories (kept as a hook to preserve hook order)
+  const [fallbackLevels, setFallbackLevels] = useState<any[] | null>(null);
 
   useEffect(() => {
     if (typeof id === 'undefined' || id === null) return;
@@ -74,6 +76,27 @@ export default function TournamentHeader({ id }: TournamentHeaderProps) {
     return () => controller.abort();
   }, [id]);
 
+  // Fallback: if tournament has no atp_category, derive categories from editions
+  useEffect(() => {
+    if (!tournament) return;
+    if (levels && levels.length > 0) return; // already have categories
+    // fetch editions and extract per-edition categories
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const res = await fetch(`/api/tournaments/${id}?source=matches`, { signal: controller.signal });
+        if (!res.ok) return;
+        const data = await res.json();
+        const ed = Array.isArray(data?.editionsData) ? data.editionsData : [];
+        const cats = ed.map((e: any) => e?.atpCategory).filter(Boolean);
+        if (cats.length > 0) setFallbackLevels(cats);
+      } catch (err) {
+        // ignore
+      }
+    })();
+    return () => controller.abort();
+  }, [tournament, id]);
+
   if (loading)
     return (
       <div
@@ -93,11 +116,18 @@ export default function TournamentHeader({ id }: TournamentHeaderProps) {
     : tournament.name || "n/d";
 
   // Livelli normalizzati in array
-  const levels = Array.isArray(tournament.category)
-    ? tournament.category
-    : tournament.category
-    ? [tournament.category]
+  const levels = Array.isArray(tournament.atp_category)
+    ? tournament.atp_category
+    : tournament.atp_category
+    ? [tournament.atp_category]
     : [];
+
+
+
+  // Deduplicate and format level labels (use fallback when needed)
+  const sourceLevels = (levels && levels.length > 0) ? levels : (fallbackLevels ?? []);
+  const levelLabels = sourceLevels.map((l) => getLevelFullName(l));
+  const uniqueLevelLabels = Array.from(new Set(levelLabels)).filter(Boolean);
 
   // Superfici (normalize and remove any 'indoor' tokens)
   const surfaces = extractUniqueSurfaces(tournament.surfaces);
@@ -112,8 +142,8 @@ export default function TournamentHeader({ id }: TournamentHeaderProps) {
     <header className="relative bg-gradient-to-r from-green-700 via-green-500 to-yellow-400 text-white p-8 rounded-2xl mb-8 w-full shadow-xl overflow-hidden">
       {/* Livelli (badge multipli) */}
       <div className="absolute top-4 right-6 flex flex-wrap gap-2">
-        {levels.map((level, i) => {
-          const color = getLevelColor(level) ?? "#555";
+        {uniqueLevelLabels.map((label, i) => {
+          const color = getLevelColor(label) ?? "#555";
           const textColor = getTextColorForRound(color);
           return (
             <span
@@ -121,7 +151,7 @@ export default function TournamentHeader({ id }: TournamentHeaderProps) {
               className="px-4 py-1 rounded-full text-sm font-semibold shadow-md"
               style={{ backgroundColor: color, color: textColor }}
             >
-              {getLevelFullName(level)}
+              {label}
             </span>
           );
         })}
@@ -132,6 +162,29 @@ export default function TournamentHeader({ id }: TournamentHeaderProps) {
         <h1 className="text-4xl md:text-5xl font-extrabold drop-shadow-lg break-words whitespace-normal">
           {displayName}
         </h1>
+
+        {/* Other historical names (smaller, deduped, exclude displayName) */}
+        {(() => {
+          const allNames = Array.isArray(tournament.name) ? tournament.name : [String(tournament.name)];
+          const displayNorm = String(displayName).trim().toLowerCase();
+          const seen = new Set<string>();
+          const others: string[] = [];
+          for (const raw of allNames) {
+            const n = (typeof raw === 'string' ? raw.trim() : String(raw)).trim();
+            if (!n) continue;
+            const norm = n.toLowerCase();
+            if (norm === displayNorm) continue; // exclude main display name (case-insensitive)
+            if (seen.has(norm)) continue; // dedupe
+            seen.add(norm);
+            others.push(n);
+          }
+          if (others.length === 0) return null;
+          return (
+            <p className="mt-1 text-sm md:text-base text-white/80">
+              {others.join(', ')}
+            </p>
+          );
+        })()}
 
         {editionRanges.length > 0 && (
           <p className="mt-3 text-lg md:text-xl font-medium text-white/90">

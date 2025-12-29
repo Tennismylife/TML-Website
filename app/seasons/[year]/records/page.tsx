@@ -193,6 +193,12 @@ export default function SeasonRecordsPage({ params }: { params: Promise<{ year: 
       style={{ ['--col-1' as any]: '240px', ['--col-2' as any]: '110px', ['--col-3' as any]: '110px', ['--col-4' as any]: '80px', ['--pcol-1' as any]: '240px', ['--pcol-2' as any]: '110px', ['--pcol-3' as any]: '110px', ['--pcol-4' as any]: '80px' }}
     >
       <>
+        {/* Header */}
+        <div className="bg-gradient-to-r from-yellow-400 to-green-600 p-8 rounded-lg mb-8 w-full text-center">
+          <h1 className="text-4xl font-bold">Season {year}</h1>
+          <p className="text-xl mt-2">Explore the record for {year} season</p>
+        </div>
+
         {/* Tabs */}
         <div className="relative mb-6 flex flex-wrap gap-2 bg-gray-800/40 rounded-2xl p-2 shadow-lg">
           {tabs.map((tab) => (

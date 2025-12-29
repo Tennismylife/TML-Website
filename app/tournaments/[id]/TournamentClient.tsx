@@ -13,6 +13,8 @@ interface Match {
   tourney_date: string | Date;
   draw_size?: number;
   surface: string;
+  tourney_name?: string | null;
+  atpCategory?: string | null;
   winner_id: string;
   winner_name: string;
   winner_ioc: string;
@@ -142,6 +144,8 @@ export default function TournamentClient({ id }: { id: string }) {
               <thead>
                 <tr className="bg-black">
                   <th className="px-4 py-2 text-center text-lg text-gray-200">Edition</th>
+                  <th className="px-4 py-2 text-left text-lg text-gray-200">Name</th>
+                  <th className="px-4 py-2 text-center text-lg text-gray-200">Category</th>
                   <th className="px-4 py-2 text-center text-lg text-gray-200">Surface</th>
                   <th className="px-4 py-2 text-center text-lg text-gray-200">Draw</th>
                   <th className="px-4 py-2 text-center text-lg text-gray-200">Champion</th>
@@ -169,6 +173,13 @@ export default function TournamentClient({ id }: { id: string }) {
                           {fmtDate(m.tourney_date)}
                         </Link>
                       </td>
+
+                      <td className="px-4 py-3 text-left text-gray-400 max-w-xs truncate" title={m.tourney_name || ''}>
+                        {m.tourney_name || "–"}
+                      </td>
+
+                      <td className="px-4 py-3 text-center text-gray-400">{m.atpCategory ?? "–"}</td>
+
                       <td className="px-4 py-3 text-center">
                         {m.surface ? (
                           <span

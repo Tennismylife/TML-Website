@@ -112,7 +112,7 @@ export async function GET() {
     for (const t of tournaments) {
       // ✅ Narrowing sicuro di category (supporta array/oggetti annidati)
       let category: string;
-      const catValues = extractNames(t.category);
+      const catValues = extractNames(t.atp_category);
       const match = ["G", "M", "F", "O"].find(c => catValues.includes(c));
       category = match ?? "Others";
 
@@ -195,7 +195,7 @@ export async function GET() {
     // If nothing is returned (or nearly everything is in others), include debug info
     const totalGroups = Object.values(counts).reduce((s, v) => s + v, 0);
     if (totalGroups === 0 || counts.others / Math.max(1, totalGroups) > 0.95) {
-      const sampleCats = (tournaments || []).slice(0, 10).map(t => ({ id: t.id, category: t.category, name: t.name }));
+      const sampleCats = (tournaments || []).slice(0, 10).map(t => ({ id: t.id, atp_category: t.atp_category, name: t.name }));
       return NextResponse.json({ groups, debug: { counts, sample: (tournaments || []).slice(0, 10), sampleCategories: sampleCats } }, { status: 200 });
     }
 
