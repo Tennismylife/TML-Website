@@ -89,7 +89,20 @@ export default function TournamentClient({ id }: { id: string }) {
       const sorted: Match[] = (data.editionsData || []).sort(
         (a, b) => new Date(b.tourney_date).getTime() - new Date(a.tourney_date).getTime()
       );
+      if (!isMountedRef.current) {
+        try { console.warn(`[TournamentClient] setEditions called but component unmounted id=${tournamentId}`); } catch (e) {}
+      }
       setEditions(sorted);
+      try { console.info(`[TournamentClient] setEditions count=${sorted.length} first=${JSON.stringify(sorted[0])}`); } catch (e) {}
+      try { performance && performance.mark && performance.mark('tournament.setEditions'); } catch (e) {}
+      // Check DOM after next tick
+      setTimeout(() => {
+        try {
+          const tbl = document.getElementById(`finals-table-${tournamentId}`);
+          const rows = tbl ? tbl.querySelectorAll('tbody tr').length : -1;
+          console.info(`[TournamentClient] DOM rows after setEditions id=${tournamentId} rows=${rows} isMounted=${isMountedRef.current}`);
+        } catch (e) {}
+      }, 50);
     } catch (err: any) {
       // Ignore AbortError (expected when we abort controller) to avoid noisy console logs
       if (err && err.name === 'AbortError') {
@@ -104,15 +117,20 @@ export default function TournamentClient({ id }: { id: string }) {
     }
   }
 
+  const isMountedRef = useRef<boolean>(false);
+
   useEffect(() => {
     if (!id) return;
+    isMountedRef.current = true;
 
     // Kick off the first fetch
     doFetch();
 
     return () => {
+      isMountedRef.current = false;
       if (abortRef.current) try { abortRef.current.abort(); } catch (e) {}
       if (retryTimeoutRef.current) clearTimeout(retryTimeoutRef.current);
+      try { console.info(`[TournamentClient] cleanup for id=${tournamentId}`); } catch (e) {}
     };
   }, [tournamentId]);
 
@@ -127,6 +145,24 @@ export default function TournamentClient({ id }: { id: string }) {
     retryTimeoutRef.current = setTimeout(() => setShowRetry(true), 5000);
     return () => { if (retryTimeoutRef.current) clearTimeout(retryTimeoutRef.current); };
   }, [loading]);
+
+  // Debug: log when editions state updates (helps confirm state -> render)
+  useEffect(() => {
+    try { console.info(`[TournamentClient] editions state updated count=${editions.length}`); } catch (e) {}
+    if (editions.length > 0) {
+      try { performance && performance.measure && performance.measure('tournament.render', 'tournament.setEditions'); } catch (e) {}
+    }
+
+    // Also check the DOM after a frame to ensure rows are present
+    const raf = requestAnimationFrame(() => {
+      try {
+        const tbl = document.getElementById(`finals-table-${tournamentId}`);
+        const rows = tbl ? tbl.querySelectorAll('tbody tr').length : -1;
+        console.info(`[TournamentClient] DOM rows after editions effect id=${tournamentId} rows=${rows}`);
+      } catch (e) {}
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [editions]);
 
   const mostTitles = useMemo(() => {
     const winnerMap = editions.reduce((acc, m) => {
@@ -202,6 +238,10 @@ export default function TournamentClient({ id }: { id: string }) {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
+      {/* Debug badge: shows number of editions received */}
+      <div className="max-w-7xl mx-auto px-6 py-3">
+        <div className="inline-block px-3 py-1 rounded bg-white/5 text-white text-sm">editions: {editions.length}</div>
+      </div>
       {/* CTA Records */}
       <div className="flex justify-center my-12">
         <Link
@@ -219,7 +259,7 @@ export default function TournamentClient({ id }: { id: string }) {
       <div className="max-w-7xl mx-auto px-6 pb-20 space-y-20">
         <section>
           <div className="overflow-x-auto rounded bg-gray-900 shadow">
-            <table className="min-w-full border-collapse">
+            <table id={`finals-table-${tournamentId}`} className="min-w-full border-collapse">
               <thead>
                 <tr className="bg-black">
                   <th className="px-4 py-2 text-center text-lg text-gray-200">Edition</th>
@@ -302,6 +342,13 @@ export default function TournamentClient({ id }: { id: string }) {
           </div>
         </section>
       </div>
+
+      {/* Debug JSON dump when ?debug=1 */}
+      {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('debug') === '1' ? (
+        <div className="max-w-7xl mx-auto px-6 pb-20">
+          <pre className="text-xs text-left whitespace-pre-wrap max-h-96 overflow-auto bg-white/5 p-4 rounded">{JSON.stringify(editions, null, 2)}</pre>
+        </div>
+      ) : null}
     </main>
   );
 }
