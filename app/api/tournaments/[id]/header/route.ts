@@ -5,7 +5,7 @@ import { resolveCanonicalTourneyId, resolveTourneyIds } from '@/lib/tournament';
 
 export async function GET(request: NextRequest, context: any) {
   const params = await context?.params;
-  const tournamentId = String(params?.id ?? "");
+  const tournamentId = params?.id ? String(params.id) : "";
 
   if (!tournamentId) {
     return NextResponse.json({ error: "Invalid tournament ID" }, { status: 400 });

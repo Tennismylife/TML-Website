@@ -2,7 +2,7 @@ import { prisma } from './prisma';
 
 // Resolve a route param (either numeric id or slug) to one or more tourney_id strings used in the match table
 export async function resolveTourneyIds(param: string): Promise<string[] | null> {
-  if (!param) return null;
+  if (!param || param === "") return null;
   if (/^\d+$/.test(param)) {
     const idNum = parseInt(param, 10);
     // Preserve historic behavior: canonical AO id 580 should include 581 as well
@@ -20,6 +20,7 @@ export async function resolveTourneyIds(param: string): Promise<string[] | null>
   }
 
   // Treat param as slug: lookup by DB slug only (do NOT compute slug from name)
+  if (!param) return null;
   const found = await prisma.tournament.findUnique({ where: { slug: param }, select: { id: true } });
   if (!found) return null;
   // If slug resolves to AO canonical id 580, include 581 as well (1977 AO special-case)
@@ -31,7 +32,7 @@ export async function resolveTourneyIds(param: string): Promise<string[] | null>
 // Numeric params are canonicalized (581 -> 580 for AO special-case).
 // Slug params are resolved to the DB id.
 export async function resolveCanonicalTourneyId(param: string): Promise<string | null> {
-  if (!param) return null;
+  if (!param || param === "") return null;
   if (/^\d+$/.test(param)) {
     const idNum = parseInt(param, 10);
     // canonicalize 581 to 580 (AO special-case)

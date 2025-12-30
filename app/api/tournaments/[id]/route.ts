@@ -5,7 +5,7 @@ export async function GET(request: NextRequest, context: any) {
   try {
     // support both Next.js versions where params can be a Promise or an object
     const params = await context?.params;
-    const id = String(params?.id ?? '');
+    const id = params?.id ? String(params.id) : '';
 
   // resolve id param (supports numeric id or slug)
   const tourneyIds = await (await import('@/lib/tournament')).resolveTourneyIds(id);

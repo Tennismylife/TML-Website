@@ -7,7 +7,7 @@ import { redirect } from 'next/navigation';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
 
 interface TournamentPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 // Funzione per rendere il nome leggibile
@@ -45,7 +45,7 @@ async function getTournament(param: string) {
 }
 
 export default async function TournamentPage({ params }: TournamentPageProps) {
-  const { id: param } = params;
+  const { id: param } = await params;
 
   const tournament = await getTournament(param);
   if (!tournament) return <div>Tournament not found</div>;
