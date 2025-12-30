@@ -130,14 +130,6 @@ export default async function TournamentPage({ params }: any) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
   const url = `${siteUrl}/tournaments/${slug}`;
 
-  // Build location string
-  const city = extractName(tournament.city);
-  const country = extractName(tournament.country);
-  const location = [city, country].filter(Boolean).join(', ') || undefined;
-
-  // Build description
-  const description = `${humanizedName} - Professional tennis tournament. ${tournament.atp_category ? `ATP ${extractName(tournament.atp_category)} level tournament.` : ''} Held in ${location || 'various locations'}.`;
-
   return (
     <>
       <script
@@ -147,31 +139,7 @@ export default async function TournamentPage({ params }: any) {
             '@context': 'https://schema.org',
             '@type': 'SportsEvent',
             name: humanizedName,
-            description,
             url,
-            eventStatus: 'https://schema.org/EventScheduled',
-            organizer: {
-              '@type': 'Organization',
-              name: 'ATP Tour',
-              url: 'https://www.atptour.com',
-            },
-            performer: {
-              '@type': 'SportsTeam',
-              name: 'ATP Tour Players',
-            },
-            image: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&h=600&fit=crop',
-            offers: {
-              '@type': 'Offer',
-              name: 'Watch Live',
-              url: 'https://www.atptour.com/en/watch',
-              availability: 'https://schema.org/InStock',
-            },
-            ...(location && {
-              location: {
-                '@type': 'Place',
-                name: location,
-              },
-            }),
           }),
         }}
       />
