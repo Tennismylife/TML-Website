@@ -135,6 +135,7 @@ model Tournament {
   years     Json?
   name      Json?
   category  Json?
+  atp_category Json?
   city      Json?
   country   Json?
   surfaces  Json?
