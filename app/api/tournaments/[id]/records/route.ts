@@ -18,7 +18,7 @@ async function fetchTournamentData(tourneyIds: string[]) {
     tournament = await prisma.tournament.findUnique({ where: { id: parseInt(canonicalId, 10) } });
   } else {
     // fallback: try to find by name-derived slug matching
-    const candidates = await prisma.tournament.findMany({ select: { id: true, name: true, city: true, country: true, ioc: true, surfaces: true } });
+    const candidates = await prisma.tournament.findMany({ select: { id: true, name: true, city: true, country: true, surfaces: true } });
     // look for a candidate whose computed slug is in the provided list
     const found = candidates.find(t => tourneyIds.includes(String(t.id)));
     if (found) tournament = found as any;
@@ -31,7 +31,6 @@ async function fetchTournamentData(tourneyIds: string[]) {
     name: Array.isArray(tournament.name) ? tournament.name[0] : (typeof tournament.name === 'string' ? tournament.name : 'n/d'),
     city: Array.isArray(tournament.city) ? tournament.city[0] : (typeof tournament.city === 'string' ? tournament.city : null),
     country: Array.isArray(tournament.country) ? tournament.country[0] : (typeof tournament.country === 'string' ? tournament.country : null),
-    ioc: Array.isArray(tournament.ioc) ? tournament.ioc[0] : (typeof tournament.ioc === 'string' ? tournament.ioc : null),
     surfaces: extractUniqueSurfaces(Array.isArray(tournament.surfaces) ? tournament.surfaces : [tournament.surfaces]),
   };
 
