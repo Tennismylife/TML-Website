@@ -196,7 +196,7 @@ export default function SeasonRecordsPage({ params }: { params: Promise<{ year: 
         {/* Header */}
         <div className="bg-gradient-to-r from-yellow-400 to-green-600 p-8 rounded-lg mb-8 w-full text-center">
           <h1 className="text-4xl font-bold">Season {year}</h1>
-          <p className="text-xl mt-2">Explore the record for {year} season</p>
+          <p className="text-xl mt-2">Explore the records for {year} season</p>
         </div>
 
         {/* Tabs */}

@@ -74,7 +74,7 @@ export default function SeasonPage({ params }: { params: Promise<{ year: string 
       {/* Header */}
       <div className="bg-gradient-to-r from-yellow-400 to-green-600 p-8 rounded-lg mb-8 w-full">
         <h1 className="text-4xl font-bold">Season {year}</h1>
-        <p className="text-xl mt-2">Explore the tournaments and matches of {year}</p>
+        <p className="text-xl mt-2">Explore the tournaments of {year}</p>
 
 
 

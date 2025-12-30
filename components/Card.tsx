@@ -12,6 +12,9 @@ export default function Card({
   description,
   colorClass,
   accentColor,
+  badge,
+  footnote,
+  subnote,
 }: {
   href: string;
   title: string;
@@ -21,12 +24,16 @@ export default function Card({
   description?: string;
   colorClass?: string;
   accentColor?: string;
+  badge?: { emoji?: string; text: string; bg?: string; textColor?: string; style?: 'street' | string };
+  footnote?: { text: string; link?: string; color?: string };
+  subnote?: { text: string; link?: string; color?: string };
 }) {
   // Extract base color (e.g. 'text-rose-400') if provided for use on the title
   const baseColorClass = colorClass ? colorClass.split(" ")[0] : "text-yellow-400";
 
   const iconRef = useRef<HTMLSpanElement | null>(null);
   const titleRef = useRef<HTMLSpanElement | null>(null);
+  const subnoteRef = useRef<HTMLSpanElement | null>(null);
 
   useEffect(() => {
     if (!accentColor) return;
@@ -34,7 +41,25 @@ export default function Card({
     if (titleRef.current) titleRef.current.style.setProperty("color", accentColor, "important");
   }, [accentColor]);
 
-  const wrapperClass = `group flex items-center gap-3 rounded-xl border border-gray-700 bg-gray-800/70 p-4 hover:bg-gray-700/60 transition-all duration-300 backdrop-blur-md shadow-md
+  // Force subnote styling when needed: use a simple solid color to avoid rendering artifacts
+  useEffect(() => {
+    if (!subnote || !subnoteRef.current) return;
+    const el = subnoteRef.current;
+    const color = subnote.color ?? STREET_PINK;
+    el.style.setProperty('color', color, 'important');
+  }, [subnote, badge]);
+
+  // Shared constant for street-style pink
+  const STREET_PINK = '#ff77b2';
+
+  // Compute subnote style to visually match the street badge when requested
+  const subnoteStyle = subnote
+    ? (subnote.color
+        ? { color: subnote.color }
+        : { color: badge?.style === 'street' ? STREET_PINK : '#ff77b2' })
+    : undefined;
+
+  const wrapperClass = `relative group flex items-center gap-3 rounded-xl border border-gray-700 bg-gray-800/70 p-4 hover:bg-gray-700/60 transition-all duration-300 backdrop-blur-md shadow-md
     ${large
       ? "col-span-full flex-col text-center p-6 hover:scale-105 w-full"
       : "w-full flex-col hover:scale-105"}
@@ -57,7 +82,78 @@ export default function Card({
             {description}
           </span>
         )}
+
+        {/* Footnote (e.g., Seasonal snapshots) */}
+        {footnote && (
+          <div className="mt-2 text-center">
+            <span style={{ color: footnote.color ?? accentColor, fontWeight: 600 }}>{footnote.text}</span>
+          </div>
+        )}
+
+        {/* Subnote (Italian campaign line) */}
+        {subnote && (
+          <div className="mt-1 text-center">
+            {href ? (
+              <span ref={subnoteRef} className="text-sm" style={subnoteStyle}>{subnote.text}</span>
+            ) : subnote.link ? (
+              <Link href={subnote.link}>
+                <span ref={subnoteRef} className="text-sm" style={subnoteStyle}>{subnote.text}</span>
+              </Link>
+            ) : (
+              <span ref={subnoteRef} className="text-sm" style={subnoteStyle}>{subnote.text}</span>
+            )}
+          </div>
+        )}
       </span>
+
+      {/* Optional badge top-right */}
+      {badge && (
+        (() => {
+          const bg = badge.bg ?? "#ec4899";
+          const isTransparent = bg === "transparent" || bg === "none";
+          const textColor = isTransparent ? (badge.textColor ?? "#f472b6") : "#FFFFFF";
+
+          // Street style: artistic pink text, no background
+          if (badge.style === 'street') {
+            return (
+              <div className="absolute top-3 right-3 rounded-md shadow-md px-0 py-0" style={{ filter: 'drop-shadow(0 6px 18px rgba(244,114,182,0.18))' }}>
+                <span
+                  className="inline-block font-extrabold leading-none"
+                  style={{
+                    // Card-like background
+                    backgroundColor: 'rgba(31,41,55,0.7)',
+                    display: 'inline-block',
+                    padding: '8px 12px',
+                    borderRadius: '8px',
+                    transform: 'rotate(-1deg) skew(-2deg)',
+                    // Solid pink text for clarity (preserve casing)
+                    color: '#ff77b2',
+                    WebkitTextFillColor: '#ff77b2',
+                    WebkitTextStroke: '1px rgba(0,0,0,0.6)',
+                    textShadow: '0 6px 18px rgba(0,0,0,0.85), 0 1px 0 rgba(255,255,255,0.04)',
+                    fontSize: '1.15rem',
+                    letterSpacing: '0.2px',
+                    lineHeight: 1,
+                    border: '1px solid rgba(255,255,255,0.02)'
+                  }}
+                >
+                  {String(badge.text)}
+                </span>
+              </div>
+            );
+          }
+
+          return (
+            <div
+              className="absolute top-3 right-3 flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold shadow-md"
+              style={{ backgroundColor: bg, color: textColor }}
+            >
+              {badge.emoji ? <span className="text-lg leading-none">{badge.emoji}</span> : null}
+              <span className="text-sm tracking-tight">{badge.text}</span>
+            </div>
+          );
+        })()
+      )}
     </>
   );
 
