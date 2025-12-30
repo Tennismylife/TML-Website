@@ -1,128 +1,185 @@
-"use client";
+import { redirect } from 'next/navigation';
+import { prisma } from "@/lib/prisma";
+import { resolveTourneyIds } from '@/lib/tournament';
+import TournamentEditionClient from './TournamentEditionClient';
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import type { Match, SortKey, SortDirection } from "@/types";
-import MatchTable from "./EditionMatchesTable";
-import EditionHeader from "./EditionHeader";
-import Seeds from "./Seeds";
-
-// 👉 NON usare PageProps (in Next.js 15 params è Promise)
-type Params = {
-  id: string;
-  year: string;
+const roundOrder: Record<string, number> = {
+  "R256": 1,
+  "R128": 2,
+  "R64": 3,
+  "R32": 4,
+  "R16": 5,
+  "QF": 6,
+  "SF": 7,
+  "F": 8,
 };
 
-// ✅ Singolo file client-safe
-export default function TournamentEditionPage(props: any) {
-  // se Next passa params come Promise, risolvilo dinamicamente
-  const [resolvedParams, setResolvedParams] = useState<Params | null>(null);
+// Funzione per rendere il nome leggibile
+function humanizeName(name: any) {
+  const s = String(name || '');
+  return s.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
-  useEffect(() => {
-    async function resolveParams() {
-      if (props?.params instanceof Promise) {
-        const p = await props.params;
-        setResolvedParams(p);
-      } else {
-        setResolvedParams(props.params);
-      }
+// Funzione per estrarre il primo nome dal JSON
+function extractName(nameField: any): string {
+  if (!nameField) return '';
+  if (typeof nameField === 'string') return nameField;
+  if (typeof nameField === 'number' || typeof nameField === 'boolean') return String(nameField);
+  if (Array.isArray(nameField)) {
+    for (const v of nameField) {
+      const r = extractName(v);
+      if (r) return r;
     }
-    resolveParams();
-  }, [props.params]);
+    return '';
+  }
+  if (typeof nameField === 'object') {
+    for (const v of Object.values(nameField)) {
+      const r = extractName(v);
+      if (r) return r;
+    }
+    return '';
+  }
+  return '';
+}
 
-  // finché non ho params, non faccio fetch
-  const id = resolvedParams?.id ?? "";
-  const year = resolvedParams?.year ?? "";
-  const router = useRouter();
+type PageProps = {
+  params: Promise<{ id: string; year: string }>;
+};
 
-  // Se l'ID è numerico, richiedi lo slug dal server e sostituisci la rotta mantenendo `year`
-  useEffect(() => {
-    if (!id || !year) return;
-    if (!/^\d+$/.test(id)) return;
-    let cancelled = false;
-    async function maybeRedirect() {
-      try {
-        const res = await fetch(`/api/tournaments/${id}/header`);
-        if (!res.ok) return;
+export default async function TournamentEditionPage({ params }: PageProps) {
+  const { id, year: yearRaw } = await params;
+  const year = Number.parseInt(yearRaw, 10);
+
+  if (isNaN(year)) {
+    return <div>Invalid year</div>;
+  }
+
+  // Handle numeric ID redirect to slug
+  if (/^\d+$/.test(id)) {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/tournaments/${id}/header`, {
+        cache: 'no-store' // Don't cache this fetch
+      });
+      if (res.ok) {
         const data = await res.json();
         const slug = data?.slug;
-        if (slug && !cancelled) {
-          const newPath = `/tournaments/${slug}/${encodeURIComponent(year)}`;
-          if (typeof window !== 'undefined' && window.location.pathname !== newPath) {
-            router.replace(newPath);
-          }
+        if (slug) {
+          redirect(`/tournaments/${slug}/${year}`);
         }
-      } catch (e) {
-        // ignore
       }
+    } catch (e) {
+      // ignore and continue
     }
-    maybeRedirect();
-    return () => { cancelled = true; };
-  }, [id, year, router]);
+  }
 
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [sortKey, setSortKey] = useState<SortKey>("round");
-  const [sortDir, setSortDir] = useState<SortDirection>("asc");
+  // Resolve tournament IDs
+  const tourneyIds = await resolveTourneyIds(id);
+  if (!tourneyIds) {
+    return <div>Tournament not found</div>;
+  }
 
-  useEffect(() => {
-    if (!id || !year) return;
+  // Fetch tournament data
+  const tournament = await prisma.tournament.findUnique({
+    where: { slug: id },
+    select: {
+      id: true,
+      name: true,
+      city: true,
+      country: true,
+      ioc: true,
+      atp_category: true,
+    },
+  });
 
-    const controller = new AbortController();
+  if (!tournament) {
+    return <div>Tournament not found</div>;
+  }
 
-    async function load() {
-      try {
-        setLoading(true);
-        const res = await fetch(`/api/tournaments/${id}/${year}`, {
-          signal: controller.signal,
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        setMatches(data.matches || []);
-      } catch (e: any) {
-        if (e.name !== "AbortError") setError(e.message);
-      } finally {
-        setLoading(false);
-      }
-    }
+  // Fetch matches for the year
+  const tourneyIdFilters = tourneyIds.flatMap((tid: string) => [{ tourney_id: tid }, { tourney_id: { endsWith: `-${tid}` } }]);
 
-    load();
-    return () => controller.abort();
-  }, [id, year]);
+  const matches = await prisma.match.findMany({
+    where: {
+      OR: tourneyIdFilters,
+      year: year,
+    },
+  });
 
-  if (!resolvedParams) return <div>Loading parameters...</div>;
-  if (loading) return <div>Loading data...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (matches.length === 0) return <div>No matches found for {year}.</div>;
+  // Sort matches
+  matches.sort((a, b) => {
+    const orderA = roundOrder[a.round] ?? 999;
+    const orderB = roundOrder[b.round] ?? 999;
+    return orderA - orderB;
+  });
 
-  const first = matches[0];
+  if (matches.length === 0) {
+    return <div>No matches found for {year}.</div>;
+  }
+
+  // Get tournament name and start date
+  const tourneyName = extractName(tournament.name) || `Tournament ${tournament.id}`;
+  const humanizedName = humanizeName(tourneyName);
+  const startDate = matches[0]?.tourney_date;
+  const endDate = matches[matches.length - 1]?.tourney_date; // Last match date
+
+  // Build location string
+  const city = extractName(tournament.city);
+  const country = extractName(tournament.country);
+  const location = [city, country].filter(Boolean).join(', ') || 'Unknown Location';
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const url = `${siteUrl}/tournaments/${id}/${year}`;
+
+  // Build description
+  const description = `${humanizedName} ${year} - Tennis tournament with ${matches.length} matches. ${tournament.atp_category ? `ATP ${extractName(tournament.atp_category)} level tournament.` : ''} Held in ${location}.`;
 
   return (
-    <main className="flex flex-col w-full min-h-screen p-4 gap-4">
-      <EditionHeader
-        tourney_name={first.tourney_name}
-        year={first.year.toString()}
-        tourney_level={first.tourney_level}
-        surface={first.surface}
-        tourney_date={new Date(first.tourney_date).toISOString()}
-        draw_size={first.draw_size}
+    <>
+      {/* JSON-LD for SportsEvent */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'SportsEvent',
+            name: `${humanizedName} ${year}`,
+            description,
+            startDate: startDate ? new Date(startDate).toISOString().split('T')[0] : undefined,
+            endDate: endDate ? new Date(endDate).toISOString().split('T')[0] : undefined,
+            eventStatus: 'https://schema.org/EventScheduled',
+            location: {
+              '@type': 'Place',
+              name: location,
+            },
+            organizer: {
+              '@type': 'Organization',
+              name: 'ATP Tour',
+              url: 'https://www.atptour.com',
+            },
+            performer: {
+              '@type': 'SportsTeam',
+              name: 'ATP Tour Players',
+            },
+            image: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&h=600&fit=crop',
+            offers: {
+              '@type': 'Offer',
+              name: 'Watch Live',
+              url: 'https://www.atptour.com/en/watch',
+              availability: 'https://schema.org/InStock',
+            },
+            url,
+          }),
+        }}
       />
 
-      <div className="w-full">
-        <MatchTable
-          matches={matches}
-          sortKey={sortKey}
-          sortDir={sortDir}
-          setSortKey={setSortKey}
-          setSortDir={setSortDir}
-          playerId=""
-        />
-      </div>
-
-      <div className="w-full">
-        <Seeds id={id} year={year} matches={matches} />
-      </div>
-    </main>
+      <TournamentEditionClient
+        id={id}
+        year={year.toString()}
+        initialMatches={matches}
+        tournamentName={humanizedName}
+        startDate={startDate}
+        location={location}
+      />
+    </>
   );
 }

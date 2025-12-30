@@ -238,10 +238,6 @@ export default function TournamentClient({ id }: { id: string }) {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
-      {/* Debug badge: shows number of editions received */}
-      <div className="max-w-7xl mx-auto px-6 py-3">
-        <div className="inline-block px-3 py-1 rounded bg-white/5 text-white text-sm">editions: {editions.length}</div>
-      </div>
       {/* CTA Records */}
       <div className="flex justify-center my-12">
         <Link
