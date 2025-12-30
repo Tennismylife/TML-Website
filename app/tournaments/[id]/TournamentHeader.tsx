@@ -42,7 +42,7 @@ export default async function TournamentHeader({ id }: TournamentHeaderProps) {
       indoor: true,
       city: true,
       country: true,
-      atp_category: true,
+      category: true,
       slug: true,
     },
   });
@@ -65,8 +65,8 @@ export default async function TournamentHeader({ id }: TournamentHeaderProps) {
   const displayName = Array.isArray(tournament.name) ? (tournament.name as any[]).at(-1) || 'n/d' : (tournament.name as any) || 'n/d';
 
   let rawCategories: string[] = [];
-  if (Array.isArray(tournament.atp_category)) rawCategories = tournament.atp_category as string[];
-  else if (tournament.atp_category) rawCategories = [String(tournament.atp_category)];
+  if (Array.isArray(tournament.category)) rawCategories = tournament.category as string[];
+  else if (tournament.category) rawCategories = [String(tournament.category)];
   else {
     // Try to derive categories from RankingTable entries for the editions we found
     const rtEntries = await prisma.rankingTable.findMany({

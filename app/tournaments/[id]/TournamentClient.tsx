@@ -23,7 +23,7 @@ interface Match {
   score: string;
 }
 
-export default function TournamentClient({ id }: { id: string }) {
+export default function TournamentClient({ id }: { id: number | string }) {
   const tournamentId = id;
 
   const [editions, setEditions] = useState<Match[]>([]);

@@ -127,22 +127,22 @@ enum Surface {
 }
 
 model Tournament {
-  id        Int     @id @default(autoincrement())
-  name      Json?
-  slug      String  @unique
+  id        Int      @id
+  slug      String   @unique
 
-  atp_category  Json?
+  startDate DateTime
+  endDate   DateTime
+  years     Json?
+  name      Json?
+  category  Json?
   city      Json?
   country   Json?
-  ioc       Json?
   surfaces  Json?
-  indoor    Boolean?
-  website   String?
+  indoor    Json?
 
   @@index([slug])
   @@index([name])
 }
-
 
 model RankingDate {
   id       Int       @id @default(autoincrement())

@@ -6,72 +6,73 @@ import { prisma } from '../../../lib/prisma';
 import { redirect } from 'next/navigation';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
 
-// Funzione per rendere il nome leggibile
-function humanizeName(name: any) {
-  const s = String(name || '');
-  return s.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+interface TournamentPageProps {
+  params: { id: string };
 }
 
-// Funzione per estrarre il primo nome dal JSON (solo per visualizzazione)
-function extractName(nameField: any): string {
-  if (!nameField) return '';
-  if (typeof nameField === 'string') return nameField;
-  if (typeof nameField === 'number' || typeof nameField === 'boolean') return String(nameField);
-  if (Array.isArray(nameField)) {
-    for (const v of nameField) {
-      const r = extractName(v);
-      if (r) return r;
-    }
-    return '';
-  }
-  if (typeof nameField === 'object') {
-    for (const v of Object.values(nameField)) {
-      const r = extractName(v);
-      if (r) return r;
-    }
-    return '';
-  }
+// Funzione per rendere il nome leggibile
+function humanizeName(name: string) {
+  return name.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+// Estrae il primo valore valido (per name, city, country)
+function extractFirst(value: any): string {
+  if (!value) return '';
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (Array.isArray(value)) return value.map(extractFirst).find(Boolean) || '';
+  if (typeof value === 'object') return Object.values(value).map(extractFirst).find(Boolean) || '';
   return '';
 }
 
-export default async function TournamentPage({ params }: any) {
-  const { id: param } = await params;
+// Estrae tutti i valori validi e li unisce (per category, surfaces, ecc.)
+function extractAll(value: any): string {
+  if (!value) return '';
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (Array.isArray(value)) return value.map(extractAll).filter(Boolean).join(', ');
+  if (typeof value === 'object') return Object.values(value).map(extractAll).filter(Boolean).join(', ');
+  return '';
+}
 
-  // Trova torneo per ID o slug
-  let tournament = null;
+// Helper per recuperare il torneo dal DB
+async function getTournament(param: string) {
   if (/^\d+$/.test(param)) {
     const canonicalId = await resolveCanonicalTourneyId(param);
-    if (!canonicalId) return <div>Tournament not found</div>;
-    const idNum = parseInt(canonicalId, 10);
-    tournament = await prisma.tournament.findUnique({ where: { id: idNum } });
-
-    if (tournament?.slug) {
-      redirect(`/tournaments/${tournament.slug}`);
-    } else if (tournament && !tournament.slug) {
-      return <div>Tournament not found</div>;
-    }
+    if (!canonicalId) return null;
+    return prisma.tournament.findUnique({ where: { id: parseInt(canonicalId, 10) } });
   } else {
-    tournament = await prisma.tournament.findUnique({ where: { slug: param } });
+    return prisma.tournament.findUnique({ where: { slug: param } });
   }
+}
 
+export default async function TournamentPage({ params }: TournamentPageProps) {
+  const { id: param } = params;
+
+  const tournament = await getTournament(param);
   if (!tournament) return <div>Tournament not found</div>;
 
-  const name = extractName(tournament.name) || `Tournament ${tournament.id}`;
+  // Redirect se l’ID numerico ha uno slug canonico
+  if (/^\d+$/.test(param) && tournament.slug) {
+    redirect(`/tournaments/${tournament.slug}`);
+  }
+
+  // Estrazione valori dai campi JSON
+  const name = extractFirst(tournament.name) || `Tournament ${tournament.id}`;
   const humanizedName = humanizeName(name);
-  const slug = tournament.slug;
-  if (!slug) return <div>Tournament not found</div>;
+
+  const locationName = extractFirst(tournament.city) || "TBD";
+  const country = extractFirst(tournament.country) || "TBD";
+
+  const category = extractAll(tournament.category) || "TBD";
+  const surfaces = extractAll(tournament.surfaces) || "TBD";
+  const indoor = extractFirst(tournament.indoor) || "TBD";
+
+  const startDate = tournament.startDate ? tournament.startDate.toISOString() : new Date().toISOString();
+  const endDate = tournament.endDate ? tournament.endDate.toISOString() : new Date().toISOString();
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-  const url = `${siteUrl}/tournaments/${slug}`;
+  const url = `${siteUrl}/tournaments/${tournament.slug}`;
 
-  // Fallback automatici per campi obbligatori
-  const locationName = tournament.city || "TBD";
-  const country = tournament.country || "TBD";
-  const startDate = tournament.startDate?.toISOString() || "2025-01-01";
-  const endDate = tournament.endDate?.toISOString() || "2025-01-14";
-  const image = tournament.image || "https://example.com/default-tournament.jpg";
   const description = `Tournament page for ${humanizedName} – results, past champions and records.`;
-  const winnerName = tournament.winner || "TBD";
 
   return (
     <>
@@ -82,35 +83,32 @@ export default async function TournamentPage({ params }: any) {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "SportsEvent",
-            "name": humanizedName,
-            "sport": "Tennis",
-            "url": url,
-            "mainEntityOfPage": url,
-            "description": description,
-            "image": image,
-            "startDate": startDate,
-            "endDate": endDate,
-            "eventStatus": "https://schema.org/EventScheduled",
-            "location": {
+            name: humanizedName,
+            sport: "Tennis",
+            url,
+            mainEntityOfPage: url,
+            description,
+            startDate,
+            endDate,
+            eventStatus: "https://schema.org/EventScheduled",
+            image: "https://example.com/default-tournament.jpg",
+            location: {
               "@type": "Place",
-              "name": locationName,
-              "address": {
+              name: locationName,
+              address: {
                 "@type": "PostalAddress",
-                "addressCountry": country
-              }
+                addressCountry: country,
+              },
             },
-            "performer": [
-              {
-                "@type": "Person",
-                "name": winnerName
-              }
-            ],
-            "organizer": {
+            organizer: {
               "@type": "SportsOrganization",
-              "name": "ATP Tour"
-            }
-            // "offers" può essere aggiunto se gestisci biglietti
-          })
+              name: "ATP Tour",
+            },
+            // Optional: categorie e superfici
+            tournamentCategory: category,
+            surfaces,
+            indoor
+          }),
         }}
       />
 
