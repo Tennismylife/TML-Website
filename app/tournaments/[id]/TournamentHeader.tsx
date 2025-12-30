@@ -1,4 +1,6 @@
-import { prisma } from '@/lib/prisma';
+'use client'
+
+import { useState, useEffect } from 'react';
 import { getLevelFullName, extractUniqueSurfaces, extractNames } from '@/lib/utils';
 import { getSurfaceColor, getLevelColor, getTextColorForRound } from '@/lib/colors';
 
@@ -29,65 +31,37 @@ function formatEditionRanges(years: number[]): string[] {
   return ranges;
 }
 
-export default async function TournamentHeader({ id }: TournamentHeaderProps) {
-  if (!id) return null;
+export default function TournamentHeader({ id }: TournamentHeaderProps) {
+  const [tournament, setTournament] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch tournament and editions server-side
-  const tournament = await prisma.tournament.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      name: true,
-      surfaces: true,
-      indoor: true,
-      city: true,
-      country: true,
-      category: true,
-      slug: true,
-    },
-  });
+  useEffect(() => {
+    if (!id) {
+      setLoading(false);
+      return;
+    }
 
+    fetch(`/api/tournaments/${id}/header`)
+      .then(res => res.json())
+      .then(data => {
+        setTournament(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
+  }, [id]);
+
+  if (loading) return <div>Loading...</div>;
   if (!tournament) return null;
-
-  // Fetch distinct editions (years) from matches
-  const editions = await prisma.match.findMany({
-    where: {
-      OR: [{ tourney_id: String(id) }, { tourney_id: { endsWith: `-${id}` } }],
-    },
-    distinct: ['year'],
-    select: { year: true },
-    orderBy: { year: 'desc' },
-  });
-
-  const years = editions.map(e => e.year).filter((y): y is number => !!y);
 
   // Prepare display values
   const displayName = Array.isArray(tournament.name) ? (tournament.name as any[]).at(-1) || 'n/d' : (tournament.name as any) || 'n/d';
 
-  let rawCategories: string[] = [];
-  if (Array.isArray(tournament.category)) rawCategories = tournament.category as string[];
-  else if (tournament.category) rawCategories = [String(tournament.category)];
-  else {
-    // Try to derive categories from RankingTable entries for the editions we found
-    const rtEntries = await prisma.rankingTable.findMany({
-      where: { tourney_id: String(id), year: { in: years.map(String) } },
-      select: { atp_category: true },
-    });
-    rawCategories = rtEntries.map(r => r.atp_category).filter(Boolean) as string[];
-  }
-
-  const seenCats = new Set<string>();
-  const uniqueCategories: string[] = [];
-  for (const c of rawCategories.map((s: any) => String(s || '').trim()).filter(Boolean)) {
-    const key = c.toUpperCase();
-    if (seenCats.has(key)) continue;
-    seenCats.add(key);
-    uniqueCategories.push(c);
-  }
-
-  const levelLabels = uniqueCategories.map((l) => getLevelFullName(l));
-  const surfaces = extractUniqueSurfaces(tournament.surfaces);
-  const editionRanges = years && years.length > 0 ? formatEditionRanges(years) : [];
+  const levelLabels = (tournament.category || []).map((l: string) => getLevelFullName(l));
+  const surfaces = tournament.surfaces || [];
+  const editionRanges = tournament.editions && tournament.editions.length > 0 ? formatEditionRanges(tournament.editions) : [];
 
   return (
     <header className="relative bg-gradient-to-r from-green-700 via-green-500 to-yellow-400 text-white p-8 rounded-2xl mb-8 w-full shadow-xl overflow-hidden">
