@@ -37,9 +37,18 @@ export default function TournamentClient({ id }: { id: string }) {
     const controller = new AbortController();
 
     async function fetchData() {
+      // Timeout: if the request takes too long on mobile, abort and show an error
+      const TIMEOUT_MS = 10000; // 10s
+      let timeoutId: NodeJS.Timeout | null = null;
       try {
         setLoading(true);
         setError(null);
+        timeoutId = setTimeout(() => {
+          // Show a friendly timeout error and abort the request
+          setError('Timeout: errore nel caricamento dei dati. Riprova.');
+          controller.abort();
+        }, TIMEOUT_MS);
+
         const res = await fetch(`/api/tournaments/${tournamentId}`, { signal: controller.signal });
         if (!res.ok) throw new Error("Errore caricamento dati");
         const data = await res.json();
@@ -48,8 +57,11 @@ export default function TournamentClient({ id }: { id: string }) {
         );
         setEditions(sorted);
       } catch (err: any) {
-        if (err.name !== "AbortError") setError(err.message);
+        // Log the error for debugging (visible in mobile remote console)
+        console.error('TournamentClient fetch error:', err);
+        if (err.name !== "AbortError") setError(err.message || 'Errore caricamento dati');
       } finally {
+        if (timeoutId) clearTimeout(timeoutId);
         setLoading(false);
       }
     }

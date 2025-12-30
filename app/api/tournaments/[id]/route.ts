@@ -9,7 +9,8 @@ export async function GET(request: NextRequest, context: any) {
 
   // resolve id param (supports numeric id or slug)
   const tourneyIds = await (await import('@/lib/tournament')).resolveTourneyIds(id);
-  if (!tourneyIds) {
+  // Defensive: handle empty arrays (resolveTourneyIds may return [] for unknown slugs)
+  if (!tourneyIds || (Array.isArray(tourneyIds) && tourneyIds.length === 0)) {
     return NextResponse.json({ error: "Tournament not found" }, { status: 404 });
   }
 
@@ -43,16 +44,14 @@ export async function GET(request: NextRequest, context: any) {
       orderBy: { tourney_date: "desc" },
     });
 
-    const editionsWithNumericId = editionsData.map(match => ({
-      ...match,
-      tourney_id: parseInt(match.tourney_id),
-    }));
+    // Keep original tourney_id string values (some ids include non-numeric parts)
+    const editions = editionsData;
 
     // Determine if the caller wants categories derived only from matches
     const useMatchesOnly = request.nextUrl?.searchParams?.get('source') === 'matches';
 
     // Enrich editions: by default try RankingTable for per-year atp_category, otherwise fall back to match.tourney_level
-    const enriched = await Promise.all(editionsWithNumericId.map(async (m) => {
+    const enriched = await Promise.all(editions.map(async (m) => {
       let atpCategory: string | null = m.tourney_level || null;
       if (!useMatchesOnly) {
         try {
