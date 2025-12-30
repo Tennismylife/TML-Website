@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { Trophy, ArrowRight, RefreshCw } from "lucide-react";
 import { getFlagFromIOC } from "@/lib/utils";
 import { getSurfaceColor, getTextColorForRound } from "@/lib/colors";
-import TournamentHeader from "./TournamentHeader";
 
 interface Match {
   year: number;
@@ -30,45 +29,104 @@ export default function TournamentClient({ id }: { id: string }) {
   const [editions, setEditions] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showRetry, setShowRetry] = useState(false);
+
+  const abortRef = useRef<AbortController | null>(null);
+  const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Fetch function extracted so it can be retried from the UI
+  async function doFetch() {
+    // Cleanup any previous controller
+    if (abortRef.current) {
+      try { abortRef.current.abort(); } catch (e) {}
+    }
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    const TIMEOUT_MS = 10000; // 10s
+    let timeoutId: NodeJS.Timeout | null = null;
+
+    try {
+      setLoading(true);
+      setError(null);
+      setShowRetry(false);
+
+      timeoutId = setTimeout(() => {
+        setError('Timeout: errore nel caricamento dei dati. Tocca Riprova.');
+        try { controller.abort(); } catch (e) {}
+      }, TIMEOUT_MS);
+
+      const fetchStart = Date.now();
+      try {
+        console.info(`[TournamentClient] fetch start id=${tournamentId} ts=${new Date(fetchStart).toISOString()}`);
+      } catch {}
+
+      const res = await fetch(`/api/tournaments/${tournamentId}`, { signal: controller.signal });
+
+      const fetchDuration = Date.now() - fetchStart;
+      try {
+        console.info(`[TournamentClient] fetch finished id=${tournamentId} status=${res.status} durationMs=${fetchDuration}`);
+      } catch {}
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => '<no body>');
+        console.error(`[TournamentClient] non-ok response status=${res.status} body=${text}`);
+        throw new Error('Errore caricamento dati');
+      }
+
+      let data: any;
+      try {
+        data = await res.json();
+      } catch (parseErr) {
+        console.error('[TournamentClient] JSON parse error', parseErr);
+        throw parseErr;
+      }
+
+      try {
+        console.info(`[TournamentClient] parsed json editions=${(data.editionsData || []).length} metaCount=${data.meta?.count ?? 'n/a'}`);
+      } catch {}
+
+      const sorted: Match[] = (data.editionsData || []).sort(
+        (a, b) => new Date(b.tourney_date).getTime() - new Date(a.tourney_date).getTime()
+      );
+      setEditions(sorted);
+    } catch (err: any) {
+      // Ignore AbortError (expected when we abort controller) to avoid noisy console logs
+      if (err && err.name === 'AbortError') {
+        // no-op
+      } else {
+        console.error('TournamentClient fetch error:', err);
+        setError(err && err.message ? err.message : 'Errore caricamento dati');
+      }
+    } finally {
+      if (timeoutId) clearTimeout(timeoutId);
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
     if (!id) return;
 
-    const controller = new AbortController();
+    // Kick off the first fetch
+    doFetch();
 
-    async function fetchData() {
-      // Timeout: if the request takes too long on mobile, abort and show an error
-      const TIMEOUT_MS = 10000; // 10s
-      let timeoutId: NodeJS.Timeout | null = null;
-      try {
-        setLoading(true);
-        setError(null);
-        timeoutId = setTimeout(() => {
-          // Show a friendly timeout error and abort the request
-          setError('Timeout: errore nel caricamento dei dati. Riprova.');
-          controller.abort();
-        }, TIMEOUT_MS);
+    return () => {
+      if (abortRef.current) try { abortRef.current.abort(); } catch (e) {}
+      if (retryTimeoutRef.current) clearTimeout(retryTimeoutRef.current);
+    };
+  }, [tournamentId]);
 
-        const res = await fetch(`/api/tournaments/${tournamentId}`, { signal: controller.signal });
-        if (!res.ok) throw new Error("Errore caricamento dati");
-        const data = await res.json();
-        const sorted: Match[] = (data.editionsData || []).sort(
-          (a, b) => new Date(b.tourney_date).getTime() - new Date(a.tourney_date).getTime()
-        );
-        setEditions(sorted);
-      } catch (err: any) {
-        // Log the error for debugging (visible in mobile remote console)
-        console.error('TournamentClient fetch error:', err);
-        if (err.name !== "AbortError") setError(err.message || 'Errore caricamento dati');
-      } finally {
-        if (timeoutId) clearTimeout(timeoutId);
-        setLoading(false);
-      }
+  // Show a retry action if loading takes too long (helps mobile users recover)
+  useEffect(() => {
+    if (!loading) {
+      if (retryTimeoutRef.current) { clearTimeout(retryTimeoutRef.current); retryTimeoutRef.current = null; }
+      setShowRetry(false);
+      return;
     }
 
-    fetchData();
-    return () => controller.abort();
-  }, [tournamentId]);
+    retryTimeoutRef.current = setTimeout(() => setShowRetry(true), 5000);
+    return () => { if (retryTimeoutRef.current) clearTimeout(retryTimeoutRef.current); };
+  }, [loading]);
 
   const mostTitles = useMemo(() => {
     const winnerMap = editions.reduce((acc, m) => {
@@ -97,7 +155,6 @@ export default function TournamentClient({ id }: { id: string }) {
   if (loading) {
     return (
       <main className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        <TournamentHeader id={parseInt(tournamentId)} />
         <div className="max-w-7xl mx-auto px-6 pt-20 flex flex-col items-center space-y-8">
           <div className="relative">
             <div className="w-32 h-32 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full animate-pulse blur-xl opacity-50" />
@@ -108,6 +165,18 @@ export default function TournamentClient({ id }: { id: string }) {
               <div key={i} className="h-20 bg-white/5 backdrop-blur rounded-2xl animate-pulse" />
             ))}
           </div>
+
+          {showRetry && (
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-300 mb-2">Se il caricamento è lento, prova a toccare il pulsante per riprovare.</p>
+              <button
+                onClick={() => doFetch()}
+                className="px-6 py-2 rounded-full bg-purple-600 hover:bg-purple-500 text-white font-semibold"
+              >
+                Riprova
+              </button>
+            </div>
+          )}
         </div>
       </main>
     );
@@ -133,8 +202,6 @@ export default function TournamentClient({ id }: { id: string }) {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
-      <TournamentHeader id={parseInt(tournamentId)} />
-
       {/* CTA Records */}
       <div className="flex justify-center my-12">
         <Link

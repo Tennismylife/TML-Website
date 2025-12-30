@@ -35,6 +35,7 @@ export async function GET(request: NextRequest, context: any) {
     // Recupera solo le finali
     const tourneyIdFilters = tourneyIds.flatMap((tid: string) => [{ tourney_id: tid }, { tourney_id: { endsWith: `-${tid}` } }]);
 
+    const queryStart = Date.now();
     const editionsData = await prisma.match.findMany({
       where: {
         OR: tourneyIdFilters,
@@ -43,6 +44,7 @@ export async function GET(request: NextRequest, context: any) {
       select: matchSelect,
       orderBy: { tourney_date: "desc" },
     });
+    const queryDuration = Date.now() - queryStart;
 
     // Keep original tourney_id string values (some ids include non-numeric parts)
     const editions = editionsData;
@@ -50,6 +52,7 @@ export async function GET(request: NextRequest, context: any) {
     // Determine if the caller wants categories derived only from matches
     const useMatchesOnly = request.nextUrl?.searchParams?.get('source') === 'matches';
 
+    const enrichStart = Date.now();
     // Enrich editions: by default try RankingTable for per-year atp_category, otherwise fall back to match.tourney_level
     const enriched = await Promise.all(editions.map(async (m) => {
       let atpCategory: string | null = m.tourney_level || null;
@@ -69,8 +72,17 @@ export async function GET(request: NextRequest, context: any) {
       }
       return { ...m, atpCategory };
     }));
+    const enrichDuration = Date.now() - enrichStart;
 
-    return NextResponse.json({ editionsData: enriched });
+    // Diagnostic logging to help debug mobile issues
+    try {
+      const ua = request.headers.get('user-agent') || 'unknown';
+      console.info(`[api/tournaments/${id}] fetched editions=${editions.length} enriched=${enriched.length} queryMs=${queryDuration} enrichMs=${enrichDuration} ua=${ua} useMatchesOnly=${useMatchesOnly}`);
+    } catch (err) {
+      // best-effort logging
+    }
+
+    return NextResponse.json({ editionsData: enriched, meta: { count: enriched.length } });
   } catch (e: any) {
     return NextResponse.json(
       { error: e.message || "Server error" },

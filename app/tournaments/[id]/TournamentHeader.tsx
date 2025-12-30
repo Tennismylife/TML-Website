@@ -1,26 +1,9 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import {getLevelFullName, extractUniqueSurfaces} from "@/lib/utils";
-import {
-  getSurfaceColor,
-  getLevelColor,
-  getTextColorForRound,
-} from "@/lib/colors";
+import { prisma } from '@/lib/prisma';
+import { getLevelFullName, extractUniqueSurfaces, extractNames } from '@/lib/utils';
+import { getSurfaceColor, getLevelColor, getTextColorForRound } from '@/lib/colors';
 
 interface TournamentHeaderProps {
   id?: number;
-}
-
-interface TournamentData {
-  id: number;
-  name: string | string[];
-  surfaces: string[];
-  indoor: boolean | null;
-  city?: string;
-  country?: string;
-  atp_category?: any;
-  editions?: number[];
 }
 
 // Funzione helper per edizioni
@@ -46,135 +29,93 @@ function formatEditionRanges(years: number[]): string[] {
   return ranges;
 }
 
-export default function TournamentHeader({ id }: TournamentHeaderProps) {
-  const [tournament, setTournament] = useState<TournamentData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  // Fallback: per-edition categories (kept as a hook to preserve hook order)
-  const [fallbackLevels, setFallbackLevels] = useState<any[] | null>(null);
+export default async function TournamentHeader({ id }: TournamentHeaderProps) {
+  if (!id) return null;
 
-  useEffect(() => {
-    if (typeof id === 'undefined' || id === null) return;
-    const controller = new AbortController();
+  // Fetch tournament and editions server-side
+  const tournament = await prisma.tournament.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      name: true,
+      surfaces: true,
+      indoor: true,
+      city: true,
+      country: true,
+      atp_category: true,
+      slug: true,
+    },
+  });
 
-    const fetchHeader = async () => {
-      try {
-        const res = await fetch(`/api/tournaments/${id}/header`, {
-          signal: controller.signal,
-        });
-        if (!res.ok) throw new Error("Failed to fetch tournament header");
-        const data: TournamentData = await res.json();
-        setTournament(data);
-      } catch (err: any) {
-        if (err.name !== "AbortError") setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchHeader();
-    return () => controller.abort();
-  }, [id]);
-
-  // Fallback: if tournament has no atp_category, derive categories from editions
-  useEffect(() => {
-    if (!tournament) return;
-    if (levels && levels.length > 0) return; // already have categories
-    // fetch editions and extract per-edition categories
-    const controller = new AbortController();
-    (async () => {
-      try {
-        const res = await fetch(`/api/tournaments/${id}?source=matches`, { signal: controller.signal });
-        if (!res.ok) return;
-        const data = await res.json();
-        const ed = Array.isArray(data?.editionsData) ? data.editionsData : [];
-        const cats = ed.map((e: any) => e?.atpCategory).filter(Boolean);
-        if (cats.length > 0) setFallbackLevels(cats);
-      } catch (err) {
-        // ignore
-      }
-    })();
-    return () => controller.abort();
-  }, [tournament, id]);
-
-  if (loading)
-    return (
-      <div
-        className="text-center p-4 text-xl animate-pulse text-gray-400"
-        aria-busy="true"
-      >
-        Loading tournament info…
-      </div>
-    );
-
-  if (error) return <div className="text-center p-4 text-red-500">{error}</div>;
   if (!tournament) return null;
 
-  // Nome torneo
-  const displayName = Array.isArray(tournament.name)
-    ? tournament.name.at(-1) || "n/d"
-    : tournament.name || "n/d";
+  // Fetch distinct editions (years) from matches
+  const editions = await prisma.match.findMany({
+    where: {
+      OR: [{ tourney_id: String(id) }, { tourney_id: { endsWith: `-${id}` } }],
+    },
+    distinct: ['year'],
+    select: { year: true },
+    orderBy: { year: 'desc' },
+  });
 
-  // Livelli normalizzati in array
-  const levels = Array.isArray(tournament.atp_category)
-    ? tournament.atp_category
-    : tournament.atp_category
-    ? [tournament.atp_category]
-    : [];
+  const years = editions.map(e => e.year).filter((y): y is number => !!y);
 
+  // Prepare display values
+  const displayName = Array.isArray(tournament.name) ? (tournament.name as any[]).at(-1) || 'n/d' : (tournament.name as any) || 'n/d';
 
+  let rawCategories: string[] = [];
+  if (Array.isArray(tournament.atp_category)) rawCategories = tournament.atp_category as string[];
+  else if (tournament.atp_category) rawCategories = [String(tournament.atp_category)];
+  else {
+    // Try to derive categories from RankingTable entries for the editions we found
+    const rtEntries = await prisma.rankingTable.findMany({
+      where: { tourney_id: String(id), year: { in: years.map(String) } },
+      select: { atp_category: true },
+    });
+    rawCategories = rtEntries.map(r => r.atp_category).filter(Boolean) as string[];
+  }
 
-  // Deduplicate and format level labels (use fallback when needed)
-  const sourceLevels = (levels && levels.length > 0) ? levels : (fallbackLevels ?? []);
-  const levelLabels = sourceLevels.map((l) => getLevelFullName(l));
-  const uniqueLevelLabels = Array.from(new Set(levelLabels)).filter(Boolean);
+  const seenCats = new Set<string>();
+  const uniqueCategories: string[] = [];
+  for (const c of rawCategories.map((s: any) => String(s || '').trim()).filter(Boolean)) {
+    const key = c.toUpperCase();
+    if (seenCats.has(key)) continue;
+    seenCats.add(key);
+    uniqueCategories.push(c);
+  }
 
-  // Superfici (normalize and remove any 'indoor' tokens)
+  const levelLabels = uniqueCategories.map((l) => getLevelFullName(l));
   const surfaces = extractUniqueSurfaces(tournament.surfaces);
-
-  // Edizioni
-  const editionRanges =
-    tournament.editions && tournament.editions.length > 0
-      ? formatEditionRanges(tournament.editions)
-      : [];
+  const editionRanges = years && years.length > 0 ? formatEditionRanges(years) : [];
 
   return (
     <header className="relative bg-gradient-to-r from-green-700 via-green-500 to-yellow-400 text-white p-8 rounded-2xl mb-8 w-full shadow-xl overflow-hidden">
-      {/* Livelli (badge multipli) */}
       <div className="absolute top-4 right-6 flex flex-wrap gap-2">
-        {uniqueLevelLabels.map((label, i) => {
-          const color = getLevelColor(label) ?? "#555";
+        {levelLabels.map((label, i) => {
+          const color = getLevelColor(label) ?? '#555';
           const textColor = getTextColorForRound(color);
           return (
-            <span
-              key={i}
-              className="px-4 py-1 rounded-full text-sm font-semibold shadow-md"
-              style={{ backgroundColor: color, color: textColor }}
-            >
+            <span key={i} className="px-4 py-1 rounded-full text-sm font-semibold shadow-md" style={{ backgroundColor: color, color: textColor }}>
               {label}
             </span>
           );
         })}
       </div>
 
-      {/* Nome torneo */}
       <div className="flex flex-col items-center justify-center text-center">
-        <h1 className="text-4xl md:text-5xl font-extrabold drop-shadow-lg break-words whitespace-normal">
-          {displayName}
-        </h1>
-
-        {/* Other historical names (smaller, deduped, exclude displayName) */}
+        <h1 className="text-4xl md:text-5xl font-extrabold drop-shadow-lg break-words whitespace-normal">{displayName}</h1>
         {(() => {
-          const allNames = Array.isArray(tournament.name) ? tournament.name : [String(tournament.name)];
+          const allNames = extractNames(tournament.name).map((s) => (s || '').trim()).filter(Boolean);
           const displayNorm = String(displayName).trim().toLowerCase();
           const seen = new Set<string>();
           const others: string[] = [];
           for (const raw of allNames) {
-            const n = (typeof raw === 'string' ? raw.trim() : String(raw)).trim();
-            if (!n) continue;
+            const n = String(raw).trim();
             const norm = n.toLowerCase();
-            if (norm === displayNorm) continue; // exclude main display name (case-insensitive)
-            if (seen.has(norm)) continue; // dedupe
+            if (!n) continue;
+            if (norm === displayNorm) continue; // exclude main display name
+            if (seen.has(norm)) continue;
             seen.add(norm);
             others.push(n);
           }
@@ -185,29 +126,15 @@ export default function TournamentHeader({ id }: TournamentHeaderProps) {
             </p>
           );
         })()}
-
         {editionRanges.length > 0 && (
-          <p className="mt-3 text-lg md:text-xl font-medium text-white/90">
-            {editionRanges.join(", ")}
-          </p>
+          <p className="mt-3 text-lg md:text-xl font-medium text-white/90">{editionRanges.join(', ')}</p>
         )}
       </div>
 
-      {/* Superfici */}
       <div className="absolute bottom-4 left-6 flex flex-wrap gap-2">
-        {surfaces.map((surface, i) => {
-          const color = getSurfaceColor(surface) ?? "#888";
-          const textColor = getTextColorForRound(color);
-          return (
-            <span
-              key={i}
-              className="text-base md:text-lg font-medium px-3 py-1 rounded-full shadow-md"
-              style={{ backgroundColor: color, color: textColor }}
-            >
-              {surface}
-            </span>
-          );
-        })}
+        {surfaces.map((surface, i) => (
+          <span key={i} className="text-base md:text-lg font-medium px-3 py-1 rounded-full shadow-md" style={{ backgroundColor: getSurfaceColor(surface) ?? '#888', color: getTextColorForRound(getSurfaceColor(surface) ?? '#888') }}>{surface}</span>
+        ))}
       </div>
     </header>
   );

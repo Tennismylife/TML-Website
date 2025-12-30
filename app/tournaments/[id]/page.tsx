@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import React from 'react';
 import TournamentClient from './TournamentClient';
+import TournamentHeader from './TournamentHeader';
 import { prisma } from '../../../lib/prisma';
 import { redirect } from 'next/navigation';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
@@ -91,6 +92,8 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   };
 }
 
+
+
 export default async function TournamentPage({ params }: any) {
   const { id: param } = await params;
 
@@ -140,6 +143,8 @@ export default async function TournamentPage({ params }: any) {
           }),
         }}
       />
+
+      <TournamentHeader id={tournament.id} />
       <TournamentClient id={tournament.id} />
     </>
   );
