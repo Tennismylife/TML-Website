@@ -45,7 +45,7 @@ async function getTournament(param: string) {
 }
 
 export default async function TournamentPage({ params }: TournamentPageProps) {
-  const { id: param } = params;
+  const { id: param } = await params;
 
   const tournament = await getTournament(param);
   if (!tournament) return <div>Tournament not found</div>;
