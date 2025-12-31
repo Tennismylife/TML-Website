@@ -23,6 +23,7 @@ type NavItem = {
   icon: ReactNode;
   footnote?: NavSubnote;
   subnote?: NavSubnote;
+  badge?: { emoji?: string; text: string; bg?: string; textColor?: string; style?: 'street' | string };
 };
 
 import Card from '@/components/Card'
@@ -77,18 +78,18 @@ export default function HomePage() {
         <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 0 1-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8Z" />
       </svg>
     )},
-    { href: "/recordsRanking", title: "Records Ranking", subtitle: "Top Records Rankings", description: "Discover who leads the records for most weeks at No. x, wins at No. x, and best ranking at No. x.. Top x, streaks, end of the season rankings", colorClass: "text-yellow-400 group-hover:text-yellow-300", accentColor: "#facc15", icon: (
+    { href: "/recordsRanking", title: "Ranking Records", subtitle: "ATP Ranking Records", description: "Discover who leads the records for most weeks at No. x, wins at No. x, and best ranking at No. x.. Top x, streaks, end of the season rankings", colorClass: "text-yellow-400 group-hover:text-yellow-300", accentColor: "#facc15", icon: (
       <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
         <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 0 1-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8Z" />
       </svg>
     )},
-    { href: "/ranking", title: "Rankings", subtitle: "Current Rankings", description: "Explore current ATP rankings with date selector, point breakdowns, ranking movements, and quick filters to view weekly", subnote: { text: "This website supports the campaign to have Guillermo Vilas declared world number one", link: "/ranking", color: "#ff77b2" }, colorClass: "text-lime-400 group-hover:text-lime-300", accentColor: "#a3e635", icon: (
+    { href: "/ranking", title: "Rankings", subtitle: "All ATP Rankings Reconstructed Week-by-Week", description: "Explore ATP rankings with date selector, point breakdowns, and quick filters to view weekly", subnote: { text: "This website supports the campaign to have Guillermo Vilas declared world number one", link: "/ranking", color: "#ff77b2" }, colorClass: "text-lime-400 group-hover:text-lime-300", accentColor: "#a3e635", icon: (
       <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18M6 7v11M18 7v11M6 18h12" />
       </svg>
     )},
 
-    { href: "/rankingtables", title: "Rankings Tables", subtitle: "Historical Systems", description: "Browse ranking tables for different historical systems (1973, 1974–75, 1976–78, etc.)", colorClass: "text-amber-400 group-hover:text-amber-300", accentColor: "#f59e0b", icon: (
+    { href: "/rankingtables", title: "Rankings Tables", subtitle: "Historical Systems", description: "Browse ranking tables for different historical systems (1973, 1974–75, 1976–78, etc.)", badge: { emoji: "🌟", text: "EXCLUSIVE", style: "street" }, colorClass: "text-amber-400 group-hover:text-amber-300", accentColor: "#f59e0b", icon: (
       <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18M6 7v11M18 7v11M6 18h12" />
       </svg>
@@ -203,7 +204,7 @@ export default function HomePage() {
             subnote={item.subnote}
             colorClass={item.colorClass}
             accentColor={item.accentColor}
-            badge={item.title === "Rankings" ? { text: "Vilas #1", style: 'street' } : undefined}
+            badge={item.badge || (item.title === "Rankings" ? { text: "Vilas #1", style: 'street' } : undefined)}
           >
             {item.icon}
           </Card>

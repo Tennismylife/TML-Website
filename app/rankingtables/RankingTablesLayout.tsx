@@ -18,13 +18,19 @@ export default function RankingTablesLayout({ children, selectedYear, onYearSele
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white p-6">
       
-      {/* Header normale */}
-      <header className="mb-8 text-center relative">
+      {/* Title Container */}
+      <div className="mb-6 text-center bg-gray-800/50 rounded-lg p-4 border border-gray-700">
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-500 to-pink-500 drop-shadow-lg">
           Ranking Tables
         </h1>
-        <p className="mt-2 text-gray-400">Select a year to explore historical rankings</p>
-      </header>
+      </div>
+      
+      {/* Disclaimer Container */}
+      <div className="mb-8 text-center bg-gray-900/70 rounded-lg p-4 border border-gray-600">
+        <p className="text-gray-300 text-sm leading-relaxed">
+          In 2018 I published on my GitHub all the ranking tables starting from 1973. Since then, no website has ever published these tables. For the first time, they are available all together, making it easier to understand how tournaments were classified in those years, without incorrect retrospective reconstructions
+        </p>
+      </div>
 
       {/* Years Grid */}
       <nav className="mb-10" role="navigation">
@@ -46,7 +52,9 @@ export default function RankingTablesLayout({ children, selectedYear, onYearSele
       </nav>
 
       {/* Page content */}
-      <div className="bg-gray-900/50 rounded-xl p-6 shadow-inner">{children}</div>
+      <div className="bg-gray-900/50 rounded-xl p-6 shadow-inner">
+        {children}
+      </div>
     </main>
   );
 }

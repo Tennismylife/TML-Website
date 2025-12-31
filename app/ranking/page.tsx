@@ -140,14 +140,136 @@ export default function RankingPage() {
   }, [selectedDate]);
 
   if (!datesByYear.length)
-    return <div className="flex items-center justify-center min-h-screen text-gray-300">Loading dates...</div>;
+    return (
+      <main className="w-full min-h-screen bg-gray-900 text-white flex flex-col p-4">
+        {/* TITLE */}
+        <h1 className="text-3xl font-bold text-center mb-6 text-yellow-400">
+          All ATP Rankings Reconstructed<br />
+          Week by Week
+        </h1>
+
+        {/* DISCLAIMER */}
+        <div className="w-full mb-6 p-4 bg-gray-800 rounded-lg border border-gray-700">
+          <p className="text-gray-300 text-sm leading-relaxed">
+            The <span className="!text-cyan-400 font-semibold">ATP ranking</span> was officially introduced on <span className="!text-cyan-400">23 August 1973</span>, marking a major turning point in men's professional tennis. Prior to its introduction, tournament seedings were often determined subjectively, based on the opinions of journalists, officials, or tournament organizers.
+          </p>
+          <p className="text-gray-300 text-sm leading-relaxed mt-2 !text-cyan-400 font-semibold">
+            Early publication frequency
+          </p>
+          <p className="text-gray-300 text-sm leading-relaxed">
+            Unlike today, the ATP ranking was not published on a <span className="!text-cyan-400 font-semibold">weekly basis</span> from the start:
+          </p>
+          <ul className="text-gray-300 text-sm leading-relaxed ml-4 mt-1 list-disc">
+            <li><span className="!text-cyan-400">1973–1977</span>: rankings were released irregularly, often only a few times per year, typically around major tournaments or key moments of the season.</li>
+            <li><span className="!text-cyan-400">1978–1981</span>: rankings became more frequent but were still not weekly, with updates sometimes occurring every two or three weeks.</li>
+            <li><span className="!text-cyan-400 font-semibold">From 1982 onward</span>: the ATP introduced a regular weekly ranking, establishing the continuous and standardized system used today.</li>
+          </ul>
+          <p className="text-gray-300 text-sm leading-relaxed mt-2">
+            This approach inevitably leads to <span className="!text-cyan-400 font-semibold">ranking recalculations</span>. The most significant result of this reconstruction is that <span className="!text-yellow-400 font-bold">Guillermo Vilas</span> emerges as <span className="!text-yellow-400 font-bold">World No. 1</span> from <span className="!text-cyan-400">17 November 1975 to 16 January 1976</span>.
+          </p>
+          <p className="text-gray-300 text-sm leading-relaxed mt-2">
+            In a comparable case, the <span className="!text-cyan-400">WTA</span> officially recognized <span className="!text-cyan-400">Evonne Goolagong</span> as World No. 1 retroactively in <span className="!text-cyan-400">2007</span>, acknowledging historical inconsistencies in early ranking systems.
+            We hope that, sooner or later, the ATP may take a similar step.
+          </p>
+        </div>
+
+        {/* ADDITIONAL NOTE */}
+        <div className="w-full mb-6 p-4 bg-gray-800 rounded-lg border border-gray-700">
+          <p className="text-gray-300 text-sm leading-relaxed">
+            For this reason, building on research and historical reconstructions available online, we decided to reconstruct the ATP ranking on a week-by-week basis starting from the very first official ranking.
+          </p>
+        </div>
+
+        <div className="flex items-center justify-center min-h-screen text-gray-300">Loading dates...</div>
+      </main>
+    );
   if (loading)
-    return <div className="flex items-center justify-center min-h-screen text-gray-300">Loading rankings...</div>;
+    return (
+      <main className="w-full min-h-screen bg-gray-900 text-white flex flex-col p-4">
+        {/* TITLE */}
+        <h1 className="text-3xl font-bold text-center mb-6 text-yellow-400">
+          All ATP Rankings Reconstructed<br />
+          Week by Week
+        </h1>
+
+        {/* DISCLAIMER */}
+        <div className="w-full mb-6 p-4 bg-gray-800 rounded-lg border border-gray-700">
+          <p className="text-gray-300 text-sm leading-relaxed">
+            The <span className="!text-cyan-400 font-semibold">ATP ranking</span> was officially introduced on <span className="!text-cyan-400">23 August 1973</span>, marking a major turning point in men's professional tennis. Prior to its introduction, tournament seedings were often determined subjectively, based on the opinions of journalists, officials, or tournament organizers.
+          </p>
+          <p className="text-gray-300 text-sm leading-relaxed mt-2 !text-cyan-400 font-semibold">
+            Early publication frequency
+          </p>
+          <p className="text-gray-300 text-sm leading-relaxed">
+            Unlike today, the ATP ranking was not published on a <span className="!text-cyan-400 font-semibold">weekly basis</span> from the start:
+          </p>
+          <ul className="text-gray-300 text-sm leading-relaxed ml-4 mt-1 list-disc">
+            <li><span className="!text-cyan-400">1973–1977</span>: rankings were released irregularly, often only a few times per year, typically around major tournaments or key moments of the season.</li>
+            <li><span className="!text-cyan-400">1978–1981</span>: rankings became more frequent but were still not weekly, with updates sometimes occurring every two or three weeks.</li>
+            <li><span className="!text-cyan-400 font-semibold">From 1982 onward</span>: the ATP introduced a regular weekly ranking, establishing the continuous and standardized system used today.</li>
+          </ul>
+          <p className="text-gray-300 text-sm leading-relaxed mt-2">
+            This approach inevitably leads to <span className="!text-cyan-400 font-semibold">ranking recalculations</span>. The most significant result of this reconstruction is that <span className="!text-yellow-400 font-bold">Guillermo Vilas</span> emerges as <span className="!text-yellow-400 font-bold">World No. 1</span> from <span className="!text-cyan-400">17 November 1975 to 16 January 1976</span>.
+          </p>
+          <p className="text-gray-300 text-sm leading-relaxed mt-2">
+            In a comparable case, the <span className="!text-cyan-400">WTA</span> officially recognized <span className="!text-cyan-400">Evonne Goolagong</span> as World No. 1 retroactively in <span className="!text-cyan-400">2007</span>, acknowledging historical inconsistencies in early ranking systems.
+            We hope that, sooner or later, the ATP may take a similar step.
+          </p>
+        </div>
+
+        {/* ADDITIONAL NOTE */}
+        <div className="w-full mb-6 p-4 bg-gray-800 rounded-lg border border-gray-700">
+          <p className="text-gray-300 text-sm leading-relaxed">
+            For this reason, building on research and historical reconstructions available online, we decided to reconstruct the ATP ranking on a week-by-week basis starting from the very first official ranking.
+          </p>
+        </div>
+
+        <div className="flex items-center justify-center min-h-screen text-gray-300">Loading rankings...</div>
+      </main>
+    );
 
   const currentYearDates = datesByYear.find((d) => d.year === selectedYear)?.dates ?? [];
 
   return (
     <main className="w-full min-h-screen bg-gray-900 text-white flex flex-col p-4">
+      {/* TITLE */}
+      <h1 className="text-3xl font-bold text-center mb-6 text-yellow-400">
+        All ATP Rankings Reconstructed<br />
+        Week-by-Week
+      </h1>
+
+      {/* DISCLAIMER */}
+      <div className="w-full mb-6 p-4 bg-gray-800 rounded-lg border border-gray-700">
+        <p className="text-gray-300 text-sm leading-relaxed">
+          The <span className="!text-cyan-400 font-semibold">ATP ranking</span> was officially introduced on <span className="!text-cyan-400">23 August 1973</span>, marking a major turning point in men's professional tennis. Prior to its introduction, tournament seedings were often determined subjectively, based on the opinions of journalists, officials, or tournament organizers.
+        </p>
+        <p className="text-gray-300 text-sm leading-relaxed mt-2 !text-cyan-400 font-semibold">
+          Early publication frequency
+        </p>
+        <p className="text-gray-300 text-sm leading-relaxed">
+          Unlike today, the ATP ranking was not published on a <span className="!text-cyan-400 font-semibold">weekly basis</span> from the start:
+        </p>
+        <ul className="text-gray-300 text-sm leading-relaxed ml-4 mt-1 list-disc">
+          <li><span className="!text-cyan-400">1973–1977</span>: rankings were released irregularly, often only a few times per year, typically around major tournaments or key moments of the season.</li>
+          <li><span className="!text-cyan-400">1978–1981</span>: rankings became more frequent but were still not weekly, with updates sometimes occurring every two or three weeks.</li>
+          <li><span className="!text-cyan-400 font-semibold">From 1982 onward</span>: the ATP introduced a regular weekly ranking, establishing the continuous and standardized system used today.</li>
+        </ul>
+        <p className="text-gray-300 text-sm leading-relaxed mt-2">
+          This approach inevitably leads to <span className="!text-cyan-400 font-semibold">ranking recalculations</span>. The most significant result of this reconstruction is that <span className="!text-yellow-400 font-bold">Guillermo Vilas</span> emerges as <span className="!text-yellow-400 font-bold">World No. 1</span> from <span className="!text-cyan-400">17 November 1975 to 16 January 1976</span>.
+        </p>
+        <p className="text-gray-300 text-sm leading-relaxed mt-2">
+          In a comparable case, the <span className="!text-cyan-400">WTA</span> officially recognized <span className="!text-cyan-400">Evonne Goolagong</span> as World No. 1 retroactively in <span className="!text-cyan-400">2007</span>, acknowledging historical inconsistencies in early ranking systems.
+          We hope that, sooner or later, the ATP may take a similar step.
+        </p>
+      </div>
+
+      {/* ADDITIONAL NOTE */}
+      <div className="w-full mb-6 p-4 bg-gray-800 rounded-lg border border-gray-700">
+        <p className="text-gray-300 text-sm leading-relaxed">
+          For this reason, building on research and historical reconstructions available online, we decided to reconstruct the ATP ranking on a week-by-week basis starting from the very first official ranking.
+        </p>
+      </div>
+
       {/* FILTER CONTAINER */}
       <div className="w-full flex flex-col sm:flex-row gap-4 mb-6 items-start">
         {/* Year selector */}

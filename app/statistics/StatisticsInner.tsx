@@ -104,16 +104,16 @@ export default function StatisticsInner() {
     return value;
   };
 
-  // Generate table
+  // Generate table - Mobile Optimized
   const renderTable = (list: PlayerStat[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow mt-4">
-      <table className="min-w-full border-collapse">
+      <table className="min-w-full border-collapse text-sm">
         <thead>
           <tr className="bg-black">
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Matches</th>
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">{STAT_LABELS[stat]}</th>
+            <th className="border border-white/30 px-2 sm:px-4 py-3 text-center text-sm sm:text-lg text-gray-200 font-semibold">#</th>
+            <th className="border border-white/30 px-2 sm:px-4 py-3 text-left text-sm sm:text-lg text-gray-200 font-semibold">Player</th>
+            <th className="border border-white/30 px-2 sm:px-4 py-3 text-center text-sm sm:text-lg text-gray-200 font-semibold">Matches</th>
+            <th className="border border-white/30 px-2 sm:px-4 py-3 text-center text-sm sm:text-lg text-gray-200 font-semibold">{STAT_LABELS[stat]}</th>
           </tr>
         </thead>
         <tbody>
@@ -121,16 +121,27 @@ export default function StatisticsInner() {
             const globalRank = startIndex + idx + 1;
             const flag = getFlagFromIOC(p.ioc) ?? "🏳️";
             return (
-              <tr key={p.id} className="hover:bg-gray-800 border-b border-white/10">
-                <td className="border border-white/10 px-4 py-2 text-center text-gray-200">{globalRank}</td>
-                <td className="border border-white/10 px-4 py-2 text-gray-200">
+              <tr key={p.id} className="hover:bg-gray-800 border-b border-white/10 transition-colors">
+                <td className="border border-white/10 px-2 sm:px-4 py-3 text-center text-gray-200 font-medium">
+                  {globalRank}
+                </td>
+                <td className="border border-white/10 px-2 sm:px-4 py-3 text-gray-200">
                   <div className="flex items-center gap-2">
-                    {flag && <span className="text-base">{flag}</span>}
-                    <Link href={`/players/${p.id}`} className="text-indigo-300 hover:underline">{p.name}</Link>
+                    <span className="text-base sm:text-lg">{flag}</span>
+                    <Link
+                      href={`/players/${p.id}`}
+                      className="text-indigo-300 hover:text-indigo-200 hover:underline text-sm sm:text-base transition-colors"
+                    >
+                      {p.name}
+                    </Link>
                   </div>
                 </td>
-                <td className="border border-white/10 px-4 py-2 text-center text-gray-200">{p.matches}</td>
-                <td className="border border-white/10 px-4 py-2 text-center text-gray-200">{formatStat(stat, p.output)}</td>
+                <td className="border border-white/10 px-2 sm:px-4 py-3 text-center text-gray-200 font-medium">
+                  {p.matches}
+                </td>
+                <td className="border border-white/10 px-2 sm:px-4 py-3 text-center text-gray-200 font-semibold text-blue-300">
+                  {formatStat(stat, p.output)}
+                </td>
               </tr>
             );
           })}
@@ -139,53 +150,60 @@ export default function StatisticsInner() {
     </div>
   );
 
-  // Modal component
+  // Modal component - Mobile Optimized
   const Modal = ({ show, onClose, children }: { show: boolean; onClose: () => void; children: React.ReactNode }) => {
     if (!show) return null;
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50" onClick={onClose}>
-        <div className="bg-gray-900 text-gray-200 p-4 w-full max-w-7xl max-h-screen overflow-y-auto rounded border border-gray-800" onClick={(e) => e.stopPropagation()}>
+      <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-2" onClick={onClose}>
+        <div className="bg-gray-900 text-gray-200 p-3 sm:p-4 w-full max-w-7xl max-h-[90vh] sm:max-h-screen overflow-y-auto rounded-lg border border-gray-800 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="flex justify-between items-center mb-4 pb-2 border-b border-gray-700">
+            <h2 className="text-lg sm:text-xl font-bold text-white">All Players - {STAT_LABELS[stat]}</h2>
+            <button
+              onClick={onClose}
+              className="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-500 font-medium text-sm min-h-[44px] transition-colors"
+            >
+              ✕ Close
+            </button>
+          </div>
           {children}
-          <button onClick={onClose} className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500">Close</button>
         </div>
       </div>
     );
   };
 
   return (
-    <main className="min-h-screen bg-gray-900 p-4 text-white">
+    <main className="min-h-screen bg-gray-900 p-2 sm:p-4 text-white">
       <div className="max-w-6xl mx-auto w-full">
-        {/* Header con StatsSelector e View All */}
-        <div className="mb-4 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-          <div>
-            <h1 className="text-3xl font-bold">Tennis Stats at a Glance</h1>
-            <p className="text-gray-300 text-sm">
-              This tool calculates detailed performance statistics for tennis players based on match results.
+        {/* Header con StatsSelector e View All - Mobile Optimized */}
+        <div className="mb-6">
+          <div className="mb-4">
+            <h1 className="text-2xl sm:text-3xl font-bold text-center sm:text-left">Advanced Player Statistics</h1>
+            <p className="text-gray-300 text-sm text-center sm:text-left mt-2">
+              Comprehensive performance analytics and statistics for professional tennis players.
             </p>
           </div>
 
-          <div className="flex items-center gap-4 justify-center md:justify-end">
-            <div className="flex flex-col sm:flex-row items-center gap-2">
-              <label className="font-medium text-white text-sm">Stat:</label>
-              <select
-                value={stat}
-                onChange={(e) => setStat(e.target.value)}
-                className="bg-gray-700 text-white border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                {Object.entries(STAT_LABELS).map(([key, label]) => (
-                  <option key={key} value={key}>
-                    {label}
-                  </option>
-                ))}
-              </select>
+          {/* Mobile-First Controls */}
+          <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+            <div className="flex flex-col sm:flex-row gap-4 items-center">
+              {/* Stat Selector - Full Width on Mobile */}
+              <div className="w-full sm:w-auto flex flex-col sm:flex-row items-center gap-2">
+                <label className="font-bold text-yellow-400 text-lg sm:text-xl tracking-wide drop-shadow-lg">
+                  Stat:
+                </label>
+                <select
+                  value={stat}
+                  onChange={(e) => setStat(e.target.value)}
+                  className="w-full sm:w-auto bg-gray-700 text-white border border-gray-600 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
+                >
+                  {Object.entries(STAT_LABELS).map(([key, label]) => (
+                    <option key={key} value={key}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
-
-            <button
-              onClick={() => setShowModal(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
-            >
-              View All
-            </button>
           </div>
         </div>
 
@@ -199,12 +217,56 @@ export default function StatisticsInner() {
         onTourneyLevelChange={setTourneyLevel}
       />
 
-      {/* Min Matches Slider */}
-      <div className="mb-4 mt-4">
-        <label className="block text-sm font-medium mb-1 text-white">
-          Minimum Matches: {minMatches}
-        </label>
-        <input type="range" min="1" max="100" value={minMatches} onChange={(e) => setMinMatches(Number(e.target.value))} className="w-full" />
+      {/* Min Matches Slider - Mobile Optimized */}
+      <div className="bg-gray-800/30 rounded-lg p-4 border border-gray-700 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex-1">
+            <label className="block text-sm font-medium mb-2 text-white">
+              Minimum Matches: <span className="text-blue-400 font-bold">{minMatches}</span>
+            </label>
+            <input
+              type="range"
+              min="1"
+              max="100"
+              value={minMatches}
+              onChange={(e) => setMinMatches(Number(e.target.value))}
+              className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+            />
+            <div className="flex justify-between text-xs text-gray-400 mt-1">
+              <span>1</span>
+              <span>50</span>
+              <span>100</span>
+            </div>
+          </div>
+
+          {/* Quick Preset Buttons */}
+          <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={() => setMinMatches(1)}
+              className="px-3 py-2 bg-gray-700 text-white text-xs rounded hover:bg-gray-600 transition-colors min-h-[36px]"
+            >
+              Min
+            </button>
+            <button
+              onClick={() => setMinMatches(10)}
+              className="px-3 py-2 bg-gray-700 text-white text-xs rounded hover:bg-gray-600 transition-colors min-h-[36px]"
+            >
+              10+
+            </button>
+            <button
+              onClick={() => setMinMatches(25)}
+              className="px-3 py-2 bg-gray-700 text-white text-xs rounded hover:bg-gray-600 transition-colors min-h-[36px]"
+            >
+              25+
+            </button>
+            <button
+              onClick={() => setMinMatches(50)}
+              className="px-3 py-2 bg-gray-700 text-white text-xs rounded hover:bg-gray-600 transition-colors min-h-[36px]"
+            >
+              50+
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Table / Loading */}
@@ -214,6 +276,16 @@ export default function StatisticsInner() {
         <div className="text-center py-8 text-gray-300">No data available.</div>
       ) : (
         <>
+          {/* View All Button - Above Table */}
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={() => setShowModal(true)}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-500 font-medium text-sm transition-colors shadow-md"
+            >
+              View All
+            </button>
+          </div>
+
           {renderTable(playersToShow, start)}
           {totalPages > 1 && (
             <div className="mt-4 flex justify-center">

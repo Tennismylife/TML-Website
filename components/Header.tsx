@@ -60,9 +60,10 @@ export default function Header() {
           <Link href="/statistics" className={linkClass("/statistics")}>Statistics</Link>
           <Link href="/h2h" className={linkClass("/h2h")}>H2H</Link>
           <Link href="/player-vs-player" className={linkClass("/player-vs-player")}>Player vs Player</Link>
-          <Link href="/ranking" className={linkClass("/ranking")}>Ranking</Link>
+          <Link href="/ranking" className={linkClass("/ranking")}>Rankings</Link>
           <Link href="/rankingtables" className={linkClass("/rankingtables")}>Ranking Tables</Link>
-          <Link href="/records" className={linkClass("/records")}>Records</Link>
+          <Link href="/records" className={linkClass("/records")}>Match Records</Link>
+          <Link href="/recordsRanking" className={linkClass("/recordsRanking")}>Ranking Records</Link>
         </nav>
 
       </div>
