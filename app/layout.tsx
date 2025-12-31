@@ -9,6 +9,8 @@ const montserrat = Montserrat({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-montserrat',
+  preload: true,
+  fallback: ['system-ui', 'sans-serif']
 })
 
 
@@ -63,19 +65,32 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         {/* Preconnects for third-party origins (do this early but sparingly) */}
         <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://www.google-analytics.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+
+        {/* DNS prefetch for additional performance */}
+        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="//fonts.gstatic.com" />
 
         {/* Preload hero image (mobile-focused small AVIF to speed LCP on mobile emulation) */}
         <link rel="preload" href="/UnderCostruction-480.avif" as="image" type="image/avif" />
 
-        {/* Preload main CSS if available (reduces render-blocking) */}
+        {/* Preload critical CSS chunks to reduce render-blocking */}
+        <link rel="preload" href="/_next/static/css/app/layout.css" as="style" />
+        <link rel="preload" href="/_next/static/css/app/page.css" as="style" />
+
+        {/* Optimized CSS loading - Load critical CSS first, then promote to all */}
         {mainCssHref ? (
           <>
-            {/* Load stylesheet with media=print and promote to all asynchronously to avoid render-blocking. */}
-            <link rel="stylesheet" href={mainCssHref} media="print" />
+            <link rel="preload" href={mainCssHref} as="style" />
+            <link
+              rel="stylesheet"
+              href={mainCssHref}
+              media="print"
+            />
             <noscript>
               <link rel="stylesheet" href={mainCssHref} />
             </noscript>
-            <script dangerouslySetInnerHTML={{ __html: `var __href=${JSON.stringify(mainCssHref)}; (function(){try{var href=__href; var existing=document.querySelector('link[rel="stylesheet"][href="'+href+'"]'); if(existing){existing.media='print';} else { var s=document.createElement('link'); s.rel='stylesheet'; s.href=href; s.media='print'; document.head.appendChild(s);} var promote=function(){ try{ var s2=document.querySelector('link[rel="stylesheet"][href="'+href+'"]'); if(s2) s2.media='all'; }catch(e){} }; if('requestIdleCallback' in window) requestIdleCallback(promote,{timeout:1000}); else setTimeout(promote,100);}catch(e){} })();` }} />
           </>
         ) : null}
       </head>
