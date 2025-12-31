@@ -147,8 +147,9 @@ export default function HomePage() {
           alt="Under Construction"
           width={768}
           height={480}
-          className="w-full max-w-lg h-auto rounded-xl shadow-lg object-cover"
           priority
+          fetchPriority="high"
+          className="w-full max-w-lg h-auto rounded-xl shadow-lg object-cover"
           placeholder="blur"
           blurDataURL={heroLQIP}
           sizes="(max-width: 400px) 320px, (max-width: 640px) 480px, 768px"

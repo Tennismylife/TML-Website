@@ -35,20 +35,7 @@ export const metadata: Metadata = {
   },
 }
 
-import fs from 'fs'
-import path from 'path'
-
 export default function RootLayout({ children }: { children: ReactNode }) {
-  // Dynamically find the main compiled CSS file and preload it to reduce render-blocking
-  let mainCssHref: string | null = null
-  try {
-    const cssDir = path.join(process.cwd(), '.next', 'static', 'css')
-    const files = fs.readdirSync(cssDir)
-    const cssFile = files.find((f) => f.endsWith('.css'))
-    if (cssFile) mainCssHref = `/_next/static/css/${cssFile}`
-  } catch (err) {
-    // ignore - on environments without .next folder this will fail silently
-  }
 
   return (
     <html lang="it" className={montserrat.variable}>
@@ -74,25 +61,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
         {/* Preload hero image (mobile-focused small AVIF to speed LCP on mobile emulation) */}
         <link rel="preload" href="/UnderCostruction-480.avif" as="image" type="image/avif" />
-
-        {/* Preload critical CSS chunks to reduce render-blocking */}
-        <link rel="preload" href="/_next/static/css/app/layout.css" as="style" />
-        <link rel="preload" href="/_next/static/css/app/page.css" as="style" />
-
-        {/* Optimized CSS loading - Load critical CSS first, then promote to all */}
-        {mainCssHref ? (
-          <>
-            <link rel="preload" href={mainCssHref} as="style" />
-            <link
-              rel="stylesheet"
-              href={mainCssHref}
-              media="print"
-            />
-            <noscript>
-              <link rel="stylesheet" href={mainCssHref} />
-            </noscript>
-          </>
-        ) : null}
       </head>
       <body className="min-h-screen bg-gray-900 text-gray-100">
         {/* Site JSON-LD (rendered server-side in root layout) */}
