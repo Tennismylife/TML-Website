@@ -9,6 +9,8 @@ export default async function PlayerPage({ params, searchParams }: any) {
   const { id: slugParam } = params;
   const sp = searchParams;
 
+  if (!slugParam) return <div>Invalid player ID</div>;
+
   // Recupera il giocatore
   const player = !slugParam.includes('-')
     ? await prisma.player.findUnique({ where: { id: String(slugParam) }, select: { id: true, player: true, atpname: true, slug: true } })
@@ -17,7 +19,7 @@ export default async function PlayerPage({ params, searchParams }: any) {
   if (!player) return <div>Player not found</div>;
 
   // Redirect se accessed via ID
-  if (!slugParam.includes('-') && player.slug) {
+  if (!slugParam.includes('-')) {
     const search = sp?.tab ? `?tab=${sp.tab}` : '';
     redirect(`/players/${player.slug}${search}`);
     return null;
