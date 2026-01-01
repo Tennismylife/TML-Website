@@ -5,21 +5,21 @@ import { prisma } from '../../../lib/prisma';
 import SEOPlayer from './SEOPlayer';
 import { redirect } from 'next/navigation';
 
-export default async function PlayerPage({ params, searchParams }: any) {
-  const { id: slugParam } = params;
-  const sp = searchParams;
+export const dynamic = 'force-dynamic';
 
-  if (!slugParam) return <div>Invalid player ID</div>;
+export default async function PlayerPage({ params, searchParams }: any) {
+  const { id: slugParam } = await params;
+  const sp = await searchParams;
 
   // Recupera il giocatore
   const player = !slugParam.includes('-')
     ? await prisma.player.findUnique({ where: { id: String(slugParam) }, select: { id: true, player: true, atpname: true, slug: true } })
     : await prisma.player.findUnique({ where: { slug: slugParam }, select: { id: true, player: true, atpname: true, slug: true } });
 
-  if (!player) return <div>Player not found</div>;
+  if (!player) return <div>Player not found: {slugParam}</div>;
 
   // Redirect se accessed via ID
-  if (!slugParam.includes('-')) {
+  if (!slugParam.includes('-') && player.slug) {
     const search = sp?.tab ? `?tab=${sp.tab}` : '';
     redirect(`/players/${player.slug}${search}`);
     return null;
