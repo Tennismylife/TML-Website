@@ -82,6 +82,7 @@ export default function H2HPage({ playerId, mainPlayerName, filters = { year: "A
       />
       <H2HTable
         playerId={playerId}
+        playerName={mainPlayerName}
         allMatches={displayedMatches}
         loading={loading}
         error={error}

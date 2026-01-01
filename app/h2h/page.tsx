@@ -8,11 +8,13 @@ import H2HMatches from "./H2HMatches";
 import H2HPageFilters from "./H2HPageFilters";
 import { Player, Match, SortKey, SortDirection } from "@/types";
 import { useRouter, usePathname } from "next/navigation";
+import { createH2HUrl } from "@/lib/utils";
 
 export default function H2HPage() {
   const router = useRouter();
   const pathname = usePathname();
   const initAppliedRef = useRef(false);
+  const redirectRef = useRef<string | null>(null);
 
   const [searchParamsClient, setSearchParamsClient] = useState<URLSearchParams | null>(null);
   const [player1, setPlayer1] = useState<Player | null>(null);
@@ -32,6 +34,78 @@ export default function H2HPage() {
 
   // --- Leggi URL params lato client ---
   useEffect(() => setSearchParamsClient(new URLSearchParams(window.location.search)), []);
+
+  // --- Auto-redirect to slug URL when players are selected ---
+  useEffect(() => {
+    if (!player1 || !player2 || !pathname) return;
+    
+    // Only redirect if we're on the base /h2h page (not on a slug URL)
+    if (pathname !== '/h2h') return;
+    
+    // Don't redirect if we already have p1/p2 params (legacy redirect will handle it)
+    if (searchParamsClient?.has('p1') || searchParamsClient?.has('p2')) return;
+    
+    const slugUrl = createH2HUrl(player1.atpname, player2.atpname);
+    const currentSlug = `${player1.atpname}-vs-${player2.atpname}`;
+    
+    // Avoid redirect loop by checking if we've already redirected for this combination
+    if (redirectRef.current === currentSlug) return;
+    
+    redirectRef.current = currentSlug;
+    
+    // Don't include default sort parameters in the slug URL
+    const currentParams = new URLSearchParams(window.location.search);
+    // Remove default sort parameters
+    currentParams.delete('sort');
+    currentParams.delete('sortDir');
+    
+    const queryString = currentParams.toString();
+    const finalUrl = queryString ? `${slugUrl}?${queryString}` : slugUrl;
+    
+    router.replace(finalUrl);
+  }, [player1, player2, pathname, searchParamsClient, router]);
+
+  // --- Redirect to slug URL if p1 and p2 are present ---
+  useEffect(() => {
+    if (!searchParamsClient) return;
+
+    const p1id = searchParamsClient.get("p1");
+    const p2id = searchParamsClient.get("p2");
+
+    if (p1id && p2id) {
+      // Fetch both players to get their names for the slug
+      const fetchPlayers = async () => {
+        try {
+          const [res1, res2] = await Promise.all([
+            fetch(`/api/players?id=${encodeURIComponent(p1id)}`),
+            fetch(`/api/players?id=${encodeURIComponent(p2id)}`)
+          ]);
+
+          if (res1.ok && res2.ok) {
+            const player1: Player = await res1.json();
+            const player2: Player = await res2.json();
+
+            // Create slug URL and redirect
+            const slugUrl = createH2HUrl(player1.atpname, player2.atpname);
+            const currentParams = new URLSearchParams(window.location.search);
+            // Remove p1, p2 and default sort parameters
+            currentParams.delete('p1');
+            currentParams.delete('p2');
+            currentParams.delete('sort');
+            currentParams.delete('sortDir');
+            const queryString = currentParams.toString();
+            const finalUrl = queryString ? `${slugUrl}?${queryString}` : slugUrl;
+
+            router.replace(finalUrl);
+          }
+        } catch (error) {
+          console.error('Error fetching players for redirect:', error);
+        }
+      };
+
+      fetchPlayers();
+    }
+  }, [searchParamsClient, router]);
 
   useEffect(() => {
     if (!searchParamsClient) return;
@@ -54,8 +128,8 @@ export default function H2HPage() {
       tourney_name: qTourney ?? prev.tourney_name,
     }));
 
-    if (qSort) setSortKey(qSort as SortKey);
-    if (qSortDir && (qSortDir === "asc" || qSortDir === "desc")) setSortDir(qSortDir as SortDirection);
+    if (qSort && !(qSort === 'tourney_date' && qSortDir === 'desc')) setSortKey(qSort as SortKey);
+    if (qSortDir && (qSortDir === "asc" || qSortDir === "desc") && !(qSort === 'tourney_date' && qSortDir === 'desc')) setSortDir(qSortDir as SortDirection);
 
     const fetchPlayerById = async (id?: string | null) => {
       if (!id) return null;
@@ -109,26 +183,6 @@ export default function H2HPage() {
       .catch(() => setMatches([]))
       .finally(() => setLoading(false));
   }, [player1, player2]);
-
-  // --- Aggiorna URL quando cambiano player, filtri o sort ---
-  useEffect(() => {
-    if (!initAppliedRef.current) return;
-    if (!pathname) return;
-
-    const params = new URLSearchParams();
-    if (player1) params.set("p1", String(player1.id));
-    if (player2) params.set("p2", String(player2.id));
-    if (filters.year !== "All") params.set("year", String(filters.year));
-    if (filters.level !== "All") params.set("level", filters.level);
-    if (filters.surface !== "All") params.set("surface", filters.surface);
-    if (filters.round !== "All") params.set("round", filters.round);
-    if (filters.tourney_name !== "All") params.set("tourney", filters.tourney_name);
-    if (sortKey) params.set("sort", sortKey);
-    if (sortDir) params.set("sortDir", sortDir);
-
-    const newUrl = `${pathname}${params.toString() ? `?${params.toString()}` : ""}`;
-    router.replace(newUrl, { scroll: false });
-  }, [player1, player2, filters, sortKey, sortDir, router, pathname]);
 
   // --- Filtra match ---
   const filteredMatches = useMemo(() => {

@@ -523,3 +523,20 @@ export function extractUniqueSurfaces(field: any): string[] {
   }
   return out;
 }
+
+// Create a readable H2H URL from two player names
+export function createH2HUrl(player1Name: string, player2Name: string): string {
+  const slug1 = createSlug(player1Name);
+  const slug2 = createSlug(player2Name);
+  return `/h2h/${slug1}-vs-${slug2}`;
+}
+
+// Parse H2H URL slugs back to player names (for display purposes)
+export function parseH2HUrl(url: string): { player1Slug: string; player2Slug: string } | null {
+  const match = url.match(/^\/h2h\/(.+)-vs-(.+)$/);
+  if (!match) return null;
+  return {
+    player1Slug: match[1],
+    player2Slug: match[2]
+  };
+}

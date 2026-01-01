@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { getFlagFromIOC } from "@/lib/utils";
+import { getFlagFromIOC, createH2HUrl } from "@/lib/utils";
 import type { Match } from "@/types";
 import { useH2HData } from "./useH2HData";
 import Pagination from "@/components/Pagination";
@@ -20,6 +20,7 @@ interface Filters {
 
 interface H2HProps {
   playerId: string;
+  playerName: string;
   allMatches: Match[];
   loading: boolean;
   error: string | null;
@@ -44,7 +45,7 @@ function H2HSkeleton() {
   );
 }
 
-export default function H2HTable({ playerId, allMatches, loading, error, filters }: H2HProps) {
+export default function H2HTable({ playerId, playerName, allMatches, loading, error, filters }: H2HProps) {
   const { rows, lastByOpponent, sortKey, sortDir, handleSort } = useH2HData(allMatches, playerId, filters);
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
@@ -96,13 +97,9 @@ export default function H2HTable({ playerId, allMatches, loading, error, filters
     [filteredRows, currentPage]
   );
 
-  const goToMatchesVs = (oppId: string) => {
-    const params = new URLSearchParams();
-    params.set("p1", playerId);
-    params.set("p2", oppId);
-    params.set("sort", "tourney_date");
-    params.set("sortDir", "desc");
-    router.push(`/h2h?${params.toString()}`, { scroll: false });
+  const goToMatchesVs = (oppId: string, oppName: string) => {
+    const h2hUrl = createH2HUrl(playerName, oppName);
+    router.push(h2hUrl, { scroll: false });
   };
 
   if (loading) return <H2HSkeleton />;
@@ -250,7 +247,7 @@ export default function H2HTable({ playerId, allMatches, loading, error, filters
                   {/* H2H Button */}
                   <td className="px-5 py-4 text-center">
                     <button
-                      onClick={() => goToMatchesVs(r.oppId)}
+                      onClick={() => goToMatchesVs(r.oppId, r.oppName)}
                       className="group relative inline-flex items-center gap-2 px-5 py-2.5 bg-purple-600 rounded-lg font-bold text-white overflow-hidden transition-all duration-300 hover:bg-purple-500 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/40"
                       aria-label={`View matches vs ${r.oppName}`}
                     >
