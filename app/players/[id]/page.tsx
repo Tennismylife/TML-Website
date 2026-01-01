@@ -10,12 +10,20 @@ export default async function PlayerPage({ params, searchParams }: any) {
   const { id: slugParam } = params;
   const sp = searchParams;
 
+  // Recupera il giocatore dal DB
   const player = !slugParam.includes('-')
-    ? await prisma.player.findUnique({ where: { id: String(slugParam) }, select: { id: true, player: true, atpname: true, slug: true } })
-    : await prisma.player.findUnique({ where: { slug: slugParam }, select: { id: true, player: true, atpname: true, slug: true } });
+    ? await prisma.player.findUnique({ 
+        where: { id: String(slugParam) }, 
+        select: { id: true, player: true, atpname: true, slug: true } 
+      })
+    : await prisma.player.findUnique({ 
+        where: { slug: slugParam }, 
+        select: { id: true, player: true, atpname: true, slug: true } 
+      });
 
   if (!player) return <div>Player not found: {slugParam}</div>;
 
+  // Redirect se accessed via ID numerico
   if (!slugParam.includes('-') && player.slug) {
     const search = sp?.tab ? `?tab=${sp.tab}` : '';
     redirect(`/players/${player.slug}${search}`);
@@ -25,13 +33,16 @@ export default async function PlayerPage({ params, searchParams }: any) {
   const name = player.atpname || player.player || `Player ${player.id}`;
   const tab = sp?.tab || 'overview';
 
+  // Recupera tutti i match direttamente dal DB
   const allMatches = await prisma.match.findMany({
     where: { OR: [{ winner_id: player.id }, { loser_id: player.id }] },
     orderBy: { tourney_date: 'desc' }
   });
 
-  // --- Genera JSON-LD lato server ---
+  // Filtra match validi
   const filteredMatches = allMatches.filter(m => m.status !== false);
+
+  // Totali e record
   const totalMatches = filteredMatches.length;
   const careerWins = filteredMatches.filter(m => m.winner_id === player.id).length;
   const careerLosses = totalMatches - careerWins;
@@ -48,6 +59,7 @@ export default async function PlayerPage({ params, searchParams }: any) {
   const hardWinRate = (hardWins + hardLosses) > 0 ? Number(((hardWins / (hardWins + hardLosses)) * 100).toFixed(2)) : 0;
   const grassWinRate = (grassWins + grassLosses) > 0 ? Number(((grassWins / (grassWins + grassLosses)) * 100).toFixed(2)) : 0;
 
+  // Conta titoli
   const titlesMapByTourney: Record<string, number> = {};
   const titlesMapByLevel: Record<string, number> = {};
   filteredMatches.filter(m => m.winner_id === player.id && m.round === 'F').forEach(m => {
@@ -60,9 +72,11 @@ export default async function PlayerPage({ params, searchParams }: any) {
   const titlesByLevel = Object.entries(titlesMapByLevel).map(([level, count]) => ({ level, count }));
   const titlesTotal = titlesByTourney.reduce((acc, t) => acc + t.count, 0);
 
+  // URL pubblico
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
   const url = `${siteUrl}/players/${player.slug}${tab !== 'overview' ? `?tab=${tab}` : ''}`;
 
+  // --- JSON-LD lato server ---
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Person',
@@ -102,7 +116,7 @@ export default async function PlayerPage({ params, searchParams }: any) {
       {/* JSON-LD lato server */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      {/* Contenuto visibile */}
+      {/* Contenuti visibili */}
       <PlayerClient params={{ id: player.id, tab }} />
     </>
   );
