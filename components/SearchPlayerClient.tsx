@@ -43,8 +43,8 @@ export default function SearchPlayerClient() {
     };
   }, [query]);
 
-  const handleSelect = (playerId: string) => {
-    router.push(`/players/${playerId}`);
+  const handleSelect = (player: any) => {
+    router.push(`/players/${player.slug}`);
     setQuery("");
     setResults([]);
   };
@@ -61,7 +61,7 @@ export default function SearchPlayerClient() {
     } else if (e.key === "Enter") {
       e.preventDefault();
       const target = selectedIndex >= 0 ? results[selectedIndex] : results[0];
-      if (target) handleSelect(target.id);
+      if (target) handleSelect(target);
     } else if (e.key === "Escape") {
       setQuery("");
       setResults([]);
@@ -114,7 +114,7 @@ export default function SearchPlayerClient() {
                 <li
                   key={p.id}
                   data-idx={index}
-                  onClick={() => handleSelect(p.id)}
+                  onClick={() => handleSelect(p)}
                   onMouseEnter={() => setSelectedIndex(index)}
                   className={`px-3 py-2 cursor-pointer flex items-center gap-2 rounded transition-colors ${
                     index === selectedIndex

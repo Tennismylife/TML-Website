@@ -21,6 +21,7 @@ export async function GET(request: Request) {
         id: true,
         atpname: true,
         ioc: true,
+        slug: true,
       },
       take: 10, // massimo 10 risultati
     });

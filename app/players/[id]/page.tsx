@@ -3,6 +3,7 @@ import PlayerClient from './PlayerClient';
 import { prisma } from '../../../lib/prisma';
 import SEOPlayer from './SEOPlayer';
 import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 
 export async function generateMetadata({ params, searchParams }: any): Promise<Metadata> {
   const { id: slugParam } = await params;
@@ -20,6 +21,7 @@ export async function generateMetadata({ params, searchParams }: any): Promise<M
 
 export default async function PlayerPage({ params, searchParams }: any) {
   const { id: slugParam } = await params;
+  const sp = await searchParams;
 
   const player = !slugParam.includes('-')
     ? await prisma.player.findUnique({ where: { id: String(slugParam) }, select: { id: true, player: true, atpname: true, slug: true } })
@@ -27,8 +29,14 @@ export default async function PlayerPage({ params, searchParams }: any) {
 
   if (!player) return <div>Player not found</div>;
 
+  // If accessed via ID, redirect to slug
+  if (!slugParam.includes('-') && player.slug) {
+    const search = sp?.tab ? `?tab=${sp.tab}` : '';
+    redirect(`/players/${player.slug}${search}`);
+  }
+
   const name = player.atpname || player.player || `Player ${player.id}`;
-  const tab = (await searchParams)?.tab || 'overview';
+  const tab = sp?.tab || 'overview';
 
   return (
     <>
