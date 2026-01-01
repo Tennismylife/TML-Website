@@ -7,42 +7,47 @@ import { redirect } from 'next/navigation';
 export const dynamic = 'force-dynamic';
 
 export default async function PlayerPage({ params, searchParams }: any) {
-  const { id: slugParam } = params;
-  const sp = searchParams;
+  // --- Controlli params ---
+  const { id: slugParam } = await params;
+  if (!slugParam) {
+    return <div>Player ID not provided</div>;
+  }
 
-  // Recupera il giocatore dal DB
-  const player = !slugParam.includes('-')
-    ? await prisma.player.findUnique({ 
-        where: { id: String(slugParam) }, 
-        select: { id: true, player: true, atpname: true, slug: true } 
+  const { tab } = await searchParams;
+  const tabValue = tab || 'overview';
+  const isSlug = slugParam.includes('-');
+
+  // --- Recupera il giocatore dal DB ---
+  const player = !isSlug
+    ? await prisma.player.findUnique({
+        where: { id: String(slugParam) },
+        select: { id: true, player: true, atpname: true, slug: true },
       })
-    : await prisma.player.findUnique({ 
-        where: { slug: slugParam }, 
-        select: { id: true, player: true, atpname: true, slug: true } 
+    : await prisma.player.findUnique({
+        where: { slug: slugParam },
+        select: { id: true, player: true, atpname: true, slug: true },
       });
 
   if (!player) return <div>Player not found: {slugParam}</div>;
 
-  // Redirect se accessed via ID numerico
-  if (!slugParam.includes('-') && player.slug) {
-    const search = sp?.tab ? `?tab=${sp.tab}` : '';
+  // --- Redirect se accesso tramite ID numerico ---
+  if (!isSlug && player.slug) {
+    const search = tabValue !== 'overview' ? `?tab=${tabValue}` : '';
     redirect(`/players/${player.slug}${search}`);
     return null;
   }
 
   const name = player.atpname || player.player || `Player ${player.id}`;
-  const tab = sp?.tab || 'overview';
 
-  // Recupera tutti i match direttamente dal DB
+  // --- Recupera tutti i match ---
   const allMatches = await prisma.match.findMany({
     where: { OR: [{ winner_id: player.id }, { loser_id: player.id }] },
-    orderBy: { tourney_date: 'desc' }
+    orderBy: { tourney_date: 'desc' },
   });
 
-  // Filtra match validi
   const filteredMatches = allMatches.filter(m => m.status !== false);
 
-  // Totali e record
+  // --- Totali e record ---
   const totalMatches = filteredMatches.length;
   const careerWins = filteredMatches.filter(m => m.winner_id === player.id).length;
   const careerLosses = totalMatches - careerWins;
@@ -59,7 +64,7 @@ export default async function PlayerPage({ params, searchParams }: any) {
   const hardWinRate = (hardWins + hardLosses) > 0 ? Number(((hardWins / (hardWins + hardLosses)) * 100).toFixed(2)) : 0;
   const grassWinRate = (grassWins + grassLosses) > 0 ? Number(((grassWins / (grassWins + grassLosses)) * 100).toFixed(2)) : 0;
 
-  // Conta titoli
+  // --- Conta titoli ---
   const titlesMapByTourney: Record<string, number> = {};
   const titlesMapByLevel: Record<string, number> = {};
   filteredMatches.filter(m => m.winner_id === player.id && m.round === 'F').forEach(m => {
@@ -72,9 +77,9 @@ export default async function PlayerPage({ params, searchParams }: any) {
   const titlesByLevel = Object.entries(titlesMapByLevel).map(([level, count]) => ({ level, count }));
   const titlesTotal = titlesByTourney.reduce((acc, t) => acc + t.count, 0);
 
-  // URL pubblico
+  // --- URL pubblico ---
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-  const url = `${siteUrl}/players/${player.slug}${tab !== 'overview' ? `?tab=${tab}` : ''}`;
+  const url = `${siteUrl}/players/${player.slug}${tabValue !== 'overview' ? `?tab=${tabValue}` : ''}`;
 
   // --- JSON-LD lato server ---
   const jsonLd = {
@@ -117,7 +122,7 @@ export default async function PlayerPage({ params, searchParams }: any) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       {/* Contenuti visibili */}
-      <PlayerClient params={{ id: player.id, tab }} />
+      <PlayerClient params={{ id: player.id, tab: tabValue }} />
     </>
   );
 }
