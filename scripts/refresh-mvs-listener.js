@@ -38,6 +38,25 @@ const MV_NAMES = [
 ];
 
 const DEBOUNCE_MS = Number(process.env.MV_REFRESH_DEBOUNCE_MS) || 5000;
+const { createClient } = require('redis');
+
+async function clearRedisCache(clientFactory) {
+  const url = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+  const client = clientFactory ? clientFactory() : createClient({ url });
+  try {
+    await client.connect();
+    let deleted = 0;
+    for await (const k of client.scanIterator({ MATCH: 'tennismylife:*' })) {
+      await client.del(k);
+      deleted++;
+    }
+    console.log('Cleared Redis cache keys:', deleted);
+  } catch (err) {
+    console.error('Failed clearing Redis cache:', err);
+  } finally {
+    try { await client.quit(); } catch {}
+  }
+}
 
 async function refreshAll(sql) {
   const refreshConcurrently = process.env.REFRESH_CONCURRENTLY === '1' || false;
@@ -74,6 +93,7 @@ async function main() {
   if (args.includes('--once')) {
     try {
       await refreshAll(sql);
+      await clearRedisCache();
     } finally {
       await sql.end();
       // In tests we avoid calling process.exit to allow the test runner to continue
@@ -85,8 +105,9 @@ async function main() {
   let timer = null;
   let running = false;
 
+  // Listen for materialized view refresh trigger
   await sql.listen('mvs_needs_refresh', (payload) => {
-    console.log(new Date().toISOString(), 'Received notification:', payload);
+    console.log(new Date().toISOString(), 'Received mvs_needs_refresh notification:', payload);
     if (timer) clearTimeout(timer);
     timer = setTimeout(async () => {
       if (running) {
@@ -96,19 +117,36 @@ async function main() {
       running = true;
       try {
         await refreshAll(sql);
+        // After DB changes / materialized views refreshed, clear Redis cache so next requests fetch fresh data
+        await clearRedisCache();
       } finally {
         running = false;
       }
     }, DEBOUNCE_MS);
   });
 
-  console.log('Listening for mvs_needs_refresh notifications (debounce', DEBOUNCE_MS, 'ms).');
+  // Listen for generic DB changes to clear cache (debounced separately)
+  const DB_CLEAR_DEBOUNCE_MS = Number(process.env.DB_CLEAR_DEBOUNCE_MS) || 1000;
+  let dbClearTimer = null;
+  await sql.listen('db_changed', (payload) => {
+    console.log(new Date().toISOString(), 'Received db_changed notification:', payload);
+    if (dbClearTimer) clearTimeout(dbClearTimer);
+    dbClearTimer = setTimeout(async () => {
+      try {
+        await clearRedisCache();
+      } catch (err) {
+        console.error('Error clearing Redis cache on db_changed:', err);
+      }
+    }, DB_CLEAR_DEBOUNCE_MS);
+  });
+
+  console.log('Listening for mvs_needs_refresh notifications (debounce', DEBOUNCE_MS, 'ms) and db_changed notifications (debounce', DB_CLEAR_DEBOUNCE_MS, 'ms).');
 
   // keep process alive
   process.stdin.resume();
 }
 
-module.exports = { refreshAll, main };
+module.exports = { refreshAll, main, clearRedisCache };
 
 if (require.main === module) {
   main().catch((err) => {

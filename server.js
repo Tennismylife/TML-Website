@@ -10,8 +10,7 @@ const dev = false;
 const nextApp = next({ dev, dir: '.', conf: { distDir: '.next' } });
 const handle = nextApp.getRequestHandler();
 
-const API_TTL_SECONDS = 600;
-const PAGE_TTL_SECONDS = 300;
+
 const CONTROL_PARAMS = new Set(['nocache', 'x-refresh']);
 
 let redis = null;
@@ -157,10 +156,9 @@ function decompressIfGzip(buffer, headers) {
             }
           }
 
-          /* SALVA in Redis */
-          redis.setEx(
+          /* SALVA in Redis (no TTL) — cache persists until explicit invalidation */
+          redis.set(
             key,
-            type === 'api' ? API_TTL_SECONDS : PAGE_TTL_SECONDS,
             JSON.stringify({ body: bodyBuffer.toString('base64'), type: ct })
           ).then(() => console.log('[CACHE STORED]', key, bodyBuffer.length))
            .catch(err => console.error('[CACHE WRITE ERROR]', err));

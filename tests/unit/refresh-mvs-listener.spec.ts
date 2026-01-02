@@ -54,4 +54,33 @@ describe('refresh-mvs-listener', () => {
     expect(unsafe).toHaveBeenCalled();
     expect(end).toHaveBeenCalled();
   });
+
+  it('clearRedisCache deletes matching keys', async () => {
+    // Mock redis.createClient before requiring module
+    const del = vi.fn().mockResolvedValue(1);
+    const quit = vi.fn().mockResolvedValue(undefined);
+    const connect = vi.fn().mockResolvedValue(undefined);
+
+    // async iterator for scanIterator
+    async function* scanIter() {
+      yield 'tennismylife:page:/foo';
+      yield 'tennismylife:api:/bar';
+    }
+
+    const mockClient = {
+      connect,
+      scanIterator: vi.fn().mockImplementation(() => scanIter()),
+      del,
+      quit,
+    };
+
+    // Re-require module to pick up updated code
+    const { clearRedisCache } = require(MODULE_PATH);
+
+    await clearRedisCache(() => mockClient);
+
+    expect(connect).toHaveBeenCalled();
+    expect(del).toHaveBeenCalledTimes(2);
+    expect(quit).toHaveBeenCalled();
+  });
 });
