@@ -100,7 +100,7 @@ export default function LatestMatches() {
                 </tr>
               ) : (
                 recentMatches.map((m) => {
-                  const tourneyId = String(m.tourney_id || "").split("-")[1];
+                  const tourneyId = m.tourney_id ?? null;
                   const winnerFlag = getFlagFromIOC(m.winner_ioc) ?? "";
                   const loserFlag = getFlagFromIOC(m.loser_ioc) ?? "";
 
@@ -119,7 +119,7 @@ export default function LatestMatches() {
                         {m.tourney_name ? (
                           tourneyId ? (
                             <Link
-                              href={getTourneyHref({ id: tourneyId, name: m.tourney_name, year: m.year })}
+                              href={getTourneyHref({ id: tourneyId, year: m.year })}
                               className="text-indigo-300 hover:underline"
                             >
                               {m.tourney_name}
