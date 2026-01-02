@@ -285,7 +285,7 @@ export default function TournamentClient({ id }: { id: number | string }) {
                           className="text-blue-400 hover:underline font-medium"
                         >
                           {isRecent && <Trophy className="inline w-5 h-5 mr-1 animate-pulse" />}
-                          {fmtDate(m.tourney_date)}
+                          {m.year}
                         </Link>
                       </td>
 
