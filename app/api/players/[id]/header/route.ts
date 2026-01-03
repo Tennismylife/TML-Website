@@ -12,7 +12,8 @@ export async function GET(request: NextRequest, context: any) {
     if (/^\d+$/.test(playerId)) {
       player = await prisma.player.findUnique({ where: { id: String(playerId) }, select: { id: true, slug: true, player: true, atpname: true } });
     } else {
-      player = await prisma.player.findUnique({ where: { slug: playerId }, select: { id: true, slug: true, player: true, atpname: true } });
+      const slugLower = String(playerId).toLowerCase();
+      player = await prisma.player.findUnique({ where: { slug: slugLower }, select: { id: true, slug: true, player: true, atpname: true } });
     }
 
     if (!player) return NextResponse.json({ error: 'Player not found' }, { status: 404 });

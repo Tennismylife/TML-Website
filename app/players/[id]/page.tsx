@@ -10,13 +10,14 @@ export async function generateMetadata({ params }: any) {
   const { id: slugParam } = await params;
   if (!slugParam) return { title: 'Player | Tennis Statistics, Match Results & Rankings' };
 
-  const isSlug = String(slugParam).includes('-');
+  const isSlug = !/^\d+$/.test(String(slugParam));
   let player: any = null;
   try {
     if (!isSlug) {
       player = await prisma.player.findUnique({ where: { id: String(slugParam) }, select: { atpname: true, player: true, slug: true } });
     } else {
-      player = await prisma.player.findUnique({ where: { slug: String(slugParam) }, select: { atpname: true, player: true, slug: true } });
+      const slugLower = String(slugParam).toLowerCase();
+      player = await prisma.player.findUnique({ where: { slug: slugLower }, select: { atpname: true, player: true, slug: true } });
     }
   } catch (e) {
     // ignore
@@ -33,8 +34,10 @@ export default async function PlayerPage({ params, searchParams }: any) {
   const { id: slugParam } = await params;
   if (!slugParam) return <div>Player ID not provided</div>;
 
-  const tabValue = await searchParams?.tab || 'overview';
-  const isSlug = slugParam.includes('-');
+  // searchParams can be a Promise — await it before accessing properties
+  const resolvedSearchParams = await searchParams;
+  const tabValue = resolvedSearchParams?.tab || 'overview';
+  const isSlug = !/^\d+$/.test(String(slugParam)); // treat any non-all-digits as slug
 
   // PLAYER
   const player = !isSlug
@@ -43,7 +46,7 @@ export default async function PlayerPage({ params, searchParams }: any) {
         select: { id: true, player: true, atpname: true, slug: true },
       })
     : await prisma.player.findUnique({
-        where: { slug: slugParam },
+        where: { slug: String(slugParam).toLowerCase() },
         select: { id: true, player: true, atpname: true, slug: true },
       });
 
