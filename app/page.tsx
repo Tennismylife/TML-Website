@@ -48,9 +48,6 @@ export const metadata = {
 } as const;
 
 export default function HomePage() {
-  // All interactive logic was moved to client components to keep this page a Server Component.
-  // Client widgets are loaded lazily to reduce initial hydration and TBT
-
   const navItems: NavItem[] = [
     { href: "/tournaments", title: "Tournaments", subtitle: "Calendar & Results", description: "Browse upcoming and past tournaments with full draws, schedules, surfaces, and final results. Filter by level (Grand Slam, ATP 1000/500/250) and view match-by-match details.", colorClass: "text-rose-400 group-hover:text-rose-300", accentColor: "#fb7185", icon: (
       <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
@@ -102,42 +99,39 @@ export default function HomePage() {
   ];
 
   const criticalCss = `
-    /* Critical CSS: above-the-fold minimal styles for homepage */
     html,body{background:#0f1720;color:#e5e7eb}
     main{padding:0 1rem}
     @media(min-width:640px){main{padding:0 1.5rem}}
 
-    /* Header / nav (above the fold) */
     header{background:transparent;border-bottom:none}
     header nav a{color:#fff}
     header nav a.text-yellow-400{color:#facc15}
 
-    .hero-wrapper{width:100%;margin-bottom:3rem}
+    .hero-container{width:100%; margin-bottom:3rem;} /* spazio sotto hero */
     .hero-inner{width:100%;padding:0 1rem}
     .hero-img{width:100%;height:auto;border-radius:.75rem;box-shadow:0 10px 15px rgba(2,6,23,.6);object-fit:cover}
-    @media(min-width:768px){.hero-wrapper{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:1.5rem}.hero-inner{max-width:36rem}.intro{text-align:right}}
-
+    .intro{display:flex;flex-direction:column;align-items:center;text-align:center;margin:0;padding:1rem}
+    
     h1{font-weight:800;font-size:2rem;text-align:center;margin-bottom:1.25rem}
     @media(min-width:640px){h1{font-size:2.25rem}}
 
-    /* Search input */
     .search-input{width:100%;background:#111827;color:#fff;border:1px solid #374151;border-radius:.375rem;padding:.5rem .75rem;outline:none}
-
     .card-cta{transition:transform .3s ease}
-    `;
+  `;
 
-  // Small inline SVG placeholder (LQIP) painted immediately to speed up LCP
   const heroLQIP = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'><rect width='800' height='500' fill='%230f1720'/></svg>`;
 
   return (
     <main className="w-full px-4 sm:px-6">
       <style dangerouslySetInnerHTML={{ __html: criticalCss }} />
-      {/* Hero: image left, intro right */}
-      <div className="w-full mb-8">
-        <div className="hero-wrapper grid grid-cols-1 md:grid-cols-2 items-center gap-6" style={{backgroundImage: `url("${heroLQIP}")`, backgroundSize: 'cover', backgroundPosition: 'center'}}>
 
-          <div className="hero-image-wrapper flex justify-start">
-            <div className="hero-inner md:max-w-[36rem]">
+      {/* Hero + Intro */}
+      <div className="hero-container" style={{ backgroundImage: `url("${heroLQIP}")`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        <div className="flex flex-col md:flex-row items-center justify-center gap-0">
+          
+          {/* Header (più largo) */}
+          <div className="hero-image-wrapper flex justify-center md:flex-[0_0_60%]">
+            <div className="hero-inner w-full md:max-w-[48rem]">
               <Image
                 src="/header.jpg"
                 alt="Tennis My Life header"
@@ -146,7 +140,7 @@ export default function HomePage() {
                 priority
                 fetchPriority="high"
                 quality={70}
-                className="w-full h-auto object-cover hero-img rounded-lg"
+                className="w-full h-auto object-cover rounded-lg"
                 placeholder="blur"
                 blurDataURL={heroLQIP}
                 sizes="(max-width: 400px) 348px, (max-width: 640px) 480px, (max-width: 1024px) 896px, 1280px"
@@ -154,14 +148,17 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="intro max-w-2xl">
-            <p className="text-right text-gray-300 mb-0">Welcome to Tennis My Life — a comprehensive tennis statistics site. Explore tournament calendars, match results, player head-to-head records, season summaries, rankings, and advanced metrics to follow players' careers and compare performances.</p>
+          {/* Intro */}
+          <div className="intro flex flex-col items-center justify-center text-center md:flex-[0_0_40%] p-4 md:p-8 mt-0 md:mt-0">
+            <p className="text-gray-300 mb-0">
+              Welcome to TennisMyLife — a comprehensive tennis statistics site. Explore tournament calendars, match results, player head-to-head records, season summaries, rankings, and advanced metrics to follow players' careers and compare performances
+            </p>
           </div>
 
         </div>
-      </div> 
+      </div>
 
-      {/* Page JSON-LD for homepage (WebPage) to help search engines) */}
+      {/* JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -175,10 +172,10 @@ export default function HomePage() {
         }}
       />
 
-      {/* Search Player (client-loaded lazily to reduce initial hydration / TBT) */}
+      {/* Client Components */}
       <SearchPlayerLoaderClient />
 
-      {/* Featured Records Card - Full Width */}
+      {/* Featured Records Card */}
       <div className="w-full mb-8">
         <Card href="/records" title="Records" subtitle="All-Time Achievements & Milestones" large colorClass="text-yellow-400 group-hover:text-yellow-300" accentColor="#facc15">
           <svg viewBox="0 0 24 24" className="w-16 h-16" fill="none" stroke="currentColor" strokeWidth="2">
@@ -188,10 +185,9 @@ export default function HomePage() {
         </Card>
       </div>
 
-      {/* Latest Matches (moved to component) */}
       <LatestMatchesClient />
 
-      {/* Grid - full width */}
+      {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
         {navItems.map((item: NavItem) => (
           <Card
@@ -210,8 +206,6 @@ export default function HomePage() {
           </Card>
         ))}
       </div>
-
-
     </main>
   );
 }
