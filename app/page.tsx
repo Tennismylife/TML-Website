@@ -151,7 +151,7 @@ export default function HomePage() {
           {/* Intro */}
           <div className="intro flex flex-col items-center justify-center text-center md:flex-[0_0_40%] p-4 md:p-8 mt-0 md:mt-0">
             <p className="text-gray-300 mb-0">
-              Welcome to TennisMyLife — a comprehensive tennis statistics site. Explore tournament calendars, match results, player head-to-head records, season summaries, rankings, and advanced metrics to follow players' careers and compare performances
+              Welcome to TennisMyLife — a comprehensive tennis statistics site. Explore match records, ranking records, tournament calendars, match results, player head-to-head, season summaries, rankings, ranking tables, and advanced metrics to follow players' careers and compare performances
             </p>
           </div>
 
