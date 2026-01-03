@@ -51,7 +51,9 @@ export async function generateMetadata({ params }: any) {
   const tournament = await getTournament(param);
   const name = tournament ? (extractFirst(tournament.name) || `Tournament ${tournament.id}`) : String(param);
   const humanized = humanizeName(name);
-  return { title: `${humanized} | Tournament Stats, History, Match Results & Winners` };
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const ogUrl = `${siteUrl}/tournaments/${tournament.slug || param}`;
+  return { title: `${humanized} | Tournament Stats, History, Match Results & Winners`, openGraph: { url: ogUrl } };
 }
 
 export default async function TournamentPage({ params }: TournamentPageProps) {
