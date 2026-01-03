@@ -5,6 +5,27 @@ import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
+export async function generateMetadata({ params }: any) {
+  // params might be a Promise in this Next.js version, match page behavior
+  const { id: slugParam } = await params;
+  if (!slugParam) return { title: 'Player - Matches Seasons Tournaments' };
+
+  const isSlug = String(slugParam).includes('-');
+  let player: any = null;
+  try {
+    if (!isSlug) {
+      player = await prisma.player.findUnique({ where: { id: String(slugParam) }, select: { atpname: true, player: true, slug: true } });
+    } else {
+      player = await prisma.player.findUnique({ where: { slug: String(slugParam) }, select: { atpname: true, player: true, slug: true } });
+    }
+  } catch (e) {
+    // ignore
+  }
+
+  const name = player ? (player.atpname || player.player) : String(slugParam);
+  return { title: `${name} - Matches Seasons Tournaments` };
+}
+
 export default async function PlayerPage({ params, searchParams }: any) {
   const { id: slugParam } = await params;
   if (!slugParam) return <div>Player ID not provided</div>;

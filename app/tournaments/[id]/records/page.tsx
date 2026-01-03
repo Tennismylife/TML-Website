@@ -1,6 +1,9 @@
 'use client'
 
 import { use, useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
+import { getTourneyHref } from "@/lib/utils";
 import { useRouter, usePathname } from "next/navigation";
 
 import CountSection from "./CountSection";
@@ -154,6 +157,18 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
       className="w-full mx-auto p-8 text-white"
       style={{ backgroundColor: 'rgba(17,24,39,0.95)', backdropFilter: 'blur(6px)', minHeight: '100vh' }}
     >
+      <div className="w-full flex justify-start mb-6">
+        <Link
+          href={getTourneyHref({ id: String(headerId ?? id) })}
+          title="Back to tournament"
+          aria-label="Back to tournament"
+          className="inline-flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-bold rounded-full shadow-lg hover:scale-105 transition-transform"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span>Back to Tournament</span>
+        </Link>
+      </div>
+
       <TournamentHeader id={headerId} />
 
       <TournamentTabs
