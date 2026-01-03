@@ -112,9 +112,10 @@ export default function HomePage() {
     header nav a{color:#fff}
     header nav a.text-yellow-400{color:#facc15}
 
-    .hero-wrapper{width:100%;margin-bottom:3rem;display:flex;justify-content:center}
-    .hero-inner{width:100%;max-width:120rem;padding:0 1rem}
-    .hero-img{width:100%;height:auto;max-width:120rem;border-radius:.75rem;box-shadow:0 10px 15px rgba(2,6,23,.6);object-fit:cover}
+    .hero-wrapper{width:100%;margin-bottom:3rem}
+    .hero-inner{width:100%;padding:0 1rem}
+    .hero-img{width:100%;height:auto;border-radius:.75rem;box-shadow:0 10px 15px rgba(2,6,23,.6);object-fit:cover}
+    @media(min-width:768px){.hero-wrapper{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:1.5rem}.hero-inner{max-width:36rem}.intro{text-align:right}}
 
     h1{font-weight:800;font-size:2rem;text-align:center;margin-bottom:1.25rem}
     @media(min-width:640px){h1{font-size:2.25rem}}
@@ -131,38 +132,34 @@ export default function HomePage() {
   return (
     <main className="w-full px-4 sm:px-6">
       <style dangerouslySetInnerHTML={{ __html: criticalCss }} />
-        {/* Under Construction Image (LQIP placeholder to speed LCP) */}
-        <div
-          className="w-full mb-8 flex justify-center hero-wrapper"
-          style={{
-            backgroundImage: `url("${heroLQIP}")`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            width: '100%'
-          }}
-        >
-          {/* LCP image: use Next/Image with blur placeholder for LQIP and priority preload */}
-        <div className="hero-inner">
-          <Image
-            src="/header.jpg"
-            alt="Tennis My Life header"
-            width={1920}
-            height={1080}
-            priority
-            fetchPriority="high"
-            className="w-full h-auto object-cover hero-img"
-            placeholder="blur"
-            blurDataURL={heroLQIP}
-            sizes="(max-width: 640px) 480px, (max-width: 1024px) 768px, (max-width: 1600px) 1400px, 1920px"
-          />
-        </div>
-        </div>
+      {/* Hero: image left, intro right */}
+      <div className="w-full mb-8">
+        <div className="hero-wrapper grid grid-cols-1 md:grid-cols-2 items-center gap-6" style={{backgroundImage: `url("${heroLQIP}")`, backgroundSize: 'cover', backgroundPosition: 'center'}}>
 
-      {/* Title */}
-      <p className="text-left text-gray-300 mb-6 max-w-2xl mx-auto">
-        Welcome to Tennis My Life — a comprehensive tennis statistics site. Explore tournament calendars, match results, player head-to-head records, season summaries, rankings, and advanced metrics to follow players' careers and compare performances.
-      </p>
+          <div className="hero-image-wrapper flex justify-start">
+            <div className="hero-inner md:max-w-[36rem]">
+              <Image
+                src="/header.jpg"
+                alt="Tennis My Life header"
+                width={960}
+                height={540}
+                priority
+                fetchPriority="high"
+                quality={70}
+                className="w-full h-auto object-cover hero-img rounded-lg"
+                placeholder="blur"
+                blurDataURL={heroLQIP}
+                sizes="(max-width: 400px) 348px, (max-width: 640px) 480px, (max-width: 1024px) 896px, 1280px"
+              />
+            </div>
+          </div>
+
+          <div className="intro max-w-2xl">
+            <p className="text-right text-gray-300 mb-0">Welcome to Tennis My Life — a comprehensive tennis statistics site. Explore tournament calendars, match results, player head-to-head records, season summaries, rankings, and advanced metrics to follow players' careers and compare performances.</p>
+          </div>
+
+        </div>
+      </div> 
 
       {/* Page JSON-LD for homepage (WebPage) to help search engines) */}
       <script

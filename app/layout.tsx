@@ -59,8 +59,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
 
-        {/* Preload hero image (mobile-focused small AVIF to speed LCP on mobile emulation) */}
-        <link rel="preload" href="/UnderCostruction-480.avif" as="image" type="image/avif" />
+        {/* Preload small hero image (mobile-focused AVIF) to speed LCP on mobile */}
+        <link rel="preload" href="/header-480.avif" as="image" type="image/avif" />
       </head>
       <body className="min-h-screen bg-gray-900 text-gray-100">
         {/* Site JSON-LD (rendered server-side in root layout) */}
