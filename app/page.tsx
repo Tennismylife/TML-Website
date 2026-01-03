@@ -112,8 +112,9 @@ export default function HomePage() {
     header nav a{color:#fff}
     header nav a.text-yellow-400{color:#facc15}
 
-    .hero-wrapper{width:100%;margin-bottom:2rem;display:flex;justify-content:center}
-    .hero-img{width:100%;max-width:768px;height:auto;border-radius:.75rem;box-shadow:0 10px 15px rgba(2,6,23,.6);object-fit:cover}
+    .hero-wrapper{width:100%;margin-bottom:3rem;display:flex;justify-content:center}
+    .hero-inner{width:100%;max-width:120rem;padding:0 1rem}
+    .hero-img{width:100%;height:auto;max-width:120rem;border-radius:.75rem;box-shadow:0 10px 15px rgba(2,6,23,.6);object-fit:cover}
 
     h1{font-weight:800;font-size:2rem;text-align:center;margin-bottom:1.25rem}
     @media(min-width:640px){h1{font-size:2.25rem}}
@@ -142,22 +143,23 @@ export default function HomePage() {
           }}
         >
           {/* LCP image: use Next/Image with blur placeholder for LQIP and priority preload */}
-        <Image
-          src="/UnderCostruction.avif"
-          alt="Under Construction"
-          width={768}
-          height={480}
-          priority
-          fetchPriority="high"
-          className="w-full max-w-lg h-auto rounded-xl shadow-lg object-cover"
-          placeholder="blur"
-          blurDataURL={heroLQIP}
-          sizes="(max-width: 400px) 320px, (max-width: 640px) 480px, 768px"
-        />
+        <div className="hero-inner">
+          <Image
+            src="/header.jpg"
+            alt="Tennis My Life header"
+            width={1920}
+            height={1080}
+            priority
+            fetchPriority="high"
+            className="w-full h-auto object-cover hero-img"
+            placeholder="blur"
+            blurDataURL={heroLQIP}
+            sizes="(max-width: 640px) 480px, (max-width: 1024px) 768px, (max-width: 1600px) 1400px, 1920px"
+          />
+        </div>
         </div>
 
       {/* Title */}
-      <h1 className="text-3xl sm:text-4xl font-bold mb-8 text-center w-full">Tennis My Life</h1>
       <p className="text-left text-gray-300 mb-6 max-w-2xl mx-auto">
         Welcome to Tennis My Life — a comprehensive tennis statistics site. Explore tournament calendars, match results, player head-to-head records, season summaries, rankings, and advanced metrics to follow players' careers and compare performances.
       </p>

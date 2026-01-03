@@ -51,7 +51,6 @@ export async function middleware(req: NextRequest) {
             const dest = new URL(req.url);
             dest.pathname = `/${resource}/${slugFromApi}${rest ? '/' + rest : ''}`;
             dest.search = search;
-            console.log(`[middleware] numeric ${resource} id=${idSegment} -> slug=${slugFromApi} (header API)`);
             return new Response(null, { status: 301, headers: { Location: dest.toString() } }); // explicit permanent 301 redirect
           }
         }
@@ -104,11 +103,8 @@ export async function middleware(req: NextRequest) {
       }
     }
 
-    if (slug) console.log(`[middleware] ${resource} id=${idSegment} -> slug=${slug} (source=${source || 'unknown'})`);
-
     // Prevent redirect loops: if the current segment is already the canonical slug (case-insensitive), do nothing
     if (slug && slug.toLowerCase() === String(idSegment).toLowerCase()) {
-      console.log(`[middleware] ${resource} id=${idSegment} is already canonical; skipping redirect`);
       return NextResponse.next();
     }
 
