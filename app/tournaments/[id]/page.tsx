@@ -44,6 +44,16 @@ async function getTournament(param: string) {
   }
 }
 
+// Metadata dinamica per il torneo
+export async function generateMetadata({ params }: any) {
+  const { id: param } = await params;
+  if (!param) return { title: 'Tournament | Tournament Stats, History, Match Results & Winners' };
+  const tournament = await getTournament(param);
+  const name = tournament ? (extractFirst(tournament.name) || `Tournament ${tournament.id}`) : String(param);
+  const humanized = humanizeName(name);
+  return { title: `${humanized} | Tournament Stats, History, Match Results & Winners` };
+}
+
 export default async function TournamentPage({ params }: TournamentPageProps) {
   const { id: param } = await params;
 

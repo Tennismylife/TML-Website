@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export async function generateMetadata({ params }: any) {
   // params might be a Promise in this Next.js version, match page behavior
   const { id: slugParam } = await params;
-  if (!slugParam) return { title: 'Player - Matches Seasons Tournaments' };
+  if (!slugParam) return { title: 'Player | Tennis Statistics, Match Results & Rankings' };
 
   const isSlug = String(slugParam).includes('-');
   let player: any = null;
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: any) {
   }
 
   const name = player ? (player.atpname || player.player) : String(slugParam);
-  return { title: `${name} - Matches Seasons Tournaments` };
+  return { title: `${name} | Tennis Statistics, Match Results & Rankings` };
 }
 
 export default async function PlayerPage({ params, searchParams }: any) {
