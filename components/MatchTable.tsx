@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Match, SortKey, SortDirection } from "@/types";
+import { Match, SortDirection, SortKey } from "@/types";
 import { getFlagFromIOC, getTourneyHref, extractUniqueSurfaces } from "@/lib/utils";
 import { useEffect, useState, useMemo, useRef } from "react";
 
@@ -89,7 +89,79 @@ export default function MatchTable({
         { id: "LBPSvd", label: "BPSvd", title: "Loser Break Points Faced / Break Points Saved" },
       ], [showWinnerStats]);
 
-  if (!matches || matches.length === 0) return <p className="m-0 p-0">No matches found.</p>;
+
+  // Round ordering priority: ensure within the same tournament rounds are always
+  // ordered R256, R128, R64, R32, R16, R8, QF, SF, F regardless of date sorting direction.
+  const roundOrder = ['R256','R128','R64','R32','R16','R8','QF','SF','F'];
+  function getRoundIndex(round?: string | null) {
+    if (!round) return Number.MAX_SAFE_INTEGER;
+    const r = String(round).toUpperCase().trim();
+    // direct match
+    const direct = roundOrder.indexOf(r);
+    if (direct >= 0) return direct;
+    // common patterns: R32, R16, QF, SF, F
+    const match = r.match(/R(\d+)/);
+    if (match) {
+      const n = Number(match[1]);
+      // map numeric rounds to approximate slots (smaller number -> later round)
+      // we'll try to map 256,128,64,32,16,8
+      const map = {
+        256: 0, 128: 1, 64: 2, 32: 3, 16: 4, 8: 5
+      } as Record<number, number>;
+      if (n in map) return map[n];
+    }
+    if (r.includes('QUARTER') || r === 'Q' || r === 'QF') return roundOrder.indexOf('QF');
+    if (r.includes('SEMI') || r === 'SF') return roundOrder.indexOf('SF');
+    if (r === 'F' || r.includes('FINAL')) return roundOrder.indexOf('F');
+    // fallback: put unknown rounds after known ones
+    return Number.MAX_SAFE_INTEGER - 1;
+  }
+
+  const sortedMatches = useMemo(() => {
+    const arr = [...matches];
+    const dir = sortDir === 'asc' ? 1 : -1;
+
+    arr.sort((a, b) => {
+      // Special handling when sorting by tourney_date: keep rounds ordering within same tournament
+      if (sortKey === 'tourney_date') {
+        if (a.tourney_id === b.tourney_id && a.year === b.year) {
+          const ai = getRoundIndex(a.round);
+          const bi = getRoundIndex(b.round);
+          // Respect sort direction so rounds are reversed when date sort is descending
+          return (ai - bi) * dir;
+        }
+        const ad = new Date(a.tourney_date as unknown as string).getTime();
+        const bd = new Date(b.tourney_date as unknown as string).getTime();
+        return (ad - bd) * dir;
+      }
+
+      // If sorting by round directly, use explicit round order
+      if (sortKey === 'round') {
+        const ai = getRoundIndex(a.round);
+        const bi = getRoundIndex(b.round);
+        if (ai !== bi) return (ai - bi) * dir;
+        // tie-break by date
+        const ad = new Date(a.tourney_date as unknown as string).getTime();
+        const bd = new Date(b.tourney_date as unknown as string).getTime();
+        return (ad - bd) * dir;
+      }
+
+      // Generic sort for other keys (string/number fields)
+      const av = (a as any)[sortKey];
+      const bv = (b as any)[sortKey];
+      if (av == null && bv == null) return 0;
+      if (av == null) return 1 * dir;
+      if (bv == null) return -1 * dir;
+      // numeric comparison
+      if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * dir;
+      // fallback string compare
+      return String(av).localeCompare(String(bv)) * dir;
+    });
+
+    return arr;
+  }, [matches, sortKey, sortDir]);
+
+  if (!sortedMatches || sortedMatches.length === 0) return <p className="m-0 p-0">No matches found.</p>;
 
   // Compact mobile styles: tiny paddings and font so the full table can fit in one viewport
   const thBase = "first:pl-0 px-1 py-0.5 text-gray-200 text-[10px] text-center whitespace-nowrap sm:first:pl-0 sm:px-2 sm:py-1 sm:text-sm";
@@ -143,7 +215,7 @@ export default function MatchTable({
           </thead>
 
           <tbody>
-            {matches.map((m, index) => {
+            {sortedMatches.map((m, index) => {
               const wSvpt = m.w_svpt ?? null;
               const w1stIn = m.w_1stIn ?? null;
               const w2ndPts = wSvpt != null && w1stIn != null ? wSvpt - w1stIn : null;

@@ -14,7 +14,7 @@ export default function EditionMatches({
   matches,
   playerId = "",
   defaultSortKey = "tourney_date",
-  defaultSortDir = "asc",
+  defaultSortDir = "desc",
 }: {
   matches: Match[];
   playerId?: string;

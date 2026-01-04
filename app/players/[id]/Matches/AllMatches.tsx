@@ -17,7 +17,7 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
   const [allMatches, setAllMatches] = useState<Match[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
   const [sortKey, setSortKey] = useState<SortKey>("tourney_date");
-  const [sortDir, setSortDir] = useState<SortDirection>("asc");
+  const [sortDir, setSortDir] = useState<SortDirection>("desc");  // Changed from "asc" to "desc" to show latest matches first
   // show all matches by default (allow table to overflow if needed)
 
   const initialFilters: Record<string, string> = useMemo(() => {
@@ -274,7 +274,7 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
               matches={showAll ? sortedMatches : sortedMatches.slice(0, DEFAULT_INITIAL_COUNT)}
               sortKey={sortKey}
               sortDir={sortDir}
-              setSortKey={setSortKey}
+              setSortKey={(key) => setSortKey(key)}
               setSortDir={setSortDir}
               playerId={playerId}
               onHeaderHeightChange={setTableHeaderHeight}

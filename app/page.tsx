@@ -111,6 +111,12 @@ export default function HomePage() {
     .hero-inner{width:100%;padding:0 1rem}
     .hero-img{width:100%;height:auto;border-radius:.75rem;box-shadow:0 10px 15px rgba(2,6,23,.6);object-fit:cover}
     .intro{display:flex;flex-direction:column;align-items:center;text-align:center;margin:0;padding:1rem}
+
+    @media(min-width:768px){
+      .hero-container{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:0;justify-items:center}
+      .hero-inner{max-width:56rem;padding:0}
+      .intro{text-align:center;margin:0;padding:0}
+    }
     
     h1{font-weight:800;font-size:2rem;text-align:center;margin-bottom:1.25rem}
     @media(min-width:640px){h1{font-size:2.25rem}}
@@ -131,19 +137,19 @@ export default function HomePage() {
           
           {/* Header (più largo) */}
           <div className="hero-image-wrapper flex justify-center md:flex-[0_0_60%]">
-            <div className="hero-inner w-full md:max-w-[48rem]">
+            <div className="hero-inner md:max-w-[56rem]">
               <Image
                 src="/header.jpg"
                 alt="Tennis My Life header"
-                width={960}
-                height={540}
+                width={1440}
+                height={810}
                 priority
                 fetchPriority="high"
-                quality={70}
-                className="w-full h-auto object-cover rounded-lg"
+                quality={78}
+                className="w-full h-auto object-cover hero-img rounded-lg"
                 placeholder="blur"
                 blurDataURL={heroLQIP}
-                sizes="(max-width: 400px) 348px, (max-width: 640px) 480px, (max-width: 1024px) 896px, 1280px"
+                sizes="(max-width: 400px) 348px, (max-width: 640px) 480px, (max-width: 1024px) 896px, 1440px"
               />
             </div>
           </div>
