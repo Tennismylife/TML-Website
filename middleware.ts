@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * Local fallback mapping for player and tournament legacy codes -> slug.
- * Keys: uppercase legacy codes (e.g., 'W367').
- * Values: canonical slug strings used by the site.
  * Keep small and authoritative for local/dev usage.
  */
 const slugMapPlayers: Record<string, string> = {
@@ -21,9 +19,6 @@ const slugMapTournaments: Record<string, string> = {
 /** Detect legacy codes like W367, P123 (letters followed by digits). */
 const legacyCodeRegex = /^[A-Za-z]+\d+$/i;
 
-/**
- * Unified middleware for players and tournaments.
- */
 export async function middleware(req: NextRequest) {
   try {
     const { pathname, search } = req.nextUrl;
@@ -39,7 +34,7 @@ export async function middleware(req: NextRequest) {
     const rest = segments.slice(2).join('/');
     const origin = req.nextUrl.origin;
 
-    // 1) Numeric ID: call header API and redirect 301 if slug returned
+    // 1) Numeric ID: header API
     if (/^\d+$/.test(idSegment)) {
       try {
         const apiUrl = `${origin}/api/${resource}/${encodeURIComponent(idSegment)}/header`;
@@ -51,21 +46,18 @@ export async function middleware(req: NextRequest) {
             const dest = new URL(req.url);
             dest.pathname = `/${resource}/${slugFromApi}${rest ? '/' + rest : ''}`;
             dest.search = search;
-            return new Response(null, { status: 301, headers: { Location: dest.toString() } }); // explicit permanent 301 redirect
+            return new Response(null, { status: 301, headers: { Location: dest.toString() } });
           }
         }
-      } catch (e) {
-        console.error(`${resource} header API error (numeric id)`, e);
-      }
-      return NextResponse.next(); // numeric but not resolvable
+      } catch {}
+      return NextResponse.next();
     }
 
-    // 2) Non-numeric: prefer runtime slug-map API (fast cache-enabled), fallback to local map, then header API
     const codeKey = String(idSegment).toUpperCase();
+    let slug: string | undefined;
+    let source: string | undefined;
 
-    // Try fetch runtime slug-map (cache-friendly) first
-    let slug: string | undefined = undefined;
-    let source: string | undefined = undefined;
+    // 2) Slug-map API
     try {
       const apiUrl = `${origin}/api/slug-map`;
       const apiResp = await fetch(apiUrl, { method: 'GET', cache: 'force-cache' });
@@ -75,18 +67,16 @@ export async function middleware(req: NextRequest) {
         slug = mapForResource[codeKey];
         if (slug) source = 'slug-map-api';
       }
-    } catch (e) {
-      // ignore and fallback to local map
-    }
+    } catch {}
 
-    // fallback to local in-file maps
+    // 3) Local map
     if (!slug) {
       const map = resource === 'players' ? slugMapPlayers : slugMapTournaments;
       slug = map ? map[codeKey] : undefined;
       if (slug) source = 'local-map';
     }
 
-    // fallback to header API if still not found
+    // 4) Header API fallback
     if (!slug) {
       try {
         const apiUrl = `${origin}/api/${resource}/${encodeURIComponent(idSegment)}/header`;
@@ -98,24 +88,28 @@ export async function middleware(req: NextRequest) {
             source = 'header-api';
           }
         }
-      } catch (e) {
-        console.error(`${resource} header API error (fallback)`, e);
-      }
+      } catch {}
     }
 
-    // Prevent redirect loops: if the current segment is already the canonical slug (case-insensitive), do nothing
+    // ⚡ Piccola correzione: fallback automatico dai codici legacy
+    if (!slug) {
+      slug = codeKey.toLowerCase();
+      source = 'legacy-code-fallback';
+    }
+
+    // Prevenzione loop redirect
     if (slug && slug.toLowerCase() === String(idSegment).toLowerCase()) {
       return NextResponse.next();
     }
 
+    // Redirect 301 al canonical slug
     if (slug) {
       const dest = new URL(req.url);
       dest.pathname = `/${resource}/${slug}${rest ? '/' + rest : ''}`;
       dest.search = search;
-      return new Response(null, { status: 301, headers: { Location: dest.toString() } }); // explicit permanent 301 redirect
+      return new Response(null, { status: 301, headers: { Location: dest.toString() } });
     }
 
-    // No slug found — continue normally
     return NextResponse.next();
   } catch (err) {
     console.error('legacy redirect middleware error', err);
