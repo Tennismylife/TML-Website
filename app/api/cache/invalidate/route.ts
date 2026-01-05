@@ -34,11 +34,12 @@ export async function POST(req: NextRequest) {
     const toDelete = new Set();
 
     // helper to iterate keys via SCAN
-    async function scanAndCollect(match) {
+    async function scanAndCollect(match: string) {
       let cursor = '0';
       do {
         const { cursor: nextCursor, keys } = await client.scan(cursor, { MATCH: match, COUNT: 1000 });
-        cursor = nextCursor;
+        // node-redis may return cursor as string or Buffer in some environments; coerce to string
+        cursor = String(nextCursor);
         for (const k of keys) toDelete.add(k);
       } while (cursor !== '0');
     }
