@@ -50,8 +50,13 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     ? humanizeName(String(tournament.slug).replace(/-/g, ' '))
     : humanizeName(extractName(tournament.name) || `Tournament ${tournament.id}`);
 
+  const site = 'https://stats.tennismylife.org';
+  const ogUrl = `${site}/tournaments/${tournament.slug || param}/records`;
+
   return {
     title: `${display} - Records | TML`,
+    openGraph: { title: `${display} - Records | TML`, url: ogUrl, siteName: 'TML' },
+    alternates: { canonical: ogUrl },
   };
 }
 

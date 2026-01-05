@@ -70,14 +70,14 @@ function decompressIfGzip(buffer, headers) {
   const server = express();
   server.use(express.json());
 
-  /* ---------------- ACTIVE REQUESTS LOG ---------------- */
+  /* ---------------- ACTIVE REQUESTS (silenced) ---------------- */
   server.use((req, res, next) => {
     activeRequests++;
-    console.log(`🟢 Active requests: ${activeRequests} | ${req.method} ${req.originalUrl}`);
+    // Active request counters are maintained but per-request console logs removed to reduce noise
 
     res.on('finish', () => {
       activeRequests--;
-      console.log(`🔵 Request finished. Active requests: ${activeRequests} | ${req.method} ${req.originalUrl}`);
+      // logging intentionally omitted
     });
 
     next();

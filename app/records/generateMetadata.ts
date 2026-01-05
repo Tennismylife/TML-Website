@@ -28,7 +28,8 @@ export async function generateMetadata({ searchParams }: { searchParams: Record<
 
   const description = generateRecordDescription(selectedRecord, activeSubTabs, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf);
   const title = description ? `${description} — TML Records` : 'Records — TML';
-  const url = '/records' + (new URLSearchParams(searchParams as any).toString() ? '?' + new URLSearchParams(searchParams as any).toString() : '');
+  const site = 'https://stats.tennismylife.org';
+  const canonical = `${site}/records`;
 
   return {
     title,
@@ -36,12 +37,13 @@ export async function generateMetadata({ searchParams }: { searchParams: Record<
     openGraph: {
       title,
       description,
-      url,
+      url: canonical,
       siteName: 'TML',
     },
+    alternates: { canonical },
     twitter: {
       title,
       description,
     },
-  };
+  }; 
 }

@@ -25,11 +25,12 @@ export async function generateMetadata({ params }: any) {
 
   const name = player ? (player.atpname || player.player) : String(slugParam);
   const slug = player?.slug || String(slugParam);
-  const path = `/players/${slug}`;
+  const site = 'https://stats.tennismylife.org';
+  const ogUrl = `${site}/players/${slug}`;
   return {
     title: `${name} | Tennis Statistics, Match Results & Rankings`,
-    openGraph: { url: path },
-    alternates: { canonical: path },
+    openGraph: { url: ogUrl },
+    alternates: { canonical: ogUrl },
   }; 
 }
 

@@ -44,7 +44,13 @@ export async function generateMetadata({ params }: any) {
 
   const name = tourneyRow ? (Array.isArray(tourneyRow.name) ? firstString(tourneyRow.name) : firstString(tourneyRow.name)) : id;
   const display = `${humanizeName(firstString(name))} ${year}`;
-  return { title: `${display} | Tournament Stats, History, Match Results & Winners` };
+  const site = 'https://stats.tennismylife.org';
+  const ogUrl = `${site}/tournaments/${tourneyRow?.slug || id}/${year}`;
+  return {
+    title: `${display} | Tournament Stats, History, Match Results & Winners`,
+    openGraph: { url: ogUrl },
+    alternates: { canonical: ogUrl },
+  }; 
 }
 
 // Server component: render client edition component

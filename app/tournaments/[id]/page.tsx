@@ -63,8 +63,13 @@ export async function generateMetadata({ params }: any) {
   }
 
   const humanized = humanizeName(name);
-  const path = `/tournaments/${tournament?.slug || param}`;
-  return { title: `${humanized} | Tournament Stats, History, Match Results & Winners`, openGraph: { url: path }, alternates: { canonical: path } };
+  const site = 'https://stats.tennismylife.org';
+  const ogUrl = `${site}/tournaments/${tournament?.slug || param}`;
+  return {
+    title: `${humanized} | Tournament Stats, History, Match Results & Winners`,
+    openGraph: { url: ogUrl },
+    alternates: { canonical: ogUrl },
+  };
 }
 
 export default async function TournamentPage({ params }: TournamentPageProps) {
