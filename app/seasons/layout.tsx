@@ -1,19 +1,16 @@
 import type { Metadata } from 'next';
 import React from 'react';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-const url = `${siteUrl}/seasons`;
-
 export const metadata: Metadata = {
   title: 'Seasons — TML',
-  description: 'Season summaries, stats and records by year.',
+  description: 'Season summaries and statistics.',
   openGraph: {
     title: 'Seasons — TML',
-    description: 'Season summaries, stats and records by year.',
-    url,
+    description: 'Season summaries and statistics.',
+    url: '/seasons',
     type: 'website',
   },
-  alternates: { canonical: url },
+  alternates: { canonical: '/seasons' },
 };
 
 export default function SeasonsLayout({ children }: { children: React.ReactNode }) {

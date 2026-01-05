@@ -11,8 +11,7 @@ interface SEOPlayerProps {
 }
 
 export default function SEOPlayer({ playerId, slug, name, atpname, tab = 'overview', matches }: SEOPlayerProps) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-  const url = `${siteUrl}/players/${slug}${tab !== 'overview' ? `?tab=${tab}` : ''}`;
+  const url = `https://stats.tennismylife.org/players/${slug}${tab !== 'overview' ? `?tab=${tab}` : ''}`;
 
   const filteredMatches = matches.filter(m => m.status !== false);
 

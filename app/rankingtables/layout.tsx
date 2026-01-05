@@ -1,19 +1,16 @@
 import type { Metadata } from 'next';
 import React from 'react';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-const url = `${siteUrl}/rankingtables`;
-
 export const metadata: Metadata = {
   title: 'Ranking Tables — TML',
   description: 'Historical ranking tables and snapshots.',
   openGraph: {
     title: 'Ranking Tables — TML',
     description: 'Historical ranking tables and snapshots.',
-    url,
+    url: '/rankingtables',
     type: 'website',
   },
-  alternates: { canonical: url },
+  alternates: { canonical: '/rankingtables' },
 };
 
 export default function RankingTablesLayout({ children }: { children: React.ReactNode }) {

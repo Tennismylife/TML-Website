@@ -63,9 +63,8 @@ export async function generateMetadata({ params }: any) {
   }
 
   const humanized = humanizeName(name);
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-  const ogUrl = `${siteUrl}/tournaments/${tournament?.slug || param}`;
-  return { title: `${humanized} | Tournament Stats, History, Match Results & Winners`, openGraph: { url: ogUrl } };
+  const path = `/tournaments/${tournament?.slug || param}`;
+  return { title: `${humanized} | Tournament Stats, History, Match Results & Winners`, openGraph: { url: path }, alternates: { canonical: path } };
 }
 
 export default async function TournamentPage({ params }: TournamentPageProps) {
@@ -108,8 +107,7 @@ export default async function TournamentPage({ params }: TournamentPageProps) {
   const startDate = tournament.startDate ? tournament.startDate.toISOString() : new Date().toISOString();
   const endDate = tournament.endDate ? tournament.endDate.toISOString() : new Date().toISOString();
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-  const url = `${siteUrl}/tournaments/${tournament.slug}`;
+  const url = `https://stats.tennismylife.org/tournaments/${tournament.slug}`;
 
   const description = `Tournament page for ${humanizedName} – results, past champions and records.`;
 

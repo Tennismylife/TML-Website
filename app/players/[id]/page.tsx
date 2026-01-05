@@ -24,10 +24,13 @@ export async function generateMetadata({ params }: any) {
   }
 
   const name = player ? (player.atpname || player.player) : String(slugParam);
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
   const slug = player?.slug || String(slugParam);
-  const ogUrl = `${siteUrl}/players/${slug}`;
-  return { title: `${name} | Tennis Statistics, Match Results & Rankings`, openGraph: { url: ogUrl } };
+  const path = `/players/${slug}`;
+  return {
+    title: `${name} | Tennis Statistics, Match Results & Rankings`,
+    openGraph: { url: path },
+    alternates: { canonical: path },
+  }; 
 }
 
 export default async function PlayerPage({ params, searchParams }: any) {

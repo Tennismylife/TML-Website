@@ -36,7 +36,7 @@ export const metadata = {
     description: "Explore tournament calendars, match results, player head-to-head records, rankings and advanced tennis metrics on Tennis My Life.",
     images: [
       {
-        url: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/og-home.avif`,
+        url: '/og-home.avif',
         width: 1200,
         height: 630,
         alt: 'Tennis My Life - tennis statistics and records'
@@ -44,8 +44,8 @@ export const metadata = {
     ],
   },
   twitter: { card: 'summary_large_image' },
-  alternates: { canonical: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000' }
-} as const;
+  alternates: { canonical: '/' }
+} as const; 
 
 export default function HomePage() {
   const navItems: NavItem[] = [
@@ -171,7 +171,7 @@ export default function HomePage() {
           __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'WebPage',
-            'url': process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+            'url': 'https://stats.tennismylife.org',
             'name': 'Tennis My Life',
             'description': 'Comprehensive tennis statistics, match results, player profiles and historical rankings.'
           }),

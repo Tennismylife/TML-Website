@@ -16,7 +16,7 @@ const montserrat = Montserrat({
 
 const siteTitle = 'TML — Tennis Records Data History Rankings, Matches & GOAT'
 const siteDescription = 'TML aggregates tennis matches, rankings, player profiles and records. Explore player statistics, head-to-heads and historical data. Find the GOAT'
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+export const metadataBase = new URL('https://stats.tennismylife.org');
 
 export const metadata: Metadata = {
   title: siteTitle,
@@ -24,16 +24,16 @@ export const metadata: Metadata = {
   openGraph: {
     title: siteTitle,
     description: siteDescription,
-    url: siteUrl,
+    url: '/',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
   },
   alternates: {
-    canonical: siteUrl,
+    canonical: '/',
   },
-}
+} 
 
 export default function RootLayout({ children }: { children: ReactNode }) {
 
@@ -70,7 +70,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'WebSite',
-              url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+              url: 'https://stats.tennismylife.org',
               name: 'TML — Tennis Rankings, Matches & Records',
             }),
           }}
