@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-      await client.del(...keys);
+      await client.del.apply(client, keys);
     } catch (e) {
       // continue
     }
