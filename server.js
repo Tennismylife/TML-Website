@@ -1,4 +1,4 @@
-// server.js � Next.js + Redis v4
+// server.js — Next.js + Redis v4
 // Sicurezza massima: homepage NON cachata, asset statici esclusi
 
 const express = require('express');
@@ -6,10 +6,18 @@ const { createClient } = require('redis');
 const next = require('next');
 const zlib = require('zlib');
 
+/* ---------------- Global error logging ---------------- */
+process.on('uncaughtException', (err) => {
+  console.error('⚠️ UNCAUGHT EXCEPTION:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('⚠️ UNHANDLED REJECTION at:', promise, 'reason:', reason);
+});
+
 const dev = false;
 const nextApp = next({ dev, dir: '.', conf: { distDir: '.next' } });
 const handle = nextApp.getRequestHandler();
-
 
 const CONTROL_PARAMS = new Set(['nocache', 'x-refresh']);
 
@@ -21,10 +29,10 @@ async function initRedis() {
     redis = createClient({ url: 'redis://127.0.0.1:6379' });
     redis.on('error', err => console.warn('Redis error:', err));
     await redis.connect();
-    console.log('Redis connesso ? Cache attiva');
+    console.log('Redis connesso ✅ Cache attiva');
   } catch {
     redis = null;
-    console.warn('Redis NON disponibile ? Cache disattivata');
+    console.warn('Redis NON disponibile ⚠️ Cache disattivata');
   }
 }
 
@@ -70,6 +78,20 @@ function decompressIfGzip(buffer, headers) {
   const server = express();
   server.use(express.json());
 
+  /* ---------------- Track active requests ---------------- */
+  let activeRequests = 0;
+  server.use((req, res, next) => {
+    activeRequests++;
+    console.log(`🟢 Active requests: ${activeRequests} | ${req.method} ${req.path}`);
+
+    res.on('finish', () => {
+      activeRequests--;
+      console.log(`🔵 Request finished. Active requests: ${activeRequests}`);
+    });
+
+    next();
+  });
+
   /* Header sempre presente */
   server.use((req, res, next) => {
     res.setHeader('X-Cache', 'UNCACHED');
@@ -100,7 +122,7 @@ function decompressIfGzip(buffer, headers) {
 
       return res.send(body);
     } catch (e) {
-      console.error('[CACHE READ ERROR]', e);
+      console.error('[CACHE READ ERROR]', e, 'Key:', key);
       return next();
     }
   });
@@ -111,10 +133,7 @@ function decompressIfGzip(buffer, headers) {
 
     const type = req.path.startsWith('/api') ? 'api' : 'page';
 
-    /* Opzione A: homepage "/" NON cachata by default. Set env CACHE_HOME=1 to allow caching homepage. */
     if (type === 'page' && req.path === '/' && process.env.CACHE_HOME !== '1') return next();
-
-    /* Escludi asset statici */
     if (req.path.match(/\.(png|jpg|jpeg|gif|webp|svg|ico|css|js|map)$/i)) return next();
 
     const key = buildCacheKey(req, type);
@@ -135,7 +154,6 @@ function decompressIfGzip(buffer, headers) {
           const headers = res.getHeaders();
           const ct = headers['content-type'] || '';
 
-          /* NO streaming / Flight / RSC */
           if (
             headers['transfer-encoding'] === 'chunked' ||
             ct.includes('text/x-component') ||
@@ -147,7 +165,6 @@ function decompressIfGzip(buffer, headers) {
           let bodyBuffer = Buffer.concat(chunks);
           bodyBuffer = decompressIfGzip(bodyBuffer, headers);
 
-          /* HTML incompleto ? skip */
           if (ct.includes('text/html')) {
             const html = bodyBuffer.toString('utf-8');
             if (!html.includes('__NEXT_DATA__')) {
@@ -156,12 +173,11 @@ function decompressIfGzip(buffer, headers) {
             }
           }
 
-          /* SALVA in Redis (no TTL) — cache persists until explicit invalidation */
           redis.set(
             key,
             JSON.stringify({ body: bodyBuffer.toString('base64'), type: ct })
           ).then(() => console.log('[CACHE STORED]', key, bodyBuffer.length))
-           .catch(err => console.error('[CACHE WRITE ERROR]', err));
+           .catch(err => console.error('[CACHE WRITE ERROR]', err, 'Key:', key));
 
           if (res.getHeader('X-Cache') === 'UNCACHED') {
             res.setHeader('X-Cache', `${type.toUpperCase()}-STORED`);
@@ -185,16 +201,17 @@ function decompressIfGzip(buffer, headers) {
   /* ---------------- START SERVER ---------------- */
   const PORT = process.env.PORT || 3000;
   const srv = server.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server avviato ? http://localhost:${PORT}`);
+    console.log(`Server avviato ✅ http://localhost:${PORT}`);
     console.log(redis ? 'Redis cache attiva' : 'Cache disattivata');
   });
 
   /* ---------------- GRACEFUL SHUTDOWN ---------------- */
   const shutdown = async () => {
-    console.log('Shutdown...');
+    console.warn('⚠️ Shutdown triggered...');
+    console.log('Active requests at shutdown:', activeRequests);
     srv.close(() => console.log('Server chiuso'));
     if (redis) {
-      try { await redis.quit(); } catch {}
+      try { await redis.quit(); console.log('Redis disconnesso'); } catch {}
     }
     process.exit(0);
   };
