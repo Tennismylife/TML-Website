@@ -146,7 +146,8 @@ export async function GET(request: NextRequest, context: any) {
 
     // 3️⃣ Combina dati torneo + edizioni, normalizza superfici (rimuove token 'indoor')
     //     e restituisce una sola istanza per ciascuna `category` (ordine preservato)
-    const rawCategories = extractNames(tournament.atp_category).map(s => String(s || '').trim()).filter(Boolean);
+    // Use `atp_category` if present, otherwise fall back to raw `category` JSONB from DB
+    const rawCategories = extractNames(tournament.atp_category ?? tournament.category).map(s => String(s || '').trim()).filter(Boolean);
     const seenCats = new Set<string>();
     const uniqueCategories: string[] = [];
     for (const c of rawCategories) {

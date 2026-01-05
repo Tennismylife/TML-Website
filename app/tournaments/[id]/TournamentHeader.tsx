@@ -43,8 +43,9 @@ export default function TournamentHeader({ id }: TournamentHeaderProps) {
 
     fetch(`/api/tournaments/${id}/header`)
       .then(res => res.json())
-      .then(data => {
+      .then((data) => {
         setTournament(data);
+        console.debug('TournamentHeader loaded', data);
         setLoading(false);
       })
       .catch(err => {
@@ -65,16 +66,37 @@ export default function TournamentHeader({ id }: TournamentHeaderProps) {
 
   return (
     <header className="relative bg-gradient-to-r from-green-700 via-green-500 to-yellow-400 text-white p-8 rounded-2xl mb-8 w-full shadow-xl overflow-hidden">
-      <div className="absolute top-4 right-6 flex flex-wrap gap-2">
-        {levelLabels.map((label, i) => {
-          const color = getLevelColor(label) ?? '#555';
-          const textColor = getTextColorForRound(color);
-          return (
-            <span key={i} className="px-4 py-1 rounded-full text-sm font-semibold shadow-md" style={{ backgroundColor: color, color: textColor }}>
-              {label}
-            </span>
-          );
-        })}
+      <div className="absolute top-4 right-6 flex flex-wrap gap-2 z-20">
+        {(() => {
+          // Use ONLY tournament.category (deduplicated, preserve order)
+          const sourceCats = (extractNames(tournament?.category || []) as string[]);
+          const seen = new Set<string>();
+          const cats: string[] = [];
+          for (const c of sourceCats) {
+            const s = String(c || '').trim();
+            if (!s) continue;
+            const key = s.toLowerCase();
+            if (seen.has(key)) continue;
+            seen.add(key);
+            cats.push(s);
+          }
+
+          if (cats.length === 0) {
+            // no categories defined on tournament.category -> hide area
+            return null;
+          }
+
+          return cats.map((cat, i) => {
+            const label = getLevelFullName(cat);
+            const color = getLevelColor(cat) ?? '#555';
+            const textColor = getTextColorForRound(color);
+            return (
+              <span key={i} title={label} className="px-3 py-1 rounded-full text-sm font-semibold shadow-md" style={{ backgroundColor: color, color: textColor }}>
+                {label}
+              </span>
+            );
+          });
+        })()}
       </div>
 
       <div className="flex flex-col items-center justify-center text-center">
