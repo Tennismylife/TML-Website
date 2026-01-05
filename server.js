@@ -85,45 +85,24 @@ function decompressIfGzip(buffer, headers) {
   });
 
   /* ---------------- CACHE READ ---------------- */
-  server.use(async (req, res, next) => {
-    // support internal revalidation header: if present, skip returning cache so we force regeneration
-    const isRevalidate = req.headers['x-revalidate'] === '1';
+  // Use reusable middleware implemented in lib/tennisCacheMiddleware.js
+  try {
+    const { createCacheMiddlewares } = require('./lib/tennisCacheMiddleware');
+    const { readMiddleware, writeMiddleware } = createCacheMiddlewares({
+      redis,
+      buildCacheKey,
+      decompressIfGzip,
+      shouldBypassCache,
+      cacheTTL: CACHE_TTL_SECONDS,
+    });
 
-    if (!redis || shouldBypassCache(req)) return next();
+    server.use(readMiddleware);
 
-    const type = req.path.startsWith('/api') ? 'api' : 'page';
-    const key = buildCacheKey(req, type);
-
-    try {
-      const cachedStr = await redis.get(key);
-      if (!cachedStr) {
-        console.log('[CACHE MISS]', key);
-        return next();
-      }
-
-      if (isRevalidate) {
-        // treat as miss but keep stored copy — cause generation and later overwrite
-        console.log('[CACHE REVALIDATE]', key);
-        return next();
-      }
-
-      const cached = JSON.parse(cachedStr);
-      const body = Buffer.from(cached.body, 'base64');
-
-      res.setHeader('Content-Type', cached.type);
-      res.setHeader('Cache-Control', 'private, max-age=0');
-      res.setHeader('X-Cache', `${type.toUpperCase()}-HIT`);
-      res.setHeader('X-SSR-COMPLETE', '1');
-
-      res.fromCache = true;
-      console.log('[CACHE HIT]', key, body.length);
-
-      return res.send(body);
-    } catch (e) {
-      console.error('[CACHE READ ERROR]', e);
-      return next();
-    }
-  });
+    /* ---------------- CACHE WRITE ---------------- */
+    server.use(writeMiddleware);
+  } catch (e) {
+    console.error('Failed to initialize cache middlewares', e);
+  }
 
   /* ---------------- CACHE WRITE ---------------- */
   server.use((req, res, next) => {
