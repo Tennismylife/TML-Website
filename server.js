@@ -13,14 +13,6 @@ const handle = nextApp.getRequestHandler();
 
 const CONTROL_PARAMS = new Set(['nocache', 'x-refresh']);
 
-// Cache preload/refresh configuration (env-driven)
-const CACHE_TTL_SECONDS = process.env.CACHE_TTL_SECONDS ? Number(process.env.CACHE_TTL_SECONDS) : 0; // 0 => no TTL (manual invalidation)
-const CACHE_PRELOAD = process.env.CACHE_PRELOAD === '1';
-const CACHE_PRELOAD_HOURS = process.env.CACHE_PRELOAD_HOURS ? Number(process.env.CACHE_PRELOAD_HOURS) : 12;
-const PRELOAD_ALL_TOURNAMENTS = process.env.PRELOAD_ALL_TOURNAMENTS === '1';
-const PRELOAD_PATHS = process.env.PRELOAD_PATHS ? process.env.PRELOAD_PATHS.split(',').map(s => s.trim()).filter(Boolean) : ['/tournaments/australian-open/records/ages/main'];
-const CACHE_SECRET = process.env.CACHE_SECRET || null; // used by invalidation endpoints
-
 let redis = null;
 
 /* ---------------- Redis init ---------------- */
@@ -85,29 +77,37 @@ function decompressIfGzip(buffer, headers) {
   });
 
   /* ---------------- CACHE READ ---------------- */
-  // Use reusable middleware implemented in lib/tennisCacheMiddleware.js
-  try {
-    const { createCacheMiddlewares } = require('./lib/tennisCacheMiddleware');
-    const { readMiddleware, writeMiddleware } = createCacheMiddlewares({
-      redis,
-      buildCacheKey,
-      decompressIfGzip,
-      shouldBypassCache,
-      cacheTTL: CACHE_TTL_SECONDS,
-    });
+  server.use(async (req, res, next) => {
+    if (!redis || shouldBypassCache(req)) return next();
 
-    server.use(readMiddleware);
+    const type = req.path.startsWith('/api') ? 'api' : 'page';
+    const key = buildCacheKey(req, type);
 
-    /* ---------------- CACHE WRITE ---------------- */
-    server.use(writeMiddleware);
-  } catch (e) {
-    console.error('Failed to initialize cache middlewares', e);
-  }
+    try {
+      const cachedStr = await redis.get(key);
+      if (!cachedStr) return next();
+
+      const cached = JSON.parse(cachedStr);
+      const body = Buffer.from(cached.body, 'base64');
+
+      res.setHeader('Content-Type', cached.type);
+      res.setHeader('Cache-Control', 'private, max-age=0');
+      res.setHeader('X-Cache', `${type.toUpperCase()}-HIT`);
+      res.setHeader('X-SSR-COMPLETE', '1');
+
+      res.fromCache = true;
+      console.log('[CACHE HIT]', key, body.length);
+
+      return res.send(body);
+    } catch (e) {
+      console.error('[CACHE READ ERROR]', e);
+      return next();
+    }
+  });
 
   /* ---------------- CACHE WRITE ---------------- */
   server.use((req, res, next) => {
-    // Skip write for non-GET, explicit nocache query, when response served from cache, or when redis unavailable
-    if (!redis || req.method !== 'GET' || req.query.nocache || res.fromCache) return next();
+    if (!redis || shouldBypassCache(req) || res.fromCache) return next();
 
     const type = req.path.startsWith('/api') ? 'api' : 'page';
 
@@ -156,18 +156,12 @@ function decompressIfGzip(buffer, headers) {
             }
           }
 
-          /* SALVA in Redis */
-          const payload = JSON.stringify({ body: bodyBuffer.toString('base64'), type: ct });
-
-          if (CACHE_TTL_SECONDS > 0) {
-            redis.setEx(key, CACHE_TTL_SECONDS, payload)
-              .then(() => console.log('[CACHE STORED]', key, bodyBuffer.length))
-              .catch(err => console.error('[CACHE WRITE ERROR]', err));
-          } else {
-            redis.set(key, payload)
-              .then(() => console.log('[CACHE STORED]', key, bodyBuffer.length))
-              .catch(err => console.error('[CACHE WRITE ERROR]', err));
-          }
+          /* SALVA in Redis (no TTL) — cache persists until explicit invalidation */
+          redis.set(
+            key,
+            JSON.stringify({ body: bodyBuffer.toString('base64'), type: ct })
+          ).then(() => console.log('[CACHE STORED]', key, bodyBuffer.length))
+           .catch(err => console.error('[CACHE WRITE ERROR]', err));
 
           if (res.getHeader('X-Cache') === 'UNCACHED') {
             res.setHeader('X-Cache', `${type.toUpperCase()}-STORED`);
@@ -190,101 +184,12 @@ function decompressIfGzip(buffer, headers) {
 
   /* ---------------- START SERVER ---------------- */
   const PORT = process.env.PORT || 3000;
-  const srv = server.listen(PORT, '0.0.0.0', async () => {
+  const srv = server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server avviato ? http://localhost:${PORT}`);
     console.log(redis ? 'Redis cache attiva' : 'Cache disattivata');
-
-    // perform initial preload & warm if configured
-    if (redis && CACHE_PRELOAD) {
-      try {
-        const origin = `http://localhost:${PORT}`;
-
-        // preload slug map into redis and optionally warm pages
-        await preloadSlugMap(origin);
-
-        // Build list of paths to warm
-        let warmPaths = [...PRELOAD_PATHS];
-
-        if (PRELOAD_ALL_TOURNAMENTS) {
-          // attempt to get tournaments map and generate paths
-          try {
-            const sm = await redis.get('slug_map_v1');
-            if (sm) {
-              const parsed = JSON.parse(sm);
-              const tournaments = Object.values(parsed.tournaments || {});
-              for (const t of tournaments) {
-                warmPaths.push(`/tournaments/${t}/records/ages/main`);
-              }
-            }
-          } catch (e) {
-            console.warn('Failed to load tournaments map from redis for preload', e);
-          }
-        }
-
-        await warmPathsConcurrently(origin, warmPaths);
-
-        // schedule periodic refresh
-        setInterval(async () => {
-          console.log('Periodic cache refresh: preload slug-map and warm configured pages');
-          try {
-            await preloadSlugMap(origin);
-            await warmPathsConcurrently(origin, warmPaths);
-          } catch (e) {
-            console.error('Periodic refresh error', e);
-          }
-        }, Math.max(1, CACHE_PRELOAD_HOURS) * 60 * 60 * 1000);
-
-      } catch (e) {
-        console.error('Preload error', e);
-      }
-    }
   });
 
   /* ---------------- GRACEFUL SHUTDOWN ---------------- */
-
-  async function preloadSlugMap(origin) {
-    try {
-      console.log('Preloading slug-map into redis');
-      const res = await (await import('node-fetch')).default(`${origin}/api/slug-map`);
-      if (!res.ok) {
-        console.warn('slug-map preload failed', res.status);
-        return;
-      }
-      const payload = await res.json();
-      try {
-        await redis.set('slug_map_v1', JSON.stringify(payload));
-        console.log('slug-map stored in redis');
-      } catch (e) {
-        console.warn('Failed to store slug-map in redis', e);
-      }
-    } catch (e) {
-      console.warn('Error preloading slug-map', e);
-    }
-  }
-
-  async function warmPathsConcurrently(origin, paths, concurrency = 8) {
-    console.log('Warming paths:', paths.length);
-    const queue = paths.slice();
-    const results = [];
-
-    async function worker() {
-      while (queue.length) {
-        const p = queue.shift();
-        try {
-          const url = `${origin}${p}`;
-          const res = await (await import('node-fetch')).default(url, { headers: { 'x-revalidate': '1' } });
-          results.push({ path: p, status: res.status });
-          console.log('[WARM]', p, res.status);
-        } catch (e) {
-          console.error('[WARM ERROR]', p, e);
-        }
-      }
-    }
-
-    const workers = new Array(Math.min(concurrency, paths.length)).fill(0).map(() => worker());
-    await Promise.all(workers);
-    return results;
-  }
   const shutdown = async () => {
     console.log('Shutdown...');
     srv.close(() => console.log('Server chiuso'));
