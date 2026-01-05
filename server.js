@@ -1,4 +1,4 @@
-// server.js — Next.js + Redis v4
+// server.js — Next.js + Redis v4 + logging avanzato
 // Sicurezza massima: homepage NON cachata, asset statici esclusi
 
 const express = require('express');
@@ -6,22 +6,22 @@ const { createClient } = require('redis');
 const next = require('next');
 const zlib = require('zlib');
 
-/* ---------------- Global error logging ---------------- */
-process.on('uncaughtException', (err) => {
-  console.error('⚠️ UNCAUGHT EXCEPTION:', err);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('⚠️ UNHANDLED REJECTION at:', promise, 'reason:', reason);
-});
-
 const dev = false;
 const nextApp = next({ dev, dir: '.', conf: { distDir: '.next' } });
 const handle = nextApp.getRequestHandler();
 
 const CONTROL_PARAMS = new Set(['nocache', 'x-refresh']);
-
 let redis = null;
+let activeRequests = 0;
+
+/* ---------------- GLOBAL ERROR HANDLING ---------------- */
+process.on('uncaughtException', (err) => {
+  console.error('💥 Uncaught Exception:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('💥 Unhandled Rejection at:', promise, 'reason:', reason);
+});
 
 /* ---------------- Redis init ---------------- */
 async function initRedis() {
@@ -30,19 +30,15 @@ async function initRedis() {
     redis.on('error', err => console.warn('Redis error:', err));
     await redis.connect();
     console.log('Redis connesso ✅ Cache attiva');
-  } catch {
+  } catch (err) {
     redis = null;
-    console.warn('Redis NON disponibile ⚠️ Cache disattivata');
+    console.warn('Redis NON disponibile ❌ Cache disattivata', err);
   }
 }
 
 /* ---------------- Utils ---------------- */
 function shouldBypassCache(req) {
-  return (
-    req.method !== 'GET' ||
-    req.query.nocache ||
-    req.headers['x-refresh'] === '1'
-  );
+  return req.method !== 'GET' || req.query.nocache || req.headers['x-refresh'] === '1';
 }
 
 function buildCacheKey(req, type) {
@@ -61,11 +57,7 @@ function buildCacheKey(req, type) {
 
 function decompressIfGzip(buffer, headers) {
   if (headers && headers['content-encoding'] === 'gzip') {
-    try {
-      return zlib.gunzipSync(buffer);
-    } catch {
-      return buffer;
-    }
+    try { return zlib.gunzipSync(buffer); } catch { return buffer; }
   }
   return buffer;
 }
@@ -78,15 +70,14 @@ function decompressIfGzip(buffer, headers) {
   const server = express();
   server.use(express.json());
 
-  /* ---------------- Track active requests ---------------- */
-  let activeRequests = 0;
+  /* ---------------- ACTIVE REQUESTS LOG ---------------- */
   server.use((req, res, next) => {
     activeRequests++;
-    console.log(`🟢 Active requests: ${activeRequests} | ${req.method} ${req.path}`);
+    console.log(`🟢 Active requests: ${activeRequests} | ${req.method} ${req.originalUrl}`);
 
     res.on('finish', () => {
       activeRequests--;
-      console.log(`🔵 Request finished. Active requests: ${activeRequests}`);
+      console.log(`🔵 Request finished. Active requests: ${activeRequests} | ${req.method} ${req.originalUrl}`);
     });
 
     next();
@@ -122,7 +113,7 @@ function decompressIfGzip(buffer, headers) {
 
       return res.send(body);
     } catch (e) {
-      console.error('[CACHE READ ERROR]', e, 'Key:', key);
+      console.error('[CACHE READ ERROR]', e);
       return next();
     }
   });
@@ -176,8 +167,9 @@ function decompressIfGzip(buffer, headers) {
           redis.set(
             key,
             JSON.stringify({ body: bodyBuffer.toString('base64'), type: ct })
-          ).then(() => console.log('[CACHE STORED]', key, bodyBuffer.length))
-           .catch(err => console.error('[CACHE WRITE ERROR]', err, 'Key:', key));
+          )
+            .then(() => console.log('[CACHE STORED]', key, bodyBuffer.length))
+            .catch(err => console.error('[CACHE WRITE ERROR]', err));
 
           if (res.getHeader('X-Cache') === 'UNCACHED') {
             res.setHeader('X-Cache', `${type.toUpperCase()}-STORED`);
@@ -206,9 +198,9 @@ function decompressIfGzip(buffer, headers) {
   });
 
   /* ---------------- GRACEFUL SHUTDOWN ---------------- */
-  const shutdown = async () => {
-    console.warn('⚠️ Shutdown triggered...');
-    console.log('Active requests at shutdown:', activeRequests);
+  const shutdown = async (signal) => {
+    console.log(`⚠️ Shutdown triggered by signal: ${signal}`);
+    console.log(`Active requests at shutdown: ${activeRequests}`);
     srv.close(() => console.log('Server chiuso'));
     if (redis) {
       try { await redis.quit(); console.log('Redis disconnesso'); } catch {}
@@ -216,6 +208,6 @@ function decompressIfGzip(buffer, headers) {
     process.exit(0);
   };
 
-  process.on('SIGINT', shutdown);
-  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', () => shutdown('SIGINT'));
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
 })();
