@@ -26,11 +26,12 @@ interface OldestMainDrawProps {
   fetchEnabled?: boolean;
   fetchRequestId?: string | null;
   description?: string;
+  initialData?: Player[];
 }
 
-export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, fetchRequestId, description }: OldestMainDrawProps) {
+export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, fetchRequestId, description, initialData }: OldestMainDrawProps) {
   const enabled = !!fetchEnabled;
-  const [data, setData] = useState<Player[]>([]);
+  const [data, setData] = useState<Player[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
@@ -42,9 +43,9 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
   useEffect(() => {
     const controller = new AbortController();
     const fetchData = async () => {
-      if (!((enabled && fetchRequestId) || showModal)) {
-        console.debug('[OldestMainDraw] skipped fetch: no fetchRequestId and not modal', { enabled, fetchRequestId, showModal });
-        setData([]);
+      const shouldFetch = ((enabled && fetchRequestId) || showModal);
+      if (!shouldFetch) {
+        if (Array.isArray(initialData)) setData(initialData);
         setLoading(false);
         return;
       }
@@ -56,6 +57,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
         selectedSurfaces.forEach((s) => query.append("surface", s));
         selectedLevels.forEach((l) => query.append("level", l));
         if (selectedRounds) query.append("round", selectedRounds);
+        query.append("limit", showModal ? "1000" : "100");
 
         const res = await fetch(`/api/records/ages/maindraw?${query.toString()}`, { signal: controller.signal });
         if (!res.ok) throw new Error("Failed to fetch oldest main draw");
@@ -70,7 +72,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
     };
     fetchData();
     return () => controller.abort();
-  }, [selectedSurfaces, selectedLevels, selectedRounds, enabled, showModal, fetchRequestId]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, enabled, showModal, fetchRequestId, initialData]);
 
   const formatAge = (age: number) => {
     const years = Math.floor(age);
@@ -138,9 +140,9 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
   return (
     <section className="mb-8">
       {description && (
-        <div className="text-center text-4xl font-bold text-white mb-6">
+        <h1 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
-        </div>
+        </h1>
       )}
 
       <div className="mb-4 flex justify-end">

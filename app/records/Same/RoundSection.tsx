@@ -1,8 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { getFlagFromIOC } from '@/lib/utils';import { playerMatchesUrl } from "../nav";import { useSearchParams } from 'next/navigation';
+import { getFlagFromIOC } from '@/lib/utils';
+import { playerMatchesUrl } from "../nav";
+import { useSearchParams } from 'next/navigation';
 import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
 
@@ -13,6 +15,8 @@ interface SameRoundSectionProps {
   fetchEnabled?: boolean;
   setFetchEnabled?: (enabled: boolean) => void;
   description?: string;
+  fetchRequestId?: string | null;
+  initialData?: RoundEntryRecord[];
 }
 
 type RoundEntryRecord = {
@@ -23,19 +27,33 @@ type RoundEntryRecord = {
   ioc: string | null;
 };
 
-export default function SameRoundSection({ selectedSurfaces, selectedLevels, selectedRound, fetchEnabled, setFetchEnabled, description }: SameRoundSectionProps) {
-  const [entries, setEntries] = useState<RoundEntryRecord[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function SameRoundSection({ selectedSurfaces, selectedLevels, selectedRound, fetchEnabled, setFetchEnabled, description, fetchRequestId, initialData }: SameRoundSectionProps) {
+  const enabled = !!fetchEnabled;
+  const [entries, setEntries] = useState<RoundEntryRecord[]>(Array.isArray(initialData) ? initialData : []);
+  const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const perPage = 20;
   const searchParams = useSearchParams();
+  const lastRequestRef = useRef<string | null>(null);
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRound]);
 
   useEffect(() => {
-    const enabled = !!fetchEnabled;
-    if (!enabled && !showModal) return;
+    if (!selectedRound) {
+      setEntries([]);
+      setLoading(false);
+      return;
+    }
+
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal);
+    if (!shouldFetch) {
+      if (Array.isArray(initialData)) setEntries(initialData);
+      setLoading(false);
+      return;
+    }
+
+    if (fetchRequestId) lastRequestRef.current = fetchRequestId;
 
     const fetchData = async () => {
       setLoading(true);
@@ -44,23 +62,26 @@ export default function SameRoundSection({ selectedSurfaces, selectedLevels, sel
         selectedSurfaces.forEach(s => query.append('surface', s));
         selectedLevels.forEach(l => query.append('level', l));
         if (selectedRound) query.append('round', selectedRound);
+        query.set('limit', showModal ? '1000' : '100');
 
         const url = `/api/records/same/rounds?${query.toString()}`;
         const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch rounds');
         const data: RoundEntryRecord[] = await res.json();
-        setEntries(data || []);
+        setEntries(Array.isArray(data) ? data : []);
+        setPage(1);
       } catch (err) {
         console.error(err);
         setEntries([]);
       } finally {
         setLoading(false);
-        setFetchEnabled?.(false);
+        if (enabled) setFetchEnabled?.(false);
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedRound, fetchEnabled, setFetchEnabled, showModal]);
+  }, [selectedSurfaces, selectedLevels, selectedRound, enabled, fetchRequestId, showModal, initialData, setFetchEnabled]);
 
+  if (!selectedRound) return <div className="text-center py-8 text-gray-300 text-lg">Please select a round to view results.</div>;
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!entries.length) return <div className="text-center py-8 text-gray-300 text-lg">No players found.</div>;
 
@@ -112,9 +133,9 @@ export default function SameRoundSection({ selectedSurfaces, selectedLevels, sel
   return (
     <section className="mb-8">
       {description && (
-        <div className="text-center text-4xl font-bold text-white mb-6">
+        <h1 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
-        </div>
+        </h1>
       )}
 
       <div className="flex justify-end mb-4">

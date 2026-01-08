@@ -90,9 +90,11 @@ export async function GET(request: NextRequest) {
 
     // --- Sort descending by total wins ---
     result.sort((a, b) => b.total - a.total);
-    const topPlayers = result.slice(0, 100);
 
-    return NextResponse.json(topPlayers);
+    const limitParam = Number(url.searchParams.get('limit') ?? '100');
+    const limit = Number.isFinite(limitParam) ? Math.min(1000, Math.max(1, Math.floor(limitParam))) : 100;
+
+    return NextResponse.json(result.slice(0, limit));
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

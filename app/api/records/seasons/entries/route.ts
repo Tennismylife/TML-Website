@@ -36,6 +36,7 @@ export async function GET(request: NextRequest) {
     const url = request.nextUrl;
     const selectedSurfaces = getMultiParam(url, 'surface');
     const selectedLevels = getMultiParam(url, 'level');
+    const limit = Math.max(1, Math.min(1000, Number(url.searchParams.get('limit') ?? 100)));
 
     let finalEntries: EntryRecord[] = [];
 
@@ -43,7 +44,7 @@ export async function GET(request: NextRequest) {
     if (selectedSurfaces.length + selectedLevels.length <= 1) {
       const matches = await prisma.mVSameSeasonEntries.findMany({
         orderBy: { total_entries: 'desc' },
-        take: 500,
+        take: limit,
       });
       if (!matches.length) return jsonResponse([]);
 
@@ -141,7 +142,7 @@ if (selectedSurfaces.length === 1 && selectedLevels.length === 1) {
     // Ordinamento top 100
     finalEntries.sort((a, b) => b.total_entries - a.total_entries);
 
-    return jsonResponse(finalEntries.slice(0, 100));
+    return jsonResponse(finalEntries.slice(0, limit));
   } catch (error) {
     console.error('GET /records/tournaments/entries error:', error);
     return jsonResponse({ error: 'Internal Server Error' }, 500);

@@ -24,9 +24,10 @@ interface TitleRecord {
   tourney_name: string;
 }
 
-export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, fetchRequestId, description }: TitlesSectionProps & { fetchRequestId?: string | null }) {
-  const [allTitles, setAllTitles] = useState<TitleRecord[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, fetchRequestId, description, initialData }: TitlesSectionProps & { fetchRequestId?: string | null; initialData?: TitleRecord[] }) {
+  const enabled = !!fetchEnabled;
+  const [allTitles, setAllTitles] = useState<TitleRecord[]>(Array.isArray(initialData) ? initialData : []);
+  const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const perPage = 20;
@@ -36,12 +37,14 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels]);
 
   useEffect(() => {
-    const enabled = !!fetchEnabled;
-    if (!enabled && !showModal) return;
-    if (fetchRequestId) {
-      if (lastRequestRef.current === fetchRequestId) return;
-      lastRequestRef.current = fetchRequestId;
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal);
+    if (!shouldFetch) {
+      if (Array.isArray(initialData)) setAllTitles(initialData);
+      setLoading(false);
+      return;
     }
+
+    if (fetchRequestId) lastRequestRef.current = fetchRequestId;
 
     const fetchData = async () => {
       setLoading(true);
@@ -49,21 +52,23 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
         const query = new URLSearchParams();
         selectedSurfaces.forEach(s => query.append('surface', s));
         selectedLevels.forEach(l => query.append('level', l));
+        query.set('limit', showModal ? '1000' : '100');
         const url = `/api/records/same/titles?${query.toString()}`;
         const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch titles');
         const data: TitleRecord[] = await res.json();
-        setAllTitles(data || []);
+        setAllTitles(Array.isArray(data) ? data : []);
+        setPage(1);
       } catch (err) {
         console.error(err);
         setAllTitles([]);
       } finally {
         setLoading(false);
-        setFetchEnabled?.(false);
+        if (enabled) setFetchEnabled?.(false);
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, fetchRequestId, showModal]);
+  }, [selectedSurfaces, selectedLevels, enabled, fetchRequestId, showModal, initialData, setFetchEnabled]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!allTitles.length) return <div className="text-center py-8 text-gray-300 text-lg">No titles found.</div>;
@@ -119,9 +124,9 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
   return (
     <section className="mb-8">
       {description && (
-        <div className="text-center text-4xl font-bold text-white mb-6">
+        <h1 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
-        </div>
+        </h1>
       )}
 
       <div className="flex justify-end mb-4">

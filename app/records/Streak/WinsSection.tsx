@@ -1,17 +1,21 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useMemo } from 'react';
-import { useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-import Pagination from '../../../components/Pagination';
-import Modal from '@/components/Modal';
+import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
+import Pagination from "../../../components/Pagination";
+import Modal from "@/components/Modal";
 import { getFlagFromIOC } from "@/lib/utils";
+import { playerMatchesUrl } from "../nav";
 
 interface WinsSectionProps {
   selectedSurfaces: Set<string>;
   selectedLevels: Set<string>;
   selectedBestOf: number | null;
   selectedRounds?: string;
+  fetchEnabled?: boolean;
+  setFetchEnabled?: (v: boolean) => void;
+  fetchRequestId?: string | null;
+  initialData?: Streak[];
   description?: string;
 }
 
@@ -34,97 +38,103 @@ interface Match {
   score: string;
 }
 
+const viewLimit = 20;
+
 export default function WinsSection({
   selectedSurfaces,
   selectedLevels,
   selectedBestOf,
   selectedRounds,
   fetchEnabled,
+  setFetchEnabled,
+  fetchRequestId,
+  initialData,
   description,
-}: WinsSectionProps & { fetchEnabled?: boolean, description?: string }) {
-  const enabled = !!fetchEnabled;
-  const searchParams = useSearchParams();
-  const [streaks, setStreaks] = useState<Streak[]>([]);
+}: WinsSectionProps) {
+  const [streaks, setStreaks] = useState<Streak[]>(initialData ?? []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
 
-  // Matches modal state
   const [showMatchesModal, setShowMatchesModal] = useState(false);
   const [matches, setMatches] = useState<Match[]>([]);
   const [matchesLoading, setMatchesLoading] = useState(false);
   const [matchesError, setMatchesError] = useState<string | null>(null);
 
-  const perPage = 20;
+  const [hasFetched, setHasFetched] = useState(!!initialData);
+  const lastRequestIdRef = useRef<string | null>(null);
 
-  useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedBestOf, selectedRounds]);
+  const surfacesArr = useMemo(() => Array.from(selectedSurfaces), [selectedSurfaces]);
+  const levelsArr = useMemo(() => Array.from(selectedLevels), [selectedLevels]);
 
-  useEffect(() => {
-    if (!enabled && !showModal && !showMatchesModal) {
-      setStreaks([]);
-      setLoading(false);
-      return;
-    }
+  useEffect(() => setPage(1), [surfacesArr, levelsArr, selectedBestOf, selectedRounds]);
+
+  const fetchData = async (limit = 100, force = false) => {
+    if (fetchRequestId && !force && lastRequestIdRef.current === fetchRequestId) return;
 
     setLoading(true);
     setError(null);
+    lastRequestIdRef.current = fetchRequestId ?? "manual";
 
-    const fetchData = async () => {
-      try {
-        const query = new URLSearchParams();
-        selectedSurfaces.forEach(s => query.append('surface', s));
-        selectedLevels.forEach(l => query.append('level', l));
-        if (selectedBestOf !== null) query.append('bestOf', selectedBestOf.toString());
-        // Round filter: use only explicit round params from URL (external filter) — do NOT add rounds here
-        const roundsFromQS = searchParams.getAll('round');
-        if (roundsFromQS.length) {
-          roundsFromQS.forEach(r => query.append('round', r));
-        } else if (selectedRounds) {
-          if (selectedRounds === 'All') {
-            ['R128','R64','R32','R16','QF','SF','F'].forEach(r => query.append('round', r));
-          } else {
-            query.append('round', selectedRounds);
-          }
+    try {
+      const query = new URLSearchParams();
+      surfacesArr.forEach((s) => query.append("surface", s));
+      levelsArr.forEach((l) => query.append("level", l));
+      if (selectedBestOf !== null) query.append("best_of", selectedBestOf.toString());
+      if (selectedRounds) {
+        if (selectedRounds === "All") {
+          ["R128","R64","R32","R16","QF","SF","F"].forEach(r => query.append("round", r));
+        } else {
+          query.append("round", selectedRounds);
         }
-
-        const url = `/api/records/streak/wins${query.toString() ? `?${query}` : ''}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-        const rawData = await res.json();
-        let streakList: Streak[] = [];
-
-        if (Array.isArray(rawData)) {
-          streakList = rawData;
-        } else if (rawData && typeof rawData === 'object') {
-          streakList = Object.values(rawData)
-            .flatMap((v: any) => (Array.isArray(v) ? v : Object.values(v)))
-            .flat() as Streak[];
-        }
-
-        streakList.sort((a, b) => b.total_wins - a.total_wins);
-        setStreaks(streakList);
-      } catch (err) {
-        console.error(err);
-        setError('Error while loading win streaks.');
-        setStreaks([]);
-      } finally {
-        setLoading(false);
       }
-    };
+      query.append("limit", String(limit));
 
+      const res = await fetch(`/api/records/streak/wins${query.toString() ? `?${query}` : ''}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const rawData = await res.json();
+      let streakList: Streak[] = [];
+
+      if (Array.isArray(rawData)) {
+        streakList = rawData;
+      } else if (rawData && typeof rawData === 'object') {
+        streakList = Object.values(rawData)
+          .flatMap((v: any) => (Array.isArray(v) ? v : Object.values(v)))
+          .flat() as Streak[];
+      }
+
+      streakList.sort((a, b) => b.total_wins - a.total_wins);
+      setStreaks(streakList);
+    } catch (err: any) {
+      setError(err?.message || 'Error while loading win streaks.');
+      setStreaks([]);
+    } finally {
+      setLoading(false);
+      setHasFetched(true);
+      if (fetchEnabled) setFetchEnabled?.(false);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedBestOf, selectedRounds, searchParams, enabled, showModal, showMatchesModal]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchRequestId, surfacesArr.join(','), levelsArr.join(','), selectedBestOf, selectedRounds]);
 
-  const totalPages = Math.ceil(streaks.length / perPage);
+  const totalPages = Math.ceil(streaks.length / viewLimit);
 
   const currentData = useMemo(() => {
-    const start = (page - 1) * perPage;
-    return streaks.slice(start, start + perPage);
+    const start = (page - 1) * viewLimit;
+    return streaks.slice(start, start + viewLimit);
   }, [streaks, page]);
 
-  // Open matches modal
+  const linkParams: Record<string, string | string[] | number | undefined> = {};
+  if (surfacesArr.length) linkParams.surface = surfacesArr;
+  if (levelsArr.length) linkParams.level = levelsArr;
+  if (selectedBestOf !== null) linkParams.best_of = selectedBestOf;
+  if (selectedRounds) linkParams.round = selectedRounds === "All" ? undefined : selectedRounds;
+
   const openMatchesModal = async (matchIds: number[]) => {
     setShowMatchesModal(true);
     setMatches([]);
@@ -136,9 +146,8 @@ export default function WinsSection({
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setMatches(data);
-    } catch (err) {
-      console.error(err);
-      setMatchesError('Error while loading matches.');
+    } catch (err: any) {
+      setMatchesError(err?.message || 'Error while loading matches.');
     } finally {
       setMatchesLoading(false);
     }
@@ -158,7 +167,7 @@ export default function WinsSection({
         <tbody>
           {list.length === 0 ? (
             <tr>
-              <td colSpan={4} className="py-8 text-center text-gray-300">No data available.</td>
+              <td colSpan={4} className="py-8 text-center text-gray-300">{!hasFetched ? 'Select data' : 'No data available.'}</td>
             </tr>
           ) : (
             list.map((s, idx) => {
@@ -171,7 +180,7 @@ export default function WinsSection({
                   <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                     <div className="flex items-center gap-2">
                       <span className="text-base">{flag}</span>
-                      <Link href={`/players/${encodeURIComponent(s.player_id)}`} className="text-indigo-300 hover:underline">
+                      <Link href={playerMatchesUrl(s.player_id, linkParams)} className="text-indigo-300 hover:underline">
                         {s.player_name || `Player ${s.player_id}`}
                       </Link>
                     </div>
@@ -180,7 +189,7 @@ export default function WinsSection({
                   <td className="border border-white/10 px-4 py-2 text-center">
                     <button
                       onClick={() => openMatchesModal(s.match_ids)}
-                      className="px-3 py-1 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-500"
+                      className="rounded bg-indigo-600 px-3 py-1 text-sm text-white hover:bg-indigo-500"
                     >
                       View Matches
                     </button>
@@ -196,42 +205,42 @@ export default function WinsSection({
 
   return (
     <section className="mb-0">
-      {description && <div className="text-center text-4xl font-bold text-white mb-6">{description}</div>}
+      {description && <h1 className="mb-6 text-center text-2xl font-semibold text-white">{description}</h1>} 
 
-      <div className="flex justify-end mb-0">
-        {streaks.length > perPage && (
-          <button onClick={() => setShowModal(true)} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500">
+
+
+      {error && <div className="mb-2 text-center text-sm text-red-500">{error}</div>}
+
+      <div className="mb-0 flex justify-end">
+        {streaks.length > viewLimit && (
+          <button onClick={() => setShowModal(true)} className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-500">
             View All
           </button>
         )}
       </div>
 
       {loading ? (
-        <div className="text-center py-8 text-gray-300">Loading...</div>
-      ) : error ? (
-        <div className="text-center py-8 text-red-500">{error}</div>
+        <div className="py-8 text-center text-gray-300">Loading…</div>
       ) : streaks.length === 0 ? (
-        <div className="text-center py-8 text-gray-300">No win streaks found.</div>
+        <div className="py-8 text-center text-gray-300">No win streaks found.</div>
       ) : (
         <>
-          {renderTable(currentData, (page - 1) * perPage)}
+          {renderTable(currentData, (page - 1) * viewLimit)}
           {totalPages > 1 && <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />}
         </>
       )}
 
-      {/* Modal "View All" */}
       <Modal show={showModal} onClose={() => setShowModal(false)} title="Top Consecutive Win Streaks">
         {renderTable(streaks, 0)}
       </Modal>
 
-      {/* Modal Matches */}
       <Modal show={showMatchesModal} onClose={() => setShowMatchesModal(false)} title="Matches in Win Streak">
         {matchesLoading ? (
-          <div className="text-center py-8 text-gray-300">Loading matches...</div>
+          <div className="py-8 text-center text-gray-300">Loading matches…</div>
         ) : matchesError ? (
-          <div className="text-center py-8 text-red-500">{matchesError}</div>
+          <div className="py-8 text-center text-red-500">{matchesError}</div>
         ) : matches.length === 0 ? (
-          <div className="text-center py-8 text-gray-300">No matches found.</div>
+          <div className="py-8 text-center text-gray-300">No matches found.</div>
         ) : (
           <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow mt-0">
             <table className="min-w-full border-collapse">

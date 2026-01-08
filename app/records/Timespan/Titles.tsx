@@ -14,6 +14,7 @@ interface TitlesProps {
   fetchEnabled?: boolean;
   fetchRequestId?: string | null;
   description?: string;
+  initialData?: any[];
 }
 
 export default function Titles({
@@ -21,9 +22,10 @@ export default function Titles({
   selectedLevels,
   fetchEnabled,
   fetchRequestId,
-  description
+  description,
+  initialData
 }: TitlesProps) {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<any[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [page, setPage] = useState(1);
@@ -37,8 +39,7 @@ export default function Titles({
 
   useEffect(() => {
     if (!(enabled || showModal)) {
-      console.debug('[Timespan Titles] skipped fetch: not enabled and not modal', { enabled, showModal });
-      setData([]);
+      if (Array.isArray(initialData)) setData(initialData);
       setLoading(false);
       return;
     }
@@ -49,7 +50,7 @@ export default function Titles({
         const query = new URLSearchParams();
         selectedSurfaces.forEach(s => query.append('surface', s));
         selectedLevels.forEach(l => query.append('level', l));
-        query.set('perPage', '100');
+        query.set('limit', showModal ? '1000' : '100');
         const url = `/api/records/timespan/titles?${query.toString()}`;
         console.debug('[Timespan Titles] fetching', url, { enabled, showModal });
         const res = await fetch(url);
@@ -64,27 +65,30 @@ export default function Titles({
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, enabled, showModal]);
+  }, [selectedSurfaces, selectedLevels, enabled, showModal, initialData]);
 
-  // If fetching is disabled and modal is closed, show a hint instead of "No data"
-  if (!enabled && !showModal) {
-    return (
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-4 text-gray-200">Biggest Timespan Between 2 Titles</h2>
-        <div className="mb-4 flex justify-end">
-          <button
-            onClick={() => setShowModal(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
-          >
-            View All
-          </button>
-        </div>
-        <div className="text-center py-8 text-gray-300">Clicca "View All" per caricare i dati.</div>
-      </section>
-    );
-  }
   if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
-  if (!data.length) return <div className="text-center py-8 text-gray-300">No data available.</div>;
+
+  // If prefetch provided data, render it even when fetch is disabled.
+  if (!data.length) {
+    if (!enabled && !showModal) {
+      return (
+        <section className="mb-8">
+          <h2 className="text-xl font-semibold mb-4 text-gray-200">Biggest Timespan Between 2 Titles</h2>
+          <div className="mb-4 flex justify-end">
+            <button
+              onClick={() => setShowModal(true)}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
+            >
+              View All
+            </button>
+          </div>
+          <div className="text-center py-8 text-gray-300">Clicca "View All" per caricare i dati.</div>
+        </section>
+      );
+    }
+    return <div className="text-center py-8 text-gray-300">No data available.</div>;
+  }
 
   const totalPages = Math.ceil(data.length / perPage);
   const start = (page - 1) * perPage;
@@ -139,9 +143,9 @@ export default function Titles({
   return (
     <section className="mb-8">
       {description && (
-        <div className="text-center text-4xl font-bold text-white mb-6">
+        <h1 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
-        </div>
+        </h1>
       )}
 
       <div className="mb-4 flex justify-end">

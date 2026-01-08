@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Pagination from "../../../components/Pagination";
@@ -15,7 +15,11 @@ interface WinsSectionProps {
   selectedRounds: string;
   selectedBestOf: number | null;
   fetchEnabled?: boolean;
+  setFetchEnabled?: (v: boolean) => void;
+  fetchRequestId?: string | null;
   description?: string;
+  initialData?: Player[];
+  initialAge?: number;
 }
 
 interface Player {
@@ -31,26 +35,67 @@ export default function WinsSection({
   selectedRounds,
   selectedBestOf,
   fetchEnabled = true,
+  setFetchEnabled,
+  fetchRequestId,
   description,
+  initialData,
+  initialAge,
 }: WinsSectionProps) {
-  const [data, setData] = useState<Player[]>([]);
+  const enabled = !!fetchEnabled;
+  const safeInitialAge = Number.isFinite(initialAge) ? (initialAge as number) : 25;
+  const [data, setData] = useState<Player[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);  const [hasFetched, setHasFetched] = useState(false);  const [page, setPage] = useState(1);
+  const [error, setError] = useState<string | null>(null);
+  const [hasFetched, setHasFetched] = useState(Array.isArray(initialData) && initialData.length > 0);
+  const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
-  const [inputAge, setInputAge] = useState(25.0);
-  const [selectedAge, setSelectedAge] = useState(25.0);
+  const [inputAge, setInputAge] = useState(safeInitialAge);
+  const [selectedAge, setSelectedAge] = useState(safeInitialAge);
+  const lastRequestRef = useRef<string | null>(null);
 
   const formatAge = (age: number) => {
     const years = Math.floor(age);
     const days = Math.round((age - years) * 365);
     return `${years}y ${days}d`;
-  };  
+  };
 
   const searchParams = useSearchParams();
   const perPage = 20;
 
-  const fetchData = async (age: number) => {
-    if (!fetchEnabled) return;
+  useEffect(() => {
+    setInputAge(safeInitialAge);
+    setSelectedAge(safeInitialAge);
+    if (Array.isArray(initialData)) {
+      setData(initialData);
+      setHasFetched(initialData.length > 0);
+    }
+  }, [safeInitialAge, initialData]);
+
+  useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
+
+  useEffect(() => {
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal);
+    if (!shouldFetch) {
+      if (Array.isArray(initialData)) {
+        setData(initialData);
+        setHasFetched(initialData.length > 0);
+      }
+      setLoading(false);
+      return;
+    }
+
+    if (fetchRequestId) lastRequestRef.current = fetchRequestId;
+    fetchData(selectedAge, showModal ? 1000 : 100, showModal);
+  }, [enabled, fetchRequestId, showModal, selectedAge, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, initialData]);
+
+  const fetchData = async (age: number, limit: number, force = false) => {
+    if (!Number.isFinite(age)) {
+      setError('Please enter a valid age.');
+      return;
+    }
+
+    if (!force && !enabled) return;
+
     try {
       setLoading(true);
       setError(null);
@@ -61,19 +106,22 @@ export default function WinsSection({
       selectedLevels.forEach((l) => query.append("level", l));
       if (selectedRounds) query.append("round", selectedRounds);
       if (selectedBestOf != null) query.append("best_of", selectedBestOf.toString());
+      query.set('limit', String(limit));
 
       const res = await fetch(`/api/records/atage/wins?${query.toString()}`);
-      const fetchedData = await res.json();
-      setData(fetchedData);
+      if (!res.ok) throw new Error(`Failed to fetch: ${res.statusText}`);
+      const fetchedData: Player[] = await res.json();
+      setData(Array.isArray(fetchedData) ? fetchedData : []);
       setPage(1);
       setSelectedAge(age);
+      setHasFetched(true);
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "Unknown error");
       setData([]);
     } finally {
       setLoading(false);
-      setHasFetched(true);
+      if (enabled) setFetchEnabled?.(false);
     }
   };
 
@@ -162,19 +210,19 @@ export default function WinsSection({
   return (
     <section className="mb-8">
       {headerText && (
-        <div className="text-center text-4xl font-bold text-white mb-6">
+        <h1 className="mb-6 text-center text-2xl font-semibold text-white">
           {headerText}
-        </div>
+        </h1>
       )}
 
       {/* Age Input */}
       <div className="mb-4 flex items-center gap-2">
         <AgeInput value={inputAge} onChange={setInputAge} />
         <button
-          onClick={() => fetchData(inputAge)}
-          disabled={loading || !fetchEnabled || !Number.isFinite(inputAge)}
+          onClick={() => fetchData(inputAge, showModal ? 1000 : 100, true)}
+          disabled={loading || !Number.isFinite(inputAge)}
           className={`px-4 py-1 rounded ${
-            loading || !fetchEnabled || !Number.isFinite(inputAge) ? "bg-gray-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"
+            loading || !Number.isFinite(inputAge) ? "bg-gray-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"
           }`}
         >
           Apply

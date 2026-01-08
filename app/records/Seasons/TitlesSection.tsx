@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
 import { playerMatchesUrl } from "../nav";
@@ -15,6 +15,7 @@ interface TitlesSectionProps {
   setFetchEnabled?: (v: boolean) => void;
   fetchRequestId?: string | null;
   description?: string;
+  initialData?: TitleRecord[];
 }
 
 type TitleRecord = {
@@ -25,19 +26,27 @@ type TitleRecord = {
   year: number;
 };
 
-export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, fetchRequestId, description }: TitlesSectionProps) {
-  const [topSeasonTitles, setTopSeasonTitles] = useState<TitleRecord[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, fetchRequestId, description, initialData }: TitlesSectionProps) {
+  const enabled = !!fetchEnabled;
+  const [topSeasonTitles, setTopSeasonTitles] = useState<TitleRecord[]>(Array.isArray(initialData) ? initialData : []);
+  const [loading, setLoading] = useState(false);
   const [showModalTitles, setShowModalTitles] = useState(false);
   const [page, setPage] = useState(1);
   const perPage = 20;
   const searchParams = useSearchParams();
+  const lastRequestRef = useRef<string | null>(null);
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels]);
 
   useEffect(() => {
-    const enabled = !!fetchEnabled;
-    if (!enabled && !showModalTitles) return;
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModalTitles);
+    if (!shouldFetch) {
+      if (Array.isArray(initialData)) setTopSeasonTitles(initialData);
+      setLoading(false);
+      return;
+    }
+
+    if (fetchRequestId) lastRequestRef.current = fetchRequestId;
 
     const fetchData = async () => {
       setLoading(true);
@@ -45,21 +54,23 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
         const query = new URLSearchParams();
         selectedSurfaces.forEach(s => query.append('surface', s));
         selectedLevels.forEach(l => query.append('level', l));
+        query.set('limit', showModalTitles ? '1000' : '100');
         const url = `/api/records/seasons/titles?${query.toString()}`;
         const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch titles')
         const data: TitleRecord[] = await res.json();
-        setTopSeasonTitles(data || []);
+        setTopSeasonTitles(Array.isArray(data) ? data : []);
+        setPage(1);
       } catch (err) {
         console.error(err);
         setTopSeasonTitles([]);
       } finally {
         setLoading(false);
-        setFetchEnabled?.(false);
+        if (enabled) setFetchEnabled?.(false);
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, showModalTitles]);
+  }, [selectedSurfaces, selectedLevels, enabled, fetchRequestId, showModalTitles, initialData, setFetchEnabled]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!topSeasonTitles.length) return <div className="text-center py-8 text-gray-300 text-lg">No titles found.</div>;
@@ -107,9 +118,9 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
   return (
     <section className="mb-8">
       {description && (
-        <div className="text-center text-4xl font-bold text-white mb-6">
+        <h1 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
-        </div>
+        </h1>
       )}
 
       <div className="flex justify-end mb-4">

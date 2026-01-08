@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { getFlagFromIOC } from '@/lib/utils';
 import { useSearchParams } from "next/navigation";
@@ -13,7 +13,11 @@ interface RoundAppearancesProps {
   selectedLevels: Set<string>;
   selectedRound: string;
   fetchEnabled?: boolean;
+  setFetchEnabled?: (v: boolean) => void;
+  fetchRequestId?: string | null;
   description?: string;
+  initialData?: PlayerData[];
+  initialAge?: number;
 }
 
 interface PlayerData {
@@ -23,13 +27,18 @@ interface PlayerData {
   appearances_at_age: number;
 }
 
-export default function RoundAppearancesSection({ selectedSurfaces, selectedLevels, selectedRound, fetchEnabled = true, description }: RoundAppearancesProps) {
-  const [data, setData] = useState<PlayerData[]>([]);
+export default function RoundAppearancesSection({ selectedSurfaces, selectedLevels, selectedRound, fetchEnabled = true, setFetchEnabled, fetchRequestId, description, initialData, initialAge }: RoundAppearancesProps) {
+  const enabled = !!fetchEnabled;
+  const safeInitialAge = Number.isFinite(initialAge) ? (initialAge as number) : 25;
+  const [data, setData] = useState<PlayerData[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);  const [hasFetched, setHasFetched] = useState(false);  const [page, setPage] = useState(1);
+  const [error, setError] = useState<string | null>(null);
+  const [hasFetched, setHasFetched] = useState(Array.isArray(initialData) && initialData.length > 0);
+  const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
-  const [inputAge, setInputAge] = useState(25.0);
-  const [selectedAge, setSelectedAge] = useState(25.0);
+  const [inputAge, setInputAge] = useState(safeInitialAge);
+  const [selectedAge, setSelectedAge] = useState(safeInitialAge);
+  const lastRequestRef = useRef<string | null>(null);
 
   const formatAge = (age: number) => {
     const years = Math.floor(age);
@@ -50,8 +59,49 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
   const perPage = 20;
   const searchParams = useSearchParams();
 
-  const fetchData = async (age: number) => {
-    if (!fetchEnabled) return;
+  useEffect(() => {
+    setInputAge(safeInitialAge);
+    setSelectedAge(safeInitialAge);
+    if (Array.isArray(initialData)) {
+      setData(initialData);
+      setHasFetched(initialData.length > 0);
+    }
+  }, [safeInitialAge, initialData]);
+
+  useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRound]);
+
+  useEffect(() => {
+    if (!selectedRound) {
+      setData([]);
+      setHasFetched(false);
+      return;
+    }
+
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal);
+    if (!shouldFetch) {
+      if (Array.isArray(initialData)) {
+        setData(initialData);
+        setHasFetched(initialData.length > 0);
+      }
+      setLoading(false);
+      return;
+    }
+
+    if (fetchRequestId) lastRequestRef.current = fetchRequestId;
+    fetchData(selectedAge, showModal ? 1000 : 100, showModal);
+  }, [enabled, fetchRequestId, showModal, selectedAge, selectedSurfaces, selectedLevels, selectedRound, initialData]);
+
+  const fetchData = async (age: number, limit: number, force = false) => {
+    if (!Number.isFinite(age)) {
+      setError('Please enter a valid age.');
+      return;
+    }
+    if (!selectedRound) {
+      setError('Please select a round.');
+      return;
+    }
+    if (!force && !enabled) return;
+
     try {
       setLoading(true);
       setError(null);
@@ -61,23 +111,27 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
       query.append('round', selectedRound);
       selectedSurfaces.forEach(s => query.append('surface', s));
       selectedLevels.forEach(l => query.append('level', l));
+      query.set('limit', String(limit));
 
       const url = `/api/records/atage/rounds?${query.toString()}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`Failed to fetch: ${res.statusText}`);
       const fetchedData: PlayerData[] = await res.json();
-      setData(fetchedData);
+      setData(Array.isArray(fetchedData) ? fetchedData : []);
       setPage(1);
       setSelectedAge(age);
+      setHasFetched(true);
     } catch (err) {
       console.error(err);
-      setError(err instanceof Error ? err.message : "Unknown error");
+      setError(err instanceof Error ? err.message : 'Unknown error');
       setData([]);
     } finally {
       setLoading(false);
-      setHasFetched(true);
+      if (enabled) setFetchEnabled?.(false);
     }
   };
+
+  if (!selectedRound) return <div className="text-center py-8 text-gray-300 text-lg">Please select a round to view results.</div>;
 
   const totalCount = data.length;
   const totalPages = Math.ceil(totalCount / perPage);
@@ -154,18 +208,18 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
   return (
     <section className="mb-8">
       {headerText && (
-        <div className="text-center text-4xl font-bold text-white mb-6">
+        <h1 className="mb-6 text-center text-2xl font-semibold text-white">
           {headerText}
-        </div>
+        </h1>
       )} 
 
       {/* Age Input */}
       <div className="mb-4 flex items-center gap-2">
         <AgeInput value={inputAge} onChange={setInputAge} />
         <button
-          onClick={() => fetchData(inputAge)}
-          disabled={loading || !fetchEnabled || !Number.isFinite(inputAge)}
-          className={`px-4 py-1 rounded ${loading || !fetchEnabled || !Number.isFinite(inputAge) ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+          onClick={() => fetchData(inputAge, showModal ? 1000 : 100, true)}
+          disabled={loading || !Number.isFinite(inputAge)}
+          className={`px-4 py-1 rounded ${loading || !Number.isFinite(inputAge) ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
         >
           Apply
         </button>

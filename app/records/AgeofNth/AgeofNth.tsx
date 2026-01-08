@@ -15,31 +15,55 @@ interface AgeofNthProps {
   selectedRounds: string;
   selectedBestOf: number | null;
   activeSubTab: string;
-  fetchEnabled: boolean;
-  fetchRequestId: string;  // Add this line to include the missing prop
+  fetchEnabled?: boolean;
+  setFetchEnabled?: (v: boolean) => void;
+  fetchRequestId?: string | null;
+  prefetchedData?: Record<string, any[] | undefined>;
+  initialNth?: number;
   description?: string;
 }
 
-export default function AgeofNth({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeSubTab, fetchEnabled, description }: AgeofNthProps) {
+export default function AgeofNth({
+  selectedSurfaces,
+  selectedLevels,
+  selectedRounds,
+  selectedBestOf,
+  activeSubTab,
+  fetchEnabled,
+  setFetchEnabled,
+  fetchRequestId,
+  prefetchedData,
+  initialNth,
+  description,
+}: AgeofNthProps) {
+  const safeInitialNth = Number.isFinite(initialNth) ? (initialNth as number) : (activeSubTab === 'round' ? 1 : 50);
+
   return (
-    
     <section className="mb-8">
       {activeSubTab === 'slams' && (
         <InSlamsSection 
-        selectedSurfaces={Array.from(selectedSurfaces)} 
-        selectedRounds={selectedRounds}
-        fetchEnabled={fetchEnabled}
-        description={description}
+          selectedSurfaces={selectedSurfaces}
+          selectedRounds={selectedRounds}
+          fetchEnabled={fetchEnabled}
+          setFetchEnabled={setFetchEnabled}
+          fetchRequestId={fetchRequestId}
+          description={description}
+          initialData={prefetchedData?.slams as any[]}
+          initialNth={safeInitialNth}
         />
       )}
 
       {activeSubTab === 'round' && (
         <RoundSection 
-        selectedSurfaces={selectedSurfaces} 
-        selectedLevels={selectedLevels} 
-        selectedRounds={selectedRounds}
-        fetchEnabled={fetchEnabled}
-        description={description}
+          selectedSurfaces={selectedSurfaces} 
+          selectedLevels={selectedLevels} 
+          selectedRounds={selectedRounds}
+          fetchEnabled={fetchEnabled}
+          setFetchEnabled={setFetchEnabled}
+          fetchRequestId={fetchRequestId}
+          description={description}
+          initialData={prefetchedData?.round as any[]}
+          initialNth={safeInitialNth}
         />
       )}
 
@@ -50,7 +74,11 @@ export default function AgeofNth({ selectedSurfaces, selectedLevels, selectedRou
           selectedRounds={selectedRounds}
           selectedBestOf={selectedBestOf}
           fetchEnabled={fetchEnabled}
+          setFetchEnabled={setFetchEnabled}
+          fetchRequestId={fetchRequestId}
           description={description}
+          initialData={prefetchedData?.wins as any[]}
+          initialNth={safeInitialNth}
         />
       )}
 
@@ -61,7 +89,11 @@ export default function AgeofNth({ selectedSurfaces, selectedLevels, selectedRou
           selectedRounds={selectedRounds}
           selectedBestOf={selectedBestOf}
           fetchEnabled={fetchEnabled}
+          setFetchEnabled={setFetchEnabled}
+          fetchRequestId={fetchRequestId}
           description={description}
+          initialData={prefetchedData?.played as any[]}
+          initialNth={safeInitialNth}
         />
       )}
 
@@ -70,7 +102,11 @@ export default function AgeofNth({ selectedSurfaces, selectedLevels, selectedRou
           selectedSurfaces={Array.from(selectedSurfaces)}
           selectedLevels={Array.from(selectedLevels)}
           fetchEnabled={fetchEnabled}
+          setFetchEnabled={setFetchEnabled}
+          fetchRequestId={fetchRequestId}
           description={description}
+          initialData={prefetchedData?.entries as any[]}
+          initialNth={safeInitialNth}
         />
       )}
 
@@ -79,7 +115,11 @@ export default function AgeofNth({ selectedSurfaces, selectedLevels, selectedRou
           selectedSurfaces={Array.from(selectedSurfaces)}
           selectedLevels={Array.from(selectedLevels)}
           fetchEnabled={fetchEnabled}
+          setFetchEnabled={setFetchEnabled}
+          fetchRequestId={fetchRequestId}
           description={description}
+          initialData={prefetchedData?.titles as any[]}
+          initialNth={safeInitialNth}
         />
       )}
     </section>

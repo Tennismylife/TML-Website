@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { getFlagFromIOC } from '@/lib/utils';import { playerMatchesUrl } from "../nav";import { useSearchParams } from 'next/navigation';
+import { getFlagFromIOC } from '@/lib/utils';
+import { playerMatchesUrl } from "../nav";
+import { useSearchParams } from 'next/navigation';
 import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
 
@@ -15,6 +17,7 @@ interface PlayedSectionProps {
   setFetchEnabled?: (v: boolean) => void;
   fetchRequestId?: string | null;
   description?: string;
+  initialData?: PlayedRecord[];
 }
 
 type PlayedRecord = {
@@ -25,9 +28,10 @@ type PlayedRecord = {
   year: number;
 };
 
-export default function PlayedSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId, description }: PlayedSectionProps) {
-  const [topSeasonMatches, setTopSeasonMatches] = useState<PlayedRecord[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function PlayedSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId, description, initialData }: PlayedSectionProps) {
+  const enabled = !!fetchEnabled;
+  const [topSeasonMatches, setTopSeasonMatches] = useState<PlayedRecord[]>(Array.isArray(initialData) ? initialData : []);
+  const [loading, setLoading] = useState(false);
   const [showModalMatches, setShowModalMatches] = useState(false);
   const [page, setPage] = useState(1);
   const perPage = 20;
@@ -37,21 +41,16 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
 
   useEffect(() => {
-    console.debug('[Seasons Played] effect', { fetchEnabled, showModalMatches, fetchRequestId, selectedSurfaces: Array.from(selectedSurfaces), selectedLevels: Array.from(selectedLevels), selectedRounds, selectedBestOf });
-    const enabled = !!fetchEnabled;
-    if (!enabled && !showModalMatches) { console.debug('[Seasons Played] skipped: not enabled and not modal'); return; }
-
-    if (fetchRequestId) {
-      if (lastRequestRef.current === fetchRequestId) {
-        console.debug('[Seasons Played] duplicate fetchRequestId, ignoring', fetchRequestId);
-        return;
-      }
-      console.debug('[Seasons Played] accepting fetchRequestId', fetchRequestId);
-      lastRequestRef.current = fetchRequestId;
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModalMatches);
+    if (!shouldFetch) {
+      if (Array.isArray(initialData)) setTopSeasonMatches(initialData);
+      setLoading(false);
+      return;
     }
 
+    if (fetchRequestId) lastRequestRef.current = fetchRequestId;
+
     const fetchData = async () => {
-      console.debug('[Seasons Played] fetch start', { fetchRequestId });
       setLoading(true);
       try {
         const query = new URLSearchParams();
@@ -59,23 +58,23 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
         selectedLevels.forEach(l => query.append('level', l));
         if (selectedRounds) query.append('round', selectedRounds);
         if (selectedBestOf) query.append('best_of', selectedBestOf?.toString() || '');
+        query.set('limit', showModalMatches ? '1000' : '100');
         const url = `/api/records/seasons/played?${query.toString()}`;
         const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch matches')
         const data: PlayedRecord[] = await res.json();
-        console.debug('[Seasons Played] fetched count', data?.length ?? 0);
-        setTopSeasonMatches(data || []);
+        setTopSeasonMatches(Array.isArray(data) ? data : []);
+        setPage(1);
       } catch (err) {
         console.error('[Seasons Played] error fetching', err);
         setTopSeasonMatches([]);
       } finally {
         setLoading(false);
-        console.debug('[Seasons Played] fetch complete, clearing fetchEnabled');
-        setFetchEnabled?.(false);
+        if (enabled) setFetchEnabled?.(false);
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId, showModalMatches]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, enabled, fetchRequestId, showModalMatches, initialData, setFetchEnabled]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!topSeasonMatches.length) return <div className="text-center py-8 text-gray-300 text-lg">No matches found.</div>;
@@ -130,9 +129,9 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
   return (
     <section className="mb-8">
       {description && (
-        <div className="text-center text-4xl font-bold text-gray-200 mb-6">
+        <h1 className="mb-6 text-center text-2xl font-semibold text-gray-200">
           {description}
-        </div>
+        </h1>
       )}
       <div className="flex justify-end mb-4">
         <button

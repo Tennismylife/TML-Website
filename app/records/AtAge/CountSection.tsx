@@ -128,7 +128,7 @@ export default function CountSection({ selectedSurfaces, selectedLevels }: Count
           <tr key={p.id} className="border-b">
             <td className="py-1 flex items-center gap-2 w-1/2">
               <span className="text-base">{getFlagFromIOC(p.ioc) || ''}</span>
-              <Link href={`/players/${encodeURIComponent(p.id)}`} className="text-white hover:underline">
+              <Link href={`/players/${encodeURIComponent(p.id)}`} className="text-blue-700 hover:underline">
                 {p.name}
               </Link>
             </td>

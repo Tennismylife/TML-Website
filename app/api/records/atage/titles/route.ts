@@ -67,7 +67,10 @@ export async function GET(request: NextRequest) {
     // Ordina decrescente per numero di titoli
     result.sort((a, b) => b.titles_at_age - a.titles_at_age);
 
-    return NextResponse.json(result);
+    const limitParam = Number(url.searchParams.get('limit') ?? '100');
+    const limit = Number.isFinite(limitParam) ? Math.min(1000, Math.max(1, Math.floor(limitParam))) : 100;
+
+    return NextResponse.json(result.slice(0, limit));
 
   } catch (error) {
     console.error(error);

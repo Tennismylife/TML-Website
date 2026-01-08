@@ -139,9 +139,11 @@ export async function GET(request: NextRequest) {
     // ORDINA DECRESCENTE PER NUMERO DI PARTECIPAZIONI
     // =====================================================
     playersData.sort((a, b) => b.participations_at_age - a.participations_at_age);
-    const topPlayers = playersData.slice(0, 100);
 
-    return NextResponse.json(topPlayers);
+    const limitParam = Number(url.searchParams.get('limit') ?? '100');
+    const limit = Number.isFinite(limitParam) ? Math.min(1000, Math.max(1, Math.floor(limitParam))) : 100;
+
+    return NextResponse.json(playersData.slice(0, limit));
 
   } catch (error) {
     console.error(error);

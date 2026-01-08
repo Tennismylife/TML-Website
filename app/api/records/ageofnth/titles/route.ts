@@ -21,6 +21,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Invalid n parameter" }, { status: 400 });
     }
 
+    const limitParam = Number(url.searchParams.get("limit"));
+    const limit = Number.isInteger(limitParam) ? Math.min(Math.max(limitParam, 1), 1000) : 100;
+
     const selectedSurfaces = url.searchParams.getAll("surface").filter(Boolean);
     const selectedLevels = url.searchParams.getAll("level").filter(Boolean);
 
@@ -87,8 +90,7 @@ export async function GET(request: NextRequest) {
       return ageA - ageB;
     });
 
-    // Limita a 100
-    finalResult = finalResult.slice(0, 100);
+    finalResult = finalResult.slice(0, limit);
 
     return NextResponse.json(finalResult);
   } catch (error) {

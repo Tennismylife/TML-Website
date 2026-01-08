@@ -151,7 +151,7 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
 
       <TournamentTabs
         activeTab={activeTab}
-        setActiveTab={(t: string) => navigateToTab(t)}             // naviga al tab
+        setActiveTab={(t: string) => { if (t === 'ages' || t === 'percentage') { setActiveTab(t); } else { navigateToTab(t); } }}             // naviga al tab
         activeAgeSubTab={activeAgeSubTab}
         setActiveAgeSubTab={navigateToAgeSub}                      // naviga subtab ages via path
         activePercentageSubTab={activePercentageSubTab}

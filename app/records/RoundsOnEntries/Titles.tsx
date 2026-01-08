@@ -12,7 +12,9 @@ interface TitlesProps {
   selectedLevels: Set<string> | string[];
   minEntries: number;
   fetchEnabled?: boolean;
+  fetchRequestId?: string | null;
   description?: string;
+  initialData?: PlayerStat[];
 }
 
 interface PlayerStat {
@@ -24,18 +26,18 @@ interface PlayerStat {
   percentage: number;
 }
 
-export default function Titles({ selectedSurfaces, selectedLevels, minEntries, fetchEnabled, description }: TitlesProps) {
+export default function Titles({ selectedSurfaces, selectedLevels, minEntries, fetchEnabled, fetchRequestId, description, initialData }: TitlesProps) {
   const enabled = !!fetchEnabled;
-  const [data, setData] = useState<PlayerStat[]>([]);
+  const [data, setData] = useState<PlayerStat[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const perPage = 20; 
 
   useEffect(() => {
-    // Allow fetch when explicitly enabled or when the modal is opened
-    if (!enabled && !showModal) {
-      setData([]);
+    const shouldFetch = ((enabled && fetchRequestId) || showModal)
+    if (!shouldFetch) {
+      if (Array.isArray(initialData)) setData(initialData)
       setLoading(false);
       return;
     }
@@ -47,6 +49,7 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries, f
         selectedSurfaces.forEach((s) => query.append("surface", s));
         selectedLevels.forEach((l) => query.append("level", l));
 
+        query.set('limit', showModal ? '1000' : '100');
         const queryString = query.toString();
         const url = `/api/records/roundsonentries/titles${queryString ? `?${queryString}` : ""}`;
         const res = await fetch(url);
@@ -63,7 +66,7 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries, f
     };
 
     fetchData();
-  }, [selectedSurfaces, selectedLevels, enabled, showModal]);
+  }, [selectedSurfaces, selectedLevels, enabled, showModal, fetchRequestId, initialData]);
 
   const filteredData = data.filter((p) => p.entries >= minEntries);
 

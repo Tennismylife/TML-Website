@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Pagination from "../../../components/Pagination";
@@ -13,14 +13,18 @@ interface RoundSectionProps {
   selectedLevels: Set<string>;
   selectedRounds: string;
   fetchEnabled?: boolean;
+  setFetchEnabled?: (v: boolean) => void;
+  fetchRequestId?: string | null;
   description?: string;
+  initialData?: Player[];
+  initialNth?: number;
 }
 
 interface Player {
   id: string;
   name: string;
   ioc?: string;
-  age_nth_round: string; // già formattata XXy YYd
+  age_nth_round: string;
 }
 
 function NInput({ value, onChange }: { value: number; onChange: (n: number) => void }) {
@@ -29,41 +33,81 @@ function NInput({ value, onChange }: { value: number; onChange: (n: number) => v
       type="number"
       min={1}
       className="w-24 px-2 py-1 bg-gray-800 text-white border border-gray-600 rounded"
-      value={value}
+      value={Number.isFinite(value) ? value : ''}
       onChange={(e) => onChange(Number(e.target.value))}
     />
   );
 }
 
-export default function RoundSection({ selectedSurfaces, selectedRounds, selectedLevels, fetchEnabled, description }: RoundSectionProps) {
-  const [data, setData] = useState<Player[]>([]);
+export default function RoundSection({ selectedSurfaces, selectedRounds, selectedLevels, fetchEnabled, setFetchEnabled, fetchRequestId, description, initialData, initialNth }: RoundSectionProps) {
+  const enabled = !!fetchEnabled;
+  const safeInitialNth = Number.isFinite(initialNth) ? (initialNth as number) : 1;
+  const [data, setData] = useState<Player[]>(Array.isArray(initialData) ? formatData(initialData) : []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [hasFetched, setHasFetched] = useState(false);
+  const [hasFetched, setHasFetched] = useState(Array.isArray(initialData) && initialData.length > 0);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
 
-  const [inputN, setInputN] = useState(1);
-  const [selectedN, setSelectedN] = useState(1);
-  // allow parent to know applied nth
-  const [appliedNth, setAppliedNth] = useState<number | null>(null);
+  const [inputN, setInputN] = useState(safeInitialNth);
+  const [selectedN, setSelectedN] = useState(safeInitialNth);
+  const lastRequestRef = useRef<string | null>(null);
 
   const searchParams = useSearchParams();
   const perPage = 20;
 
-  // --- Funzione per convertire età decimale in XXy YYd ---
-  const formatAge = (ageDecimal: number | string | null) => {
+  function formatAge(ageDecimal: number | string | null) {
     if (ageDecimal == null) return "-";
     const ageNum = typeof ageDecimal === "string" ? parseFloat(ageDecimal) : ageDecimal;
     const years = Math.floor(ageNum);
     const days = Math.floor((ageNum - years) * 365.25);
     return `${years}y ${days}d`;
-  };
+  }
 
-  const enabled = !!fetchEnabled;
+  function formatData(items: any[]): Player[] {
+    return Array.isArray(items)
+      ? items.map((p: any) => ({
+          ...p,
+          age_nth_round: formatAge(p.age_nth_round),
+        }))
+      : [];
+  }
 
-  const fetchData = async (n: number) => {
-    if (!enabled && !showModal) return;
+  useEffect(() => {
+    setInputN(safeInitialNth);
+    setSelectedN(safeInitialNth);
+    if (Array.isArray(initialData)) {
+      const normalized = formatData(initialData);
+      setData(normalized);
+      setHasFetched(normalized.length > 0);
+    }
+  }, [safeInitialNth, initialData]);
+
+  useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds]);
+
+  useEffect(() => {
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal);
+    if (!shouldFetch) {
+      if (Array.isArray(initialData)) {
+        const normalized = formatData(initialData);
+        setData(normalized);
+        setHasFetched(normalized.length > 0);
+      }
+      setLoading(false);
+      return;
+    }
+
+    if (fetchRequestId) lastRequestRef.current = fetchRequestId;
+    fetchData(selectedN, showModal ? 1000 : 100, showModal);
+  }, [enabled, fetchRequestId, showModal, selectedN, selectedSurfaces, selectedLevels, selectedRounds, initialData]);
+
+  const fetchData = async (n: number, limit: number, force = false) => {
+    if (!Number.isFinite(n) || n <= 0) {
+      setError('Please enter a valid N value.');
+      return;
+    }
+    if (!force && !enabled) return;
+
     try {
       setLoading(true);
       setError(null);
@@ -73,28 +117,27 @@ export default function RoundSection({ selectedSurfaces, selectedRounds, selecte
       selectedSurfaces.forEach((s) => query.append("surface", s));
       selectedLevels.forEach((l) => query.append("level", l));
       if (selectedRounds) query.append("round", selectedRounds);
+      query.set('limit', String(limit));
 
       const res = await fetch(`/api/records/ageofnth/rounds?${query.toString()}`);
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || 'Failed to fetch data');
+      }
       const fetchedData = await res.json();
-
-      // Formatta età in XXy YYd
-      const formattedData = Array.isArray(fetchedData)
-        ? fetchedData.map((p: any) => ({
-            ...p,
-            age_nth_round: formatAge(p.age_nth_round),
-          }))
-        : [];
+      const formattedData = formatData(fetchedData);
 
       setData(formattedData);
       setPage(1);
       setSelectedN(n);
+      setHasFetched(true);
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "Unknown error");
       setData([]);
     } finally {
       setLoading(false);
-      setHasFetched(true);
+      if (enabled) setFetchEnabled?.(false);
     }
   };
 
@@ -178,12 +221,12 @@ export default function RoundSection({ selectedSurfaces, selectedRounds, selecte
 
   return (
     <section className="mb-8">
-      {headerText && <div className="text-center text-4xl font-bold text-white mb-6">{headerText}</div>} 
+      {headerText && <h1 className="mb-6 text-center text-2xl font-semibold text-white">{headerText}</h1>}  
 
       <div className="mb-4 flex items-center gap-2">
         <NInput value={inputN} onChange={setInputN} />
         <button
-          onClick={() => Number.isFinite(inputN) && fetchData(inputN)}
+          onClick={() => Number.isFinite(inputN) && fetchData(inputN, showModal ? 1000 : 100, true)}
           disabled={loading || !Number.isFinite(inputN) || inputN <= 0}
           className={`px-4 py-1 rounded ${
             loading || !Number.isFinite(inputN) || inputN <= 0
@@ -195,7 +238,7 @@ export default function RoundSection({ selectedSurfaces, selectedRounds, selecte
         </button>
       </div>
 
-      {playersPage.length > perPage && (
+      {data.length > perPage && (
         <div className="mb-4 flex justify-end">
           <button
             onClick={() => setShowModal(true)}
@@ -208,7 +251,7 @@ export default function RoundSection({ selectedSurfaces, selectedRounds, selecte
 
       {loading && <div className="text-center py-8 text-gray-300">Loading...</div>}
       {error && <div className="text-red-600 text-center py-2">{error}</div>}
-      {!loading && !error && playersPage.length === 0 && (
+      {!loading && !error && data.length === 0 && (
         <div>
           {!hasFetched ? (
             <div className="text-center py-8 text-gray-300">Select data</div>
@@ -218,7 +261,7 @@ export default function RoundSection({ selectedSurfaces, selectedRounds, selecte
         </div>
       )}
 
-      {!loading && playersPage.length > 0 && renderTable(playersPage, start)}
+      {!loading && data.length > 0 && renderTable(playersPage, start)}
 
       {!loading && totalPages > 1 && (
         <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />

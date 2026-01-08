@@ -19,6 +19,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'round_number parameter is required' }, { status: 400 });
     }
 
+    const limitParam = Number(url.searchParams.get('limit'));
+    const limit = Number.isInteger(limitParam) ? Math.min(Math.max(limitParam, 1), 1000) : 100;
+
     // Filtro lato DB
     const playersData = await prisma.mVNeededToRound.findMany({
       where: selectedRounds.length > 0 ? { round: { in: selectedRounds } } : {},
@@ -78,7 +81,7 @@ export async function GET(request: NextRequest) {
 
     // Ordina e limita
     result.sort((a, b) => a.tournaments_played - b.tournaments_played);
-    return NextResponse.json(result.slice(0, 100));
+    return NextResponse.json(result.slice(0, limit));
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

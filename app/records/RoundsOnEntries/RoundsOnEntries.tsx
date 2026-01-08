@@ -11,19 +11,21 @@ interface RoundsonentriesProps {
   selectedRounds: string;
   activeSubTab: string;
   fetchEnabled?: boolean;
+  fetchRequestId?: string | null;
   description?: string;
+  prefetchedData?: Record<string, any[] | undefined>;
 }
 
-export default function Roundsonentries({ selectedSurfaces, selectedLevels, selectedRounds, activeSubTab, fetchEnabled, description }: RoundsonentriesProps) {
+export default function Roundsonentries({ selectedSurfaces, selectedLevels, selectedRounds, activeSubTab, fetchEnabled, fetchRequestId, description, prefetchedData }: RoundsonentriesProps) {
   const enabled = !!fetchEnabled;
   const [minEntries, setMinEntries] = useState(1);
 
   return (
     <section className="mb-8">
       {description && (
-        <div className="text-center text-4xl font-bold text-white mb-6">
+        <h1 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
-        </div>
+        </h1>
       )}
 
       {/* Minimum Entries Filter */}
@@ -40,7 +42,15 @@ export default function Roundsonentries({ selectedSurfaces, selectedLevels, sele
       </div>
 
       {activeSubTab === 'titles' ? (
-        <Titles selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} minEntries={minEntries} fetchEnabled={enabled} description={description} />
+        <Titles
+          selectedSurfaces={selectedSurfaces}
+          selectedLevels={selectedLevels}
+          minEntries={minEntries}
+          fetchEnabled={enabled}
+          fetchRequestId={fetchRequestId}
+          description={description}
+          initialData={prefetchedData?.titles as any[]}
+        />
       ) : (
         <Rounds
           selectedSurfaces={selectedSurfaces}
@@ -48,7 +58,9 @@ export default function Roundsonentries({ selectedSurfaces, selectedLevels, sele
           selectedRounds={selectedRounds}
           minEntries={minEntries}
           fetchEnabled={enabled}
+          fetchRequestId={fetchRequestId}
           description={description}
+          initialData={prefetchedData?.round as any[]}
         />
       )}
     </section>

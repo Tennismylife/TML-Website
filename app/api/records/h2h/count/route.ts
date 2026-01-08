@@ -34,7 +34,9 @@ export async function GET(request: NextRequest) {
     const selectedSurface = url.searchParams.get('surface');
     const selectedLevel = url.searchParams.get('tourney_level') || url.searchParams.get('level');
     const selectedRound = url.searchParams.get('round');
-    const selectedBestOf = url.searchParams.get('bestOf');
+    const selectedBestOf = url.searchParams.get('bestOf') ?? url.searchParams.get('best_of');
+    const limitParam = Number(url.searchParams.get('limit') || '100');
+    const limit = Math.min(200, Math.max(1, Number.isFinite(limitParam) ? limitParam : 100));
 
     const filters = [selectedSurface, selectedLevel, selectedRound, selectedBestOf].filter(Boolean);
 
@@ -61,7 +63,7 @@ export async function GET(request: NextRequest) {
 
       output = output
         .sort((a, b) => (b.total_matches ?? 0) - (a.total_matches ?? 0))
-        .slice(0, 100);
+        .slice(0, limit);
 
       const playerIds = Array.from(
         new Set(output.flatMap(p => [p.player1_id, p.player2_id]).filter(Boolean))
@@ -107,7 +109,7 @@ export async function GET(request: NextRequest) {
 
     const h2hArray = Object.values(h2hMap)
       .sort((a, b) => b.total - a.total)
-      .slice(0, 100);
+      .slice(0, limit);
 
     const playerIds = Array.from(new Set(h2hArray.flatMap(p => [p.player1_id, p.player2_id])));
     const players = await prisma.player.findMany({

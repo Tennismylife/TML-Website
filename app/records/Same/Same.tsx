@@ -16,9 +16,10 @@ interface SameProps {
   setFetchEnabled?: (v: boolean) => void;
   fetchRequestId?: string | null;
   description?: string;
+  prefetchedData?: Record<string, any[] | undefined>;
 }
 
-export default function Same({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeSubTab, fetchEnabled, setFetchEnabled, fetchRequestId, description }: SameProps) {
+export default function Same({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeSubTab, fetchEnabled, setFetchEnabled, fetchRequestId, description, prefetchedData }: SameProps) {
   return (
     <section className="mb-8">
       {activeSubTab === 'wins' && (
@@ -31,6 +32,7 @@ export default function Same({ selectedSurfaces, selectedLevels, selectedRounds,
           setFetchEnabled={setFetchEnabled}
           fetchRequestId={fetchRequestId}
           description={description}
+          initialData={prefetchedData?.wins as any[]}
         />
       )}
 
@@ -44,6 +46,7 @@ export default function Same({ selectedSurfaces, selectedLevels, selectedRounds,
           setFetchEnabled={setFetchEnabled}
           fetchRequestId={fetchRequestId}
           description={description}
+          initialData={prefetchedData?.played as any[]}
         />
       )}
 
@@ -55,6 +58,7 @@ export default function Same({ selectedSurfaces, selectedLevels, selectedRounds,
           setFetchEnabled={setFetchEnabled}
           fetchRequestId={fetchRequestId}
           description={description}
+          initialData={prefetchedData?.entries as any[]}
         />
       )}
       {activeSubTab === 'round' && (
@@ -64,7 +68,9 @@ export default function Same({ selectedSurfaces, selectedLevels, selectedRounds,
           selectedRound={selectedRounds}
           fetchEnabled={fetchEnabled}
           setFetchEnabled={setFetchEnabled}
+          fetchRequestId={fetchRequestId}
           description={description}
+          initialData={prefetchedData?.round as any[]}
         />
       )}
 
@@ -76,6 +82,7 @@ export default function Same({ selectedSurfaces, selectedLevels, selectedRounds,
           setFetchEnabled={setFetchEnabled}
           fetchRequestId={fetchRequestId}
           description={description}
+          initialData={prefetchedData?.titles as any[]}
         />
       )}
     </section>

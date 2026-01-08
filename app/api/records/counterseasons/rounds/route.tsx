@@ -14,12 +14,16 @@ export async function GET(request: NextRequest) {
     const selectedLevels = url.searchParams.getAll('level');
     const selectedRound = (url.searchParams.get('round') || '').toUpperCase();
     const minRoundPerSeason = Math.max(1, Number(url.searchParams.get('min') || '1'));
+    const bestOf = url.searchParams.get('best_of');
+    const limitParam = Number(url.searchParams.get('limit') || '100');
+    const limit = Math.min(1000, Math.max(1, Number.isFinite(limitParam) ? limitParam : 100));
 
     // Build where clause
     const where: any = { status: true, team_event: false };
     if (selectedSurfaces.length) where.surface = { in: selectedSurfaces };
     if (selectedLevels.length) where.tourney_level = { in: selectedLevels };
     if (selectedRound) where.round = { equals: selectedRound, mode: 'insensitive' };
+    if (bestOf) where.best_of = Number(bestOf);
 
     // Fetch matches
     const matches = await prisma.match.findMany({
@@ -91,7 +95,7 @@ export async function GET(request: NextRequest) {
     // Sort by totalSeasons descending, then name
     players.sort((a, b) => b.totalSeasons - a.totalSeasons || a.name.localeCompare(b.name));
 
-    return NextResponse.json({ players });
+    return NextResponse.json({ players: players.slice(0, limit) });
   } catch (err) {
     if (process.env.NODE_ENV !== 'production') console.error(err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

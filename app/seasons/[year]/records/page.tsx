@@ -93,15 +93,15 @@ export default function SeasonRecordsPage({ params }: { params: Promise<{ year: 
 
   const handleTabClick = (tabKey: string) => {
     if (tabKey === "ages") {
-      setActiveTab("ages-main"); // default sub-tab
+      // set local default sub-tab but don't update URL yet
+      setActiveTab("ages-main");
       setShowAgesSubTabs(true);
       setShowPercentageSubTabs(false);
-      updateUrl("ages-main");
     } else if (tabKey === "percentage") {
-      setActiveTab("percentage-overall"); // default sub-tab
+      // set local default sub-tab but don't update URL yet
+      setActiveTab("percentage-overall");
       setShowPercentageSubTabs(true);
       setShowAgesSubTabs(false);
-      updateUrl("percentage-overall");
     } else {
       setActiveTab(tabKey as typeof activeTab);
       setShowAgesSubTabs(false);

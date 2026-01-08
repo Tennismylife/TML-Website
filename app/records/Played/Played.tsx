@@ -14,9 +14,9 @@ interface Player {
   totalPlayed: number;
 }
 
-export default function Played({ fetchEnabled, description }: { fetchEnabled?: boolean; description?: string }) {
+export default function Played({ topPlayed, fetchEnabled, description, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf }: { topPlayed?: any[]; fetchEnabled?: boolean; description?: string; selectedSurfaces?: Set<string>; selectedLevels?: Set<string>; selectedRounds?: string; selectedBestOf?: number | null }) {
   const enabled = !!fetchEnabled;
-  const [allPlayers, setAllPlayers] = useState<Player[]>([]);
+  const [allPlayers, setAllPlayers] = useState<Player[]>(topPlayed || []);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -35,7 +35,7 @@ export default function Played({ fetchEnabled, description }: { fetchEnabled?: b
   // Fetch players
   useEffect(() => {
     const fetchPlayers = async () => {
-      if (!enabled && !showModal) {
+      if (!enabled && !showModal && !(topPlayed && topPlayed.length)) {
         setAllPlayers([]);
         setLoading(false);
         return;
@@ -43,12 +43,32 @@ export default function Played({ fetchEnabled, description }: { fetchEnabled?: b
 
       setLoading(true);
       try {
-        const params = new URLSearchParams(Array.from(searchParams.entries()));
+        // prefer explicit props for filters
+        const params = new URLSearchParams();
+        if (selectedSurfaces !== undefined) Array.from(selectedSurfaces).forEach(s => params.append('surface', s));
+        else Array.from(searchParams.entries()).forEach(([k,v]) => { if (k === 'surface') params.append(k, v); });
+
+        if (selectedLevels !== undefined) Array.from(selectedLevels).forEach(l => params.append('level', l));
+        else Array.from(searchParams.entries()).forEach(([k,v]) => { if (k === 'level') params.append(k, v); });
+
+        if (selectedRounds !== undefined) { if (selectedRounds) params.set('round', selectedRounds); }
+        else { const r = searchParams.get('round'); if (r) params.set('round', r); }
+
+        if (selectedBestOf !== undefined) { if (selectedBestOf !== null) params.set('bestOf', String(selectedBestOf)); }
+        else { const b = searchParams.get('bestOf'); if (b) params.set('bestOf', b); }
+
+        params.set("perPage", showModal ? "1000" : "100");
         params.delete("page"); // remove page param
 
-        const res = await fetch(`/api/records/played?${params.toString()}`);
-        const data = await res.json();
-        setAllPlayers(data.players || []);
+        // If topPlayed is provided by the server and we're not in 'View All' mode, use it
+        // Otherwise perform a client fetch so the UI shows data even if server prefetch failed.
+        if (!showModal && topPlayed && topPlayed.length) {
+          setAllPlayers(topPlayed || []);
+        } else {
+          const res = await fetch(`/api/records/played?${params.toString()}`);
+          const data = await res.json();
+          setAllPlayers(data.players || []);
+        }
       } catch (err) {
         console.error(err);
         setAllPlayers([]);
@@ -57,7 +77,7 @@ export default function Played({ fetchEnabled, description }: { fetchEnabled?: b
       }
     };
     fetchPlayers();
-  }, [searchParams, enabled, showModal]);
+  }, [searchParams, enabled, showModal, topPlayed, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
 
   if (loading)
     return <div className="text-center py-8 text-gray-300">Loading...</div>;
@@ -100,7 +120,7 @@ export default function Played({ fetchEnabled, description }: { fetchEnabled?: b
         <tbody>
           {playersList.map((p, idx) => {
             const globalRank = startIndex + idx + 1;
-            const flag = p.ioc ? getFlagFromIOC(p.ioc) : null;
+            const flag = getFlagFromIOC(p.ioc) ?? "🏳️";
 
             return (
               <tr key={p.id} className="hover:bg-gray-800 border-b border-white/10">
@@ -129,9 +149,9 @@ export default function Played({ fetchEnabled, description }: { fetchEnabled?: b
   return (
     <section className="mb-8">
       {description && (
-        <div className="text-center text-4xl font-bold text-white mb-6">
+        <h1 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
-        </div>
+        </h1>
       )}
 
       <div className="mb-4 flex justify-end">

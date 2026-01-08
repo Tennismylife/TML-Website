@@ -42,6 +42,7 @@ export async function GET(request: NextRequest) {
     const selectedLevels = getMultiParam(url, 'level');
     const selectedBestOf = getMultiParam(url, 'best_of');
     const selectedRounds = getMultiParam(url, 'round');
+    const limit = Math.max(1, Math.min(1000, Number(url.searchParams.get('limit') ?? 100)));
 
     let finalWins: YearWinRecord[] = [];
 
@@ -51,7 +52,7 @@ export async function GET(request: NextRequest) {
     ) {
       const wins = await prisma.mVSameSeasonWins.findMany({
         orderBy: { total_wins: 'desc' },
-        take: 500,
+        take: limit,
       });
 
       if (!wins.length) return jsonResponse([]);
@@ -159,7 +160,7 @@ export async function GET(request: NextRequest) {
     // Ordinamento top 100
     finalWins.sort((a, b) => b.total_wins - a.total_wins);
 
-    return jsonResponse(finalWins.slice(0, 100));
+    return jsonResponse(finalWins.slice(0, limit));
   } catch (error) {
     console.error('GET /records/same/year-wins error:', error);
     return jsonResponse({ error: 'Internal Server Error' }, 500);

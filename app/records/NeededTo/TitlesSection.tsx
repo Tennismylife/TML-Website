@@ -1,17 +1,22 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Pagination from "../../../components/Pagination";
 import Modal from "@/components/Modal";
 import { getFlagFromIOC } from "@/lib/utils";
+import { playerMatchesUrl } from "../nav";
 
 interface TitlesSectionProps {
   selectedSurfaces: string[];
   selectedLevels: string[];
   fetchEnabled?: boolean;
+  setFetchEnabled?: (v: boolean) => void;
+  fetchRequestId?: string | null;
   description?: string;
+  initialData?: Player[];
+  initialNth?: number;
 }
 
 interface Player {
@@ -28,49 +33,91 @@ function NInput({ value, onChange }: { value: number; onChange: (n: number) => v
       type="number"
       min={1}
       className="w-24 px-2 py-1 bg-gray-800 text-white border border-gray-600 rounded"
-      value={value}
+      value={Number.isFinite(value) ? value : ''}
       onChange={(e) => onChange(Number(e.target.value))}
     />
   );
 }
 
-export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchEnabled, description }: TitlesSectionProps) {
-  const [data, setData] = useState<Player[]>([]);
+export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, fetchRequestId, description, initialData, initialNth }: TitlesSectionProps) {
+  const enabled = !!fetchEnabled;
+  const safeInitialNth = Number.isFinite(initialNth) ? (initialNth as number) : 1;
+
+  const [data, setData] = useState<Player[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [hasFetched, setHasFetched] = useState(false);
+  const [hasFetched, setHasFetched] = useState(Array.isArray(initialData) && initialData.length > 0);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
-  const enabled = !!fetchEnabled;
-  const [inputN, setInputN] = useState(1);
-  const [selectedN, setSelectedN] = useState(1);
+  const [inputN, setInputN] = useState(safeInitialNth);
+  const [selectedN, setSelectedN] = useState(safeInitialNth);
+  const lastRequestRef = useRef<string | null>(null);
 
   const searchParams = useSearchParams();
   const perPage = 20;
 
-  const fetchData = async (n: number) => {
-    if (!enabled) return;
+  useEffect(() => {
+    setInputN(safeInitialNth);
+    setSelectedN(safeInitialNth);
+    if (Array.isArray(initialData)) {
+      setData(initialData);
+      setHasFetched(initialData.length > 0);
+    }
+  }, [safeInitialNth, initialData]);
+
+  useEffect(() => setPage(1), [selectedSurfaces, selectedLevels]);
+
+  useEffect(() => {
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal);
+    if (!shouldFetch) {
+      if (Array.isArray(initialData)) {
+        setData(initialData);
+        setHasFetched(initialData.length > 0);
+      }
+      setLoading(false);
+      return;
+    }
+
+    if (fetchRequestId) lastRequestRef.current = fetchRequestId;
+    fetchData(selectedN, showModal ? 1000 : 100, showModal);
+  }, [enabled, fetchRequestId, showModal, selectedN, selectedSurfaces, selectedLevels, initialData]);
+
+  const fetchData = async (n: number, limit: number, force = false) => {
+    if (!Number.isFinite(n) || n <= 0) {
+      setError('Please enter a valid N value.');
+      return;
+    }
+    if (!force && !enabled) return;
+
     try {
       setLoading(true);
       setError(null);
 
       const query = new URLSearchParams();
       query.append("maxTitles", n.toString());
+      query.set('limit', String(limit));
       selectedSurfaces.forEach(s => query.append("surface", s));
       selectedLevels.forEach(l => query.append("level", l));
 
       const res = await fetch(`/api/records/neededto/titles?${query.toString()}`);
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || 'Failed to fetch data');
+      }
       const fetchedData: Player[] = await res.json();
-      setData(fetchedData.sort((a, b) => a.tournaments_played - b.tournaments_played));
+      const sorted = fetchedData.sort((a, b) => a.tournaments_played - b.tournaments_played);
+
+      setData(sorted);
       setPage(1);
       setSelectedN(n);
+      setHasFetched(true);
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "Unknown error");
       setData([]);
     } finally {
       setLoading(false);
-      setHasFetched(true);
+      if (enabled) setFetchEnabled?.(false);
     }
   };
 
@@ -80,7 +127,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
   const playersPage = data.slice(start, start + perPage);
 
   const getPlayerLink = (playerId: string) => {
-    let link = `/players/${playerId}?tab=matches`;
+    let link = playerMatchesUrl(playerId);
     for (const [key, value] of searchParams.entries()) {
       if (!value || key === "tab") continue;
       link += `&${key}=${encodeURIComponent(value)}`;
@@ -145,23 +192,45 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
 
   return (
     <section className="mb-8">
-      {headerText && <div className="text-center text-4xl font-bold text-white mb-6">{headerText}</div>}
+      {headerText && <h1 className="mb-6 text-center text-2xl font-semibold text-white">{headerText}</h1>} 
 
       <div className="mb-4 flex items-center gap-2">
         <NInput value={inputN} onChange={setInputN} />
         <button
-          onClick={() => fetchData(inputN)}
-          disabled={loading}
-          className={`px-4 py-1 rounded ${loading ? "bg-gray-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+          onClick={() => fetchData(inputN, showModal ? 1000 : 100, true)}
+          disabled={loading || !Number.isFinite(inputN) || inputN <= 0}
+          className={`px-4 py-1 rounded ${
+            loading || !Number.isFinite(inputN) || inputN <= 0
+              ? "bg-gray-600 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700 text-white"
+          }`}
         >
           Apply
         </button>
       </div>
 
+      {data.length > perPage && (
+        <div className="mb-4 flex justify-end">
+          <button
+            onClick={() => setShowModal(true)}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
+          >
+            View All
+          </button>
+        </div>
+      )}
+
       {loading && <div className="text-center py-8 text-gray-300">Loading...</div>}
       {error && <div className="text-red-600 text-center py-2">{error}</div>}
-      {!loading && data.length === 0 && !hasFetched && <div className="text-center py-8 text-gray-300">Select data</div>}
-      {!loading && data.length === 0 && hasFetched && <div className="text-center py-8 text-gray-300">No data found.</div>}
+      {!loading && !error && data.length === 0 && (
+        <div>
+          {!hasFetched ? (
+            <div className="text-center py-8 text-gray-300">Select data</div>
+          ) : (
+            <div className="text-center py-8 text-gray-300">No data found.</div>
+          )}
+        </div>
+      )}
 
       {!loading && data.length > 0 && renderTable(playersPage, start)}
 
@@ -169,11 +238,9 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
         <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       )}
 
-      {data.length > perPage && (
-        <Modal show={showModal} onClose={() => setShowModal(false)} title={`Tournaments Played to Reach Title ${selectedN}${filterText}`}>
-          {renderTable(data)}
-        </Modal>
-      )}
+      <Modal show={showModal} onClose={() => setShowModal(false)} title={`Tournaments Played to Reach Title ${selectedN}${filterText}`}>
+        {renderTable(data)}
+      </Modal>
     </section>
   );
 }

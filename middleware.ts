@@ -26,6 +26,82 @@ export async function middleware(req: NextRequest) {
 
     const { pathname, search } = req.nextUrl;
     const segments = pathname.split('/').filter(Boolean);
+    const origin = req.nextUrl.origin;
+
+    // If path is /records/<record>
+    if (segments[0] === 'records' && segments[1]) {
+      const VALID_RECORDS = new Set([
+        "wins",
+        "played",
+        "count",
+        "titles",
+        "entries",
+        "ages",
+        "timespan",
+        "percentage",
+        "roundsonentries",
+        "same",
+        "seasons",
+        "atage",
+        "ageofnth",
+        "neededto",
+        "counterseasons",
+        "h2h",
+        "streak",
+      ]);
+
+      const recordSegment = String(segments[1]).toLowerCase();
+      if (VALID_RECORDS.has(recordSegment)) {
+        // If the URL uses ?subtab=<x> while the canonical form is /records/<record>/<subtab>, redirect to the canonical path
+        const subtabParam = req.nextUrl.searchParams.get('subtab');
+        // helper: normalize subtab values to kebab-case (handles camelCase like 'youngestWinners')
+        const normalizeSubtab = (s: string | null) => {
+          if (!s) return s;
+          if (s.includes('-')) return s; // already kebab
+          return s.replace(/([a-z0-9])([A-Z])/g, '$1-$2').replace(/_/g, '-').toLowerCase();
+        };
+        // Only redirect when the subtab is provided as a query and not already present as a path segment
+        if (subtabParam && !(segments.length > 2)) {
+          const normalized = normalizeSubtab(subtabParam);
+          const dest = new URL(req.url);
+          dest.pathname = `/records/${encodeURIComponent(recordSegment)}/${encodeURIComponent(normalized)}`;
+          // Preserve other query params except `subtab`
+          const newParams = new URLSearchParams(req.nextUrl.searchParams as any);
+          newParams.delete('subtab');
+          dest.search = newParams.toString();
+          return new Response(null, { status: 301, headers: { Location: dest.toString() } });
+        }
+
+        // No rewrite here: allow the request to continue to /records/<record>
+        // so the page at `/records/[...slug]` can render the specific record view
+        // using the path + any query params (e.g., surface/level).
+        return NextResponse.next();
+      }
+    }
+
+    // Handle legacy records query URL: /records?record=<x>&subtab=<y>&... -> /records/<x>/<y>?<other-params>
+    if (segments[0] === 'records') {
+      const recordParam = req.nextUrl.searchParams.get('record');
+      if (recordParam) {
+        const subtabParam = req.nextUrl.searchParams.get('subtab');
+        // normalize subtab to kebab-case as above
+        const normalizeSubtab = (s: string | null) => {
+          if (!s) return s;
+          if (s.includes('-')) return s; // already kebab
+          return s.replace(/([a-z0-9])([A-Z])/g, '$1-$2').replace(/_/g, '-').toLowerCase();
+        };
+        const normalized = normalizeSubtab(subtabParam);
+        const dest = new URL(req.url);
+        dest.pathname = `/records/${encodeURIComponent(recordParam)}${normalized ? '/' + encodeURIComponent(normalized) : ''}`;
+        // Preserve other query params except `record` and `subtab`
+        const newParams = new URLSearchParams(req.nextUrl.searchParams as any);
+        newParams.delete('record');
+        newParams.delete('subtab');
+        dest.search = newParams.toString();
+        return new Response(null, { status: 301, headers: { Location: dest.toString() } });
+      }
+    }
+
     if (segments.length < 2) return NextResponse.next();
 
     const resource = segments[0]; // 'players' or 'tournaments'
@@ -35,7 +111,6 @@ export async function middleware(req: NextRequest) {
     if (!idSegment) return NextResponse.next();
 
     const rest = segments.slice(2).join('/');
-    const origin = req.nextUrl.origin;
 
     // 1) Numeric ID: header API
     if (/^\d+$/.test(idSegment)) {

@@ -45,6 +45,7 @@ export async function GET(request: NextRequest) {
     const selectedLevels = getMultiParam(url, 'level');
     const selectedRounds = getMultiParam(url, 'round');
     const selectedBestOf = getMultiParam(url, 'best_of');
+    const limit = Math.max(1, Math.min(1000, Number(url.searchParams.get('limit') ?? 100)));
 
     let finalMatches: PlayedRecord[] = [];
 
@@ -52,7 +53,7 @@ export async function GET(request: NextRequest) {
     if (selectedSurfaces.length + selectedLevels.length + selectedRounds.length + selectedBestOf.length <= 1) {
       const matches = await prisma.mVSameTournamentPlayed.findMany({
         orderBy: { total_matches: 'desc' },
-        take: 500,
+        take: limit,
       });
       if (!matches.length) return jsonResponse([]);
 
@@ -187,7 +188,7 @@ export async function GET(request: NextRequest) {
 
     // Ordinamento per total_matches e calcolo del rank
     finalMatches.sort((a, b) => b.total_matches - a.total_matches);
-    finalMatches = finalMatches.slice(0, 100);
+    finalMatches = finalMatches.slice(0, limit);
 
     finalMatches.forEach((record, index) => {
       record.rank = index + 1; // rank 1,2,3,...

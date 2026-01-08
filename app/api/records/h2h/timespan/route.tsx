@@ -30,6 +30,8 @@ export async function GET(request: NextRequest) {
     const selectedSurfaces = url.searchParams.getAll('surface');
     const selectedLevels = url.searchParams.getAll('level');
     const selectedRoundsRaw = url.searchParams.getAll('round');
+    const limitParam = Number(url.searchParams.get('limit') || '50');
+    const limit = Math.min(200, Math.max(1, Number.isFinite(limitParam) ? limitParam : 50));
 
     // Gestione filtro "All"
     const selectedRounds = selectedRoundsRaw.filter(r => r !== 'All');
@@ -132,7 +134,7 @@ export async function GET(request: NextRequest) {
 
     const h2hTimespanArray = Array.from(h2hTimespanMap.values())
       .sort((a, b) => b.timespanDays - a.timespanDays)
-      .slice(0, 50); // top 50
+      .slice(0, limit);
 
     const result: H2HTimespanResponse = {
       h2hTimespans: h2hTimespanArray,

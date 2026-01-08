@@ -26,11 +26,12 @@ interface YoungestMainDrawProps {
   fetchEnabled?: boolean;
   fetchRequestId?: string | null;
   description?: string;
+  initialData?: Player[];
 }
 
-export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, fetchRequestId, description }: YoungestMainDrawProps) {
+export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, fetchRequestId, description, initialData }: YoungestMainDrawProps) {
   const enabled = !!fetchEnabled;
-  const [data, setData] = useState<Player[]>([]);
+  const [data, setData] = useState<Player[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
@@ -42,9 +43,9 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
   useEffect(() => {
     const controller = new AbortController();
     const fetchData = async () => {
-      if (!((enabled && fetchRequestId) || showModal)) {
-        console.debug('[YoungestMainDraw] skipped fetch: no fetchRequestId and not modal', { enabled, fetchRequestId, showModal });
-        setData([]);
+      const shouldFetch = ((enabled && fetchRequestId) || showModal);
+      if (!shouldFetch) {
+        if (Array.isArray(initialData)) setData(initialData);
         setLoading(false);
         return;
       }
@@ -56,6 +57,7 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
         selectedSurfaces.forEach((s) => query.append("surface", s));
         selectedLevels.forEach((l) => query.append("level", l));
         if (selectedRounds) query.append("round", selectedRounds);
+        query.append("limit", showModal ? "1000" : "100");
 
         const res = await fetch(`/api/records/ages/maindraw?${query.toString()}`, { signal: controller.signal });
         if (!res.ok) throw new Error("Failed to fetch youngest main draw");
@@ -70,7 +72,7 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
     };
     fetchData();
     return () => controller.abort();
-  }, [selectedSurfaces, selectedLevels, selectedRounds, enabled, showModal, fetchRequestId]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, enabled, showModal, fetchRequestId, initialData]);
 
   const formatAge = (age: number) => {
     const years = Math.floor(age);

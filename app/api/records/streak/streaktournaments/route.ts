@@ -28,15 +28,21 @@ export async function GET(request: NextRequest) {
       select: {
         event_id: true,
         tourney_name: true,
+        tourney_date: true,
         year: true,
         surface: true,
         tourney_level: true,
       },
       distinct: ['event_id'], // <-- garantisce una riga per event_id
-      orderBy: { year: 'asc' },
+      orderBy: { tourney_date: 'asc' },
     });
 
-    return NextResponse.json(tournaments);
+    const formatted = tournaments.map(t => ({
+      ...t,
+      tourney_date: t.tourney_date instanceof Date ? t.tourney_date.toISOString().slice(0, 10) : t.tourney_date,
+    }));
+
+    return NextResponse.json(formatted);
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

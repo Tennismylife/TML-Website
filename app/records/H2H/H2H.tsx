@@ -14,7 +14,9 @@ interface H2HSectionProps {
   selectedBestOf: number | null;
   activeSubTab: string;
   fetchEnabled?: boolean;
-  fetchRequestId?: string | number;
+  setFetchEnabled?: (v: boolean) => void;
+  fetchRequestId?: string | number | null;
+  prefetchedData?: Record<string, any[] | undefined>;
   description?: string;
 }
 
@@ -25,123 +27,106 @@ export default function H2HSection({
   selectedBestOf, 
   activeSubTab,
   fetchEnabled,
+  setFetchEnabled,
   fetchRequestId,
+  prefetchedData,
   description
 }: H2HSectionProps) {
   const [showModal, setShowModal] = React.useState(false);
-  const enabled = !!fetchEnabled;
+  const effectiveFetchId = fetchRequestId != null ? String(fetchRequestId) : undefined;
+  const hasPrefetch = !!(prefetchedData && Object.values(prefetchedData).some(Boolean));
+  const enabled = !!fetchEnabled || hasPrefetch;
 
-  // If fetching is not enabled and the parent modal is not open, show a hint
   if (!enabled && !showModal) {
     return (
       <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-4 text-gray-200">Head-to-Head (H2H)</h2>
+        <h2 className="mb-4 text-xl font-semibold text-gray-200">Head-to-Head (H2H)</h2>
         <div className="mb-4 flex justify-end">
           <button
             onClick={() => setShowModal(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
+            className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-500"
           >
             View All
           </button>
         </div>
-        <div className="text-center py-8 text-gray-300">Clicca "View All" per caricare i dati H2H.</div>
+        <div className="py-8 text-center text-gray-300">Clicca "View All" per caricare i dati H2H.</div>
       </section>
     );
   }
+
+  const commonProps = {
+    selectedSurfaces,
+    selectedLevels,
+    selectedRounds,
+    selectedBestOf,
+    fetchEnabled,
+    setFetchEnabled,
+    fetchRequestId: effectiveFetchId,
+    description,
+  } as const;
 
   return (
     <section className="rounded p-4">
       {activeSubTab === 'count' && (
         <CountSection
-          selectedSurfaces={selectedSurfaces}
-          selectedLevels={selectedLevels}
-          selectedRounds={selectedRounds}
-          selectedBestOf={selectedBestOf}
-          fetchEnabled={fetchEnabled}
-          fetchRequestId={fetchRequestId != null ? String(fetchRequestId) : undefined}
+          {...commonProps}
+          initialData={prefetchedData?.count as any[] | undefined}
           parentShowModal={showModal}
-          description={description}
         />
       )}
       {activeSubTab === 'seasons' && (
         <SeasonsSection
-          selectedSurfaces={selectedSurfaces}
-          selectedLevels={selectedLevels}
-          selectedRounds={selectedRounds}
-          fetchEnabled={fetchEnabled}
-          fetchRequestId={fetchRequestId != null ? String(fetchRequestId) : undefined}
+          {...commonProps}
+          initialData={prefetchedData?.seasons as any[] | undefined}
           parentShowModal={showModal}
-          description={description}
         />
       )}
       {activeSubTab === 'tournament' && (
         <SameTournamentSection
-          selectedSurfaces={selectedSurfaces}
-          selectedLevels={selectedLevels}
-          selectedRounds={selectedRounds}
-          fetchEnabled={fetchEnabled}
-          fetchRequestId={fetchRequestId != null ? String(fetchRequestId) : undefined}
+          {...commonProps}
+          initialData={prefetchedData?.tournament as any[] | undefined}
           parentShowModal={showModal}
-          description={description}
         />
       )}
       {activeSubTab === 'timespan' && (
         <TimespanSection
-          selectedSurfaces={selectedSurfaces}
-          selectedLevels={selectedLevels}
-          selectedRounds={selectedRounds}
-          fetchEnabled={fetchEnabled}
-          fetchRequestId={fetchRequestId != null ? String(fetchRequestId) : undefined}
+          {...commonProps}
+          initialData={prefetchedData?.timespan as any[] | undefined}
           parentShowModal={showModal}
-          description={description}
         />
       )} 
 
-      {/* Parent modal to show full active subtab data */}
       <Modal show={showModal} onClose={() => setShowModal(false)} title="H2H — Full Data">
         {activeSubTab === 'count' && (
           <CountSection
-            selectedSurfaces={selectedSurfaces}
-            selectedLevels={selectedLevels}
-            selectedRounds={selectedRounds}
-            selectedBestOf={selectedBestOf}
-            fetchEnabled={true}
-            fetchRequestId={fetchRequestId != null ? String(fetchRequestId) : undefined}
-            parentShowModal={true}
-            description={description}
+            {...commonProps}
+            fetchEnabled
+            initialData={prefetchedData?.count as any[] | undefined}
+            parentShowModal
           />
         )}
         {activeSubTab === 'seasons' && (
           <SeasonsSection
-            selectedSurfaces={selectedSurfaces}
-            selectedLevels={selectedLevels}
-            selectedRounds={selectedRounds}
-            fetchEnabled={true}
-            fetchRequestId={fetchRequestId != null ? String(fetchRequestId) : undefined}
-            parentShowModal={true}
-            description={description}
+            {...commonProps}
+            fetchEnabled
+            initialData={prefetchedData?.seasons as any[] | undefined}
+            parentShowModal
           />
         )}
         {activeSubTab === 'tournament' && (
           <SameTournamentSection
-            selectedSurfaces={selectedSurfaces}
-            selectedLevels={selectedLevels}
-            selectedRounds={selectedRounds}
-            fetchEnabled={true}
-            fetchRequestId={fetchRequestId != null ? String(fetchRequestId) : undefined}
-            parentShowModal={true}
-            description={description}
+            {...commonProps}
+            fetchEnabled
+            initialData={prefetchedData?.tournament as any[] | undefined}
+            parentShowModal
           />
         )}
         {activeSubTab === 'timespan' && (
           <TimespanSection
-            selectedSurfaces={selectedSurfaces}
-            selectedLevels={selectedLevels}
-            selectedRounds={selectedRounds}
-            fetchEnabled={true}
-            fetchRequestId={fetchRequestId != null ? String(fetchRequestId) : undefined}
-            parentShowModal={true}
-            description={description}
+            {...commonProps}
+            fetchEnabled
+            initialData={prefetchedData?.timespan as any[] | undefined}
+            parentShowModal
           />
         )}
       </Modal>

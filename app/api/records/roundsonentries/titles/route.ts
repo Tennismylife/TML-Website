@@ -9,6 +9,7 @@ export async function GET(request: NextRequest) {
     const url = new URL(request.url);
     const selectedSurfaces = url.searchParams.getAll('surface');
     const selectedLevels = url.searchParams.getAll('level');
+    const limitParam = Math.max(1, Math.min(1000, Number(url.searchParams.get('limit') ?? 100)));
 
     // 1️⃣ Costruzione filtri dinamici
     const filters: any = {};
@@ -68,10 +69,10 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    // 6️⃣ Ordinamento top 100
+    // 6️⃣ Ordinamento top N
     const result = allPlayers
       .sort((a, b) => b.percentage - a.percentage || b.wins - a.wins)
-      .slice(0, 100);
+      .slice(0, limitParam);
 
     return NextResponse.json({
       FinalWins: result,

@@ -32,6 +32,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Invalid n parameter" }, { status: 400 });
     }
 
+    const limitParam = Number(url.searchParams.get("limit"));
+    const limit = Number.isInteger(limitParam) ? Math.min(Math.max(limitParam, 1), 1000) : 100;
+
     const getFiltered = (k: string) => url.searchParams.getAll(k).filter(Boolean);
     const selectedSurfaces = getFiltered("surface");
     const selectedLevels = getFiltered("level");
@@ -82,7 +85,7 @@ export async function GET(request: NextRequest) {
         })
         .filter(Boolean)
         .sort((a, b) => a.numeric_age - b.numeric_age)
-        .slice(0, 100)
+        .slice(0, limit)
         .map(({ numeric_age, ...rest }) => rest);
 
       return NextResponse.json(result);
@@ -150,7 +153,7 @@ export async function GET(request: NextRequest) {
       })
       .filter(Boolean)
       .sort((a, b) => a.numeric_age - b.numeric_age)
-      .slice(0, 100)
+      .slice(0, limit)
       .map(({ numeric_age, ...rest }) => rest);
 
     return NextResponse.json(finalResult);

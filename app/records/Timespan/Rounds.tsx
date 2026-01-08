@@ -12,11 +12,12 @@ interface RoundsProps {
   selectedLevels: Set<string>;
   selectedRounds: string;
   description?: string;
+  initialData?: any[];
 }
 
-const Rounds = ({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, fetchRequestId, description }: RoundsProps & { fetchEnabled?: boolean, fetchRequestId?: string | null, description?: string }) => {
+const Rounds = ({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, fetchRequestId, description, initialData }: RoundsProps & { fetchEnabled?: boolean, fetchRequestId?: string | null, description?: string, initialData?: any[] }) => {
   const enabled = !!fetchEnabled;
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<any[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [page, setPage] = useState(1);
@@ -34,9 +35,9 @@ const Rounds = ({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled
         return;
       }
 
-      if (!((enabled && fetchRequestId) || fetchRequestId)) {
-        console.debug('[Timespan Rounds] skipped fetch: no fetchRequestId', { enabled, fetchRequestId });
-        setData([]);
+      const shouldFetch = ((enabled && fetchRequestId) || showModal || (!enabled && fetchRequestId))
+      if (!shouldFetch) {
+        if (Array.isArray(initialData)) setData(initialData);
         setLoading(false);
         return;
       }
@@ -47,7 +48,7 @@ const Rounds = ({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled
         selectedSurfaces.forEach(s => query.append('surface', s));
         selectedLevels.forEach(l => query.append('level', l));
         query.append('round', selectedRounds);
-        query.set('perPage', '100');
+        query.set('perPage', showModal ? '1000' : '100');
         const url = `/api/records/timespan/rounds?${query.toString()}`;
         console.debug('[Timespan Rounds] fetching', url, { enabled, selectedRounds, fetchRequestId });
         const res = await fetch(url);
@@ -63,7 +64,7 @@ const Rounds = ({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled
     };
 
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedRounds, enabled, fetchRequestId]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, enabled, fetchRequestId, showModal, initialData]);
 
   if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
   if (!selectedRounds) return <div className="text-center py-8 text-gray-300">Please select rounds in the filters to view results.</div>;
@@ -128,9 +129,9 @@ const Rounds = ({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled
   return (
     <section className="mb-8">
       {description && (
-        <div className="text-center text-4xl font-bold text-white mb-6">
+        <h1 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
-        </div>
+        </h1>
       )}
 
       <div className="mb-4 flex justify-end">

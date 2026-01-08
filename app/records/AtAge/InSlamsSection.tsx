@@ -54,7 +54,6 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
   const searchParams = useSearchParams();
 
   const fetchData = async (age: number) => {
-    if (!fetchEnabled) return;
     try {
       setLoading(true);
       setError(null);
@@ -147,9 +146,9 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
   return (
     <section className="mb-8">
       {headerText && (
-        <div className="text-center text-4xl font-bold text-white mb-6">
+        <h1 className="mb-6 text-center text-2xl font-semibold text-white">
           {headerText}
-        </div>
+        </h1>
       )}
 
       {/* Age Input */}
@@ -157,8 +156,8 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
         <AgeInput value={inputAge} onChange={setInputAge} />
         <button
           onClick={() => fetchData(inputAge)}
-          disabled={loading || !fetchEnabled || !Number.isFinite(inputAge)}
-          className={`px-4 py-1 rounded ${loading || !fetchEnabled || !Number.isFinite(inputAge) ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+          disabled={loading || !Number.isFinite(inputAge)}
+          className={`px-4 py-1 rounded ${loading || !Number.isFinite(inputAge) ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
         >
           Apply
         </button>

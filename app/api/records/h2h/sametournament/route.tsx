@@ -22,9 +22,13 @@ interface H2HTourney {
 
 export async function GET(request: NextRequest) {
   try {
+    const url = new URL(request.url);
+    const limitParam = Number(url.searchParams.get('limit') || '200');
+    const limit = Math.min(200, Math.max(1, Number.isFinite(limitParam) ? limitParam : 200));
+
     const rows = await prisma.mVH2HTourney.findMany({
       orderBy: { matches_played: 'desc' },
-      take: 200,
+      take: limit,
       select: {
         tourney_id: true,
         tourney_name: true,  // se la tua view include il nome

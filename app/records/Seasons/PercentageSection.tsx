@@ -1,8 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { getFlagFromIOC } from '@/lib/utils';import { playerMatchesUrl } from "../nav";import { useSearchParams } from 'next/navigation';
+import { getFlagFromIOC } from '@/lib/utils';
+import { playerMatchesUrl } from "../nav";
+import { useSearchParams } from 'next/navigation';
 import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
 
@@ -15,6 +17,7 @@ interface PercentageSectionProps {
   setFetchEnabled?: (v: boolean) => void;
   fetchRequestId?: string | null;
   description?: string;
+  initialData?: PercentageRecord[];
 }
 
 type PercentageRecord = {
@@ -27,19 +30,27 @@ type PercentageRecord = {
   Year: number;
 };
 
-export default function PercentageSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId, description }: PercentageSectionProps) {
-  const [seasonPercentageData, setSeasonPercentageData] = useState<PercentageRecord[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function PercentageSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId, description, initialData }: PercentageSectionProps) {
+  const enabled = !!fetchEnabled;
+  const [seasonPercentageData, setSeasonPercentageData] = useState<PercentageRecord[]>(Array.isArray(initialData) ? initialData : []);
+  const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [page, setPage] = useState(1);
   const perPage = 20;
   const searchParams = useSearchParams();
+  const lastRequestRef = useRef<string | null>(null);
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
 
   useEffect(() => {
-    const enabled = !!fetchEnabled;
-    if (!enabled && !showModal) return;
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal);
+    if (!shouldFetch) {
+      if (Array.isArray(initialData)) setSeasonPercentageData(initialData);
+      setLoading(false);
+      return;
+    }
+
+    if (fetchRequestId) lastRequestRef.current = fetchRequestId;
 
     const fetchSeasonPercentage = async () => {
       setLoading(true);
@@ -49,23 +60,25 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
         selectedLevels.forEach(l => query.append('tourney_level', l));
         if (selectedRounds) query.append('round', selectedRounds);
         if (selectedBestOf) query.append('best_of', selectedBestOf?.toString() || '');
+        query.set('limit', showModal ? '1000' : '100');
 
         const url = `/api/records/seasons/percentage?${query.toString()}`;
         const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch season percentage');
 
         const data: PercentageRecord[] = await res.json();
-        setSeasonPercentageData(data);
+        setSeasonPercentageData(Array.isArray(data) ? data : []);
+        setPage(1);
       } catch (err) {
         console.error(err);
         setSeasonPercentageData([]);
       } finally {
         setLoading(false);
-        setFetchEnabled?.(false);
+        if (enabled) setFetchEnabled?.(false);
       }
     };
     fetchSeasonPercentage();
-  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, showModal]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, enabled, fetchRequestId, showModal, initialData, setFetchEnabled]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!seasonPercentageData.length) return <div className="text-center py-8 text-gray-300 text-lg">No data found.</div>;
@@ -119,9 +132,9 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
   return (
     <section className="mb-8">
       {description && (
-        <div className="text-center text-4xl font-bold text-white mb-6">
+        <h1 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
-        </div>
+        </h1>
       )}
 
       <div className="flex justify-end mb-4">

@@ -302,6 +302,12 @@ describe('Records - single fetch on filter change', () => {
     await userEvent.click(titlesBtn);
 
     await waitFor(() => expect(fetchSpy).toHaveBeenCalledWith('/api/records/timespan/titles'));
+
+    // URL should be updated to canonical path form
+    await waitFor(() => {
+      // history.replaceState should have been used to update URL in-place
+      expect(window.location.pathname).toBe('/records/timespan/titles');
+    });
   });
 
   it('rapid clicks on tabs only activate the last one', async () => {
@@ -345,6 +351,43 @@ describe('Records - single fetch on filter change', () => {
     await userEvent.click(agesBtn);
 
     expect(screen.getByTestId('component-Ages')).toBeTruthy();
+
+    // URL should reflect the selected record
+    expect(window.location.pathname).toBe('/records/ages');
+  });
+
+  it('clicking an Ages subtab like Oldest Winners resets filters and updates path to kebab-case', async () => {
+    render(<RecordPage />);
+
+    // Activate Wins tab and apply a filter so we have a filter state
+    const winsBtn = screen.getByRole('button', { name: /Wins/i });
+    await userEvent.click(winsBtn);
+    await waitFor(() => expect(fetch).toHaveBeenCalled());
+
+    // Simulate a filter click via the lightweight TestRecords pattern (some filters appear after activation)
+    const hardBtn = screen.getByRole('button', { name: /Hard/i });
+    await userEvent.click(hardBtn);
+
+    // Ensure URL contains the surface param now
+    await waitFor(() => expect(window.location.search).toContain('surface=Hard'));
+
+    // Now switch to Ages tab and click the Oldest Winners subtab
+    const agesBtn = screen.getByRole('button', { name: /Ages/i });
+    await userEvent.hover(agesBtn);
+    await userEvent.click(agesBtn); // activate ages tab
+
+    const owMatches = screen.getAllByRole('button', { name: /Oldest Winners/i });
+    const owBtn = owMatches.find(b => b.className?.includes('px-3')) || owMatches[0];
+    await userEvent.click(owBtn);
+
+    // Expect OldestWinners component
+    await waitFor(() => expect(screen.getByTestId('component-OldestWinners')).toBeTruthy());
+
+    // Filters should have been reset (no surface query param)
+    expect(window.location.search).not.toContain('surface=Hard');
+
+    // And the URL pathname should be kebab-case
+    expect(window.location.pathname).toBe('/records/ages/oldest-winners');
   });
 
   it('fetch is not called on repeated clicks of the same tab', async () => {

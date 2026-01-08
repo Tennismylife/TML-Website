@@ -9,10 +9,11 @@ import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
 
 interface PercentageProps {
-  selectedSurfaces: Set<string>;
-  selectedLevels: Set<string>;
-  selectedRounds: string;
-  selectedBestOf: number | null;
+  selectedSurfaces?: Set<string>;
+  selectedLevels?: Set<string>;
+  selectedRounds?: string;
+  selectedBestOf?: number | null;
+  topWinPercentages?: PlayerPercentage[];
   fetchEnabled?: boolean;
   description?: string;
 }
@@ -25,9 +26,9 @@ interface PlayerPercentage {
   matchesPlayed: number;
 }
 
-const Percentage = ({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, description }: PercentageProps) => {
+const Percentage = ({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, topWinPercentages, fetchEnabled, description }: PercentageProps) => {
   const enabled = !!fetchEnabled;
-  const [data, setData] = useState<PlayerPercentage[]>([]);
+  const [data, setData] = useState<PlayerPercentage[]>(topWinPercentages || []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [minMatches, setMinMatches] = useState(1);
@@ -36,12 +37,17 @@ const Percentage = ({ selectedSurfaces, selectedLevels, selectedRounds, selected
   const perPage = 20;
   const searchParams = useSearchParams();
 
-  useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
+  // Reset page when filters change
+  useEffect(() => setPage(1), [searchParams]);
 
   useEffect(() => {
     const fetchData = async () => {
       if (!enabled && !showModal) {
-        setData([]);
+        if (topWinPercentages && topWinPercentages.length) {
+          setData(topWinPercentages);
+        } else {
+          setData([]);
+        }
         setLoading(false);
         return;
       }
@@ -49,16 +55,34 @@ const Percentage = ({ selectedSurfaces, selectedLevels, selectedRounds, selected
       setLoading(true);
       try {
         const query = new URLSearchParams();
-        selectedSurfaces.forEach((s) => query.append('surface', s));
-        selectedLevels.forEach((l) => query.append('level', l));
-        if (selectedRounds) query.append('round', selectedRounds);
-        if (selectedBestOf) query.append('best_of', selectedBestOf.toString());
-        const url = `/api/records/percentage${query.toString() ? '?' + query.toString() : ''}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('Failed to fetch percentage data');
-        const result = await res.json();
-        setData(result.topWinPercentages || []);
-      } catch (err) {
+
+        if (selectedSurfaces !== undefined) Array.from(selectedSurfaces).forEach((s) => query.append('surface', s));
+        else Array.from(searchParams.entries()).forEach(([k, v]) => { if (k === 'surface') query.append(k, v); });
+
+        if (selectedLevels !== undefined) Array.from(selectedLevels).forEach((l) => query.append('level', l));
+        else Array.from(searchParams.entries()).forEach(([k, v]) => { if (k === 'level') query.append(k, v); });
+
+        if (selectedRounds !== undefined) { if (selectedRounds) query.append('round', selectedRounds); }
+        else searchParams.getAll('round').forEach(r => query.append('round', r));
+
+        if (selectedBestOf !== undefined) { if (selectedBestOf !== null) query.append('best_of', selectedBestOf.toString()); }
+        else searchParams.getAll('best_of').forEach(b => query.append('best_of', b));
+
+        query.set('perPage', showModal ? '1000' : '100');
+        query.delete('page');
+
+        if (!showModal && topWinPercentages && topWinPercentages.length) {
+          setData(topWinPercentages);
+          setError(null);
+        } else {
+          const url = `/api/records/percentage${query.toString() ? '?' + query.toString() : ''}`;
+          const res = await fetch(url);
+          if (!res.ok) throw new Error('Failed to fetch percentage data');
+          const result = await res.json();
+          setData(result.topWinPercentages || []);
+          setError(null);
+        }
+      } catch (err: any) {
         console.error(err);
         setData([]);
         setError(err);
@@ -67,7 +91,7 @@ const Percentage = ({ selectedSurfaces, selectedLevels, selectedRounds, selected
       }
     };
     fetchData();
-  }, [Array.from(selectedSurfaces).sort().join(','), Array.from(selectedLevels).sort().join(','), selectedRounds, selectedBestOf, enabled, showModal]);
+  }, [searchParams, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, enabled, showModal, topWinPercentages]);
 
   const filteredData = data.filter(p => p.matchesPlayed >= minMatches);
 
@@ -108,7 +132,7 @@ const Percentage = ({ selectedSurfaces, selectedLevels, selectedRounds, selected
               <tr key={`${p.id}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalIdx}</td>
                 <td className="border border-white/10 px-4 py-2 text-lg text-gray-200 flex items-center gap-2">
-                  <span className="text-base">{getFlagFromIOC(p.ioc) || ''}</span>
+                  <span className="text-base">{getFlagFromIOC(p.ioc) || '🏳️'}</span>
                   <Link href={getLink(String(p.id))} className="text-gray-200 hover:underline">{p.name}</Link>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{wins}</td>
@@ -125,9 +149,9 @@ const Percentage = ({ selectedSurfaces, selectedLevels, selectedRounds, selected
   return (
     <section className="mb-8">
       {description && (
-        <div className="text-center text-4xl font-bold text-white mb-6">
+        <h1 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
-        </div>
+        </h1>
       )}
 
       <div className="mb-4">

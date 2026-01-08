@@ -18,6 +18,9 @@ export async function GET(request: NextRequest) {
     const selectedSurfaces = url.searchParams.getAll('surface');
     const selectedLevels = url.searchParams.getAll('level');
     const minTitlesPerSeason = parseInt(url.searchParams.get('minTitlesPerSeason') || '1', 10);
+    const bestOf = url.searchParams.get('best_of');
+    const limitParam = Number(url.searchParams.get('limit') || '100');
+    const limit = Math.min(1000, Math.max(1, Number.isFinite(limitParam) ? limitParam : 100));
 
     // --- Fetch matches ---
     const matches = await prisma.match.findMany({
@@ -25,6 +28,7 @@ export async function GET(request: NextRequest) {
         round: 'F',
         ...(selectedSurfaces.length > 0 && { surface: { in: selectedSurfaces } }),
         ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),
+        ...(bestOf ? { best_of: Number(bestOf) } : {}),
         NOT: {
           OR: [
             { score: { contains: "W/O", mode: 'insensitive' } },
@@ -79,7 +83,7 @@ export async function GET(request: NextRequest) {
     // Sort players by totalSeasons descending, then name ascending
     players.sort((a, b) => b.totalSeasons - a.totalSeasons || a.name.localeCompare(b.name));
 
-    return NextResponse.json({ players });
+    return NextResponse.json({ players: players.slice(0, limit) });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

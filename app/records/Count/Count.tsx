@@ -15,13 +15,20 @@ interface PlayerData {
 }
 
 interface CountProps {
-  selectedRounds: string;
-  top: PlayerData[];
+  selectedRounds?: string;
+  selectedSurfaces?: Set<string>;
+  selectedLevels?: Set<string>;
+  selectedBestOf?: number | null;
+  topCount?: PlayerData[];
+  fetchEnabled?: boolean;
   description?: string;
 }
 
-export default function Count({ selectedRounds, top, description }: CountProps) {
+export default function Count({ selectedRounds, selectedSurfaces, selectedLevels, selectedBestOf, topCount, fetchEnabled, description }: CountProps) {
+  const enabled = !!fetchEnabled;
+  const [allPlayers, setAllPlayers] = useState<PlayerData[]>(Array.isArray(topCount) ? topCount : []);
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
   const perPage = 20;
@@ -32,15 +39,66 @@ export default function Count({ selectedRounds, top, description }: CountProps) 
     return () => window.removeEventListener('records:reset', handler as EventListener);
   }, []);
 
-  useEffect(() => setPage(1), [top]);
+  // Reset page when filters change
+  useEffect(() => setPage(1), [searchParams]);
 
-  if (!top || top.length === 0) {
-    return <div className="text-center py-8 text-gray-300">No data available.</div>;
-  }
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!enabled && !showModal) {
+        if (Array.isArray(topCount) && topCount.length) {
+          setAllPlayers(topCount);
+        } else {
+          setAllPlayers([]);
+        }
+        setLoading(false);
+        return;
+      }
 
-  const totalPages = Math.ceil(top.length / perPage);
+      setLoading(true);
+      try {
+        const params = new URLSearchParams();
+
+        // Prefer explicit props, fallback to URL search params
+        if (selectedSurfaces !== undefined) Array.from(selectedSurfaces).forEach(s => params.append('surface', s));
+        else Array.from(searchParams.entries()).forEach(([k, v]) => { if (k === 'surface') params.append(k, v); });
+
+        if (selectedLevels !== undefined) Array.from(selectedLevels).forEach(l => params.append('level', l));
+        else Array.from(searchParams.entries()).forEach(([k, v]) => { if (k === 'level') params.append(k, v); });
+
+        if (selectedRounds !== undefined) { if (selectedRounds) params.set('round', selectedRounds); }
+        else { const r = searchParams.get('round'); if (r) params.set('round', r); }
+
+        if (selectedBestOf !== undefined) { if (selectedBestOf !== null) params.set('bestOf', String(selectedBestOf)); }
+        else { const b = searchParams.get('bestOf'); if (b) params.set('bestOf', b); }
+
+        params.set('perPage', showModal ? '1000' : '100');
+        params.delete('page');
+
+        if (!showModal && Array.isArray(topCount) && topCount.length) {
+          setAllPlayers(topCount);
+        } else {
+          const res = await fetch(`/api/records/count?${params.toString()}`);
+          const data = await res.json();
+          const rows = Array.isArray(data.top) ? data.top : [];
+          setAllPlayers(rows);
+        }
+      } catch (err) {
+        console.error(err);
+        setAllPlayers([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [searchParams, enabled, showModal, topCount, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
+
+  if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
+  if (!allPlayers.length) return <div className="text-center py-8 text-gray-300">No data available.</div>;
+
+  const totalPages = Math.ceil(allPlayers.length / perPage);
   const start = (page - 1) * perPage;
-  const currentData = top.slice(start, start + perPage);
+  const currentData = allPlayers.slice(start, start + perPage);
 
   const playerTournamentsUrl = (playerId: string) => `/players/${playerId}?tab=tournaments`;
 
@@ -68,7 +126,7 @@ export default function Count({ selectedRounds, top, description }: CountProps) 
         <tbody>
           {data.map((p, idx) => {
             const globalRank = startIndex + idx + 1;
-            const flag = p.ioc ? getFlagFromIOC(p.ioc) : null;
+            const flag = getFlagFromIOC(p.ioc) ?? "🏳️";
 
             return (
               <tr key={p.id} className="hover:bg-gray-800 border-b border-white/10">
@@ -97,9 +155,9 @@ export default function Count({ selectedRounds, top, description }: CountProps) 
   return (
     <section className="mb-8">
       {description && (
-        <div className="text-center text-4xl font-bold text-white mb-6">
+        <h1 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
-        </div>
+        </h1>
       )}
 
       <div className="mb-4 flex justify-end">
@@ -122,7 +180,7 @@ export default function Count({ selectedRounds, top, description }: CountProps) 
         onClose={() => setShowModal(false)}
         title="Players with Most Appearances"
       >
-        {renderTable(top)}
+        {renderTable(allPlayers)}
       </Modal>
     </section>
   );

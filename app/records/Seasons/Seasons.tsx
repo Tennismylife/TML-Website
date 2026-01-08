@@ -1,14 +1,11 @@
-// app/records/Seasons/Seasons.tsx
-
 'use client'
 
-import { useState, useEffect } from 'react';
-import PercentageSection from './PercentageSection';
-import RoundSection from './RoundsSection';
 import WinsSection from './WinsSection';
 import PlayedSection from './PlayedSection';
 import EntriesSection from './EntriesSection';
 import TitlesSection from './TitlesSection';
+import RoundSection from './RoundsSection';
+import PercentageSection from './PercentageSection';
 
 interface SeasonsProps {
   selectedSurfaces: Set<string>;
@@ -20,15 +17,10 @@ interface SeasonsProps {
   setFetchEnabled?: (v: boolean) => void;
   fetchRequestId?: string | null;
   description?: string;
+  prefetchedData?: Record<string, any[] | undefined>;
 }
 
-export default function Seasons({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeSubTab, fetchEnabled, setFetchEnabled, fetchRequestId, description }: SeasonsProps) {
-  // No top-level data fetch here; children handle fetching like in `Same`.
-  const [loading, setLoading] = useState(false);
-
-
-
-
+export default function Seasons({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeSubTab, fetchEnabled, setFetchEnabled, fetchRequestId, description, prefetchedData }: SeasonsProps) {
   return (
     <section className="mb-8">
       {activeSubTab === 'wins' && (
@@ -41,8 +33,10 @@ export default function Seasons({ selectedSurfaces, selectedLevels, selectedRoun
           setFetchEnabled={setFetchEnabled}
           fetchRequestId={fetchRequestId}
           description={description}
+          initialData={prefetchedData?.wins as any[]}
         />
       )}
+
       {activeSubTab === 'played' && (
         <PlayedSection
           selectedSurfaces={Array.from(selectedSurfaces)}
@@ -53,8 +47,10 @@ export default function Seasons({ selectedSurfaces, selectedLevels, selectedRoun
           setFetchEnabled={setFetchEnabled}
           fetchRequestId={fetchRequestId}
           description={description}
+          initialData={prefetchedData?.played as any[]}
         />
       )}
+
       {activeSubTab === 'entries' && (
         <EntriesSection
           selectedSurfaces={Array.from(selectedSurfaces)}
@@ -63,8 +59,10 @@ export default function Seasons({ selectedSurfaces, selectedLevels, selectedRoun
           setFetchEnabled={setFetchEnabled}
           fetchRequestId={fetchRequestId}
           description={description}
+          initialData={prefetchedData?.entries as any[]}
         />
       )}
+
       {activeSubTab === 'titles' && (
         <TitlesSection
           selectedSurfaces={Array.from(selectedSurfaces)}
@@ -73,8 +71,10 @@ export default function Seasons({ selectedSurfaces, selectedLevels, selectedRoun
           setFetchEnabled={setFetchEnabled}
           fetchRequestId={fetchRequestId}
           description={description}
+          initialData={prefetchedData?.titles as any[]}
         />
       )}
+
       {activeSubTab === 'round' && (
         <RoundSection
           selectedSurfaces={Array.from(selectedSurfaces)}
@@ -84,8 +84,10 @@ export default function Seasons({ selectedSurfaces, selectedLevels, selectedRoun
           setFetchEnabled={setFetchEnabled}
           fetchRequestId={fetchRequestId}
           description={description}
+          initialData={prefetchedData?.round as any[]}
         />
       )}
+
       {activeSubTab === 'percentage' && (
         <PercentageSection
           selectedSurfaces={Array.from(selectedSurfaces)}
@@ -96,9 +98,9 @@ export default function Seasons({ selectedSurfaces, selectedLevels, selectedRoun
           setFetchEnabled={setFetchEnabled}
           fetchRequestId={fetchRequestId}
           description={description}
+          initialData={prefetchedData?.percentage as any[]}
         />
       )}
-
     </section>
   );
 }

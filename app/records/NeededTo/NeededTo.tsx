@@ -10,10 +10,15 @@ interface NeededToSectionProps {
   selectedRounds: string;
   activeSubTab: string;
   fetchEnabled?: boolean;
+  setFetchEnabled?: (v: boolean) => void;
+  fetchRequestId?: string | null;
+  prefetchedData?: Record<string, any[] | undefined>;
+  initialNth?: number;
+  initialRoundNumber?: number;
   description?: string;
 }
 
-export default function NeededToSection({ selectedSurfaces, selectedLevels, selectedRounds, activeSubTab, fetchEnabled, description }: NeededToSectionProps) {
+export default function NeededToSection({ selectedSurfaces, selectedLevels, selectedRounds, activeSubTab, fetchEnabled, setFetchEnabled, fetchRequestId, prefetchedData, initialNth, initialRoundNumber, description }: NeededToSectionProps) {
   return (
     <section className="mb-8">
       {activeSubTab === 'titles' && (
@@ -21,7 +26,11 @@ export default function NeededToSection({ selectedSurfaces, selectedLevels, sele
           selectedSurfaces={Array.from(selectedSurfaces)}
           selectedLevels={Array.from(selectedLevels)}
           fetchEnabled={fetchEnabled}
+          setFetchEnabled={setFetchEnabled}
+          fetchRequestId={fetchRequestId}
           description={description}
+          initialData={prefetchedData?.titles as any[]}
+          initialNth={initialNth}
         />
       )}
       {activeSubTab === 'rounds' && (
@@ -30,7 +39,11 @@ export default function NeededToSection({ selectedSurfaces, selectedLevels, sele
           selectedLevels={Array.from(selectedLevels)}
           selectedRounds={selectedRounds}
           fetchEnabled={fetchEnabled}
+          setFetchEnabled={setFetchEnabled}
+          fetchRequestId={fetchRequestId}
           description={description}
+          initialData={prefetchedData?.rounds as any[]}
+          initialNth={initialRoundNumber}
         />
       )}
     </section>

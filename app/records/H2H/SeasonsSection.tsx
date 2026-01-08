@@ -1,17 +1,20 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { getFlagFromIOC } from "@/lib/utils";
 import Modal from "@/components/Modal";
+import { playerMatchesUrl } from "../nav";
 
 interface SeasonsSectionProps {
   selectedSurfaces: Set<string>;
   selectedLevels: Set<string>;
   selectedRounds: string;
   fetchEnabled?: boolean;
+  setFetchEnabled?: (v: boolean) => void;
   parentShowModal?: boolean;
-  fetchRequestId?: string;
+  fetchRequestId?: string | null;
+  initialData?: H2HSeasonRecord[];
   description?: string;
 }
 
@@ -22,83 +25,91 @@ interface H2HSeasonRecord {
   matches_played: number;
 }
 
-interface H2HSeasonResponse {
-  h2h_season: H2HSeasonRecord[];
-}
+const previewLimit = 10;
 
 export default function SeasonsSection({
   selectedSurfaces,
   selectedLevels,
   selectedRounds,
   fetchEnabled,
+  setFetchEnabled,
   parentShowModal,
   fetchRequestId,
+  initialData,
   description,
 }: SeasonsSectionProps) {
-  const enabled = !!fetchEnabled;
-  const [data, setData] = useState<H2HSeasonResponse | null>(null);
+  const [data, setData] = useState<H2HSeasonRecord[]>(initialData ?? []);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [modalTitle, setModalTitle] = useState('');
-  const [modalPlayers, setModalPlayers] = useState<H2HSeasonRecord[]>([]);
+  const [hasFetched, setHasFetched] = useState(!!initialData);
+  const lastRequestIdRef = useRef<string | null>(null);
 
-  useEffect(() => {
-    console.debug('[SeasonsSection] effect start', { enabled, showModal, parentShowModal });
-    if (!enabled && !showModal && !parentShowModal) {
-      console.debug('[SeasonsSection] skipped fetch: not enabled and no modal');
-      setData(null);
-      setLoading(false);
-      return;
-    }
+  const surfacesArr = useMemo(() => Array.from(selectedSurfaces), [selectedSurfaces]);
+  const levelsArr = useMemo(() => Array.from(selectedLevels), [selectedLevels]);
+
+  const fetchData = async (limit = 200, force = false) => {
+    if (fetchRequestId && !force && lastRequestIdRef.current === fetchRequestId) return;
 
     setLoading(true);
     setError(null);
+    lastRequestIdRef.current = fetchRequestId ?? "manual";
 
-    // Costruisco l'URL senza filtro per anno
-    const url = '/api/records/h2h/seasons';
-    console.debug('[SeasonsSection] fetching', url);
+    try {
+      const params = new URLSearchParams();
+      surfacesArr.forEach((s) => params.append("surface", s));
+      levelsArr.forEach((l) => params.append("level", l));
+      if (selectedRounds) params.set("round", selectedRounds);
+      params.set("limit", String(limit));
 
-    fetch(url)
-      .then(res => res.json())
-      .then(setData)
-      .catch(setError)
-      .finally(() => setLoading(false));
-  }, [selectedSurfaces, selectedLevels, selectedRounds, enabled, showModal, parentShowModal]);
+      const res = await fetch(`/api/records/h2h/seasons?${params.toString()}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      const arr = Array.isArray(json?.h2h_season) ? json.h2h_season : [];
+      setData(arr);
+    } catch (err: any) {
+      setError(err?.message || "Unable to load data");
+      setData([]);
+    } finally {
+      setLoading(false);
+      setHasFetched(true);
+      if (fetchEnabled) setFetchEnabled?.(false);
+    }
+  };
 
-  if (error) return <div>Error loading data</div>;
-  if (loading) return <div>Loading...</div>;
-
-  const h2hSeasonArray = data?.h2h_season || [];
+  useEffect(() => {
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchRequestId, surfacesArr.join(','), levelsArr.join(','), selectedRounds]);
 
   const renderTable = (players: H2HSeasonRecord[]) => (
     <div className="overflow-x-auto">
-      <table className="w-full text-sm border-collapse">
+      <table className="w-full border-collapse text-sm">
         <thead>
           <tr className="border-b">
-            <th className="text-left py-1">Player 1</th>
-            <th className="text-left py-1">Player 2</th>
-            <th className="text-left py-1">Year</th>
-            <th className="text-left py-1">Matches</th>
+            <th className="py-1 text-left">Player 1</th>
+            <th className="py-1 text-left">Player 2</th>
+            <th className="py-1 text-left">Year</th>
+            <th className="py-1 text-left">Matches</th>
           </tr>
         </thead>
         <tbody>
           {players.length === 0 ? (
             <tr>
-              <td colSpan={4} className="py-2 text-gray-500">No data</td>
+              <td colSpan={4} className="py-2 text-gray-500">{!hasFetched ? "Select data" : "No data"}</td>
             </tr>
           ) : (
             players.map((p) => (
               <tr key={`${p.player1.id}-${p.player2.id}-${p.year}`} className="border-b">
                 <td className="py-1">
-                  <span className="text-base mr-1">{getFlagFromIOC(p.player1.ioc) || ""}</span>
-                  <Link href={`/players/${encodeURIComponent(p.player1.id)}`} className="text-white hover:underline">
+                  <span className="mr-1 text-base">{getFlagFromIOC(p.player1.ioc) || ""}</span>
+                  <Link href={playerMatchesUrl(p.player1.id)} className="text-blue-700 hover:underline">
                     {p.player1.name}
                   </Link>
                 </td>
                 <td className="py-1">
-                  <span className="text-base mr-1">{getFlagFromIOC(p.player2.ioc) || ""}</span>
-                  <Link href={`/players/${encodeURIComponent(p.player2.id)}`} className="text-white hover:underline">
+                  <span className="mr-1 text-base">{getFlagFromIOC(p.player2.ioc) || ""}</span>
+                  <Link href={playerMatchesUrl(p.player2.id)} className="text-blue-700 hover:underline">
                     {p.player2.name}
                   </Link>
                 </td>
@@ -112,22 +123,27 @@ export default function SeasonsSection({
     </div>
   );
 
-  const previewPlayers = h2hSeasonArray.slice(0, 10);
+  const previewPlayers = data.slice(0, previewLimit);
 
   return (
     <section className="rounded border bg-white p-4">
-      {description && <div className="text-center text-4xl font-bold text-white mb-6">{description}</div>}
+      {description && <h1 className="mb-6 text-center text-2xl font-semibold text-white">{description}</h1>} 
+
+
+
+      {error && <div className="mb-2 text-sm text-red-500">{error}</div>}
+
       {renderTable(previewPlayers)}
-      {h2hSeasonArray.length > 10 && (
+      {data.length > previewLimit && (
         <button
-          onClick={() => { setModalTitle('H2H in Same Season'); setModalPlayers(h2hSeasonArray); setShowModal(true); }}
-          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+          onClick={() => { setShowModal(true); }}
+          className="mt-2 rounded bg-blue-500 px-4 py-2 text-white"
         >
           View All
         </button>
       )}
-      <Modal show={showModal} onClose={() => setShowModal(false)} title={modalTitle}>
-        {renderTable(modalPlayers)}
+      <Modal show={showModal} onClose={() => setShowModal(false)} title="H2H in Same Season">
+        {renderTable(data)}
       </Modal>
     </section>
   );

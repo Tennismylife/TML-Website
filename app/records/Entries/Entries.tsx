@@ -15,9 +15,9 @@ interface Entry {
   entries: number;
 }
 
-export default function Entries({ fetchEnabled, description }: { fetchEnabled?: boolean; description?: string }) {
+export default function Entries({ fetchEnabled, description, topEntries, selectedSurfaces, selectedLevels }: { fetchEnabled?: boolean; description?: string; topEntries?: Entry[]; selectedSurfaces?: Set<string>; selectedLevels?: Set<string>; }) {
   const enabled = !!fetchEnabled; // default false
-  const [allEntries, setAllEntries] = useState<Entry[]>([]);
+  const [allEntries, setAllEntries] = useState<Entry[]>(Array.isArray(topEntries) ? topEntries : []);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -32,19 +32,33 @@ export default function Entries({ fetchEnabled, description }: { fetchEnabled?: 
 
   useEffect(() => {
     const fetchEntries = async () => {
-      if (!enabled) {
-        console.debug('[Entries] skipped fetch: enabled=false');
+      if (!enabled && !showModal) {
+        if (Array.isArray(topEntries) && topEntries.length) setAllEntries(topEntries);
+        else setAllEntries([]);
+        setLoading(false);
         return;
       }
       setLoading(true);
       try {
-        const params = new URLSearchParams(searchParams as any);
-        params.set("perPage", "100");
+        const params = new URLSearchParams();
+
+        if (selectedSurfaces !== undefined) Array.from(selectedSurfaces).forEach(s => params.append('surface', s));
+        else Array.from(searchParams.entries()).forEach(([k,v]) => { if (k === 'surface') params.append(k, v); });
+
+        if (selectedLevels !== undefined) Array.from(selectedLevels).forEach(l => params.append('level', l));
+        else Array.from(searchParams.entries()).forEach(([k,v]) => { if (k === 'level') params.append(k, v); });
+
+        params.set("perPage", showModal ? "1000" : "100");
         params.delete("page");
 
-        const res = await fetch(`/api/records/entries?${params.toString()}`);
-        const data = await res.json();
-        setAllEntries(data.topEntries || []);
+        if (!showModal && Array.isArray(topEntries) && topEntries.length) {
+          setAllEntries(topEntries);
+        } else {
+          const res = await fetch(`/api/records/entries?${params.toString()}`);
+          const data = await res.json();
+          const rows = Array.isArray(data.topEntries) ? data.topEntries : [];
+          setAllEntries(rows);
+        }
       } catch (err) {
         console.error(err);
         setAllEntries([]);
@@ -53,7 +67,7 @@ export default function Entries({ fetchEnabled, description }: { fetchEnabled?: 
       }
     };
     fetchEntries();
-  }, [searchParams, enabled]);
+  }, [searchParams, enabled, showModal, topEntries, selectedSurfaces, selectedLevels]);
 
   if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
   if (!allEntries.length) return <div className="text-center py-8 text-gray-300">No data available.</div>;
@@ -112,9 +126,9 @@ export default function Entries({ fetchEnabled, description }: { fetchEnabled?: 
   return (
     <section className="mb-8">
       {description && (
-        <div className="text-center text-4xl font-bold text-white mb-6">
+        <h1 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
-        </div>
+        </h1>
       )}
 
       <div className="mb-4 flex justify-end">

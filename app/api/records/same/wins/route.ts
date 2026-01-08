@@ -44,6 +44,7 @@ export async function GET(request: NextRequest) {
     const selectedLevels = getMultiParam(url, 'level');
     const selectedRounds = getMultiParam(url, 'round');
     const selectedBestOf = getMultiParam(url, 'best_of');
+    const limit = Math.max(1, Math.min(1000, Number(url.searchParams.get('limit') ?? 100)));
 
     let finalWins: WinRecord[] = [];
 
@@ -51,7 +52,7 @@ export async function GET(request: NextRequest) {
     if (selectedSurfaces.length + selectedLevels.length + selectedRounds.length + selectedBestOf.length <= 1) {
       const wins = await prisma.mVSameTournamentWins.findMany({
         orderBy: { total_wins: 'desc' },
-        take: 500,
+        take: limit,
       });
       if (!wins.length) return jsonResponse([]);
 
@@ -181,7 +182,7 @@ export async function GET(request: NextRequest) {
 
     // Ordinamento e top 100
     finalWins.sort((a, b) => b.total_wins - a.total_wins);
-    finalWins = finalWins.slice(0, 100);
+    finalWins = finalWins.slice(0, limit);
 
     return jsonResponse(finalWins);
   } catch (error) {

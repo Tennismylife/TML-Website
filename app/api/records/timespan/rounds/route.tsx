@@ -7,6 +7,7 @@ export async function GET(request: NextRequest) {
     const roundParam = searchParams.get("round");
     const selectedSurfaces = searchParams.getAll("surface");
     const selectedLevels = searchParams.getAll("level");
+    const limitParam = Math.max(1, Math.min(1000, Number(searchParams.get('perPage') ?? searchParams.get('limit') ?? 100)));
 
     if (!roundParam) {
       return NextResponse.json({ error: "Round parameter is required" }, { status: 400 });
@@ -73,10 +74,10 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    // Ordina e prendi top 100
-    const top100 = data.sort((a, b) => b.spanDays - a.spanDays).slice(0, 100);
+    // Ordina e prendi top N
+    const topRows = data.sort((a, b) => b.spanDays - a.spanDays).slice(0, limitParam);
 
-    return NextResponse.json({ data: top100, round: roundParam });
+    return NextResponse.json({ data: topRows, round: roundParam });
   } catch (error) {
     console.error("Error fetching player tournament timespan:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

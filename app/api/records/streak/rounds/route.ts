@@ -10,8 +10,22 @@ export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url);
     const selectedSurfaces = url.searchParams.getAll('surface');
-    const selectedLevels = url.searchParams.getAll('tourney_level');
+    const selectedLevels = [
+      ...url.searchParams.getAll('tourney_level'),
+      ...url.searchParams.getAll('level'),
+    ];
     const selectedRounds = url.searchParams.getAll('round');
+    const selectedBestOf = [
+      ...url.searchParams.getAll('best_of'),
+      ...url.searchParams.getAll('bestOf'),
+    ]
+      .map(Number)
+      .filter(b => [1, 3, 5].includes(b));
+
+    const rawLimit = Number(url.searchParams.get('limit') ?? '100');
+    const limit = Number.isFinite(rawLimit)
+      ? Math.min(200, Math.max(1, rawLimit))
+      : 100;
 
     const roundOrder: Record<string, number> = {
       'R128': 1,
@@ -23,12 +37,12 @@ export async function GET(request: NextRequest) {
       'F': 7,
     };
 
-    // Caso 1: filtri aggiuntivi → algoritmo originale
-    if (selectedSurfaces.length > 0 || selectedLevels.length > 0) {
+    const computeLive = async () => {
       const matches = await prisma.match.findMany({
         where: {
           ...(selectedSurfaces.length > 0 && { surface: { in: selectedSurfaces } }),
           ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),
+          ...(selectedBestOf.length > 0 && { best_of: { in: selectedBestOf } }),
           team_event: false,
           round: { not: 'RR' },
         },
@@ -47,7 +61,6 @@ export async function GET(request: NextRequest) {
         orderBy: { tourney_date: 'asc' },
       });
 
-      // Map: playerId -> { name, ioc, tournaments }
       const playerTournaments = new Map<
         string,
         { name: string; ioc: string; tournaments: Map<string, { event_id: string; date: Date; maxRoundValue: number; maxRound: string }> }
@@ -78,7 +91,6 @@ export async function GET(request: NextRequest) {
         if (m.loser_id) processPlayer(String(m.loser_id), m.loser_name, m.loser_ioc ?? '');
       }
 
-      // Calcolo streak
       const allStreaks = [];
 
       for (const [playerId, playerData] of playerTournaments) {
@@ -119,7 +131,12 @@ export async function GET(request: NextRequest) {
 
       allStreaks.sort((a, b) => b.maxStreak - a.maxStreak);
 
-      return NextResponse.json({ streaks: allStreaks.slice(0, 50) });
+      return allStreaks.slice(0, limit);
+    };
+
+    // Caso 1: filtri aggiuntivi o più round → algoritmo live
+    if (selectedSurfaces.length > 0 || selectedLevels.length > 0 || selectedBestOf.length > 0 || selectedRounds.length > 1) {
+      return NextResponse.json({ streaks: await computeLive() });
     }
 
     // Caso 2: solo round selezionato → usa la MV
@@ -129,7 +146,7 @@ export async function GET(request: NextRequest) {
       const streaks = await prisma.mVStreakRounds.findMany({
         where: { min_round: minRound },
         orderBy: { maxStreak: 'desc' },
-        take: 50,
+        take: limit,
       });
 
       const result = streaks.map(s => ({
@@ -138,10 +155,14 @@ export async function GET(request: NextRequest) {
         event_ids: s.event_ids,
       }));
 
-      return NextResponse.json({ streaks: result });
+      if (result.length > 0) {
+        return NextResponse.json({ streaks: result });
+      }
+      // Fallback se MV vuota
+      return NextResponse.json({ streaks: await computeLive() });
     }
 
-    return NextResponse.json({ streaks: [] });
+    return NextResponse.json({ streaks: await computeLive() });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

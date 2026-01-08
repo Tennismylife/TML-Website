@@ -11,6 +11,9 @@ interface StreakSectionProps {
   selectedBestOf: number | null;
   activeSubTab: string;
   fetchEnabled?: boolean;
+  setFetchEnabled?: (v: boolean) => void;
+  fetchRequestId?: string | number | null;
+  prefetchedData?: Record<string, any[] | undefined>;
   description?: string;
 }
 
@@ -21,28 +24,37 @@ export default function StreakSection({
   selectedBestOf,
   activeSubTab,
   fetchEnabled,
+  setFetchEnabled,
+  fetchRequestId,
+  prefetchedData,
   description
 }: StreakSectionProps) {
+  const effectiveFetchId = fetchRequestId != null ? String(fetchRequestId) : undefined;
+
+  const commonProps = {
+    selectedSurfaces,
+    selectedLevels,
+    selectedRounds,
+    selectedBestOf,
+    fetchEnabled,
+    setFetchEnabled,
+    fetchRequestId: effectiveFetchId,
+    description,
+  } as const;
 
   return (
     <section className="rounded p-4">
       {activeSubTab === 'wins' && (
         <WinsSection
-          selectedSurfaces={selectedSurfaces}
-          selectedLevels={selectedLevels}
-          selectedBestOf={selectedBestOf}
-          fetchEnabled={fetchEnabled}
-          description={description}
+          {...commonProps}
+          initialData={prefetchedData?.wins as any[] | undefined}
         />
       )}
 
       {activeSubTab === 'round' && (
         <RoundSection
-          selectedSurfaces={selectedSurfaces}
-          selectedLevels={selectedLevels}
-          selectedRounds={selectedRounds}
-          fetchEnabled={fetchEnabled}
-          description={description}
+          {...commonProps}
+          initialData={prefetchedData?.round as any[] | undefined}
         />
       )}
     </section>

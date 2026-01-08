@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Pagination from "../../../components/Pagination";
@@ -13,15 +13,19 @@ interface WinsSectionProps {
   selectedLevels: string[];
   selectedRounds: string;
   selectedBestOf: number | null;
-  fetchEnabled?: boolean; // added
+  fetchEnabled?: boolean;
+  setFetchEnabled?: (v: boolean) => void;
+  fetchRequestId?: string | null;
   description?: string;
+  initialData?: Player[];
+  initialNth?: number;
 }
 
 interface Player {
   id: string;
   name: string;
   ioc?: string;
-  age_at_win: string; // ora è già nel formato "XXy YYd" o "-"
+  age_at_win: string;
 }
 
 function XInput({ value, onChange }: { value: number; onChange: (n: number) => void }) {
@@ -30,7 +34,7 @@ function XInput({ value, onChange }: { value: number; onChange: (n: number) => v
       type="number"
       min={1}
       className="w-24 px-2 py-1 bg-gray-800 text-white border border-gray-600 rounded"
-      value={value}
+      value={Number.isFinite(value) ? value : ''}
       onChange={(e) => onChange(Number(e.target.value))}
     />
   );
@@ -41,23 +45,61 @@ export default function WinsSection({
   selectedLevels,
   selectedRounds,
   selectedBestOf,
-  fetchEnabled = true, // added with default
+  fetchEnabled = false,
+  setFetchEnabled,
+  fetchRequestId,
   description,
+  initialData,
+  initialNth,
 }: WinsSectionProps) {
-  const [data, setData] = useState<Player[]>([]);
+  const enabled = !!fetchEnabled;
+  const safeInitialNth = Number.isFinite(initialNth) ? (initialNth as number) : 50;
+  const [data, setData] = useState<Player[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);  const [hasFetched, setHasFetched] = useState(false);  const [page, setPage] = useState(1);
+  const [error, setError] = useState<string | null>(null);
+  const [hasFetched, setHasFetched] = useState(Array.isArray(initialData) && initialData.length > 0);
+  const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
-
-  // X-esima vittoria
-  const [inputX, setInputX] = useState(50);
-  const [selectedX, setSelectedX] = useState(50);
+  const [inputX, setInputX] = useState(safeInitialNth);
+  const [selectedX, setSelectedX] = useState(safeInitialNth);
+  const lastRequestRef = useRef<string | null>(null);
 
   const searchParams = useSearchParams();
   const perPage = 20;
 
-  const fetchData = async (x: number) => {
-    if (!fetchEnabled) return;
+  useEffect(() => {
+    setInputX(safeInitialNth);
+    setSelectedX(safeInitialNth);
+    if (Array.isArray(initialData)) {
+      setData(initialData);
+      setHasFetched(initialData.length > 0);
+    }
+  }, [safeInitialNth, initialData]);
+
+  useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
+
+  useEffect(() => {
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal);
+    if (!shouldFetch) {
+      if (Array.isArray(initialData)) {
+        setData(initialData);
+        setHasFetched(initialData.length > 0);
+      }
+      setLoading(false);
+      return;
+    }
+
+    if (fetchRequestId) lastRequestRef.current = fetchRequestId;
+    fetchData(selectedX, showModal ? 1000 : 100, showModal);
+  }, [enabled, fetchRequestId, showModal, selectedX, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, initialData]);
+
+  const fetchData = async (x: number, limit: number, force = false) => {
+    if (!Number.isFinite(x) || x <= 0) {
+      setError('Please enter a valid N value.');
+      return;
+    }
+    if (!force && !enabled) return;
+
     try {
       setLoading(true);
       setError(null);
@@ -68,6 +110,7 @@ export default function WinsSection({
       selectedLevels.forEach((l) => query.append("level", l));
       if (selectedRounds) query.append("round", selectedRounds);
       if (selectedBestOf != null) query.append("best_of", selectedBestOf.toString());
+      query.set('limit', String(limit));
 
       const res = await fetch(`/api/records/ageofnth/wins?${query.toString()}`);
       if (!res.ok) {
@@ -76,16 +119,17 @@ export default function WinsSection({
       }
 
       const fetchedData: Player[] = await res.json();
-      setData(fetchedData);
+      setData(Array.isArray(fetchedData) ? fetchedData : []);
       setPage(1);
       setSelectedX(x);
+      setHasFetched(true);
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "Unknown error");
       setData([]);
     } finally {
       setLoading(false);
-      setHasFetched(true);
+      if (enabled) setFetchEnabled?.(false);
     }
   };
 
@@ -173,13 +217,13 @@ export default function WinsSection({
 
   return (
     <section className="mb-8">
-      {headerText && <div className="text-center text-4xl font-bold text-white mb-6">{headerText}</div>}  
+      {headerText && <h1 className="mb-6 text-center text-2xl font-semibold text-white">{headerText}</h1>}  
 
       {/* X Input */}
       <div className="mb-4 flex items-center gap-2">
         <XInput value={inputX} onChange={setInputX} />
         <button
-          onClick={() => Number.isFinite(inputX) && fetchData(inputX)}
+          onClick={() => Number.isFinite(inputX) && fetchData(inputX, showModal ? 1000 : 100, true)}
           disabled={loading || !Number.isFinite(inputX) || inputX <= 0}
           className={`px-4 py-1 rounded ${
             loading || !Number.isFinite(inputX) || inputX <= 0

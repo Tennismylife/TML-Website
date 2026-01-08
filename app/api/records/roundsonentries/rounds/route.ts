@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
     const selectedSurfaces = url.searchParams.getAll('surface');
     const selectedLevels = url.searchParams.getAll('level');
     const targetRound = url.searchParams.get('round');
+    const limitParam = Math.max(1, Math.min(1000, Number(url.searchParams.get('limit') ?? 100)));
 
     if (!targetRound) {
       return NextResponse.json({ error: 'Missing round parameter' }, { status: 400 });
@@ -70,7 +71,7 @@ export async function GET(request: NextRequest) {
     // Ordina per percentuale, poi per wins, poi per entries
     const result = allPlayers
       .sort((a, b) => b.percentage - a.percentage || b.wins - a.wins || b.entries - a.entries)
-      .slice(0, 100);
+      .slice(0, limitParam);
 
     return NextResponse.json({
       targetRound,

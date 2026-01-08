@@ -137,7 +137,10 @@ export async function GET(request: NextRequest) {
     // =====================================================
     playersData.sort((a, b) => b.wins_at_age - a.wins_at_age);
 
-    return NextResponse.json(playersData);
+    const limitParam = Number(url.searchParams.get('limit') ?? '100');
+    const limit = Number.isFinite(limitParam) ? Math.min(1000, Math.max(1, Math.floor(limitParam))) : 100;
+
+    return NextResponse.json(playersData.slice(0, limit));
 
   } catch (error) {
     console.error(error);

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { getFlagFromIOC } from '@/lib/utils';
 import { useSearchParams } from "next/navigation";
@@ -15,6 +15,7 @@ interface RoundsSectionProps {
   setFetchEnabled?: (v: boolean) => void;
   fetchRequestId?: string | null;
   description?: string;
+  initialData?: SeasonRoundRecord[];
 }
 
 interface SeasonRoundRecord {
@@ -25,19 +26,33 @@ interface SeasonRoundRecord {
   total_rounds: number;
 }
 
-export default function RoundsSection({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, setFetchEnabled, fetchRequestId, description }: RoundsSectionProps) {
-  const [topSeasonRounds, setTopSeasonRounds] = useState<SeasonRoundRecord[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function RoundsSection({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, setFetchEnabled, fetchRequestId, description, initialData }: RoundsSectionProps) {
+  const enabled = !!fetchEnabled;
+  const [topSeasonRounds, setTopSeasonRounds] = useState<SeasonRoundRecord[]>(Array.isArray(initialData) ? initialData : []);
+  const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [showModalRounds, setShowModalRounds] = useState(false);
   const perPage = 20;
   const searchParams = useSearchParams();
+  const lastRequestRef = useRef<string | null>(null);
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds]);
 
   useEffect(() => {
-    const enabled = !!fetchEnabled;
-    if (!enabled && !showModalRounds) return;
+    if (!selectedRounds) {
+      setTopSeasonRounds([]);
+      setLoading(false);
+      return;
+    }
+
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModalRounds);
+    if (!shouldFetch) {
+      if (Array.isArray(initialData)) setTopSeasonRounds(initialData);
+      setLoading(false);
+      return;
+    }
+
+    if (fetchRequestId) lastRequestRef.current = fetchRequestId;
 
     const fetchData = async () => {
       setLoading(true);
@@ -46,23 +61,26 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
         selectedSurfaces.forEach(s => query.append('surface', s));
         selectedLevels.forEach(l => query.append('level', l));
         if (selectedRounds) query.append('round', selectedRounds);
+        query.set('limit', showModalRounds ? '1000' : '100');
 
         const url = `/api/records/seasons/rounds?${query.toString()}`;
         const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch rounds')
         const data: SeasonRoundRecord[] = await res.json();
-        setTopSeasonRounds(data);
+        setTopSeasonRounds(Array.isArray(data) ? data : []);
+        setPage(1);
       } catch (err) {
         console.error(err);
         setTopSeasonRounds([]);
       } finally {
         setLoading(false);
-        setFetchEnabled?.(false);
+        if (enabled) setFetchEnabled?.(false);
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, setFetchEnabled, showModalRounds]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, enabled, fetchRequestId, showModalRounds, initialData, setFetchEnabled]);
 
+  if (!selectedRounds) return <div className="text-center py-8 text-gray-300 text-lg">Please select a round to view results.</div>;
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!topSeasonRounds.length) return <div className="text-center py-8 text-gray-300 text-lg">No rounds found.</div>;
 
@@ -117,9 +135,9 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
   return (
     <section className="mb-8">
       {description && (
-        <div className="text-center text-4xl font-bold text-white mb-6">
+        <h1 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
-        </div>
+        </h1>
       )}
 
       <div className="flex justify-end mb-4">

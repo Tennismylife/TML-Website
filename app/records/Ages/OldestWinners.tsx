@@ -25,11 +25,12 @@ interface OldestWinnersProps {
   fetchEnabled?: boolean;
   fetchRequestId?: string | null;
   description?: string;
+  initialData?: Player[];
 }
 
-const OldestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRequestId, description }: OldestWinnersProps) => {
+const OldestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRequestId, description, initialData }: OldestWinnersProps) => {
   const enabled = !!fetchEnabled;
-  const [data, setData] = useState<Player[]>([]);
+  const [data, setData] = useState<Player[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
@@ -43,9 +44,9 @@ const OldestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRe
   useEffect(() => {
     const controller = new AbortController();
     const fetchData = async () => {
-      if (!((enabled && fetchRequestId) || showModal)) {
-        console.debug('[OldestWinners] skipped fetch: no fetchRequestId and not modal', { enabled, fetchRequestId, showModal });
-        setData([]);
+      const shouldFetch = ((enabled && fetchRequestId) || showModal);
+      if (!shouldFetch) {
+        if (Array.isArray(initialData)) setData(initialData);
         setLoading(false);
         return;
       }
@@ -56,6 +57,7 @@ const OldestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRe
         query.append("type", "oldest");
         selectedSurfaces.forEach((s) => query.append("surface", s));
         selectedLevels.forEach((l) => query.append("level", l));
+        query.append("limit", showModal ? "1000" : "100");
         const url = `/api/records/ages/winners?${query.toString()}`;
         const res = await fetch(url, { signal: controller.signal });
         if (!res.ok) throw new Error("Failed to fetch oldest winners");
@@ -70,7 +72,7 @@ const OldestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRe
     };
     fetchData();
     return () => controller.abort();
-  }, [selectedSurfaces, selectedLevels, enabled, showModal, fetchRequestId]);
+  }, [selectedSurfaces, selectedLevels, enabled, showModal, fetchRequestId, initialData]);
 
   const formatAge = (age: number) => {
     const years = Math.floor(age);
@@ -143,7 +145,7 @@ const OldestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRe
 
   return (
     <section className="mb-8">
-      {description && <div className="text-center text-4xl font-bold text-white mb-6">{description}</div>}
+      {description && <h1 className="mb-6 text-center text-2xl font-semibold text-white">{description}</h1>} 
 
       <div className="mb-4 flex justify-end">
         <button

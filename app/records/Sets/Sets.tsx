@@ -124,7 +124,7 @@ export default function Sets({ selectedSurfaces, selectedLevels, selectedRounds,
                 <span>{getFlagFromIOC(p.player.ioc) || ''}</span>
                 <Link
                   href={`/players/${encodeURIComponent(String(p.player.id))}`}
-                  className="text-white hover:underline"
+                  className="text-blue-700 hover:underline"
                 >
                   {p.player.name}
                 </Link>
@@ -216,7 +216,7 @@ export default function Sets({ selectedSurfaces, selectedLevels, selectedRounds,
             <label
               key={bo}
               className={`flex items-center gap-1 cursor-pointer select-none ${
-                selectedBestOf.has(bo) ? 'font-semibold text-white' : 'text-gray-700'
+                selectedBestOf.has(bo) ? 'font-semibold text-blue-700' : 'text-gray-700'
               }`}
             >
               <input

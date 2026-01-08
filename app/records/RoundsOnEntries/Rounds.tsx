@@ -12,6 +12,7 @@ interface RoundsProps {
   selectedRounds: string;
   minEntries: number;
   description?: string;
+  initialData?: PlayerStat[];
 }
 
 interface PlayerStat {
@@ -23,9 +24,9 @@ interface PlayerStat {
   percentage: number;
 }
 
-export default function Rounds({ selectedSurfaces, selectedLevels, selectedRounds, minEntries, fetchEnabled, description }: RoundsProps & { fetchEnabled?: boolean; description?: string }) {
+export default function Rounds({ selectedSurfaces, selectedLevels, selectedRounds, minEntries, fetchEnabled, fetchRequestId, description, initialData }: RoundsProps & { fetchEnabled?: boolean; fetchRequestId?: string | null; description?: string; initialData?: PlayerStat[] }) {
   const enabled = !!fetchEnabled;
-  const [data, setData] = useState<PlayerStat[]>([]);
+  const [data, setData] = useState<PlayerStat[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
@@ -33,14 +34,25 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
   const perPage = 20;
 
   useEffect(() => {
-    if (!selectedRounds) return;
+    if (!selectedRounds) {
+      setData([]);
+      setLoading(false);
+      return;
+    }
 
     const fetchData = async () => {
+      const shouldFetch = ((enabled && fetchRequestId) || showModal)
+      if (!shouldFetch) {
+        if (Array.isArray(initialData)) setData(initialData)
+        setLoading(false);
+        return;
+      }
       setLoading(true);
       try {
         const query = new URLSearchParams();
         selectedSurfaces.forEach((s) => query.append("surface", s));
         selectedLevels.forEach((l) => query.append("level", l));
+        query.set('limit', showModal ? '1000' : '100');
 
         const queryString = query.toString();
         const url =
@@ -62,10 +74,11 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
     };
 
     fetchData();
-  }, [selectedRounds, Array.from(selectedSurfaces).join(","), Array.from(selectedLevels).join(","), enabled]);
+  }, [selectedRounds, Array.from(selectedSurfaces).join(","), Array.from(selectedLevels).join(","), enabled, showModal, fetchRequestId, initialData]);
 
   const filteredData = data.filter(p => p.entries >= minEntries);
 
+  if (!selectedRounds) return <div className="text-center py-8 text-gray-300">Please select a round to view results.</div>;
   if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
   if (!filteredData.length) return <div className="text-center py-8 text-gray-300">No data available.</div>;
 

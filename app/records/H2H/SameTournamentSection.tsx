@@ -1,16 +1,20 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { getFlagFromIOC } from "@/lib/utils";
 import Modal from "@/components/Modal";
+import { playerMatchesUrl } from "../nav";
 
 interface SameTournamentSectionProps {
   selectedSurfaces: Set<string>;
   selectedLevels: Set<string>;
-  selectedRounds: string; // può essere "All"
+  selectedRounds: string;
+  fetchEnabled?: boolean;
+  setFetchEnabled?: (v: boolean) => void;
   parentShowModal?: boolean;
   fetchRequestId?: string | null;
+  initialData?: H2HTournamentRecord[];
   description?: string;
 }
 
@@ -28,85 +32,80 @@ interface H2HTournamentRecord {
   matches_played: number;
 }
 
-interface H2HTournamentResponse {
-  h2h_tourney: H2HTournamentRecord[];
-}
+const previewLimit = 10;
 
-export default function SameTournamentSection({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, fetchRequestId, parentShowModal, description }: SameTournamentSectionProps & { fetchEnabled?: boolean, fetchRequestId?: string | null, parentShowModal?: boolean, description?: string }) {
-  const enabled = !!fetchEnabled;
-  const [data, setData] = useState<H2HTournamentResponse | null>(null);
+export default function SameTournamentSection({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, setFetchEnabled, parentShowModal, fetchRequestId, initialData, description }: SameTournamentSectionProps) {
+  const [data, setData] = useState<H2HTournamentRecord[]>(initialData ?? []);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [modalTitle, setModalTitle] = useState('');
-  const [modalPlayers, setModalPlayers] = useState<H2HTournamentRecord[]>([]);
+  const [hasFetched, setHasFetched] = useState(!!initialData);
+  const lastRequestIdRef = useRef<string | null>(null);
+
+  const surfacesArr = useMemo(() => Array.from(selectedSurfaces), [selectedSurfaces]);
+  const levelsArr = useMemo(() => Array.from(selectedLevels), [selectedLevels]);
+
+  const fetchData = async (limit = 200, force = false) => {
+    if (fetchRequestId && !force && lastRequestIdRef.current === fetchRequestId) return;
+
+    setLoading(true);
+    setError(null);
+    lastRequestIdRef.current = fetchRequestId ?? "manual";
+
+    try {
+      const query = new URLSearchParams();
+      surfacesArr.forEach(s => query.append('surface', s));
+      levelsArr.forEach(l => query.append('level', l));
+      if (selectedRounds && selectedRounds !== 'All') query.append('round', selectedRounds);
+      query.append('limit', String(limit));
+
+      const res = await fetch(`/api/records/h2h/sametournament?${query.toString()}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      setData(Array.isArray(json?.h2h_tourney) ? json.h2h_tourney : []);
+    } catch (err: any) {
+      setError(err?.message || 'Unable to load data');
+      setData([]);
+    } finally {
+      setLoading(false);
+      setHasFetched(true);
+      if (fetchEnabled) setFetchEnabled?.(false);
+    }
+  };
 
   useEffect(() => {
-    console.debug('[SameTournamentSection] effect start', { enabled, showModal, parentShowModal, fetchRequestId });
-    const fetchData = async () => {
-      if (!((enabled && fetchRequestId) || showModal || parentShowModal)) {
-        console.debug('[SameTournamentSection] skipped fetch: not enabled and no modal and no fetchRequestId');
-        setData(null);
-        setLoading(false);
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
-      try {
-        const query = new URLSearchParams();
-        selectedSurfaces.forEach(s => query.append('surface', s));
-        selectedLevels.forEach(l => query.append('level', l));
-        query.append('round', selectedRounds && selectedRounds !== 'All' ? selectedRounds : 'All');
-
-        const url = `/api/records/h2h/sametournament?${query.toString()}`;
-        console.debug('[SameTournamentSection] fetching', url);
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('Failed to fetch');
-        const json: H2HTournamentResponse = await res.json();
-        setData(json);
-      } catch (err) {
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedRounds, enabled, showModal, parentShowModal, fetchRequestId]);
-
-  if (error) return <div>Error loading data</div>;
-  if (loading) return <div>Loading...</div>;
-
-  const h2hTournamentArray = data?.h2h_tourney || [];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchRequestId, surfacesArr.join(','), levelsArr.join(','), selectedRounds]);
 
   const renderTable = (players: H2HTournamentRecord[]) => (
     <div className="overflow-x-auto">
-      <table className="w-full text-sm border-collapse">
+      <table className="w-full border-collapse text-sm">
         <thead>
           <tr className="border-b">
-            <th className="text-left py-1">Player 1</th>
-            <th className="text-left py-1">Player 2</th>
-            <th className="text-left py-1">Tournament</th>
-            <th className="text-left py-1">Matches</th>
+            <th className="py-1 text-left">Player 1</th>
+            <th className="py-1 text-left">Player 2</th>
+            <th className="py-1 text-left">Tournament</th>
+            <th className="py-1 text-left">Matches</th>
           </tr>
         </thead>
         <tbody>
           {players.length === 0 ? (
             <tr>
-              <td colSpan={4} className="py-2 text-gray-500">No data</td>
+              <td colSpan={4} className="py-2 text-gray-500">{!hasFetched ? 'Select data' : 'No data'}</td>
             </tr>
           ) : (
             players.map((p) => (
               <tr key={`${p.player1.id}-${p.player2.id}-${p.tourney_id}`} className="border-b">
                 <td className="py-1">
-                  <span className="text-base mr-1">{getFlagFromIOC(p.player1.ioc) || ""}</span>
-                  <Link href={`/players/${encodeURIComponent(p.player1.id ?? '')}`} className="text-white hover:underline">
+                  <span className="mr-1 text-base">{getFlagFromIOC(p.player1.ioc) || ""}</span>
+                  <Link href={playerMatchesUrl(String(p.player1.id))} className="text-blue-700 hover:underline">
                     {p.player1.name}
                   </Link>
                 </td>
                 <td className="py-1">
-                  <span className="text-base mr-1">{getFlagFromIOC(p.player2.ioc) || ""}</span>
-                  <Link href={`/players/${encodeURIComponent(p.player2.id ?? '')}`} className="text-white hover:underline">
+                  <span className="mr-1 text-base">{getFlagFromIOC(p.player2.ioc) || ""}</span>
+                  <Link href={playerMatchesUrl(String(p.player2.id))} className="text-blue-700 hover:underline">
                     {p.player2.name}
                   </Link>
                 </td>
@@ -120,22 +119,27 @@ export default function SameTournamentSection({ selectedSurfaces, selectedLevels
     </div>
   );
 
-  const previewPlayers = h2hTournamentArray.slice(0, 10);
+  const previewPlayers = data.slice(0, previewLimit);
 
   return (
     <section className="rounded border bg-white p-4">
-      {description && <div className="text-center text-4xl font-bold text-white mb-6">{description}</div>}
+      {description && <h1 className="mb-6 text-center text-2xl font-semibold text-white">{description}</h1>} 
+
+
+
+      {error && <div className="mb-2 text-sm text-red-500">{error}</div>}
+
       {renderTable(previewPlayers)}
-      {h2hTournamentArray.length > 10 && (
+      {data.length > previewLimit && (
         <button
-          onClick={() => { setModalTitle('H2H in Same Tournament'); setModalPlayers(h2hTournamentArray); setShowModal(true); }}
-          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+          onClick={() => setShowModal(true)}
+          className="mt-2 rounded bg-blue-500 px-4 py-2 text-white"
         >
           View All
         </button>
       )}
-      <Modal show={showModal} onClose={() => setShowModal(false)} title={modalTitle}>
-        {renderTable(modalPlayers)}
+      <Modal show={showModal} onClose={() => setShowModal(false)} title="H2H in Same Tournament">
+        {renderTable(data)}
       </Modal>
     </section>
   );

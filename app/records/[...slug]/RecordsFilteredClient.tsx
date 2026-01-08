@@ -15,8 +15,8 @@ export default function RecordsFilteredClient({ record, sub, filters = {}, canon
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const baseTitle = record ? `${record.toUpperCase()} Records` : 'Records';
-    document.title = `${baseTitle} — Filters applied`;
+    const baseTitle = record ? record.toUpperCase() : '';
+    document.title = baseTitle ? `${baseTitle} — Filters applied` : 'Filters applied';
 
     // meta robots noindex,follow
     const metaRobots = document.querySelector('meta[name="robots"]') || document.createElement('meta');
@@ -45,7 +45,8 @@ export default function RecordsFilteredClient({ record, sub, filters = {}, canon
           if (Array.isArray(v)) v.forEach(x => params.append(k, x));
           else params.append(k, String(v));
         }
-        const path = `/api/records/${encodeURIComponent(record ?? '')}${sub ? '/' + encodeURIComponent(sub) : ''}` + (params.toString() ? `?${params.toString()}` : '');
+        const effectiveSub = sub ?? (typeof filters.subtab === 'string' ? String(filters.subtab) : undefined);
+        const path = `/api/records/${encodeURIComponent(record ?? '')}${effectiveSub ? '/' + encodeURIComponent(effectiveSub) : ''}` + (params.toString() ? `?${params.toString()}` : '');
         const res = await fetch(path);
         if (!res.ok) throw new Error(`Fetch error ${res.status}`);
         const json = await res.json();

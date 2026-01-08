@@ -15,6 +15,9 @@ export async function GET(request: NextRequest) {
     const n = nParam ? parseInt(nParam, 10) : 1;
     if (isNaN(n) || n < 1) return NextResponse.json({ error: 'Invalid parameter n' }, { status: 400 });
 
+    const limitParam = Number(url.searchParams.get('limit'));
+    const limit = Number.isInteger(limitParam) ? Math.min(Math.max(limitParam, 1), 1000) : 100;
+
     const selectedSurfaces = url.searchParams.getAll('surface');
     const selectedRounds = url.searchParams.getAll('round');
     const selectedLevels = url.searchParams.getAll('level');
@@ -84,7 +87,7 @@ export async function GET(request: NextRequest) {
     results.sort((a, b) => a.age_nth_round - b.age_nth_round);
 
     // --- Limita a primi 100 ---
-    const topResults = results.slice(0, 100);
+    const topResults = results.slice(0, limit);
 
     return NextResponse.json(topResults);
 

@@ -1,8 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { getFlagFromIOC } from '@/lib/utils';import { playerMatchesUrl } from "../nav";import { useSearchParams } from "next/navigation";
+import { getFlagFromIOC } from '@/lib/utils';
+import { playerMatchesUrl } from "../nav";
+import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
 
@@ -13,6 +15,7 @@ interface EntriesSectionProps {
   setFetchEnabled?: (v: boolean) => void;
   fetchRequestId?: string | null;
   description?: string;
+  initialData?: EntryRecord[];
 }
 
 type EntryRecord = {
@@ -23,19 +26,27 @@ type EntryRecord = {
   year: number;
 };
 
-export default function EntriesSection({ selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, fetchRequestId, description }: EntriesSectionProps) {
-  const [topSeasonEntries, setTopSeasonEntries] = useState<EntryRecord[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function EntriesSection({ selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, fetchRequestId, description, initialData }: EntriesSectionProps) {
+  const enabled = !!fetchEnabled;
+  const [topSeasonEntries, setTopSeasonEntries] = useState<EntryRecord[]>(Array.isArray(initialData) ? initialData : []);
+  const [loading, setLoading] = useState(false);
   const [showModalEntries, setShowModalEntries] = useState(false);
   const [page, setPage] = useState(1);
   const perPage = 20;
   const searchParams = useSearchParams();
+  const lastRequestRef = useRef<string | null>(null);
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels]);
 
   useEffect(() => {
-    const enabled = !!fetchEnabled;
-    if (!enabled && !showModalEntries) return;
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModalEntries);
+    if (!shouldFetch) {
+      if (Array.isArray(initialData)) setTopSeasonEntries(initialData);
+      setLoading(false);
+      return;
+    }
+
+    if (fetchRequestId) lastRequestRef.current = fetchRequestId;
 
     const fetchData = async () => {
       setLoading(true);
@@ -43,21 +54,23 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
         const query = new URLSearchParams();
         selectedSurfaces.forEach(s => query.append('surface', s));
         selectedLevels.forEach(l => query.append('level', l));
+        query.set('limit', showModalEntries ? '1000' : '100');
         const url = `/api/records/seasons/entries?${query.toString()}`;
         const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch entries')
         const data: EntryRecord[] = await res.json();
-        setTopSeasonEntries(data || []);
+        setTopSeasonEntries(Array.isArray(data) ? data : []);
+        setPage(1);
       } catch (err) {
         console.error(err);
         setTopSeasonEntries([]);
       } finally {
         setLoading(false);
-        setFetchEnabled?.(false);
+        if (enabled) setFetchEnabled?.(false);
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, showModalEntries]);
+  }, [selectedSurfaces, selectedLevels, enabled, fetchRequestId, showModalEntries, initialData, setFetchEnabled]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!topSeasonEntries.length) return <div className="text-center py-8 text-gray-300 text-lg">No entries found.</div>;
@@ -105,9 +118,9 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
   return (
     <section className="mb-8">
       {description && (
-        <div className="text-center text-4xl font-bold text-white mb-6">
+        <h1 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
-        </div>
+        </h1>
       )}
 
       <div className="flex justify-end mb-4">

@@ -195,7 +195,12 @@ export function generateRecordDescription(
     if (appliedAge != null && Number.isFinite(appliedAge)) {
       description = `Most ${subTabLabels.atage[sub] || sub} at ${formatAppliedAge(appliedAge)}`;
     } else {
-      description = `Most ${subTabLabels.atage[sub] || sub} at (select age)`;
+      // For Slams we prefer a more explicit phrasing
+      if (sub === 'slams') {
+        description = `Most wins in slams at (select age)`;
+      } else {
+        description = `Most ${subTabLabels.atage[sub] || sub} at (select age)`;
+      }
     }
   } else if (selectedRecord === 'ageofnth') {
     const sub = activeSubTabs.ageofnth;

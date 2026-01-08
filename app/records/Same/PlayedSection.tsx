@@ -27,9 +27,10 @@ interface PlayedRecord {
   ioc: string;
 }
 
-export default function PlayedSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId, description }: PlayedSectionProps & { fetchRequestId?: string | null }) {
-  const [allPlayed, setAllPlayed] = useState<PlayedRecord[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function PlayedSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId, description, initialData }: PlayedSectionProps & { fetchRequestId?: string | null; initialData?: PlayedRecord[] }) {
+  const enabled = !!fetchEnabled;
+  const [allPlayed, setAllPlayed] = useState<PlayedRecord[]>(Array.isArray(initialData) ? initialData : []);
+  const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
@@ -39,12 +40,14 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
 
   useEffect(() => {
-    const enabled = !!fetchEnabled;
-    if (!enabled && !showModal) return;
-    if (fetchRequestId) {
-      if (lastRequestRef.current === fetchRequestId) return;
-      lastRequestRef.current = fetchRequestId;
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal);
+    if (!shouldFetch) {
+      if (Array.isArray(initialData)) setAllPlayed(initialData);
+      setLoading(false);
+      return;
     }
+
+    if (fetchRequestId) lastRequestRef.current = fetchRequestId;
 
     const fetchData = async () => {
       setLoading(true);
@@ -54,21 +57,23 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
         selectedLevels.forEach(l => query.append('level', l));
         if (selectedRounds) query.append('round', selectedRounds);
         if (selectedBestOf) query.append('best_of', selectedBestOf?.toString() || '');
+        query.set('limit', showModal ? '1000' : '100');
         const url = `/api/records/same/played?${query.toString()}`;
         const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch played');
         const data: PlayedRecord[] = await res.json();
-        setAllPlayed(data || []);
+        setAllPlayed(Array.isArray(data) ? data : []);
+        setPage(1);
       } catch (err) {
         console.error(err);
         setAllPlayed([]);
       } finally {
         setLoading(false);
-        setFetchEnabled?.(false);
+        if (enabled) setFetchEnabled?.(false);
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId, showModal]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, enabled, fetchRequestId, showModal, initialData, setFetchEnabled]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!allPlayed.length) return <div className="text-center py-8 text-gray-300 text-lg">No matches found.</div>;
@@ -125,9 +130,9 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
   return (
     <section className="mb-8">
       {description && (
-        <div className="text-center text-4xl font-bold text-white mb-6">
+        <h1 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
-        </div>
+        </h1>
       )}
 
       <div className="flex justify-end mb-4">

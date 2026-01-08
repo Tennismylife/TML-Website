@@ -17,8 +17,8 @@ export default function RecordsFilteredClient({ record, sub, filters = {}, canon
   useEffect(() => {
     // Update document title
     try {
-      const baseTitle = record ? `${record.toUpperCase()} Records` : 'Records';
-      document.title = `${baseTitle} — Filters applied`;
+      const baseTitle = record ? record.toUpperCase() : '';
+      document.title = baseTitle ? `${baseTitle} — Filters applied` : 'Filters applied';
     } catch (err) {}
 
     // set meta robots noindex,follow
@@ -52,7 +52,23 @@ export default function RecordsFilteredClient({ record, sub, filters = {}, canon
         const res = await fetch(path);
         if (!res.ok) throw new Error(`Fetch error ${res.status}`);
         const json = await res.json();
-        setData(Array.isArray(json) ? json : []);
+        if (Array.isArray(json)) {
+          setData(json);
+        } else if (json && typeof json === 'object') {
+          // accept common shapes like { topWinners, topPlayed, rows, ... }
+          const keys = ['topWinners', 'topPlayed', 'top', 'topTitles', 'topEntries', 'topRoundOnEntries', 'rows'];
+          let found: any[] | null = null;
+          for (const k of keys) {
+            if (Array.isArray((json as any)[k])) { found = (json as any)[k]; break; }
+          }
+          if (!found) {
+            const arrProps = Object.values(json).filter((v) => Array.isArray(v));
+            if (arrProps.length) found = arrProps[0] as any[];
+          }
+          setData(found || []);
+        } else {
+          setData([]);
+        }
       } catch (err: any) {
         setError(err?.message || 'Error fetching data');
         setData([]);

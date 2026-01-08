@@ -7,6 +7,7 @@ export async function GET(req: NextRequest) {
     const url = new URL(req.url);
     const selectedSurfaces = url.searchParams.getAll('surface');
     const selectedLevels = url.searchParams.getAll('level');
+    const limitParam = Math.max(1, Math.min(1000, Number(url.searchParams.get('perPage') ?? url.searchParams.get('limit') ?? 100)));
 
     let rawEntries: any[] = [];
 
@@ -139,8 +140,8 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // --- Ordina per max days_between e prendi top 100
-    const top100 = rawEntries
+    // --- Ordina per max days_between e prendi top N
+    const topRows = rawEntries
       .map(r => {
         let maxDays = 0;
         if (selectedSurfaces.length > 0 && r.surface_timespan) maxDays = Math.max(...r.surface_timespan.map((s: any) => s.days_between ?? 0));
@@ -149,10 +150,10 @@ export async function GET(req: NextRequest) {
         return { ...r, max_days_between: maxDays };
       })
       .sort((a, b) => b.max_days_between - a.max_days_between)
-      .slice(0, 100);
+      .slice(0, limitParam);
 
     // --- Restituisci solo JSON necessario
-    const filteredJSON = top100.map(r => {
+    const filteredJSON = topRows.map(r => {
       if (selectedSurfaces.length > 0) return { player_id: r.player_id, player_name: r.player_name, ioc: r.ioc, surface_timespan: r.surface_timespan };
       if (selectedLevels.length > 0) return { player_id: r.player_id, player_name: r.player_name, ioc: r.ioc, level_timespan: r.level_timespan };
       return { player_id: r.player_id, player_name: r.player_name, ioc: r.ioc, overall_timespan: r.overall_timespan };

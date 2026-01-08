@@ -14,6 +14,9 @@ export async function GET(request: NextRequest) {
     const n = parseInt(nParam, 10);
     if (isNaN(n) || n < 1) return NextResponse.json([], { status: 400 });
 
+    const limitParam = Number(url.searchParams.get('limit'));
+    const limit = Number.isInteger(limitParam) ? Math.min(Math.max(limitParam, 1), 1000) : 100;
+
     const selectedSurfaces = url.searchParams.getAll('surface');
     const round = url.searchParams.get('round') || '';
 
@@ -86,7 +89,7 @@ export async function GET(request: NextRequest) {
       })
       .filter(Boolean)
       .sort((a, b) => a!.age_nth_win.localeCompare(b!.age_nth_win)) // ascending
-      .slice(0, 100);
+      .slice(0, limit);
 
     return NextResponse.json(output);
   } catch (err) {

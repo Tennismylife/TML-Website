@@ -31,6 +31,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Invalid x parameter" }, { status: 400 });
     }
 
+    const limitParam = Number(url.searchParams.get("limit"));
+    const limit = Number.isInteger(limitParam) ? Math.min(Math.max(limitParam, 1), 1000) : 100;
+
     const getFiltered = (key: string) => url.searchParams.getAll(key).filter(Boolean);
 
     const selectedSurfaces = getFiltered("surface");
@@ -106,7 +109,7 @@ export async function GET(request: NextRequest) {
       finalResult.sort((a, b) => a.age_at_game - b.age_at_game);
 
       // Prendi primi 100
-      finalResult = finalResult.slice(0, 100);
+      finalResult = finalResult.slice(0, limit);
 
       // Formatta età
       const formattedResult = finalResult.map((p) => ({
@@ -175,7 +178,7 @@ export async function GET(request: NextRequest) {
     finalResult2.sort((a, b) => a.age_at_game - b.age_at_game);
 
     // Prendi primi 100
-    finalResult2 = finalResult2.slice(0, 100);
+    finalResult2 = finalResult2.slice(0, limit);
 
     // Formatta età
     const formattedResult2 = finalResult2.map((p) => ({

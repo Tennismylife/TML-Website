@@ -58,6 +58,9 @@ export default function FiltersComponent({
   const router = useRouter();
   const searchParams = useSearchParams();
   const lastAppliedQS = useRef<string | null>(null);
+  // Persist the last canonical query we applied across navigations so an in-memory ref reset
+  // doesn't cause repeated normalization (common when router.replace remounts the component).
+  const STORAGE_KEY = "records-last-applied-canon";
 
   const surfaceEmojis: Record<string, string> = {
     Hard: "🟦",
@@ -208,25 +211,132 @@ export default function FiltersComponent({
     if (selectedRounds) params.set("round", selectedRounds);
     if (selectedBestOf !== null) params.set("bestOf", selectedBestOf.toString());
 
-    // Build canonical path for the active record: /records/<activeTab>
-    // NOTE: do NOT write `activeSubTab` here to avoid overwriting a subtab coming from another client.
-    const canonical = (uParams: URLSearchParams) =>
-      Array.from(uParams.entries()).sort().map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join("&");
-
-    const newCanon = canonical(params);
-    const currentCanon = canonical(new URLSearchParams(window.location.search));
-
-    // Don't perform replacements when there's no active tab (avoids flipping to /records/)
-    if (!activeTab) return;
-
-    const newPath = `/records/${encodeURIComponent(activeTab)}`;
-
-    // Avoid loop: only replace when pathname or canonicalized QS differ,
-    // and skip if we already applied the same canonical QS.
-    if (newPath !== window.location.pathname || (newCanon !== currentCanon && lastAppliedQS.current !== newCanon)) {
-      lastAppliedQS.current = newCanon;
-      router.replace(newPath + (params.toString() ? `?${params.toString()}` : ""));
+    // Preserve incoming tab/subtab value but normalize to use only `subtab` in the URL
+    // If an older client provided `tab` we convert it to `subtab` and do NOT write `tab`.
+    const incomingTabKey = searchParams.has("subtab") ? "subtab" : (searchParams.has("tab") ? "tab" : null);
+    let incomingSubtab: string | null = null;
+    if (incomingTabKey) {
+      const incomingValue = searchParams.get(incomingTabKey);
+      if (incomingValue) {
+        // Normalize to canonical `subtab` key only
+        params.set("subtab", incomingValue);
+        incomingSubtab = incomingValue;
+      }
     }
+    // NOTE: do NOT write activeSubTab as a default into the URL here,
+    // to avoid overwriting a subtab coming from another client.
+    // The Tabs component should write the subtab when the user explicitly selects one.
+
+    // Remove any legacy `record` and `tab` params from the query params - we'll encode them in the pathname/subtab
+    params.delete("record");
+    params.delete("tab");
+
+    const canonicalize = (uParams: URLSearchParams) => {
+      const map = new Map<string, string[]>();
+      for (const [k, v] of uParams.entries()) {
+        if (!map.has(k)) map.set(k, []);
+        map.get(k)!.push(v);
+      }
+      const parts: string[] = [];
+      const keys = Array.from(map.keys()).sort();
+      for (const k of keys) {
+        const vals = map.get(k)!.slice().sort();
+        for (const v of vals) parts.push(`${encodeURIComponent(k)}=${encodeURIComponent(v)}`);
+      }
+      return parts.join("&");
+    };
+
+    const newCanon = canonicalize(params);
+    const currentCanon = canonicalize(new URLSearchParams(window.location.search));
+    const newPath = `/records/${encodeURIComponent(activeTab)}${incomingSubtab ? `/${encodeURIComponent(incomingSubtab)}` : ""}`;
+
+    const desiredSearch = newCanon ? `?${newCanon}` : "";
+    const desiredHref = `${window.location.origin}${newPath}${desiredSearch}`;
+
+    const debugMode = new URLSearchParams(window.location.search).has("__debug");
+    if (debugMode) {
+      console.log("[filters-debug] effect start", {
+        selectedSurfaces: Array.from(selectedSurfaces).sort(),
+        selectedLevels: Array.from(selectedLevels).sort(),
+        selectedRounds,
+        selectedBestOf,
+        incomingSearch: window.location.search,
+      });
+      console.log("[filters-debug] desiredHref:", desiredHref);
+      console.log("[filters-debug] currentHref:", window.location.href);
+      console.log("[filters-debug] newCanon:", newCanon, "currentCanon:", currentCanon);
+    }
+
+    // If the full href already matches, nothing to do
+    if (window.location.href === desiredHref) {
+      if (debugMode) console.log("[filters-debug] hrefs equal - skip replace");
+      return;
+    }
+
+    // Compare current filter values as sets to avoid replacing when values already match
+    const currentParams = new URLSearchParams(window.location.search);
+    const setFromParams = (key: string) => new Set(currentParams.getAll(key));
+    const currentSurfaces = setFromParams("surface");
+    const currentLevels = setFromParams("level");
+    const currentRound = currentParams.get("round") || "";
+    const currentBestOf = currentParams.get("bestOf") ? Number(currentParams.get("bestOf")) : null;
+
+    const setsEqual = (a: Set<string>, b: Set<string>) => {
+      if (a.size !== b.size) return false;
+      for (const x of a) if (!b.has(x)) return false;
+      return true;
+    };
+
+    // Check sessionStorage to avoid repeating a normalization across navigations/remounts
+    let storedCanon: string | null = null;
+    try {
+      storedCanon = sessionStorage.getItem(STORAGE_KEY);
+      if (debugMode) console.log("[filters-debug] storedCanon:", storedCanon);
+    } catch (e) {
+      if (debugMode) console.warn("[filters-debug] sessionStorage unavailable", e);
+    }
+
+    if (window.location.pathname === newPath && setsEqual(currentSurfaces, selectedSurfaces) && setsEqual(currentLevels, selectedLevels) && currentRound === selectedRounds && currentBestOf === selectedBestOf) {
+      // If the canonical strings differ (ordering/canonicalization), do a single replace to normalize, otherwise skip
+      if (currentCanon === newCanon) {
+        if (debugMode) console.log("[filters-debug] values equal and canon equal - skip replace");
+        return;
+      }
+
+      // If we've already stored that we applied this canonicalization, skip doing it again
+      if (storedCanon === newCanon) {
+        if (debugMode) console.log("[filters-debug] canon already normalized in session - skip replace");
+        return;
+      }
+
+      if (debugMode) console.log("[filters-debug] values equal but canon differs - normalizing once");
+
+      try {
+        sessionStorage.setItem(STORAGE_KEY, newCanon);
+      } catch (e) {
+        if (debugMode) console.warn("[filters-debug] failed to write sessionStorage", e);
+      }
+
+      lastAppliedQS.current = newCanon;
+      router.replace(newPath + desiredSearch);
+      return;
+    }
+
+    // Avoid repeating the same replacement multiple times
+    if (lastAppliedQS.current === newCanon || storedCanon === newCanon) {
+      if (debugMode) console.log("[filters-debug] already applied canonical qs - skip");
+      return;
+    }
+
+    // Apply replacement once and remember it *before* calling replace to avoid loops
+    try {
+      sessionStorage.setItem(STORAGE_KEY, newCanon);
+    } catch (e) {
+      if (debugMode) console.warn("[filters-debug] failed to write sessionStorage", e);
+    }
+    lastAppliedQS.current = newCanon;
+    if (debugMode) console.log("[filters-debug] performing replace ->", newPath + desiredSearch);
+    router.replace(newPath + desiredSearch);
   }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeTab, activeSubTab, searchParams, router]);
 
   const selectSurface = (surface: string) => setSelectedSurfaces(new Set([surface]));

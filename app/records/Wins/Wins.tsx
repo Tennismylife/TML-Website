@@ -35,6 +35,15 @@ export default function Wins({ topWinners, fetchEnabled, description }: WinsProp
   // Reset page when filters change
   useEffect(() => setPage(1), [searchParams]);
 
+  // Keep client state in sync with server-provided `topWinners` so SSR + client filters work
+  useEffect(() => {
+    if (!showModal) {
+      // If server passed prefetched results, use them immediately
+      if (topWinners && topWinners.length) setAllWinners(topWinners);
+      else setAllWinners([]);
+    }
+  }, [topWinners, showModal]);
+
   // Fetch winners (skip fetch if parent provided data via `topWinners` prop, but allow 'View All' to fetch)
   useEffect(() => {
     const fetchWinners = async () => {
@@ -134,9 +143,9 @@ export default function Wins({ topWinners, fetchEnabled, description }: WinsProp
   return (
     <section className="mb-0">
       {description && (
-        <div className="text-center text-4xl font-bold text-white mb-6">
+        <h1 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
-        </div>
+        </h1>
       )}
       <div className="flex justify-end mb-0">
         <button

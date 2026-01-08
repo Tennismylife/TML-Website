@@ -37,6 +37,9 @@ export async function GET(request: NextRequest) {
       select: { winner_id: true, loser_id: true, winner_age: true, loser_age: true },
     });
 
+    const limitParam = Number(url.searchParams.get('limit') ?? '100');
+    const limit = Number.isFinite(limitParam) ? Math.min(1000, Math.max(1, Math.floor(limitParam))) : 100;
+
     // ----------- count occurrences per player -----------
     const countsByPlayer = new Map<string, number>();
 
@@ -75,9 +78,7 @@ export async function GET(request: NextRequest) {
 
     // ----------- sort descending -----------
     result.sort((a, b) => b.appearances_at_age - a.appearances_at_age);
-    const topPlayers = result.slice(0, 100);
-
-    return NextResponse.json(topPlayers);
+    return NextResponse.json(result.slice(0, limit));
 
   } catch (error) {
     console.error(error);

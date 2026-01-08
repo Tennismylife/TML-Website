@@ -37,6 +37,7 @@ export async function GET(request: NextRequest) {
     const url = request.nextUrl;
     const selectedSurfaces = getMultiParam(url, 'surface');
     const selectedLevels = getMultiParam(url, 'level');
+    const limit = Math.max(1, Math.min(1000, Number(url.searchParams.get('limit') ?? 100)));
 
     let finalTitles: TitleRecord[] = [];
 
@@ -44,7 +45,7 @@ export async function GET(request: NextRequest) {
     if (selectedSurfaces.length + selectedLevels.length <= 1) {
       const titles = await prisma.mVSameSeasonTitles.findMany({
         orderBy: { titles_in_year: 'desc' },
-        take: 500,
+        take: limit,
       });
       if (!titles.length) return jsonResponse([]);
 
@@ -135,7 +136,7 @@ export async function GET(request: NextRequest) {
 
     // Ordinamento e top 100
     finalTitles.sort((a, b) => b.total_titles - a.total_titles);
-    finalTitles = finalTitles.slice(0, 100);
+    finalTitles = finalTitles.slice(0, limit);
 
     return jsonResponse(finalTitles);
   } catch (error) {

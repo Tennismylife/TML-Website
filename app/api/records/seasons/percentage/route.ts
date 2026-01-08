@@ -28,6 +28,7 @@ export async function GET(request: NextRequest) {
     const selectedLevels = getMultiParam(url, 'tourney_level');
     const selectedRounds = getMultiParam(url, 'round');
     const selectedBestOf = getMultiParam(url, 'best_of');
+    const limit = Math.max(1, Math.min(1000, Number(url.searchParams.get('limit') ?? 100)));
 
     const totalFilters =
       selectedSurfaces.length + selectedLevels.length + selectedRounds.length + selectedBestOf.length;
@@ -38,6 +39,7 @@ export async function GET(request: NextRequest) {
     if (totalFilters <= 1) {
       const records = await prisma.mVSameSeasonPercentage.findMany({
         orderBy: { win_rate: 'desc' },
+        take: limit,
       });
       if (!records.length) return jsonResponse([]);
 
@@ -167,7 +169,7 @@ export async function GET(request: NextRequest) {
     );
     finalData = finalData.map((item, idx) => ({ ...item, Rank: idx + 1 }));
 
-    return jsonResponse(finalData.slice(0, 100));
+    return jsonResponse(finalData.slice(0, limit));
   } catch (error) {
     console.error('GET /records/seasons/percentage error:', error);
     return jsonResponse({ error: 'Internal Server Error' }, 500);

@@ -80,10 +80,17 @@ export async function GET(request: NextRequest) {
     const selectedLevels   = url.searchParams.getAll("level");
     const selectedSurfaces = url.searchParams.getAll("surface");
     const selectedRounds   = url.searchParams.getAll("round");
-    const selectedBestOf   = url.searchParams
-      .getAll("bestOf")
+    const selectedBestOf   = [
+      ...url.searchParams.getAll("best_of"),
+      ...url.searchParams.getAll("bestOf")
+    ]
       .map(Number)
       .filter(b => [1, 3, 5].includes(b));
+
+    const rawLimit = Number(url.searchParams.get("limit") ?? "100");
+    const limit = Number.isFinite(rawLimit)
+      ? Math.min(200, Math.max(1, rawLimit))
+      : 100;
 
     const filtersCount =
       [selectedLevels, selectedSurfaces, selectedRounds, selectedBestOf]
@@ -95,8 +102,9 @@ export async function GET(request: NextRequest) {
        0 FILTRI → MV GLOBALE
     ===================================================== */
     if (filtersCount === 0 && mvData?.global) {
+      const global = await enrichStreaks(mvData.global as any[]);
       return NextResponse.json({
-        global: await enrichStreaks(mvData.global as any[])
+        global: global.slice(0, limit)
       });
     }
 
@@ -110,7 +118,8 @@ export async function GET(request: NextRequest) {
       if (selectedLevels.length && mvData.levels) {
         for (const l of selectedLevels) {
           if (mvData.levels[l]?.length) {
-            result[l] = await enrichStreaks(mvData.levels[l]);
+            const enriched = await enrichStreaks(mvData.levels[l]);
+            result[l] = enriched.slice(0, limit);
             usedMV = true;
           }
         }
@@ -119,7 +128,8 @@ export async function GET(request: NextRequest) {
       if (selectedSurfaces.length && mvData.surfaces) {
         for (const s of selectedSurfaces) {
           if (mvData.surfaces[s]?.length) {
-            result[s] = await enrichStreaks(mvData.surfaces[s]);
+            const enriched = await enrichStreaks(mvData.surfaces[s]);
+            result[s] = enriched.slice(0, limit);
             usedMV = true;
           }
         }
@@ -128,7 +138,8 @@ export async function GET(request: NextRequest) {
       if (selectedRounds.length && mvData.rounds) {
         for (const r of selectedRounds) {
           if (mvData.rounds[r]?.length) {
-            result[r] = await enrichStreaks(mvData.rounds[r]);
+            const enriched = await enrichStreaks(mvData.rounds[r]);
+            result[r] = enriched.slice(0, limit);
             usedMV = true;
           }
         }
@@ -138,7 +149,8 @@ export async function GET(request: NextRequest) {
         for (const bo of selectedBestOf) {
           const key = bo.toString();
           if (mvData.best_of[key]?.length) {
-            result[key] = await enrichStreaks(mvData.best_of[key]);
+            const enriched = await enrichStreaks(mvData.best_of[key]);
+            result[key] = enriched.slice(0, limit);
             usedMV = true;
           }
         }
@@ -167,10 +179,10 @@ export async function GET(request: NextRequest) {
 
     const liveStreaks = calculateLiveStreaks(matches)
       .sort((a, b) => b.total_wins - a.total_wins)
-      .slice(0, 100);
+      .slice(0, limit);
 
     return NextResponse.json({
-      global: await enrichStreaks(liveStreaks)
+      global: (await enrichStreaks(liveStreaks)).slice(0, limit)
     });
 
   } catch (error: any) {

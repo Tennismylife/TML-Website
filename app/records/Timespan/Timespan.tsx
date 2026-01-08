@@ -9,10 +9,10 @@ interface TimespanProps {
   selectedLevels: Set<string>;
   selectedRounds: string;
   selectedTab: string;
-  onTabChange: (tab: string) => void;
   fetchEnabled?: boolean;
   fetchRequestId?: string | null;
   description?: string;
+  prefetchedData?: Record<string, any[] | undefined>;
 }
 
 export default function Timespan({
@@ -20,15 +20,22 @@ export default function Timespan({
   selectedLevels,
   selectedRounds,
   selectedTab,
-  onTabChange,
   fetchEnabled,
   fetchRequestId,
-  description
+  description,
+  prefetchedData
 }: TimespanProps) {
   return (
     <section className="mb-8">
       {selectedTab === "entries" ? (
-        <Entries selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} description={description} />
+        <Entries
+          selectedSurfaces={selectedSurfaces}
+          selectedLevels={selectedLevels}
+          fetchEnabled={fetchEnabled}
+          fetchRequestId={fetchRequestId}
+          description={description}
+          initialData={prefetchedData?.entries}
+        />
       ) : selectedTab === "titles" ? (
         <Titles
           selectedSurfaces={selectedSurfaces}
@@ -36,6 +43,7 @@ export default function Timespan({
           fetchEnabled={fetchEnabled}
           fetchRequestId={fetchRequestId}
           description={description}
+          initialData={prefetchedData?.titles}
         />
       ) : (
         <Rounds
@@ -45,6 +53,7 @@ export default function Timespan({
           fetchEnabled={fetchEnabled}
           fetchRequestId={fetchRequestId}
           description={description}
+          initialData={prefetchedData?.rounds}
         />
       )}
     </section>

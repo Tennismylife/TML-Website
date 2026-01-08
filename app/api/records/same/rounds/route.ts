@@ -37,6 +37,7 @@ export async function GET(request: NextRequest) {
     const selectedSurfaces = getMultiParam(url, 'surface');
     const selectedLevels = getMultiParam(url, 'level');
     const selectedRounds = getMultiParam(url, 'round');
+    const limit = Math.max(1, Math.min(1000, Number(url.searchParams.get('limit') ?? 100)));
 
     let finalRounds: TournamentRoundRecord[] = [];
 
@@ -44,7 +45,7 @@ export async function GET(request: NextRequest) {
     if (selectedSurfaces.length + selectedLevels.length + selectedRounds.length <= 1) {
       const rounds = await prisma.mVSameTournamentRounds.findMany({
         orderBy: { total_rounds: 'desc' },
-        take: 500,
+        take: limit,
         select: {
           tourney_name: true,
           player_id: true,
@@ -140,7 +141,7 @@ export async function GET(request: NextRequest) {
     // Ordinamento top 100
     finalRounds.sort((a, b) => b.total_rounds - a.total_rounds);
 
-    return jsonResponse(finalRounds.slice(0, 100));
+    return jsonResponse(finalRounds.slice(0, limit));
   } catch (error) {
     console.error('GET /records/same/tournament-rounds error:', error);
     return jsonResponse({ error: 'Internal Server Error' }, 500);

@@ -38,6 +38,7 @@ export async function GET(request: NextRequest) {
     const selectedLevels = getMultiParam(url, 'level');
     const selectedBestOf = getMultiParam(url, 'best_of');
     const selectedRounds = getMultiParam(url, 'round');
+    const limit = Math.max(1, Math.min(1000, Number(url.searchParams.get('limit') ?? 100)));
 
     let finalPlayed: YearPlayedRecord[] = [];
 
@@ -47,7 +48,7 @@ export async function GET(request: NextRequest) {
     ) {
       const played = await prisma.mVSameSeasonPlayed.findMany({
         orderBy: { total_played: 'desc' },
-        take: 500,
+        take: limit,
       });
 
       if (!played.length) return jsonResponse([]);
@@ -149,7 +150,7 @@ export async function GET(request: NextRequest) {
     // Ordinamento top 100
     finalPlayed.sort((a, b) => b.total_played - a.total_played);
 
-    return jsonResponse(finalPlayed.slice(0, 100));
+    return jsonResponse(finalPlayed.slice(0, limit));
   } catch (error) {
     console.error('GET /records/same/year-played error:', error);
     return jsonResponse({ error: 'Internal Server Error' }, 500);

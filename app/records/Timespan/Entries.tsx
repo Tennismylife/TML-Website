@@ -20,11 +20,12 @@ interface EntriesSectionProps {
   selectedSurfaces: Set<string>;
   selectedLevels: Set<string>;
   description?: string;
+  initialData?: TimespanEntry[];
 }
 
-export default function EntriesSection({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRequestId, description }: EntriesSectionProps & { fetchEnabled?: boolean, fetchRequestId?: string | null, description?: string }) {
+export default function EntriesSection({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRequestId, description, initialData }: EntriesSectionProps & { fetchEnabled?: boolean, fetchRequestId?: string | null, description?: string, initialData?: TimespanEntry[] }) {
   const enabled = !!fetchEnabled;
-  const [entries, setEntries] = useState<TimespanEntry[]>([]);
+  const [entries, setEntries] = useState<TimespanEntry[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
@@ -35,9 +36,9 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!((enabled && fetchRequestId) || showModal)) {
-        console.debug('[Timespan Entries] skipped fetch: no fetchRequestId and not modal', { enabled, fetchRequestId, showModal });
-        setEntries([]);
+      const shouldFetch = ((enabled && fetchRequestId) || showModal);
+      if (!shouldFetch) {
+        if (Array.isArray(initialData)) setEntries(initialData);
         setLoading(false);
         return;
       }
@@ -46,7 +47,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
         const query = new URLSearchParams();
         selectedSurfaces.forEach(s => query.append('surface', s));
         selectedLevels.forEach(l => query.append('level', l));
-        query.set('perPage', '100'); // fetch top 100
+        query.set('perPage', showModal ? '1000' : '100');
         const url = `/api/records/timespan/entries?${query.toString()}`;
         console.debug('[Timespan Entries] fetching', url, { enabled, showModal, fetchRequestId });
         const res = await fetch(url);
@@ -61,7 +62,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
       }
     };
     fetchData();
-  }, [selectedSurfaces, selectedLevels, enabled, fetchRequestId, showModal]);
+  }, [selectedSurfaces, selectedLevels, enabled, fetchRequestId, showModal, initialData]);
 
   if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
   if (!entries.length) return <div className="text-center py-8 text-gray-300">No data available.</div>;
@@ -132,9 +133,9 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
   return (
     <section className="mb-8">
       {description && (
-        <div className="text-center text-4xl font-bold text-white mb-6">
+        <h1 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
-        </div>
+        </h1>
       )}
 
       <div className="mb-4 flex justify-end">
