@@ -59,8 +59,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
 
-        {/* Preload small hero image (mobile-focused AVIF) to speed LCP on mobile */}
-        <link rel="preload" href="/header-480.avif" as="image" type="image/avif" />
+        {/* Preload small hero image (use existing JPG to avoid 404) */}
+        <link rel="preload" href="/header.jpg" as="image" type="image/jpeg" />
       </head>
       <body className="min-h-screen bg-gray-900 text-gray-100">
         {/* Site JSON-LD (rendered server-side in root layout) */}
@@ -84,7 +84,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         </main>
 
         <footer className="text-sm text-gray-400 py-6 text-center">
-          © 2025 TennisMyLife - Tennis Data Records History
+          © 2026 TennisMyLife - Tennis Data Records History
         </footer>
       </body>
     </html>

@@ -171,14 +171,14 @@ export default function YoungestAllRounds({ selectedSurfaces, selectedLevels, fe
                       <td className="border border-gray-700 px-4 py-2">
                         <div className="flex items-center gap-2">
                           <span className="text-sm">{getFlagFromIOC(p.ioc) || ""}</span>
-                          <Link href={`/players/${encodeURIComponent(String(p.id))}`} className="text-blue-400 hover:underline">
+                          <Link href={`/players/${encodeURIComponent(String(p.id))}`} className="text-white hover:underline">
                             {p.name}
                           </Link>
                         </div>
                       </td>
                       <td className="border border-gray-700 px-4 py-2 text-center">{formatAge(p.age)}</td>
                       <td className="border border-gray-700 px-4 py-2">
-                        <Link href={getTourneyHref({ id: p.tourney_id, name: p.tourney_name, year: p.year })} className="text-blue-400 hover:underline">
+                        <Link href={getTourneyHref({ id: p.tourney_id, name: p.tourney_name, year: p.year })} className="text-white hover:underline">
                           {p.tourney_name} {p.year}
                         </Link>
                       </td>

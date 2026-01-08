@@ -282,36 +282,71 @@ const tabs = [
     return false;
   };
 
-  // --- Init query params ---
+  function kebabToKey(s: string | undefined) {
+    if (!s) return s;
+    return s.split('-').map((part, idx) => idx === 0 ? part : (part.charAt(0).toUpperCase() + part.slice(1))).join('');
+  }
+
+  function keyToKebab(s: string | undefined) {
+    if (!s) return s;
+    return s.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+  }
+
+  // --- Init from pathname or query params ---
   useEffect(() => {
-    const recordParam = searchParams.get("record");
-    if (recordParam) {
-      setSelectedRecord(recordParam);
-      setActiveTab(recordParam);
-      // if page was loaded with ?record=..., enable fetch so initial view loads
-      const requestId = String(Date.now());
-      setFetchRequestId(requestId);
-      setFetchEnabled(true);
-      lastUserActionRef.current = 'click';
-      prevSelectedRecordRef.current = recordParam;
+    // Prefer path segments first: /records/<record>[/<subtab>]
+    let pathRecord: string | null = null;
+    let pathSubtab: string | null = null;
+    if (typeof window !== 'undefined') {
+      const parts = window.location.pathname.split('/').filter(Boolean);
+      const recordsIndex = parts.indexOf('records');
+      if (recordsIndex >= 0 && parts.length > recordsIndex + 1) {
+        pathRecord = parts[recordsIndex + 1];
+        if (parts.length > recordsIndex + 2) pathSubtab = parts[recordsIndex + 2];
+      }
     }
 
+    const queryRecord = searchParams.get("record");
+    const querySubtab = searchParams.get("subtab") || searchParams.get("tab");
     const surfaceParams = searchParams.getAll("surface");
     const levelParams = searchParams.getAll("level");
     const roundParam = searchParams.get("round");
     const bestOfParam = searchParams.get("bestOf");
-    const subtabParam = searchParams.get("subtab");
+
+    // final values prefer path over query
+    const finalRecord = pathRecord ?? queryRecord;
+    const finalSub = pathSubtab ? kebabToKey(pathSubtab) : (querySubtab ? kebabToKey(querySubtab) : null);
+
+    if (finalRecord) {
+      setSelectedRecord(finalRecord);
+      setActiveTab(finalRecord);
+      // enable fetch so initial view loads
+      const requestId = String(Date.now());
+      setFetchRequestId(requestId);
+      setFetchEnabled(true);
+      lastUserActionRef.current = 'click';
+      prevSelectedRecordRef.current = finalRecord;
+      if (finalSub) setActiveSubTabs(prev => ({ ...prev, [finalRecord]: finalSub }));
+
+      // If the record came from a legacy query (?record=...), replace with a canonical path
+      if (!pathRecord && queryRecord) {
+        const subSegment = finalSub ? `/${encodeURIComponent(keyToKebab(finalSub))}` : '';
+        const canonicalPath = `/records/${encodeURIComponent(finalRecord)}${subSegment}`;
+        skipFirstUrlUpdateRef.current = true;
+        safeReplace(canonicalPath);
+      }
+    }
 
     if (surfaceParams.length) setSelectedSurfaces(new Set(surfaceParams));
     if (levelParams.length) setSelectedLevels(new Set(levelParams));
     if (roundParam) setSelectedRounds(roundParam);
     if (bestOfParam) setSelectedBestOf(Number(bestOfParam));
-    if (recordParam && subtabParam) setActiveSubTabs(prev => ({ ...prev, [recordParam]: subtabParam }));
 
-    // Clean up redundant 'tab' parameter if present
-    if (searchParams.get("tab")) {
+    // Clean up legacy 'tab'/'subtab' query params on mount (we canonicalize record/subtab above)
+    if (searchParams.get("tab") || searchParams.get("subtab")) {
       const url = new URL(window.location.href);
       url.searchParams.delete('tab');
+      url.searchParams.delete('subtab');
       safeReplace(url.toString());
     }
   }, [searchParams]);
@@ -327,9 +362,17 @@ const tabs = [
 
   // Reset filters when selected record changes (covers programmatic/tab changes)
   useEffect(() => {
-    // Track previous 'record' query param and only reset when it actually changes
-    const urlRecord = searchParams.get("record");
-    const urlSubtab = searchParams.get("subtab");
+    // Track previous 'record' (prefer path segments) and only reset when it actually changes
+    let urlRecord = searchParams.get("record");
+    let urlSubtab = searchParams.get("subtab");
+    if (!urlRecord && typeof window !== 'undefined') {
+      const parts = window.location.pathname.split('/').filter(Boolean);
+      const recordsIndex = parts.indexOf('records');
+      if (recordsIndex >= 0 && parts.length > recordsIndex + 1) {
+        urlRecord = parts[recordsIndex + 1];
+        if (!urlSubtab && parts.length > recordsIndex + 2) urlSubtab = kebabToKey(parts[recordsIndex + 2]);
+      }
+    }
 
     if (!selectedRecord) {
       lastUrlRecordRef.current = urlRecord;
@@ -377,17 +420,16 @@ const tabs = [
       return;
     }
 
+    // Build canonical path: /records/<selectedRecord>[/<subtab>] and add only filter query params
     const query = new URLSearchParams();
-    query.set("record", selectedRecord);
     Array.from(selectedSurfaces).forEach(s => query.append("surface", s));
     Array.from(selectedLevels).forEach(l => query.append("level", l));
     if (selectedRounds) query.set("round", selectedRounds);
     if (selectedBestOf) query.set("bestOf", String(selectedBestOf));
     const sub = activeSubTabs[selectedRecord ?? ""];
-    if (sub) query.set("subtab", sub);
 
-    const pathname = '/records';
-    const newPath = pathname + (query.toString() ? '?' + query.toString() : '');
+    const subSegment = sub ? `/${encodeURIComponent(keyToKebab(sub))}` : '';
+    const newPath = `/records/${encodeURIComponent(selectedRecord)}${subSegment}` + (query.toString() ? '?' + query.toString() : '');
 
     if (typeof window !== 'undefined' && window.history && typeof window.history.replaceState === 'function') {
       // Update URL in-place without triggering a navigation
@@ -560,17 +602,10 @@ const tabs = [
                   });
                 }
 
-                // Update URL to reset filters
+                // Update URL to canonical path and reset filters
                 skipUrlUpdateRef.current = true;
-                const url = new URL(window.location.href);
-                url.searchParams.delete('tab');
-                url.searchParams.set('record', tab.key);
-                url.searchParams.delete('subtab');
-                url.searchParams.delete('surface');
-                url.searchParams.delete('level');
-                url.searchParams.delete('round');
-                url.searchParams.delete('bestOf');
-                safeReplace(url.toString());
+                const canonicalPath = `/records/${encodeURIComponent(tab.key)}`;
+                safeReplace(canonicalPath + window.location.search.replace(/([?&])(?:surface|level|round|bestOf)=[^&]*/g, '').replace(/[?&]$/, ''));
               }}
               className={`relative px-4 py-2 rounded-xl font-medium transition-colors duration-200 ${(activeTab === tab.key || hoveredTab === tab.key) ? 'text-white' : 'text-gray-300 hover:text-white'}`}
             >
@@ -602,14 +637,8 @@ const tabs = [
           setSelectedBestOf(null);
           // Small delay to ensure the child has mounted before triggering the fetch and updating the URL
           const requestId = String(Date.now());
-          const url = new URL(window.location.href);
-          url.searchParams.delete('tab');
-          url.searchParams.set('record', tab.key);
-          url.searchParams.set('subtab', st.key);
-          url.searchParams.delete('surface');
-          url.searchParams.delete('level');
-          url.searchParams.delete('round');
-          url.searchParams.delete('bestOf');
+          const subSegment = `/${encodeURIComponent(keyToKebab(st.key))}`;
+          const canonicalPath = `/records/${encodeURIComponent(tab.key)}${subSegment}`;
 
           // wait for the next animation frame so React can mount children before fetching
           requestAnimationFrame(() => {
@@ -618,7 +647,7 @@ const tabs = [
             setFetchRequestId(requestId);
             // Update URL after child mount to avoid race with mounting
             skipUrlUpdateRef.current = true;
-            safeReplace(url.toString());
+            safeReplace(canonicalPath + window.location.search.replace(/([?&])(?:surface|level|round|bestOf)=[^&]*/g, '').replace(/[?&]$/, ''));
           });
         }}
         className={`px-3 py-1 rounded ${activeSubTabs[tab.key] === st.key ? "bg-gray-700 text-white" : "text-gray-300 hover:text-white hover:bg-gray-600"}`}

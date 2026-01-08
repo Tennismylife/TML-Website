@@ -228,7 +228,7 @@ export default function MatchTable({
                 <tr key={index} className="hover:bg-gray-800/50">
                   <td className={tdBase}>{new Date(m.tourney_date as unknown as string).toLocaleDateString()}</td>
                   <td className={tdBase}>
-                    <Link href={getTourneyHref({ id: m.tourney_id, name: m.tourney_name, year: m.year })} className="text-blue-600 hover:underline">
+                    <Link href={getTourneyHref({ id: m.tourney_id, name: m.tourney_name, year: m.year })} className="text-white hover:underline">
                       {m.tourney_name}
                     </Link>
                   </td>

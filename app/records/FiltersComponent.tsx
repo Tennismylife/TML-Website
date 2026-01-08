@@ -208,29 +208,18 @@ export default function FiltersComponent({
     if (selectedRounds) params.set("round", selectedRounds);
     if (selectedBestOf !== null) params.set("bestOf", selectedBestOf.toString());
 
-    // Use canonical path: /records?record=<activeTab>
-    params.set("record", activeTab);
-
-    // Preserve incoming tab/subtab value but normalize to use only `subtab` in the URL
-    // If an older client provided `tab` we convert it to `subtab` and do NOT write `tab`.
-    const incomingTabKey = searchParams.has("subtab") ? "subtab" : (searchParams.has("tab") ? "tab" : null);
-    if (incomingTabKey) {
-      const incomingValue = searchParams.get(incomingTabKey);
-      if (incomingValue) {
-        // Normalize to canonical `subtab` key only
-        params.set("subtab", incomingValue);
-      }
-    }
-    // NOTE: do NOT write activeSubTab as a default into the URL here,
-    // to avoid overwriting a subtab coming from another client.
-    // The Tabs component should write the subtab when the user explicitly selects one.
-
+    // Build canonical path for the active record: /records/<activeTab>
+    // NOTE: do NOT write `activeSubTab` here to avoid overwriting a subtab coming from another client.
     const canonical = (uParams: URLSearchParams) =>
       Array.from(uParams.entries()).sort().map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join("&");
 
     const newCanon = canonical(params);
     const currentCanon = canonical(new URLSearchParams(window.location.search));
-    const newPath = `/records`;
+
+    // Don't perform replacements when there's no active tab (avoids flipping to /records/)
+    if (!activeTab) return;
+
+    const newPath = `/records/${encodeURIComponent(activeTab)}`;
 
     // Avoid loop: only replace when pathname or canonicalized QS differ,
     // and skip if we already applied the same canonical QS.

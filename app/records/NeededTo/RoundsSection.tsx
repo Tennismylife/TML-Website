@@ -95,7 +95,7 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
                   <td className="border px-4 py-2">
                     <div className="flex items-center gap-2">
                       <span>{getFlagFromIOC(p.ioc) || ''}</span>
-                      <Link href={`/players/${encodeURIComponent(p.player_id)}`} className="text-blue-700 hover:underline">
+                      <Link href={`/players/${encodeURIComponent(p.player_id)}`} className="text-white hover:underline">
                         {p.player_name}
                       </Link>
                     </div>

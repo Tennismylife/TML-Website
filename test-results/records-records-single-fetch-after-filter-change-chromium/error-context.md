@@ -1,0 +1,144 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "Site logo" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - img "Site logo" [ref=e5]
+      - navigation [ref=e6]:
+        - link "Home" [ref=e7] [cursor=pointer]:
+          - /url: /
+        - link "Tournaments" [ref=e8] [cursor=pointer]:
+          - /url: /tournaments
+        - link "Seasons" [ref=e9] [cursor=pointer]:
+          - /url: /seasons
+        - link "Statistics" [ref=e10] [cursor=pointer]:
+          - /url: /statistics
+        - link "H2H" [ref=e11] [cursor=pointer]:
+          - /url: /h2h
+        - link "Player vs Player" [ref=e12] [cursor=pointer]:
+          - /url: /player-vs-player
+        - link "Rankings" [ref=e13] [cursor=pointer]:
+          - /url: /ranking
+        - link "Ranking Tables" [ref=e14] [cursor=pointer]:
+          - /url: /rankingtables
+        - link "Match Records" [ref=e15] [cursor=pointer]:
+          - /url: /records
+        - link "Ranking Records" [ref=e16] [cursor=pointer]:
+          - /url: /recordsRanking
+  - main [ref=e17]:
+    - main [ref=e18]:
+      - generic [ref=e19]:
+        - heading "Records" [level=1] [ref=e20]
+        - paragraph [ref=e21]:
+          - text: Welcome to the Records section. This area groups player and tournament records into topics like
+          - strong [ref=e22]: Wins
+          - text: ","
+          - strong [ref=e23]: Played
+          - text: ","
+          - strong [ref=e24]: Titles
+          - text: ","
+          - strong [ref=e25]: Entries
+          - text: ","
+          - strong [ref=e26]: Ages
+          - text: ","
+          - strong [ref=e27]: Timespan
+          - text: ","
+          - strong [ref=e28]: Percentage
+          - text: ","
+          - strong [ref=e29]: Round-on-Entries
+          - text: ","
+          - strong [ref=e30]: Same
+          - text: (same tournament),
+          - strong [ref=e31]: Seasons
+          - text: ","
+          - strong [ref=e32]: At Age
+          - text: ","
+          - strong [ref=e33]: Age at Nth
+          - text: ","
+          - strong [ref=e34]: Needed To
+          - text: ","
+          - strong [ref=e35]: Counter Seasons
+          - text: ","
+          - strong [ref=e36]: H2H
+          - text: and
+          - strong [ref=e37]: Streak
+          - text: . Each tab renders the component located under
+          - code [ref=e38]: app/records/
+          - text: for that topic (for example,
+          - strong [ref=e39]: Wins
+          - text: uses
+          - code [ref=e40]: app/records/Wins/Wins.tsx
+          - text: ), and available subtabs refine the query (for example Ages → Oldest / Youngest; Timespan → Entries / Titles / Rounds). Use the
+          - emphasis [ref=e41]: surface
+          - text: ","
+          - emphasis [ref=e42]: level
+          - text: ","
+          - emphasis [ref=e43]: round
+          - text: and
+          - emphasis [ref=e44]: bestOf
+          - text: filters to narrow the results; the UI enforces which filters are valid for each tab/subtab.
+      - generic [ref=e45]:
+        - button "Wins" [active] [ref=e47] [cursor=pointer]: Wins
+        - button "Played" [ref=e50] [cursor=pointer]
+        - button "Count" [ref=e52] [cursor=pointer]
+        - button "Titles" [ref=e54] [cursor=pointer]
+        - button "Entries" [ref=e56] [cursor=pointer]
+        - button "Ages" [ref=e58] [cursor=pointer]
+        - button "Timespan" [ref=e60] [cursor=pointer]
+        - button "Percentage" [ref=e62] [cursor=pointer]
+        - button "Rounds on Entries" [ref=e64] [cursor=pointer]
+        - button "Same" [ref=e66] [cursor=pointer]
+        - button "Seasons" [ref=e68] [cursor=pointer]
+        - button "At Age" [ref=e70] [cursor=pointer]
+        - button "Age at Nth" [ref=e72] [cursor=pointer]
+        - button "Needed To" [ref=e74] [cursor=pointer]
+        - button "Counter Seasons" [ref=e76] [cursor=pointer]
+        - button "H2H" [ref=e78] [cursor=pointer]
+        - button "Streak" [ref=e80] [cursor=pointer]
+      - generic [ref=e81]:
+        - group "Surface" [ref=e82]:
+          - generic [ref=e83]: Surface
+          - generic [ref=e84]:
+            - button "All" [pressed] [ref=e85] [cursor=pointer]
+            - button "🟦 Hard" [ref=e86] [cursor=pointer]
+            - button "🟧 Clay" [ref=e87] [cursor=pointer]
+            - button "🟩 Grass" [ref=e88] [cursor=pointer]
+            - button "🟪 Carpet" [ref=e89] [cursor=pointer]
+        - group "Level" [ref=e90]:
+          - generic [ref=e91]: Level
+          - generic [ref=e92]:
+            - button "All" [pressed] [ref=e93] [cursor=pointer]
+            - button "Grand Slam" [ref=e94] [cursor=pointer]
+            - button "Masters 1000" [ref=e95] [cursor=pointer]
+            - button "ATP Finals" [ref=e96] [cursor=pointer]
+            - button "Others" [ref=e97] [cursor=pointer]
+            - button "250" [ref=e98] [cursor=pointer]
+            - button "500" [ref=e99] [cursor=pointer]
+            - button "Davis Cup" [ref=e100] [cursor=pointer]
+        - group "Rounds" [ref=e101]:
+          - generic [ref=e102]: Rounds
+          - generic [ref=e103]:
+            - button "All" [pressed] [ref=e104] [cursor=pointer]
+            - button "R128" [ref=e105] [cursor=pointer]
+            - button "R64" [ref=e106] [cursor=pointer]
+            - button "R32" [ref=e107] [cursor=pointer]
+            - button "R16" [ref=e108] [cursor=pointer]
+            - button "QF" [ref=e109] [cursor=pointer]
+            - button "SF" [ref=e110] [cursor=pointer]
+            - button "F" [ref=e111] [cursor=pointer]
+        - group "Best Of" [ref=e112]:
+          - generic [ref=e113]: Best Of
+          - generic [ref=e114]:
+            - button "All" [pressed] [ref=e115] [cursor=pointer]
+            - button "3" [ref=e116] [cursor=pointer]
+            - button "5" [ref=e117] [cursor=pointer]
+            - button "1" [ref=e118] [cursor=pointer]
+      - generic [ref=e120]: Loading...
+  - contentinfo [ref=e121]: © 2026 TennisMyLife - Tennis Data Records History
+  - button "Open Next.js Dev Tools" [ref=e127] [cursor=pointer]:
+    - img [ref=e128]
+  - alert [ref=e131]
+```

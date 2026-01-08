@@ -133,7 +133,7 @@ export default function FirstN({ selectedSurfaces, selectedLevels, selectedRound
               <tr key={index} className="border-b">
                 <td className="py-1">
                   <span className="text-base mr-1">{getFlagFromIOC(p.player.ioc) || ""}</span>
-                  <Link href={`/players/${encodeURIComponent(String(p.player.id))}`} className="text-blue-700 hover:underline">
+                  <Link href={`/players/${encodeURIComponent(String(p.player.id))}`} className="text-white hover:underline">
                     {p.player.name}
                   </Link>
                 </td>

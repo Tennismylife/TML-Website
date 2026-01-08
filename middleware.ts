@@ -21,6 +21,9 @@ const legacyCodeRegex = /^[A-Za-z]+\d+$/i;
 
 export async function middleware(req: NextRequest) {
   try {
+    // Debugging: log incoming requests for players/tournaments/records to diagnose unexpected 405s
+    try { console.debug('[middleware] %s %s', req.method || 'UNKNOWN', req.nextUrl?.pathname + (req.nextUrl?.search || '')); } catch (e) {}
+
     const { pathname, search } = req.nextUrl;
     const segments = pathname.split('/').filter(Boolean);
     if (segments.length < 2) return NextResponse.next();
@@ -118,5 +121,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/players/:path*', '/tournaments/:path*'],
+  matcher: ['/players/:path*', '/tournaments/:path*', '/records/:path*'],
 };
