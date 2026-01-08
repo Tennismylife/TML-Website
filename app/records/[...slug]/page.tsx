@@ -2,6 +2,7 @@
 import { metadataBase } from '../../../lib/site';
 import { generateRecordDescription } from '../../../lib/generateRecordDescription';
 import RecordsFilteredClient from './RecordsFilteredClient';
+import SyncUrlClient from '../../../components/SyncUrlClient';
 import RecordsTabs from '../RecordsTabs';
 import RecordsFilters from '../RecordsFilters.server';
 
@@ -69,6 +70,26 @@ function resolveUrl(path: string) {
     const base = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
     return new URL(path, base).toString();
   }
+}
+
+// Canonicalize arbitrary search params object into a deterministic query string
+function canonicalizeParamsObj(sp: Record<string, any> | undefined) {
+  if (!sp) return '';
+  const map = new Map<string, string[]>();
+  for (const [k, v] of Object.entries(sp)) {
+    if (v === undefined) continue;
+    const key = k;
+    const values = Array.isArray(v) ? v.map(String) : [String(v)];
+    if (!map.has(key)) map.set(key, []);
+    map.set(key, map.get(key)!.concat(values));
+  }
+  const keys = Array.from(map.keys()).sort();
+  const parts: string[] = [];
+  for (const k of keys) {
+    const vals = Array.from(new Set(map.get(k)!)).sort();
+    for (const v of vals) parts.push(`${encodeURIComponent(k)}=${encodeURIComponent(v)}`);
+  }
+  return parts.join('&');
 }
 
 export async function fetchRecordData(record: string | null, sub?: string | null) {
@@ -232,8 +253,13 @@ export default async function SlugPage({ params, searchParams }: { params: Param
     const activeSubResolved = sub ?? (typeof sp.subtab === 'string' ? kebabToKey(String(sp.subtab)) : undefined);
     const description = generateRecordDescription(record, { ...activeSubTabsDefault, [record || '']: activeSubResolved || activeSubTabsDefault[record || ''] }, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf);
 
+    // Build canonical URL including canonicalized query params
+    const query = canonicalizeParamsObj(sp as any);
+    const canonicalFull = canonicalUrl + (query ? `?${query}` : '');
+
     return (
       <main className="w-full min-h-screen p-4 bg-gray-900 text-white">
+        <SyncUrlClient url={canonicalFull} />
         <section className="mb-6 text-gray-200">
           <h1 className="text-2xl sm:text-3xl font-semibold mb-2 text-white">{description || (record ? `${record.toUpperCase()} Records` : 'Records')}</h1>
           <p className="text-gray-300">Filtered view — server-rendered results.</p>
@@ -246,23 +272,36 @@ export default async function SlugPage({ params, searchParams }: { params: Param
         </div>
 
         {/* Server component with SSR prefetch */}
-        <ServerComponent searchParams={sp} record={record} sub={activeSubResolved} canonicalUrl={canonicalUrl} description={description} />
+        <ServerComponent searchParams={sp} record={record} sub={activeSubResolved} canonicalUrl={canonicalFull} description={description} />
       </main>
     )
   }
 
+  // Fallback: compute description and canonicalFull using searchParams so header + URL match
+  const spFallback = searchParams as Record<string, any>;
+  const toArray = (v?: string | string[]) => (v === undefined ? [] : (Array.isArray(v) ? v : [v]));
+  const selectedSurfacesFB = new Set(toArray(spFallback.surface ?? spFallback['surface[]']));
+  const selectedLevelsFB = new Set(toArray(spFallback.level ?? spFallback['level[]']));
+  const selectedRoundsFB = typeof spFallback.round === 'string' ? String(spFallback.round) : '';
+  const selectedBestOfFB = spFallback.bestOf ? Number(spFallback.bestOf as string) : null;
+  const activeSubResolvedFB = sub ?? (typeof spFallback.subtab === 'string' ? kebabToKey(String(spFallback.subtab)) : undefined);
+  const descriptionFB = generateRecordDescription(record, { ...activeSubTabsDefault, [record || '']: activeSubResolvedFB || activeSubTabsDefault[record || ''] }, selectedSurfacesFB, selectedLevelsFB, selectedRoundsFB, selectedBestOfFB);
+  const queryFB = canonicalizeParamsObj(spFallback);
+  const canonicalFullFB = resolveUrl(`/records/${record}${activeSubResolvedFB ? `/${activeSubResolvedFB}` : ''}`) + (queryFB ? `?${queryFB}` : '');
+
   return (
     <main className="w-full min-h-screen p-4 bg-gray-900 text-white">
+      <SyncUrlClient url={canonicalFullFB} />
       <section className="mb-6 text-gray-200">
-        <h1 className="text-2xl sm:text-3xl font-semibold mb-2 text-white">{record ? `${record.toUpperCase()} Records` : 'Records'}</h1>
+        <h1 className="text-2xl sm:text-3xl font-semibold mb-2 text-white">{descriptionFB || (record ? `${record.toUpperCase()} Records` : 'Records')}</h1>
         <p className="text-gray-300">Filtered view — results are loaded client-side.</p>
       </section>
 
       <RecordsFilteredClient
         record={record}
-        sub={sub}
+        sub={activeSubResolvedFB}
         filters={searchParams}
-        canonicalUrl={canonicalUrl}
+        canonicalUrl={canonicalFullFB}
       />
     </main>
   );

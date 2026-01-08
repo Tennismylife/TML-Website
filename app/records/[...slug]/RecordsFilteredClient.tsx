@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import { generateRecordDescription } from '../../../lib/generateRecordDescription';
 
 interface Props {
   record: string | null;
@@ -15,8 +16,41 @@ export default function RecordsFilteredClient({ record, sub, filters = {}, canon
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const baseTitle = record ? record.toUpperCase() : '';
-    document.title = baseTitle ? `${baseTitle} — Filters applied` : 'Filters applied';
+    // Compute description so document.title always matches the H1 above the table
+    const toArray = (v?: string | string[]) => (v === undefined ? [] : (Array.isArray(v) ? v : [v]));
+    const selectedSurfaces = new Set(toArray(filters.surface ?? filters['surface[]']));
+    const selectedLevels = new Set(toArray(filters.level ?? filters['level[]']));
+    const selectedRounds = typeof filters.round === 'string' ? String(filters.round) : '';
+    const selectedBestOf = filters.bestOf ? Number(filters.bestOf as string) : null;
+
+    const kebabToKey = (s: string | undefined) => {
+      if (!s) return s;
+      return s.split('-').map((part, idx) => idx === 0 ? part : (part.charAt(0).toUpperCase() + part.slice(1))).join('');
+    };
+    const activeSubTabsDefault: Record<string,string> = {
+      ages: 'oldest',
+      timespan: 'entries',
+      roundsonentries: 'titles',
+      same: 'wins',
+      seasons: 'wins',
+      atage: 'wins',
+      ageofnth: 'wins',
+      neededto: 'titles',
+      counterseasons: 'round',
+      streak: 'wins',
+      h2h: 'count',
+    };
+
+    const effectiveSub = sub ?? (typeof filters.subtab === 'string' ? kebabToKey(String(filters.subtab)) : undefined);
+
+    const description = generateRecordDescription(record, { ...activeSubTabsDefault, [record || '']: effectiveSub || activeSubTabsDefault[record || ''] }, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf);
+
+    if (description) {
+      document.title = `${description} — TML`;
+    } else {
+      const baseTitle = record ? record.toUpperCase() : '';
+      document.title = baseTitle ? `${baseTitle} — Filters applied` : 'Filters applied';
+    }
 
     // meta robots noindex,follow
     const metaRobots = document.querySelector('meta[name="robots"]') || document.createElement('meta');
