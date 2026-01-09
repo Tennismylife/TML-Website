@@ -9,7 +9,7 @@ import { metadata as PlayersMetadata } from '../app/players/layout';
 import { metadata as MatchesMetadata } from '../app/matches/layout';
 import { metadata as ForecastsMetadata } from '../app/forecasts/layout';
 import { metadata as H2HMetadata } from '../app/h2h/layout';
-import { metadata as RecordsRankingMetadata } from '../app/recordsRanking/layout';
+import { metadata as RecordsRankingMetadata } from '../app/recordsranking/layout';
 import { metadata as SeasonsMetadata } from '../app/seasons/layout';
 import { metadata as StatisticsMetadata } from '../app/statistics/layout';
 import { metadata as TournamentsMetadata } from '../app/tournaments/layout';
@@ -23,7 +23,7 @@ const cases: Array<{ metadata: any; path: string }> = [
   { metadata: MatchesMetadata, path: '/matches' },
   { metadata: ForecastsMetadata, path: '/forecasts' },
   { metadata: H2HMetadata, path: '/h2h' },
-  { metadata: RecordsRankingMetadata, path: '/recordsRanking' },
+  { metadata: RecordsRankingMetadata, path: '/recordsranking' },
   { metadata: SeasonsMetadata, path: '/seasons' },
   { metadata: StatisticsMetadata, path: '/statistics' },
   { metadata: TournamentsMetadata, path: '/tournaments' },

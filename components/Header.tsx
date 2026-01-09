@@ -63,7 +63,7 @@ export default function Header() {
           <Link href="/ranking" className={linkClass("/ranking")}>Rankings</Link>
           <Link href="/rankingtables" className={linkClass("/rankingtables")}>Ranking Tables</Link>
           <Link href="/records" className={linkClass("/records")}>Match Records</Link>
-          <Link href="/recordsRanking" className={linkClass("/recordsRanking")}>Ranking Records</Link>
+          <Link href="/recordsranking" className={linkClass("/recordsranking")}>Ranking Records</Link>
         </nav>
 
       </div>

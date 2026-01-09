@@ -75,7 +75,7 @@ export default function HomePage() {
         <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 0 1-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8Z" />
       </svg>
     )},
-    { href: "/recordsRanking", title: "Ranking Records", subtitle: "ATP Ranking Records", description: "Discover who leads the records for most weeks at No. x, wins at No. x, and best ranking at No. x.. Top x, streaks, end of the season rankings", colorClass: "text-yellow-400 group-hover:text-yellow-300", accentColor: "#facc15", icon: (
+    { href: "/recordsranking", title: "Ranking Records", subtitle: "ATP Ranking Records", description: "Discover who leads the records for most weeks at No. x, wins at No. x, and best ranking at No. x.. Top x, streaks, end of the season rankings", colorClass: "text-yellow-400 group-hover:text-yellow-300", accentColor: "#facc15", icon: (
       <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
         <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 0 1-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8Z" />
       </svg>
