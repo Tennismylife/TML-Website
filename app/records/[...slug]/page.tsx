@@ -204,13 +204,13 @@ export async function generateMetadata(
     !selectedRounds &&
     selectedBestOf === null;
 
+  // All records pages are indexable regardless of filters.
+
   return {
     title: `${desc || record || 'Records'} — TML`,
     description: desc || 'TML records and statistics',
     alternates: { canonical: canonicalFull },
-    robots: isPrincipalCombination
-      ? { index: true, follow: true }
-      : { index: false, follow: true },
+    robots: { index: true, follow: true },
   };
 }
 
