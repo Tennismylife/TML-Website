@@ -3,6 +3,8 @@ import './globals.css'
 import { ReactNode } from 'react'
 import Header from '../components/Header'
 import GAListener from './analytics/GAListener' // importa il listener
+import { metadataBase } from '../lib/site'
+export { metadataBase }
 import { Montserrat } from 'next/font/google'
 
 const montserrat = Montserrat({
