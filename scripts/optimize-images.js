@@ -58,10 +58,30 @@ async function optimizeLogo() {
   }
 }
 
+async function optimizeHeaderAvif() {
+  const src = path.join(__dirname, '..', 'public', 'header.jpg');
+  const dest = path.join(__dirname, '..', 'public', 'header-480.avif');
+  if (!fs.existsSync(src)) {
+    console.warn('No public/header.jpg found, skipping header AVIF generation.');
+    return;
+  }
+
+  try {
+    await sharp(src)
+      .resize({ width: 480 })
+      .avif({ quality: 60 })
+      .toFile(dest);
+    console.log(`Wrote optimized header AVIF → ${dest}`);
+  } catch (err) {
+    console.error('Header AVIF generation failed:', err.message || err);
+  }
+}
+
 async function main() {
   await ensureDir(path.join(__dirname, '..', 'public'));
   await optimizeFavicon();
   await optimizeLogo();
+  await optimizeHeaderAvif();
   console.log('Image optimization complete.');
 }
 
