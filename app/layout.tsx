@@ -3,8 +3,7 @@ import './globals.css'
 import { ReactNode } from 'react'
 import Header from '../components/Header'
 import GAListener from './analytics/GAListener' // importa il listener
-import { metadataBase as siteMetadataBase } from '../lib/site'
-export const metadataBase = siteMetadataBase;
+export const metadataBase = new URL('https://stats.tennismylife.org');
 import { Montserrat } from 'next/font/google'
 
 const montserrat = Montserrat({
