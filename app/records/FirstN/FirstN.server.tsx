@@ -14,14 +14,13 @@ export default async function FirstNServer({ searchParams, ...serverProps }: { s
 
   const selectedSurfaces = new Set(toArray(sp.surface ?? sp['surface[]']))
   const selectedLevels = new Set(toArray(sp.level ?? sp['level[]']))
-  const activeSubTab = serverProps.sub ?? getFirst('subtab') ?? undefined
-  const fetchEnabled = serverProps.fetchEnabled ?? Object.keys(sp || {}).length > 0
+  const selectedRounds = String(serverProps.selectedRounds ?? getFirst('round') ?? 'All')
 
   return (
     <ServerWrapper
       Component={FirstN}
       searchParams={sp}
-      serverProps={{ selectedSurfaces, selectedLevels, activeSubTab, fetchEnabled, ...serverProps }}
+      serverProps={{ selectedSurfaces, selectedLevels, selectedRounds }}
     />
   )
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { getFlagFromIOC } from "@/lib/utils";
 import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
@@ -43,6 +43,7 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
   const lastRequestRef = useRef<string | null>(null);
 
   const searchParams = useSearchParams();
+  const router = useRouter();
   const perPage = 20;
 
   useEffect(() => {
@@ -100,6 +101,35 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
       setPage(1);
       setRoundNumber(n);
       setHasFetched(true);
+
+      try {
+        const path = window.location.pathname;
+        const newQuery = new URLSearchParams();
+        newQuery.set('n', String(n));
+        selectedSurfaces.forEach(s => newQuery.append('surface', s));
+        selectedLevels.forEach(l => newQuery.append('level', l));
+        if (selectedRounds) newQuery.set('round', selectedRounds);
+
+        const current = (typeof window !== 'undefined') ? new URLSearchParams(window.location.search) : new URLSearchParams();
+        const compareMulti = (a: URLSearchParams, b: URLSearchParams, key: string) => {
+          const aa = a.getAll(key).map(String).sort();
+          const bb = b.getAll(key).map(String).sort();
+          if (aa.length !== bb.length) return false;
+          for (let i = 0; i < aa.length; i++) if (aa[i] !== bb[i]) return false;
+          return true;
+        };
+
+        const sameN = current.get('n') === newQuery.get('n');
+        const sameSurface = compareMulti(current, newQuery, 'surface');
+        const sameLevel = compareMulti(current, newQuery, 'level');
+        const sameRound = current.get('round') === newQuery.get('round');
+
+        if (!(sameN && sameSurface && sameLevel && sameRound)) {
+          router.replace(`${path}?${newQuery.toString()}`);
+        }
+      } catch (e) {
+        // ignore
+      }
     } catch (err: any) {
       console.error(err);
       setError(err instanceof Error ? err.message : 'Unknown error');

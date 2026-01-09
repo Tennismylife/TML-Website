@@ -24,9 +24,11 @@ export default async function CounterSeasonsServer({ searchParams, ...serverProp
   })()
 
   const seasonsParam = getFirst('seasons')
+  const nParam = getFirst('n')
   const initialSeasons = (() => {
-    if (!seasonsParam) return 1
-    const parsed = Number(seasonsParam)
+    const val = seasonsParam ?? nParam
+    if (!val) return 1
+    const parsed = Number(val)
     return Number.isFinite(parsed) ? parsed : 1
   })()
 

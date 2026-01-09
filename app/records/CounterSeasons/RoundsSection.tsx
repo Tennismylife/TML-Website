@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Modal from "@/components/Modal";
 import { getFlagFromIOC } from "@/lib/utils";
 
@@ -48,6 +49,7 @@ export default function RoundsSection({
   const [minRoundPerSeason, setMinRoundPerSeason] = useState(Math.max(1, initialSeasons || 1));
 
   const lastRequestIdRef = useRef<string | null>(null);
+  const router = useRouter();
 
   const roundAbbreviations: Record<string, string> = {
     R128: "R128s",
@@ -93,6 +95,37 @@ export default function RoundsSection({
       const data = await res.json();
       const list: Player[] = Array.isArray(data.players) ? data.players : [];
       setPlayers(list);
+
+      try {
+        const path = window.location.pathname;
+        const newQuery = new URLSearchParams();
+        newQuery.set('n', String(minRoundPerSeason));
+        selectedSurfaces.forEach(s => newQuery.append('surface', s));
+        selectedLevels.forEach(l => newQuery.append('level', l));
+        if (selectedRound) newQuery.set('round', selectedRound);
+        if (selectedBestOf != null) newQuery.set('bestOf', String(selectedBestOf));
+
+        const current = (typeof window !== 'undefined') ? new URLSearchParams(window.location.search) : new URLSearchParams();
+        const compareMulti = (a: URLSearchParams, b: URLSearchParams, key: string) => {
+          const aa = a.getAll(key).map(String).sort();
+          const bb = b.getAll(key).map(String).sort();
+          if (aa.length !== bb.length) return false;
+          for (let i = 0; i < aa.length; i++) if (aa[i] !== bb[i]) return false;
+          return true;
+        };
+
+        const sameN = current.get('n') === newQuery.get('n');
+        const sameSurface = compareMulti(current, newQuery, 'surface');
+        const sameLevel = compareMulti(current, newQuery, 'level');
+        const sameRound = current.get('round') === newQuery.get('round');
+        const sameBestOf = current.get('bestOf') === newQuery.get('bestOf');
+
+        if (!(sameN && sameSurface && sameLevel && sameRound && sameBestOf)) {
+          router.replace(`${path}?${newQuery.toString()}`);
+        }
+      } catch (e) {
+        // ignore
+      }
     } catch (err: any) {
       setError(err?.message || "Unable to load data");
       setPlayers([]);

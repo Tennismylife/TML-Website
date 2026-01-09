@@ -310,7 +310,12 @@ export default function RecordsFilters({ activeTab, activeSubTab, searchParams =
             {BEST_OF_LIST.map(b => (
               <a
                 key={b}
-                href={buildCanonicalPath(activeTab, activeSubTab) + (buildSearch(Array.from(selectedSurfaces), Array.from(selectedLevels), selectedRounds, b) ? `?${buildSearch(Array.from(selectedSurfaces), Array.from(selectedLevels), selectedRounds, b)}` : '')}
+                href={(() => {
+                  const params = buildSearch(Array.from(selectedSurfaces), Array.from(selectedLevels), selectedRounds, b);
+                  const subParam = effectiveSub ? `subtab=${encodeURIComponent(effectiveSub)}` : '';
+                  const qs = [subParam, params].filter(Boolean).join('&');
+                  return buildCanonicalPath(activeTab) + (qs ? `?${qs}` : '');
+                })()}
                 className={`px-5 py-2 rounded-full font-medium ${selectedBestOf === b ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
                 {b}
               </a>

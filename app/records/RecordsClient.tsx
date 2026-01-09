@@ -209,11 +209,11 @@ export default function RecordsClient({ initialRecord = null, initialSubtab = nu
     switch(selectedRecord) {
       case "wins": return <Wins fetchEnabled={fetchEnabled} description={""} />;
       case "played": return <Played fetchEnabled={fetchEnabled} description={""} />;
-      case "count": return <Count selectedRounds={selectedRounds} top={undefined} description={""} />;
+      case "count": return <Count selectedRounds={selectedRounds} description={""} />;
       case "titles": return <Titles topTitles={undefined} description={""} />;
       case "entries": return <Entries fetchEnabled={fetchEnabled} description={""} />;
       case "ages": return <Ages selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={activeSubTabsRef.current.ages} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} description={""} />;
-      case "timespan": return <Timespan selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedTab={activeSubTabsRef.current.timespan} onTabChange={(t)=>{activeSubTabsRef.current.timespan=t;}} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} description={""} />;
+      case "timespan": return <Timespan selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedTab={activeSubTabsRef.current.timespan || 'entries'} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} description={""} />;
       case "percentage": return <Percentage selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} fetchEnabled={fetchEnabled} description={""} />;
       case "roundsonentries": return <Roundsonentries selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={activeSubTabsRef.current.roundsonentries} fetchEnabled={fetchEnabled} description={""} />;
       case "same": return <Same selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabsRef.current.same} fetchEnabled={fetchEnabled} setFetchEnabled={setFetchEnabled} fetchRequestId={fetchRequestId} description={""} />;
@@ -221,7 +221,7 @@ export default function RecordsClient({ initialRecord = null, initialSubtab = nu
       case "atage": return <AtAge selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabsRef.current.atage} fetchEnabled={fetchEnabled} description={""} />;
       case "ageofnth": return <AgeofNth selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabsRef.current.ageofnth} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} description={""} />;
       case "neededto": return <NeededToSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={activeSubTabsRef.current.neededto} fetchEnabled={fetchEnabled} description={""} />;
-      case "counterseasons": return <CounterSeasonsSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={activeSubTabsRef.current.counterseasons} fetchEnabled={fetchEnabled} description={""} />;
+      case "counterseasons": return <CounterSeasonsSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabsRef.current.counterseasons || 'round'} fetchEnabled={fetchEnabled} description={""} />;
       case "streak": return <StreakSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabsRef.current.streak} fetchEnabled={fetchEnabled} description={""} />;
       case "h2h": return <H2HSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={activeSubTabsRef.current.h2h} fetchEnabled={fetchEnabled} fetchRequestId={fetchRequestId} description={""} />;
       default: return null;

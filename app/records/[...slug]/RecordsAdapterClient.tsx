@@ -133,9 +133,9 @@ export default function RecordsAdapterClient({ record, sub, filters = {}, topDat
     case 'entries':
       return <Entries fetchEnabled={fetchEnabled} description={description} />;
     case 'count':
-      return <Count top={topData} selectedRounds={selectedRounds} description={description} />;
+      return <Count topCount={topData || []} selectedRounds={selectedRounds} description={description} />;
     case 'timespan':
-      return <Timespan selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedTab={sub || undefined} onTabChange={() => {}} fetchEnabled={fetchEnabled} description={description} />;
+      return <Timespan selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedTab={sub || 'entries'} fetchEnabled={fetchEnabled} description={description} />;
     case 'ages':
       return <Ages selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={sub || undefined} fetchEnabled={fetchEnabled} description={description} />;
     case 'percentage':
@@ -153,7 +153,7 @@ export default function RecordsAdapterClient({ record, sub, filters = {}, topDat
     case 'neededto':
       return <NeededToSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={sub || undefined} fetchEnabled={fetchEnabled} description={description} />;
     case 'counterseasons':
-      return <CounterSeasonsSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={sub || undefined} fetchEnabled={fetchEnabled} description={description} />;
+      return <CounterSeasonsSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={sub || 'round'} fetchEnabled={fetchEnabled} description={description} />;
     case 'h2h':
       return <H2HSection selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} activeSubTab={sub || undefined} fetchEnabled={fetchEnabled} description={description} />;
     case 'streak':

@@ -43,8 +43,6 @@ export default function AtAge({
           selectedRounds={selectedRounds} // InSlamsSection sembra usare singolare
           selectedBestOf={selectedBestOf}
           fetchEnabled={fetchEnabled}
-          setFetchEnabled={setFetchEnabled}
-          fetchRequestId={fetchRequestId}
           description={description}
           initialData={prefetchedData?.slams as any[]}
           initialAge={safeInitialAge}

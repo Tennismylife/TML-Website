@@ -18,16 +18,19 @@ export default async function NeededToServer({ searchParams, ...serverProps }: {
   const selectedRounds = (getFirst('round') ?? '') as string
   const maxTitlesParam = getFirst('maxTitles')
   const roundNumberParam = getFirst('round_number')
+  const nParam = getFirst('n')
 
   const parsedMaxTitles = (() => {
-    if (!maxTitlesParam) return null
-    const n = Number(maxTitlesParam)
+    const val = maxTitlesParam ?? nParam
+    if (!val) return null
+    const n = Number(val)
     return Number.isFinite(n) ? n : null
   })()
 
   const parsedRoundNumber = (() => {
-    if (!roundNumberParam) return null
-    const n = Number(roundNumberParam)
+    const val = roundNumberParam ?? nParam
+    if (!val) return null
+    const n = Number(val)
     return Number.isFinite(n) ? n : null
   })()
 

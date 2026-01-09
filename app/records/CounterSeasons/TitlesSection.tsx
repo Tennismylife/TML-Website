@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Modal from "@/components/Modal";
 import { getFlagFromIOC } from "@/lib/utils";
 
@@ -46,7 +47,7 @@ export default function TitlesSection({
 	const [minTitlesPerSeason, setMinTitlesPerSeason] = useState(Math.max(1, initialSeasons || 1));
 
 	const lastRequestIdRef = useRef<string | null>(null);
-
+  const router = useRouter();
 	const filtersText = useMemo(() => {
 		const parts: string[] = [];
 		if (selectedLevels.length) parts.push(`in ${selectedLevels.join(" or ")}`);
@@ -79,7 +80,34 @@ export default function TitlesSection({
 			const data = await res.json();
 			const list: Player[] = Array.isArray(data.players) ? data.players : [];
 			setPlayers(list);
-		} catch (err: any) {
+			try {
+				const path = window.location.pathname;
+				const newQuery = new URLSearchParams();
+				newQuery.set('n', String(minTitlesPerSeason));
+				selectedSurfaces.forEach(s => newQuery.append('surface', s));
+				selectedLevels.forEach(l => newQuery.append('level', l));
+				if (selectedBestOf != null) newQuery.set('bestOf', String(selectedBestOf));
+
+				const current = (typeof window !== 'undefined') ? new URLSearchParams(window.location.search) : new URLSearchParams();
+				const compareMulti = (a: URLSearchParams, b: URLSearchParams, key: string) => {
+					const aa = a.getAll(key).map(String).sort();
+					const bb = b.getAll(key).map(String).sort();
+					if (aa.length !== bb.length) return false;
+					for (let i = 0; i < aa.length; i++) if (aa[i] !== bb[i]) return false;
+					return true;
+				};
+
+				const sameN = current.get('n') === newQuery.get('n');
+				const sameSurface = compareMulti(current, newQuery, 'surface');
+				const sameLevel = compareMulti(current, newQuery, 'level');
+				const sameBestOf = current.get('bestOf') === newQuery.get('bestOf');
+
+				if (!(sameN && sameSurface && sameLevel && sameBestOf)) {
+					router.replace(`${path}?${newQuery.toString()}`);
+				}
+			} catch (e) {
+				// ignore
+			}		} catch (err: any) {
 			setError(err?.message || "Unable to load data");
 			setPlayers([]);
 		} finally {
