@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Pagination from "../../../components/Pagination";
 import Modal from "@/components/Modal";
 import { getFlagFromIOC, toOrdinal } from "@/lib/utils";
@@ -64,6 +64,7 @@ export default function PlayedSection({
   const lastRequestRef = useRef<string | null>(null);
 
   const searchParams = useSearchParams();
+  const router = useRouter();
   const perPage = 20;
 
   useEffect(() => {
@@ -121,6 +122,38 @@ export default function PlayedSection({
       setPage(1);
       setSelectedX(x);
       setHasFetched(true);
+
+      try {
+        const path = window.location.pathname;
+        const newQuery = new URLSearchParams();
+        newQuery.set('n', String(x));
+        selectedSurfaces.forEach(s => newQuery.append('surface', s));
+        selectedLevels.forEach(l => newQuery.append('level', l));
+        if (selectedRounds) newQuery.set('round', selectedRounds);
+        if (selectedBestOf != null) newQuery.set('bestOf', String(selectedBestOf));
+
+        const current = (typeof window !== 'undefined') ? new URLSearchParams(window.location.search) : new URLSearchParams();
+        const compareMulti = (a: URLSearchParams, b: URLSearchParams, key: string) => {
+          const aa = a.getAll(key).map(String).sort();
+          const bb = b.getAll(key).map(String).sort();
+          if (aa.length !== bb.length) return false;
+          for (let i = 0; i < aa.length; i++) if (aa[i] !== bb[i]) return false;
+          return true;
+        };
+
+        const sameN = current.get('n') === newQuery.get('n');
+        const sameSurface = compareMulti(current, newQuery, 'surface');
+        const sameLevel = compareMulti(current, newQuery, 'level');
+        const sameRound = current.get('round') === newQuery.get('round');
+        const sameBestOf = current.get('bestOf') === newQuery.get('bestOf');
+
+        if (!(sameN && sameSurface && sameLevel && sameRound && sameBestOf)) {
+          router.replace(`${path}?${newQuery.toString()}`);
+        }
+      } catch (e) {
+        // ignore
+      }
+
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "Unknown error");

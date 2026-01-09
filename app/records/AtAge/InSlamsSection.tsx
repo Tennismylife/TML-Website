@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
 import AgeInput from './AgeInput';
@@ -13,6 +13,8 @@ interface InSlamsSectionProps {
   selectedBestOf: number | null;
   fetchEnabled?: boolean;
   description?: string;
+  initialData?: PlayerData[];
+  initialAge?: number;
 }
 
 interface PlayerData {
@@ -26,13 +28,14 @@ interface PlayerData {
   total: number;
 }
 
-export default function InSlamsSection({ selectedSurfaces, selectedRounds, selectedBestOf, fetchEnabled = true, description }: InSlamsSectionProps) {
-  const [data, setData] = useState<PlayerData[]>([]);
+export default function InSlamsSection({ selectedSurfaces, selectedRounds, selectedBestOf, fetchEnabled = true, description, initialData, initialAge }: InSlamsSectionProps) {
+  const safeInitialAge = Number.isFinite(initialAge as any) ? (initialAge as number) : 25;
+  const [data, setData] = useState<PlayerData[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);  const [hasFetched, setHasFetched] = useState(false);  const [page, setPage] = useState(1);
+  const [error, setError] = useState<string | null>(null);  const [hasFetched, setHasFetched] = useState(Array.isArray(initialData) && initialData.length > 0);  const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
-  const [inputAge, setInputAge] = useState(25.0);
-  const [selectedAge, setSelectedAge] = useState(25.0);
+  const [inputAge, setInputAge] = useState(safeInitialAge);
+  const [selectedAge, setSelectedAge] = useState(safeInitialAge);
 
   const formatAge = (age: number) => {
     const years = Math.floor(age);
@@ -53,6 +56,16 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
   const perPage = 20;
   const searchParams = useSearchParams();
 
+  useEffect(() => {
+    setInputAge(safeInitialAge);
+    setSelectedAge(safeInitialAge);
+    if (Array.isArray(initialData)) {
+      setData(initialData);
+      setHasFetched(initialData.length > 0);
+    }
+  }, [safeInitialAge, initialData]);
+  const router = useRouter();
+
   const fetchData = async (age: number) => {
     try {
       setLoading(true);
@@ -71,6 +84,35 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
       setData(fetchedData);
       setPage(1);
       setSelectedAge(age);
+
+      try {
+        const path = window.location.pathname;
+        const newQuery = new URLSearchParams();
+        newQuery.set('age', age.toFixed(3));
+        selectedSurfaces.forEach(s => newQuery.append('surface', s));
+        if (selectedRounds) newQuery.set('round', selectedRounds);
+        if (selectedBestOf != null) newQuery.set('bestOf', String(selectedBestOf));
+
+        const current = (typeof window !== 'undefined') ? new URLSearchParams(window.location.search) : new URLSearchParams();
+        const compareMulti = (a: URLSearchParams, b: URLSearchParams, key: string) => {
+          const aa = a.getAll(key).map(String).sort();
+          const bb = b.getAll(key).map(String).sort();
+          if (aa.length !== bb.length) return false;
+          for (let i = 0; i < aa.length; i++) if (aa[i] !== bb[i]) return false;
+          return true;
+        };
+
+        const sameAge = current.get('age') === newQuery.get('age');
+        const sameSurface = compareMulti(current, newQuery, 'surface');
+        const sameRound = current.get('round') === newQuery.get('round');
+        const sameBestOf = current.get('bestOf') === newQuery.get('bestOf');
+
+        if (!(sameAge && sameSurface && sameRound && sameBestOf)) {
+          router.replace(`${path}?${newQuery.toString()}`);
+        }
+      } catch (e) {
+        // ignore
+      }
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "Unknown error");

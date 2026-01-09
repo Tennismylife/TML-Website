@@ -112,6 +112,7 @@ export default function AtAge({
         <TitlesSection
           selectedSurfaces={Array.from(selectedSurfaces)}
           selectedLevels={Array.from(selectedLevels)}
+          selectedRounds={selectedRounds}
           fetchEnabled={fetchEnabled}
           setFetchEnabled={setFetchEnabled}
           fetchRequestId={fetchRequestId}

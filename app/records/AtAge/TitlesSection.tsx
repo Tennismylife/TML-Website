@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
 import AgeInput from './AgeInput';
@@ -11,6 +11,7 @@ import { playerMatchesUrl } from "../nav";
 interface TitlesSectionProps {
   selectedSurfaces: string[];
   selectedLevels: string[];
+  selectedRounds?: string;
   fetchEnabled?: boolean;
   setFetchEnabled?: (v: boolean) => void;
   fetchRequestId?: string | null;
@@ -47,6 +48,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
 
   const perPage = 20;
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   useEffect(() => {
     setInputAge(safeInitialAge);
@@ -91,7 +93,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
       selectedLevels.forEach(l => query.append('level', l));
       query.set('limit', String(limit));
 
-      const url = `/api/records/atage/titles?${query.toString()}`;
+        const url = `/api/records/atage/titles?${query.toString()}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`Failed to fetch: ${res.statusText}`);
       const fetchedData: Player[] = await res.json();
@@ -99,6 +101,35 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
       setPage(1);
       setSelectedAge(age);
       setHasFetched(true);
+
+      // update URL so age is shareable and server-rendered on external entry
+      try {
+        const path = window.location.pathname;
+        const newQuery = new URLSearchParams();
+        newQuery.set('age', age.toFixed(3));
+        selectedSurfaces.forEach(s => newQuery.append('surface', s));
+        selectedLevels.forEach(l => newQuery.append('level', l));
+
+        // Compare current search params semantically to avoid replace loops
+        const current = (typeof window !== 'undefined') ? new URLSearchParams(window.location.search) : new URLSearchParams();
+        const compareMulti = (a: URLSearchParams, b: URLSearchParams, key: string) => {
+          const aa = a.getAll(key).map(String).sort();
+          const bb = b.getAll(key).map(String).sort();
+          if (aa.length !== bb.length) return false;
+          for (let i = 0; i < aa.length; i++) if (aa[i] !== bb[i]) return false;
+          return true;
+        };
+
+        const sameAge = current.get('age') === newQuery.get('age');
+        const sameSurface = compareMulti(current, newQuery, 'surface');
+        const sameLevel = compareMulti(current, newQuery, 'level');
+
+        if (!(sameAge && sameSurface && sameLevel)) {
+          router.replace(`${path}?${newQuery.toString()}`);
+        }
+      } catch (e) {
+        // ignore
+      }
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "Unknown error");

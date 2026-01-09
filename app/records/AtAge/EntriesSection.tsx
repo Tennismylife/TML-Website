@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
 import AgeInput from './AgeInput';
@@ -11,6 +11,7 @@ import { playerMatchesUrl } from "../nav";
 interface EntriesSectionProps {
   selectedSurfaces: string[];
   selectedLevels: string[];
+
   fetchEnabled?: boolean;
   setFetchEnabled?: (v: boolean) => void;
   fetchRequestId?: string | null;
@@ -47,6 +48,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
 
   const perPage = 20;
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   useEffect(() => {
     setInputAge(safeInitialAge);
@@ -89,6 +91,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
       query.append('age', age.toFixed(3));
       selectedSurfaces.forEach(s => query.append('surface', s));
       selectedLevels.forEach(l => query.append('level', l));
+
       query.set('limit', String(limit));
 
       const url = `/api/records/atage/entries?${query.toString()}`;
@@ -99,6 +102,34 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
       setPage(1);
       setSelectedAge(age);
       setHasFetched(true);
+
+      try {
+        const path = window.location.pathname;
+        const newQuery = new URLSearchParams();
+        newQuery.set('age', age.toFixed(3));
+        selectedSurfaces.forEach(s => newQuery.append('surface', s));
+        selectedLevels.forEach(l => newQuery.append('level', l));
+
+        // Compare current params semantically to avoid unnecessary replaces
+        const current = (typeof window !== 'undefined') ? new URLSearchParams(window.location.search) : new URLSearchParams();
+        const compareMulti = (a: URLSearchParams, b: URLSearchParams, key: string) => {
+          const aa = a.getAll(key).map(String).sort();
+          const bb = b.getAll(key).map(String).sort();
+          if (aa.length !== bb.length) return false;
+          for (let i = 0; i < aa.length; i++) if (aa[i] !== bb[i]) return false;
+          return true;
+        };
+
+        const sameAge = current.get('age') === newQuery.get('age');
+        const sameSurface = compareMulti(current, newQuery, 'surface');
+        const sameLevel = compareMulti(current, newQuery, 'level');
+
+        if (!(sameAge && sameSurface && sameLevel)) {
+          router.replace(`${path}?${newQuery.toString()}`);
+        }
+      } catch (e) {
+        // ignore
+      }
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "Unknown error");

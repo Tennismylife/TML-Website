@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
 import AgeInput from './AgeInput';
@@ -87,6 +87,8 @@ export default function PlayedSection({
     fetchData(selectedAge, showModal ? 1000 : 100, showModal);
   }, [enabled, fetchRequestId, showModal, selectedAge, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, initialData]);
 
+  const router = useRouter();
+
   const fetchData = async (age: number, limit: number, force = false) => {
     if (!Number.isFinite(age)) {
       setError('Please enter a valid age.');
@@ -103,7 +105,7 @@ export default function PlayedSection({
       selectedSurfaces.forEach((s) => query.append("surface", s));
       selectedLevels.forEach((l) => query.append("level", l));
       if (selectedRounds) query.append("round", selectedRounds);
-      if (selectedBestOf != null) query.append("best_of", selectedBestOf.toString());
+      if (selectedBestOf != null) query.append("best_of", String(selectedBestOf));
       query.set('limit', String(limit));
 
       const res = await fetch(`/api/records/atage/played?${query.toString()}`);
@@ -113,6 +115,39 @@ export default function PlayedSection({
       setPage(1);
       setSelectedAge(age);
       setHasFetched(true);
+
+      // Update URL so the age is reflected and shareable
+      try {
+        const path = window.location.pathname;
+        const newQuery = new URLSearchParams();
+        newQuery.set('age', age.toFixed(3));
+        selectedSurfaces.forEach(s => newQuery.append('surface', s));
+        selectedLevels.forEach(l => newQuery.append('level', l));
+        if (selectedRounds) newQuery.set('round', selectedRounds);
+        if (selectedBestOf != null) newQuery.set('bestOf', String(selectedBestOf));
+
+        const current = (typeof window !== 'undefined') ? new URLSearchParams(window.location.search) : new URLSearchParams();
+        const compareMulti = (a: URLSearchParams, b: URLSearchParams, key: string) => {
+          const aa = a.getAll(key).map(String).sort();
+          const bb = b.getAll(key).map(String).sort();
+          if (aa.length !== bb.length) return false;
+          for (let i = 0; i < aa.length; i++) if (aa[i] !== bb[i]) return false;
+          return true;
+        };
+
+        const sameAge = current.get('age') === newQuery.get('age');
+        const sameSurface = compareMulti(current, newQuery, 'surface');
+        const sameLevel = compareMulti(current, newQuery, 'level');
+        const sameRound = current.get('round') === newQuery.get('round');
+        const sameBestOf = current.get('bestOf') === newQuery.get('bestOf');
+
+        if (!(sameAge && sameSurface && sameLevel && sameRound && sameBestOf)) {
+          router.replace(`${path}?${newQuery.toString()}`);
+        }
+      } catch (e) {
+        // ignore URL update errors
+      }
+
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "Unknown error");

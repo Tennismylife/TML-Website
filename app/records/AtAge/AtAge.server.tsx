@@ -33,7 +33,9 @@ export default async function AtAgeServer({ searchParams, ...serverProps }: { se
   const hasFilters = selectedSurfaces.size > 0 || selectedLevels.size > 0 || !!selectedRounds || selectedBestOf !== null
 
   const prefetchedData: Record<string, any[] | undefined> = {}
-  if (!hasFilters) {
+  // Prefetch when either the age is explicitly provided in the URL (external entry)
+  // or when there are no filters (the default behavior)
+  if (ageParam || !hasFilters) {
     try {
       const params = new URLSearchParams()
       params.set('age', initialAge.toFixed(3))
