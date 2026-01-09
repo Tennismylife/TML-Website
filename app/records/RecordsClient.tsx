@@ -148,7 +148,27 @@ export default function RecordsClient({ initialRecord = null, initialSubtab = nu
     const path = buildPath(selectedRecord, sub);
     try {
       const desc = generateRecordDescription(selectedRecord, activeSubTabsRef.current, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf);
-      if (typeof document !== 'undefined') document.title = desc ? `${desc} — Records` : 'Records';
+      if (desc && typeof document !== 'undefined') {
+        const newTitle = `${desc} — TML`;
+        const currentTitle = typeof document !== 'undefined' ? document.title || '' : '';
+        const shouldForceTitle = lastUserActionRef.current === 'click' || lastUserActionRef.current === 'filter';
+
+        // If the user initiated the change, allow the client to overwrite the title (to reflect selected filters).
+        if (shouldForceTitle) {
+          document.title = newTitle;
+          if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') console.debug('[RecordsClient] forced title (user action)', document.title);
+        } else {
+          // Otherwise only set the title if it isn't already an SEO title or differs from the desired title
+          if (!currentTitle.includes('— TML') || currentTitle !== newTitle) {
+            document.title = newTitle;
+            if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') console.debug('[RecordsClient] set title', document.title);
+          } else {
+            if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') console.debug('[RecordsClient] not overwriting server SEO title', currentTitle);
+          }
+        }
+      } else {
+        if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') console.debug('[RecordsClient] skipping title update (no desc)');
+      }
     } catch (err) {}
     const shouldPush = lastUserActionRef.current === 'click' || lastUserActionRef.current === 'filter';
     if (shouldPush) {

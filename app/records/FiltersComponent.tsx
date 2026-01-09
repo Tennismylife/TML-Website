@@ -3,6 +3,7 @@
 import React from 'react';
 import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { keyFromParamLabel } from '@/lib/levels';
 
 const SURFACE_LIST = ["Hard", "Clay", "Grass", "Carpet"];
 const ROUND_LIST = ["R128", "R64", "R32", "R16", "QF", "SF", "F"];
@@ -193,12 +194,21 @@ export default function FiltersComponent({
 
   useEffect(() => {
     const surfaces = searchParams.getAll("surface");
-    const levels = searchParams.getAll("level");
+    const levelParams = searchParams.getAll("level");
     const rounds = searchParams.get("round");
     const bestOf = searchParams.get("bestOf") ? Number(searchParams.get("bestOf")) : null;
 
-    setSelectedSurfaces(new Set(surfaces));
-    setSelectedLevels(new Set(levels));
+    // Map level param labels (e.g. "Grand-Slam") back to keys (e.g. 'G') so the UI highlighting works
+    const levelKeys = levelParams.map(p => {
+      const k = keyFromParamLabel(p);
+      return k || String(p).toUpperCase();
+    });
+
+    // Normalize surface values to Title Case for UI highlighting (e.g., 'clay' -> 'Clay')
+    const surfaceTitles = surfaces.map(s => typeof s === 'string' ? (s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()) : s);
+
+    setSelectedSurfaces(new Set(surfaceTitles));
+    setSelectedLevels(new Set(levelKeys));
 
     setSelectedRounds(rounds || "");
     setSelectedBestOf(bestOf);
@@ -206,9 +216,11 @@ export default function FiltersComponent({
 
   useEffect(() => {
     const params = new URLSearchParams();
-    Array.from(selectedSurfaces).sort().forEach(s => params.append("surface", s));
-    Array.from(selectedLevels).sort().forEach(l => params.append("level", l));
-    if (selectedRounds) params.set("round", selectedRounds);
+    // Use Title Case surface param values in the URL (e.g. "Hard") so they match UI labels
+    Array.from(selectedSurfaces).sort().forEach(s => params.append("surface", String(s).charAt(0).toUpperCase() + String(s).slice(1).toLowerCase()));
+    // Use single-letter level code (e.g. 'G') in the URL
+    Array.from(selectedLevels).sort().forEach(l => params.append("level", String(l).toUpperCase()));
+    if (selectedRounds) params.set("round", String(selectedRounds).toUpperCase());
     if (selectedBestOf !== null) params.set("bestOf", selectedBestOf.toString());
 
     // Preserve incoming tab/subtab value but normalize to use only `subtab` in the URL

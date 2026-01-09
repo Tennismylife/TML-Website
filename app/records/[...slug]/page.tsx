@@ -1,6 +1,7 @@
 ﻿import { Metadata } from 'next';
 import { metadataBase } from '../../../lib/site';
 import { generateRecordDescription } from '../../../lib/generateRecordDescription';
+import { keyFromParamLabel } from '../../../lib/levels';
 import RecordsFilteredClient from './RecordsFilteredClient';
 import SyncUrlClient from '../../../components/SyncUrlClient';
 import RecordsTabs from '../RecordsTabs';
@@ -79,7 +80,15 @@ function canonicalizeParamsObj(sp: Record<string, any> | undefined) {
   for (const [k, v] of Object.entries(sp)) {
     if (v === undefined) continue;
     const key = k;
-    const values = Array.isArray(v) ? v.map(String) : [String(v)];
+    const normalizeVal = (val: string) => {
+      // For `level`, canonicalize to single-letter uppercase (e.g. G)
+      if (key === 'level') return String(val).toUpperCase();
+      if (key === 'surface') return String(val).charAt(0).toUpperCase() + String(val).slice(1).toLowerCase();
+      if (key === 'round') return String(val).toUpperCase();
+      if (key === 'subtab') return String(val).toLowerCase();
+      return val;
+    };
+    const values = Array.isArray(v) ? v.map(String).map(normalizeVal) : [normalizeVal(String(v))];
     if (!map.has(key)) map.set(key, []);
     map.set(key, map.get(key)!.concat(values));
   }
@@ -122,9 +131,21 @@ export async function fetchRecordData(record: string | null, sub?: string | null
 }
 
 export async function generateMetadata({ params, searchParams }: { params: Params; searchParams: SearchParams; }): Promise<Metadata> {
-  const slug = params.slug || [];
+  // `params` can be thenable in App Router; await it before accessing properties
+  const p = (params && typeof (params as any)?.then === 'function') ? await (params as any) : (params || {});
+  const slug = p.slug || [];
   const record = slug[0] ?? null;
   const sub = slug[1] ?? null;
+
+  // Resolve searchParams early so metadata can reflect filters (e.g. surface=Clay)
+  const sp = (searchParams && typeof (searchParams as any)?.then === 'function') ? await (searchParams as any) : (searchParams || {});
+  const hasQueryParams = Object.keys(sp || {}).length > 0;
+  const toArray = (v?: string | string[]) => (v === undefined ? [] : (Array.isArray(v) ? v : [v]));
+  // Normalize surfaces to Title Case for display/highlighting
+  const selectedSurfaces = new Set(toArray(sp.surface ?? sp['surface[]']).map(s => typeof s === 'string' ? (s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()) : s));
+  const selectedLevels = new Set(toArray(sp.level ?? sp['level[]']));
+  const selectedRounds = typeof sp.round === 'string' ? String(sp.round) : '';
+  const selectedBestOf = sp.bestOf ? Number(sp.bestOf as string) : null;
 
   const activeSubTabsDefault: Record<string,string> = {
     ages: 'oldest',
@@ -141,9 +162,8 @@ export async function generateMetadata({ params, searchParams }: { params: Param
   };
 
   const titleBase = record ? `${record}${sub ? ' — ' + sub : ''}` : 'Records';
-  const desc = generateRecordDescription(record, activeSubTabsDefault, new Set(), new Set(), '', null);
+  const desc = generateRecordDescription(record, activeSubTabsDefault, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf);
 
-  const hasQueryParams = Object.keys(searchParams || {}).length > 0;
   const canonicalPath = record ? `/records/${encodeURIComponent(record)}${sub ? '/' + encodeURIComponent(sub) : ''}` : '/records';
   const canonicalUrl = resolveUrl(canonicalPath);
 
@@ -156,10 +176,28 @@ export async function generateMetadata({ params, searchParams }: { params: Param
 }
 
 export default async function SlugPage({ params, searchParams }: { params: Params; searchParams: SearchParams }) {
-  const slug = params.slug || [];
+  // Resolve `params` (may be thenable) before accessing `slug`
+  const p = (params && typeof (params as any)?.then === 'function') ? await (params as any) : (params || {});
+  const slug = p.slug || [];
   const record = slug[0] ?? null;
   const sub = slug[1] ? kebabToKey(slug[1]) : null;
-  const hasQueryParams = Object.keys(searchParams || {}).length > 0;
+  // Resolve searchParams (it may be thenable) before reading its properties
+  const spResolved = (searchParams && typeof (searchParams as any)?.then === 'function') ? await (searchParams as any) : (searchParams || {});
+  const hasQueryParams = Object.keys(spResolved || {}).length > 0;
+
+  const activeSubTabsDefault: Record<string,string> = {
+    ages: 'oldest',
+    timespan: 'entries',
+    roundsonentries: 'titles',
+    same: 'wins',
+    seasons: 'wins',
+    atage: 'wins',
+    ageofnth: 'wins',
+    neededto: 'titles',
+    counterseasons: 'round',
+    streak: 'wins',
+    h2h: 'count',
+  };
 
   // If there are no query params and no specific record, render the generic record table.
   // If a `record` is present, prefer server-rendering the dedicated ServerComponent so
@@ -229,7 +267,7 @@ export default async function SlugPage({ params, searchParams }: { params: Param
   const ServerComponent = record ? serverMap[record] : null;
 
   if (ServerComponent) {
-    const sp = (searchParams && typeof (searchParams as any).then === 'function') ? await (searchParams as any) : searchParams;
+    const sp = spResolved;
     const toArray = (v?: string | string[]) => (v === undefined ? [] : (Array.isArray(v) ? v : [v]));
     const selectedSurfaces = new Set(toArray(sp.surface ?? sp['surface[]']));
     const selectedLevels = new Set(toArray(sp.level ?? sp['level[]']));
@@ -237,19 +275,6 @@ export default async function SlugPage({ params, searchParams }: { params: Param
     const selectedBestOf = sp.bestOf ? Number((sp.bestOf as string)) : null;
 
     // Compute description server-side so the client component receives it
-    const activeSubTabsDefault: Record<string,string> = {
-      ages: 'oldest',
-      timespan: 'entries',
-      roundsonentries: 'titles',
-      same: 'wins',
-      seasons: 'wins',
-      atage: 'wins',
-      ageofnth: 'wins',
-      neededto: 'titles',
-      counterseasons: 'round',
-      streak: 'wins',
-      h2h: 'count',
-    };
     const activeSubResolved = sub ?? (typeof sp.subtab === 'string' ? kebabToKey(String(sp.subtab)) : undefined);
     const description = generateRecordDescription(record, { ...activeSubTabsDefault, [record || '']: activeSubResolved || activeSubTabsDefault[record || ''] }, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf);
 
@@ -262,7 +287,7 @@ export default async function SlugPage({ params, searchParams }: { params: Param
         <SyncUrlClient url={canonicalFull} />
         <section className="mb-6 text-gray-200">
           <h1 className="text-2xl sm:text-3xl font-semibold mb-2 text-white">{description || (record ? `${record.toUpperCase()} Records` : 'Records')}</h1>
-          <p className="text-gray-300">Filtered view — server-rendered results.</p>
+
         </section>
 
         {/* Tabs + Filters */}
@@ -278,7 +303,7 @@ export default async function SlugPage({ params, searchParams }: { params: Param
   }
 
   // Fallback: compute description and canonicalFull using searchParams so header + URL match
-  const spFallback = searchParams as Record<string, any>;
+  const spFallback = spResolved as Record<string, any>;
   const toArray = (v?: string | string[]) => (v === undefined ? [] : (Array.isArray(v) ? v : [v]));
   const selectedSurfacesFB = new Set(toArray(spFallback.surface ?? spFallback['surface[]']));
   const selectedLevelsFB = new Set(toArray(spFallback.level ?? spFallback['level[]']));
@@ -300,7 +325,7 @@ export default async function SlugPage({ params, searchParams }: { params: Param
       <RecordsFilteredClient
         record={record}
         sub={activeSubResolvedFB}
-        filters={searchParams}
+        filters={spResolved}
         canonicalUrl={canonicalFullFB}
       />
     </main>

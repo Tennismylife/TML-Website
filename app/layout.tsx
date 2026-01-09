@@ -16,7 +16,7 @@ const montserrat = Montserrat({
 
 const siteTitle = 'TML — Tennis Records Data History Rankings, Matches & GOAT'
 const siteDescription = 'TML aggregates tennis matches, rankings, player profiles and records. Explore player statistics, head-to-heads and historical data. Find the GOAT'
-const metadataBase = new URL('https://stats.tennismylife.org');
+export const metadataBase = new URL('https://stats.tennismylife.org');
 
 export const metadata: Metadata = {
   title: siteTitle,

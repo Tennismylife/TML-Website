@@ -3,6 +3,9 @@ import { useEffect } from "react";
 
 export default function SyncUrlClient({ url }: { url?: string }) {
   useEffect(() => {
+    // Intentionally do not touch document.title here to avoid stomping on
+    // more specific client-side title updates triggered by user actions.
+
     if (!url) return;
     try {
       const current = window.location.href;

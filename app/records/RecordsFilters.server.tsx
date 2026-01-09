@@ -1,5 +1,6 @@
 import React from 'react';
 import { metadataBase } from '../../lib/site';
+import { keyFromParamLabel } from '@/lib/levels';
 
 interface Props {
   activeTab: string | null | undefined;
@@ -34,9 +35,11 @@ function canonicalizeParams(params: URLSearchParams) {
 
 function buildSearch(selectedSurfaces: string[], selectedLevels: string[], selectedRounds?: string, selectedBestOf?: number | null) {
   const params = new URLSearchParams();
-  selectedSurfaces.forEach(s => params.append('surface', s));
-  selectedLevels.forEach(l => params.append('level', l));
-  if (selectedRounds) params.set('round', selectedRounds);
+  // Surface param in Title Case to match UI labels (e.g. 'Hard')
+  selectedSurfaces.forEach(s => params.append('surface', String(s).charAt(0).toUpperCase() + String(s).slice(1).toLowerCase()));
+  // Use single-letter level code (e.g. 'G') in the URL
+  selectedLevels.forEach(l => params.append('level', String(l).toUpperCase()));
+  if (selectedRounds) params.set('round', String(selectedRounds).toUpperCase());
   if (selectedBestOf !== null && selectedBestOf !== undefined) params.set('bestOf', String(selectedBestOf));
   const canon = canonicalizeParams(params);
   return canon;
@@ -52,8 +55,10 @@ export default function RecordsFilters({ activeTab, activeSubTab, searchParams =
   };
   const effectiveSub = activeSubTab || (typeof searchParams.subtab === 'string' ? kebabToKey(String(searchParams.subtab)) : undefined);
 
-  const selectedSurfaces = new Set(toArray(searchParams.surface ?? searchParams['surface[]']));
-  const selectedLevels = new Set(toArray(searchParams.level ?? searchParams['level[]']));
+  // Normalize incoming surface params to Title Case so they match UI labels (e.g., 'clay' -> 'Clay')
+  const selectedSurfaces = new Set(toArray(searchParams.surface ?? searchParams['surface[]']).map(s => typeof s === 'string' ? (s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()) : s));
+  const rawLevels = toArray(searchParams.level ?? searchParams['level[]']);
+  const selectedLevels = new Set(rawLevels.map(l => { const k = keyFromParamLabel(String(l)); return k || String(l).toUpperCase(); }));
   const selectedRounds = typeof searchParams.round === 'string' ? String(searchParams.round) : '';
   const selectedBestOf = searchParams.bestOf ? Number(searchParams.bestOf as string) : null;
 

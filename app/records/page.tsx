@@ -11,8 +11,16 @@ import { generateRecordDescription } from '../../lib/generateRecordDescription';
 // If the request is to `/records` with no query params, perform a server-side redirect
 // to `/records/count` so a tab is always present (parity with previous client behavior).
 export default async function RecordsPage({ searchParams }: { searchParams?: Record<string, string | string[] | undefined> }) {
-  const params = searchParams || {};
-  const hasQueryParams = Object.keys(params).length > 0;
+  // `searchParams` can be a Promise-like object in Next.js App Router; await it before accessing properties
+  const params = await (async () => {
+    if (!searchParams) return {};
+    // If searchParams is thenable (a Promise), await it; otherwise use it directly
+    if (typeof (searchParams as any)?.then === 'function') {
+      return await (searchParams as any);
+    }
+    return searchParams;
+  })();
+  const hasQueryParams = Object.keys(params || {}).length > 0;
 
   // Show a summary page when no query params are present (overview of tabs/subtabs/filters)
   if (!hasQueryParams) {

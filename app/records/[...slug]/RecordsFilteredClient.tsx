@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { generateRecordDescription } from '../../../lib/generateRecordDescription';
+import { keyFromParamLabel } from '@/lib/levels';
 
 interface Props {
   record: string | null;
@@ -47,9 +48,10 @@ export default function RecordsFilteredClient({ record, sub, filters = {}, canon
 
     if (description) {
       document.title = `${description} — TML`;
+      if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') console.debug('[RecordsFilteredClient] set title', document.title);
     } else {
-      const baseTitle = record ? record.toUpperCase() : '';
-      document.title = baseTitle ? `${baseTitle} — Filters applied` : 'Filters applied';
+      // Skip setting a placeholder title (e.g. "Filters applied") to avoid briefly overwriting a correct title
+      if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') console.debug('[RecordsFilteredClient] skipping title update (no description)');
     }
 
     // meta robots noindex,follow
@@ -76,11 +78,23 @@ export default function RecordsFilteredClient({ record, sub, filters = {}, canon
         const params = new URLSearchParams();
         for (const [k, v] of Object.entries(filters || {})) {
           if (v == null) continue;
-          if (Array.isArray(v)) v.forEach(x => params.append(k, x));
-          else params.append(k, String(v));
+          const normalizeForApi = (key: string, val: string) => {
+            if (key === 'surface') return val.charAt(0).toUpperCase() + val.slice(1).toLowerCase();
+            if (key === 'level') {
+              // Accept either a param label (Grand-Slam) or a letter (G) and return the letter
+              const k = keyFromParamLabel(val);
+              return k || String(val).toUpperCase();
+            }
+            if (key === 'round') return val.toUpperCase();
+            return val;
+          };
+
+          if (Array.isArray(v)) v.forEach(x => params.append(k, normalizeForApi(k, String(x))));
+          else params.append(k, normalizeForApi(k, String(v)));
         }
         const effectiveSub = sub ?? (typeof filters.subtab === 'string' ? String(filters.subtab) : undefined);
         const path = `/api/records/${encodeURIComponent(record ?? '')}${effectiveSub ? '/' + encodeURIComponent(effectiveSub) : ''}` + (params.toString() ? `?${params.toString()}` : '');
+        if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') console.debug('[RecordsFilteredClient] fetching', path);
         const res = await fetch(path);
         if (!res.ok) throw new Error(`Fetch error ${res.status}`);
         const json = await res.json();

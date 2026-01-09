@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import { generateRecordDescription } from '@/lib/generateRecordDescription';
+import { keyFromParamLabel } from '@/lib/levels';
 
 type Tab = { key: string; label: string };
 
@@ -98,10 +100,53 @@ const subTabs: Record<string, Tab[]> = {
 export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: RecordsTabsProps) {
   const [activeTab, setActiveTab] = useState<string | null>(activeTabProp || null);
   const [hoveredTab, setHoveredTab] = useState<string | null>(null);
+  const searchParams = typeof window !== 'undefined' ? undefined : undefined; // placeholder to satisfy SSR types
 
   useEffect(() => {
     setActiveTab(activeTabProp || null);
   }, [activeTabProp]);
+
+  // Ensure the browser title stays in sync after navigation: recompute description whenever
+  // the active tab/subtab or search params change and set the document title again (with a short debounce)
+  useEffect(() => {
+    let t: any = null;
+    try {
+      const sp = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams('');
+      const toArray = (v?: string | string[]) => (v === undefined ? [] : (Array.isArray(v) ? v : [v]));
+      const selectedSurfaces = new Set(sp.getAll('surface').map(s => (s.charAt(0).toUpperCase() + s.slice(1).toLowerCase())));
+      const levelParams = sp.getAll('level');
+      const selectedLevels = new Set(levelParams.map(p => { const k = keyFromParamLabel(p); return k || String(p).toUpperCase(); }));
+      const selectedRounds = (sp.get('round') || '').toUpperCase();
+      const selectedBestOf = sp.get('bestOf') ? Number(sp.get('bestOf')) : null;
+
+      const camel = kebabToKey(activeSubTab || undefined);
+      const active = activeTabProp || null;
+      if (active) {
+        const activeSubTabsDefault: Record<string,string> = {
+          ages: 'oldest',
+          timespan: 'entries',
+          roundsonentries: 'titles',
+          same: 'wins',
+          seasons: 'wins',
+          atage: 'wins',
+          ageofnth: 'wins',
+          neededto: 'titles',
+          counterseasons: 'round',
+          streak: 'wins',
+          h2h: 'count',
+        };
+        const desc = generateRecordDescription(active, { ...activeSubTabsDefault, [active]: camel }, selectedSurfaces, selectedLevels as any, selectedRounds as any, selectedBestOf as any);
+        if (desc && typeof document !== 'undefined') {
+          document.title = `${desc} — TML`;
+          // reapply after short delay to avoid being overwritten by other flows
+          t = setTimeout(() => { if (typeof document !== 'undefined') document.title = `${desc} — TML`; }, 200);
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+    return () => { if (t) clearTimeout(t); };
+  }, [activeTabProp, activeSubTab]);
 
   const tabClass = (key: string) =>
     `px-4 py-2 rounded-xl font-medium transition-colors duration-200 ${key === activeTab ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700'}`;
@@ -109,6 +154,39 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
   const subTabClass = (key: string) => {
     const camel = kebabToKey(key);
     return `px-3 py-1 rounded transition-colors duration-150 ${camel === activeSubTab ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}`;
+  }
+
+  // When a subtab is clicked, update the browser title immediately to match the description
+  function handleSubtabClick(tabKey: string, subKey: string) {
+    try {
+      const sp = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+      const toArray = (v?: string | string[]) => (v === undefined ? [] : (Array.isArray(v) ? v : [v]));
+      const selectedSurfaces = new Set(sp.getAll('surface').map(s => (s.charAt(0).toUpperCase() + s.slice(1).toLowerCase())));
+      const levelParams = sp.getAll('level');
+      const selectedLevels = new Set(levelParams.map(p => { const k = keyFromParamLabel(p); return k || String(p).toUpperCase(); }));
+      const selectedRounds = (sp.get('round') || '').toUpperCase();
+      const selectedBestOf = sp.get('bestOf') ? Number(sp.get('bestOf')) : null;
+
+      const activeSubTabsDefault: Record<string,string> = {
+        ages: 'oldest',
+        timespan: 'entries',
+        roundsonentries: 'titles',
+        same: 'wins',
+        seasons: 'wins',
+        atage: 'wins',
+        ageofnth: 'wins',
+        neededto: 'titles',
+        counterseasons: 'round',
+        streak: 'wins',
+        h2h: 'count',
+      };
+
+      const camel = kebabToKey(subKey);
+      const desc = generateRecordDescription(tabKey, { ...activeSubTabsDefault, [tabKey]: camel }, selectedSurfaces, selectedLevels as any, selectedRounds as any, selectedBestOf as any);
+      if (desc && typeof document !== 'undefined') document.title = `${desc} — TML`;
+    } catch (e) {
+      // ignore
+    }
   }
 
   return (
@@ -143,7 +221,7 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
                     <Link
                       key={st.key}
                       href={`/records/${encodeURIComponent(tab.key)}?subtab=${encodeURIComponent(st.key)}`}
-                      onClick={() => { setActiveTab(null); setHoveredTab(null); }}
+                      onClick={() => { setActiveTab(null); setHoveredTab(null); handleSubtabClick(tab.key, st.key); }}
                       className={subTabClass(st.key)}
                     >
                       {st.label}
