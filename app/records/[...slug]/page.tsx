@@ -166,12 +166,32 @@ export async function generateMetadata({ params, searchParams }: { params: Param
 
   const canonicalPath = record ? `/records/${encodeURIComponent(record)}${sub ? '/' + encodeURIComponent(sub) : ''}` : '/records';
   const canonicalUrl = resolveUrl(canonicalPath);
+  // Include canonicalized query params in the canonical URL (e.g., ?surface=Hard)
+  // For canonical, include only the main canonicalizing params in deterministic order
+  const canonicalParams: Record<string, any> = {};
+  ['surface', 'level', 'round', 'bestOf'].forEach(k => {
+    const v = (sp as any)?.[k] ?? (sp as any)?.[`${k}[]`];
+    if (v !== undefined) canonicalParams[k] = v;
+  });
+  const query = canonicalizeParamsObj(canonicalParams as any);
+  const canonicalFull = canonicalUrl + (query ? `?${query}` : '');
+
+  // Decide robots: only index,follow for the canonical "principal" combination:
+  // Surface=Hard AND no levels, no round, no bestOf. Everything else -> noindex,follow
+  const isPrincipalCombination = (
+    selectedSurfaces.size === 1 && selectedSurfaces.has('Hard') &&
+    selectedLevels.size === 0 &&
+    (!selectedRounds || selectedRounds === '') &&
+    (selectedBestOf === null)
+  );
 
   return {
     title: `${desc || titleBase} — TML`,
     description: desc || 'TML records and statistics',
-    alternates: { canonical: canonicalUrl },
-    robots: hasQueryParams ? { index: false, follow: true } : { index: true, follow: true },
+    // Point canonical to the full URL including canonicalized specified query params
+    alternates: { canonical: canonicalFull },
+    // only index,follow for the principal combination; otherwise noindex,follow
+    robots: isPrincipalCombination ? { index: true, follow: true } : { index: false, follow: true },
   } as Metadata;
 }
 

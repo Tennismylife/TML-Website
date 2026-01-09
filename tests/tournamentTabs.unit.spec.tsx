@@ -33,10 +33,9 @@ describe('TournamentTabs subtabs behavior', () => {
     const agesBtn = screen.getAllByRole('button').find(b => b.textContent?.trim() === 'Ages')!;
     await userEvent.click(agesBtn);
 
-    // Clicking Ages should call setActiveTab('ages')
+    // Clicking Ages should call setActiveTab('ages') and open the first subtab
     expect(setActiveTab).toHaveBeenCalledWith('ages');
-    // But it should NOT immediately set the age subtab (no forced default)
-    expect(setActiveAgeSubTab).not.toHaveBeenCalled();
+    expect(setActiveAgeSubTab).toHaveBeenCalledWith('main');
 
     // Subtabs should be visible; find the 'Titles' subtab button and click it
     const titlesMatches = screen.getAllByRole('button', { name: /Titles/i });
@@ -62,7 +61,7 @@ describe('TournamentTabs subtabs behavior', () => {
     await userEvent.click(percBtn);
 
     expect(setActiveTab).toHaveBeenCalledWith('percentage');
-    expect(setActivePercentageSubTab).not.toHaveBeenCalled();
+    expect(setActivePercentageSubTab).toHaveBeenCalledWith('overall');
 
     const perRoundMatches = screen.getAllByRole('button', { name: /Win % per Round/i });
     const perRoundBtn = perRoundMatches.find(b => b.className?.includes('rounded-full')) || perRoundMatches[0];

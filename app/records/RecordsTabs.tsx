@@ -201,8 +201,12 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
           onMouseLeave={() => setHoveredTab(null)}
         >
           <Link
-            href={`/records/${encodeURIComponent(tab.key)}`}
-            onClick={() => setHoveredTab(null)}
+            href={firstSub ? `/records/${encodeURIComponent(tab.key)}?subtab=${encodeURIComponent(firstSub)}` : `/records/${encodeURIComponent(tab.key)}`}
+            onClick={() => {
+              setHoveredTab(null);
+              // If this tab has subtabs, navigate to the default first subtab and precompute title
+              if (firstSub) handleSubtabClick(tab.key, firstSub);
+            }}
             className={tabClass(tab.key)}
           >
             {tab.label}

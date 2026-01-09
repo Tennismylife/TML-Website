@@ -65,10 +65,14 @@ export default function TournamentTabs({
       setActiveTab("ages");
       setShowAgesSubTabs(true);
       setShowPercentageSubTabs(false);
+      // Quando si clicca il tab 'Ages' apri automaticamente il primo subtab
+      setActiveAgeSubTab(agesSubTabs[0].key);
     } else if (tabKey === "percentage") {
       setActiveTab("percentage");
       setShowPercentageSubTabs(true);
       setShowAgesSubTabs(false);
+      // Quando si clicca il tab 'Percentages' apri automaticamente il primo subtab
+      setActivePercentageSubTab(percentageSubTabs[0].key);
     } else {
       setActiveTab(tabKey);
       setShowAgesSubTabs(false);

@@ -174,10 +174,16 @@ describe('Records - single fetch on filter change', () => {
   it('renders the correct component when a tab is clicked', async () => {
     render(<RecordPage />);
 
-    // Click Wins tab
+    // Click Wins tab — clicking a tab with subtabs should navigate to its first subtab automatically
     const winsBtn = screen.getByRole('button', { name: /Wins/i });
     await userEvent.click(winsBtn);
+    // For top-level tabs that have a dedicated server component (Wins is top-level) the component renders
     expect(screen.getByTestId('component-Wins')).toBeTruthy();
+
+    // Click 'Same' tab — it has subtabs and should navigate to its default first subtab 'wins'
+    const sameBtn = screen.getByRole('button', { name: /Same/i });
+    await userEvent.click(sameBtn);
+    await waitFor(() => expect(fetchSpy).toHaveBeenCalledWith('/api/records/same/wins'));
 
     // Click another tab, e.g., Played
     const playedBtn = screen.getByRole('button', { name: /Played/i });
