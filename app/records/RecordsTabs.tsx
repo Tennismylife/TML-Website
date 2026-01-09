@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateRecordDescription } from '@/lib/generateRecordDescription';
@@ -100,6 +100,7 @@ const subTabs: Record<string, Tab[]> = {
 export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: RecordsTabsProps) {
   const [activeTab, setActiveTab] = useState<string | null>(activeTabProp || null);
   const [hoveredTab, setHoveredTab] = useState<string | null>(null);
+  const navRef = useRef<HTMLElement | null>(null);
   const searchParams = typeof window !== 'undefined' ? undefined : undefined; // placeholder to satisfy SSR types
 
   useEffect(() => {
@@ -148,6 +149,17 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
     return () => { if (t) clearTimeout(t); };
   }, [activeTabProp, activeSubTab]);
 
+  // Close opened subtab menus when clicking/tapping outside the nav (mobile friendly)
+  useEffect(() => {
+    const handleDocClick = (e: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+        setHoveredTab(null);
+      }
+    };
+    document.addEventListener('mousedown', handleDocClick);
+    return () => document.removeEventListener('mousedown', handleDocClick);
+  }, []);
+
   const tabClass = (key: string) =>
     `px-4 py-2 rounded-xl font-medium transition-colors duration-200 ${key === activeTab ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700'}`;
 
@@ -190,7 +202,7 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
   }
 
   return (
-    <nav className="mb-6 flex flex-wrap gap-3" aria-label="Record tabs">
+    <nav ref={navRef} className="mb-6 flex flex-wrap gap-3" aria-label="Record tabs">
       {tabs.map(tab => {
         const firstSub = subTabs[tab.key]?.[0]?.key;
         return (
@@ -202,10 +214,18 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
         >
           <Link
             href={firstSub ? `/records/${encodeURIComponent(tab.key)}?subtab=${encodeURIComponent(firstSub)}` : `/records/${encodeURIComponent(tab.key)}`}
-            onClick={() => {
+            onClick={(e) => {
               setHoveredTab(null);
-              // If this tab has subtabs, navigate to the default first subtab and precompute title
-              if (firstSub) handleSubtabClick(tab.key, firstSub);
+              if (firstSub) {
+                // On small screens (mobile) open the subtab menu instead of navigating directly
+                if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+                  e.preventDefault();
+                  setHoveredTab(prev => (prev === tab.key ? null : tab.key));
+                  return;
+                }
+                // Desktop: navigate to default first subtab and precompute title
+                handleSubtabClick(tab.key, firstSub);
+              }
             }}
             className={tabClass(tab.key)}
           >
