@@ -123,6 +123,16 @@ export default async function RecordsRankingSlugPage({
   return (
     <main>
       <RecordsRankingClient currentTabSeg={tabSeg} currentSubSeg={subSeg} />
+      <div
+        id="rr-debug"
+        aria-hidden="true"
+        style={{ display: 'none' }}
+        data-rr-slug-param={String(slugParam ?? '')}
+        data-rr-slug-is-array={Array.isArray(slugParam) ? '1' : '0'}
+        data-rr-tab-raw={String(tabSegRaw)}
+        data-rr-tab={String(tabSeg)}
+        data-rr-sub={String(subSeg ?? '')}
+      />
       <div className="mt-6 w-full">{content}</div>
     </main>
   );
