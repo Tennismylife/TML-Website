@@ -31,7 +31,6 @@ module.exports = {
       watch: false,
       autorestart: true,
       restart_delay: 5000,
-      max_memory_restart: '400M',
       env_production: {
         NODE_ENV: 'production',
         // IMPORTANT: These are placeholders for convenience. Do NOT commit real secrets to VCS.
@@ -41,9 +40,9 @@ module.exports = {
         NEXT_PUBLIC_GA4_MEASUREMENT_ID: 'G-71D4H6D4VN',
         GA4_MEASUREMENT_ID: 'G-71D4H6D4VN',
         GA4_API_SECRET: 'uamHcS3AT1miokEH0aeGtg',
-        GA4_FALLBACK_DEBUG: '0',
+        GA4_FALLBACK_DEBUG: '1',
         REDIS_URL: 'redis://127.0.0.1:6379',
-        DATABASE_URL: 'postgresql://postgres:password@localhost:5432/tennis',
+        DATABASE_URL: 'postgresql://postgres:Matlab1985911@localhost:5432/tennis',
         SENTRY_DSN: '',
         OTHER_ENV: ''
       },
