@@ -31,10 +31,14 @@ export default async function RecordsRankingSlugPage({
   params,
   searchParams,
 }: {
-  params?: { slug?: string[] };
+  params?: { slug?: string | string[] };
   searchParams?: Record<string, string | string[] | undefined>;
 }) {
-  const slug = params?.slug ?? [];
+  // Next should provide catch-all params as `string[]`, but in some environments
+  // (custom server / edge cases) it can surface as a single `string`.
+  const slugParam = params?.slug;
+  const slug = Array.isArray(slugParam) ? slugParam : (slugParam ? [slugParam] : []);
+
   const tabSegRaw = slug[0] ?? 'count';
   const subSegRaw = slug[1] ?? null;
 
