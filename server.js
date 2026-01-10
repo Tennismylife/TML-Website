@@ -248,6 +248,27 @@ function decompressIfGzip(buffer, headers) {
     return serveGif(req, res);
   });
 
+  // Additional neutral alias `/r` and `/r.gif` used for aggressive AdBlock rules testing
+  server.post('/r', async (req, res) => {
+    if (!req.body || !req.body.page_path) return res.status(400).json({ error: 'missing page_path' });
+    try {
+      if (redis) await redis.hIncrBy('ga4_fallback:stats', `received:${req.path}`, 1);
+      else ga4Stats.received[req.path] = (ga4Stats.received[req.path] || 0) + 1;
+    } catch (e) {
+      console.warn('[GA4-STATS] increment receive failed', e && e.message);
+    }
+    return handleGa4Fallback(req, res, { redis, inMemoryStats: ga4Stats });
+  });
+
+  server.get('/r.gif', (req, res) => {
+    try {
+      if (redis) redis.hIncrBy('ga4_fallback:stats', `received:${req.path}`, 1).catch(() => {});
+      else ga4Stats.received[req.path] = (ga4Stats.received[req.path] || 0) + 1;
+    } catch (e) {}
+
+    return serveGif(req, res);
+  });
+
   // Debug endpoint to inspect counters (only for local debugging; not linked in UI)
   server.get('/_events/stats', async (req, res) => {
     try {
