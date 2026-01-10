@@ -236,6 +236,18 @@ function decompressIfGzip(buffer, headers) {
     return handleGa4Fallback(req, res, { redis, inMemoryStats: ga4Stats });
   });
 
+  // Image beacon: 1x1 GIF to support clients that block XHR/fetch/beacon
+  const { serveGif } = require('./lib/ga4-fallback');
+  server.get('/p.gif', (req, res) => {
+    // Increment receive counter for diagnostics
+    try {
+      if (redis) redis.hIncrBy('ga4_fallback:stats', `received:${req.path}`, 1).catch(() => {});
+      else ga4Stats.received[req.path] = (ga4Stats.received[req.path] || 0) + 1;
+    } catch (e) {}
+
+    return serveGif(req, res);
+  });
+
   // Debug endpoint to inspect counters (only for local debugging; not linked in UI)
   server.get('/_events/stats', async (req, res) => {
     try {
