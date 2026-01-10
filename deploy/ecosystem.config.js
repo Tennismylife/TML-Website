@@ -42,7 +42,7 @@ module.exports = {
         GA4_API_SECRET: 'uamHcS3AT1miokEH0aeGtg',
         GA4_FALLBACK_DEBUG: '1',
         REDIS_URL: 'redis://127.0.0.1:6379',
-        DATABASE_URL: 'postgresql://postgres:Matlab1985911@localhost:5432/tennis',
+        DATABASE_URL: 'postgresql://postgres:miapasswords@localhost:5432/tennis',
         SENTRY_DSN: '',
         OTHER_ENV: ''
       },
