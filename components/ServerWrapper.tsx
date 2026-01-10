@@ -67,5 +67,15 @@ export default async function ServerWrapper<CProps>({ Component, searchParams, s
   // (e.g. `surface`, `level`, `round`) while still receiving the raw
   // `searchParams` object under that prop name. Merge with any serverProps
   // supplied by the page.
-  return <Component {...(normalized as unknown as CProps)} {...(serverProps as any)} searchParams={sp || {}} />
+  // Wrap the client component in a Suspense boundary to avoid forcing the
+  // entire page to opt into client-side rendering when client hooks like
+  // `useSearchParams` are used inside the client component (see Next.js message
+  // "missing-suspense-with-csr-bailout"). This keeps the rest of the page
+  // server-rendered and only hydrates the client component on the client.
+  return (
+    <React.Suspense fallback={<div className="text-gray-300">Loading…</div>}>
+      <Component {...(normalized as unknown as CProps)} {...(serverProps as any)} searchParams={sp || {}} />
+    </React.Suspense>
+  )
 }
+
