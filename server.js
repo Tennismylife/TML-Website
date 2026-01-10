@@ -206,6 +206,11 @@ function decompressIfGzip(buffer, headers) {
       console.warn('[GA4-STATS] increment receive failed', e && e.message);
     }
 
+    if (process.env.GA4_FALLBACK_DEBUG === '1') {
+      const shortUa = String(req.body?.user_agent || req.headers['user-agent'] || '').slice(0,120);
+      console.debug('[GA4-FALLBACK] recv', { path: req.path, page_path: req.body?.page_path, ip: req.ip || req.connection?.remoteAddress, ua: shortUa });
+    }
+
     // Delegate to the isolated handler and pass optional stats handles
     return handleGa4Fallback(req, res, { redis, inMemoryStats: ga4Stats });
   });
@@ -221,6 +226,12 @@ function decompressIfGzip(buffer, headers) {
     } catch (e) {
       console.warn('[GA4-STATS] increment receive failed', e && e.message);
     }
+
+    if (process.env.GA4_FALLBACK_DEBUG === '1') {
+      const shortUa = String(req.body?.user_agent || req.headers['user-agent'] || '').slice(0,120);
+      console.debug('[GA4-FALLBACK] recv', { path: req.path, page_path: req.body?.page_path, ip: req.ip || req.connection?.remoteAddress, ua: shortUa });
+    }
+
     return handleGa4Fallback(req, res, { redis, inMemoryStats: ga4Stats });
   });
 
@@ -233,6 +244,12 @@ function decompressIfGzip(buffer, headers) {
     } catch (e) {
       console.warn('[GA4-STATS] increment receive failed', e && e.message);
     }
+
+    if (process.env.GA4_FALLBACK_DEBUG === '1') {
+      const shortUa = String(req.body?.user_agent || req.headers['user-agent'] || '').slice(0,120);
+      console.debug('[GA4-FALLBACK] recv', { path: req.path, page_path: req.body?.page_path, ip: req.ip || req.connection?.remoteAddress, ua: shortUa });
+    }
+
     return handleGa4Fallback(req, res, { redis, inMemoryStats: ga4Stats });
   });
 
@@ -244,6 +261,11 @@ function decompressIfGzip(buffer, headers) {
       if (redis) redis.hIncrBy('ga4_fallback:stats', `received:${req.path}`, 1).catch(() => {});
       else ga4Stats.received[req.path] = (ga4Stats.received[req.path] || 0) + 1;
     } catch (e) {}
+
+    if (process.env.GA4_FALLBACK_DEBUG === '1') {
+      const shortUa = String(req.headers['user-agent'] || '').slice(0,120);
+      console.debug('[GA4-FALLBACK] gif recv', { path: req.path, page_path: req.query && req.query.page_path, ip: req.ip || req.connection?.remoteAddress, ua: shortUa });
+    }
 
     return serveGif(req, res);
   });
@@ -257,6 +279,12 @@ function decompressIfGzip(buffer, headers) {
     } catch (e) {
       console.warn('[GA4-STATS] increment receive failed', e && e.message);
     }
+
+    if (process.env.GA4_FALLBACK_DEBUG === '1') {
+      const shortUa = String(req.body?.user_agent || req.headers['user-agent'] || '').slice(0,120);
+      console.debug('[GA4-FALLBACK] recv', { path: req.path, page_path: req.body?.page_path, ip: req.ip || req.connection?.remoteAddress, ua: shortUa });
+    }
+
     return handleGa4Fallback(req, res, { redis, inMemoryStats: ga4Stats });
   });
 
@@ -265,6 +293,11 @@ function decompressIfGzip(buffer, headers) {
       if (redis) redis.hIncrBy('ga4_fallback:stats', `received:${req.path}`, 1).catch(() => {});
       else ga4Stats.received[req.path] = (ga4Stats.received[req.path] || 0) + 1;
     } catch (e) {}
+
+    if (process.env.GA4_FALLBACK_DEBUG === '1') {
+      const shortUa = String(req.headers['user-agent'] || '').slice(0,120);
+      console.debug('[GA4-FALLBACK] gif recv', { path: req.path, page_path: req.query && req.query.page_path, ip: req.ip || req.connection?.remoteAddress, ua: shortUa });
+    }
 
     return serveGif(req, res);
   });
