@@ -25,9 +25,15 @@ import DiffPointsEoy from "../DiffPoints/EndOfTheSeason/page";
 import TimespanEoyCount from "../TimespanEndOfTheSeason/TimespanCountEndOfTheSeason/page";
 import TimespanEoyTop from "../TimespanEndOfTheSeason/TimespanTopEndOfTheSeason/page";
 
-export default async function RecordsRankingSlugPage(props: any) {
-  // Next can pass `props` as a Promise for dynamic route params; await it before accessing `params`.
-  const { params, searchParams } = (await props) as { params?: { slug?: string[] }, searchParams?: Record<string, string | string[]> };
+export const dynamic = 'force-dynamic';
+
+export default async function RecordsRankingSlugPage({
+  params,
+  searchParams,
+}: {
+  params?: { slug?: string[] };
+  searchParams?: Record<string, string | string[] | undefined>;
+}) {
   const slug = params?.slug ?? [];
   const tabSegRaw = slug[0] ?? 'count';
   const subSegRaw = slug[1] ?? null;
@@ -45,8 +51,7 @@ export default async function RecordsRankingSlugPage(props: any) {
     console.debug('[records-ranking] params', { slug, tabSegRaw, subSegRaw, tabSeg, subSeg });
   }
 
-  // Ensure searchParams is awaited (avoid sync dynamic API usage)
-  const resolvedSearchParams = await (searchParams as unknown as Promise<Record<string, string | string[]>>);
+  const resolvedSearchParams = searchParams ?? {};
 
   // map segment to server component
   let content: React.ReactNode = null;
