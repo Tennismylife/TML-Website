@@ -73,17 +73,37 @@ export default function Ga4FallbackClient() {
           user_agent: navigator?.userAgent || '',
         };
 
-        fetch('/ga4-fallback', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-          keepalive: true,
-        }).then((res) => {
-          if (res && (res.status === 204 || (res.status >= 200 && res.status < 300))) {
-            sentRef.current.add(path);
-            try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(sentRef.current))); } catch (e) {}
+        // Try a very neutral endpoint first, then fall back to less-neutral aliases
+        const endpoints = ['/p', '/_events/collect'.replace(/ /g, ''), '/ga4-fallback'];
+        let succeeded = false;
+        const trySend = async (i = 0) => {
+          if (i >= endpoints.length) {
+            pendingRef.current = false;
+            return;
           }
-        }).catch(() => {}).finally(() => { pendingRef.current = false; });
+          try {
+            const res = await fetch(endpoints[i], {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+              keepalive: true,
+            });
+            if (res && (res.status === 204 || (res.status >= 200 && res.status < 300))) {
+              sentRef.current.add(path);
+              try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(sentRef.current))); } catch (e) {}
+              succeeded = true;
+              pendingRef.current = false;
+              return;
+            }
+            // if response code suggests blocked/filtered or not accepted, try next
+            trySend(i + 1);
+          } catch (err) {
+            // Network/blocked error: try next endpoint
+            trySend(i + 1);
+          }
+        };
+
+        trySend();
       }, GRACE_MS);
 
       return () => {
