@@ -1,4 +1,5 @@
-﻿import { Metadata } from 'next';
+﻿import React from 'react';
+import { Metadata } from 'next';
 import { metadataBase } from '../../../lib/site';
 import { generateRecordDescription } from '../../../lib/generateRecordDescription';
 import RecordsFilteredClient from './RecordsFilteredClient';
@@ -240,39 +241,41 @@ export default async function SlugPage({ params, searchParams }: Props) {
 
     return (
       <main className="w-full min-h-screen p-4 bg-gray-900 text-white">
-        <section className="mb-6 text-gray-200">
-          <h1 className="text-2xl sm:text-3xl font-semibold mb-2 text-white">
-            {record ? `${record.toUpperCase()} Records` : 'Records'}
-          </h1>
-          <p className="text-gray-300">
-            {record ? `Record page for ${record}${sub ? ` / ${sub}` : ''}` : 'All records'}
-          </p>
-        </section>
+        <React.Suspense fallback={<div className="text-gray-300">Loading…</div>}>
+          <section className="mb-6 text-gray-200">
+            <h1 className="text-2xl sm:text-3xl font-semibold mb-2 text-white">
+              {record ? `${record.toUpperCase()} Records` : 'Records'}
+            </h1>
+            <p className="text-gray-300">
+              {record ? `Record page for ${record}${sub ? ` / ${sub}` : ''}` : 'All records'}
+            </p>
+          </section>
 
-        <section className="bg-gray-800/40 rounded-2xl p-4 shadow-lg">
-          {data && data.length > 0 ? (
-            <table className="w-full table-auto text-left text-sm">
-              <thead>
-                <tr className="text-gray-300">
-                  {Object.keys(data[0]).map(k => (
-                    <th key={k} className="px-2 py-1 font-medium">{k}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((row: any, idx: number) => (
-                  <tr key={idx} className={idx % 2 === 0 ? 'bg-gray-900/30' : ''}>
-                    {Object.values(row).map((v, j) => (
-                      <td key={j} className="px-2 py-1 text-gray-200">{String(v ?? '')}</td>
+          <section className="bg-gray-800/40 rounded-2xl p-4 shadow-lg">
+            {data && data.length > 0 ? (
+              <table className="w-full table-auto text-left text-sm">
+                <thead>
+                  <tr className="text-gray-300">
+                    {Object.keys(data[0]).map(k => (
+                      <th key={k} className="px-2 py-1 font-medium">{k}</th>
                     ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <div className="text-center text-gray-400">No data available</div>
-          )}
-        </section>
+                </thead>
+                <tbody>
+                  {data.map((row: any, idx: number) => (
+                    <tr key={idx} className={idx % 2 === 0 ? 'bg-gray-900/30' : ''}>
+                      {Object.values(row).map((v, j) => (
+                        <td key={j} className="px-2 py-1 text-gray-200">{String(v ?? '')}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <div className="text-center text-gray-400">No data available</div>
+            )}
+          </section>
+        </React.Suspense>
       </main>
     );
   }
@@ -325,15 +328,17 @@ export default async function SlugPage({ params, searchParams }: Props) {
 
     return (
       <main className="w-full min-h-screen p-4 bg-gray-900 text-white">
-        <SyncUrlClient url={canonicalFull} />
-        {description && (
-          <h1 className="mb-10 text-center text-3xl sm:text-4xl font-semibold text-white">
-            {description}
-          </h1>
-        )}
-        <RecordsTabs activeTab={record} activeSubTab={activeSubResolved || null} />
-        <RecordsFilters activeTab={record} activeSubTab={activeSubResolved || null} searchParams={sp} />
-        <ServerComponent searchParams={sp} record={record} sub={activeSubResolved} canonicalUrl={canonicalFull} description={''} />
+        <React.Suspense fallback={<div className="text-gray-300">Loading…</div>}>
+          <SyncUrlClient url={canonicalFull} />
+          {description && (
+            <h1 className="mb-10 text-center text-3xl sm:text-4xl font-semibold text-white">
+              {description}
+            </h1>
+          )}
+          <RecordsTabs activeTab={record} activeSubTab={activeSubResolved || null} />
+          <RecordsFilters activeTab={record} activeSubTab={activeSubResolved || null} searchParams={sp} />
+          <ServerComponent searchParams={sp} record={record} sub={activeSubResolved} canonicalUrl={canonicalFull} description={''} />
+        </React.Suspense>
       </main>
     );
   }
