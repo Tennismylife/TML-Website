@@ -27,10 +27,8 @@ import FirstNServer from '../FirstN/FirstN.server';
 import StreakServer from '../Streak/Streak.server';
 
 type Props = {
-  params: Promise<{
-    slug?: string[];
-  }>;
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+  params: { slug?: string[] } | Promise<{ slug?: string[] }>;
+  searchParams?: Record<string, string | string[] | undefined> | Promise<Record<string, string | string[] | undefined>>;
 };
 
 function kebabToKey(s?: string) {

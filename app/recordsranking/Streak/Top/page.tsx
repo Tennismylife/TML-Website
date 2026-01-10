@@ -1,131 +1,92 @@
-"use client";
+import React from 'react';
+import { prisma } from '@/lib/prisma';
+import { getFlagFromIOC } from '@/lib/utils';
+import DropdownNavSelect from '@/components/DropdownNavSelect';
 
-import { useState, useEffect } from "react";
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { getFlagFromIOC } from "@/lib/utils";
-import Pagination from "@/components/Pagination";
-import Link from "next/link";
+function formatDate(d: Date) { return d.toISOString().slice(0,10); }
 
-interface Player {
-  id?: string;
-  name: string;
-  ioc?: string;
-  weeks: number;
-  startDate?: string;
-  endDate?: string;
-}
-
-export default function StreakTop() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-
-  const [players, setPlayers] = useState<Player[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1);
-  const [top, setTop] = useState(Number(searchParams?.get('top') ?? 2)); // Top X selezionato
+export default async function StreakTop({ searchParams }: { searchParams?: Record<string,string | string[]> }) {
+  const top = Number((searchParams?.top as string) ?? 2);
   const perPage = 20;
+  const page = Number((searchParams?.page as string) ?? 1);
 
-  useEffect(() => {
-    if (!pathname) return;
-    const params = new URLSearchParams(searchParams?.toString() || '');
-    params.set('top', String(top));
-    const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
-    router.replace(newUrl);
-  }, [top, pathname, router, searchParams]);
-  useEffect(() => {
-    const fetchData = async () => {
-      setPage(1); // reset pagina prima del fetch
-      setLoading(true);
-      try {
-        const res = await fetch(`/api/recordsranking/streak/top?top=${top}`);
-        const data = await res.json();
-        setPlayers(data || []);
-      } catch (err) {
-        console.error(err);
-        setPlayers([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [top]);
+  // replicate API logic server-side
+  const allRankings = await prisma.ranking.findMany({
+    where: { rank: { lte: top } },
+    orderBy: [{ playerId: 'asc' }, { rankingDateId: 'asc' }],
+    select: { playerId: true, rankingDateId: true, rankingDate: { select: { date: true } }, player: { select: { id: true, atpname: true, ioc: true } } },
+  });
 
-  const totalPages = Math.ceil(players.length / perPage);
+  let currentPlayerId: string | null = null;
+  let currentPlayerInfo: { id?: string; name: string; ioc?: string } | null = null;
+  let streakStart: Date | null = null;
+  let streakEnd: Date | null = null;
+  let prevRankingDateId: number | null = null;
+  let currentStreak = 0;
+  const result: Array<{id?:string; name:string; ioc?:string; weeks:number; startDate?:string; endDate?:string}> = [];
+
+  const commitStreak = () => {
+    if (!currentPlayerId || !currentPlayerInfo || !streakStart || !streakEnd || currentStreak < 1) return;
+    result.push({ id: currentPlayerInfo.id, name: currentPlayerInfo.name, ioc: currentPlayerInfo.ioc, weeks: currentStreak, startDate: formatDate(streakStart), endDate: formatDate(streakEnd) });
+  };
+
+  for (const r of allRankings) {
+    const currentDate = new Date(r.rankingDate.date);
+    if (r.playerId !== currentPlayerId) {
+      commitStreak();
+      currentPlayerId = r.playerId;
+      currentPlayerInfo = { id: r.player?.id, name: r.player?.atpname ?? r.playerId, ioc: r.player?.ioc ?? undefined };
+      streakStart = currentDate; streakEnd = currentDate; prevRankingDateId = r.rankingDateId; currentStreak = 1; continue;
+    }
+    if (r.rankingDateId === (prevRankingDateId ?? 0) + 1) { currentStreak += 1; streakEnd = currentDate; }
+    else { commitStreak(); currentStreak = 1; streakStart = currentDate; streakEnd = currentDate; }
+    prevRankingDateId = r.rankingDateId;
+  }
+  commitStreak();
+
+  result.sort((a,b)=> b.weeks - a.weeks);
+
+  const totalPages = Math.ceil(result.length / perPage);
   const start = (page - 1) * perPage;
-  const paginatedPlayers = players.slice(start, start + perPage);
+  const pageRows = result.slice(start, start + perPage);
 
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">
-        Consecutive Weeks at Top {top}
-      </h2>
-
-      {/* Dropdown Top X a sinistra */}
-      <div className="flex justify-start mb-6 ml-4 items-center">
-        <label className="text-gray-200 font-medium mr-2">Select Top X:</label>
-        <select
-          value={top}
-          onChange={(e) => {
-            const v = Number(e.target.value);
-            setTop(v);
-            if (pathname) {
-              const params = new URLSearchParams(searchParams?.toString() || '');
-              params.set('top', String(v));
-              const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
-              router.replace(newUrl);
-            }
-          }}
-          className="px-3 py-1 bg-gray-800 text-gray-200 border border-gray-600 rounded"
-        >
-          {[1,2,3,4,5,6,7,8,9,10,20,30,50,100].map((n) => (
-            <option key={n} value={n}>
-              Top {n}
-            </option>
-          ))}
-        </select>
+      <div className="flex items-center gap-4 mb-4">
+        <label className="text-gray-200 font-medium">Top:</label>
+        <DropdownNavSelect name="top" value={String(top)} options={[1,2,3,4,5,6,7,8,9,10,20,30,50,100].map(n => ({ value: String(n), label: `Top ${n}`}))} />
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
-        <table className="min-w-full border-collapse">
-          <thead>
-            <tr className="bg-black">
-              <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
-              <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
-              <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Weeks</th>
-              <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Start Date</th>
-              <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">End Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedPlayers.map((p, idx) => {
-              const globalRank = start + idx + 1;
-              const flag = p.ioc ? getFlagFromIOC(p.ioc) : null;
-              return (
-                <tr key={`${p.id ?? p.name}-${start + idx}`} className="hover:bg-gray-800 border-b border-white/10">
-                  <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
-                  <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
-                    <div className="flex items-center gap-2">
-                      {flag && <span className="text-base">{flag}</span>}
-                      {p.id ? <Link href={`/players/${p.id}`} className="hover:underline">{p.name}</Link> : <span>{p.name}</span>}
-                    </div>
-                  </td>
-                  <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.weeks}</td>
-                  <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.startDate ?? "-"}</td>
-                  <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.endDate ?? "-"}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">Consecutive Weeks at Top {top}</h2>
+      {pageRows.length === 0 ? (<div className="text-gray-400 py-4 text-center">No data available.</div>) : (
+        <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
+          <table className="min-w-full border-collapse">
+            <thead>
+              <tr className="bg-black"><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Top</th><th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Weeks</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Start</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">End</th></tr>
+            </thead>
+            <tbody>
+              {pageRows.map((p, idx)=> (
+                <tr key={`${p.id ?? p.name}-${start + idx}`} className="hover:bg-gray-800 border-b border-white/10"><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{start + idx + 1}</td><td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{p.ioc && <span className="text-base">{getFlagFromIOC(p.ioc)}</span>}<span>{p.name}</span></div></td><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.weeks}</td><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.startDate}</td><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.endDate}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
-        {totalPages > 1 && (
-          <div className="mt-4 flex justify-center">
-            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
-          </div>
-        )}
-      </div>
+      {totalPages > 1 && (
+        <div className="flex gap-2 mt-4 justify-center">
+          {Array.from({ length: totalPages }).map((_, i) => {
+            const p = i + 1;
+            const q = new URLSearchParams(); q.set('top', String(top)); if (p > 1) q.set('page', String(p));
+            const href = `/recordsranking/Streak/Top${q.toString() ? `?${q.toString()}` : ''}`;
+            return (
+              <a key={p} href={href} className={`px-2 py-1 rounded ${p === page ? 'bg-blue-700 text-white' : 'bg-gray-800 text-gray-200'}`}>
+                {p}
+              </a>
+            );
+          })}
+        </div>
+      )} 
     </section>
   );
-}
+} 

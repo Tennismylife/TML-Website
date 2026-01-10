@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useMemo, useState } from "react";
 import MatchTable from "@/components/MatchTable";
 import type { Match, SortKey, SortDirection } from "@/types";

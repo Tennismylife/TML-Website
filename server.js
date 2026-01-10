@@ -187,6 +187,19 @@ function decompressIfGzip(buffer, headers) {
     next();
   });
 
+  /* ---------------- GA4 FALLBACK ENDPOINT ---------------- */
+  // POST /ga4-fallback
+  // Accepts: { page_path, page_title, referrer, user_agent }
+  // Uses `lib/ga4-fallback.js` to generate/reuse HttpOnly cookie and forward the event
+  const { handleGa4Fallback } = require('./lib/ga4-fallback');
+
+  server.post('/ga4-fallback', (req, res) => {
+    if (!req.body || !req.body.page_path) return res.status(400).json({ error: 'missing page_path' });
+    // Delegate to the isolated handler. It sets a HttpOnly cookie when needed and uses
+    // GA4 Measurement Protocol (GA4_MEASUREMENT_ID & GA4_API_SECRET env vars).
+    return handleGa4Fallback(req, res);
+  });
+
   /* ---------------- NEXT.JS FALLBACK ---------------- */
   server.all(/.*/, (req, res) => handle(req, res));
 

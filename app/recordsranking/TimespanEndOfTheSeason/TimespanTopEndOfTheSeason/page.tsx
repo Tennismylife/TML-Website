@@ -1,101 +1,70 @@
-"use client";
+import React from 'react';
+import { prisma } from '@/lib/prisma';
+import { getFlagFromIOC } from '@/lib/utils';
+import DropdownNavSelect from '../../../../components/DropdownNavSelect';
 
-import { useEffect, useState } from "react";
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import Pagination from "@/components/Pagination";
-import { getFlagFromIOC } from "@/lib/utils";
-import Modal from "@/components/Modal"; 
+function diffYMD(a: Date, b: Date) { let y=b.getUTCFullYear()-a.getUTCFullYear(); let m=b.getUTCMonth()-a.getUTCMonth(); let d=b.getUTCDate()-a.getUTCDate(); if (d<0){const prev=new Date(Date.UTC(b.getUTCFullYear(),b.getUTCMonth(),0)); d+=prev.getUTCDate(); m-=1;} if(m<0){m+=12;y-=1;} return {y,m,d}; }
 
-interface EoyTopTimespanItem {
-  id: string;
-  name: string;
-  ioc?: string | null;
-  firstYear: number;
-  lastYear: number;
-  spanYears: number;
-}
+type Props = { searchParams?: Record<string,string | string[]> };
 
-export default function EoyTopTimespan() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
+export default async function EoyTopTimespan(props: Props) {
+  const searchParams = props.searchParams;
+  const top = Number((searchParams?.top as string) ?? 5);
+  if (!Number.isInteger(top) || top < 1) {
+    return (<section className="mb-8"><div className="text-gray-400 py-4 text-center">Invalid 'top' param</div></section>);
+  }
 
-  const initialTop = Number(searchParams?.get('top') ?? searchParams?.get('rank') ?? 2);
-  const [top, setTop] = useState<number>(initialTop);
-  const [rows, setRows] = useState<EoyTopTimespanItem[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1);
-  const [modalItem, setModalItem] = useState<EoyTopTimespanItem[] | null>(null);
-  const perPage = 20;
+  const fromYear = searchParams?.fromYear ? Number(searchParams.fromYear as string) : null;
+  const toYear = searchParams?.toYear ? Number(searchParams.toYear as string) : null;
 
-  // normalize 'rank' -> 'top' when present
-  useEffect(() => {
-    const rankParam = searchParams?.get('rank');
-    const topParam = searchParams?.get('top');
-    if (rankParam && !topParam && pathname) {
-      const params = new URLSearchParams(searchParams?.toString() || '');
-      params.delete('rank');
-      params.set('top', rankParam);
-      const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
-      router.replace(newUrl);
-    }
-  }, [searchParams, pathname, router]);
-  const fetchRows = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/recordsranking/timespanendoftheseason/top?top=${top}`);
-      const data: EoyTopTimespanItem[] = await res.json();
-      setRows((Array.isArray(data) ? data : []).filter(r => r.spanYears > 0));
-    } catch (err) {
-      console.error("Error fetching EOY Top-X timespan:", err);
-      setRows([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const dateWhere: any = {};
+  if (fromYear !== null) dateWhere.gte = new Date(Date.UTC(fromYear,0,1));
+  if (toYear !== null)   dateWhere.lt  = new Date(Date.UTC(toYear+1,0,1));
 
-  useEffect(() => {
-    fetchRows();
-    setPage(1);
-  }, [top]);
+  const allDates = await prisma.rankingDate.findMany({ where: Object.keys(dateWhere).length ? { date: dateWhere } : undefined, select: { date: true }, orderBy: { date: 'asc' } });
+  const years = Array.from(new Set(allDates.map(d=>d.date.getUTCFullYear())));
+  if (years.length === 0) return (<section className="mb-8"><div className="text-gray-400 py-4 text-center">No data available.</div></section>);
 
-  const totalPages = Math.ceil(rows.length / perPage);
-  const start = (page - 1) * perPage;
-  const pageRows = rows.slice(start, start + perPage);
+  const lastPerYear = await Promise.all(years.map(async (year)=>{ const last = await prisma.rankingDate.findFirst({ where: { date: { gte: new Date(Date.UTC(year,0,1)), lt: new Date(Date.UTC(year+1,0,1)) } }, orderBy: { date: 'desc' }, select: { id: true, date: true } }); return last ? { year, id: last.id, date: last.date } : null; }));
+  const valid = (lastPerYear.filter(Boolean) as {year:number; id:number; date:Date}[]);
+  if (valid.length === 0) return (<section className="mb-8"><div className="text-gray-400 py-4 text-center">No data available.</div></section>);
 
-  const renderTable = (list: EoyTopTimespanItem[], startIndex = 0) => (
+  const yearById = new Map<number, number>(valid.map(v=>[v.id, v.year]));
+  const ids = valid.map(v=>v.id);
+
+  const rows = await prisma.ranking.findMany({ where: { rank: { lte: top }, rankingDateId: { in: ids } }, select: { playerId: true, player: { select: { atpname: true, ioc: true } }, rankingDate: { select: { date: true } } } });
+  if (rows.length === 0) return (<section className="mb-8"><div className="text-gray-400 py-4 text-center">No data available.</div></section>);
+
+  const byPlayer = new Map<string, { name:string; ioc:string|null; min:Date; max:Date }>();
+  for (const r of rows) {
+    const id = String(r.playerId); const d = r.rankingDate.date; const name = r.player?.atpname ?? null; if (!name) continue; const ioc = r.player?.ioc ?? null; const prev = byPlayer.get(id); if (!prev) byPlayer.set(id, { name, ioc, min: d, max: d }); else { if (d < prev.min) prev.min = d; if (d > prev.max) prev.max = d; }
+  }
+
+  const MS_PER_DAY = 1000 * 60 * 60 * 24;
+  const data = Array.from(byPlayer.entries()).map(([id, v]) => { const timespanDays = Math.max(0, Math.floor((v.max.getTime() - v.min.getTime()) / MS_PER_DAY)); const {y,m,d} = diffYMD(v.min, v.max); return { id, name: v.name, ioc: v.ioc, firstDate: v.min.toISOString().slice(0,10), lastDate: v.max.toISOString().slice(0,10), timespanDays, timespanLabel: `${y}y ${m}m ${d}d` } }).sort((a,b)=> b.timespanDays - a.timespanDays || b.lastDate.localeCompare(a.lastDate) || a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }));
+
+  const rowsToShow = data.slice(0,20);
+
+  const renderTable = (list: any[]) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
       <table className="min-w-full border-collapse">
         <thead>
           <tr className="bg-black">
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">#</th>
             <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Timespan (years)</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">First year</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Last year</th>
+            <th className="border border-white/30 px-4 py-2 text-right text-lg text-gray-200">Span</th>
+            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">First</th>
+            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Last</th>
           </tr>
         </thead>
         <tbody>
           {list.map((r, idx) => (
-            <tr
-              key={`${r.id}-${r.firstYear}-${r.lastYear}`}
-              className="hover:bg-gray-800 border-b border-white/10 cursor-pointer"
-              onClick={() => setModalItem([r])}
-            >
-              <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
-                {startIndex + idx + 1}
-              </td>
-              <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
-                <div className="flex items-center gap-2">
-                  {r.ioc && <span className="text-base">{getFlagFromIOC(r.ioc)}</span>}
-                  <span>{r.name}</span>
-                </div>
-              </td>
-              <td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">
-                {r.spanYears}
-              </td>
-              <td className="border border-white/10 px-4 py-2 text-gray-300">{r.firstYear}</td>
-              <td className="border border-white/10 px-4 py-2 text-gray-300">{r.lastYear}</td>
+            <tr key={`${r.id}-${r.firstDate}-${r.lastDate}`} className="hover:bg-gray-800 border-b border-white/10">
+              <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{idx+1}</td>
+              <td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{r.ioc && <span className="text-base">{getFlagFromIOC(r.ioc)}</span>}<span>{r.name}</span></div></td>
+              <td className="border border-white/10 px-4 py-2 text-right text-lg text-indigo-300">{r.timespanLabel}</td>
+              <td className="border border-white/10 px-4 py-2 text-gray-300">{r.firstDate}</td>
+              <td className="border border-white/10 px-4 py-2 text-gray-300">{r.lastDate}</td>
             </tr>
           ))}
         </tbody>
@@ -103,54 +72,14 @@ export default function EoyTopTimespan() {
     </div>
   );
 
-
   return (
     <section className="mb-8">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <label className="text-gray-200 font-medium mr-2">Top Range (EOY):</label>
-          <select
-            value={top}
-            onChange={(e) => {
-              const v = Number(e.target.value);
-              setTop(v);
-              if (pathname) {
-                const params = new URLSearchParams(searchParams?.toString() || '');
-                params.delete('rank');
-                params.set('top', String(v));
-                const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
-                router.replace(newUrl);
-              }
-            }}
-            className="px-2 py-1 rounded bg-gray-800 text-gray-200 border border-gray-600"
-          >
-            {[1,2,3,4,5,6,7,8,9,10,20,30,50,100].map((n) => (
-              <option key={n} value={n}>Top {n}</option>
-            ))}
-          </select>
-        </div>
-        <h2 className="text-xl font-semibold text-gray-200 text-center flex-1">
-          Timespan at EOY Top {top}
-        </h2>
-        <button
-          onClick={() => setModalItem(rows)}
-          className="ml-auto px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
-        >
-          View All
-        </button>
+      <div className="flex items-center gap-4 mb-4">
+        <label className="text-gray-200 font-medium">Top-X (EOY):</label>
+        <DropdownNavSelect name="top" value={String(top)} options={[5,10,20,50,100].map(t=>({ value: String(t), label: `Top ${t}`}))} />
       </div>
-
-      {loading && <div className="text-gray-400 py-4 text-center">Loading...</div>}
-      {!loading && pageRows.length > 0 && renderTable(pageRows, start)}
-      {!loading && pageRows.length === 0 && <div className="text-gray-400 py-4 text-center">No data available.</div>}
-
-      {totalPages > 1 && !loading && (
-        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
-      )}
-
-      <Modal show={!!modalItem} onClose={() => setModalItem(null)} title={`Timespan Details`}>
-        {renderTable(modalItem || [])}
-      </Modal>
+      <h2 className="flex-1 text-center text-xl font-semibold text-gray-200">Top-X Timespan (EOY)</h2>
+      {rowsToShow.length > 0 ? renderTable(rowsToShow) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
     </section>
   );
 }

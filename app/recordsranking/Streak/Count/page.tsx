@@ -1,60 +1,113 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import React from 'react';
 import { getFlagFromIOC } from "@/lib/utils";
-import Pagination from "@/components/Pagination";
+import { prisma } from "@/lib/prisma";
+import RecordsCountControls from "../../Count/RecordsCountControls";
 import Link from "next/link";
 
 interface Player {
   id?: string;
   name: string;
-  ioc?: string;
+  ioc?: string | null;
   weeks: number;
   startDate?: string;
   endDate?: string;
 }
 
-export default function StreakCount() {
-  const [players, setPlayers] = useState<Player[]>([]);
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-
-  const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1);
-  const [rank, setRank] = useState(Number(searchParams?.get('rank') ?? 1)); // Rank selezionato
+export default async function StreakCount({ searchParams }: { searchParams?: Record<string, string | string[]> }) {
+  const rank = Number((searchParams?.rank as string) ?? 1);
+  const page = Number((searchParams?.page as string) ?? '1');
   const perPage = 20;
 
-  useEffect(() => {
-    if (!pathname) return;
-    const params = new URLSearchParams(searchParams?.toString() || '');
-    params.set('rank', String(rank));
-    const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
-    router.replace(newUrl);
-  }, [rank, pathname, router, searchParams]);
+  // replicate server logic from API route
+  const allRankings = await prisma.ranking.findMany({
+    where: { rank },
+    orderBy: [{ playerId: "asc" }, { rankingDate: { date: "asc" } }],
+    select: {
+      playerId: true,
+      rankingDate: { select: { date: true } },
+      player: { select: { id: true, atpname: true, ioc: true } },
+    },
+  });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setPage(1); // reset pagina prima del fetch
-      setLoading(true);
-      try {
-        const res = await fetch(`/api/recordsranking/streak/count?rank=${rank}`);
-        const data = await res.json();
-        setPlayers(data || []);
-      } catch (err) {
-        console.error(err);
-        setPlayers([]);
-      } finally {
-        setLoading(false);
+  const resultMap: Record<string, Player & { weeks: number }> = {};
+
+  let currentPlayerId: string | null = null;
+  let currentPlayerInfo: { id?: string; name: string; ioc?: string | null } | null = null;
+  let prevDate: Date | null = null;
+  let currentStreak = 0;
+  let maxStreak = 0;
+  let streakStart: Date | null = null;
+  let streakEnd: Date | null = null;
+  let maxStreakStart: Date | null = null;
+  let maxStreakEnd: Date | null = null;
+
+  const commitPlayer = () => {
+    if (!currentPlayerId || !currentPlayerInfo) return;
+    const prev = resultMap[currentPlayerId];
+    const best = Math.max(prev?.weeks ?? 0, maxStreak);
+
+    resultMap[currentPlayerId] = {
+      id: currentPlayerInfo.id,
+      name: currentPlayerInfo.name,
+      ioc: currentPlayerInfo.ioc ?? null,
+      weeks: best,
+      startDate: maxStreakStart?.toISOString().split("T")[0],
+      endDate: maxStreakEnd?.toISOString().split("T")[0],
+    } as Player & { weeks: number };
+  };
+
+  for (const r of allRankings) {
+    if (r.playerId !== currentPlayerId) {
+      commitPlayer();
+      currentPlayerId = r.playerId;
+      currentPlayerInfo = {
+        id: r.player?.id,
+        name: r.player?.atpname ?? r.playerId,
+        ioc: r.player?.ioc ?? undefined,
+      };
+      prevDate = null;
+      currentStreak = 0;
+      maxStreak = 0;
+      streakStart = null;
+      streakEnd = null;
+      maxStreakStart = null;
+      maxStreakEnd = null;
+    }
+
+    if (prevDate) {
+      const diffDays = Math.round(
+        (r.rankingDate.date.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
+      if (diffDays >= 6 && diffDays <= 8) {
+        currentStreak += 1;
+        streakEnd = r.rankingDate.date;
+      } else {
+        currentStreak = 1;
+        streakStart = r.rankingDate.date;
+        streakEnd = r.rankingDate.date;
       }
-    };
-    fetchData();
-  }, [rank]);
+    } else {
+      currentStreak = 1;
+      streakStart = r.rankingDate.date;
+      streakEnd = r.rankingDate.date;
+    }
 
-  const totalPages = Math.ceil(players.length / perPage);
+    if (currentStreak > maxStreak) {
+      maxStreak = currentStreak;
+      maxStreakStart = streakStart;
+      maxStreakEnd = streakEnd;
+    }
+
+    prevDate = r.rankingDate.date;
+  }
+
+  commitPlayer();
+
+  const resultArray: (Player & { weeks: number })[] = Object.values(resultMap).sort((a, b) => b.weeks - a.weeks);
+
+  const totalPages = Math.ceil(resultArray.length / perPage);
   const start = (page - 1) * perPage;
-  const paginatedPlayers = players.slice(start, start + perPage);
+  const paginatedPlayers = resultArray.slice(start, start + perPage);
 
   const renderTable = () => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
@@ -96,7 +149,17 @@ export default function StreakCount() {
 
       {totalPages > 1 && (
         <div className="mt-4 flex justify-center">
-          <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+          <div className="mt-4 flex justify-center gap-2">
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <a
+                key={i}
+                href={`?rank=${rank}&page=${i + 1}`}
+                className={`px-3 py-1 rounded ${i + 1 === page ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-200'}`}
+              >
+                {i + 1}
+              </a>
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -108,36 +171,11 @@ export default function StreakCount() {
         Consecutive Weeks at No. {rank}
       </h2>
 
-      {/* Dropdown per selezionare rank a sinistra */}
-      <div className="flex justify-start mb-6 ml-4 items-center">
-        <label className="text-gray-200 font-medium mr-2">Select Rank:</label>
-        <select
-          value={rank}
-          onChange={(e) => {
-            const v = Number(e.target.value);
-            setRank(v);
-            if (pathname) {
-              const params = new URLSearchParams(searchParams?.toString() || '');
-              params.set('rank', String(v));
-              const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
-              router.replace(newUrl);
-            }
-          }}
-          className="px-3 py-1 bg-gray-800 text-gray-200 border border-gray-600 rounded"
-        >
-          {[...Array(10)].map((_, i) => (
-            <option key={i + 1} value={i + 1}>
-              {i + 1}
-            </option>
-          ))}
-        </select>
-      </div>
+      <React.Suspense fallback={<div className="text-gray-400 py-2 text-center">Loading controls...</div>}>
+        <RecordsCountControls initialTop={rank} />
+      </React.Suspense>
 
-      {loading ? (
-        <div className="text-center py-8 text-gray-300">Loading...</div>
-      ) : (
-        renderTable()
-      )}
+      {renderTable()}
     </section>
   );
 }

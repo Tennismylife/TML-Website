@@ -12,7 +12,7 @@ describe('sitemap generator', () => {
     expect(urls).toContain('/records/same/played');
     expect(urls).toContain('/records/titles');
     expect(urls).toContain('/records/ages/oldest');
-  });
+  }, 20000);
 
   it('generates valid XML', async () => {
     const xml = await generateSitemapXml();

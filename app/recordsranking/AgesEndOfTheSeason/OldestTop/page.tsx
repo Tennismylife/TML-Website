@@ -1,10 +1,7 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import Pagination from "@/components/Pagination";
+import { prisma } from "@/lib/prisma";
 import { getFlagFromIOC } from "@/lib/utils";
-import Modal from "@/components/Modal"; 
+import React from 'react';
+import RecordsTopControls from '../../Top/RecordsTopControls';
 
 interface OldestEoyTopItem {
   id: string;
@@ -15,99 +12,98 @@ interface OldestEoyTopItem {
   year: number;     // solo anno
 }
 
-export default function OldestEoyTopX() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
+function diffYMD(birth: Date, ref: Date) {
+  let y = ref.getUTCFullYear() - birth.getUTCFullYear();
+  let m = ref.getUTCMonth() - birth.getUTCMonth();
+  let d = ref.getUTCDate() - birth.getUTCDate();
+  if (d < 0) {
+    const prevMonth = new Date(Date.UTC(ref.getUTCFullYear(), ref.getUTCMonth(), 0));
+    d += prevMonth.getUTCDate();
+    m -= 1;
+  }
+  if (m < 0) {
+    m += 12;
+    y -= 1;
+  }
+  return { y, m, d };
+}
 
-  const initialTop = Number(searchParams?.get('top') ?? searchParams?.get('rank') ?? 2);
-  const [top, setTop] = useState<number>(initialTop);
-  const [rows, setRows] = useState<OldestEoyTopItem[]>([]);
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+export default async function OldestEoyTop({ searchParams }: { searchParams?: Record<string, string | string[]> }) {
+  const initialTop = Number((searchParams?.top as string) ?? (searchParams?.rank as string) ?? 2);
+  const top = initialTop;
+  const limit = Math.min(500, Math.max(1, Number((searchParams?.limit as string) ?? 200)));
+
+  // years
+  const fromYearParam = searchParams?.fromYear as string | undefined;
+  const toYearParam = searchParams?.toYear as string | undefined;
+  const fromYear = fromYearParam ? Number(fromYearParam) : null;
+  const toYear = toYearParam ? Number(toYearParam) : null;
+
+  const dateWhere: any = {};
+  if (fromYear !== null) dateWhere.gte = new Date(Date.UTC(fromYear, 0, 1));
+  if (toYear !== null) dateWhere.lt  = new Date(Date.UTC(toYear + 1, 0, 1));
+
+  const allDates = await prisma.rankingDate.findMany({ where: Object.keys(dateWhere).length ? { date: dateWhere } : undefined, select: { date: true }, orderBy: { date: 'asc' } });
+  const years = Array.from(new Set(allDates.map(d => d.date.getUTCFullYear())));
+  if (years.length === 0) return (<section className="mb-8"><div className="text-gray-400 py-4 text-center">No data available.</div></section>);
+
+  const lastPerYear = await Promise.all(years.map(async (year) => {
+    const last = await prisma.rankingDate.findFirst({ where: { date: { gte: new Date(Date.UTC(year, 0, 1)), lt: new Date(Date.UTC(year + 1, 0, 1)) } }, orderBy: { date: 'desc' }, select: { id: true, date: true } });
+    return last ? { year, id: last.id, date: last.date } : null;
+  }));
+
+  const last = (lastPerYear.filter(Boolean) as { year: number; id: number; date: Date }[]);
+  if (last.length === 0) return (<section className="mb-8"><div className="text-gray-400 py-4 text-center">No data available.</div></section>);
+
+  const eoyIds = last.map(x => x.id);
+  const yearById = new Map<number, number>(last.map(x => [x.id, x.year]));
+
+  const rowsData = await prisma.ranking.findMany({
+    where: { rank: { lte: top }, rankingDateId: { in: eoyIds } },
+    select: { playerId: true, player: { select: { atpname: true, ioc: true, birthdate: true } }, rankingDateId: true, rankingDate: { select: { date: true } } },
+  });
+
+  const bestByPlayer = new Map<string, { name: string; ioc: string | null; year: number; date: Date; birth: Date; ageDays: number }>();
+  for (const r of rowsData) {
+    const id = String(r.playerId);
+    const birth = r.player.birthdate;
+    if (!birth) continue;
+    const ref = r.rankingDate.date;
+    if (ref < birth) continue;
+
+    const ageDays = Math.floor((ref.getTime() - birth.getTime()) / (1000 * 60 * 60 * 24));
+    const recYear = yearById.get(r.rankingDateId)!;
+
+    const prev = bestByPlayer.get(id);
+    if (!prev || ageDays > prev.ageDays || (ageDays === prev.ageDays && ref < prev.date)) {
+      bestByPlayer.set(id, { name: r.player.atpname, ioc: r.player.ioc, year: recYear, date: ref, birth, ageDays });
+    }
+  }
+
+  const data: OldestEoyTopItem[] = Array.from(bestByPlayer.entries()).map(([id, v]) => {
+    const { y, m, d } = diffYMD(v.birth, v.date);
+    return { id, name: v.name, ioc: v.ioc, ageDays: v.ageDays, ageLabel: `${y}y ${m}m ${d}d`, year: v.year };
+  }).sort((a, b) => b.ageDays - a.ageDays).slice(0, limit);
+
   const perPage = 20;
-
-  useEffect(() => {
-    const rankParam = searchParams?.get('rank');
-    const topParam = searchParams?.get('top');
-    if (rankParam && !topParam && pathname) {
-      const params = new URLSearchParams(searchParams?.toString() || '');
-      params.delete('rank');
-      params.set('top', rankParam);
-      const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
-      router.replace(newUrl);
-    }
-  }, [searchParams, pathname, router]);
-  const fetchRows = async (selectedTop: number) => {
-    setLoading(true);
-    try {
-      const res = await fetch(
-        `/api/recordsranking/agesendoftheseason/oldesttop?top=${selectedTop}&limit=200`
-      );
-      const data = await res.json();
-      setRows(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Error fetching oldest EOY Top-X:", err);
-      setRows([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchRows(top);
-    setPage(1);
-  }, [top]);
-
-  const totalPages = Math.ceil(rows.length / perPage);
+  const page = Number((searchParams?.page as string) ?? '1');
+  const totalPages = Math.ceil(data.length / perPage);
   const start = (page - 1) * perPage;
-  const paginatedRows = rows.slice(start, start + perPage);
+  const paginatedRows = data.slice(start, start + perPage);
 
   const renderTable = (list: OldestEoyTopItem[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
       <table className="min-w-full border-collapse">
         <thead>
-          <tr className="bg-black">
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">
-              Rank
-            </th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">
-              Player
-            </th>
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">
-              Age at EOY Top {top}
-            </th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">
-              Year
-            </th>
-          </tr>
+          <tr className="bg-black"><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Top</th><th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Age at EOY Top {top}</th><th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Year</th></tr>
         </thead>
         <tbody>
           {list.map((r, idx) => (
-            <tr
-              key={`${r.id}-${r.year}`}
-              className="hover:bg-gray-800 border-b border-white/10"
-            >
-              <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
-                {startIndex + idx + 1}
-              </td>
-              <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
-                <div className="flex items-center gap-2">
-                  {r.ioc && (
-                    <span className="text-base">
-                      {getFlagFromIOC(r.ioc)}
-                    </span>
-                  )}
-                  <span>{r.name}</span>
-                </div>
-              </td>
-              <td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">
-                {r.ageLabel}
-              </td>
-              <td className="border border-white/10 px-4 py-2 text-gray-300">
-                {r.year}
-              </td>
+            <tr key={`${r.id}-${r.year}`} className="hover:bg-gray-800 border-b border-white/10">
+              <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{startIndex + idx + 1}</td>
+              <td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{r.ioc && <span className="text-base">{getFlagFromIOC(r.ioc)}</span>}<span>{r.name}</span></div></td>
+              <td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">{r.ageLabel}</td>
+              <td className="border border-white/10 px-4 py-2 text-gray-300">{r.year}</td>
             </tr>
           ))}
         </tbody>
@@ -115,79 +111,25 @@ export default function OldestEoyTopX() {
     </div>
   );
 
-  
-
   return (
     <section className="mb-8">
-      {/* Controls */}
       <div className="flex items-center gap-4 mb-4">
-        <label className="text-gray-200 font-medium">Top Range (EOY):</label>
-        <select
-          value={top}
-          onChange={(e) => {
-            const v = Number(e.target.value);
-            setTop(v);
-            if (pathname) {
-              const params = new URLSearchParams(searchParams?.toString() || '');
-              params.delete('rank');
-              params.set('top', String(v));
-              const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
-              router.replace(newUrl);
-            }
-          }}
-          className="px-2 py-1 rounded bg-gray-800 text-gray-200 border border-gray-600"
-        >
-          {[...Array(10)].map((_, i) => (
-            <option key={i + 1} value={i + 1}>
-              Top {i + 1}
-            </option>
+        <label className="text-gray-200 font-medium">Top:</label>
+      </div>
+      <React.Suspense fallback={<div className="text-gray-400 py-2 text-center">Loading controls...</div>}>
+        <RecordsTopControls initialTop={initialTop} hideLabel />
+      </React.Suspense>
+      <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">Oldest Players to Finish Year-End in the Top {top}</h2>
+
+      {paginatedRows.length > 0 ? renderTable(paginatedRows, start) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
+
+      {totalPages > 1 && (
+        <div className="mt-4 flex justify-center gap-2">
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <a key={i} href={`?top=${top}&page=${i + 1}`} className={`px-3 py-1 rounded ${i + 1 === page ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-200'}`}>{i + 1}</a>
           ))}
-        </select>
-      </div>
-
-      <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">
-        Oldest Players to Finish Year-End in the Top {top}
-      </h2>
-
-      {/* View All */}
-      <div className="mb-4 flex justify-end">
-        <button
-          onClick={() => setShowModal(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
-        >
-          View All
-        </button>
-      </div>
-
-      {/* Main table */}
-      {loading && (
-        <div className="text-gray-400 py-4 text-center">Loading...</div>
-      )}
-      {!loading && paginatedRows.length > 0 &&
-        renderTable(paginatedRows, start)}
-      {!loading && paginatedRows.length === 0 && (
-        <div className="text-gray-400 py-4 text-center">
-          No data available.
         </div>
       )}
-
-      {/* Pagination */}
-      {totalPages > 1 && !loading && (
-        <Pagination
-          page={page}
-          totalPages={totalPages}
-          onPageChange={setPage}
-        />
-      )}
-
-      {/* Modal */}
-      <Modal
-        show={showModal}
-        onClose={() => setShowModal(false)}
-        title={`Oldest at Year-End Top ${top}`}
-      >
-        {renderTable(rows)}
-      </Modal>
     </section>
   );
 }

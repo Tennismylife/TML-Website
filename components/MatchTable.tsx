@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import { Match, SortDirection, SortKey } from "@/types";
 import { getFlagFromIOC, getTourneyHref, extractUniqueSurfaces } from "@/lib/utils";

@@ -1,22 +1,8 @@
-"use client";
-
-import { useState, useEffect } from "react";
 import Overall from "./Overall/page";
 import EndOfTheSeason from "./EndOfTheSeason/page";
 
-export default function DiffPoints() {
-  const [activeSubTab, setActiveSubTab] = useState<"Overall" | "EndOfTheSeason">("Overall");
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const subtab = params.get("subtab") as "Overall" | "EndOfTheSeason" | null;
-    if (subtab) setActiveSubTab(subtab);
-  }, []);
-
-  return (
-    <div>
-      {activeSubTab === "Overall" && <Overall />}
-      {activeSubTab === "EndOfTheSeason" && <EndOfTheSeason />}
-    </div>
-  );
+export default function DiffPoints({ searchParams }: { searchParams?: Record<string, string | string[]> }) {
+  const sub = (searchParams?.subtab as string) ?? null;
+  if (sub === 'EndOfTheSeason') return <EndOfTheSeason />;
+  return <Overall />;
 }

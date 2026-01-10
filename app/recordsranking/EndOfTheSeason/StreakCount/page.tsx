@@ -1,100 +1,107 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { prisma } from "@/lib/prisma";
 import { getFlagFromIOC } from "@/lib/utils";
-import Pagination from "@/components/Pagination";
-import Modal from "@/components/Modal"; 
 
 interface PlayerStreak {
   id: string;
   name: string;
   ioc?: string | null;
   longestStreak: number;
-  seasons: number[]; // anni della striscia più lunga
-  // streaks?: { length: number; seasons: number[] }[]; // se in futuro usi includeAll=1
+  seasons: number[];
 }
 
-export default function EoyRankStreaks() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
+function computeStreaks(sortedYears: number[]): number[][] {
+  const streaks: number[][] = [];
+  if (sortedYears.length === 0) return streaks;
+  let curr: number[] = [sortedYears[0]];
+  for (let i = 1; i < sortedYears.length; i++) {
+    const y = sortedYears[i];
+    if (y === curr[curr.length - 1] + 1) curr.push(y);
+    else { streaks.push(curr); curr = [y]; }
+  }
+  streaks.push(curr);
+  return streaks;
+}
 
-  const [players, setPlayers] = useState<PlayerStreak[]>([]);
-  const [rank, setRank] = useState<number>(Number(searchParams?.get('rank') ?? 1)); // numero esatto
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const perPage = 20;
+import StreakCountControls from "./StreakCountControls";
 
-  useEffect(() => {
-    if (!pathname) return;
-    const params = new URLSearchParams(searchParams?.toString() || '');
-    params.set('rank', String(rank));
-    const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
-    router.replace(newUrl);
-  }, [rank, pathname, router, searchParams]);
-  const fetchPlayers = async (selectedRank: number) => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/recordsranking/endofseason/streakcount?rank=${selectedRank}`);
-      const data = await res.json();
-      setPlayers(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Error fetching EOY streaks:", err);
-      setPlayers([]);
-    } finally {
-      setLoading(false);
+export default async function EoyRankStreaks({ searchParams }: { searchParams?: Record<string, string | string[]> }) {
+  const rank = Number((searchParams?.rank as string) ?? 1);
+  const includeAll = (searchParams?.includeAll as string) === '1';
+
+  // get last per year
+  const dateWhere: any = {};
+  if (searchParams?.fromYear) dateWhere.gte = new Date(Date.UTC(Number(searchParams.fromYear as string), 0, 1));
+  if (searchParams?.toYear) dateWhere.lt = new Date(Date.UTC(Number(searchParams.toYear as string) + 1, 0, 1));
+
+  const allDates = await prisma.rankingDate.findMany({ where: dateWhere, select: { date: true }, orderBy: { date: 'asc' } });
+  const allYears = Array.from(new Set(allDates.map(d => d.date.getUTCFullYear())));
+  if (allYears.length === 0) return (<section className="mb-8"><div className="text-gray-400 py-4 text-center">No data available.</div></section>);
+
+  const lastDates = await Promise.all(allYears.map(async (year) => {
+    const last = await prisma.rankingDate.findFirst({ where: { date: { gte: new Date(Date.UTC(year,0,1)), lt: new Date(Date.UTC(year+1,0,1)) } }, orderBy: { date: 'desc' }, select: { id: true, date: true } });
+    return last ? { year, id: last.id, date: last.date } : null;
+  }));
+  const validLast = (lastDates.filter(Boolean) as { year: number; id: number; date: Date }[]);
+  if (validLast.length === 0) return (<section className="mb-8"><div className="text-gray-400 py-4 text-center">No data available.</div></section>);
+
+  const lastDateIds = validLast.map(d => d.id);
+
+  const rows = await prisma.ranking.findMany({ where: { rank, rankingDateId: { in: lastDateIds } }, select: { playerId: true, player: { select: { atpname: true, ioc: true } }, rankingDate: { select: { date: true } } } });
+
+  const playersMap = new Map<string, { name: string; ioc: string | null }>();
+  rows.forEach(r => playersMap.set(String(r.playerId), { name: r.player.atpname, ioc: r.player.ioc }));
+
+  const grouped = new Map<string, number[]>();
+  rows.forEach(r => {
+    const id = String(r.playerId);
+    const years = grouped.get(id) ?? [];
+    years.push(r.rankingDate.date.getUTCFullYear());
+    grouped.set(id, years);
+  });
+
+  const data: any[] = [];
+  for (const [playerId, yearsList] of grouped.entries()) {
+    const years = Array.from(new Set(yearsList)).sort((a,b)=>a-b);
+    let streaks = computeStreaks(years);
+    streaks = streaks.filter(s => s.length > 1);
+    if (streaks.length === 0) continue;
+
+    for (const s of streaks) {
+      const info = playersMap.get(playerId)!;
+      data.push(includeAll
+        ? { id: playerId, name: info.name, ioc: info.ioc, longestStreak: s.length, seasons: s, streaks: streaks.map(st => ({ length: st.length, seasons: st })) }
+        : { id: playerId, name: info.name, ioc: info.ioc, longestStreak: s.length, seasons: s }
+      );
     }
-  };
+  }
 
-  useEffect(() => {
-    fetchPlayers(rank);
-    setPage(1);
-  }, [rank]);
+  data.sort((a,b) => b.longestStreak - a.longestStreak || a.name.localeCompare(b.name, 'en',{ sensitivity: 'base' }));
 
-  const totalCount = players.length;
+  const perPage = 20;
+  const page = Number((searchParams?.page as string) ?? '1');
+  const totalCount = data.length;
   const totalPages = Math.ceil(totalCount / perPage);
   const start = (page - 1) * perPage;
-  const paginatedPlayers = players.slice(start, start + perPage);
+  const paginatedPlayers = data.slice(start, start + perPage);
 
   const renderTable = (list: PlayerStreak[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
       <table className="min-w-full border-collapse">
         <thead>
           <tr className="bg-black">
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">
-              Rank
-            </th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">
-              Player
-            </th>
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">
-              Longest Streak at No. {rank}
-            </th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">
-              Years
-            </th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
+            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Longest Streak at No. {rank}</th>
+            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Years</th>
           </tr>
         </thead>
         <tbody>
           {list.map((p, idx) => (
             <tr key={`${p.id}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
-              <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
-                {startIndex + idx + 1}
-              </td>
-              <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
-                <div className="flex items-center gap-2">
-                  {p.ioc && <span className="text-base">{getFlagFromIOC(p.ioc)}</span>}
-                  <span>{p.name}</span>
-                </div>
-              </td>
-              <td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">
-                {p.longestStreak}
-              </td>
-              <td className="border border-white/10 px-4 py-2 text-gray-300">
-                {p.seasons?.length ? p.seasons.join(", ") : "—"}
-              </td>
+              <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{startIndex + idx + 1}</td>
+              <td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{p.ioc && <span className="text-base">{getFlagFromIOC(p.ioc)}</span>}<span>{p.name}</span></div></td>
+              <td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">{p.longestStreak}</td>
+              <td className="border border-white/10 px-4 py-2 text-gray-300">{p.seasons?.length ? p.seasons.join(", ") : "—"}</td>
             </tr>
           ))}
         </tbody>
@@ -102,63 +109,16 @@ export default function EoyRankStreaks() {
     </div>
   );
 
-  
-
   return (
     <section className="mb-8">
-      {/* Selezione Rank esatto */}
-      <div className="flex items-center gap-4 mb-4">
-        <label className="text-gray-200 font-medium">Select Rank:</label>
-        <select
-          value={rank}
-          onChange={(e) => {
-            const v = Number(e.target.value);
-            setRank(v);
-            if (pathname) {
-              const params = new URLSearchParams(searchParams?.toString() || '');
-              params.set('rank', String(v));
-              const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
-              router.replace(newUrl);
-            }
-          }}
-          className="px-2 py-1 rounded bg-gray-800 text-gray-200 border border-gray-600"
-        >
-          {[...Array(10)].map((_, i) => (
-            <option key={i + 1} value={i + 1}>
-              No. {i + 1}
-            </option>
-          ))}
-        </select>
-      </div>
-      <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">
-        Consecutive Seasons at Year-End No. {rank}
-      </h2>
-      {/* View All */}
-      <div className="mb-4 flex justify-end">
-        <button
-          onClick={() => setShowModal(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
-        >
-          View All
-        </button>
-      </div>
+      <StreakCountControls initialRank={rank} />
+      <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">Consecutive Seasons at Year-End No. {rank}</h2>
 
-      {/* Tabella */}
-      {loading && <div className="text-gray-400 py-4 text-center">Loading...</div>}
-      {!loading && paginatedPlayers.length > 0 && renderTable(paginatedPlayers, start)}
-      {!loading && paginatedPlayers.length === 0 && (
-        <div className="text-gray-400 py-4 text-center">No data available.</div>
+      {paginatedPlayers.length > 0 ? renderTable(paginatedPlayers, start) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
+
+      {totalPages > 1 && (
+        <div className="mt-4 flex justify-center gap-2">{Array.from({ length: totalPages }).map((_, i) => (<a key={i} href={`?rank=${rank}&page=${i + 1}`} className={`px-3 py-1 rounded ${i + 1 === page ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-200'}`}>{i + 1}</a>))}</div>
       )}
-
-      {/* Paginazione */}
-      {totalPages > 1 && !loading && (
-        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
-      )}
-
-      {/* Modal View All */}
-      <Modal show={showModal} onClose={() => setShowModal(false)} title={`EOY Streaks at No. ${rank}`}>
-        {renderTable(players)}
-      </Modal>
     </section>
   );
 }

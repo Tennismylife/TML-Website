@@ -1,36 +1,17 @@
-"use client";
-
-"use client";
-
-import { useState, useEffect } from "react";
 import OldestCount from "./OldestCount/page";
 import YoungestCount from "./YoungestCount/page";
 import OldestTop from "./OldestTop/page";
 import YoungestTop from "./YoungestTop/page";
 
-export default function Ages() {
-  const [activeSubTab, setActiveSubTab] = useState<
-    "YoungestCount" | "OldestCount" | "YoungestTop" | "OldestTop"
-  >("OldestCount");
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const subtab = params.get("subtab") as
-      | "YoungestCount"
-      | "OldestCount"
-      | "YoungestTop"
-      | "OldestTop"
-      | null;
-
-    if (subtab) setActiveSubTab(subtab);
-  }, []);
+export default function Ages({ searchParams }: { searchParams?: Record<string, string | string[]> }) {
+  const subtab = (searchParams?.subtab as string | undefined) ?? 'OldestCount';
 
   return (
     <div>
-      {activeSubTab === "OldestCount" && <OldestCount />}
-      {activeSubTab === "YoungestCount" && <YoungestCount />}
-      {activeSubTab === "OldestTop" && <OldestTop />}
-      {activeSubTab === "YoungestTop" && <YoungestTop />}
+      {subtab === "OldestCount" && <OldestCount />}
+      {subtab === "YoungestCount" && <YoungestCount />}
+      {subtab === "OldestTop" && <OldestTop />}
+      {subtab === "YoungestTop" && <YoungestTop />}
     </div>
   );
 }

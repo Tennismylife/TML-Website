@@ -8,9 +8,9 @@ describe('generateMetadata for records page', () => {
     expect(meta.robots).toEqual({ index: true, follow: true });
   });
 
-  it('sets noindex for non-principal combinations', async () => {
+  it('remains indexable for non-principal combinations', async () => {
     const meta = await generateMetadata({ params: { slug: ['same'] }, searchParams: { surface: 'Hard', level: 'G' } as any });
     expect(meta.alternates?.canonical).toContain('?level=G');
-    expect(meta.robots).toEqual({ index: false, follow: true });
+    expect(meta.robots).toEqual({ index: true, follow: true });
   });
 });

@@ -1,62 +1,52 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import React from 'react';
 import { getFlagFromIOC } from "@/lib/utils";
-import Pagination from "@/components/Pagination";
-import Modal from "@/components/Modal"; 
+import { prisma } from "@/lib/prisma";
+import RecordsTopControls from "./RecordsTopControls";
 
 interface TopXPlayer {
   id: string;
   name: string;
-  ioc?: string;
+  ioc?: string | null;
   weeks: number;
 }
 
-export default function RecordsTopX() {
-  const [players, setPlayers] = useState<TopXPlayer[]>([]);
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-
-  const initialTop = Number(searchParams?.get('top') ?? 2);
-  const [top, setTop] = useState<number>(initialTop);
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+export default async function RecordsTopX({ searchParams }: { searchParams?: Record<string, string | string[]> }) {
+  const initialTop = Number((searchParams?.top as string) ?? 2);
+  const page = Number((searchParams?.page as string) ?? '1');
   const perPage = 20;
 
-  useEffect(() => {
-    if (!pathname) return;
-    const params = new URLSearchParams(searchParams?.toString() || '');
-    params.set('top', String(top));
-    const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
-    router.replace(newUrl);
-  }, [top, pathname, router, searchParams]);
-  const fetchPlayers = async (selectedTop: number) => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/recordsranking/top?top=${selectedTop}`);
-      const data = await res.json();
-      setPlayers(data || []);
-    } catch (err) {
-      console.error("Error fetching Top X players:", err);
-      setPlayers([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const top = initialTop;
 
-  useEffect(() => {
-    fetchPlayers(top);
-    setPage(1); // reset pagina quando cambia il Top X
-  }, [top]);
+  // Server-side query
+  const weeksInTopX = await prisma.ranking.groupBy({
+    by: ["playerId"],
+    where: { rank: { lte: top } },
+    _count: { rankingDateId: true },
+  });
 
-  const totalCount = players.length;
+  const playerIds = weeksInTopX.map(r => r.playerId);
+
+  const playersRaw = await prisma.player.findMany({
+    where: { id: { in: playerIds } },
+    select: { id: true, atpname: true, ioc: true },
+  });
+
+  const nameMap = Object.fromEntries(playersRaw.map(p => [p.id, p.atpname]));
+  const iocMap = Object.fromEntries(playersRaw.map(p => [p.id, p.ioc]));
+
+  const result: TopXPlayer[] = weeksInTopX
+    .map(r => ({
+      id: r.playerId,
+      name: nameMap[r.playerId] ?? "Unknown",
+      ioc: iocMap[r.playerId] ?? null,
+      weeks: r._count.rankingDateId,
+    }))
+    .sort((a, b) => b.weeks - a.weeks);
+
+  const totalCount = result.length;
   const totalPages = Math.ceil(totalCount / perPage);
   const start = (page - 1) * perPage;
-  const end = start + perPage;
-  const paginatedPlayers = players.slice(start, end);
+  const paginatedPlayers = result.slice(start, start + perPage);
 
   const renderTable = (list: TopXPlayer[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
@@ -70,7 +60,7 @@ export default function RecordsTopX() {
               Player
             </th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">
-              Weeks in Top {top}
+              Weeks in Top {initialTop}
             </th>
           </tr>
         </thead>
@@ -96,61 +86,34 @@ export default function RecordsTopX() {
     </div>
   );
 
-
   return (
     <section className="mb-8">
-      {/* Dropdown Top X */}
-      <div className="flex items-center gap-4 mb-4">
-        <label className="text-gray-200 font-medium">Select Top X:</label>
-        <select
-          value={top}
-          onChange={(e) => {
-            const v = Number(e.target.value);
-            setTop(v);
-            if (pathname) {
-              const params = new URLSearchParams(searchParams?.toString() || '');
-              params.set('top', String(v));
-              const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
-              router.replace(newUrl);
-            }
-          }}
-          className="px-2 py-1 rounded bg-gray-800 text-gray-200 border border-gray-600"
-        >
-          {[1,2,3,4,5,6,7,8,9,10,20,30,50,100].map((n) => (
-            <option key={n} value={n}>
-              Top {n}
-            </option>
-          ))}
-        </select>
-      </div>
-      <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">
-        Weeks at Top {top}
-      </h2>
-      {/* Pulsante View All */}
-      <div className="mb-4 flex justify-end">
-        <button
-          onClick={() => setShowModal(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
-        >
-          View All
-        </button>
-      </div>
+      <React.Suspense fallback={<div className="text-gray-400 py-2 text-center">Loading controls...</div>}>
+        <RecordsTopControls initialTop={initialTop} />
+      </React.Suspense>
 
-      {/* Tabella con paginazione */}
-      {loading && <div className="text-gray-400 py-4 text-center">Loading...</div>}
-      {!loading && paginatedPlayers.length > 0 && renderTable(paginatedPlayers, start)}
-      {!loading && paginatedPlayers.length === 0 && (
+      <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">
+        Weeks at Top {initialTop}
+      </h2>
+
+      {paginatedPlayers.length > 0 ? renderTable(paginatedPlayers, start) : (
         <div className="text-gray-400 py-4 text-center">No data available.</div>
       )}
 
-      {totalPages > 1 && !loading && (
-        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+      {/* Simple server-side pagination links */}
+      {totalPages > 1 && (
+        <div className="mt-4 flex justify-center gap-2">
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <a
+              key={i}
+              href={`?top=${initialTop}&page=${i + 1}`}
+              className={`px-3 py-1 rounded ${i + 1 === page ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-200'}`}
+            >
+              {i + 1}
+            </a>
+          ))}
+        </div>
       )}
-
-      {/* Modal View All */}
-      <Modal show={showModal} onClose={() => setShowModal(false)} title={`Top ${top} Players`}>
-        {renderTable(players)}
-      </Modal>
     </section>
   );
 }
