@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 
 interface RecordsRankingProps {
@@ -62,21 +63,21 @@ export default function RecordsRankingClient({ currentTabSeg = 'count', currentS
           const isActive = activeTabKey === tab.key;
           return (
             <div key={tab.key} className="relative group">
-              <a href={href} className={`relative px-4 py-2 rounded-2xl font-medium ${isActive ? 'text-white' : 'text-gray-300 hover:text-white'}`}>
+              <Link href={href} className={`relative px-4 py-2 rounded-2xl font-medium ${isActive ? 'text-white' : 'text-gray-300 hover:text-white'}`}>
                 <span>{tab.label}</span>
-              </a>
+              </Link>
               {tab.hasSub && (
                 <div className="absolute left-0 mt-2 hidden group-hover:flex flex-col gap-1 bg-gray-900 p-2 rounded-lg shadow-lg z-10">
                   {(subTabsOptions[tab.key] || []).map(st => {
-                    const subHref = `${href}/${st.key}`;
+                    const subHref = `${href}/${encodeURIComponent(st.key)}`;
                     const isSubActive = currentSubSeg && currentSubSeg.toLowerCase() === st.key.toLowerCase();
                     return (
-                      <a
+                      <Link
                         key={st.key}
                         href={subHref}
                         className={`px-3 py-1 rounded transition-colors duration-150 ${isSubActive ? 'bg-blue-700 text-white' : 'bg-gray-800 text-gray-200 hover:bg-gray-700 hover:text-white'}`}>
                         {st.label}
-                      </a>
+                      </Link>
                     );
                   })}
                 </div>

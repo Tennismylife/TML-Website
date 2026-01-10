@@ -26,7 +26,8 @@ import TimespanEoyCount from "../TimespanEndOfTheSeason/TimespanCountEndOfTheSea
 import TimespanEoyTop from "../TimespanEndOfTheSeason/TimespanTopEndOfTheSeason/page";
 
 export default async function RecordsRankingSlugPage(props: any) {
-  const { params, searchParams } = props as { params?: { slug?: string[] }, searchParams?: Record<string, string | string[]> };
+  // Next can pass `props` as a Promise for dynamic route params; await it before accessing `params`.
+  const { params, searchParams } = (await props) as { params?: { slug?: string[] }, searchParams?: Record<string, string | string[]> };
   const slug = params?.slug ?? [];
   const tabSeg = slug[0] ?? 'count';
   const subSeg = slug[1] ?? null;
