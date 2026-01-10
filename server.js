@@ -5,6 +5,9 @@ const express = require('express');
 const { createClient } = require('redis');
 const next = require('next');
 const zlib = require('zlib');
+const fs = require('fs');
+const path = require('path');
+const { execSync } = require('child_process');
 
 const dev = false;
 const nextApp = next({ dev, dir: '.', conf: { distDir: '.next' } });
@@ -13,6 +16,24 @@ const handle = nextApp.getRequestHandler();
 const CONTROL_PARAMS = new Set(['nocache', 'x-refresh']);
 let redis = null;
 let activeRequests = 0;
+
+function safeReadBuildId() {
+  try {
+    const buildIdPath = path.join(process.cwd(), '.next', 'BUILD_ID');
+    if (!fs.existsSync(buildIdPath)) return null;
+    return String(fs.readFileSync(buildIdPath, 'utf8') || '').trim() || null;
+  } catch {
+    return null;
+  }
+}
+
+function safeReadGitSha() {
+  try {
+    return String(execSync('git rev-parse HEAD', { cwd: process.cwd(), stdio: ['ignore', 'pipe', 'ignore'] }) || '').trim() || null;
+  } catch {
+    return null;
+  }
+}
 
 /* ---------------- GLOBAL ERROR HANDLING ---------------- */
 process.on('uncaughtException', (err) => {
@@ -97,7 +118,23 @@ function decompressIfGzip(buffer, headers) {
   /* Header sempre presente */
   server.use((req, res, next) => {
     res.setHeader('X-Cache', 'UNCACHED');
+    const sha = safeReadGitSha();
+    const buildId = safeReadBuildId();
+    if (sha) res.setHeader('X-App-Commit', sha.slice(0, 12));
+    if (buildId) res.setHeader('X-App-BuildId', buildId);
     next();
+  });
+
+  // Minimal version endpoint for production verification
+  server.get('/_version', (req, res) => {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    return res.status(200).send(JSON.stringify({
+      commit: safeReadGitSha(),
+      buildId: safeReadBuildId(),
+      node: process.version,
+      env: process.env.NODE_ENV || null,
+      time: new Date().toISOString(),
+    }));
   });
 
   /* ---------------- CACHE READ ---------------- */
