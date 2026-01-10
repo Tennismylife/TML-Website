@@ -5,7 +5,7 @@ WITH surface_json AS (
     SELECT
         CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END AS tourney_id,
         player_id,
-        jsonb_object_agg(COALESCE(surface, 'Unknown'), cnt) AS surface_entries
+        jsonb_object_agg(COALESCE(surface, 'Unknown'), cnt) AS surface_totals
     FROM (
         SELECT
             CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END AS tourney_id,
