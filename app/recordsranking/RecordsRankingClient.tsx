@@ -44,13 +44,18 @@ export default function RecordsRankingClient({ currentTabSeg = 'count', currentS
 
   const keyToPath = (k: string) => (Object.fromEntries(Object.entries(tabPathMap).map(([a,b]) => [a,b])[k] ?? k).replace ? (tabPathMap[k] ?? k).replace(/([A-Z])/g, (m) => m.toLowerCase()) : (tabPathMap[k] ?? k).replace(/([A-Z])/g, (m) => m.toLowerCase()));
 
+  const normalizeSeg = (s: any) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
   const activeTabKey = (() => {
     if (!currentTabSeg) return 'Count';
-    const reverseMap = Object.fromEntries(Object.entries(tabPathMap).map(([k,v]) => [v, k]));
-    if (reverseMap[currentTabSeg]) return reverseMap[currentTabSeg];
-    const found = tabs.find(t => (tabPathMap[t.key] ?? t.key).toLowerCase() === currentTabSeg.toLowerCase());
+    const normCurrent = normalizeSeg(currentTabSeg);
+    const reverseMap = Object.fromEntries(Object.entries(tabPathMap).map(([k,v]) => [normalizeSeg(v), k]));
+    if (reverseMap[normCurrent]) return reverseMap[normCurrent];
+    const found = tabs.find(t => normalizeSeg(tabPathMap[t.key] ?? t.key) === normCurrent);
     return found?.key ?? 'Count';
   })();
+
+  if (process.env.RANKING_DEBUG === '1') console.debug('[records-ranking client] activeTabKey', { currentTabSeg, currentSubSeg, activeTabKey });
 
   return (
     <main className="w-full px-8 py-8 text-white bg-gray-900">

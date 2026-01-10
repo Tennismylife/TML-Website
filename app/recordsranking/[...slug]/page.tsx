@@ -32,6 +32,15 @@ export default async function RecordsRankingSlugPage(props: any) {
   const tabSeg = slug[0] ?? 'count';
   const subSeg = slug[1] ?? null;
 
+  // Normalization helper for comparing segments in a case-insensitive, punctuation-agnostic way
+  const normalizeSeg = (s: any) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+  // Debug: log incoming params when RANKING_DEBUG=1
+  if (process.env.RANKING_DEBUG === '1') {
+    // Avoid logging PII; only log structure
+    console.debug('[records-ranking] params', { slug, tabSeg, subSeg });
+  }
+
   // Ensure searchParams is awaited (avoid sync dynamic API usage)
   const resolvedSearchParams = await (searchParams as unknown as Promise<Record<string, string | string[]>>);
 
