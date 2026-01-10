@@ -29,16 +29,20 @@ export default async function RecordsRankingSlugPage(props: any) {
   // Next can pass `props` as a Promise for dynamic route params; await it before accessing `params`.
   const { params, searchParams } = (await props) as { params?: { slug?: string[] }, searchParams?: Record<string, string | string[]> };
   const slug = params?.slug ?? [];
-  const tabSeg = slug[0] ?? 'count';
-  const subSeg = slug[1] ?? null;
+  const tabSegRaw = slug[0] ?? 'count';
+  const subSegRaw = slug[1] ?? null;
 
   // Normalization helper for comparing segments in a case-insensitive, punctuation-agnostic way
   const normalizeSeg = (s: any) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
+  // normalized segments used for routing logic
+  const tabSeg = normalizeSeg(tabSegRaw);
+  const subSeg = subSegRaw ? normalizeSeg(subSegRaw) : null;
+
   // Debug: log incoming params when RANKING_DEBUG=1
   if (process.env.RANKING_DEBUG === '1') {
     // Avoid logging PII; only log structure
-    console.debug('[records-ranking] params', { slug, tabSeg, subSeg });
+    console.debug('[records-ranking] params', { slug, tabSegRaw, subSegRaw, tabSeg, subSeg });
   }
 
   // Ensure searchParams is awaited (avoid sync dynamic API usage)
