@@ -31,12 +31,18 @@ export default async function RecordsRankingSlugPage({
   params,
   searchParams,
 }: {
-  params?: { slug?: string | string[] };
-  searchParams?: Record<string, string | string[] | undefined>;
+  // Next (v15+) can provide these as Promises.
+  params?: Promise<{ slug?: string | string[] }> | { slug?: string | string[] };
+  searchParams?:
+    | Promise<Record<string, string | string[] | undefined>>
+    | Record<string, string | string[] | undefined>;
 }) {
+  const resolvedParams = await Promise.resolve(params ?? {});
+  const resolvedSearchParams = await Promise.resolve(searchParams ?? {});
+
   // Next should provide catch-all params as `string[]`, but in some environments
   // (custom server / edge cases) it can surface as a single `string`.
-  const slugParam = params?.slug;
+  const slugParam = (resolvedParams as any)?.slug;
   const slug = Array.isArray(slugParam) ? slugParam : (slugParam ? [slugParam] : []);
 
   const tabSegRaw = slug[0] ?? 'count';
@@ -54,8 +60,6 @@ export default async function RecordsRankingSlugPage({
     // Avoid logging PII; only log structure
     console.debug('[records-ranking] params', { slug, tabSegRaw, subSegRaw, tabSeg, subSeg });
   }
-
-  const resolvedSearchParams = searchParams ?? {};
 
   // NOTE: The tab implementations live in other route modules (page.tsx files).
   // In production, rendering those modules as JSX can occasionally lead to
@@ -123,16 +127,18 @@ export default async function RecordsRankingSlugPage({
   return (
     <main>
       <RecordsRankingClient currentTabSeg={tabSeg} currentSubSeg={subSeg} />
-      <div
-        id="rr-debug"
-        aria-hidden="true"
-        style={{ display: 'none' }}
-        data-rr-slug-param={String(slugParam ?? '')}
-        data-rr-slug-is-array={Array.isArray(slugParam) ? '1' : '0'}
-        data-rr-tab-raw={String(tabSegRaw)}
-        data-rr-tab={String(tabSeg)}
-        data-rr-sub={String(subSeg ?? '')}
-      />
+      {process.env.RANKING_DEBUG === '1' ? (
+        <div
+          id="rr-debug"
+          aria-hidden="true"
+          style={{ display: 'none' }}
+          data-rr-slug-param={String(slugParam ?? '')}
+          data-rr-slug-is-array={Array.isArray(slugParam) ? '1' : '0'}
+          data-rr-tab-raw={String(tabSegRaw)}
+          data-rr-tab={String(tabSeg)}
+          data-rr-sub={String(subSeg ?? '')}
+        />
+      ) : null}
       <div className="mt-6 w-full">{content}</div>
     </main>
   );
