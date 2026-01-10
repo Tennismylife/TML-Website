@@ -89,6 +89,8 @@ export async function handleGa4Post(req: Request) {
       setCookie = buildSetCookieHeader(COOKIE_NAME, client_id);
     }
 
+    const debugMode = process.env.GA4_FALLBACK_DEBUG === '1';
+
     const payload = {
       client_id,
       user_agent,
@@ -99,10 +101,13 @@ export async function handleGa4Post(req: Request) {
             page_location: page_path,
             page_title,
             page_referrer: referrer,
+            ...(debugMode ? { debug_mode: true } : {}),
           },
         },
       ],
     };
+
+    if (debugMode) console.debug('[ga4-next] debug_mode enabled; payload will include debug_mode');
 
     try {
       await sendToGa4(measurementId, apiSecret, payload, 2000);

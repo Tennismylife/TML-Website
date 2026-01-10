@@ -14,9 +14,23 @@ import { useEffect, useRef } from 'react';
 const STORAGE_KEY = 'ga4_fallback_sent_paths_v1';
 
 function hasGtag() {
-  // gtag commonly defined as function; adblockers usually remove it
+  // gtag commonly defined as function; adblockers sometimes leave a stub function
+  // so check for a loader script to ensure it's actually functional.
   try {
-    return typeof (window as any).gtag === 'function';
+    const gtagFn = (window as any).gtag;
+    if (typeof gtagFn !== 'function') return false;
+
+    // Check for the presence of a typical gtag/gtm loader script; if missing,
+    // gtag is likely stubbed (blocked) and we should treat it as absent.
+    try {
+      const scripts = Array.from(document.scripts).map(s => s.src || '').filter(Boolean);
+      const hasLoader = scripts.some(src => src.includes('googletagmanager.com') || src.includes('google-analytics.com') || src.includes('gtag/js'));
+      if (!hasLoader) return false;
+    } catch (e) {
+      // If any error occurs while inspecting scripts, fall back to the function check only
+    }
+
+    return true;
   } catch (e) {
     return false;
   }
@@ -76,12 +90,16 @@ export default function Ga4FallbackClient() {
         // Try a very neutral endpoint first, then fall back to less-neutral aliases
         const endpoints = ['/p', '/_events/collect'.replace(/ /g, ''), '/ga4-fallback'];
         let succeeded = false;
+
+        if ((window as any).GA4_FALLBACK_DEBUG) console.debug('[ga4-fallback] attempting fallback for', path, 'endpoints=', endpoints);
+
         const trySend = async (i = 0) => {
           if (i >= endpoints.length) {
             pendingRef.current = false;
             return;
           }
           try {
+            if ((window as any).GA4_FALLBACK_DEBUG) console.debug('[ga4-fallback] POST', endpoints[i]);
             const res = await fetch(endpoints[i], {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -89,6 +107,7 @@ export default function Ga4FallbackClient() {
               keepalive: true,
             });
             if (res && (res.status === 204 || (res.status >= 200 && res.status < 300))) {
+              if ((window as any).GA4_FALLBACK_DEBUG) console.debug('[ga4-fallback] POST ok', endpoints[i], res.status);
               sentRef.current.add(path);
               try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(sentRef.current))); } catch (e) {}
               succeeded = true;
@@ -96,8 +115,10 @@ export default function Ga4FallbackClient() {
               return;
             }
             // if response code suggests blocked/filtered or not accepted, try next
+            if ((window as any).GA4_FALLBACK_DEBUG) console.debug('[ga4-fallback] POST non-ok', endpoints[i], res && res.status);
             trySend(i + 1);
           } catch (err) {
+            if ((window as any).GA4_FALLBACK_DEBUG) console.debug('[ga4-fallback] POST error', endpoints[i], err && (err as Error).message);
             // Network/blocked error: try next endpoint
             trySend(i + 1);
           }
