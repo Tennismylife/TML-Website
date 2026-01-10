@@ -38,7 +38,18 @@ async function initRedis() {
 
 /* ---------------- Utils ---------------- */
 function shouldBypassCache(req) {
-  return req.method !== 'GET' || req.query.nocache || req.headers['x-refresh'] === '1';
+  // Next.js App Router uses special headers for Flight/RSC navigation and prefetch.
+  // Those responses are content-negotiated (HTML vs text/x-component) and must not
+  // be served from the same HTML cache key, otherwise client navigation can break
+  // and appear to "stick" to the first rendered page.
+  const accept = String(req.headers['accept'] || '');
+  const isRsc =
+    req.headers['rsc'] === '1' ||
+    typeof req.headers['next-router-state-tree'] !== 'undefined' ||
+    typeof req.headers['next-router-prefetch'] !== 'undefined' ||
+    accept.includes('text/x-component');
+
+  return req.method !== 'GET' || req.query.nocache || req.headers['x-refresh'] === '1' || isRsc;
 }
 
 function buildCacheKey(req, type) {

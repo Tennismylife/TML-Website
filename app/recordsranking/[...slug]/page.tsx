@@ -53,58 +53,67 @@ export default async function RecordsRankingSlugPage({
 
   const resolvedSearchParams = searchParams ?? {};
 
+  // NOTE: The tab implementations live in other route modules (page.tsx files).
+  // In production, rendering those modules as JSX can occasionally lead to
+  // unexpected reuse of the same module output. Calling them as async functions
+  // (and awaiting) is deterministic and also allows us to pass `searchParams`.
+  const render = async (Comp: any, extraProps?: Record<string, any>) => {
+    if (!Comp) return null;
+    return await Comp({ searchParams: resolvedSearchParams, ...(extraProps ?? {}) });
+  };
+
   // map segment to server component
   let content: React.ReactNode = null;
   switch (tabSeg) {
     case 'count':
-      content = <Count />;
+      content = await render(Count);
       break;
     case 'top':
-      content = <Top />;
+      content = await render(Top);
       break;
     case 'streak':
-      if (subSeg === 'top') content = <StreakTop />;
-      else content = <StreakCount />;
+      if (subSeg === 'top') content = await render(StreakTop);
+      else content = await render(StreakCount);
       break;
     case 'endoftheseason':
-      if (subSeg === 'top') content = <EndSeasonTop />;
-      else if (subSeg === 'streaktop') content = <EndSeasonStreakTop />;
-      else if (subSeg === 'streakcount') content = <EndSeasonStreakCount />;
-      else content = <EndSeasonCount />;
+      if (subSeg === 'top') content = await render(EndSeasonTop);
+      else if (subSeg === 'streaktop') content = await render(EndSeasonStreakTop);
+      else if (subSeg === 'streakcount') content = await render(EndSeasonStreakCount);
+      else content = await render(EndSeasonCount);
       break;
     case 'ages':
-      if (subSeg === 'youngesttop') content = <AgesYoungestTop />;
-      if (subSeg === 'oldesttop') content = <AgesOldestTop />;
-      if (subSeg === 'youngestcount') content = <AgesYoungestCount />;
-      if (subSeg === 'oldestcount') content = <AgesOldestCount />;
+      if (subSeg === 'youngesttop') content = await render(AgesYoungestTop);
+      if (subSeg === 'oldesttop') content = await render(AgesOldestTop);
+      if (subSeg === 'youngestcount') content = await render(AgesYoungestCount);
+      if (subSeg === 'oldestcount') content = await render(AgesOldestCount);
       break;
     case 'agesendoftheseason':
-      if (subSeg === 'youngesttop') content = <AgesEoyYoungestTop />;
-      if (subSeg === 'oldesttop') content = <AgesEoyOldestTop />;
-      if (subSeg === 'youngestcount') content = <AgesEoyYoungestCount />;
-      if (subSeg === 'oldestcount') content = <AgesEoyOldestCount />;
+      if (subSeg === 'youngesttop') content = await render(AgesEoyYoungestTop);
+      if (subSeg === 'oldesttop') content = await render(AgesEoyOldestTop);
+      if (subSeg === 'youngestcount') content = await render(AgesEoyYoungestCount);
+      if (subSeg === 'oldestcount') content = await render(AgesEoyOldestCount);
       break;
     case 'timespan':
-      if (subSeg === 'top') content = <TimespanTop />;
-      else content = <TimespanCount />;
+      if (subSeg === 'top') content = await render(TimespanTop);
+      else content = await render(TimespanCount);
       break;
     case 'timespanendoftheseason':
-      if (subSeg === 'top') content = <TimespanEoyTop />;
-      else content = <TimespanEoyCount />;
+      if (subSeg === 'top') content = await render(TimespanEoyTop);
+      else content = await render(TimespanEoyCount);
       break;
     case 'mostpoints':
       // When we navigate via path (/mostpoints/<sub>), the sub segment is in subSeg.
       // MostPoints expects a query param `subtab` with values like 'Overall' or 'EndOfTheSeason'.
       const mostPointsSearchParams = { ...(resolvedSearchParams ?? {}), ...(subSeg ? { subtab: (subSeg === 'overall' ? 'Overall' : (subSeg === 'endoftheseason' ? 'EndOfTheSeason' : subSeg)) } : {}) };
-      content = <MostPoints searchParams={mostPointsSearchParams} />;
+      content = await render(MostPoints, { searchParams: mostPointsSearchParams });
       break;
     case 'diffpoints':
       // Map path segment to DiffPoints subtab names and pass via searchParams
       const diffPointsSearchParams = { ...(resolvedSearchParams ?? {}), ...(subSeg ? { subtab: (subSeg === 'overall' ? 'Overall' : (subSeg === 'endoftheseason' ? 'EndOfTheSeason' : subSeg)) } : {}) };
-      if ((subSeg ?? '') === 'endoftheseason') content = <DiffPointsEoy searchParams={diffPointsSearchParams} />; else content = <DiffPointsOverall searchParams={diffPointsSearchParams} />;
+      if ((subSeg ?? '') === 'endoftheseason') content = await render(DiffPointsEoy, { searchParams: diffPointsSearchParams }); else content = await render(DiffPointsOverall, { searchParams: diffPointsSearchParams });
       break;
     default:
-      content = <Count />;
+      content = await render(Count);
   }
 
   return (
