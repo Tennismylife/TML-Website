@@ -119,3 +119,6 @@ export async function handleGa4Post(req: Request) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+// Export helpers for use by other routes (image beacon GET)
+export { sendToGa4, sanitizePath, buildSetCookieHeader };

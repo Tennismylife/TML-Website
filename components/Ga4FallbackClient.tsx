@@ -103,7 +103,39 @@ export default function Ga4FallbackClient() {
           }
         };
 
-        trySend();
+        trySend().then(async () => {
+          // If all XHR/fetch attempts failed, attempt a beacon via navigator.sendBeacon
+          if ((navigator as any).sendBeacon) {
+            try {
+              const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+              const ok = (navigator as any).sendBeacon('/p', blob);
+              if (ok) {
+                sentRef.current.add(path);
+                try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(sentRef.current))); } catch (e) {}
+                pendingRef.current = false;
+                return;
+              }
+            } catch (e) {}
+          }
+
+          // As a last resort, try an image beacon (more likely to bypass XHR/Fetch blocking)
+          try {
+            const img = new Image();
+            img.onload = () => {
+              sentRef.current.add(path);
+              try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(sentRef.current))); } catch (e) {}
+              pendingRef.current = false;
+            };
+            img.onerror = () => { pendingRef.current = false; };
+            img.referrerPolicy = 'no-referrer';
+            img.src = `/p.gif?page_path=${encodeURIComponent(path)}`;
+          } catch (e) {
+            pendingRef.current = false;
+          }
+        }).catch(() => {
+          // ensure pending flag cleared and fallbacks attempted
+          pendingRef.current = false;
+        });
       }, GRACE_MS);
 
       return () => {
