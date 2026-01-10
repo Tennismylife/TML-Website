@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Pagination from "@/components/Pagination";
 import { getFlagFromIOC } from "@/lib/utils";
 import Modal from "@/components/Modal";
@@ -15,13 +16,24 @@ interface OldestItem {
 }
 
 export default function OldestAtRank() {
-  const [rank, setRank] = useState<number>(1);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const [rank, setRank] = useState<number>(Number(searchParams?.get('rank') ?? 1));
   const [rows, setRows] = useState<OldestItem[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const perPage = 20;
 
+  useEffect(() => {
+    if (!pathname) return;
+    const params = new URLSearchParams(searchParams?.toString() || '');
+    params.set('rank', String(rank));
+    const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
+    router.replace(newUrl);
+  }, [rank, pathname, router, searchParams]);
   const fetchRows = async (selectedRank: number) => {
     setLoading(true);
     try {
@@ -107,7 +119,16 @@ export default function OldestAtRank() {
         <label className="text-gray-200 font-medium">Select Rank:</label>
         <select
           value={rank}
-          onChange={(e) => setRank(Number(e.target.value))}
+          onChange={(e) => {
+            const v = Number(e.target.value);
+            setRank(v);
+            if (pathname) {
+              const params = new URLSearchParams(searchParams?.toString() || '');
+              params.set('rank', String(v));
+              const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
+              router.replace(newUrl);
+            }
+          }}
           className="px-2 py-1 rounded bg-gray-800 text-gray-200 border border-gray-600"
         >
           {[...Array(10)].map((_, i) => (

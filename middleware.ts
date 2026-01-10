@@ -28,6 +28,19 @@ export async function middleware(req: NextRequest) {
     const segments = pathname.split('/').filter(Boolean);
     const origin = req.nextUrl.origin;
 
+    // Normalize any /recordsranking path segments to lowercase canonical form
+    if (segments[0] === 'recordsranking' && segments[1]) {
+      const lowerSegments = [segments[0], ...segments.slice(1).map(s => String(s).toLowerCase())];
+      const normalizedPath = '/' + lowerSegments.join('/');
+      const currentPath = req.nextUrl.pathname.replace(/\/$/, '');
+      if (normalizedPath !== currentPath) {
+        const dest = new URL(req.url);
+        dest.pathname = normalizedPath;
+        dest.search = req.nextUrl.search;
+        return new Response(null, { status: 301, headers: { Location: dest.toString() } });
+      }
+    }
+
     // If path is /records/<record>
     if (segments[0] === 'records' && segments[1]) {
       const VALID_RECORDS = new Set([
@@ -196,5 +209,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/players/:path*', '/tournaments/:path*', '/records/:path*'],
+  matcher: ['/players/:path*', '/tournaments/:path*', '/records/:path*', '/recordsranking/:path*'],
 };

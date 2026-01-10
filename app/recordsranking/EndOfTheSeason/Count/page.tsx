@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { getFlagFromIOC } from "@/lib/utils";
 import Pagination from "@/components/Pagination";
 import Modal from "@/components/Modal"; 
@@ -14,13 +15,24 @@ interface Player {
 }
 
 export default function RecordsCount() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [players, setPlayers] = useState<Player[]>([]);
-  const [top, setTop] = useState<number>(1);
+  const [top, setTop] = useState<number>(Number(searchParams?.get('rank') ?? 1));
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const perPage = 20;
 
+  useEffect(() => {
+    if (!pathname) return;
+    const params = new URLSearchParams(searchParams?.toString() || '');
+    params.set('rank', String(top));
+    const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
+    router.replace(newUrl);
+  }, [top, pathname, router, searchParams]);
   const fetchPlayers = async (selectedRank: number) => {
     setLoading(true);
     try {
@@ -98,7 +110,16 @@ export default function RecordsCount() {
         <label className="text-gray-200 font-medium">Select Rank:</label>
         <select
           value={top}
-          onChange={(e) => setTop(Number(e.target.value))}
+          onChange={(e) => {
+            const v = Number(e.target.value);
+            setTop(v);
+            if (pathname) {
+              const params = new URLSearchParams(searchParams?.toString() || '');
+              params.set('rank', String(v));
+              const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
+              router.replace(newUrl);
+            }
+          }}
           className="px-2 py-1 rounded bg-gray-800 text-gray-200 border border-gray-600"
         >
           {[...Array(10)].map((_, i) => (

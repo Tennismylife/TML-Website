@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Pagination from "@/components/Pagination";
 import { getFlagFromIOC } from "@/lib/utils";
 import Modal from "@/components/Modal"; 
@@ -15,13 +16,30 @@ interface EoyTopTimespanItem {
 }
 
 export default function EoyTopTimespan() {
-  const [top, setTop] = useState<number>(2);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const initialTop = Number(searchParams?.get('top') ?? searchParams?.get('rank') ?? 2);
+  const [top, setTop] = useState<number>(initialTop);
   const [rows, setRows] = useState<EoyTopTimespanItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [modalItem, setModalItem] = useState<EoyTopTimespanItem[] | null>(null);
   const perPage = 20;
 
+  // normalize 'rank' -> 'top' when present
+  useEffect(() => {
+    const rankParam = searchParams?.get('rank');
+    const topParam = searchParams?.get('top');
+    if (rankParam && !topParam && pathname) {
+      const params = new URLSearchParams(searchParams?.toString() || '');
+      params.delete('rank');
+      params.set('top', rankParam);
+      const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
+      router.replace(newUrl);
+    }
+  }, [searchParams, pathname, router]);
   const fetchRows = async () => {
     setLoading(true);
     try {
@@ -93,11 +111,21 @@ export default function EoyTopTimespan() {
           <label className="text-gray-200 font-medium mr-2">Top Range (EOY):</label>
           <select
             value={top}
-            onChange={(e) => setTop(Number(e.target.value))}
+            onChange={(e) => {
+              const v = Number(e.target.value);
+              setTop(v);
+              if (pathname) {
+                const params = new URLSearchParams(searchParams?.toString() || '');
+                params.delete('rank');
+                params.set('top', String(v));
+                const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
+                router.replace(newUrl);
+              }
+            }}
             className="px-2 py-1 rounded bg-gray-800 text-gray-200 border border-gray-600"
           >
-            {[...Array(10)].map((_, i) => (
-              <option key={i + 1} value={i + 1}>Top {i + 1}</option>
+            {[1,2,3,4,5,6,7,8,9,10,20,30,50,100].map((n) => (
+              <option key={n} value={n}>Top {n}</option>
             ))}
           </select>
         </div>

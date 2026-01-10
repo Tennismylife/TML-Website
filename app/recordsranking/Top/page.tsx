@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { getFlagFromIOC } from "@/lib/utils";
 import Pagination from "@/components/Pagination";
 import Modal from "@/components/Modal"; 
@@ -14,12 +15,24 @@ interface TopXPlayer {
 
 export default function RecordsTopX() {
   const [players, setPlayers] = useState<TopXPlayer[]>([]);
-  const [top, setTop] = useState<number>(2);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const initialTop = Number(searchParams?.get('top') ?? 2);
+  const [top, setTop] = useState<number>(initialTop);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const perPage = 20;
 
+  useEffect(() => {
+    if (!pathname) return;
+    const params = new URLSearchParams(searchParams?.toString() || '');
+    params.set('top', String(top));
+    const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
+    router.replace(newUrl);
+  }, [top, pathname, router, searchParams]);
   const fetchPlayers = async (selectedTop: number) => {
     setLoading(true);
     try {
@@ -91,12 +104,21 @@ export default function RecordsTopX() {
         <label className="text-gray-200 font-medium">Select Top X:</label>
         <select
           value={top}
-          onChange={(e) => setTop(Number(e.target.value))}
+          onChange={(e) => {
+            const v = Number(e.target.value);
+            setTop(v);
+            if (pathname) {
+              const params = new URLSearchParams(searchParams?.toString() || '');
+              params.set('top', String(v));
+              const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
+              router.replace(newUrl);
+            }
+          }}
           className="px-2 py-1 rounded bg-gray-800 text-gray-200 border border-gray-600"
         >
-          {[...Array(10)].map((_, i) => (
-            <option key={i + 1} value={i + 1}>
-              Top {i + 1}
+          {[1,2,3,4,5,6,7,8,9,10,20,30,50,100].map((n) => (
+            <option key={n} value={n}>
+              Top {n}
             </option>
           ))}
         </select>

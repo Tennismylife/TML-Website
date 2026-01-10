@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
 import Count from "./Count/page";
@@ -143,102 +144,9 @@ function SubTabs<K extends keyof SubTabMap>({
   );
 }
 
-// --- Componente principale ---
+import RecordsRankingClient from './RecordsRankingClient';
+
 export default function RecordsRankingPage() {
-  type MainTabKey = typeof tabs[number]["key"];
-  const [activeTab, setActiveTab] = useState<MainTabKey>("Count");
-
-  // Stato sub-tab per ogni tab
-  const [activeSubTabs, setActiveSubTabs] = useState<Partial<Record<keyof SubTabMap, string>>>({});
-  const [hoverTab, setHoverTab] = useState<string | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Gestione click fuori
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setHoverTab(null);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Sub-tab corrente del tab attivo
-  const currentSubTab =
-    (activeTab in activeSubTabs ? activeSubTabs[activeTab as keyof SubTabMap] : null) ||
-    (subTabsOptions[activeTab as keyof SubTabMap]?.[0]?.key) ||
-    activeTab;
-
-  // Mappatura dinamica componenti
-  const componentsMap: Record<string, Record<string, React.FC>> = {
-    Count: { Count },
-    Top: { Top },
-    Streak: { Count: StreakCount, Top: StreakTop },
-    EndSeason: { Count: EndSeasonCount, Top: EndSeasonTop, StreakCount: EndSeasonStreakCount, StreakTop: EndSeasonStreakTop },
-    Ages: { YoungestCount: AgesYoungestCount, OldestCount: AgesOldestCount, YoungestTop: AgesYoungestTop, OldestTop: AgesOldestTop },
-    AgesEndofTheSeason: { YoungestCount: AgesEOYYoungestCount, OldestCount: AgesEOYOldestCount, YoungestTop: AgesEOYYoungestTop, OldestTop: AgesEOYOldestTop },
-    Timespan: { Count: TimespanCount, Top: TimespanTop },
-    TimespanEndOfTheSeason: { Count: TimespanCountEndOfTheSeason, Top: TimespanTopEndOfTheSeason },
-    MostPoints: { Overall: MostPointsOverall, EndOfTheSeason: MostPointsEndOfTheSeason },
-    DiffPoints: { Overall: DiffPointsOverall, EndOfTheSeason: DiffPointsEndOfTheSeason },
-  };
-
-  const ActiveComponent = componentsMap[activeTab]?.[currentSubTab] || Count;
-
-  return (
-    <main ref={containerRef} className="w-full px-8 py-8 text-white bg-gray-900">
-      <h1 className="mb-8 text-3xl font-bold text-center text-gray-100">Records Ranking</h1>
-
-      {/* Barra dei tab */}
-      <div className="relative mb-8 flex flex-wrap gap-3 bg-gray-800/40 rounded-2xl p-4 shadow-lg w-full justify-center">
-        {tabs.map((tab) => (
-          <div
-            key={tab.key}
-            className="relative"
-            onMouseEnter={() => tab.hasSubTabs && setHoverTab(tab.key)}
-            onMouseLeave={() => tab.hasSubTabs && setHoverTab(null)}
-          >
-            <button
-              onClick={() => {
-                setActiveTab(tab.key);
-                if (tab.hasSubTabs) setHoverTab(tab.key);
-              }}
-              onFocus={() => tab.hasSubTabs && setHoverTab(tab.key)}
-              onBlur={() => tab.hasSubTabs && setHoverTab(null)}
-              className={`relative px-4 py-2 rounded-2xl font-medium transition-colors duration-200 ${
-                activeTab === tab.key ? "text-white" : "text-gray-300 hover:text-white"
-              }`}
-            >
-              {activeTab === tab.key && (
-                <motion.div
-                  layoutId="active-tab"
-                  className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl shadow-md"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                />
-              )}
-              <span className="relative z-10">{tab.label}</span>
-            </button>
-
-            <AnimatePresence>
-              {tab.hasSubTabs && hoverTab === tab.key && (
-                <SubTabs
-                  items={subTabsOptions[tab.key as keyof SubTabMap]}
-                  active={currentSubTab as any}
-                  setActive={(subKey) =>
-                    setActiveSubTabs((prev) => ({ ...prev, [tab.key]: subKey }))
-                  }
-                />
-              )}
-            </AnimatePresence>
-          </div>
-        ))}
-      </div>
-
-      {/* Contenuto */}
-      <div className="mt-6 w-full overflow-x-auto">
-        <ActiveComponent />
-      </div>
-    </main>
-  );
+  // Server page renders client so both /recordsranking and /recordsranking/<slug> work
+  return <RecordsRankingClient />;
 }

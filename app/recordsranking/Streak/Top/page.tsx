@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { getFlagFromIOC } from "@/lib/utils";
 import Pagination from "@/components/Pagination";
 import Link from "next/link";
@@ -15,12 +16,23 @@ interface Player {
 }
 
 export default function StreakTop() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [top, setTop] = useState(2); // Top X selezionato
+  const [top, setTop] = useState(Number(searchParams?.get('top') ?? 2)); // Top X selezionato
   const perPage = 20;
 
+  useEffect(() => {
+    if (!pathname) return;
+    const params = new URLSearchParams(searchParams?.toString() || '');
+    params.set('top', String(top));
+    const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
+    router.replace(newUrl);
+  }, [top, pathname, router, searchParams]);
   useEffect(() => {
     const fetchData = async () => {
       setPage(1); // reset pagina prima del fetch
@@ -54,12 +66,21 @@ export default function StreakTop() {
         <label className="text-gray-200 font-medium mr-2">Select Top X:</label>
         <select
           value={top}
-          onChange={(e) => setTop(Number(e.target.value))}
+          onChange={(e) => {
+            const v = Number(e.target.value);
+            setTop(v);
+            if (pathname) {
+              const params = new URLSearchParams(searchParams?.toString() || '');
+              params.set('top', String(v));
+              const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
+              router.replace(newUrl);
+            }
+          }}
           className="px-3 py-1 bg-gray-800 text-gray-200 border border-gray-600 rounded"
         >
-          {[...Array(10)].map((_, i) => (
-            <option key={i + 1} value={i + 1}>
-              Top {i + 1}
+          {[1,2,3,4,5,6,7,8,9,10,20,30,50,100].map((n) => (
+            <option key={n} value={n}>
+              Top {n}
             </option>
           ))}
         </select>

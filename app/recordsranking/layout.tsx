@@ -7,10 +7,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Records Ranking — TML',
     description: 'Ranked records and historical leaderboards.',
-    url: '/recordsRanking',
+    url: '/recordsranking',
     type: 'website',
   },
-  alternates: { canonical: '/recordsRanking' },
+  alternates: { canonical: '/recordsranking' },
 };
 
 export default function RecordsRankingLayout({ children }: { children: React.ReactNode }) {
