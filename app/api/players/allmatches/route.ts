@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
 
     let playerMap: Record<string, string> = {};
     if (vsBackhand) {
-      const playerIds = Array.from(new Set(matches.flatMap(m => [m.winner_id, m.loser_id]).filter(id => id !== null)));
+      const playerIds: string[] = Array.from(new Set(matches.flatMap(m => [m.winner_id, m.loser_id]).filter((id): id is string => id !== null)));
       const players = await prisma.player.findMany({
         where: { id: { in: playerIds } },
         select: { id: true, backhand: true }
