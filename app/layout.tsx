@@ -4,6 +4,7 @@ import { ReactNode } from 'react'
 import Header from '../components/Header'
 import GAListener from './analytics/GAListener' // importa il listener
 import Ga4FallbackClient from '../components/Ga4FallbackClient' // client-side fallback for GA4 when gtag is blocked
+import TrackPageClient from './TrackPageClient' // client-side visit tracking (fires on route changes)
 import { Montserrat } from 'next/font/google'
 
 const montserrat = Montserrat({
@@ -80,6 +81,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <GAListener />
         {/* GA4 fallback: only active when gtag is not available (avoids double-counting) */}
         <Ga4FallbackClient />
+        {/* Client-side visit tracker: fires on initial load and route changes */}
+        <TrackPageClient />
         <Header />
         <main className="w-full px-0 py-6">
           {children}

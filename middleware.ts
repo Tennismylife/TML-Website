@@ -24,6 +24,45 @@ export async function middleware(req: NextRequest) {
     // Debugging: log incoming requests for players/tournaments/records to diagnose unexpected 405s
     try { console.debug('[middleware] %s %s', req.method || 'UNKNOWN', req.nextUrl?.pathname + (req.nextUrl?.search || '')); } catch (e) {}
 
+    // Server-side visit tracking: derive a readable pageTitle, filter bots, and call API route fire-and-forget
+    try {
+      const pathnameOnly = req.nextUrl?.pathname || '';
+      // Skip tracking for API routes, Next internals and non-GET methods
+      if (req.method === 'GET' && !pathnameOnly.startsWith('/api/') && !pathnameOnly.startsWith('/_next/') && !pathnameOnly.startsWith('/favicon.ico')) {
+        // Read UA and forwarded IP (support both Next Request headers.get and plain header object shapes)
+        const ua = req.headers?.get ? req.headers.get('user-agent') : (req.headers && (req.headers['user-agent'] || req.headers['User-Agent'])) || '';
+        const xff = req.headers?.get ? (req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip')) : (req.headers && (req.headers['x-forwarded-for'] || req.headers['x-real-ip'])) || '';
+
+        // Basic bot filtering on the middleware side to avoid extra calls
+        const BOT_RE = /(bot|crawl|spider|slurp|curl|wget)/i;
+        if (!BOT_RE.test(String(ua || ''))) {
+          // Derive pageTitle from path: '/' -> 'Home', otherwise join segments, replace dashes with spaces
+          let pageTitle: string | null = null;
+          try {
+            if (!pathnameOnly || pathnameOnly === '/' || pathnameOnly === '') pageTitle = 'Home';
+            else {
+              const parts = pathnameOnly.split('/').filter(Boolean).map(s => decodeURIComponent(String(s)).replace(/-/g, ' ').replace(/\s+/g, ' ').trim());
+              pageTitle = parts.join(' ').toLowerCase();
+            }
+          } catch (e) {
+            pageTitle = null;
+          }
+
+          fetch(new URL('/api/track-visit', req.nextUrl.origin).toString(), {
+            method: 'POST',
+            headers: {
+              'content-type': 'application/json',
+              'x-original-user-agent': ua || '',
+              'x-original-ip': xff || '',
+            },
+            body: JSON.stringify({ pageTitle, pageUrl: req.nextUrl?.href || null }),
+            // keepalive ensures the fetch will be attempted even during navigation/closing
+            keepalive: true,
+          }).catch(() => {});
+        }
+      }
+    } catch (e) {}
+
     const { pathname, search } = req.nextUrl;
     const segments = pathname.split('/').filter(Boolean);
     const origin = req.nextUrl.origin;
@@ -211,3 +250,6 @@ export async function middleware(req: NextRequest) {
 export const config = {
   matcher: ['/players/:path*', '/tournaments/:path*', '/records/:path*', '/recordsranking/:path*'],
 };
+
+// Note: don't re-export server-side DB helpers here to avoid pulling Prisma into the Edge middleware runtime.
+// Use `import { trackVisit, trackVisitMiddleware } from './lib/visitTracker'` from server-side code or Express apps instead.

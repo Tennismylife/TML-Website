@@ -46,7 +46,7 @@ async function getTournament(param: string) {
 }
 
 // Metadata dinamica per il torneo
-export async function generateMetadata({ params }: any) {
+export async function generateMetadata({ params }: any): Promise<Metadata> {
   const { id: param } = await params;
   if (!param) return { title: 'Tournament | Tournament Stats, History, Match Results & Winners' };
   const tournament = await getTournament(param);
@@ -65,9 +65,35 @@ export async function generateMetadata({ params }: any) {
   const humanized = humanizeName(name);
   const site = 'https://stats.tennismylife.org';
   const ogUrl = `${site}/tournaments/${tournament?.slug || param}`;
+
+  // Use our dynamic OG generator API as primary social image (server-side falls back to a default)
+  const ogImage = `${site}/api/og/tournament/${tournament?.slug || param}`;
+
+  const metaTitle = `${humanized} | Tournament Stats, History, Match Results & Winners`;
+  const metaDescription = `Results, history, champions and match statistics for ${humanized}.`;
+
   return {
-    title: `${humanized} | Tournament Stats, History, Match Results & Winners`,
-    openGraph: { url: ogUrl },
+    title: metaTitle,
+    description: metaDescription,
+    openGraph: {
+      type: 'article',
+      title: humanized,
+      description: metaDescription,
+      url: ogUrl,
+      images: [
+        {
+          url: ogImage,
+          alt: `${humanized} - Tournament`,
+        },
+      ],
+      siteName: 'TennisMyLife',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: humanized,
+      description: metaDescription,
+      images: [ogImage],
+    },
     alternates: { canonical: ogUrl },
   };
 }
