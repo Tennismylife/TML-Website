@@ -32,8 +32,8 @@ export async function GET(request: NextRequest) {
 
     const opponents = new Set<string>();
     matches.forEach(m => {
-      if (m.winner_id !== player) opponents.add(m.winner_id);
-      if (m.loser_id !== player) opponents.add(m.loser_id);
+      if (m.winner_id !== player && m.winner_id !== null) opponents.add(m.winner_id);
+      if (m.loser_id !== player && m.loser_id !== null) opponents.add(m.loser_id);
     });
 
     return NextResponse.json(Array.from(opponents));
