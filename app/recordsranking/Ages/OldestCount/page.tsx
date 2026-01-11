@@ -32,18 +32,25 @@ export default async function OldestAtRank({ searchParams }: { searchParams?: Re
   const rank = Number((searchParams?.rank as string) ?? 1);
   const limit = Math.min(500, Math.max(1, Number((searchParams?.limit as string) ?? 200)));
 
-  const rankings = await prisma.ranking.findMany({
-    where: {
-      rank,
-      ...(searchParams?.fromYear || searchParams?.toYear
-        ? { rankingDate: { date: {
-            ...(searchParams?.fromYear ? { gte: new Date(Date.UTC(Number(searchParams.fromYear as string), 0, 1)) } : {}),
-            ...(searchParams?.toYear ? { lt: new Date(Date.UTC(Number(searchParams.toYear as string) + 1, 0, 1)) } : {}),
-          } } }
-        : {}),
-    },
-    select: { playerId: true, player: { select: { atpname: true, ioc: true, birthdate: true } }, rankingDate: { select: { date: true } } }
-  });
+  let rankings: Array<any> = [];
+  try {
+    rankings = await prisma.ranking.findMany({
+      where: {
+        rank,
+        ...(searchParams?.fromYear || searchParams?.toYear
+          ? { rankingDate: { date: {
+              ...(searchParams?.fromYear ? { gte: new Date(Date.UTC(Number(searchParams.fromYear as string), 0, 1)) } : {}),
+              ...(searchParams?.toYear ? { lt: new Date(Date.UTC(Number(searchParams.toYear as string) + 1, 0, 1)) } : {}),
+            } } }
+          : {}),
+      },
+      select: { playerId: true, player: { select: { atpname: true, ioc: true, birthdate: true } }, rankingDate: { select: { date: true } } }
+    });
+  } catch (err) {
+    console.error('OldestCount page: DB error fetching rankings', err);
+    // fail safe: render empty dataset so build/export does not crash
+    rankings = [];
+  }
 
   const bestByPlayer = new Map<string, { name: string; ioc: string | null; date: Date; birth: Date; ageDays: number }>();
 
