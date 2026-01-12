@@ -23,38 +23,58 @@ export default function MatomoClient() {
       _paq.push(['setTrackerUrl', u + 'matomo.php']);
       _paq.push(['setSiteId', '1']);
 
-      // Detect AdBlock and track page view once with a custom dimension
+      // Detect AdBlock robustly (multiple test elements) and track page view once with a custom dimension
       function detectAdBlockAndTrack() {
-        let adTest: HTMLElement | null = null;
+        const adNames = ['ad-banner-test', 'adsbox', 'doubleclick-test', 'adsense-test', 'banner-ad-test'];
+        const els: HTMLElement[] = [];
         try {
-          adTest = document.createElement('div');
-          adTest.className = 'ad-banner-test';
-          adTest.style.cssText = 'height:1px;width:1px;position:absolute;left:-9999px;';
-          adTest.setAttribute('data-ad-test', '1');
-          document.body.appendChild(adTest);
-
-          const computed = typeof window.getComputedStyle === 'function' ? window.getComputedStyle(adTest) : ({} as CSSStyleDeclaration);
-          const hidden = (adTest.offsetParent === null || adTest.offsetHeight === 0 || (computed && computed.display === 'none'));
-          _paq.push(['setCustomDimension', 1, hidden ? 'Yes' : 'No']);
-        } catch (e) {
-          // safe fallback
-          _paq.push(['setCustomDimension', 1, 'No']);
-        } finally {
-          if (!(window as any).__matomoPageTracked) {
-            _paq.push(['trackPageView']);
-            _paq.push(['enableLinkTracking']);
-            (window as any).__matomoPageTracked = true;
-          } else {
-            _paq.push(['enableLinkTracking']);
+          for (const name of adNames) {
+            const el = document.createElement('div');
+            el.className = name;
+            el.style.cssText = 'width:1px;height:1px;position:absolute;left:-9999px;top:0;';
+            el.setAttribute('data-ad-test', name);
+            document.body.appendChild(el);
+            els.push(el);
           }
-          try { if (adTest && adTest.parentNode) adTest.parentNode.removeChild(adTest); } catch (e) {}
+
+          setTimeout(() => {
+            let blocked = false;
+            for (const e of els) {
+              if (!document.body.contains(e) || e.offsetParent === null || e.offsetHeight === 0) {
+                blocked = true;
+                break;
+              }
+              const cs = typeof window.getComputedStyle === 'function' ? window.getComputedStyle(e) : null;
+              if (cs && (cs.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0')) {
+                blocked = true;
+                break;
+              }
+            }
+
+            try { _paq.push(['setCustomDimension', 1, blocked ? 'Yes' : 'No']); } catch (err) {}
+            if (!(window as any).__matomoPageTracked) {
+              _paq.push(['trackPageView']);
+              (window as any).__matomoPageTracked = true;
+            }
+            _paq.push(['enableLinkTracking']);
+            console.log('AdBlock attivo: ' + (blocked ? 'Yes' : 'No'));
+
+            // cleanup
+            for (const e of els) {
+              try { if (e && e.parentNode) e.parentNode.removeChild(e); } catch (err) {}
+            }
+          }, 100);
+        } catch (err) {
+          try { _paq.push(['setCustomDimension', 1, 'No']); _paq.push(['enableLinkTracking']); } catch (e) {}
+          console.log('AdBlock detection failed', err);
         }
       }
 
+      // run when DOM is ready
       if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function () { setTimeout(detectAdBlockAndTrack, 100); });
+        document.addEventListener('DOMContentLoaded', detectAdBlockAndTrack);
       } else {
-        setTimeout(detectAdBlockAndTrack, 100);
+        detectAdBlockAndTrack();
       }
 
       const d = document;
