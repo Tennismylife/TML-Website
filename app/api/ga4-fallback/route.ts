@@ -1,6 +1,6 @@
-// app/api/ga4-fallback/route.ts
-import { handleGa4Post } from '../_ga4/handler';
+// app/api/ga4-fallback/route.ts - removed
+import { NextResponse } from 'next/server';
 
-export async function POST(req: Request) {
-  return handleGa4Post(req);
+export async function POST() {
+  return NextResponse.json({ error: 'Removed' }, { status: 410 });
 }

@@ -235,134 +235,15 @@ function decompressIfGzip(buffer, headers) {
     next();
   });
 
-  /* ---------------- GA4 FALLBACK ENDPOINT ---------------- */
-  // In-memory fallback stats (used when Redis is unavailable)
-  const ga4Stats = { received: {}, forward_ok: {}, forward_fail: {} };
+  /* ---------------- GA4 FALLBACK ENDPOINT (REMOVED) ---------------- */
+  // Removed GA4 fallback endpoints: /ga4-fallback, /_events/collect, /p, /p.gif, /r, /r.gif and debug stats.
+  // These routes were intentionally removed to stop receiving fallback POST requests.
+  // If you need to restore them, reintroduce the handler and `lib/ga4-fallback.js` implementation.
 
-  // POST /ga4-fallback
-  // Accepts: { page_path, page_title, referrer, user_agent }
-  // Uses `lib/ga4-fallback.js` to generate/reuse HttpOnly cookie and forward the event
-  const { handleGa4Fallback } = require('./lib/ga4-fallback');
 
-  server.post('/ga4-fallback', async (req, res) => {
-    if (!req.body || !req.body.page_path) return res.status(400).json({ error: 'missing page_path' });
-    // Increment 'received' counters (Redis if available, otherwise in-memory)
-    try {
-      if (redis) await redis.hIncrBy('ga4_fallback:stats', `received:${req.path}`, 1);
-      else ga4Stats.received[req.path] = (ga4Stats.received[req.path] || 0) + 1;
-    } catch (e) {
-      console.warn('[GA4-STATS] increment receive failed', e && e.message);
-    }
+  // No GA4 fallback handlers (removed).
+  // Debug stats endpoint removed.
 
-    if (process.env.GA4_FALLBACK_DEBUG === '1') {
-      const shortUa = String(req.body?.user_agent || req.headers['user-agent'] || '').slice(0,120);
-      console.debug('[GA4-FALLBACK] recv', { path: req.path, page_path: req.body?.page_path, ip: req.ip || req.connection?.remoteAddress, ua: shortUa });
-    }
-
-    // Delegate to the isolated handler and pass optional stats handles
-    return handleGa4Fallback(req, res, { redis, inMemoryStats: ga4Stats });
-  });
-
-  // Alias endpoint with a very neutral path to evade adblockers that filter requests
-  // by URL tokens (e.g. 'ga', 'analytics', 'google'). This additional route points to
-  // the same handler — minimal and backwards-compatible change.
-  server.post('/_events/collect', async (req, res) => {
-    if (!req.body || !req.body.page_path) return res.status(400).json({ error: 'missing page_path' });
-    try {
-      if (redis) await redis.hIncrBy('ga4_fallback:stats', `received:${req.path}`, 1);
-      else ga4Stats.received[req.path] = (ga4Stats.received[req.path] || 0) + 1;
-    } catch (e) {
-      console.warn('[GA4-STATS] increment receive failed', e && e.message);
-    }
-
-    if (process.env.GA4_FALLBACK_DEBUG === '1') {
-      const shortUa = String(req.body?.user_agent || req.headers['user-agent'] || '').slice(0,120);
-      console.debug('[GA4-FALLBACK] recv', { path: req.path, page_path: req.body?.page_path, ip: req.ip || req.connection?.remoteAddress, ua: shortUa });
-    }
-
-    return handleGa4Fallback(req, res, { redis, inMemoryStats: ga4Stats });
-  });
-
-  // Very neutral alias `/p` — extremely short and unlikely to be blocked by pattern-based filters
-  server.post('/p', async (req, res) => {
-    if (!req.body || !req.body.page_path) return res.status(400).json({ error: 'missing page_path' });
-    try {
-      if (redis) await redis.hIncrBy('ga4_fallback:stats', `received:${req.path}`, 1);
-      else ga4Stats.received[req.path] = (ga4Stats.received[req.path] || 0) + 1;
-    } catch (e) {
-      console.warn('[GA4-STATS] increment receive failed', e && e.message);
-    }
-
-    if (process.env.GA4_FALLBACK_DEBUG === '1') {
-      const shortUa = String(req.body?.user_agent || req.headers['user-agent'] || '').slice(0,120);
-      console.debug('[GA4-FALLBACK] recv', { path: req.path, page_path: req.body?.page_path, ip: req.ip || req.connection?.remoteAddress, ua: shortUa });
-    }
-
-    return handleGa4Fallback(req, res, { redis, inMemoryStats: ga4Stats });
-  });
-
-  // Image beacon: 1x1 GIF to support clients that block XHR/fetch/beacon
-  const { serveGif } = require('./lib/ga4-fallback');
-  server.get('/p.gif', (req, res) => {
-    // Increment receive counter for diagnostics
-    try {
-      if (redis) redis.hIncrBy('ga4_fallback:stats', `received:${req.path}`, 1).catch(() => {});
-      else ga4Stats.received[req.path] = (ga4Stats.received[req.path] || 0) + 1;
-    } catch (e) {}
-
-    if (process.env.GA4_FALLBACK_DEBUG === '1') {
-      const shortUa = String(req.headers['user-agent'] || '').slice(0,120);
-      console.debug('[GA4-FALLBACK] gif recv', { path: req.path, page_path: req.query && req.query.page_path, ip: req.ip || req.connection?.remoteAddress, ua: shortUa });
-    }
-
-    return serveGif(req, res);
-  });
-
-  // Additional neutral alias `/r` and `/r.gif` used for aggressive AdBlock rules testing
-  server.post('/r', async (req, res) => {
-    if (!req.body || !req.body.page_path) return res.status(400).json({ error: 'missing page_path' });
-    try {
-      if (redis) await redis.hIncrBy('ga4_fallback:stats', `received:${req.path}`, 1);
-      else ga4Stats.received[req.path] = (ga4Stats.received[req.path] || 0) + 1;
-    } catch (e) {
-      console.warn('[GA4-STATS] increment receive failed', e && e.message);
-    }
-
-    if (process.env.GA4_FALLBACK_DEBUG === '1') {
-      const shortUa = String(req.body?.user_agent || req.headers['user-agent'] || '').slice(0,120);
-      console.debug('[GA4-FALLBACK] recv', { path: req.path, page_path: req.body?.page_path, ip: req.ip || req.connection?.remoteAddress, ua: shortUa });
-    }
-
-    return handleGa4Fallback(req, res, { redis, inMemoryStats: ga4Stats });
-  });
-
-  server.get('/r.gif', (req, res) => {
-    try {
-      if (redis) redis.hIncrBy('ga4_fallback:stats', `received:${req.path}`, 1).catch(() => {});
-      else ga4Stats.received[req.path] = (ga4Stats.received[req.path] || 0) + 1;
-    } catch (e) {}
-
-    if (process.env.GA4_FALLBACK_DEBUG === '1') {
-      const shortUa = String(req.headers['user-agent'] || '').slice(0,120);
-      console.debug('[GA4-FALLBACK] gif recv', { path: req.path, page_path: req.query && req.query.page_path, ip: req.ip || req.connection?.remoteAddress, ua: shortUa });
-    }
-
-    return serveGif(req, res);
-  });
-
-  // Debug endpoint to inspect counters (only for local debugging; not linked in UI)
-  server.get('/_events/stats', async (req, res) => {
-    try {
-      if (redis) {
-        const all = await redis.hGetAll('ga4_fallback:stats');
-        return res.json(all);
-      }
-      return res.json(ga4Stats);
-    } catch (e) {
-      console.error('[GA4-STATS] read failed', e && e.message);
-      return res.status(500).json({ error: 'failed to read stats' });
-    }
-  });
 
   /* ---------------- NEXT.JS FALLBACK ---------------- */
   server.all(/.*/, (req, res) => handle(req, res));

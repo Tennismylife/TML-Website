@@ -1,11 +1,10 @@
-// app/api/p/route.ts
-import { handleGa4Post, GET as GA_GET } from '../_ga4/handler';
+// app/api/p/route.ts - removed
 import { NextResponse } from 'next/server';
 
-export async function GET(req: Request) {
-  return NextResponse.json({ ok: true });
+export async function GET() {
+  return NextResponse.json({ error: 'Removed' }, { status: 410 });
 }
 
-export async function POST(req: Request) {
-  return handleGa4Post(req);
+export async function POST() {
+  return NextResponse.json({ error: 'Removed' }, { status: 410 });
 }
