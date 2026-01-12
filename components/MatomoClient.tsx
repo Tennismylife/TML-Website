@@ -33,7 +33,7 @@ export default function MatomoClient() {
           adTest.setAttribute('data-ad-test', '1');
           document.body.appendChild(adTest);
 
-          const computed = window.getComputedStyle ? getComputedStyle(adTest) : ({} as CSSStyleDeclaration);
+          const computed = typeof window.getComputedStyle === 'function' ? window.getComputedStyle(adTest) : ({} as CSSStyleDeclaration);
           const hidden = (adTest.offsetParent === null || adTest.offsetHeight === 0 || (computed && computed.display === 'none'));
           _paq.push(['setCustomDimension', 1, hidden ? 'Yes' : 'No']);
         } catch (e) {
