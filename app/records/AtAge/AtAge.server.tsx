@@ -32,40 +32,37 @@ export default async function AtAgeServer({ searchParams, ...serverProps }: { se
 
   const hasFilters = selectedSurfaces.size > 0 || selectedLevels.size > 0 || !!selectedRounds || selectedBestOf !== null
 
+  // Prefetch at-age results with selected filters so SSR includes filtered table
   const prefetchedData: Record<string, any[] | undefined> = {}
-  // Prefetch when either the age is explicitly provided in the URL (external entry)
-  // or when there are no filters (the default behavior)
-  if (ageParam || !hasFilters) {
-    try {
-      const params = new URLSearchParams()
-      params.set('age', initialAge.toFixed(3))
-      params.set('limit', '1000')
-      selectedSurfaces.forEach(s => params.append('surface', s))
-      selectedLevels.forEach(l => params.append('level', l))
-      if (selectedRounds) params.set('round', selectedRounds)
-      if (selectedBestOf !== null) params.set('best_of', String(selectedBestOf))
+  try {
+    const params = new URLSearchParams()
+    params.set('age', initialAge.toFixed(3))
+    params.set('limit', '1000')
+    for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
+    for (const l of Array.from(selectedLevels)) params.append('level', l)
+    if (selectedRounds) params.set('round', selectedRounds)
+    if (selectedBestOf !== null) params.set('best_of', String(selectedBestOf))
 
-      const fetchJson = async (path: string) => {
-        const url = new URL(path, metadataBase)
-        const res = await fetch(url, { cache: 'no-store' })
-        if (!res.ok) return undefined
-        const json = await res.json()
-        return Array.isArray(json) ? json : undefined
-      }
-
-      if (activeSubTab === 'wins') prefetchedData.wins = await fetchJson(`/api/records/atage/wins?${params.toString()}`)
-      if (activeSubTab === 'played') prefetchedData.played = await fetchJson(`/api/records/atage/played?${params.toString()}`)
-      if (activeSubTab === 'entries') prefetchedData.entries = await fetchJson(`/api/records/atage/entries?${params.toString()}`)
-      if (activeSubTab === 'titles') prefetchedData.titles = await fetchJson(`/api/records/atage/titles?${params.toString()}`)
-      if (activeSubTab === 'slams') prefetchedData.slams = await fetchJson(`/api/records/atage/inslams?${params.toString()}`)
-      if (activeSubTab === 'round' && selectedRounds) prefetchedData.round = await fetchJson(`/api/records/atage/rounds?${params.toString()}`)
-    } catch (err) {
-      // best-effort prefetch
+    const fetchJson = async (path: string) => {
+      const url = new URL(path, metadataBase)
+      const res = await fetch(url, { cache: 'no-store' })
+      if (!res.ok) return undefined
+      const json = await res.json()
+      return Array.isArray(json) ? json : undefined
     }
+
+    if (activeSubTab === 'wins') prefetchedData.wins = await fetchJson(`/api/records/atage/wins${params.toString() ? '?' + params.toString() : ''}`)
+    if (activeSubTab === 'played') prefetchedData.played = await fetchJson(`/api/records/atage/played${params.toString() ? '?' + params.toString() : ''}`)
+    if (activeSubTab === 'entries') prefetchedData.entries = await fetchJson(`/api/records/atage/entries${params.toString() ? '?' + params.toString() : ''}`)
+    if (activeSubTab === 'titles') prefetchedData.titles = await fetchJson(`/api/records/atage/titles${params.toString() ? '?' + params.toString() : ''}`)
+    if (activeSubTab === 'slams') prefetchedData.slams = await fetchJson(`/api/records/atage/inslams${params.toString() ? '?' + params.toString() : ''}`)
+    if (activeSubTab === 'round' && selectedRounds) prefetchedData.round = await fetchJson(`/api/records/atage/rounds${params.toString() ? '?' + params.toString() : ''}`)
+  } catch (err) {
+    // best-effort prefetch
   }
 
-  const fetchEnabled = serverProps.fetchEnabled ?? hasFilters
-  const fetchRequestId = serverProps.fetchRequestId ?? (fetchEnabled ? String(Date.now()) : null)
+  const fetchEnabled = serverProps.fetchEnabled ?? false
+  const fetchRequestId = serverProps.fetchRequestId ?? null
 
   return (
     <ServerWrapper

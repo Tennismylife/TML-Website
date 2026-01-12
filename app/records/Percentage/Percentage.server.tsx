@@ -21,25 +21,25 @@ export default async function PercentageServer({ searchParams, ...serverProps }:
     return v ? Number(v) : null
   })()
 
-  const hasFilters = (selectedSurfaces.size > 0) || (selectedLevels.size > 0) || (selectedRounds ? true : false) || (selectedBestOf ? true : false)
+  // Prefetch percentage results with selected filters so SSR includes filtered table
   let topWinPercentages: any[] = []
-
-  if (!hasFilters) {
-    try {
-      const params = new URLSearchParams()
-      params.set('perPage', '1000')
-      const apiUrl = new URL(`/api/records/percentage?${params.toString()}`, metadataBase).toString()
-      const res = await fetch(apiUrl, { cache: 'no-store' })
-      if (res.ok) {
-        const data = await res.json()
-        if (Array.isArray((data as any).topWinPercentages)) topWinPercentages = (data as any).topWinPercentages
-      }
-    } catch (err) {
-      // ignore
+  try {
+    const params = new URLSearchParams()
+    for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
+    for (const l of Array.from(selectedLevels)) params.append('level', l)
+    if (selectedRounds) params.set('round', selectedRounds)
+    params.set('perPage', '1000')
+    const apiUrl = new URL(`/api/records/percentage${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
+    const res = await fetch(apiUrl, { cache: 'no-store' })
+    if (res.ok) {
+      const data = await res.json()
+      if (Array.isArray((data as any).rows)) topWinPercentages = (data as any).rows
     }
+  } catch (err) {
+    // ignore
   }
 
-  const fetchEnabled = hasFilters ? true : false
+  const fetchEnabled = false
 
   return (
     <ServerWrapper

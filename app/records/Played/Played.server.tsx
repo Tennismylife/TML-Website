@@ -23,29 +23,29 @@ export default async function PlayedServer({ searchParams, ...serverProps }: { s
   })()
   const hasFilters = (selectedSurfaces.size > 0) || (selectedLevels.size > 0) || (selectedRounds ? true : false) || (selectedBestOf ? true : false)
 
-  // Server-side prefetch when there are no filters so the page renders initial data
+  // Server-side prefetch using selected filters so SSR includes filtered results
   let topPlayed: any[] = []
-
-  if (!hasFilters) {
-    try {
-      const params = new URLSearchParams()
-      // request a large per-page so initial render includes full top list
-      params.set('perPage', '1000')
-      const apiUrl = new URL(`/api/records/played?${params.toString()}`, metadataBase).toString()
-      const res = await fetch(apiUrl, { cache: 'no-store' })
-      if (res.ok) {
-        const data = await res.json()
-        if (Array.isArray(data)) topPlayed = data
-        else if (Array.isArray((data as any).players)) topPlayed = (data as any).players
-        else if (Array.isArray((data as any).rows)) topPlayed = (data as any).rows
-      }
-    } catch (err) {
-      // ignore - topPlayed stays empty
+  try {
+    const params = new URLSearchParams()
+    for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
+    for (const l of Array.from(selectedLevels)) params.append('level', l)
+    if (selectedRounds) params.set('round', selectedRounds)
+    if (selectedBestOf) params.set('bestOf', String(selectedBestOf))
+    params.set('perPage', '1000')
+    const apiUrl = new URL(`/api/records/played${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
+    const res = await fetch(apiUrl, { cache: 'no-store' })
+    if (res.ok) {
+      const data = await res.json()
+      if (Array.isArray(data)) topPlayed = data
+      else if (Array.isArray((data as any).players)) topPlayed = (data as any).players
+      else if (Array.isArray((data as any).rows)) topPlayed = (data as any).rows
     }
+  } catch (err) {
+    // ignore - topPlayed stays empty
   }
 
-  // If we prefetched, disable client auto-fetch to avoid duplicate requests
-  const fetchEnabled = !hasFilters ? false : true
+  // Prefetch performed: default to using server data on the client
+  const fetchEnabled = false
 
   // Always render through ServerWrapper so the client component handles pagination identically to Wins
   return (

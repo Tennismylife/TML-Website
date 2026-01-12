@@ -22,23 +22,26 @@ export default async function CountServer({ searchParams, ...serverProps }: { se
   })()
   const hasFilters = (selectedSurfaces.size > 0) || (selectedLevels.size > 0) || (selectedRounds ? true : false) || (selectedBestOf ? true : false)
 
+  // Prefetch count results with selected filters so SSR includes filtered table
   let topCount: any[] = []
-  if (!hasFilters) {
-    try {
-      const params = new URLSearchParams()
-      params.set('perPage', '1000')
-      const apiUrl = new URL(`/api/records/count?${params.toString()}`, metadataBase).toString()
-      const res = await fetch(apiUrl, { cache: 'no-store' })
-      if (res.ok) {
-        const data = await res.json()
-        if (Array.isArray((data as any).top)) topCount = (data as any).top
-      }
-    } catch (err) {
-      // ignore
+  try {
+    const params = new URLSearchParams()
+    for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
+    for (const l of Array.from(selectedLevels)) params.append('level', l)
+    if (selectedRounds) params.set('round', selectedRounds)
+    if (selectedBestOf) params.set('bestOf', String(selectedBestOf))
+    params.set('perPage', '1000')
+    const apiUrl = new URL(`/api/records/count${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
+    const res = await fetch(apiUrl, { cache: 'no-store' })
+    if (res.ok) {
+      const data = await res.json()
+      if (Array.isArray((data as any).top)) topCount = (data as any).top
     }
+  } catch (err) {
+    // ignore
   }
 
-  const fetchEnabled = hasFilters ? true : false
+  const fetchEnabled = false
 
   return (
     <ServerWrapper

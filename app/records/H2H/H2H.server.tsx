@@ -31,11 +31,12 @@ export default async function H2HServer({ searchParams, ...serverProps }: { sear
     !!selectedRounds ||
     selectedBestOf !== null
 
+  // Prefetch H2H data for the active subtab using selected filters so SSR includes filtered results
   const prefetchedData: Record<string, any[] | undefined> = {}
-  if (!hasFilters) {
+  try {
     const params = new URLSearchParams()
-    selectedSurfaces.forEach(s => params.append('surface', s))
-    selectedLevels.forEach(l => params.append('level', l))
+    for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
+    for (const l of Array.from(selectedLevels)) params.append('level', l)
     if (selectedRounds) params.set('round', selectedRounds)
     if (selectedBestOf !== null) params.set('best_of', String(selectedBestOf))
     params.set('limit', '200')
@@ -54,20 +55,22 @@ export default async function H2HServer({ searchParams, ...serverProps }: { sear
     }
 
     if (activeSubTab === 'count') {
-      prefetchedData.count = await fetchArray(`/api/records/h2h/count?${params.toString()}`, 'h2h')
+      prefetchedData.count = await fetchArray(`/api/records/h2h/count${params.toString() ? '?' + params.toString() : ''}`, 'h2h')
     }
     if (activeSubTab === 'seasons') {
-      prefetchedData.seasons = await fetchArray(`/api/records/h2h/seasons?${params.toString()}`, 'h2h_season')
+      prefetchedData.seasons = await fetchArray(`/api/records/h2h/seasons${params.toString() ? '?' + params.toString() : ''}`, 'h2h_season')
     }
     if (activeSubTab === 'tournament') {
-      prefetchedData.tournament = await fetchArray(`/api/records/h2h/sametournament?${params.toString()}`, 'h2h_tourney')
+      prefetchedData.tournament = await fetchArray(`/api/records/h2h/sametournament${params.toString() ? '?' + params.toString() : ''}`, 'h2h_tourney')
     }
     if (activeSubTab === 'timespan') {
-      prefetchedData.timespan = await fetchArray(`/api/records/h2h/timespan?${params.toString()}`, 'h2hTimespans')
+      prefetchedData.timespan = await fetchArray(`/api/records/h2h/timespan${params.toString() ? '?' + params.toString() : ''}`, 'h2hTimespans')
     }
+  } catch (err) {
+    // ignore
   }
 
-  const fetchEnabled = serverProps.fetchEnabled ?? hasFilters
+  const fetchEnabled = serverProps.fetchEnabled ?? false
   const fetchRequestId = serverProps.fetchRequestId ?? (fetchEnabled ? String(Date.now()) : null)
 
   return (

@@ -45,41 +45,40 @@ export default async function NeededToServer({ searchParams, ...serverProps }: {
     parsedMaxTitles !== null ||
     parsedRoundNumber !== null
 
+  // Prefetch NeededTo results using selected filters so SSR includes filtered table
   const prefetchedData: Record<string, any[] | undefined> = {}
-  if (!hasFilters) {
-    try {
-      const fetchJson = async (path: string) => {
-        const url = new URL(path, metadataBase)
-        const res = await fetch(url, { cache: 'no-store' })
-        if (!res.ok) return undefined
-        const json = await res.json()
-        return Array.isArray(json) ? json : undefined
-      }
-
-      if (activeSubTab === 'titles') {
-        const params = new URLSearchParams()
-        params.set('limit', '1000')
-        params.set('maxTitles', initialNth.toString())
-        selectedSurfaces.forEach(s => params.append('surface', s))
-        selectedLevels.forEach(l => params.append('level', l))
-        prefetchedData.titles = await fetchJson(`/api/records/neededto/titles?${params.toString()}`)
-      }
-
-      if (activeSubTab === 'rounds') {
-        const params = new URLSearchParams()
-        params.set('limit', '1000')
-        params.set('round_number', initialRoundNumber.toString())
-        if (selectedRounds) params.set('round', selectedRounds)
-        selectedSurfaces.forEach(s => params.append('surface', s))
-        selectedLevels.forEach(l => params.append('level', l))
-        prefetchedData.rounds = await fetchJson(`/api/records/neededto/rounds?${params.toString()}`)
-      }
-    } catch (err) {
-      // best-effort prefetch
+  try {
+    const fetchJson = async (path: string) => {
+      const url = new URL(path, metadataBase)
+      const res = await fetch(url, { cache: 'no-store' })
+      if (!res.ok) return undefined
+      const json = await res.json()
+      return Array.isArray(json) ? json : undefined
     }
+
+    if (activeSubTab === 'titles') {
+      const params = new URLSearchParams()
+      params.set('limit', '1000')
+      params.set('maxTitles', initialNth.toString())
+      for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
+      for (const l of Array.from(selectedLevels)) params.append('level', l)
+      prefetchedData.titles = await fetchJson(`/api/records/neededto/titles${params.toString() ? '?' + params.toString() : ''}`)
+    }
+
+    if (activeSubTab === 'rounds') {
+      const params = new URLSearchParams()
+      params.set('limit', '1000')
+      params.set('round_number', initialRoundNumber.toString())
+      if (selectedRounds) params.set('round', selectedRounds)
+      for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
+      for (const l of Array.from(selectedLevels)) params.append('level', l)
+      prefetchedData.rounds = await fetchJson(`/api/records/neededto/rounds${params.toString() ? '?' + params.toString() : ''}`)
+    }
+  } catch (err) {
+    // best-effort prefetch
   }
 
-  const fetchEnabled = serverProps.fetchEnabled ?? hasFilters
+  const fetchEnabled = serverProps.fetchEnabled ?? false
   const fetchRequestId = serverProps.fetchRequestId ?? (fetchEnabled ? String(Date.now()) : null)
 
   return (

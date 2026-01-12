@@ -42,39 +42,38 @@ export default async function CounterSeasonsServer({ searchParams, ...serverProp
     selectedBestOf !== null ||
     seasonsParam !== undefined
 
+  // Prefetch counterseasons results with selected filters so SSR includes filtered table
   const prefetchedData: Record<string, any[] | undefined> = {}
-  if (!hasFilters) {
-    try {
-      const fetchJson = async (path: string) => {
-        const url = new URL(path, metadataBase)
-        const res = await fetch(url, { cache: 'no-store' })
-        if (!res.ok) return undefined
-        const json = await res.json()
-        const arr = Array.isArray(json?.players) ? json.players : Array.isArray(json) ? json : undefined
-        return arr
-      }
-
-      const params = new URLSearchParams()
-      params.set('limit', '1000')
-      selectedSurfaces.forEach(s => params.append('surface', s))
-      selectedLevels.forEach(l => params.append('level', l))
-      if (selectedBestOf !== null) params.set('best_of', String(selectedBestOf))
-
-      if (activeSubTab === 'titles') {
-        params.set('minTitlesPerSeason', initialSeasons.toString())
-        prefetchedData.titles = await fetchJson(`/api/records/counterseasons/titles?${params.toString()}`)
-      }
-      if (activeSubTab === 'round') {
-        params.set('round', selectedRounds || 'F')
-        params.set('min', initialSeasons.toString())
-        prefetchedData.rounds = await fetchJson(`/api/records/counterseasons/rounds?${params.toString()}`)
-      }
-    } catch (err) {
-      // best-effort prefetch
+  try {
+    const fetchJson = async (path: string) => {
+      const url = new URL(path, metadataBase)
+      const res = await fetch(url, { cache: 'no-store' })
+      if (!res.ok) return undefined
+      const json = await res.json()
+      const arr = Array.isArray(json?.players) ? json.players : Array.isArray(json) ? json : undefined
+      return arr
     }
+
+    const params = new URLSearchParams()
+    params.set('limit', '1000')
+    for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
+    for (const l of Array.from(selectedLevels)) params.append('level', l)
+    if (selectedBestOf !== null) params.set('best_of', String(selectedBestOf))
+
+    if (activeSubTab === 'titles') {
+      params.set('minTitlesPerSeason', initialSeasons.toString())
+      prefetchedData.titles = await fetchJson(`/api/records/counterseasons/titles${params.toString() ? '?' + params.toString() : ''}`)
+    }
+    if (activeSubTab === 'round') {
+      params.set('round', selectedRounds || 'F')
+      params.set('min', initialSeasons.toString())
+      prefetchedData.rounds = await fetchJson(`/api/records/counterseasons/rounds${params.toString() ? '?' + params.toString() : ''}`)
+    }
+  } catch (err) {
+    // best-effort prefetch
   }
 
-  const fetchEnabled = serverProps.fetchEnabled ?? hasFilters
+  const fetchEnabled = serverProps.fetchEnabled ?? false
   const fetchRequestId = serverProps.fetchRequestId ?? (fetchEnabled ? String(Date.now()) : null)
 
   return (

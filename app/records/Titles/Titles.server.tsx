@@ -16,25 +16,25 @@ export default async function TitlesServer({ searchParams, ...serverProps }: { s
   const selectedSurfaces = new Set(toArray(sp.surface ?? sp['surface[]']))
   const selectedLevels = new Set(toArray(sp.level ?? sp['level[]']))
 
-  const hasFilters = (selectedSurfaces.size > 0) || (selectedLevels.size > 0)
+  // Build params from selected filters and prefetch server-side so SSR includes filtered table
   let topTitles: any[] = []
-
-  if (!hasFilters) {
-    try {
-      const params = new URLSearchParams()
-      params.set('perPage', '1000')
-      const apiUrl = new URL(`/api/records/titles?${params.toString()}`, metadataBase).toString()
-      const res = await fetch(apiUrl, { cache: 'no-store' })
-      if (res.ok) {
-        const data = await res.json()
-        if (Array.isArray((data as any).topTitles)) topTitles = (data as any).topTitles
-      }
-    } catch (err) {
-      // ignore
+  try {
+    const params = new URLSearchParams()
+    for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
+    for (const l of Array.from(selectedLevels)) params.append('level', l)
+    params.set('perPage', '1000')
+    const apiUrl = new URL(`/api/records/titles${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
+    const res = await fetch(apiUrl, { cache: 'no-store' })
+    if (res.ok) {
+      const data = await res.json()
+      if (Array.isArray((data as any).topTitles)) topTitles = (data as any).topTitles
     }
+  } catch (err) {
+    // ignore
   }
 
-  const fetchEnabled = hasFilters ? true : false
+  // Prefetched: client should use server data by default
+  const fetchEnabled = false
 
   return (
     <ServerWrapper

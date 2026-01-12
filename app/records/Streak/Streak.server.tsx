@@ -30,12 +30,13 @@ export default async function StreakServer({ searchParams, ...serverProps }: { s
     !!selectedRounds ||
     selectedBestOf !== null
 
+  // Prefetch streak results with selected filters so SSR includes filtered table
   const prefetchedData: Record<string, any[] | undefined> = {}
-  if (!hasFilters) {
+  try {
     const params = new URLSearchParams()
     params.set('limit', '100')
-    selectedSurfaces.forEach(s => params.append('surface', s))
-    selectedLevels.forEach(l => params.append('level', l))
+    for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
+    for (const l of Array.from(selectedLevels)) params.append('level', l)
     if (selectedRounds) params.set('round', selectedRounds)
     if (selectedBestOf !== null) params.set('best_of', String(selectedBestOf))
 
@@ -56,14 +57,16 @@ export default async function StreakServer({ searchParams, ...serverProps }: { s
     }
 
     if (activeSubTab === 'wins') {
-      prefetchedData.wins = await fetchJsonArray(`/api/records/streak/wins?${params.toString()}`, 'global')
+      prefetchedData.wins = await fetchJsonArray(`/api/records/streak/wins${params.toString() ? '?' + params.toString() : ''}`, 'global')
     }
     if (activeSubTab === 'round') {
-      prefetchedData.round = await fetchJsonArray(`/api/records/streak/rounds?${params.toString()}`, 'streaks')
+      prefetchedData.round = await fetchJsonArray(`/api/records/streak/rounds${params.toString() ? '?' + params.toString() : ''}`, 'streaks')
     }
+  } catch (err) {
+    // ignore
   }
 
-  const fetchEnabled = serverProps.fetchEnabled ?? hasFilters
+  const fetchEnabled = serverProps.fetchEnabled ?? false
   const fetchRequestId = serverProps.fetchRequestId ?? (fetchEnabled ? String(Date.now()) : null)
 
   return (

@@ -26,36 +26,39 @@ export default async function RoundsOnEntriesServer({ searchParams, ...serverPro
     return (selectedSurfaces.size > 0) || (selectedLevels.size > 0)
   })()
 
+  // Prefetch roundsonentries results with selected filters so SSR includes filtered table
   const prefetchedData: Record<string, any[] | undefined> = {}
-  if (!hasFilters) {
-    try {
-      if (activeSubTab === 'titles') {
-        const params = new URLSearchParams()
-        params.set('limit', '1000')
-        const apiUrl = new URL(`/api/records/roundsonentries/titles?${params.toString()}`, metadataBase).toString()
-        const res = await fetch(apiUrl, { cache: 'no-store' })
-        if (res.ok) {
-          const json = await res.json()
-          if (Array.isArray((json as any).FinalWins)) prefetchedData.titles = (json as any).FinalWins
-        }
-      } else if (activeSubTab === 'round' && selectedRounds) {
-        const params = new URLSearchParams()
-        params.set('limit', '1000')
-        params.set('round', selectedRounds)
-        const apiUrl = new URL(`/api/records/roundsonentries/rounds?${params.toString()}`, metadataBase).toString()
-        const res = await fetch(apiUrl, { cache: 'no-store' })
-        if (res.ok) {
-          const json = await res.json()
-          if (Array.isArray((json as any).FinalWins)) prefetchedData.round = (json as any).FinalWins
-        }
+  try {
+    if (activeSubTab === 'titles') {
+      const params = new URLSearchParams()
+      params.set('limit', '1000')
+      for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
+      for (const l of Array.from(selectedLevels)) params.append('level', l)
+      const apiUrl = new URL(`/api/records/roundsonentries/titles${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
+      const res = await fetch(apiUrl, { cache: 'no-store' })
+      if (res.ok) {
+        const json = await res.json()
+        if (Array.isArray((json as any).FinalWins)) prefetchedData.titles = (json as any).FinalWins
       }
-    } catch (err) {
-      // ignore prefetch failures
+    } else if (activeSubTab === 'round' && selectedRounds) {
+      const params = new URLSearchParams()
+      params.set('limit', '1000')
+      params.set('round', selectedRounds)
+      for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
+      for (const l of Array.from(selectedLevels)) params.append('level', l)
+      const apiUrl = new URL(`/api/records/roundsonentries/rounds${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
+      const res = await fetch(apiUrl, { cache: 'no-store' })
+      if (res.ok) {
+        const json = await res.json()
+        if (Array.isArray((json as any).FinalWins)) prefetchedData.round = (json as any).FinalWins
+      }
     }
+  } catch (err) {
+    // ignore prefetch failures
   }
 
-  const fetchEnabled = serverProps.fetchEnabled ?? hasFilters
-  const fetchRequestId = serverProps.fetchRequestId ?? (fetchEnabled ? String(Date.now()) : null)
+  const fetchEnabled = serverProps.fetchEnabled ?? false
+  const fetchRequestId = serverProps.fetchRequestId ?? null
 
   return (
     <ServerWrapper
