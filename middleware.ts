@@ -62,7 +62,8 @@ export async function middleware(req: NextRequest) {
 
           // Also send a fire-and-forget POST to the server-side Matomo proxy for robust tracking
           try {
-            fetch(new URL('/api/matomo', req.nextUrl.origin).toString(), {
+            // POST to the safe fallback endpoint to avoid 5xx causing navigation issues
+          fetch(new URL('/api/matomo-safe', req.nextUrl.origin).toString(), {
               method: 'POST',
               headers: {
                 'content-type': 'application/json',
