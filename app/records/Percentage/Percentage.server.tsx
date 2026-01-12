@@ -28,12 +28,13 @@ export default async function PercentageServer({ searchParams, ...serverProps }:
     for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
     for (const l of Array.from(selectedLevels)) params.append('level', l)
     if (selectedRounds) params.set('round', selectedRounds)
+    if (selectedBestOf !== null) params.set('best_of', String(selectedBestOf))
     params.set('perPage', '1000')
     const apiUrl = new URL(`/api/records/percentage${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
     const res = await fetch(apiUrl, { cache: 'no-store' })
     if (res.ok) {
       const data = await res.json()
-      if (Array.isArray((data as any).rows)) topWinPercentages = (data as any).rows
+      if (Array.isArray((data as any).topWinPercentages)) topWinPercentages = (data as any).topWinPercentages
     }
   } catch (err) {
     // ignore
