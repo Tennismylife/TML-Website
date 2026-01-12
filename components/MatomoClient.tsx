@@ -74,10 +74,12 @@ export default function MatomoClient() {
       try {
         _paq.push(['setCustomDimension', 1, adBlockDetected ? 'Yes' : 'No']);
         _paq.push(['enableLinkTracking']);
-        if (!window.__matomoPageTracked) {
-          _paq.push(['trackPageView']);
-          window.__matomoPageTracked = true;
-        }
+
+        // Forza sempre trackPageView anche se __matomoPageTracked esiste
+        _paq.push(['trackPageView']);
+        window.__matomoPageTracked = true;
+
+        console.log('Matomo trackPageView inviato ✅');
       } catch (err) {
         console.error('Errore Matomo tracking:', err);
       }
