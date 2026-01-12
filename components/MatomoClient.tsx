@@ -81,7 +81,15 @@ export default function MatomoClient() {
       const g = d.createElement('script');
       const s = d.getElementsByTagName('script')[0];
       g.async = true;
-      g.src = u + 'matomo.js';
+      // prefer a neutral filename, but fall back to Matomo's default if not available
+      g.src = u + 'mtrack.js';
+      g.onerror = function () {
+        try {
+          if (g.src && typeof (g.src as string).endsWith === 'function' && (g.src as string).endsWith('mtrack.js')) {
+            g.src = u + 'matomo.js';
+          }
+        } catch (e) { /* ignore */ }
+      };
       s.parentNode?.insertBefore(g, s);
     })();
 
