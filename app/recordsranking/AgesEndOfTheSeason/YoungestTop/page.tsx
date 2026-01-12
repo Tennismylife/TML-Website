@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getFlagFromIOC } from "@/lib/utils";
 import React from 'react';
 import RecordsTopControls from '../../Top/RecordsTopControls';
+import ServerPagination from '@/components/ServerPagination';
 
 interface YoungestEoyTopItem {
   id: string;
@@ -142,11 +143,7 @@ export default async function YoungestEoyTop({ searchParams }: { searchParams?: 
       {paginatedRows.length > 0 ? renderTable(paginatedRows, start) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
 
       {totalPages > 1 && (
-        <div className="mt-4 flex justify-center gap-2">
-          {Array.from({ length: totalPages }).map((_, i) => (
-            <a key={i} href={`?top=${top}&page=${i + 1}`} className={`px-3 py-1 rounded ${i + 1 === page ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-200'}`}>{i + 1}</a>
-          ))}
-        </div>
+        <ServerPagination page={page} totalPages={totalPages} getHref={(p) => `?top=${top}&page=${p}`} />
       )}
     </section>
   );

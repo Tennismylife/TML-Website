@@ -101,7 +101,6 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
   const [activeTab, setActiveTab] = useState<string | null>(activeTabProp || null);
   const [hoveredTab, setHoveredTab] = useState<string | null>(null);
   const navRef = useRef<HTMLElement | null>(null);
-  const searchParams = typeof window !== 'undefined' ? undefined : undefined; // placeholder to satisfy SSR types
 
   useEffect(() => {
     setActiveTab(activeTabProp || null);
@@ -206,9 +205,10 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
   }
 
   return (
-    <nav ref={navRef} className="mb-6 flex flex-wrap gap-3" aria-label="Record tabs">
+    <nav ref={navRef} className="mb-6 flex flex-wrap gap-3 bg-gray-800/40 rounded-2xl p-4 shadow-lg w-full justify-center" aria-label="Record tabs">
       {tabs.map(tab => {
         const firstSub = subTabs[tab.key]?.[0]?.key;
+        const isActive = tab.key === activeTab;
         return (
         <div
           key={tab.key}
@@ -231,7 +231,7 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
                 handleSubtabClick(tab.key, firstSub);
               }
             }}
-            className={tabClass(tab.key)}
+            className={`px-4 py-2 rounded-2xl font-medium transition-colors duration-200 ${isActive ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white'}`}
           >
             {tab.label}
           </Link>

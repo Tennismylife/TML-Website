@@ -1,5 +1,8 @@
-import React from 'react';
+"use client";
+
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 
 
 interface RecordsRankingProps {
@@ -55,42 +58,74 @@ export default function RecordsRankingClient({ currentTabSeg = 'count', currentS
     return found?.key ?? 'Count';
   })();
 
+  const [hoveredTab, setHoveredTab] = useState<string | null>(null);
+  const navRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const handleDocClick = (e: MouseEvent) => { if (navRef.current && !navRef.current.contains(e.target as Node)) setHoveredTab(null); };
+    document.addEventListener('mousedown', handleDocClick);
+    return () => document.removeEventListener('mousedown', handleDocClick);
+  }, []);
+
   if (process.env.RANKING_DEBUG === '1') console.debug('[records-ranking client] activeTabKey', { currentTabSeg, currentSubSeg, activeTabKey });
 
   return (
     <main className="w-full px-8 py-8 text-white bg-gray-900">
       <h1 className="mb-8 text-3xl font-bold text-center text-gray-100">Records Ranking</h1>
 
-      <div className="mb-4 flex flex-wrap gap-3 bg-gray-800/40 rounded-2xl p-4 shadow-lg w-full justify-center">
+      <nav ref={navRef} className="mb-4 flex flex-wrap gap-3 bg-gray-800/40 rounded-2xl p-4 shadow-lg w-full justify-center" aria-label="Ranking tabs">
         {tabs.map((tab) => {
           const tabSeg = (tabPathMap as any)[tab.key] ?? tab.key;
           const href = `/recordsranking/${tabSeg.replace(/([A-Z])/g,(m)=>m.toLowerCase())}`;
           const isActive = activeTabKey === tab.key;
+
           return (
-            <div key={tab.key} className="relative group">
-              <Link href={href} className={`relative px-4 py-2 rounded-2xl font-medium ${isActive ? 'text-white' : 'text-gray-300 hover:text-white'}`}>
-                <span>{tab.label}</span>
+            <div key={tab.key} className="relative" onMouseEnter={() => setHoveredTab(tab.key)} onMouseLeave={() => setHoveredTab(null)}>
+              <Link
+                href={href}
+                className={`px-4 py-2 rounded-xl font-medium transition-colors duration-200 ${isActive ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700'}`}
+                onClick={(e) => {
+                  if (tab.hasSub && typeof window !== 'undefined' && window.innerWidth <= 768) {
+                    e.preventDefault();
+                    setHoveredTab(prev => (prev === tab.key ? null : tab.key));
+                    return;
+                  }
+                }}
+              >
+                {tab.label}
               </Link>
+
               {tab.hasSub && (
-                <div className="absolute left-0 mt-2 hidden group-hover:flex flex-col gap-1 bg-gray-900 p-2 rounded-lg shadow-lg z-10">
-                  {(subTabsOptions[tab.key] || []).map(st => {
-                    const subHref = `${href}/${encodeURIComponent(st.key)}`;
-                    const isSubActive = currentSubSeg && currentSubSeg.toLowerCase() === st.key.toLowerCase();
-                    return (
-                      <Link
-                        key={st.key}
-                        href={subHref}
-                        className={`px-3 py-1 rounded transition-colors duration-150 ${isSubActive ? 'bg-blue-700 text-white' : 'bg-gray-800 text-gray-200 hover:bg-gray-700 hover:text-white'}`}>
-                        {st.label}
-                      </Link>
-                    );
-                  })}
-                </div>
+                <AnimatePresence>
+                  {(hoveredTab === tab.key) && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      className="absolute left-0 mt-2 flex flex-col gap-1 bg-gray-900 p-2 rounded-lg shadow-lg z-10"
+                    >
+                      {(subTabsOptions[tab.key] || []).map(st => {
+                        const subHref = `${href}/${encodeURIComponent(st.key)}`;
+                        const isSubActive = currentSubSeg && currentSubSeg.toLowerCase() === st.key.toLowerCase();
+                        return (
+                          <Link
+                            key={st.key}
+                            href={subHref}
+                            onClick={() => setHoveredTab(null)}
+                            className={`px-3 py-1 rounded transition-colors duration-150 ${isSubActive ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}`}
+                          >
+                            {st.label}
+                          </Link>
+                        );
+                      })}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               )}
             </div>
-          );
+          )
         })}
-      </div>
+      </nav>
 
       <div id="recordsranking-server-content" className="mt-6 w-full overflow-x-auto" />
     </main>

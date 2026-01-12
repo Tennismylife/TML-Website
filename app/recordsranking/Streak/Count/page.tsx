@@ -2,6 +2,7 @@ import React from 'react';
 import { getFlagFromIOC } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
 import RecordsCountControls from "../../Count/RecordsCountControls";
+import ServerPagination from '@/components/ServerPagination';
 import Link from "next/link";
 
 interface Player {
@@ -149,19 +150,7 @@ export default async function StreakCount({ searchParams }: { searchParams?: Pro
       </table>
 
       {totalPages > 1 && (
-        <div className="mt-4 flex justify-center">
-          <div className="mt-4 flex justify-center gap-2">
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <a
-                key={i}
-                href={`?rank=${rank}&page=${i + 1}`}
-                className={`px-3 py-1 rounded ${i + 1 === page ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-200'}`}
-              >
-                {i + 1}
-              </a>
-            ))}
-          </div>
-        </div>
+        <ServerPagination page={page} totalPages={totalPages} getHref={(p) => `?rank=${rank}&page=${p}`} />
       )}
     </div>
   );

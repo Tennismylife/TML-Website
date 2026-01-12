@@ -2,6 +2,7 @@ import React from 'react';
 import { getFlagFromIOC } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
 import RecordsCountControls from "./RecordsCountControls";
+import ServerPagination from '@/components/ServerPagination';
 
 interface Player {
   id: string;
@@ -102,19 +103,13 @@ export default async function RecordsCount({ searchParams }: { searchParams?: Pr
         <div className="text-gray-400 py-4 text-center">No data available.</div>
       )}
 
-      {/* Simple server-side pagination links */}
-      {totalPages > 1 && (
-        <div className="mt-4 flex justify-center gap-2">
-          {Array.from({ length: totalPages }).map((_, i) => (
-            <a
-              key={i}
-              href={`?rank=${initialTop}&page=${i + 1}`}
-              className={`px-3 py-1 rounded ${i + 1 === page ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-200'}`}
-            >
-              {i + 1}
-            </a>
-          ))}
-        </div>
+      {/* Server-side styled pagination */}
+      { totalPages > 1 && (
+        <ServerPagination
+          page={page}
+          totalPages={totalPages}
+          getHref={(p) => `?rank=${initialTop}&page=${p}`}
+        />
       )}
     </section>
   );
