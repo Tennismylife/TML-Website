@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 declare global {
   interface Window {
     _paq?: any[];
+    __matomoPageTracked?: boolean;
   }
 }
 
@@ -16,13 +17,46 @@ export default function MatomoClient() {
 
     // preserve/expose global _paq queue used by Matomo
     const _paq = (window._paq = window._paq || []);
-    _paq.push(['trackPageView']);
-    _paq.push(['enableLinkTracking']);
 
     (function () {
       const u = '//stats.tennismylife.org/matomo-tracking/';
       _paq.push(['setTrackerUrl', u + 'matomo.php']);
       _paq.push(['setSiteId', '1']);
+
+      // Detect AdBlock and track page view once with a custom dimension
+      function detectAdBlockAndTrack() {
+        let adTest: HTMLElement | null = null;
+        try {
+          adTest = document.createElement('div');
+          adTest.className = 'ad-banner-test';
+          adTest.style.cssText = 'height:1px;width:1px;position:absolute;left:-9999px;';
+          adTest.setAttribute('data-ad-test', '1');
+          document.body.appendChild(adTest);
+
+          const computed = window.getComputedStyle ? getComputedStyle(adTest) : ({} as CSSStyleDeclaration);
+          const hidden = (adTest.offsetParent === null || adTest.offsetHeight === 0 || (computed && computed.display === 'none'));
+          _paq.push(['setCustomDimension', 1, hidden ? 'Yes' : 'No']);
+        } catch (e) {
+          // safe fallback
+          _paq.push(['setCustomDimension', 1, 'No']);
+        } finally {
+          if (!(window as any).__matomoPageTracked) {
+            _paq.push(['trackPageView']);
+            _paq.push(['enableLinkTracking']);
+            (window as any).__matomoPageTracked = true;
+          } else {
+            _paq.push(['enableLinkTracking']);
+          }
+          try { if (adTest && adTest.parentNode) adTest.parentNode.removeChild(adTest); } catch (e) {}
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () { setTimeout(detectAdBlockAndTrack, 100); });
+      } else {
+        setTimeout(detectAdBlockAndTrack, 100);
+      }
+
       const d = document;
       const g = d.createElement('script');
       const s = d.getElementsByTagName('script')[0];
