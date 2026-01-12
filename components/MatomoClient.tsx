@@ -6,7 +6,7 @@ declare global {
   interface Window {
     _paq?: any[];
     __matomoPageTracked?: boolean;
-    adBlockDetected?: boolean; // per debug globale
+    adBlockDetected?: boolean;
   }
 }
 
@@ -19,8 +19,8 @@ export default function MatomoClient() {
     const MATOMO_URL = '//stats.tennismylife.org/matomo-tracking/';
     const SITE_ID = '1';
 
-    // Impostazioni base
-    _paq.push(['setTrackerUrl', MATOMO_URL + 'matomo.php']);
+    // Tracker URL punta a mtrack.php (rinominato per evitare blocchi)
+    _paq.push(['setTrackerUrl', MATOMO_URL + 'mtrack.php']);
     _paq.push(['setSiteId', SITE_ID]);
 
     // Funzione di rilevamento AdBlock
@@ -63,20 +63,17 @@ export default function MatomoClient() {
     }
 
     const adBlockDetected = detectAdBlock();
-    window.adBlockDetected = adBlockDetected; // <--- debug globale
+    window.adBlockDetected = adBlockDetected; // debug globale
     console.log('AdBlock attivo:', adBlockDetected ? 'Yes' : 'No');
 
-    // Caricamento dinamico di mtrack.js
+    // Caricamento dinamico dello script rinominato
     const g = document.createElement('script');
     g.async = true;
     g.src = MATOMO_URL + 'mtrack.js';
     g.onload = () => {
       try {
-        // Custom Dimension prima del trackPageView
         _paq.push(['setCustomDimension', 1, adBlockDetected ? 'Yes' : 'No']);
-        // Abilita link tracking
         _paq.push(['enableLinkTracking']);
-        // TrackPageView una sola volta
         if (!window.__matomoPageTracked) {
           _paq.push(['trackPageView']);
           window.__matomoPageTracked = true;
