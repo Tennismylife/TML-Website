@@ -66,10 +66,13 @@ export async function middleware(req: NextRequest) {
               method: 'POST',
               headers: {
                 'content-type': 'application/json',
-                'x-original-user-agent': ua || '',
-                'x-original-ip': xff || '',
               },
-              body: JSON.stringify({ pageUrl: req.nextUrl?.href || null, pageTitle }),
+              body: JSON.stringify({
+                pageUrl: req.nextUrl?.href || null,
+                pageTitle,
+                userAgent: ua || '',
+                ip: xff || '',
+              }),
               keepalive: true,
             }).catch(() => {});
           } catch (e) {}
