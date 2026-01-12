@@ -1,5 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-
 const MATOMO_ENDPOINT = 'https://stats.tennismylife.org/matomo-tracking/matomo.php';
 const TIMEOUT_MS = 2500;
 
@@ -42,24 +40,39 @@ async function sendToMatomo({
 
     clearTimeout(timeout);
   } catch (e) {
-    console.error('Matomo send error', e);
+    // swallow errors — tracking must never fail the client
   }
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+function extractIpFromHeader(val: string | null | undefined) {
+  if (!val) return null;
   try {
-    const body = req.body || {};
-    const pageUrl = body.pageUrl || req.headers.referer || '';
-    const pageTitle = body.pageTitle || '';
-    const ua = req.headers['user-agent'] || '';
-    const ip = Array.isArray(req.headers['x-forwarded-for']) ? req.headers['x-forwarded-for'][0] : req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
-    const referer = req.headers.referer || '';
+    return String(val).split(',')[0].trim();
+  } catch (e) {
+    return String(val);
+  }
+}
 
+export async function POST(req: Request) {
+  try {
+    const body = await req.json().catch(() => ({}));
+
+    const pageUrl = body?.pageUrl || body?.pageURL || req.headers.get('referer') || req.headers.get('referrer') || null;
+    const pageTitle = body?.pageTitle || body?.title || null;
+
+    const ua = body?.userAgent || body?.ua || req.headers.get('user-agent') || null;
+    const ip = body?.ip || extractIpFromHeader(req.headers.get('x-original-ip') || req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip')) || null;
+    const referer = body?.referer || req.headers.get('referer') || req.headers.get('referrer') || null;
+
+    // Fire-and-forget to Matomo
     sendToMatomo({ pageUrl, pageTitle, ua, ip, referer }).catch(() => {});
 
-    res.status(204).end(); // mai fallire il client
-  } catch (err) {
-    console.error('Matomo API error:', err);
-    res.status(204).end();
+    return new Response(null, { status: 204 });
+  } catch (e) {
+    return new Response(null, { status: 204 });
   }
+}
+
+export async function GET() {
+  return new Response(null, { status: 204 });
 }
