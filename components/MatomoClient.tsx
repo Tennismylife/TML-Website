@@ -5,7 +5,6 @@ import { useEffect } from 'react';
 declare global {
   interface Window {
     _paq?: any[];
-    __matomoPageTracked?: boolean;
     adBlockDetected?: boolean;
   }
 }
@@ -15,47 +14,22 @@ export default function MatomoClient() {
     if (typeof window === 'undefined') return;
 
     const _paq = (window._paq = window._paq || []);
-
     const MATOMO_URL = '//stats.tennismylife.org/matomo-tracking/';
     const SITE_ID = '1';
 
-    // Tracker URL punta a mtrack.php (rinominato per evitare blocchi)
+    // Imposta tracker
     _paq.push(['setTrackerUrl', MATOMO_URL + 'mtrack.php']);
     _paq.push(['setSiteId', SITE_ID]);
 
-    // Funzione di rilevamento AdBlock
+    // Funzione veloce per rilevare AdBlock
     function detectAdBlock(): boolean {
-      const baitNames = ['ad-banner-test', 'adsbox', 'doubleclick-test', 'adsense-test', 'banner-ad-test'];
-      const els: HTMLElement[] = [];
-
       try {
-        for (const name of baitNames) {
-          const el = document.createElement('div');
-          el.className = name;
-          el.style.cssText = 'width:1px;height:1px;position:absolute;left:-9999px;top:0;';
-          el.setAttribute('data-ad-test', name);
-          document.body.appendChild(el);
-          els.push(el);
-        }
-
-        let blocked = false;
-        for (const e of els) {
-          if (!document.body.contains(e) || e.offsetParent === null || e.offsetHeight === 0) {
-            blocked = true;
-            break;
-          }
-          const cs = typeof window.getComputedStyle === 'function' ? window.getComputedStyle(e) : null;
-          if (cs && (cs.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0')) {
-            blocked = true;
-            break;
-          }
-        }
-
-        // cleanup
-        for (const e of els) {
-          try { e.parentNode?.removeChild(e); } catch {}
-        }
-
+        const bait = document.createElement('div');
+        bait.className = 'adsbox-test';
+        bait.style.cssText = 'width:1px;height:1px;position:absolute;left:-9999px;';
+        document.body.appendChild(bait);
+        const blocked = bait.offsetParent === null || bait.offsetHeight === 0;
+        document.body.removeChild(bait);
         return blocked;
       } catch {
         return false;
@@ -63,32 +37,32 @@ export default function MatomoClient() {
     }
 
     const adBlockDetected = detectAdBlock();
-    window.adBlockDetected = adBlockDetected; // debug globale
+    window.adBlockDetected = adBlockDetected;
     console.log('AdBlock attivo:', adBlockDetected ? 'Yes' : 'No');
 
-    // Caricamento dinamico dello script rinominato
+    // Caricamento dello script Matomo
     const g = document.createElement('script');
     g.async = true;
     g.src = MATOMO_URL + 'mtrack.js';
+
     g.onload = () => {
       try {
+        // Imposta Custom Dimension
         _paq.push(['setCustomDimension', 1, adBlockDetected ? 'Yes' : 'No']);
+
+        // Abilita link tracking
         _paq.push(['enableLinkTracking']);
 
-        // Forza sempre trackPageView anche se __matomoPageTracked esiste
+        // Forza sempre trackPageView
         _paq.push(['trackPageView']);
-        window.__matomoPageTracked = true;
-
         console.log('Matomo trackPageView inviato ✅');
       } catch (err) {
-        console.error('Errore Matomo tracking:', err);
+        console.error('Errore invio visita Matomo:', err);
       }
     };
 
     const s = document.getElementsByTagName('script')[0];
     s.parentNode?.insertBefore(g, s);
-
-    return () => {};
   }, []);
 
   return null;
