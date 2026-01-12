@@ -5,6 +5,7 @@ import Header from '../components/Header'
 import GAListener from './analytics/GAListener' // importa il listener
 import Ga4FallbackClient from '../components/Ga4FallbackClient' // client-side fallback for GA4 when gtag is blocked
 import TrackPageClient from './TrackPageClient' // client-side visit tracking (fires on route changes)
+import MatomoClient from '../components/MatomoClient' // client-side Matomo tracker (migrated from pages/_app.tsx) 
 import { Montserrat } from 'next/font/google'
 
 const montserrat = Montserrat({
@@ -83,6 +84,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <Ga4FallbackClient />
         {/* Client-side visit tracker: fires on initial load and route changes */}
         <TrackPageClient />
+        {/* Matomo tracker (migrated from pages/_app.tsx) */}
+        <MatomoClient />
         <Header />
         <main className="w-full px-0 py-6">
           {children}
