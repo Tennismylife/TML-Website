@@ -71,9 +71,32 @@ function extractIpFromHeader(val: string | null | undefined) {
 
 // POST endpoint
 export async function POST(req: Request) {
-  try {
-    const body = await req.json().catch(() => ({}));
+  // Early debug switch from header
+  const debugHeaderRaw = String(req.headers.get('x-matomo-debug') || req.headers.get('x-debug-matomo') || '0');
+  const debug = debugHeaderRaw === '1' || debugHeaderRaw.toLowerCase() === 'true';
 
+  let body: any = {};
+  let parseError: string | null = null;
+
+  try {
+    const text = await req.text();
+    if (text) {
+      try {
+        body = JSON.parse(text);
+      } catch (err) {
+        parseError = (err && (err as Error).message) || 'invalid json';
+        body = {};
+        if (debug) console.warn('Matomo route: JSON parse failed:', parseError);
+      }
+    }
+  } catch (err) {
+    // reading body failed — keep body empty
+    parseError = (err && (err as Error).message) || 'body-read-failed';
+    body = {};
+    if (debug) console.error('Matomo route: failed to read body:', parseError);
+  }
+
+  try {
     const pageUrl =
       body?.pageUrl ||
       req.headers.get('x-page-url') ||
@@ -83,6 +106,7 @@ export async function POST(req: Request) {
       null;
 
     const pageTitle = body?.pageTitle || body?.title || null;
+
     const ua =
       body?.userAgent ||
       body?.ua ||
@@ -99,20 +123,26 @@ export async function POST(req: Request) {
       ) ||
       null;
 
-    const referer =
-      body?.referer || req.headers.get('referer') || req.headers.get('referrer') || null;
+    const referer = body?.referer || req.headers.get('referer') || req.headers.get('referrer') || null;
 
-    // LOG nel terminale per debug
-    console.log('Tracking POST:', { pageUrl, pageTitle, ua, ip, referer });
+    // Debug log
+    console.log('Tracking POST:', { pageUrl, pageTitle, ua, ip, referer, parseError });
 
-    // Fire-and-forget server-side POST
-    sendToMatomo({ pageUrl, pageTitle, ua, ip, referer }).catch(() => {});
+    // Fire-and-forget to Matomo (do not await)
+    sendToMatomo({ pageUrl, pageTitle, ua, ip, referer }).catch((err) => {
+      if (debug) console.warn('sendToMatomo failed (ignored):', err && (err as Error).message);
+    });
 
-    // Sempre 204 per il client
+    if (debug) {
+      const debugPayload = { pageUrl, pageTitle, ua, ip, referer, parseError };
+      return new Response(JSON.stringify(debugPayload), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
+
     return new Response(null, { status: 204 });
   } catch (e) {
-    console.error('Error in /api/matomo POST:', e);
-    return new Response(null, { status: 204 }); // mai 500
+    console.error('Unhandled error in /api/matomo POST:', e);
+    if (debug) return new Response(JSON.stringify({ error: String(e) }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    return new Response(null, { status: 204 });
   }
 }
 
