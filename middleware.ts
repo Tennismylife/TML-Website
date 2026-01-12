@@ -60,23 +60,8 @@ export async function middleware(req: NextRequest) {
             keepalive: true,
           }).catch(() => {});
 
-          // Also send a fire-and-forget POST to the server-side Matomo proxy for robust tracking
-          try {
-            // POST to the safe fallback endpoint to avoid 5xx causing navigation issues
-          fetch(new URL('/api/matomo-safe', req.nextUrl.origin).toString(), {
-              method: 'POST',
-              headers: {
-                'content-type': 'application/json',
-              },
-              body: JSON.stringify({
-                pageUrl: req.nextUrl?.href || null,
-                pageTitle,
-                userAgent: ua || '',
-                ip: xff || '',
-              }),
-              keepalive: true,
-            }).catch(() => {});
-          } catch (e) {}
+          // Matomo server-side probe removed — no server-side Matomo calls from middleware.
+          // If you want to reintroduce server-side Matomo tracking, add a safe, privacy-preserving call here.
         }
       }
     } catch (e) {}
