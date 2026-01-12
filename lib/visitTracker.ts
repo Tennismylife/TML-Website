@@ -69,6 +69,13 @@ export async function trackVisit(req: any, pageTitle?: string): Promise<boolean>
     const user_agent = ua || null;
     const page_title = pageTitle || null;
 
+    // Fire-and-forget: send server-side Matomo pageview (also helps when client-side JS is blocked by ad blockers)
+    try {
+      sendMatomoEvent({ url: page_url || undefined, title: page_title || undefined, ua: user_agent || undefined, ip: user_ip || undefined, referer: req?.headers?.get ? req.headers.get('referer') || req.headers.get('referrer') || undefined : req?.headers?.referer || undefined }).catch(() => {});
+    } catch (e) {
+      // ignore
+    }
+
     // Insert into DB, swallow any errors but log them.
     try {
       const res: any = await prisma.$queryRaw`
@@ -84,6 +91,40 @@ export async function trackVisit(req: any, pageTitle?: string): Promise<boolean>
   } catch (err) {
     console.error('trackVisit error', err);
     return false;
+  }
+}
+
+// --- Matomo helper ---
+async function sendMatomoEvent(opts: { url?: string; title?: string; ua?: string; ip?: string; referer?: string } ) {
+  try {
+    const endpointBase = 'https://stats.tennismylife.org/matomo-tracking/matomo.php';
+    const params = new URLSearchParams();
+    params.set('idsite', '1');
+    params.set('rec', '1');
+    if (opts.url) params.set('url', String(opts.url));
+    if (opts.title) params.set('action_name', String(opts.title));
+    if (opts.ip) params.set('cip', String(opts.ip));
+    if (opts.ua) params.set('ua', String(opts.ua));
+    if (opts.referer) params.set('urlref', String(opts.referer));
+
+    const url = `${endpointBase}?${params.toString()}`;
+
+    // Use a short timeout/abort to avoid holding server work
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 2500);
+
+    // Include User-Agent header and send a GET (Matomo accepts either GET/POST)
+    await fetch(url, {
+      method: 'GET',
+      headers: {
+        'User-Agent': opts.ua || '',
+      },
+      signal: controller.signal,
+    }).catch(() => {});
+
+    clearTimeout(timeout);
+  } catch (e) {
+    // safe ignore — tracking must never fail the request
   }
 }
 

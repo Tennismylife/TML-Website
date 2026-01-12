@@ -59,6 +59,20 @@ export async function middleware(req: NextRequest) {
             // keepalive ensures the fetch will be attempted even during navigation/closing
             keepalive: true,
           }).catch(() => {});
+
+          // Also send a fire-and-forget POST to the server-side Matomo proxy for robust tracking
+          try {
+            fetch(new URL('/api/matomo', req.nextUrl.origin).toString(), {
+              method: 'POST',
+              headers: {
+                'content-type': 'application/json',
+                'x-original-user-agent': ua || '',
+                'x-original-ip': xff || '',
+              },
+              body: JSON.stringify({ pageUrl: req.nextUrl?.href || null, pageTitle }),
+              keepalive: true,
+            }).catch(() => {});
+          } catch (e) {}
         }
       }
     } catch (e) {}
