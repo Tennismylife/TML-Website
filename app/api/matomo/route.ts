@@ -78,18 +78,10 @@ function extractIpFromHeader(val: string | null | undefined) {
 
 // POST endpoint (robust headers-only mode to avoid body parsing issues in production)
 export async function POST(req: Request) {
-  // Debug switch
-  const debugHeaderRaw = String(req.headers.get('x-matomo-debug') || req.headers.get('x-debug-matomo') || '0');
-  const debug = debugHeaderRaw === '1' || debugHeaderRaw.toLowerCase() === 'true';
-
-  // Very early log to diagnose 5xx that occur before other code runs
+  // Debug mode disabled for Matomo endpoint to avoid exposing request bodies or header snapshots.
   try {
-    // log a lightweight snapshot of headers keys and a small JSON of headers to help debugging
-    const headerKeys = Array.from(req.headers.keys()).join(',');
-    let headerSnapshot = {} as Record<string, string>;
-    try { headerSnapshot = Object.fromEntries(req.headers as any); } catch (hErr) { /* ignore */ }
-    console.log('/api/matomo POST entry - method:', req.method, 'headers-keys:', headerKeys, 'headerSnapshot:', JSON.stringify(headerSnapshot));
-  } catch (e) { console.warn('/api/matomo: header log failed', e); }
+    console.log('/api/matomo POST entry');
+  } catch (e) { /* ignore */ }
 
   try {
     // Prefer header-based inputs to avoid parsing body in the edge environment
@@ -110,33 +102,16 @@ export async function POST(req: Request) {
 
     const referer = req.headers.get('referer') || req.headers.get('referrer') || null;
 
-    console.log('Tracking POST (headers mode):', { pageUrl, pageTitle, ua, ip, referer });
+    // Minimal logging only — do not log headers or body to avoid leaking sensitive data
+    console.log('Tracking POST (headers mode) received');
 
-    // In debug mode, attempt to read and log the request body safely to diagnose body-related 5xx
-    if (debug) {
-      try {
-        const txt = await req.clone().text();
-        console.log('/api/matomo debug: request body (truncated 200 chars):', txt ? txt.slice(0, 200) : '');
-      } catch (bodyErr) {
-        console.warn('/api/matomo debug: failed to read request body', bodyErr);
-      }
-    }
-
-    // Fire-and-forget to Matomo
-    sendToMatomo({ pageUrl, pageTitle, ua, ip, referer }).catch((err) => {
-      if (debug) console.warn('sendToMatomo failed (ignored):', err && (err as Error).message);
-    });
-
-    if (debug) {
-      const debugPayload = { pageUrl, pageTitle, ua, ip, referer };
-      return new Response(JSON.stringify(debugPayload), { status: 200, headers: { 'Content-Type': 'application/json' } });
-    }
+    // Fire-and-forget to Matomo (ignore errors)
+    sendToMatomo({ pageUrl, pageTitle, ua, ip, referer }).catch(() => {});
 
     return new Response(null, { status: 204 });
   } catch (e) {
-    // log stack if available
-    try { console.error('Unhandled error in /api/matomo POST (headers mode):', e && (e as Error).stack ? (e as Error).stack : e); } catch (logErr) { console.error('Error logging error in /api/matomo:', logErr); }
-    if (debug) return new Response(JSON.stringify({ error: String(e) }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    // Swallow errors — do not expose error details to the caller
+    try { console.error('Unhandled error in /api/matomo POST (headers mode):', e && (e as Error).stack ? (e as Error).stack : e); } catch (logErr) { /* ignore */ }
     return new Response(null, { status: 204 });
   }
 }
