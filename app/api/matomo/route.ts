@@ -69,78 +69,46 @@ function extractIpFromHeader(val: string | null | undefined) {
   }
 }
 
-// POST endpoint
+// POST endpoint (robust headers-only mode to avoid body parsing issues in production)
 export async function POST(req: Request) {
-  // Early debug switch from header
+  // Debug switch
   const debugHeaderRaw = String(req.headers.get('x-matomo-debug') || req.headers.get('x-debug-matomo') || '0');
   const debug = debugHeaderRaw === '1' || debugHeaderRaw.toLowerCase() === 'true';
 
-  let body: any = {};
-  let parseError: string | null = null;
-
   try {
-    const text = await req.text();
-    if (text) {
-      try {
-        body = JSON.parse(text);
-      } catch (err) {
-        parseError = (err && (err as Error).message) || 'invalid json';
-        body = {};
-        if (debug) console.warn('Matomo route: JSON parse failed:', parseError);
-      }
-    }
-  } catch (err) {
-    // reading body failed — keep body empty
-    parseError = (err && (err as Error).message) || 'body-read-failed';
-    body = {};
-    if (debug) console.error('Matomo route: failed to read body:', parseError);
-  }
-
-  try {
+    // Prefer header-based inputs to avoid parsing body in the edge environment
     const pageUrl =
-      body?.pageUrl ||
       req.headers.get('x-page-url') ||
       req.headers.get('x-original-url') ||
       req.headers.get('referer') ||
       req.headers.get('referrer') ||
       null;
 
-    const pageTitle = body?.pageTitle || body?.title || null;
+    const pageTitle = req.headers.get('x-page-title') || req.headers.get('x-title') || null;
 
-    const ua =
-      body?.userAgent ||
-      body?.ua ||
-      req.headers.get('x-original-user-agent') ||
-      req.headers.get('user-agent') ||
-      null;
+    const ua = req.headers.get('x-original-user-agent') || req.headers.get('user-agent') || null;
 
-    const ip =
-      body?.ip ||
-      extractIpFromHeader(
-        req.headers.get('x-original-ip') ||
-          req.headers.get('x-forwarded-for') ||
-          req.headers.get('x-real-ip')
-      ) ||
-      null;
+    const ip = extractIpFromHeader(
+      req.headers.get('x-original-ip') || req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip')
+    ) || null;
 
-    const referer = body?.referer || req.headers.get('referer') || req.headers.get('referrer') || null;
+    const referer = req.headers.get('referer') || req.headers.get('referrer') || null;
 
-    // Debug log
-    console.log('Tracking POST:', { pageUrl, pageTitle, ua, ip, referer, parseError });
+    console.log('Tracking POST (headers mode):', { pageUrl, pageTitle, ua, ip, referer });
 
-    // Fire-and-forget to Matomo (do not await)
+    // Fire-and-forget to Matomo
     sendToMatomo({ pageUrl, pageTitle, ua, ip, referer }).catch((err) => {
       if (debug) console.warn('sendToMatomo failed (ignored):', err && (err as Error).message);
     });
 
     if (debug) {
-      const debugPayload = { pageUrl, pageTitle, ua, ip, referer, parseError };
+      const debugPayload = { pageUrl, pageTitle, ua, ip, referer };
       return new Response(JSON.stringify(debugPayload), { status: 200, headers: { 'Content-Type': 'application/json' } });
     }
 
     return new Response(null, { status: 204 });
   } catch (e) {
-    console.error('Unhandled error in /api/matomo POST:', e);
+    console.error('Unhandled error in /api/matomo POST (headers mode):', e);
     if (debug) return new Response(JSON.stringify({ error: String(e) }), { status: 200, headers: { 'Content-Type': 'application/json' } });
     return new Response(null, { status: 204 });
   }
