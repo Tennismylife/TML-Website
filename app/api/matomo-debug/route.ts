@@ -2,7 +2,7 @@
 export async function POST(req: Request) {
   try {
     const text = await req.text().catch(() => '');
-    let body = null;
+    let body: any = null;
     try { body = text ? JSON.parse(text) : null; } catch (e) { body = { _raw: text }; }
 
     const headers: Record<string,string|null> = {
