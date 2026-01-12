@@ -75,6 +75,9 @@ export async function POST(req: Request) {
   const debugHeaderRaw = String(req.headers.get('x-matomo-debug') || req.headers.get('x-debug-matomo') || '0');
   const debug = debugHeaderRaw === '1' || debugHeaderRaw.toLowerCase() === 'true';
 
+  // Very early log to diagnose 5xx that occur before other code runs
+  try { console.log('/api/matomo POST entry - headers:', Array.from(req.headers.keys()).join(',')); } catch (e) { console.warn('/api/matomo: header log failed', e); }
+
   try {
     // Prefer header-based inputs to avoid parsing body in the edge environment
     const pageUrl =
