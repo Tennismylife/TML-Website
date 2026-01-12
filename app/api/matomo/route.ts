@@ -10,6 +10,13 @@
 
 import { NextRequest } from 'next/server';
 
+// Very early module load log to detect initialization failures in production
+try {
+  console.log('/api/matomo route loaded');
+} catch (e) {
+  console.warn('/api/matomo: module load log failed', e);
+}
+
 const MATOMO_ENDPOINT = 'https://stats.tennismylife.org/matomo-tracking/matomo.php';
 const TIMEOUT_MS = 2500;
 
@@ -76,7 +83,13 @@ export async function POST(req: Request) {
   const debug = debugHeaderRaw === '1' || debugHeaderRaw.toLowerCase() === 'true';
 
   // Very early log to diagnose 5xx that occur before other code runs
-  try { console.log('/api/matomo POST entry - headers:', Array.from(req.headers.keys()).join(',')); } catch (e) { console.warn('/api/matomo: header log failed', e); }
+  try {
+    // log a lightweight snapshot of headers keys and a small JSON of headers to help debugging
+    const headerKeys = Array.from(req.headers.keys()).join(',');
+    let headerSnapshot = {} as Record<string, string>;
+    try { headerSnapshot = Object.fromEntries(req.headers as any); } catch (hErr) { /* ignore */ }
+    console.log('/api/matomo POST entry - method:', req.method, 'headers-keys:', headerKeys, 'headerSnapshot:', JSON.stringify(headerSnapshot));
+  } catch (e) { console.warn('/api/matomo: header log failed', e); }
 
   try {
     // Prefer header-based inputs to avoid parsing body in the edge environment
@@ -99,6 +112,16 @@ export async function POST(req: Request) {
 
     console.log('Tracking POST (headers mode):', { pageUrl, pageTitle, ua, ip, referer });
 
+    // In debug mode, attempt to read and log the request body safely to diagnose body-related 5xx
+    if (debug) {
+      try {
+        const txt = await req.clone().text();
+        console.log('/api/matomo debug: request body (truncated 200 chars):', txt ? txt.slice(0, 200) : '');
+      } catch (bodyErr) {
+        console.warn('/api/matomo debug: failed to read request body', bodyErr);
+      }
+    }
+
     // Fire-and-forget to Matomo
     sendToMatomo({ pageUrl, pageTitle, ua, ip, referer }).catch((err) => {
       if (debug) console.warn('sendToMatomo failed (ignored):', err && (err as Error).message);
@@ -111,7 +134,8 @@ export async function POST(req: Request) {
 
     return new Response(null, { status: 204 });
   } catch (e) {
-    console.error('Unhandled error in /api/matomo POST (headers mode):', e);
+    // log stack if available
+    try { console.error('Unhandled error in /api/matomo POST (headers mode):', e && (e as Error).stack ? (e as Error).stack : e); } catch (logErr) { console.error('Error logging error in /api/matomo:', logErr); }
     if (debug) return new Response(JSON.stringify({ error: String(e) }), { status: 200, headers: { 'Content-Type': 'application/json' } });
     return new Response(null, { status: 204 });
   }
