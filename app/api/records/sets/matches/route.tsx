@@ -128,18 +128,18 @@ export async function GET(request: NextRequest) {
     }
 
     const matchRecords: MatchRecord[] = matches.map(m => {
-      const isWinner = m.winner_id === playerId;
-      const opponent = isWinner ? m.loser_name : m.winner_name;
+      const isWinner = String(m.winner_id) === playerId;
+      const opponent = isWinner ? (m.loser_name ?? '') : (m.winner_name ?? '');
       const opponentIoc = isWinner ? m.loser_ioc : m.winner_ioc;
       return {
         id: String(m.id),
-        date: m.tourney_date.toISOString(),
-        tourney_name: m.tourney_name,
-        surface: m.surface,
-        round: m.round,
+        date: m.tourney_date?.toISOString() ?? '',
+        tourney_name: m.tourney_name ?? '',
+        surface: m.surface ?? '',
+        round: m.round ?? '',
         opponent,
         opponent_ioc: opponentIoc ?? '',
-        score: m.score,
+        score: m.score ?? '',
         winner: isWinner,
       };
     });

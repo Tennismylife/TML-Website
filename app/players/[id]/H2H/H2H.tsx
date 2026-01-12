@@ -56,7 +56,7 @@ export default function H2HPage({ playerId, mainPlayerName, filters = { year: "A
 
     if (filters.opponent) {
       matches = matches.filter(m =>
-        m.opponent.toLowerCase().includes(filters.opponent.toLowerCase())
+        (m.opponent ?? '').toLowerCase().includes(filters.opponent.toLowerCase())
       );
     }
     if (filters.year !== "All") matches = matches.filter(m => m.year === filters.year);

@@ -80,14 +80,14 @@ export async function GET(request: NextRequest) {
     const setPlayerInfo = (
       id: string,
       winnerId: string,
-      winnerName: string,
+      winnerName: string | null | undefined,
       winnerIoc: string | null,
-      loserName: string,
+      loserName: string | null | undefined,
       loserIoc: string | null
     ) => {
       if (!playerInfo.has(id)) {
         playerInfo.set(id, {
-          name: id === winnerId ? winnerName : loserName,
+          name: id === winnerId ? (winnerName ?? '') : (loserName ?? ''),
           ioc: id === winnerId ? winnerIoc ?? "" : loserIoc ?? "",
         });
       }

@@ -35,7 +35,7 @@ export async function GET() {
       surfaces: surfaces.map(s => s.surface).filter(Boolean).sort(),
       levels: levels.map(l => l.tourney_level).filter(Boolean).sort(),
       rounds: rounds.map(r => r.round).filter(Boolean).sort(),
-      bestOfs: bestOfs.map(b => b.best_of).filter(Boolean).sort((a, b) => a - b),
+      bestOfs: bestOfs.map(b => b.best_of).filter((x): x is number => x != null).sort((a, b) => a - b),
     });
   } catch (error) {
     console.error(error);

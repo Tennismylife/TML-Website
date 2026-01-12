@@ -22,6 +22,7 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
 
   const initialFilters: Record<string, string> = useMemo(() => {
     const obj: Record<string, string> = {};
+    if (!search) return obj;
     search.forEach((value, key) => {
       if (key !== "tab") obj[key] = value;
     });
@@ -114,9 +115,10 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
   }, [endpoint]);
 
   const sortedMatches = useMemo(() => {
+    if (sortKey === null) return [...matches];
     return [...matches].sort((a, b) => {
-      const valA = a[sortKey];
-      const valB = b[sortKey];
+      const valA = a[sortKey as keyof typeof a];
+      const valB = b[sortKey as keyof typeof b];
 
       if (valA == null) return 1;
       if (valB == null) return -1;

@@ -32,7 +32,7 @@ export async function GET(request: NextRequest, context: any) {
     });
 
     // Filtra finali
-    const finals = tournamentMatches.filter((m) => ["F", "W", "Final"].includes(m.round));
+    const finals = tournamentMatches.filter((m) => ["F", "W", "Final"].includes(m.round ?? ''));
 
     // Calcolo delle entries totali (anni unici)
     const playerEntries = new Map<string, {

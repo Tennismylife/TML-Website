@@ -16,21 +16,21 @@ export default function Seeds({ id, year, matches }: SeedsProps) {
 
     const seedsMap = new Map<
       number,
-      { name: string; ioc: string; lastMatch: Match | null; outcome: string }
+      { name: string; ioc?: string | undefined; lastMatch: Match | null; outcome: string }
     >();
 
     for (const m of matches) {
       if (m.winner_seed && !seedsMap.has(m.winner_seed))
         seedsMap.set(m.winner_seed, {
-          name: m.winner_name,
-          ioc: m.winner_ioc,
+          name: m.winner_name ?? "",
+          ioc: m.winner_ioc ?? undefined,
           lastMatch: null,
           outcome: "",
         });
       if (m.loser_seed && !seedsMap.has(m.loser_seed))
         seedsMap.set(m.loser_seed, {
-          name: m.loser_name,
-          ioc: m.loser_ioc,
+          name: m.loser_name ?? "",
+          ioc: m.loser_ioc ?? undefined,
           lastMatch: null,
           outcome: "",
         });
@@ -52,8 +52,8 @@ export default function Seeds({ id, year, matches }: SeedsProps) {
         .slice()
         .sort(
           (a, b) =>
-            (roundOrder.indexOf(a.round) ?? Infinity) -
-            (roundOrder.indexOf(b.round) ?? Infinity)
+            (roundOrder.indexOf(a.round ?? "") ?? Infinity) -
+            (roundOrder.indexOf(b.round ?? "") ?? Infinity)
         )
         .at(-1);
 
@@ -72,12 +72,12 @@ export default function Seeds({ id, year, matches }: SeedsProps) {
         data.outcome = "Winner 🏆";
       } else if (!isWinner) {
         data.outcome = `${lastMatch.round}, lost to ${getFlagFromIOC(
-          opponentIOC
-        )} ${opponentName}`;
+          opponentIOC ?? undefined
+        )} ${opponentName ?? ""}`;
       } else {
         data.outcome = `Reached ${lastMatch.round}, beat ${getFlagFromIOC(
-          opponentIOC
-        )} ${opponentName}`;
+          opponentIOC ?? undefined
+        )} ${opponentName ?? ""}`;
       }
 
       data.lastMatch = lastMatch;

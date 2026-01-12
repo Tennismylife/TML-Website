@@ -57,16 +57,16 @@ const Percentage = ({ selectedSurfaces, selectedLevels, selectedRounds, selected
         const query = new URLSearchParams();
 
         if (selectedSurfaces !== undefined) Array.from(selectedSurfaces).forEach((s) => query.append('surface', s));
-        else Array.from(searchParams.entries()).forEach(([k, v]) => { if (k === 'surface') query.append(k, v); });
+        else Array.from(searchParams?.entries() ?? []).forEach(([k, v]) => { if (k === 'surface') query.append(k, v); });
 
         if (selectedLevels !== undefined) Array.from(selectedLevels).forEach((l) => query.append('level', l));
-        else Array.from(searchParams.entries()).forEach(([k, v]) => { if (k === 'level') query.append(k, v); });
+        else Array.from(searchParams?.entries() ?? []).forEach(([k, v]) => { if (k === 'level') query.append(k, v); });
 
         if (selectedRounds !== undefined) { if (selectedRounds) query.append('round', selectedRounds); }
-        else searchParams.getAll('round').forEach(r => query.append('round', r));
+        else (searchParams?.getAll('round') ?? []).forEach(r => query.append('round', r));
 
         if (selectedBestOf !== undefined) { if (selectedBestOf !== null) query.append('best_of', selectedBestOf.toString()); }
-        else searchParams.getAll('best_of').forEach(b => query.append('best_of', b));
+        else (searchParams?.getAll('best_of') ?? []).forEach(b => query.append('best_of', b));
 
         query.set('perPage', showModal ? '1000' : '100');
         query.delete('page');
@@ -101,7 +101,7 @@ const Percentage = ({ selectedSurfaces, selectedLevels, selectedRounds, selected
 
   const getLink = (playerId: string) => {
     let link = playerMatchesUrl(playerId);
-    for (const [key, value] of searchParams.entries()) {
+    for (const [key, value] of (searchParams?.entries() ?? [])) {
       if (key !== "tab") link += `&${key}=${encodeURIComponent(value)}`;
     }
     return link;

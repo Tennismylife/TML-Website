@@ -87,20 +87,23 @@ export async function GET(request: NextRequest) {
       if (p1Games > p2Games) {
         // vincitore del match ha vinto il primo set
         firstSetWinnerId = m.winner_id;
-        firstSetWinnerName = m.winner_name;
+        firstSetWinnerName = m.winner_name ?? '';
         firstSetWinnerIoc = m.winner_ioc ?? '';
       } else if (p2Games > p1Games) {
         // perdente del match ha vinto il primo set
         firstSetWinnerId = m.loser_id;
-        firstSetWinnerName = m.loser_name;
+        firstSetWinnerName = m.loser_name ?? '';
         firstSetWinnerIoc = m.loser_ioc ?? '';
       } else {
         continue;
       }
 
-      if (!playerStats.has(firstSetWinnerId)) {
-        playerStats.set(firstSetWinnerId, {
-          id: firstSetWinnerId,
+      if (!firstSetWinnerId) continue;
+      const key = String(firstSetWinnerId);
+
+      if (!playerStats.has(key)) {
+        playerStats.set(key, {
+          id: key,
           name: firstSetWinnerName,
           ioc: firstSetWinnerIoc,
           wins: 0,
@@ -109,10 +112,10 @@ export async function GET(request: NextRequest) {
         });
       }
 
-      const stats = playerStats.get(firstSetWinnerId)!;
+      const stats = playerStats.get(key)!;
       stats.total += 1;
 
-      if (firstSetWinnerId === m.winner_id) {
+      if (String(firstSetWinnerId) === String(m.winner_id)) {
         stats.wins += 1;
       } else {
         stats.losses += 1;

@@ -12,7 +12,7 @@ interface AtAgeProps {
   selectedLevels: Set<string>;
   selectedRounds: string; // singolare per RoundSection
   selectedBestOf: number | null;
-  activeSubTab: string;
+  activeSubTab?: string;
   fetchEnabled?: boolean;
   setFetchEnabled?: (v: boolean) => void;
   fetchRequestId?: string | null;

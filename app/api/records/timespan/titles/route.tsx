@@ -32,25 +32,26 @@ export async function GET(request: NextRequest) {
 
     for (const m of matches) {
       if (!m.winner_id) continue;
-      const date = new Date(m.tourney_date);
-      const existing = winners.get(m.winner_id);
+      const date = m.tourney_date ? new Date(m.tourney_date) : new Date(0);
+      const key = String(m.winner_id);
+      const existing = winners.get(key);
       if (!existing) {
-        winners.set(m.winner_id, {
+        winners.set(key, {
           name: m.winner_name ?? "",
           ioc: m.winner_ioc ?? "",
           minDate: date,
           maxDate: date,
-          minTourney: m.tourney_name,
-          maxTourney: m.tourney_name,
+          minTourney: m.tourney_name ?? "",
+          maxTourney: m.tourney_name ?? "",
         });
       } else {
         if (date < existing.minDate) {
           existing.minDate = date;
-          existing.minTourney = m.tourney_name;
+          existing.minTourney = m.tourney_name ?? "";
         }
         if (date > existing.maxDate) {
           existing.maxDate = date;
-          existing.maxTourney = m.tourney_name;
+          existing.maxTourney = m.tourney_name ?? "";
         }
       }
     }

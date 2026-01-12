@@ -11,9 +11,10 @@ function diffYMD(birth: Date, ref: Date) {
   return { y, m, d };
 }
 
-export default async function EoyRankTimespan({ searchParams }: { searchParams?: Record<string, string | string[]> }) {
-  const rank = Number((searchParams?.rank as string) ?? 1);
-  const includeAll = (searchParams?.includeAll as string) === '1';
+export default async function EoyRankTimespan({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
+  const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
+  const rank = Number((sp.rank as string) ?? 1);
+  const includeAll = (sp.includeAll as string) === '1';
 
   if (!Number.isInteger(rank) || rank < 1) {
     return (<section className="mb-8"><div className="text-gray-400 py-4 text-center">Invalid 'rank' param</div></section>);

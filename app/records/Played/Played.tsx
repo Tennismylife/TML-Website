@@ -46,16 +46,16 @@ export default function Played({ topPlayed, fetchEnabled, description, selectedS
         // prefer explicit props for filters
         const params = new URLSearchParams();
         if (selectedSurfaces !== undefined) Array.from(selectedSurfaces).forEach(s => params.append('surface', s));
-        else Array.from(searchParams.entries()).forEach(([k,v]) => { if (k === 'surface') params.append(k, v); });
+        else Array.from(searchParams?.entries() ?? []).forEach(([k,v]) => { if (k === 'surface') params.append(k, v); });
 
         if (selectedLevels !== undefined) Array.from(selectedLevels).forEach(l => params.append('level', l));
-        else Array.from(searchParams.entries()).forEach(([k,v]) => { if (k === 'level') params.append(k, v); });
+        else Array.from(searchParams?.entries() ?? []).forEach(([k,v]) => { if (k === 'level') params.append(k, v); });
 
         if (selectedRounds !== undefined) { if (selectedRounds) params.set('round', selectedRounds); }
-        else { const r = searchParams.get('round'); if (r) params.set('round', r); }
+        else { const r = searchParams?.get('round'); if (r) params.set('round', r); }
 
         if (selectedBestOf !== undefined) { if (selectedBestOf !== null) params.set('bestOf', String(selectedBestOf)); }
-        else { const b = searchParams.get('bestOf'); if (b) params.set('bestOf', b); }
+        else { const b = searchParams?.get('bestOf'); if (b) params.set('bestOf', b); }
 
         params.set("perPage", showModal ? "1000" : "100");
         params.delete("page"); // remove page param
@@ -93,7 +93,7 @@ export default function Played({ topPlayed, fetchEnabled, description, selectedS
   // Generate player link with filters
   const getLink = (playerId: string) => {
     let link = `/players/${playerId}?tab=matches&result=Played`;
-    for (const [key, value] of searchParams.entries()) {
+    for (const [key, value] of (searchParams?.entries() ?? [])) {
       if (!value || key === "tab") continue;
       if (key === "bestOf") {
         const bestOfValues = value.split(",").filter(Boolean);

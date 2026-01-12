@@ -3,9 +3,10 @@ import { prisma } from '@/lib/prisma';
 import { getFlagFromIOC } from '@/lib/utils';
 import DropdownNavSelect from '../../../../components/DropdownNavSelect';
 
-export default async function EoyTopXStreaks({ searchParams }: { searchParams?: Record<string,string | string[]> }) {
-  const top = Number((searchParams?.top as string) ?? 2);
-  const page = Number((searchParams?.page as string) ?? 1);
+export default async function EoyTopXStreaks({ searchParams }: { searchParams?: Promise<Record<string,string | string[]>> }) {
+  const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
+  const top = Number((sp.top as string) ?? 2);
+  const page = Number((sp.page as string) ?? 1);
   const perPage = 20;
 
   if (!Number.isInteger(top) || top < 1 || top > 50) {
@@ -13,8 +14,8 @@ export default async function EoyTopXStreaks({ searchParams }: { searchParams?: 
   }
 
   // Date bounds from optional params
-  const fromYear = searchParams?.fromYear ? Number(searchParams.fromYear as string) : null;
-  const toYear = searchParams?.toYear ? Number(searchParams.toYear as string) : null;
+  const fromYear = sp.fromYear ? Number(sp.fromYear as string) : null;
+  const toYear = sp.toYear ? Number(sp.toYear as string) : null;
   const dateWhere: any = {};
   if (fromYear !== null || toYear !== null) {
     dateWhere.date = {};
@@ -44,7 +45,7 @@ export default async function EoyTopXStreaks({ searchParams }: { searchParams?: 
     const id = String(r.playerId);
     const year = r.rankingDate.date.getUTCFullYear();
     let rec = byPlayer.get(id);
-    if (!rec) { rec = { name: r.player.atpname, ioc: r.player.ioc, years: [] }; byPlayer.set(id, rec); }
+    if (!rec) { if (!r.player) continue; rec = { name: r.player.atpname ?? '', ioc: r.player.ioc ?? null, years: [] }; byPlayer.set(id, rec); }
     rec.years.push(year);
   }
 

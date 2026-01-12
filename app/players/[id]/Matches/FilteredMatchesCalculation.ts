@@ -80,15 +80,15 @@ export default function FilteredMatchesCalculation(
       if (vsRankFilter !== "All") {
         switch (vsRankFilter) {
           case "Top1": if (oppRank !== 1) return false; break;
-          case "Top5": if (!(oppRank >= 1 && oppRank <= 5)) return false; break;
-          case "Top10": if (!(oppRank >= 1 && oppRank <= 10)) return false; break;
-          case "Top20": if (!(oppRank >= 1 && oppRank <= 20)) return false; break;
-          case "Top50": if (!(oppRank >= 1 && oppRank <= 50)) return false; break;
-          case "Top100": if (!(oppRank >= 1 && oppRank <= 100)) return false; break;
-          case "11+": if (!(oppRank >= 11)) return false; break;
-          case "21+": if (!(oppRank >= 21)) return false; break;
-          case "51+": if (!(oppRank >= 51)) return false; break;
-          case "101+": if (!(oppRank >= 101)) return false; break;
+          case "Top5": if (!(oppRank != null && oppRank >= 1 && oppRank <= 5)) return false; break;
+          case "Top10": if (!(oppRank != null && oppRank >= 1 && oppRank <= 10)) return false; break;
+          case "Top20": if (!(oppRank != null && oppRank >= 1 && oppRank <= 20)) return false; break;
+          case "Top50": if (!(oppRank != null && oppRank >= 1 && oppRank <= 50)) return false; break;
+          case "Top100": if (!(oppRank != null && oppRank >= 1 && oppRank <= 100)) return false; break;
+          case "11+": if (!(oppRank != null && oppRank >= 11)) return false; break;
+          case "21+": if (!(oppRank != null && oppRank >= 21)) return false; break;
+          case "51+": if (!(oppRank != null && oppRank >= 51)) return false; break;
+          case "101+": if (!(oppRank != null && oppRank >= 101)) return false; break;
           case "Higher": if (!(myRank != null && oppRank != null && myRank > oppRank)) return false; break;
           case "Lower": if (!(myRank != null && oppRank != null && myRank < oppRank)) return false; break;
         }
@@ -98,14 +98,14 @@ export default function FilteredMatchesCalculation(
       if (vsAgeFilter !== "All") {
         const myAge = isWinner ? m.winner_age : m.loser_age;
         switch (vsAgeFilter) {
-          case "Younger": if (!(oppAge < myAge)) return false; break;
-          case "Older": if (!(oppAge > myAge)) return false; break;
-          case "Under18": if (!(oppAge < 18)) return false; break;
-          case "Under21": if (!(oppAge < 21)) return false; break;
-          case "Under23": if (!(oppAge < 23)) return false; break;
-          case "Over28": if (!(oppAge > 28)) return false; break;
-          case "Over30": if (!(oppAge > 30)) return false; break;
-          case "Over40": if (!(oppAge > 40)) return false; break;
+          case "Younger": if (!(oppAge != null && myAge != null && oppAge < myAge)) return false; break;
+          case "Older": if (!(oppAge != null && myAge != null && oppAge > myAge)) return false; break;
+          case "Under18": if (!(oppAge != null && oppAge < 18)) return false; break;
+          case "Under21": if (!(oppAge != null && oppAge < 21)) return false; break;
+          case "Under23": if (!(oppAge != null && oppAge < 23)) return false; break;
+          case "Over28": if (!(oppAge != null && oppAge > 28)) return false; break;
+          case "Over30": if (!(oppAge != null && oppAge > 30)) return false; break;
+          case "Over40": if (!(oppAge != null && oppAge > 40)) return false; break;
         }
       }
 
@@ -252,5 +252,5 @@ if (firstSetFilter !== "All") {
 
       return true;
     })
-    .sort((a, b) => new Date(b.tourney_date).getTime() - new Date(a.tourney_date).getTime());
+    .sort((a, b) => (b.tourney_date ? new Date(b.tourney_date).getTime() : 0) - (a.tourney_date ? new Date(a.tourney_date).getTime() : 0));
 }

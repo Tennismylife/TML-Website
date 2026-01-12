@@ -62,13 +62,13 @@ export async function GET(request: NextRequest) {
         }
         const players = tournamentWins.get(tourneyId)!;
         if (!players.has(String(m.winner_id))) {
-          players.set(String(m.winner_id), { name: m.winner_name, ioc: m.winner_ioc ?? "", wins: 0, tourney_name: m.tourney_name });
+          players.set(String(m.winner_id), { name: m.winner_name ?? "", ioc: m.winner_ioc ?? "", wins: 0, tourney_name: m.tourney_name ?? "" });
         }
         players.get(String(m.winner_id))!.wins += 1;
       }
 
       // For played and entries
-      const updatePlayer = (id: string | null, name: string, ioc: string | null) => {
+      const updatePlayer = (id: string | null, name: string | null, ioc: string | null) => {
         if (!id) return;
         // For played
         if (!tournamentPlayed.has(tourneyId)) {
@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
         }
         const playersPlayed = tournamentPlayed.get(tourneyId)!;
         if (!playersPlayed.has(String(id))) {
-          playersPlayed.set(String(id), { name, ioc: ioc ?? "", played: 0, tourney_name: m.tourney_name });
+          playersPlayed.set(String(id), { name: name ?? "", ioc: ioc ?? "", played: 0, tourney_name: m.tourney_name ?? "" });
         }
         playersPlayed.get(String(id))!.played += 1;
 
@@ -86,7 +86,7 @@ export async function GET(request: NextRequest) {
         }
         const playersEntries = tournamentEntries.get(tourneyId)!;
         if (!playersEntries.has(String(id))) {
-          playersEntries.set(String(id), { name, ioc: ioc ?? "", entries: new Set(), tourney_name: m.tourney_name });
+          playersEntries.set(String(id), { name: name ?? "", ioc: ioc ?? "", entries: new Set(), tourney_name: m.tourney_name ?? "" });
         }
         playersEntries.get(String(id))!.entries.add(year);
       };
@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
         }
         const players = tournamentTitles.get(tourneyId)!;
         if (!players.has(String(m.winner_id))) {
-          players.set(String(m.winner_id), { name: m.winner_name, ioc: m.winner_ioc ?? "", titles: 0, tourney_name: m.tourney_name });
+          players.set(String(m.winner_id), { name: m.winner_name ?? "", ioc: m.winner_ioc ?? "", titles: 0, tourney_name: m.tourney_name ?? "" });
         }
         players.get(String(m.winner_id))!.titles += 1;
       }

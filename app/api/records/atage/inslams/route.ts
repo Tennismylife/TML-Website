@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
       if (!playerSlamWins[slamName]) continue;
 
       if (!playerInfo.has(playerId)) {
-        playerInfo.set(playerId, { name: m.winner_name, ioc: m.winner_ioc ?? '' });
+        playerInfo.set(playerId, { name: m.winner_name ?? '', ioc: m.winner_ioc ?? '' });
       }
 
       const arr = playerSlamWins[slamName].get(playerId) || [];

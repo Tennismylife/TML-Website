@@ -31,14 +31,12 @@ export default async function RecordsRankingSlugPage({
   params,
   searchParams,
 }: {
-  // Next (v15+) can provide these as Promises.
-  params?: Promise<{ slug?: string | string[] }> | { slug?: string | string[] };
-  searchParams?:
-    | Promise<Record<string, string | string[] | undefined>>
-    | Record<string, string | string[] | undefined>;
+  // Next (v15+) provides these as Promises.
+  params?: Promise<{ slug?: string | string[] }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const resolvedParams = await Promise.resolve(params ?? {});
-  const resolvedSearchParams = await Promise.resolve(searchParams ?? {});
+  const resolvedSearchParams = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
 
   // Next should provide catch-all params as `string[]`, but in some environments
   // (custom server / edge cases) it can surface as a single `string`.

@@ -57,15 +57,16 @@ export default function H2HMatches({
   // Sorting client-side (con gestione corretta della data!)
   const sortedMatches = useMemo(() => {
     if (!matches?.length) return [];
+    if (sortKey === null) return [...matches];
 
     return [...matches].sort((a, b) => {
-      let aVal: any = a[sortKey];
-      let bVal: any = b[sortKey];
+      let aVal: any = a[sortKey as keyof typeof a];
+      let bVal: any = b[sortKey as keyof typeof b];
 
       // Gestione speciale per la data
       if (sortKey === "tourney_date") {
-        aVal = new Date(a.tourney_date).getTime();
-        bVal = new Date(b.tourney_date).getTime();
+        aVal = a.tourney_date ? new Date(a.tourney_date).getTime() : null;
+        bVal = b.tourney_date ? new Date(b.tourney_date).getTime() : null;
       }
 
       if (aVal == null) return sortDir === "asc" ? -1 : 1;
@@ -261,11 +262,11 @@ export default function H2HMatches({
                   }`}
                 >
                   <td className="px-3 py-2 text-center">
-                    {new Date(m.tourney_date).toLocaleDateString(undefined, {
+                    {m.tourney_date ? new Date(m.tourney_date).toLocaleDateString(undefined, {
                       year: "numeric",
                       month: "short",
                       day: "numeric",
-                    })}
+                    }) : "-"}
                   </td>
                   <td className="px-3 py-2">
                     <Link
@@ -279,22 +280,22 @@ export default function H2HMatches({
                   <td className="px-3 py-2 text-center">{m.round}</td>
                   <td className="px-3 py-2 text-center">{m.winner_rank ?? "-"}</td>
                   <td className="px-3 py-2">
-                    <span className="mr-1">{getFlagFromIOC(m.winner_ioc)}</span>
+                    <span className="mr-1">{getFlagFromIOC(m.winner_ioc ?? '')}</span>
                     <Link
-                      href={`/players/${m.winner_id}`}
+                      href={`/players/${String(m.winner_id ?? '')}`}
                       className={isPlayerWinner ? "font-bold text-green-400" : "text-gray-100 hover:text-white"}
                     >
-                      {renderNameWithSeedEntry(m.winner_name, m.winner_seed, m.winner_entry)}
+                      {renderNameWithSeedEntry(m.winner_name ?? '', m.winner_seed, m.winner_entry)}
                     </Link>
                   </td>
                   <td className="px-3 py-2 text-center">{m.loser_rank ?? "-"}</td>
                   <td className="px-3 py-2">
-                    <span className="mr-1">{getFlagFromIOC(m.loser_ioc)}</span>
+                    <span className="mr-1">{getFlagFromIOC(m.loser_ioc ?? '')}</span>
                     <Link
-                      href={`/players/${m.loser_id}`}
+                      href={`/players/${String(m.loser_id ?? '')}`}
                       className={isPlayerLoser ? "font-bold text-red-400" : "text-gray-100 hover:text-white"}
                     >
-                      {renderNameWithSeedEntry(m.loser_name, m.loser_seed, m.loser_entry)}
+                      {renderNameWithSeedEntry(m.loser_name ?? '', m.loser_seed, m.loser_entry)}
                     </Link>
                   </td>
                   <td className="px-3 py-2 text-center font-medium">{m.score}</td>

@@ -53,7 +53,7 @@ export default function H2HFilters({ mainPlayer, allMatches, loading, error, fil
       if (!pathname) return;
 
       // Only sync if tab query param indicates H2H is active
-      const tabParam = searchParams.get('tab');
+      const tabParam = searchParams?.get('tab');
       if (tabParam && tabParam !== 'h2h') {
         // eslint-disable-next-line no-console
         console.debug('[H2HFilters] sync skipped (active tab is not h2h)');
@@ -128,8 +128,8 @@ export default function H2HFilters({ mainPlayer, allMatches, loading, error, fil
   const filteredMatches = useMemo(() => {
     if (!debouncedOpponent) return allMatches;
     return allMatches.filter(m =>
-      (m.winner_name === mainPlayer && m.loser_name.toLowerCase().includes(debouncedOpponent.toLowerCase())) ||
-      (m.loser_name === mainPlayer && m.winner_name.toLowerCase().includes(debouncedOpponent.toLowerCase()))
+      (m.winner_name === mainPlayer && (m.loser_name ?? '').toLowerCase().includes(debouncedOpponent.toLowerCase())) ||
+      (m.loser_name === mainPlayer && (m.winner_name ?? '').toLowerCase().includes(debouncedOpponent.toLowerCase()))
     );
   }, [allMatches, mainPlayer, debouncedOpponent]);
 
@@ -142,7 +142,7 @@ export default function H2HFilters({ mainPlayer, allMatches, loading, error, fil
   }, [filteredMatches, mainPlayer]);
 
   // Opzioni dinamiche dei filtri
-  const yearOptions = useMemo(() => Array.from(new Set(filteredMatches.map(m => m.year))).sort((a,b)=>b-a), [filteredMatches]);
+  const yearOptions = useMemo(() => Array.from(new Set(filteredMatches.map(m => m.year).filter((y): y is number => y != null))).sort((a,b)=>b-a), [filteredMatches]);
   const levelOptions = useMemo(() => Array.from(new Set(filteredMatches.map(m => m.tourney_level ?? "Unknown")))
     .sort((a,b)=>LEVEL_ORDER.indexOf(a)-LEVEL_ORDER.indexOf(b)), [filteredMatches]);
   const surfaceOptions = useMemo(() => Array.from(new Set(filteredMatches.map(m => m.surface ?? "Unknown")))
@@ -150,8 +150,9 @@ export default function H2HFilters({ mainPlayer, allMatches, loading, error, fil
   const roundOptions = useMemo(() => Array.from(new Set(filteredMatches.map(m => m.round ?? "Unknown")))
     .sort((a,b)=>ROUND_ORDER.indexOf(a)-ROUND_ORDER.indexOf(b)), [filteredMatches]);
   const tournamentOptions = useMemo(() => Array.from(new Set(filteredMatches
-    .filter(m => m.tourney_name && !m.tourney_name.toLowerCase().includes("davis"))
-    .map(m => m.tourney_name)))
+    .map(m => m.tourney_name ?? '')
+    .filter(t => t && !t.toLowerCase().includes("davis"))
+    ))
     .sort(), [filteredMatches]);
 
   return (

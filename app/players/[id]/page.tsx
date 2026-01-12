@@ -99,10 +99,10 @@ export default async function PlayerPage({ params, searchParams }: any) {
   allMatches
     .filter(m => m.winner_id === player.id && m.round === 'F')
     .forEach(m => {
-      titlesByTourney[m.tourney_name] =
-        (titlesByTourney[m.tourney_name] || 0) + 1;
-      titlesByLevel[m.tourney_level] =
-        (titlesByLevel[m.tourney_level] || 0) + 1;
+      const tn = m.tourney_name ?? '';
+      titlesByTourney[tn] = (titlesByTourney[tn] || 0) + 1;
+      const lvl = m.tourney_level ?? '';
+      titlesByLevel[lvl] = (titlesByLevel[lvl] || 0) + 1;
     });
 
   const siteUrl = 'https://stats.tennismylife.org';

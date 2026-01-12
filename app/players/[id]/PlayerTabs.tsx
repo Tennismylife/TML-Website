@@ -32,7 +32,7 @@ export default function PlayerTabs({ player, tabs, initialTab, setTab, tournamen
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const tabParam = searchParams.get("tab");
+  const tabParam = searchParams?.get("tab");
 
   const activeTab = useMemo(() => {
     const tab = tabParam || initialTab || "profile";
@@ -43,7 +43,7 @@ export default function PlayerTabs({ player, tabs, initialTab, setTab, tournamen
 
   const handleTabClick = (tabId: string) => {
     // Build a new query string based on current search params
-    const params = new URLSearchParams(Array.from(searchParams.entries()));
+    const params = new URLSearchParams(Array.from(searchParams?.entries() ?? []));
     params.set("tab", tabId);
     if (tabId !== "tournaments") params.delete("sub");
 

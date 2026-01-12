@@ -193,10 +193,10 @@ export default function FiltersComponent({
   });
 
   useEffect(() => {
-    const surfaces = searchParams.getAll("surface");
-    const levelParams = searchParams.getAll("level");
-    const rounds = searchParams.get("round");
-    const bestOf = searchParams.get("bestOf") ? Number(searchParams.get("bestOf")) : null;
+    const surfaces = searchParams?.getAll("surface") ?? [];
+    const levelParams = searchParams?.getAll("level") ?? [];
+    const rounds = searchParams?.get("round") ?? "";
+    const bestOf = searchParams?.get("bestOf") ? Number(searchParams?.get("bestOf")) : null;
 
     // Map level param labels (e.g. "Grand-Slam") back to keys (e.g. 'G') so the UI highlighting works
     const levelKeys = levelParams.map(p => {
@@ -225,10 +225,10 @@ export default function FiltersComponent({
 
     // Preserve incoming tab/subtab value but normalize to use only `subtab` in the URL
     // If an older client provided `tab` we convert it to `subtab` and do NOT write `tab`.
-    const incomingTabKey = searchParams.has("subtab") ? "subtab" : (searchParams.has("tab") ? "tab" : null);
+    const incomingTabKey = searchParams?.has("subtab") ? "subtab" : (searchParams?.has("tab") ? "tab" : null);
     let incomingSubtab: string | null = null;
     if (incomingTabKey) {
-      const incomingValue = searchParams.get(incomingTabKey);
+      const incomingValue = searchParams?.get(incomingTabKey);
       if (incomingValue) {
         // Normalize to canonical `subtab` key only
         params.set("subtab", incomingValue);

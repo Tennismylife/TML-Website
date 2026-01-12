@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
         select: { id: true, atpname: true, ioc: true },
       });
 
-      return NextResponse.json({ h2h: enrichH2H(output, players) });
+      return NextResponse.json({ h2h: enrichH2H(output, players.map(p => ({ id: p.id, atpname: p.atpname ?? '', ioc: p.ioc ?? '' }))) });
     }
 
     // --- CASO 2: multi-filtro, calcolo H2H dinamico ---
@@ -98,6 +98,7 @@ export async function GET(request: NextRequest) {
     for (const m of matches) {
       const winnerId = m.winner_id;
       const loserId = m.loser_id;
+      if (!winnerId || !loserId) continue;
       const [p1, p2] = winnerId < loserId ? [winnerId, loserId] : [loserId, winnerId];
       const key = `${p1}_${p2}`;
 
@@ -117,7 +118,7 @@ export async function GET(request: NextRequest) {
       select: { id: true, atpname: true, ioc: true },
     });
 
-    return NextResponse.json({ h2h: enrichH2H(h2hArray, players) });
+    return NextResponse.json({ h2h: enrichH2H(h2hArray, players.map(p => ({ id: p.id, atpname: p.atpname ?? '', ioc: p.ioc ?? '' }))) });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

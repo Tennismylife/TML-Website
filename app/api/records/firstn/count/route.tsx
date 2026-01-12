@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
         if (!playerMatches.has(key)) {
           playerMatches.set(key, {
             id: key,
-            name: match.winner_name,
+            name: match.winner_name ?? '',
             ioc: match.winner_ioc ?? "",
             matches: [],
           });
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
         if (!playerMatches.has(key)) {
           playerMatches.set(key, {
             id: key,
-            name: match.loser_name,
+            name: match.loser_name ?? '',
             ioc: match.loser_ioc ?? "",
             matches: [],
           });
@@ -83,10 +83,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Prepara i record con match ordinati
-    const records = [];
+    const records: any[] = [];
     for (const [playerId, data] of playerMatches) {
       // Ordina i match per data crescente
-      data.matches.sort((a, b) => new Date(a.tourney_date).getTime() - new Date(b.tourney_date).getTime());
+      data.matches.sort((a, b) => (a.tourney_date ? new Date(a.tourney_date).getTime() : 0) - (b.tourney_date ? new Date(b.tourney_date).getTime() : 0));
 
       records.push({
         player: { id: playerId, name: data.name, ioc: data.ioc },

@@ -5,10 +5,11 @@ import DropdownNavSelect from '@/components/DropdownNavSelect';
 
 function formatDate(d: Date) { return d.toISOString().slice(0,10); }
 
-export default async function StreakTop({ searchParams }: { searchParams?: Record<string,string | string[]> }) {
-  const top = Number((searchParams?.top as string) ?? 2);
+export default async function StreakTop({ searchParams }: { searchParams?: Promise<Record<string,string | string[]>> }) {
+  const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
+  const top = Number((sp.top as string) ?? 2);
   const perPage = 20;
-  const page = Number((searchParams?.page as string) ?? 1);
+  const page = Number((sp.page as string) ?? 1);
 
   // replicate API logic server-side
   const allRankings = await prisma.ranking.findMany({

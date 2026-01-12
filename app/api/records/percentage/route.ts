@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
     winners.forEach(w => {
       const key = String(w.winner_id);
       statsMap.set(key, {
-        id: w.winner_id,
+        id: String(w.winner_id),
         name: w.winner_name ?? '',
         ioc: w.winner_ioc ?? '',
         wins: w._count.winner_id,
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
       const key = String(l.loser_id);
       if (!statsMap.has(key)) {
         statsMap.set(key, {
-          id: l.loser_id,
+          id: String(l.loser_id),
           name: l.loser_name ?? '',
           ioc: l.loser_ioc ?? '',
           wins: 0,

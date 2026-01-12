@@ -28,19 +28,20 @@ function diffYMD(birth: Date, ref: Date) {
   return { y, m, d };
 }
 
-export default async function OldestAtRank({ searchParams }: { searchParams?: Record<string, string | string[]> }) {
-  const rank = Number((searchParams?.rank as string) ?? 1);
-  const limit = Math.min(500, Math.max(1, Number((searchParams?.limit as string) ?? 200)));
+export default async function OldestAtRank({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
+  const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
+  const rank = Number((sp.rank as string) ?? 1);
+  const limit = Math.min(500, Math.max(1, Number((sp.limit as string) ?? 200)));
 
   let rankings: Array<any> = [];
   try {
     rankings = await prisma.ranking.findMany({
       where: {
         rank,
-        ...(searchParams?.fromYear || searchParams?.toYear
+        ...(sp.fromYear || sp.toYear
           ? { rankingDate: { date: {
-              ...(searchParams?.fromYear ? { gte: new Date(Date.UTC(Number(searchParams.fromYear as string), 0, 1)) } : {}),
-              ...(searchParams?.toYear ? { lt: new Date(Date.UTC(Number(searchParams.toYear as string) + 1, 0, 1)) } : {}),
+              ...(sp.fromYear ? { gte: new Date(Date.UTC(Number(sp.fromYear as string), 0, 1)) } : {}),
+              ...(sp.toYear ? { lt: new Date(Date.UTC(Number(sp.toYear as string) + 1, 0, 1)) } : {}),
             } } }
           : {}),
       },
@@ -75,7 +76,7 @@ export default async function OldestAtRank({ searchParams }: { searchParams?: Re
   }).sort((a, b) => b.ageDays - a.ageDays || a.name.localeCompare(b.name, 'en', { sensitivity: 'base' })).slice(0, limit);
 
   const perPage = 20;
-  const page = Number((searchParams?.page as string) ?? '1');
+  const page = Number((sp.page as string) ?? '1');
   const totalPages = Math.ceil(data.length / perPage);
   const start = (page - 1) * perPage;
   const paginatedRows = data.slice(start, start + perPage);

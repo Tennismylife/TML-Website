@@ -135,7 +135,7 @@ export default function PlayerTabsClient({ player }: PlayerTabsClientProps) {
       {/* Player Info */}
       <div className="bg-gray-800/80 text-gray-100 shadow-lg rounded-xl p-6 flex flex-col gap-4 border border-gray-700">
         <div className="grid grid-cols-2 gap-2 text-sm text-gray-200">
-          <div>Age: {calculateAge(player.birthdate)}</div>
+          <div>Age: {calculateAge(player.birthdate ?? undefined)}</div>
           <div>Hand: {player.hand === "R" ? "Right" : player.hand === "L" ? "Left" : "N/A"}</div>
           <div>Backhand: {getBackhandLabel(player.backhand)}</div>
           <div>Height: {player.height ? `${player.height} cm` : "N/A"}</div>

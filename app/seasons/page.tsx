@@ -122,7 +122,7 @@ export default function SeasonsPage() {
               {/* Vincitori Slam */}
               <div className="mt-4 flex flex-col gap-2">
                 {(season.slam_winners ?? []).map((sw) => {
-                  const flag = getFlagFromIOC(sw.winner_ioc ?? null) || "🏳️";
+                  const flag = getFlagFromIOC(sw.winner_ioc ?? undefined) || "🏳️";
                   return (
                     <div
                       key={`${season.year}-${sw.code}-${sw.tourney_date}`}

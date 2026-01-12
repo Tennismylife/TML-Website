@@ -98,6 +98,7 @@ export async function GET(req: Request) {
     const bestByPlayer = new Map<string, MaxRec>();
 
     for (const r of rows) {
+      if (!r.player) continue;
       const id = String(r.playerId);
       const birth = r.player.birthdate;
       if (!birth) continue;
@@ -110,7 +111,7 @@ export async function GET(req: Request) {
       const prev = bestByPlayer.get(id);
       if (!prev || ageDays > prev.ageDays || (ageDays === prev.ageDays && ref > prev.date)) {
         bestByPlayer.set(id, {
-          name: r.player.atpname,
+          name: r.player.atpname ?? '',
           ioc: r.player.ioc,
           year: recYear,
           date: ref,

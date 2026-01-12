@@ -74,24 +74,26 @@ export async function GET(request: NextRequest) {
           const playerData = playerTournaments.get(playerId)!;
           const tMap = playerData.tournaments;
           const eId = m.event_id;
-          const roundValue = roundOrder[m.round] || 0;
+          if (!eId) return;
+          const roundValue = roundOrder[String(m.round)] ?? 0;
 
+          const tDate = m.tourney_date ? new Date(m.tourney_date) : new Date(0);
           if (!tMap.has(eId)) {
-            tMap.set(eId, { event_id: eId, date: new Date(m.tourney_date), maxRoundValue: roundValue, maxRound: m.round });
+            tMap.set(eId, { event_id: eId, date: tDate, maxRoundValue: roundValue, maxRound: m.round ?? '' });
           } else {
             const existing = tMap.get(eId)!;
             if (roundValue > existing.maxRoundValue) {
               existing.maxRoundValue = roundValue;
-              existing.maxRound = m.round;
+              existing.maxRound = m.round ?? existing.maxRound;
             }
           }
         };
 
-        if (m.winner_id) processPlayer(String(m.winner_id), m.winner_name, m.winner_ioc ?? '');
-        if (m.loser_id) processPlayer(String(m.loser_id), m.loser_name, m.loser_ioc ?? '');
+        if (m.winner_id) processPlayer(String(m.winner_id), m.winner_name ?? '', m.winner_ioc ?? '');
+        if (m.loser_id) processPlayer(String(m.loser_id), m.loser_name ?? '', m.loser_ioc ?? '');
       }
 
-      const allStreaks = [];
+      const allStreaks: any[] = [];
 
       for (const [playerId, playerData] of playerTournaments) {
         const tournaments = Array.from(playerData.tournaments.values()).sort((a, b) => a.date.getTime() - b.date.getTime());

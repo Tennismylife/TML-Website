@@ -19,17 +19,18 @@ function diffYMD(birth: Date, ref: Date) {
   return { y, m, d };
 }
 
-export default async function OldestEoyAtRank({ searchParams }: { searchParams?: Record<string,string | string[]> }) {
-  const rank = Number((searchParams?.rank as string) ?? 1);
+export default async function OldestEoyAtRank({ searchParams }: { searchParams?: Promise<Record<string,string | string[]>> }) {
+  const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
+  const rank = Number((sp.rank as string) ?? 1);
   const perPage = 20;
-  const page = Number((searchParams?.page as string) ?? 1);
+  const page = Number((sp.page as string) ?? 1);
   const limit = 200;
 
   // validate
   if (!Number.isInteger(rank) || rank < 1) return (<section className="mb-8"><div className="text-gray-400 py-4 text-center">Invalid rank</div></section>);
 
-  const fromYear = searchParams?.fromYear ? Number(searchParams.fromYear as string) : null;
-  const toYear = searchParams?.toYear ? Number(searchParams.toYear as string) : null;
+  const fromYear = sp.fromYear ? Number(sp.fromYear as string) : null;
+  const toYear = sp.toYear ? Number(sp.toYear as string) : null;
 
   const dateWhere: any = {};
   if (fromYear !== null) dateWhere.gte = new Date(Date.UTC(fromYear,0,1));
@@ -52,6 +53,7 @@ export default async function OldestEoyAtRank({ searchParams }: { searchParams?:
   const bestByPlayer = new Map<string, MaxRec>();
 
   for (const r of rows) {
+    if (!r.player) continue;
     const id = String(r.playerId);
     const birth = r.player.birthdate;
     if (!birth) continue;
@@ -61,7 +63,7 @@ export default async function OldestEoyAtRank({ searchParams }: { searchParams?:
     const recYear = yearById.get(r.rankingDateId)!;
     const prev = bestByPlayer.get(id);
     if (!prev || ageDays > prev.ageDays || (ageDays === prev.ageDays && ref > prev.date)) {
-      bestByPlayer.set(id, { name: r.player.atpname, ioc: r.player.ioc, year: recYear, date: ref, birth, ageDays });
+      bestByPlayer.set(id, { name: r.player.atpname ?? '', ioc: r.player.ioc, year: recYear, date: ref, birth, ageDays });
     }
   }
 

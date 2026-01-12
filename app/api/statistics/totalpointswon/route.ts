@@ -122,8 +122,8 @@ export async function GET(request: NextRequest) {
     for (const p of players) {
       const current = map.get(p.id);
       if (current) {
-        current.name = p.atpname;
-        current.ioc = p.ioc;
+        current.name = p.atpname ?? '';
+        current.ioc = p.ioc ?? '';
       }
     }
 

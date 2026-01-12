@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
     matches.forEach(m => {
       if (m.round === 'F' && m.winner_id && m.year) {
         if (!seasonsMap.has(m.winner_id)) {
-          seasonsMap.set(m.winner_id, { name: m.winner_name, ioc: m.winner_ioc, seasonsCount: {} });
+          seasonsMap.set(m.winner_id, { name: m.winner_name ?? '', ioc: m.winner_ioc ?? '', seasonsCount: {} });
         }
         const player = seasonsMap.get(m.winner_id)!;
         player.seasonsCount[m.year] = (player.seasonsCount[m.year] || 0) + 1;

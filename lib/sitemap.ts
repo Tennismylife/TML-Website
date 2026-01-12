@@ -72,8 +72,8 @@ export async function getSitemapUrls() {
     distinct: ['tourney_id', 'year'], // una sola volta per edizione
   });
   const editionUrls = editions
-    .filter(e => e.tourney_id && e.year && tournamentMap[e.tourney_id])
-    .map(e => `/tournaments/${tournamentMap[e.tourney_id]}/${e.year}`);
+    .filter(e => e.tourney_id && e.year && tournamentMap[String(e.tourney_id)])
+    .map(e => `/tournaments/${tournamentMap[String(e.tourney_id)]}/${e.year}`);
 
   // --- RECORDS DINAMICI ---
   let recordUrls: string[] = [];

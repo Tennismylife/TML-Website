@@ -87,8 +87,9 @@ export function checkRank(myRank: number | null, oppRank: number | null, rankFil
   }
 }
 
-export function filterByAge(myAge: number, oppAge: number, vsAge?: string) {
+export function filterByAge(myAge?: number, oppAge?: number, vsAge?: string) {
   if (!vsAge) return true;
+  if (myAge == null || oppAge == null) return false;
   switch (vsAge) {
     case "Younger": return oppAge < myAge;
     case "Older": return oppAge > myAge;

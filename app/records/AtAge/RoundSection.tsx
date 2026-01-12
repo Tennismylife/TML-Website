@@ -170,7 +170,7 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
 
   const getPlayerLink = (playerId: string) => {
     let link = `/players/${playerId}?tab=matches`;
-    for (const [key, value] of searchParams.entries()) {
+    for (const [key, value] of (searchParams?.entries() ?? [])) {
       if (!value || key === "tab") continue;
       link += `&${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
     }

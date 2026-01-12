@@ -9,8 +9,9 @@ interface YearEndMaxPointsItem {
   year: number | string;
 }
 
-export default async function No1YearEndMaxPointsRanking({ searchParams }: { searchParams?: Record<string, string | string[]> }) {
-  const includeAll = (searchParams?.includeAll as string) === '1';
+export default async function No1YearEndMaxPointsRanking({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
+  const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
+  const includeAll = (sp.includeAll as string) === '1';
 
   // Server-side replication of API logic
   const allDates = await prisma.rankingDate.findMany({ select: { date: true }, orderBy: { date: 'asc' } });

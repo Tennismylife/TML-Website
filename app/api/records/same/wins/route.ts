@@ -135,13 +135,14 @@ export async function GET(request: NextRequest) {
 
       if (matches.length > 0) {
         const groupedMap = matches.reduce((acc, m) => {
-          const key = `${m.winner_id}_${m.tourney_id}`;
+          if (!m.winner_id) return acc;
+          const key = `${String(m.winner_id)}_${String(m.tourney_id ?? '')}`;
           if (!acc[key])
             acc[key] = {
-              player_id: m.winner_id,
-              player_name: m.winner_name,
-              tourney_id: m.tourney_id,
-              tourney_name: m.tourney_name,
+              player_id: String(m.winner_id),
+              player_name: m.winner_name ?? '',
+              tourney_id: m.tourney_id ?? '',
+              tourney_name: m.tourney_name ?? '',
               total_wins: 0,
               surface: null,
               tourney_level: null,

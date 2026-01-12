@@ -65,15 +65,15 @@ export async function GET(request: NextRequest) {
       { winner: { id: string; name: string; ioc: string }; date: Date; name: string }
     >();
     for (const f of finals) {
-      if (f.winner_id && f.tourney_date) {
+      if (f.winner_id && f.tourney_date && f.tourney_id) {
         tournamentWinners.set(f.tourney_id, {
           winner: {
             id: String(f.winner_id),
-            name: f.winner_name,
+            name: f.winner_name ?? '',
             ioc: f.winner_ioc ?? "",
           },
           date: new Date(f.tourney_date),
-          name: f.tourney_name,
+          name: f.tourney_name ?? '',
         });
       }
     }
@@ -97,6 +97,7 @@ export async function GET(request: NextRequest) {
     // Raggruppo i match per torneo
     const matchesByTournament = new Map<string, typeof allMatches>();
     for (const m of allMatches) {
+      if (!m.tourney_id) continue;
       if (!matchesByTournament.has(m.tourney_id)) {
         matchesByTournament.set(m.tourney_id, []);
       }
@@ -104,13 +105,13 @@ export async function GET(request: NextRequest) {
     }
 
     // Calcolo i break point faced in ogni torneo
-    const records = [];
+    const records: any[] = [];
     for (const [tId, data] of tournamentWinners) {
       const winnerId = data.winner.id;
       const matches = matchesByTournament.get(tId) ?? [];
 
       let totalBreakPointsFaced = 0;
-      const matchList = [];
+      const matchList: any[] = [];
       let hasValues = true;
       for (const m of matches) {
         if (String(m.winner_id) === winnerId) {

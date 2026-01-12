@@ -69,7 +69,7 @@ export default function AverageAgeSection({ id }: { id: string }) {
   const yMax = Math.ceil(maxAge + 1);   // es. 28.7 → 30
 
   // Generiamo tick solo interi, ogni anno
-  const yTicks = [];
+  const yTicks: number[] = [];
   for (let i = yMin; i <= yMax; i++) {
     yTicks.push(i);
   }

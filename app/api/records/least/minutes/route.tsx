@@ -70,22 +70,22 @@ export async function GET(request: NextRequest) {
     const tournamentWinnersMap = new Map<string, TournamentRecord>();
 
     for (const m of matches) {
-      if (!m.winner_id || !m.tourney_date) continue;
-      const key = `${m.tourney_id}-${m.tourney_date.toISOString().slice(0, 10)}`;
+      if (!m.winner_id || !m.tourney_date || !m.tourney_id) continue;
+      const key = `${String(m.tourney_id)}-${m.tourney_date.toISOString().slice(0, 10)}`;
       if (!tournamentWinnersMap.has(key)) {
         const total = totals.find(
           (t) =>
-            t.tourney_id === m.tourney_id &&
+            String(t.tourney_id) === String(m.tourney_id) &&
             String(t.winner_id) === String(m.winner_id)
         )?._sum.minutes ?? 0;
 
         tournamentWinnersMap.set(key, {
-          player: { id: String(m.winner_id), name: m.winner_name, ioc: m.winner_ioc ?? "" },
+          player: { id: String(m.winner_id), name: m.winner_name ?? "", ioc: m.winner_ioc ?? "" },
           totalMinutes: total,
-          tournament: m.tourney_name,
+          tournament: m.tourney_name ?? "",
           year: m.tourney_date.getFullYear(),
           date: m.tourney_date.toISOString().slice(0, 10),
-          tourney_id: m.tourney_id,
+          tourney_id: String(m.tourney_id),
         });
       }
     }

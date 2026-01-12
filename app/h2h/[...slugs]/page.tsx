@@ -36,6 +36,7 @@ export default function H2HPage() {
   useEffect(() => {
     const loadPlayersFromSlugs = async () => {
       try {
+        if (!pathname) return;
         // Extract slugs from pathname: /h2h/player1-vs-player2 -> ['player1-vs-player2']
         const pathParts = pathname.split('/').filter(Boolean);
         if (pathParts.length < 2 || pathParts[0] !== 'h2h') return;
@@ -58,8 +59,8 @@ export default function H2HPage() {
           fetch(`/api/players/search?slug=${encodeURIComponent(player2Slug)}`).then(res => res.ok ? res.json() : null)
         ]);
 
-        if (p1Data?.player) setPlayer1(p1Data.player);
-        if (p2Data?.player) setPlayer2(p2Data.player);
+        if (p1Data?.player) setPlayer1({ ...p1Data.player, atpname: p1Data.player.atpname ?? '' });
+        if (p2Data?.player) setPlayer2({ ...p2Data.player, atpname: p2Data.player.atpname ?? '' });
 
       } catch (error) {
         console.error('Error parsing H2H URL:', error);
@@ -97,7 +98,7 @@ export default function H2HPage() {
 
   // --- Clean URL by removing default parameters ---
   useEffect(() => {
-    if (!pathname.startsWith('/h2h/')) return;
+    if (!pathname || !pathname.startsWith('/h2h/')) return;
     
     const currentParams = new URLSearchParams(window.location.search);
     let hasChanges = false;
@@ -163,10 +164,11 @@ export default function H2HPage() {
   };
   const sortedMatches = useMemo(() => {
     if (!matches.length) return [];
+    if (sortKey === null) return [...matches];
 
     return [...matches].sort((a, b) => {
-      let aVal: any = a[sortKey];
-      let bVal: any = b[sortKey];
+      let aVal: any = a[sortKey as keyof typeof a];
+      let bVal: any = b[sortKey as keyof typeof b];
 
       if (sortKey === "tourney_date") {
         aVal = new Date(aVal);

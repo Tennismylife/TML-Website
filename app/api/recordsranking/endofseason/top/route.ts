@@ -107,13 +107,14 @@ export async function GET(req: Request) {
     const agg = new Map<string, Agg>(); // playerId come stringa
 
     for (const r of rows) {
+      if (!r.player) continue;
       const id = String(r.playerId);
       const year = r.rankingDate.date.getUTCFullYear();
 
       let a = agg.get(id);
       if (!a) {
         a = {
-          name: r.player.atpname,
+          name: r.player.atpname ?? '',
           ioc: r.player.ioc,
           endYearTopCount: 0,
           seasons: new Set<number>(),

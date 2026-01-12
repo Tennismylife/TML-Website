@@ -75,11 +75,12 @@ export async function GET(req: Request) {
     const byPlayer = new Map<string, Agg>();
 
     for (const r of rows) {
+      if (!r.player) continue;
       const id   = String(r.playerId);
       const year = yearById.get(r.rankingDateId)!;
       const prev = byPlayer.get(id);
       if (!prev) {
-        byPlayer.set(id, { name: r.player.atpname, ioc: r.player.ioc, firstYear: year, lastYear: year });
+        byPlayer.set(id, { name: r.player.atpname ?? '', ioc: r.player.ioc, firstYear: year, lastYear: year });
       } else {
         if (year < prev.firstYear) prev.firstYear = year;
         if (year > prev.lastYear)  prev.lastYear  = year;

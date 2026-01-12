@@ -2,7 +2,8 @@ import React from 'react';
 import RecordsRankingClient from './RecordsRankingClient';
 import Count from "./Count/page";
 
-export default async function RecordsRankingPage({ searchParams }: { searchParams?: Record<string, string | string[]> }) {
+export default async function RecordsRankingPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
+  const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
   // default server-rendered content is Count
   return (
     <main>

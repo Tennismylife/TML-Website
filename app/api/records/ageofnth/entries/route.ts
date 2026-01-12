@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
             numeric_age: ageNum,
           };
         })
-        .filter(Boolean)
+        .filter((x): x is { id: string; name: string; ioc: string; age_at_entry: string; numeric_age: number } => x != null)
         .sort((a, b) => a.numeric_age - b.numeric_age)
         .slice(0, limit)
         .map(({ numeric_age, ...rest }) => rest);
@@ -151,7 +151,7 @@ export async function GET(request: NextRequest) {
           numeric_age: age,
         };
       })
-      .filter(Boolean)
+      .filter((x): x is { id: string; name: string; ioc: string; age_at_entry: string; numeric_age: number } => x != null)
       .sort((a, b) => a.numeric_age - b.numeric_age)
       .slice(0, limit)
       .map(({ numeric_age, ...rest }) => rest);

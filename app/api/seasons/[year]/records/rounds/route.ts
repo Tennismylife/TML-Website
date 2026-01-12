@@ -48,18 +48,22 @@ export async function GET(request: Request, context: { params: Promise<{ year: s
     }[] = [];
 
     matches.forEach(m => {
-      allPlayers.push({
-        round: m.round,
-        id: m.winner_id,
-        name: m.winner_name,
-        ioc: m.winner_ioc || '',
-      });
-      allPlayers.push({
-        round: m.round,
-        id: m.loser_id,
-        name: m.loser_name,
-        ioc: m.loser_ioc || '',
-      });
+      if (m.winner_id) {
+        allPlayers.push({
+          round: m.round ?? '',
+          id: String(m.winner_id),
+          name: m.winner_name ?? '',
+          ioc: m.winner_ioc ?? '',
+        });
+      }
+      if (m.loser_id) {
+        allPlayers.push({
+          round: m.round ?? '',
+          id: String(m.loser_id),
+          name: m.loser_name ?? '',
+          ioc: m.loser_ioc ?? '',
+        });
+      }
     });
 
     // Raggruppa in memoria e conta le presenze per round

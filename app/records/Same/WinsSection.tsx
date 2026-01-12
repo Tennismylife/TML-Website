@@ -84,7 +84,7 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
 
   const getPlayerLink = (playerId: string) => {
     const params: string[] = [];
-    for (const [key, value] of searchParams.entries()) {
+    for (const [key, value] of (searchParams?.entries() ?? [])) {
       if (key === 'tab') continue;
       params.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
     }

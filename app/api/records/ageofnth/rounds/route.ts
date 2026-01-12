@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
       if (m.winner_id && m.winner_age != null) {
         const id = String(m.winner_id);
         if (!playerRounds.has(id)) {
-          playerRounds.set(id, { name: m.winner_name, ioc: m.winner_ioc ?? '', ages: [] });
+          playerRounds.set(id, { name: m.winner_name ?? '', ioc: m.winner_ioc ?? '', ages: [] });
         }
         playerRounds.get(id)!.ages.push(m.winner_age);
       }
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
       if (m.loser_id && m.loser_age != null) {
         const id = String(m.loser_id);
         if (!playerRounds.has(id)) {
-          playerRounds.set(id, { name: m.loser_name, ioc: m.loser_ioc ?? '', ages: [] });
+          playerRounds.set(id, { name: m.loser_name ?? '', ioc: m.loser_ioc ?? '', ages: [] });
         }
         playerRounds.get(id)!.ages.push(m.loser_age);
       }

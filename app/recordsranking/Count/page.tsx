@@ -10,9 +10,10 @@ interface Player {
   weeks: number;
 }
 
-export default async function RecordsCount({ searchParams }: { searchParams?: Record<string, string | string[]> }) {
-  const initialTop = Number((searchParams?.rank as string) ?? 1);
-  const page = Number((searchParams?.page as string) ?? '1');
+export default async function RecordsCount({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
+  const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
+  const initialTop = Number((sp.rank as string) ?? 1);
+  const page = Number((sp.page as string) ?? '1');
   const perPage = 20;
 
   // Server-side query (same logic as API route)

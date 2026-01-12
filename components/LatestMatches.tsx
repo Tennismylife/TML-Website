@@ -101,8 +101,8 @@ export default function LatestMatches() {
               ) : (
                 recentMatches.map((m) => {
                   const tourneyId = m.tourney_id ?? null;
-                  const winnerFlag = getFlagFromIOC(m.winner_ioc) ?? "";
-                  const loserFlag = getFlagFromIOC(m.loser_ioc) ?? "";
+                  const winnerFlag = getFlagFromIOC(m.winner_ioc ?? undefined) ?? "";
+                  const loserFlag = getFlagFromIOC(m.loser_ioc ?? undefined) ?? "";
 
                   return (
                     <tr

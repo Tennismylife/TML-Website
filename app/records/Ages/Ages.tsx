@@ -9,7 +9,7 @@ interface AgesProps {
   selectedSurfaces: Set<string>;
   selectedLevels: Set<string>;
   selectedRounds: string;
-  activeSubTab: string;
+  activeSubTab?: string;
   fetchEnabled?: boolean;
   fetchRequestId?: string | null;
   description?: string;

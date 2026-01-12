@@ -55,7 +55,7 @@ export default function SeasonRecordsPage({ params }: { params: Promise<{ year: 
 
   // Sync tab state with URL 'tab' param and update URL when tabs change
   useEffect(() => {
-    const tabParam = searchParams.get("tab");
+    const tabParam = searchParams?.get("tab");
     if (!tabParam) return;
 
     let target = tabParam;
@@ -85,7 +85,7 @@ export default function SeasonRecordsPage({ params }: { params: Promise<{ year: 
   }, [searchParams]);
 
   const updateUrl = (tabKey: string) => {
-    const params = new URLSearchParams(Array.from(searchParams.entries()));
+    const params = new URLSearchParams(Array.from(searchParams?.entries() ?? []));
     params.set("tab", tabKey);
     const qs = params.toString();
     router.push(`${pathname}${qs ? `?${qs}` : ""}`);

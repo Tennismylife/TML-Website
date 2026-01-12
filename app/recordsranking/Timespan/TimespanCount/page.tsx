@@ -18,15 +18,16 @@ function diffYMD(birth: Date, ref: Date) {
   return { y, m, d };
 }
 
-export default async function RankTimespan({ searchParams }: { searchParams?: Record<string, string | string[]> }) {
-  const rank = Number((searchParams?.rank as string) ?? 1);
-  const includeAll = (searchParams?.includeAll as string) === '1';
-  const eoy = (searchParams?.eoy as string) === '1';
+export default async function RankTimespan({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
+  const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
+  const rank = Number((sp.rank as string) ?? 1);
+  const includeAll = (sp.includeAll as string) === '1';
+  const eoy = (sp.eoy as string) === '1';
 
   // replicate API logic server-side
   const dateBounds: any = {};
-  const fromYear = searchParams?.fromYear ? Number(searchParams.fromYear as string) : null;
-  const toYear = searchParams?.toYear ? Number(searchParams.toYear as string) : null;
+  const fromYear = sp.fromYear ? Number(sp.fromYear as string) : null;
+  const toYear = sp.toYear ? Number(sp.toYear as string) : null;
   if (fromYear !== null) dateBounds.gte = new Date(Date.UTC(fromYear, 0, 1));
   if (toYear !== null)   dateBounds.lt  = new Date(Date.UTC(toYear + 1, 0, 1));
 

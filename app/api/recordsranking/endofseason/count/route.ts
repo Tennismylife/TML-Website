@@ -62,12 +62,13 @@ export async function GET(req: Request) {
     const agg = new Map<string, Agg>(); // playerId come stringa
 
     for (const r of rows) {
+      if (!r.player) continue;
       const id = String(r.playerId);                     // <-- ID come stringa
       const year = r.rankingDate.date.getUTCFullYear();  // stagione
 
       let a = agg.get(id);
       if (!a) {
-        a = { name: r.player.atpname, ioc: r.player.ioc, endYearCount: 0, seasons: new Set<number>() };
+        a = { name: r.player.atpname ?? '', ioc: r.player.ioc, endYearCount: 0, seasons: new Set<number>() };
         agg.set(id, a);
       }
       a.endYearCount += 1;

@@ -50,7 +50,7 @@ export default function Wins({ topWinners, fetchEnabled, description }: WinsProp
       if (!enabled && !showModal) return;
       setLoading(true);
       try {
-        const params = new URLSearchParams(Array.from(searchParams.entries()));
+        const params = new URLSearchParams(Array.from(searchParams?.entries() ?? []));
         // If parent provided topWinners and we are not in 'View All' modal, use it
         if (!showModal && topWinners && topWinners.length) {
           setAllWinners(topWinners);
@@ -87,7 +87,7 @@ export default function Wins({ topWinners, fetchEnabled, description }: WinsProp
   // Generate player link with filters
   const getLink = (playerId: string) => {
     let link = `/players/${playerId}?tab=matches&result=Win`;
-    for (const [key, value] of searchParams.entries()) {
+    for (const [key, value] of (searchParams?.entries() ?? [])) {
       if (!value || key === "tab") continue;
       if (key === "bestOf") {
         const bestOfValues = value.split(",").filter(Boolean);

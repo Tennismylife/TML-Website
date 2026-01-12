@@ -46,7 +46,7 @@ interface PlayerStat {
 export default function StatisticsInner() {
   const searchParams = useSearchParams();
 
-  const [stat, setStat] = useState(searchParams.get("stat") || "aces");
+  const [stat, setStat] = useState(searchParams?.get("stat") ?? "aces");
   const [surface, setSurface] = useState("all");
   const [year, setYear] = useState("all");
   const [tourneyLevel, setTourneyLevel] = useState("all");

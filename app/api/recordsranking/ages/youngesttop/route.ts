@@ -76,7 +76,7 @@ export async function GET(req: Request) {
       const ageDays = Math.floor((date.getTime() - birth.getTime()) / (1000 * 60 * 60 * 24));
       const prev = bestByPlayer.get(id);
       if (!prev || ageDays < prev.ageDays) {
-        bestByPlayer.set(id, { name: r.player.atpname, ioc: r.player.ioc, date, birth, ageDays });
+        bestByPlayer.set(id, { name: r.player.atpname ?? '', ioc: r.player.ioc, date, birth, ageDays });
       }
     }
 

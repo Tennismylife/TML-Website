@@ -118,7 +118,7 @@ export default function Seasons({ playerId }: SeasonsProps) {
         if (abort) return;
 
         setAllMatches(data);
-        const uniqYears = Array.from(new Set(data.map((m) => m.year))).sort((a, b) => b - a);
+        const uniqYears = Array.from(new Set(data.map((m) => m.year).filter((y): y is number => y != null))).sort((a, b) => b - a);
         setYears(uniqYears);
 
         // If a year is present in URL params and valid -> select it, otherwise default to first year
@@ -170,7 +170,7 @@ export default function Seasons({ playerId }: SeasonsProps) {
     setsAgg,
     gamesAgg,
     tiebreakAgg,
-  } = useYearStats(matchesForStats, selectedYear, playerId);
+  } = useYearStats(matchesForStats, selectedYear ?? "All", playerId);
 
   const matchesIndividual = useMemo(
     () => allMatches.filter((m) => !m.team_event),

@@ -20,13 +20,14 @@ function diffYMD(a: Date, b: Date) {
   return { y, m, d };
 }
 
-export default async function TopXTimespan({ searchParams }: { searchParams?: Record<string, string | string[]> }) {
-  const top = Number((searchParams?.top as string) ?? 5);
-  const includeAll = (searchParams?.includeAll as string) === '1';
-  const eoy = (searchParams?.eoy as string) === '1';
+export default async function TopXTimespan({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
+  const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
+  const top = Number((sp.top as string) ?? 5);
+  const includeAll = (sp.includeAll as string) === '1';
+  const eoy = (sp.eoy as string) === '1';
 
-  const fromYear = searchParams?.fromYear ? Number(searchParams.fromYear as string) : null;
-  const toYear = searchParams?.toYear ? Number(searchParams.toYear as string) : null;
+  const fromYear = sp.fromYear ? Number(sp.fromYear as string) : null;
+  const toYear = sp.toYear ? Number(sp.toYear as string) : null;
   const limit = 200;
 
   if (!Number.isInteger(top) || top < 1) {
@@ -81,7 +82,7 @@ export default async function TopXTimespan({ searchParams }: { searchParams?: Re
 
   const rowsToShow = includeAll ? data : data.slice(0, 20);
   const perPage = 20;
-  const page = Number((searchParams?.page as string) ?? 1);
+  const page = Number((sp.page as string) ?? 1);
   const totalPages = Math.ceil(data.length / perPage);
   const start = (page - 1) * perPage;
   const pageRows = data.slice(start, start + perPage);

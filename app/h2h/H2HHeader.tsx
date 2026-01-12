@@ -4,14 +4,14 @@ import { getFlagFromIOC } from "@/lib/utils";
 import Link from "next/link";
 
 interface Player {
-  atpname: string;
-  ioc: string;     // Aggiunto
+  atpname: string | null;
+  ioc: string | null;     // Aggiunto
   id?: string;     // Opzionale, per il Link
 }
 
 interface Match {
-  winner_name: string;
-  loser_name: string;
+  winner_name: string | null;
+  loser_name: string | null;
 }
 
 interface H2HHeaderProps {
@@ -54,18 +54,18 @@ export default function H2HHeader({
       <div className="flex justify-between items-center mb-6 -mt-2">
         {/* Player 1 - sinistra */}
         <div className="flex items-center gap-3">
-          <span className="text-4xl">{getFlagFromIOC(player1.ioc)}</span>
+          <span className="text-4xl">{getFlagFromIOC(player1.ioc ?? '')}</span>
           <span className="text-xl font-bold text-gray-100">
-            {player1.atpname}
+            {player1.atpname ?? ''}
           </span>
         </div>
 
         {/* Player 2 - destra */}
         <div className="flex items-center gap-3">
           <span className="text-xl font-bold text-gray-100 text-right">
-            {player2.atpname}
+            {player2.atpname ?? ''}
           </span>
-          <span className="text-4xl">{getFlagFromIOC(player2.ioc)}</span>
+          <span className="text-4xl">{getFlagFromIOC(player2.ioc ?? '')}</span>
         </div>
       </div>
 

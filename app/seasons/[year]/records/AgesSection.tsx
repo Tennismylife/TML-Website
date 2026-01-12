@@ -184,8 +184,8 @@ export default function AgeSection({ year, selectedSurfaces, selectedLevels, act
 
   const { topOldest, topYoungest, sortedOldest, sortedYoungest, allYoungestItems, allOldestItems, topOldestTitles, topYoungestTitles } = agesData;
 
-  const mainOldest = sortedOldest.length ? sortedOldest : topOldest ?? [];
-  const mainYoungest = sortedYoungest.length ? sortedYoungest : topYoungest ?? [];
+  const mainOldest = (sortedOldest && sortedOldest.length) ? sortedOldest : (topOldest ?? []);
+  const mainYoungest = (sortedYoungest && sortedYoungest.length) ? sortedYoungest : (topYoungest ?? []);
 
   return (
     <section className="mb-4">

@@ -79,7 +79,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
 
   const getLink = (playerId: string) => {
     const params: Record<string, string> = {};
-    for (const [key, value] of searchParams.entries()) {
+    for (const [key, value] of (searchParams?.entries() ?? [])) {
       if (key === 'tab') continue;
       params[key] = value;
     }

@@ -3,17 +3,17 @@ import { prisma } from '@/lib/prisma';
 import { getFlagFromIOC } from '@/lib/utils';
 import DropdownNavSelect from '../../../../components/DropdownNavSelect';
 
-type Props = { searchParams?: Record<string,string | string[]> };
+type Props = { searchParams?: Promise<Record<string,string | string[]>> };
 
 export default async function RecordsTopX(props: Props) {
-  const searchParams = props.searchParams;
-  const top = Number((searchParams?.top as string) ?? 2);
+  const sp = await Promise.resolve(props.searchParams ?? {}) as Record<string, string | string[]>;
+  const top = Number((sp.top as string) ?? 2);
   const perPage = 20;
-  const page = Number((searchParams?.page as string) ?? 1);
+  const page = Number((sp.page as string) ?? 1);
 
   // port API logic server-side
-  const fromYear = searchParams?.fromYear ? Number(searchParams.fromYear as string) : null;
-  const toYear = searchParams?.toYear ? Number(searchParams.toYear as string) : null;
+  const fromYear = sp.fromYear ? Number(sp.fromYear as string) : null;
+  const toYear = sp.toYear ? Number(sp.toYear as string) : null;
   const dateWhere: any = {};
   if (fromYear !== null) dateWhere.gte = new Date(Date.UTC(fromYear,0,1));
   if (toYear !== null)   dateWhere.lt  = new Date(Date.UTC(toYear+1,0,1));
@@ -39,7 +39,7 @@ export default async function RecordsTopX(props: Props) {
     const id = String(r.playerId);
     const year = r.rankingDate.date.getUTCFullYear();
     let a = agg.get(id);
-    if (!a) { a = { name: r.player.atpname, ioc: r.player.ioc, endYearTopCount: 0, seasons: new Set() }; agg.set(id, a); }
+    if (!a) { if (!r.player) continue; a = { name: r.player.atpname ?? '', ioc: r.player.ioc ?? null, endYearTopCount: 0, seasons: new Set() }; agg.set(id, a); }
     if (!a.seasons.has(year)) { a.seasons.add(year); a.endYearTopCount += 1; }
   }
 

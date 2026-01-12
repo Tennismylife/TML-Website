@@ -148,8 +148,8 @@ export default function MatchTable({
       }
 
       // Generic sort for other keys (string/number fields)
-      const av = (a as any)[sortKey];
-      const bv = (b as any)[sortKey];
+      const av = typeof sortKey === 'string' ? (a as any)[sortKey] : null;
+      const bv = typeof sortKey === 'string' ? (b as any)[sortKey] : null;
       if (av == null && bv == null) return 0;
       if (av == null) return 1 * dir;
       if (bv == null) return -1 * dir;
@@ -237,22 +237,22 @@ export default function MatchTable({
                   <td className={tdBase}>{m.round}</td>
                   <td className={tdBase}>{m.winner_rank ?? "-"}</td>
                   <td className={tdBase}>
-                    <span className="mr-1">{getFlagFromIOC(m.winner_ioc)}</span>
+                    <span className="mr-1">{getFlagFromIOC(m.winner_ioc ?? undefined)}</span>
                     <Link
                       href={`/players/${m.winner_id}`}
                       className={m.winner_id === playerId ? "font-bold text-green-600" : ""}
                     >
-                      {renderNameWithSeedEntry(m.winner_name, m.winner_seed, m.winner_entry)}
+                      {renderNameWithSeedEntry(m.winner_name ?? "", m.winner_seed, m.winner_entry)}
                     </Link>
                   </td>
                   <td className={tdBase}>{m.loser_rank ?? "-"}</td>
                   <td className={tdBase}>
-                    <span className="mr-1">{getFlagFromIOC(m.loser_ioc)}</span>
+                    <span className="mr-1">{getFlagFromIOC(m.loser_ioc ?? undefined)}</span>
                     <Link
                       href={`/players/${m.loser_id}`}
                       className={m.loser_id === playerId ? "font-bold text-red-600" : ""}
                     >
-                      {renderNameWithSeedEntry(m.loser_name, m.loser_seed, m.loser_entry)}
+                      {renderNameWithSeedEntry(m.loser_name ?? "", m.loser_seed, m.loser_entry)}
                     </Link>
                   </td>
                   <td className={tdBase}>{m.score}</td>

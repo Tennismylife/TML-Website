@@ -9,8 +9,9 @@ interface No1MaxPointsItem {
   date: string;
 }
 
-export default async function No1MaxPointsRanking({ searchParams }: { searchParams?: Record<string, string | string[]> }) {
-  const includeAll = (searchParams?.includeAll as string) === '1';
+export default async function No1MaxPointsRanking({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
+  const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
+  const includeAll = (sp.includeAll as string) === '1';
   // replicate API logic server-side
   const grouped = await prisma.ranking.groupBy({ by: ["playerId"], _max: { points: true }, orderBy: [{ _max: { points: 'desc' } }], take: 100 });
   const playerIds = grouped.map(g => g.playerId);

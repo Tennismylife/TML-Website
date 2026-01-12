@@ -31,12 +31,12 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(
     matches.map(m => ({
       id: m.id,
-      tourney_date: m.tourney_date.toISOString().slice(0, 10),
-      tourney_name: m.tourney_name,
-      opponent_name: m.loser_name,
-      score: m.score,
-      loser_ioc: m.loser_ioc,
-      round: m.round
+      tourney_date: m.tourney_date ? m.tourney_date.toISOString().slice(0, 10) : '',
+      tourney_name: m.tourney_name ?? '',
+      opponent_name: m.loser_name ?? '',
+      score: m.score ?? '',
+      loser_ioc: m.loser_ioc ?? '',
+      round: m.round ?? ''
     }))
   );
 }

@@ -39,8 +39,8 @@ export async function GET(request: NextRequest, context: any) {
 
   // Ordino i match in base all'ordine dei round
   matches.sort((a, b) => {
-    const orderA = roundOrder[a.round] ?? 999;
-    const orderB = roundOrder[b.round] ?? 999;
+    const orderA = roundOrder[String(a.round)] ?? 999;
+    const orderB = roundOrder[String(b.round)] ?? 999;
     return orderA - orderB;
   });
 

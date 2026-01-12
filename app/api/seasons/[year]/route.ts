@@ -75,7 +75,7 @@ export async function GET(request: Request, context: { params: Promise<{ year: s
         loser: finalMatch?.loser_name ?? "Unknown",
         score: finalMatch?.score ?? "-",
         tourney_id: rep.tourney_id,
-        extractedId: rep.tourney_id.split("-").pop() ?? rep.tourney_id,
+        extractedId: rep.tourney_id ? (String(rep.tourney_id).split("-").pop() ?? String(rep.tourney_id)) : '',
         winner_ioc: finalMatch?.winner_ioc ?? "",
         loser_ioc: finalMatch?.loser_ioc ?? "",
         draw_size: rep.draw_size ?? 0,

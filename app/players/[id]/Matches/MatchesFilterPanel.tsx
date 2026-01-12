@@ -27,9 +27,9 @@ const TOURNEY_LEVELS = [
 
 export default function MatchesFilterPanel({ playerId, matches, allMatches, displayedMatches, updateUrl, onExplicitChange }: Props) {
   const searchParams = useSearchParams();
-  const urlYear = searchParams.get("year");
-  const urlTourney = searchParams.get("tourney");
-  const urlLevel = searchParams.get("level");
+  const urlYear = searchParams?.get("year");
+  const urlTourney = searchParams?.get("tourney");
+  const urlLevel = searchParams?.get("level");
 
   // --- Filtri selezionati ---
   const [selectedYear, setSelectedYear] = useState<string>("All");
@@ -63,7 +63,7 @@ export default function MatchesFilterPanel({ playerId, matches, allMatches, disp
   // --- Inizializzazione filtri disponibili dai match ---
   useEffect(() => {
     if (!initializedRef.current && allMatches.length > 0) {
-      const years = Array.from(new Set(allMatches.map(m => m.year)))
+      const years = Array.from(new Set(allMatches.map(m => m.year).filter((y): y is number => y != null)))
                          .sort((a,b) => b-a)
                          .map(String);
       // if URL provided a year that's not in the available list, add it so the UI preserves the selection
@@ -112,16 +112,16 @@ export default function MatchesFilterPanel({ playerId, matches, allMatches, disp
       setSelectedYear(urlYear ?? "All");
       setTourneyIdFilter(urlTourney ?? "All");
       setTourneyLevelFilter(urlLevel ?? "All");
-      setVsRankFilter(searchParams.get("vsRank") || "All");
-      setVsAgeFilter(searchParams.get("vsAge") || "All");
-      setVsHandFilter(searchParams.get("vsHand") || "All");
-      setVsBackhandFilter(searchParams.get("vsBackhand") || "All");
-      setVsEntryFilter(searchParams.get("vsEntry") || "All");
-      setAsRankFilter(searchParams.get("asRank") || "All");
-      setAsEntryFilter(searchParams.get("asEntry") || "All");
-      setMatchSetFilter(searchParams.get("set") || "All");
-      setFirstSetFilter(searchParams.get("firstSet") || "All");
-      setScoreFilter(searchParams.get("score") || "All");
+      setVsRankFilter(searchParams?.get("vsRank") || "All");
+      setVsAgeFilter(searchParams?.get("vsAge") || "All");
+      setVsHandFilter(searchParams?.get("vsHand") || "All");
+      setVsBackhandFilter(searchParams?.get("vsBackhand") || "All");
+      setVsEntryFilter(searchParams?.get("vsEntry") || "All");
+      setAsRankFilter(searchParams?.get("asRank") || "All");
+      setAsEntryFilter(searchParams?.get("asEntry") || "All");
+      setMatchSetFilter(searchParams?.get("set") || "All");
+      setFirstSetFilter(searchParams?.get("firstSet") || "All");
+      setScoreFilter(searchParams?.get("score") || "All");
 
       initializedRef.current = true;
     }

@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
         if (m.surface === 'Clay') winsClay += 1;
         if (m.surface === 'Carpet') winsCarpet += 1;
 
-        if (m.round === 'F' && !m.score?.includes("WEA") && !["Davis Cup", "World Team Cup", "Laver Cup", "ATP Cup"].some(name => m.tourney_name.includes(name))) {
+        if (m.round === 'F' && !m.score?.includes("WEA") && !["Davis Cup", "World Team Cup", "Laver Cup", "ATP Cup"].some(name => (m.tourney_name ?? '').includes(name))) {
           titlesAll += 1;
           if (m.tourney_level === 'G') titlesGrandSlam += 1;
           if (m.tourney_level === 'M') titlesMasters1000 += 1;

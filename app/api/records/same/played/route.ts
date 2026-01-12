@@ -140,14 +140,15 @@ export async function GET(request: NextRequest) {
       if (matches.length > 0) {
         const groupedMap = matches.reduce((acc, m) => {
           [[m.winner_id, m.winner_name], [m.loser_id, m.loser_name]].forEach(([pid, pname]) => {
-            const key = `${pid}_${m.tourney_id}`;
+            if (!pid) return;
+            const key = `${String(pid)}_${String(m.tourney_id ?? '')}`;
             if (!acc[key])
               acc[key] = {
                 rank: 0,
-                player_id: pid,
-                player_name: pname,
-                tourney_id: m.tourney_id,
-                tourney_name: m.tourney_name,
+                player_id: String(pid),
+                player_name: pname ?? '',
+                tourney_id: m.tourney_id ?? '',
+                tourney_name: m.tourney_name ?? '',
                 total_matches: 0,
                 surface: null,
                 tourney_level: null,

@@ -136,7 +136,9 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
           streak: 'wins',
           h2h: 'count',
         };
-        const desc = generateRecordDescription(active, { ...activeSubTabsDefault, [active]: camel }, selectedSurfaces, selectedLevels as any, selectedRounds as any, selectedBestOf as any);
+        const merged = { ...activeSubTabsDefault, [active]: camel };
+        const mergedClean = Object.fromEntries(Object.entries(merged).map(([k, v]) => [k, v ?? ''])) as Record<string, string>;
+        const desc = generateRecordDescription(active, mergedClean, selectedSurfaces, selectedLevels as any, selectedRounds as any, selectedBestOf as any);
         if (desc && typeof document !== 'undefined') {
           document.title = `${desc} — TML`;
           // reapply after short delay to avoid being overwritten by other flows
@@ -194,7 +196,9 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
       };
 
       const camel = kebabToKey(subKey);
-      const desc = generateRecordDescription(tabKey, { ...activeSubTabsDefault, [tabKey]: camel }, selectedSurfaces, selectedLevels as any, selectedRounds as any, selectedBestOf as any);
+      const merged = { ...activeSubTabsDefault, [tabKey]: camel };
+      const mergedClean = Object.fromEntries(Object.entries(merged).map(([k, v]) => [k, v ?? ''])) as Record<string, string>;
+      const desc = generateRecordDescription(tabKey, mergedClean, selectedSurfaces, selectedLevels as any, selectedRounds as any, selectedBestOf as any);
       if (desc && typeof document !== 'undefined') document.title = `${desc} — TML`;
     } catch (e) {
       // ignore

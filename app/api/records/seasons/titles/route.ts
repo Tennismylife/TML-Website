@@ -60,8 +60,8 @@ export async function GET(request: NextRequest) {
 
       titles.forEach(e => {
         let totalTitles = e.titles_in_year;
-        let surface = null;
-        let level = null;
+        let surface: string | null = null;
+        let level: string | null = null;
 
         if (selectedSurfaces.length === 1) {
           surface = selectedSurfaces[0];

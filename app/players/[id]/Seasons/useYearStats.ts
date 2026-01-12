@@ -93,7 +93,7 @@ export function useYearStats(allMatches: Match[], selectedYear: number | "All", 
     if (selectedYear === "All") return [];
     const groups = new Map<string, Match[]>();
     for (const m of yearMatches) {
-      const d = toDate(m.tourney_date);
+      const d = toDate(m.tourney_date ?? '');
       const key = `${m.tourney_name ?? "Unknown"}__${d ? d.toISOString().slice(0, 10) : "nodate"}`;
       const arr = groups.get(key);
       if (arr) arr.push(m);
@@ -103,7 +103,7 @@ export function useYearStats(allMatches: Match[], selectedYear: number | "All", 
     const tiles: TourneyTile[] = [];
     for (const [key, arr] of groups.entries()) {
       const rep = arr[0];
-      const d = toDate(rep.tourney_date)!;
+      const d = toDate(rep.tourney_date ?? '') ?? new Date(0);
 
       let wins = 0, losses = 0, bestScore = 0, bestRound = rep.round ?? "-", champion = false;
 

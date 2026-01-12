@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
       const id = String(m.winner_id);
       if (!playerWinsMap.has(id)) {
         playerWinsMap.set(id, {
-          name: m.winner_name,
+          name: m.winner_name ?? '',
           ioc: m.winner_ioc ?? '',
           ages: [],
           perSlam: {
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
       }
       const player = playerWinsMap.get(id)!;
       player.ages.push(m.winner_age);
-      player.perSlam[m.tourney_name] += 1;
+      if (m.tourney_name) player.perSlam[m.tourney_name] += 1;
     }
 
     // --- Construct output: take N-th win ---
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
         let count = 0;
         for (const m of matches) {
           if (String(m.winner_id) !== id) continue;
-          perSlamN[m.tourney_name] += 1;
+          if (m.tourney_name) perSlamN[m.tourney_name] += 1;
           count += 1;
           if (count === n) break;
         }

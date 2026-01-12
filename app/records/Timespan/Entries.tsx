@@ -73,7 +73,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
 
   const getLink = (playerId: string) => {
     let link = `/players/${playerId}?tab=matches`;
-    for (const [key, value] of searchParams.entries()) {
+    for (const [key, value] of (searchParams?.entries() ?? [])) {
       if (key !== 'tab') link += `&${key}=${encodeURIComponent(value)}`;
     }
     return link;
@@ -112,7 +112,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
                   <>
                     <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300 font-medium" rowSpan={timespans.length}>{globalRank}</td>
                     <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200 flex items-center gap-2 font-medium" rowSpan={timespans.length}>
-                      {entry.ioc && <span className="text-base">{getFlagFromIOC(entry.ioc)}</span>}
+                      {entry.ioc && <span className="text-base">{getFlagFromIOC(entry.ioc ?? undefined)}</span>}
                       <Link href={getLink(entry.player_id)} className="text-gray-300 hover:underline">{entry.player_name}</Link>
                     </td>
                   </>

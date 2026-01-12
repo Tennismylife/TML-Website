@@ -24,14 +24,15 @@ function computeStreaks(sortedYears: number[]): number[][] {
 
 import StreakCountControls from "./StreakCountControls";
 
-export default async function EoyRankStreaks({ searchParams }: { searchParams?: Record<string, string | string[]> }) {
-  const rank = Number((searchParams?.rank as string) ?? 1);
-  const includeAll = (searchParams?.includeAll as string) === '1';
+export default async function EoyRankStreaks({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
+  const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
+  const rank = Number((sp.rank as string) ?? 1);
+  const includeAll = (sp.includeAll as string) === '1';
 
   // get last per year
   const dateWhere: any = {};
-  if (searchParams?.fromYear) dateWhere.gte = new Date(Date.UTC(Number(searchParams.fromYear as string), 0, 1));
-  if (searchParams?.toYear) dateWhere.lt = new Date(Date.UTC(Number(searchParams.toYear as string) + 1, 0, 1));
+  if (sp.fromYear) dateWhere.gte = new Date(Date.UTC(Number(sp.fromYear as string), 0, 1));
+  if (sp.toYear) dateWhere.lt = new Date(Date.UTC(Number(sp.toYear as string) + 1, 0, 1));
 
   const allDates = await prisma.rankingDate.findMany({ where: dateWhere, select: { date: true }, orderBy: { date: 'asc' } });
   const allYears = Array.from(new Set(allDates.map(d => d.date.getUTCFullYear())));
@@ -49,7 +50,7 @@ export default async function EoyRankStreaks({ searchParams }: { searchParams?: 
   const rows = await prisma.ranking.findMany({ where: { rank, rankingDateId: { in: lastDateIds } }, select: { playerId: true, player: { select: { atpname: true, ioc: true } }, rankingDate: { select: { date: true } } } });
 
   const playersMap = new Map<string, { name: string; ioc: string | null }>();
-  rows.forEach(r => playersMap.set(String(r.playerId), { name: r.player.atpname, ioc: r.player.ioc }));
+  rows.forEach(r => { if (!r.player) return; playersMap.set(String(r.playerId), { name: r.player.atpname ?? '', ioc: r.player.ioc ?? null }); });
 
   const grouped = new Map<string, number[]>();
   rows.forEach(r => {
@@ -78,7 +79,7 @@ export default async function EoyRankStreaks({ searchParams }: { searchParams?: 
   data.sort((a,b) => b.longestStreak - a.longestStreak || a.name.localeCompare(b.name, 'en',{ sensitivity: 'base' }));
 
   const perPage = 20;
-  const page = Number((searchParams?.page as string) ?? '1');
+  const page = Number((sp.page as string) ?? '1');
   const totalCount = data.length;
   const totalPages = Math.ceil(totalCount / perPage);
   const start = (page - 1) * perPage;

@@ -116,12 +116,12 @@ export default function TournamentEditionClient(props: any) {
       </div>
 
       <EditionHeader
-        tourney_name={first.tourney_name}
-        year={first.year.toString()}
-        tourney_level={first.tourney_level}
-        surface={first.surface}
-        tourney_date={new Date(first.tourney_date).toISOString()}
-        draw_size={first.draw_size}
+        tourney_name={first.tourney_name ?? ''}
+        year={first.year?.toString() ?? year}
+        tourney_level={first.tourney_level ?? ''}
+        surface={first.surface ?? ''}
+        tourney_date={first.tourney_date ? new Date(first.tourney_date).toISOString() : ''}
+        draw_size={first.draw_size ?? 0}
       />
 
       {/* Centered CTA: View Records */}

@@ -93,35 +93,47 @@ export async function GET(request: NextRequest) {
       }
 
       // Assicurati che entrambi i giocatori siano presenti nella mappa
-      if (!playerStats.has(m.winner_id)) {
-        playerStats.set(m.winner_id, {
-          id: m.winner_id,
-          name: m.winner_name,
-          ioc: m.winner_ioc ?? '',
-          wins: 0,
-          losses: 0,
-          total: 0,
-        });
+      if (m.winner_id) {
+        const wKey = String(m.winner_id);
+        if (!playerStats.has(wKey)) {
+          playerStats.set(wKey, {
+            id: wKey,
+            name: m.winner_name ?? '',
+            ioc: m.winner_ioc ?? '',
+            wins: 0,
+            losses: 0,
+            total: 0,
+          });
+        }
       }
-      if (!playerStats.has(m.loser_id)) {
-        playerStats.set(m.loser_id, {
-          id: m.loser_id,
-          name: m.loser_name,
-          ioc: m.loser_ioc ?? '',
-          wins: 0,
-          losses: 0,
-          total: 0,
-        });
+      if (m.loser_id) {
+        const lKey = String(m.loser_id);
+        if (!playerStats.has(lKey)) {
+          playerStats.set(lKey, {
+            id: lKey,
+            name: m.loser_name ?? '',
+            ioc: m.loser_ioc ?? '',
+            wins: 0,
+            losses: 0,
+            total: 0,
+          });
+        }
       }
 
       // Logica aggiornata: conta solo se un giocatore è stato DAVVERO avanti 2-1
       if (winnerSetCount === 3 && loserSetCount === 2 && up2to1 === 'loser') {
-        playerStats.get(m.loser_id)!.total++;
-        playerStats.get(m.loser_id)!.losses++;
+        if (m.loser_id) {
+          const lKey = String(m.loser_id);
+          playerStats.get(lKey)!.total++;
+          playerStats.get(lKey)!.losses++;
+        }
       }
       if (winnerSetCount === 3 && loserSetCount === 1 && up2to1 === 'winner') {
-        playerStats.get(m.winner_id)!.total++;
-        playerStats.get(m.winner_id)!.wins++;
+        if (m.winner_id) {
+          const wKey = String(m.winner_id);
+          playerStats.get(wKey)!.total++;
+          playerStats.get(wKey)!.wins++;
+        }
       }
     }
 

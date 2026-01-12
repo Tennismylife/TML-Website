@@ -28,14 +28,15 @@ function diffYMD(birth: Date, ref: Date) {
   return { y, m, d };
 }
 
-export default async function OldestEoyTop({ searchParams }: { searchParams?: Record<string, string | string[]> }) {
-  const initialTop = Number((searchParams?.top as string) ?? (searchParams?.rank as string) ?? 2);
+export default async function OldestEoyTop({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
+  const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
+  const initialTop = Number((sp.top as string) ?? (sp.rank as string) ?? 2);
   const top = initialTop;
-  const limit = Math.min(500, Math.max(1, Number((searchParams?.limit as string) ?? 200)));
+  const limit = Math.min(500, Math.max(1, Number((sp.limit as string) ?? 200)));
 
   // years
-  const fromYearParam = searchParams?.fromYear as string | undefined;
-  const toYearParam = searchParams?.toYear as string | undefined;
+  const fromYearParam = sp.fromYear as string | undefined;
+  const toYearParam = sp.toYear as string | undefined;
   const fromYear = fromYearParam ? Number(fromYearParam) : null;
   const toYear = toYearParam ? Number(toYearParam) : null;
 
@@ -65,6 +66,7 @@ export default async function OldestEoyTop({ searchParams }: { searchParams?: Re
 
   const bestByPlayer = new Map<string, { name: string; ioc: string | null; year: number; date: Date; birth: Date; ageDays: number }>();
   for (const r of rowsData) {
+    if (!r.player) continue;
     const id = String(r.playerId);
     const birth = r.player.birthdate;
     if (!birth) continue;
@@ -76,7 +78,7 @@ export default async function OldestEoyTop({ searchParams }: { searchParams?: Re
 
     const prev = bestByPlayer.get(id);
     if (!prev || ageDays > prev.ageDays || (ageDays === prev.ageDays && ref < prev.date)) {
-      bestByPlayer.set(id, { name: r.player.atpname, ioc: r.player.ioc, year: recYear, date: ref, birth, ageDays });
+      bestByPlayer.set(id, { name: r.player.atpname ?? '', ioc: r.player.ioc, year: recYear, date: ref, birth, ageDays });
     }
   }
 
@@ -86,7 +88,7 @@ export default async function OldestEoyTop({ searchParams }: { searchParams?: Re
   }).sort((a, b) => b.ageDays - a.ageDays).slice(0, limit);
 
   const perPage = 20;
-  const page = Number((searchParams?.page as string) ?? '1');
+  const page = Number((sp.page as string) ?? '1');
   const totalPages = Math.ceil(data.length / perPage);
   const start = (page - 1) * perPage;
   const paginatedRows = data.slice(start, start + perPage);

@@ -5,17 +5,17 @@ import DropdownNavSelect from '../../../../components/DropdownNavSelect';
 
 function diffYMD(a: Date, b: Date) { let y=b.getUTCFullYear()-a.getUTCFullYear(); let m=b.getUTCMonth()-a.getUTCMonth(); let d=b.getUTCDate()-a.getUTCDate(); if (d<0){const prev=new Date(Date.UTC(b.getUTCFullYear(),b.getUTCMonth(),0)); d+=prev.getUTCDate(); m-=1;} if(m<0){m+=12;y-=1;} return {y,m,d}; }
 
-type Props = { searchParams?: Record<string,string | string[]> };
+type Props = { searchParams?: Promise<Record<string,string | string[]>> };
 
 export default async function EoyTopTimespan(props: Props) {
-  const searchParams = props.searchParams;
-  const top = Number((searchParams?.top as string) ?? 5);
+  const sp = await Promise.resolve(props.searchParams ?? {}) as Record<string, string | string[]>;
+  const top = Number((sp.top as string) ?? 5);
   if (!Number.isInteger(top) || top < 1) {
     return (<section className="mb-8"><div className="text-gray-400 py-4 text-center">Invalid 'top' param</div></section>);
   }
 
-  const fromYear = searchParams?.fromYear ? Number(searchParams.fromYear as string) : null;
-  const toYear = searchParams?.toYear ? Number(searchParams.toYear as string) : null;
+  const fromYear = sp.fromYear ? Number(sp.fromYear as string) : null;
+  const toYear = sp.toYear ? Number(sp.toYear as string) : null;
 
   const dateWhere: any = {};
   if (fromYear !== null) dateWhere.gte = new Date(Date.UTC(fromYear,0,1));

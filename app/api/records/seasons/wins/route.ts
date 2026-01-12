@@ -125,8 +125,9 @@ export async function GET(request: NextRequest) {
 
       const groupedMap: Record<string, { player_id: string; year: number; total_wins: number }> = {};
       matches.forEach(m => {
-        const key = `${m.winner_id}_${m.year}`;
-        if (!groupedMap[key]) groupedMap[key] = { player_id: m.winner_id, year: m.year, total_wins: 0 };
+        if (!m.winner_id || m.year == null) return;
+        const key = `${String(m.winner_id)}_${m.year}`;
+        if (!groupedMap[key]) groupedMap[key] = { player_id: String(m.winner_id), year: m.year, total_wins: 0 };
         groupedMap[key].total_wins += 1;
       });
 

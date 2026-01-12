@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
     };
 
     // Esegui query per tutti i round
-    const allRoundsItems = [];
+    const allRoundsItems: Array<{ title: string; list: any[]; fullList: any[] }> = [];
     for (const round of roundOrder) {
       const item = await getTopPlayers(round, typeParam === "youngest" ? "asc" : "desc");
       if (item.fullList.length > 0) allRoundsItems.push(item);

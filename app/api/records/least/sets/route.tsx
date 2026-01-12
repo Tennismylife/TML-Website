@@ -90,15 +90,16 @@ export async function GET(request: NextRequest) {
       { winner: { id: string; name: string; ioc: string }; date: Date; name: string }
     >();
     for (const f of finals) {
-      if (f.winner_id && f.tourney_date) {
-        tournamentWinners.set(f.tourney_id, {
+      if (f.winner_id && f.tourney_date && f.tourney_id) {
+        const tid = String(f.tourney_id);
+        tournamentWinners.set(tid, {
           winner: {
             id: String(f.winner_id),
-            name: f.winner_name,
+            name: f.winner_name ?? "",
             ioc: f.winner_ioc ?? "",
           },
           date: new Date(f.tourney_date),
-          name: f.tourney_name,
+          name: f.tourney_name ?? "",
         });
       }
     }
@@ -121,26 +122,28 @@ export async function GET(request: NextRequest) {
     // Raggruppo i match per torneo
     const matchesByTournament = new Map<string, typeof allMatches>();
     for (const m of allMatches) {
-      if (!matchesByTournament.has(m.tourney_id)) {
-        matchesByTournament.set(m.tourney_id, []);
+      if (!m.tourney_id) continue;
+      const tid = String(m.tourney_id);
+      if (!matchesByTournament.has(tid)) {
+        matchesByTournament.set(tid, []);
       }
-      matchesByTournament.get(m.tourney_id)!.push(m);
+      matchesByTournament.get(tid)!.push(m);
     }
 
     // Calcolo i set persi in ogni torneo
-    const records = [];
+    const records: any[] = [];
     for (const [tId, data] of tournamentWinners) {
       const winnerId = data.winner.id;
       const matches = matchesByTournament.get(tId) ?? [];
 
       let totalSetsLost = 0;
-      const matchList = [];
+      const matchList: any[] = [];
       for (const m of matches) {
         if (String(m.winner_id) === winnerId) {
-          const setsLost = parseSetsLost(m.score);
+          const setsLost = parseSetsLost(m.score ?? "");
           totalSetsLost += setsLost;
           matchList.push({
-            opponent: m.loser_name,
+            opponent: m.loser_name ?? "",
             date: m.tourney_date,
             tournament: data.name,
             round: m.round,

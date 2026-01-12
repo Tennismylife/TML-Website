@@ -130,7 +130,7 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
 
   const getPlayerLink = (playerId: string) => {
     let link = playerMatchesUrl(playerId);
-    for (const [key, value] of searchParams.entries()) {
+    for (const [key, value] of (searchParams?.entries() ?? [])) {
       if (!value || key === "tab") continue;
       link += `&${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
     }

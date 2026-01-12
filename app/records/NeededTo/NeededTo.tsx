@@ -8,7 +8,7 @@ interface NeededToSectionProps {
   selectedSurfaces: Set<string>;
   selectedLevels: Set<string>;
   selectedRounds: string;
-  activeSubTab: string;
+  activeSubTab?: string;
   fetchEnabled?: boolean;
   setFetchEnabled?: (v: boolean) => void;
   fetchRequestId?: string | null;

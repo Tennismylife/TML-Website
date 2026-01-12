@@ -60,16 +60,16 @@ export default function Count({ selectedRounds, selectedSurfaces, selectedLevels
 
         // Prefer explicit props, fallback to URL search params
         if (selectedSurfaces !== undefined) Array.from(selectedSurfaces).forEach(s => params.append('surface', s));
-        else Array.from(searchParams.entries()).forEach(([k, v]) => { if (k === 'surface') params.append(k, v); });
+else Array.from(searchParams?.entries() ?? []).forEach(([k, v]) => { if (k === 'surface') params.append(k, v); });
 
         if (selectedLevels !== undefined) Array.from(selectedLevels).forEach(l => params.append('level', l));
-        else Array.from(searchParams.entries()).forEach(([k, v]) => { if (k === 'level') params.append(k, v); });
+else Array.from(searchParams?.entries() ?? []).forEach(([k, v]) => { if (k === 'level') params.append(k, v); });
 
         if (selectedRounds !== undefined) { if (selectedRounds) params.set('round', selectedRounds); }
-        else { const r = searchParams.get('round'); if (r) params.set('round', r); }
+        else { const r = searchParams?.get('round'); if (r) params.set('round', r); }
 
         if (selectedBestOf !== undefined) { if (selectedBestOf !== null) params.set('bestOf', String(selectedBestOf)); }
-        else { const b = searchParams.get('bestOf'); if (b) params.set('bestOf', b); }
+        else { const b = searchParams?.get('bestOf'); if (b) params.set('bestOf', b); }
 
         params.set('perPage', showModal ? '1000' : '100');
         params.delete('page');
@@ -104,7 +104,7 @@ export default function Count({ selectedRounds, selectedSurfaces, selectedLevels
 
   const getLink = (playerId: string) => {
     let link = playerTournamentsUrl(playerId);
-    for (const [key, value] of searchParams.entries()) {
+    for (const [key, value] of (searchParams?.entries() ?? [])) {
       if (key !== "tab") {
         const separator = link.includes("?") ? "&" : "?";
         link += `${separator}${encodeURIComponent(key)}=${encodeURIComponent(value)}`;

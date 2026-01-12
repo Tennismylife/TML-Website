@@ -13,9 +13,10 @@ interface Player {
   endDate?: string;
 }
 
-export default async function StreakCount({ searchParams }: { searchParams?: Record<string, string | string[]> }) {
-  const rank = Number((searchParams?.rank as string) ?? 1);
-  const page = Number((searchParams?.page as string) ?? '1');
+export default async function StreakCount({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
+  const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
+  const rank = Number((sp.rank as string) ?? 1);
+  const page = Number((sp.page as string) ?? '1');
   const perPage = 20;
 
   // replicate server logic from API route

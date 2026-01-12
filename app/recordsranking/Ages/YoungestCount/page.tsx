@@ -27,14 +27,15 @@ function diffYMD(birth: Date, ref: Date) {
   return { y, m, d };
 }
 
-export default async function YoungestAtRank({ searchParams }: { searchParams?: Record<string, string | string[]> }) {
-  const rank = Number((searchParams?.rank as string) ?? 1);
-  const limit = Math.min(500, Math.max(1, Number((searchParams?.limit as string) ?? 200)));
+export default async function YoungestAtRank({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
+  const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
+  const rank = Number((sp.rank as string) ?? 1);
+  const limit = Math.min(500, Math.max(1, Number((sp.limit as string) ?? 200)));
 
   // determine years and last per year
   const dateWhere: any = {};
-  if (searchParams?.fromYear) dateWhere.gte = new Date(Date.UTC(Number(searchParams.fromYear as string), 0, 1));
-  if (searchParams?.toYear) dateWhere.lt = new Date(Date.UTC(Number(searchParams.toYear as string) + 1, 0, 1));
+  if (sp.fromYear) dateWhere.gte = new Date(Date.UTC(Number(sp.fromYear as string), 0, 1));
+  if (sp.toYear) dateWhere.lt = new Date(Date.UTC(Number(sp.toYear as string) + 1, 0, 1));
 
   const allDates = await prisma.rankingDate.findMany({ where: Object.keys(dateWhere).length ? { date: dateWhere } : undefined, select: { date: true }, orderBy: { date: 'asc' } });
   const years = Array.from(new Set(allDates.map(d => d.date.getUTCFullYear())));
@@ -55,6 +56,7 @@ export default async function YoungestAtRank({ searchParams }: { searchParams?: 
   const bestByPlayer = new Map<string, { name: string; ioc: string | null; year: number; date: Date; birth: Date; ageDays: number }>();
 
   for (const r of rowsData) {
+    if (!r.player) continue;
     const id = String(r.playerId);
     const birth = r.player.birthdate;
     if (!birth) continue;
@@ -66,14 +68,14 @@ export default async function YoungestAtRank({ searchParams }: { searchParams?: 
 
     const prev = bestByPlayer.get(id);
     if (!prev || ageDays < prev.ageDays || (ageDays === prev.ageDays && ref < prev.date)) {
-      bestByPlayer.set(id, { name: r.player.atpname, ioc: r.player.ioc, year: recYear, date: ref, birth, ageDays });
+      bestByPlayer.set(id, { name: r.player.atpname ?? '', ioc: r.player.ioc, year: recYear, date: ref, birth, ageDays });
     }
   }
 
   const data: YoungestItem[] = Array.from(bestByPlayer.entries()).map(([id, v]) => { const { y, m, d } = diffYMD(v.birth, v.date); return { id, name: v.name, ioc: v.ioc, ageDays: v.ageDays, ageLabel: `${y}y ${m}m ${d}d`, date: v.date.toISOString().slice(0,10), year: v.year as any }; }).sort((a,b)=> a.ageDays - b.ageDays).slice(0, limit);
 
   const perPage = 20;
-  const page = Number((searchParams?.page as string) ?? '1');
+  const page = Number((sp.page as string) ?? '1');
   const totalPages = Math.ceil(data.length / perPage);
   const start = (page - 1) * perPage;
   const paginatedRows = data.slice(start, start + perPage);

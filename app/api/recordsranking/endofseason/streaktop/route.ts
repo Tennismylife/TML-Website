@@ -91,11 +91,12 @@ export async function GET(req: Request) {
     // 4) Aggrega anni per player
     const byPlayer = new Map<string, { name: string; ioc: string | null; years: number[] }>();
     for (const r of rows) {
+      if (!r.player) continue;
       const id = String(r.playerId);
       const year = r.rankingDate.date.getUTCFullYear();
       let rec = byPlayer.get(id);
       if (!rec) {
-        rec = { name: r.player.atpname, ioc: r.player.ioc, years: [] };
+        rec = { name: r.player.atpname ?? '', ioc: r.player.ioc, years: [] };
         byPlayer.set(id, rec);
       }
       rec.years.push(year);

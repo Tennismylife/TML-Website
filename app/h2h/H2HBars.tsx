@@ -4,31 +4,31 @@ import React from "react";
 
 interface Player {
   id: string;
-  atpname: string;
-  ioc?: string;
+  atpname: string | null;
+  ioc?: string | null;
 }
 
 // Definizione del tipo coerente con tutti i campi di prisma.match
 interface Match {
   id: number;
-  tourney_id: string;
-  tourney_name: string;
-  surface: string;
+  tourney_id: string | null;
+  tourney_name: string | null;
+  surface: string | null;
   draw_size: number | null;
-  tourney_level: string;
-  tourney_date: Date;
+  tourney_level: string | null;
+  tourney_date: Date | null;
   match_num: number | null;
-  winner_id: string;
-  winner_name: string;
+  winner_id: string | null;
+  winner_name: string | null;
   winner_ioc: string | null;
-  loser_id: string;
-  loser_name: string;
+  loser_id: string | null;
+  loser_name: string | null;
   loser_ioc: string | null;
-  score: string;
+  score: string | null;
   best_of: number | null;
-  round: string;
+  round: string | null;
   minutes: number | null;
-  status: boolean;
+  status: boolean | null;
 }
 
 interface H2HBarsProps {
@@ -75,7 +75,7 @@ const H2HBars: React.FC<H2HBarsProps> = ({ matches, player1, player2, category }
     matches.forEach((m) => {
       const isPlayer1Winner = m.winner_name === player1.atpname;
       const isPlayer2Winner = m.winner_name === player2.atpname;
-      const { setsWinner, setsLoser, gamesWinner, gamesLoser } = parseScore(m.score);
+      const { setsWinner, setsLoser, gamesWinner, gamesLoser } = parseScore(m.score ?? '');
 
       let v1 = 0;
       let v2 = 0;

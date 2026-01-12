@@ -12,7 +12,7 @@ interface SeasonsProps {
   selectedLevels: Set<string>;
   selectedRounds: string;
   selectedBestOf: number | null;
-  activeSubTab: string;
+  activeSubTab?: string;
   fetchEnabled?: boolean;
   setFetchEnabled?: (v: boolean) => void;
   fetchRequestId?: string | null;

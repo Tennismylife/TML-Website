@@ -57,10 +57,10 @@ export default function Titles({ selectedSurfaces, selectedLevels, topTitles, fe
         const params = new URLSearchParams();
 
         if (selectedSurfaces !== undefined) Array.from(selectedSurfaces).forEach(s => params.append('surface', s));
-        else Array.from(searchParams.entries()).forEach(([k, v]) => { if (k === 'surface') params.append(k, v); });
+        else Array.from(searchParams?.entries() ?? []).forEach(([k, v]) => { if (k === 'surface') params.append(k, v); });
 
         if (selectedLevels !== undefined) Array.from(selectedLevels).forEach(l => params.append('level', l));
-        else Array.from(searchParams.entries()).forEach(([k, v]) => { if (k === 'level') params.append(k, v); });
+        else Array.from(searchParams?.entries() ?? []).forEach(([k, v]) => { if (k === 'level') params.append(k, v); });
 
         params.set('perPage', showModal ? '1000' : '100');
         params.delete('page');
@@ -93,7 +93,7 @@ export default function Titles({ selectedSurfaces, selectedLevels, topTitles, fe
 
   const getLink = (playerId: string) => {
     const params: Record<string, string> = { tab: 'tournaments', round: 'W' };
-    for (const [key, value] of searchParams.entries()) {
+    for (const [key, value] of (searchParams?.entries() ?? [])) {
       if (key !== 'tab' && key !== 'round') params[key] = value;
     }
     return playerTournamentsUrl(playerId, params as any);

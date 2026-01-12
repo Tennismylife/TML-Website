@@ -116,7 +116,7 @@ export async function middleware(req: NextRequest) {
         if (subtabParam && !(segments.length > 2)) {
           const normalized = normalizeSubtab(subtabParam);
           const dest = new URL(req.url);
-          dest.pathname = `/records/${encodeURIComponent(recordSegment)}/${encodeURIComponent(normalized)}`;
+          dest.pathname = `/records/${encodeURIComponent(recordSegment)}/${encodeURIComponent(String(normalized))}`;
           // Preserve other query params except `subtab`
           const newParams = new URLSearchParams(req.nextUrl.searchParams as any);
           newParams.delete('subtab');

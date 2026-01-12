@@ -11,9 +11,10 @@ interface Player {
   seasons: number[]; // elenco anni
 }
 
-export default async function RecordsCount({ searchParams }: { searchParams?: Record<string, string | string[]> }) {
-  const rank = Number((searchParams?.rank as string) ?? 1);
-  const page = Number((searchParams?.page as string) ?? '1');
+export default async function RecordsCount({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
+  const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
+  const rank = Number((sp.rank as string) ?? 1);
+  const page = Number((sp.page as string) ?? '1');
   const perPage = 20;
 
   // Server-side logic from API
@@ -44,11 +45,12 @@ export default async function RecordsCount({ searchParams }: { searchParams?: Re
 
   const agg = new Map<string, { name: string; ioc: string | null; endYearCount: number; seasons: Set<number> }>();
   for (const r of rows) {
+    if (!r.player) continue;
     const id = String(r.playerId);
     const year = r.rankingDate.date.getUTCFullYear();
     let a = agg.get(id);
     if (!a) {
-      a = { name: r.player.atpname, ioc: r.player.ioc, endYearCount: 0, seasons: new Set<number>() };
+      a = { name: r.player.atpname ?? '', ioc: r.player.ioc ?? null, endYearCount: 0, seasons: new Set<number>() };
       agg.set(id, a);
     }
     a.endYearCount += 1;

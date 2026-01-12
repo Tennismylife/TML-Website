@@ -93,31 +93,37 @@ export async function GET(request: NextRequest) {
 
       if (split) {
         // Entrambi i giocatori hanno partecipato a un match con primi due set split
-        if (!playerStats.has(m.winner_id)) {
-          playerStats.set(m.winner_id, {
-            id: m.winner_id,
-            name: m.winner_name,
-            ioc: m.winner_ioc ?? '',
-            wins: 0,
-            losses: 0,
-            total: 0,
-          });
+        if (m.winner_id) {
+          const wKey = String(m.winner_id);
+          if (!playerStats.has(wKey)) {
+            playerStats.set(wKey, {
+              id: wKey,
+              name: m.winner_name ?? '',
+              ioc: m.winner_ioc ?? '',
+              wins: 0,
+              losses: 0,
+              total: 0,
+            });
+          }
+          playerStats.get(wKey)!.wins += 1;
+          playerStats.get(wKey)!.total += 1;
         }
-        playerStats.get(m.winner_id)!.wins += 1;
-        playerStats.get(m.winner_id)!.total += 1;
 
-        if (!playerStats.has(m.loser_id)) {
-          playerStats.set(m.loser_id, {
-            id: m.loser_id,
-            name: m.loser_name,
-            ioc: m.loser_ioc ?? '',
-            wins: 0,
-            losses: 0,
-            total: 0,
-          });
+        if (m.loser_id) {
+          const lKey = String(m.loser_id);
+          if (!playerStats.has(lKey)) {
+            playerStats.set(lKey, {
+              id: lKey,
+              name: m.loser_name ?? '',
+              ioc: m.loser_ioc ?? '',
+              wins: 0,
+              losses: 0,
+              total: 0,
+            });
+          }
+          playerStats.get(lKey)!.losses += 1;
+          playerStats.get(lKey)!.total += 1;
         }
-        playerStats.get(m.loser_id)!.losses += 1;
-        playerStats.get(m.loser_id)!.total += 1;
       }
     }
 

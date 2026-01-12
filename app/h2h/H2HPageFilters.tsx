@@ -26,7 +26,7 @@ export default function H2HPageFilters({ allMatches, loading, error, filters, se
   const yearOptions = useMemo(() => {
     const ys = new Set<number>();
     for (const m of allMatches) {
-      ys.add(m.year);
+      if (m.year != null) ys.add(m.year);
     }
     return Array.from(ys).sort((a, b) => b - a);
   }, [allMatches]);

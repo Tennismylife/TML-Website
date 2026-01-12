@@ -46,13 +46,13 @@ export default function PerformanceFilter({
 
   const filters = controlledFilters ?? localFilters;
   const setFilters = controlledSetFilters ?? ((partial: Partial<PerformanceFilterProps['filters']>) => {
-    setLocalFilters(prev => ({ ...prev, ...partial }));
+    setLocalFilters(prev => ({ ...prev, ...partial } as PerformanceFilterProps['filters']));
   });
 
   // Compute filter options
   const yearOptions = useMemo(() => {
     const ys = new Set<number>();
-    allMatches.forEach(m => ys.add(m.year));
+    allMatches.forEach(m => { if (m.year != null) ys.add(m.year); });
     return Array.from(ys).sort((a, b) => b - a);
   }, [allMatches]);
 
@@ -84,11 +84,11 @@ export default function PerformanceFilter({
   // Filter matches and notify parent
   const filteredMatches = useMemo(() => {
     return allMatches.filter(m => {
-      if (filters.year !== "All" && m.year !== filters.year) return false;
-      if (filters.level !== "All" && (m.tourney_level ?? "Unknown") !== filters.level) return false;
-      if (filters.surface !== "All" && (m.surface ?? "Unknown") !== filters.surface) return false;
-      if (filters.round !== "All" && (m.round ?? "Unknown") !== filters.round) return false;
-      if (filters.tournament !== "All" && (m.tourney_name ?? "") !== filters.tournament) return false;
+      if (filters!.year !== "All" && m.year !== filters!.year) return false;
+      if (filters!.level !== "All" && (m.tourney_level ?? "Unknown") !== filters!.level) return false;
+      if (filters!.surface !== "All" && (m.surface ?? "Unknown") !== filters!.surface) return false;
+      if (filters!.round !== "All" && (m.round ?? "Unknown") !== filters!.round) return false;
+      if (filters!.tournament !== "All" && (m.tourney_name ?? "") !== filters!.tournament) return false;
       return true;
     });
   }, [allMatches, filters]);
@@ -105,7 +105,7 @@ export default function PerformanceFilter({
       <div className="flex items-center gap-2">
         <label className="w-24 font-semibold text-white">Season</label>
         <select
-          value={filters.year === "All" ? "All" : String(filters.year)}
+          value={filters!.year === "All" ? "All" : String(filters!.year)}
           onChange={(e) => setFilters({ year: e.target.value === "All" ? "All" : Number(e.target.value) })}
           className={selectClass}
           disabled={loading || !!error}
@@ -119,7 +119,7 @@ export default function PerformanceFilter({
       <div className="flex items-center gap-2">
         <label className="w-24 font-semibold text-white">Level</label>
         <select
-          value={filters.level}
+          value={filters!.level}
           onChange={(e) => setFilters({ level: e.target.value })}
           className={selectClass}
           disabled={loading || !!error}
@@ -133,7 +133,7 @@ export default function PerformanceFilter({
       <div className="flex items-center gap-2">
         <label className="w-24 font-semibold text-white">Surface</label>
         <select
-          value={filters.surface}
+          value={filters!.surface}
           onChange={(e) => setFilters({ surface: e.target.value })}
           className={selectClass}
           disabled={loading || !!error}
@@ -147,7 +147,7 @@ export default function PerformanceFilter({
       <div className="flex items-center gap-2">
         <label className="w-24 font-semibold text-white">Round</label>
         <select
-          value={filters.round}
+          value={filters!.round}
           onChange={(e) => setFilters({ round: e.target.value })}
           className={selectClass}
           disabled={loading || !!error}
@@ -161,7 +161,7 @@ export default function PerformanceFilter({
       <div className="flex items-center gap-2">
         <label className="w-24 font-semibold text-white">Tournament</label>
         <select
-          value={filters.tournament}
+          value={filters!.tournament}
           onChange={(e) => setFilters({ tournament: e.target.value })}
           className={selectClass}
           disabled={loading || !!error}

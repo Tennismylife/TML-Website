@@ -86,7 +86,7 @@ export async function GET(req: Request) {
     // Costruisci i record separati per ogni streak di ciascun giocatore
     const data: any[] = [];
     const playersMap = new Map<string, { name: string; ioc: string | null }>();
-    rows.forEach(r => playersMap.set(String(r.playerId), { name: r.player.atpname, ioc: r.player.ioc }));
+    rows.forEach(r => { if (!r.player) return; playersMap.set(String(r.playerId), { name: r.player.atpname ?? '', ioc: r.player.ioc }); });
 
     // Raggruppa per giocatore per calcolare le streaks
     const grouped = new Map<string, number[]>();

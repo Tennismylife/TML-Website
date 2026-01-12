@@ -43,10 +43,10 @@ export default function Entries({ fetchEnabled, description, topEntries, selecte
         const params = new URLSearchParams();
 
         if (selectedSurfaces !== undefined) Array.from(selectedSurfaces).forEach(s => params.append('surface', s));
-        else Array.from(searchParams.entries()).forEach(([k,v]) => { if (k === 'surface') params.append(k, v); });
+else Array.from(searchParams?.entries() ?? []).forEach(([k,v]) => { if (k === 'surface') params.append(k, v); });
 
         if (selectedLevels !== undefined) Array.from(selectedLevels).forEach(l => params.append('level', l));
-        else Array.from(searchParams.entries()).forEach(([k,v]) => { if (k === 'level') params.append(k, v); });
+        else Array.from(searchParams?.entries() ?? []).forEach(([k,v]) => { if (k === 'level') params.append(k, v); });
 
         params.set("perPage", showModal ? "1000" : "100");
         params.delete("page");
@@ -79,7 +79,7 @@ export default function Entries({ fetchEnabled, description, topEntries, selecte
 
   const getLink = (playerId: string) => {
     const params: Record<string, string> = {};
-    for (const [key, value] of searchParams.entries()) {
+    for (const [key, value] of (searchParams?.entries() ?? [])) {
       if (key === 'tab') continue;
       params[key] = value;
     }

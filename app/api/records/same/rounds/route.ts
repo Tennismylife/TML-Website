@@ -109,8 +109,9 @@ export async function GET(request: NextRequest) {
       const groupedMap: Record<string, { player_id: string; tourney_name: string; total_rounds: number }> = {};
       matches.forEach(m => {
         [m.winner_id, m.loser_id].forEach(pid => {
-          const key = `${pid}_${m.tourney_name}`;
-          if (!groupedMap[key]) groupedMap[key] = { player_id: pid, tourney_name: m.tourney_name, total_rounds: 0 };
+          if (!pid) return;
+          const key = `${String(pid)}_${m.tourney_name ?? ''}`;
+          if (!groupedMap[key]) groupedMap[key] = { player_id: String(pid), tourney_name: m.tourney_name ?? '', total_rounds: 0 };
           groupedMap[key].total_rounds += 1;
         });
       });

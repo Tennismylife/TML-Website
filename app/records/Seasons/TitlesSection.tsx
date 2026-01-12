@@ -95,7 +95,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
         <tbody>
           {data.map((p, idx) => {
             const rank = startIndex + idx + 1;
-            const flag = getFlagFromIOC(p.ioc) ?? '';
+            const flag = getFlagFromIOC(p.ioc ?? undefined) ?? '';
             return (
               <tr key={`${p.id}-${p.year}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-400 font-semibold">{rank}</td>

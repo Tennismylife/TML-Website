@@ -1,8 +1,9 @@
 import React from 'react';
 import { getFlagFromIOC } from '@/lib/utils';
 
-export default async function YearEndDifferenceNo1No2({ searchParams }: { searchParams?: Record<string,string | string[]> }) {
-  const includeAll = (searchParams?.includeAll as string) === '1';
+export default async function YearEndDifferenceNo1No2({ searchParams }: { searchParams?: Promise<Record<string,string | string[]>> }) {
+  const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
+  const includeAll = (sp.includeAll as string) === '1';
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000';
   const res = await fetch(`${baseUrl}/api/recordsranking/diffpoints/endoftheseason`, { cache: 'no-store' });
   const data = await res.json();

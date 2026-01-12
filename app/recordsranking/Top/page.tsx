@@ -10,9 +10,10 @@ interface TopXPlayer {
   weeks: number;
 }
 
-export default async function RecordsTopX({ searchParams }: { searchParams?: Record<string, string | string[]> }) {
-  const initialTop = Number((searchParams?.top as string) ?? 2);
-  const page = Number((searchParams?.page as string) ?? '1');
+export default async function RecordsTopX({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
+  const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
+  const initialTop = Number((sp.top as string) ?? 2);
+  const page = Number((sp.page as string) ?? '1');
   const perPage = 20;
 
   const top = initialTop;

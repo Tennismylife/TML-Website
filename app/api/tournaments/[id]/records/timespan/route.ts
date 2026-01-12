@@ -66,7 +66,7 @@ export async function GET(request: NextRequest, context: any) {
 
     // Finals (per calcolare i "Winner")
     const finals = matches.filter((m) =>
-      ["F", "Final", "W"].includes(m.round)
+      ["F", "Final", "W"].includes(m.round ?? '')
     );
 
     // Round → giocatori → date min/max

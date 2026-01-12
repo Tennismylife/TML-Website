@@ -182,10 +182,13 @@ function matchContributes(
   const firstWon = p.firstWon ?? null;
   const secondWon = p.secondWon ?? null;
   const bpFaced = p.bpFaced ?? null;
+  const minutes = p.minutes ?? null;
 
   const o_svpt = opp.svpt ?? null;
   const o_firstIn = opp.firstIn ?? null;
   const o_firstWon = opp.firstWon ?? null;
+  const o_bpFaced = opp.bpFaced ?? null;
+  const o_secondWon = opp.secondWon ?? null;
 
   switch (stat) {
     case 'aces': return true;
@@ -197,7 +200,7 @@ function matchContributes(
     case 'servicewon':    return svpt !== null && svpt > 0;
 
     case 'bpsaved':       return bpFaced !== null && bpFaced > 0;
-    case 'bpwon':         return opp.bpFaced !== null && opp.bpFaced > 0;
+    case 'bpwon':         return o_bpFaced !== null && o_bpFaced > 0;
 
     case '1streturnwon':  return o_firstIn !== null && o_firstIn > 0;
     case '2ndreturnwon':  return (o_svpt !== null && o_firstIn !== null) && (o_svpt - o_firstIn) > 0;
@@ -208,7 +211,7 @@ function matchContributes(
 
     case 'totalpointswon':
       return (svpt !== null && firstWon !== null && secondWon !== null) &&
-             (o_svpt !== null && o_firstWon !== null && opp.secondWon !== null);
+             (o_svpt !== null && o_firstWon !== null && o_secondWon !== null);
 
     case 'totalpointswonpct':
       return (svpt !== null && o_svpt !== null) && (svpt + o_svpt) > 0;
@@ -230,9 +233,9 @@ function matchContributes(
       return sets.some(s => s.tb);
 
     case 'totalminutes':
-      return p.minutes !== null && p.minutes > 0;
+      return minutes !== null && minutes > 0;
     case 'avgminutes':
-      return p.minutes !== null;
+      return minutes !== null;
 
     default:
       return true;

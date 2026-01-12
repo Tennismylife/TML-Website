@@ -112,7 +112,7 @@ export async function GET(request: NextRequest) {
         playerAgeWins.get(playerId)!.push(m.winner_age);
 
         if (!playerInfo.has(playerId)) {
-          playerInfo.set(playerId, { name: m.winner_name, ioc: m.winner_ioc ?? "" });
+          playerInfo.set(playerId, { name: m.winner_name ?? '', ioc: m.winner_ioc ?? "" });
         }
 
         // For entries (unique tourneys with age), exclude team events
@@ -120,7 +120,7 @@ export async function GET(request: NextRequest) {
           if (!playerAgeEntries.has(playerId)) {
             playerAgeEntries.set(playerId, []);
           }
-          playerAgeEntries.get(playerId)!.push({ tourney_id: m.tourney_id, age: m.winner_age });
+          if (m.tourney_id) playerAgeEntries.get(playerId)!.push({ tourney_id: m.tourney_id, age: m.winner_age });
         }
       }
 
@@ -140,7 +140,7 @@ export async function GET(request: NextRequest) {
         playerAgePlayed.get(loserId)!.push(m.loser_age);
 
         if (!playerInfo.has(loserId)) {
-          playerInfo.set(loserId, { name: m.loser_name, ioc: m.loser_ioc ?? "" });
+          playerInfo.set(loserId, { name: m.loser_name ?? '', ioc: m.loser_ioc ?? "" });
         }
 
         // For entries (unique tourneys with age), exclude team events
@@ -148,7 +148,7 @@ export async function GET(request: NextRequest) {
           if (!playerAgeEntries.has(loserId)) {
             playerAgeEntries.set(loserId, []);
           }
-          playerAgeEntries.get(loserId)!.push({ tourney_id: m.tourney_id, age: m.loser_age });
+          if (m.tourney_id) playerAgeEntries.get(loserId)!.push({ tourney_id: m.tourney_id, age: m.loser_age });
         }
       }
 
@@ -161,7 +161,7 @@ export async function GET(request: NextRequest) {
         playerAgeTitles.get(playerId)!.push(m.winner_age);
 
         if (!playerInfo.has(playerId)) {
-          playerInfo.set(playerId, { name: m.winner_name, ioc: m.winner_ioc ?? "" });
+          playerInfo.set(playerId, { name: m.winner_name ?? '', ioc: m.winner_ioc ?? "" });
         }
       }
     }

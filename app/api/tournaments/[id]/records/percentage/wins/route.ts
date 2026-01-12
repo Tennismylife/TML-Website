@@ -43,7 +43,7 @@ export async function GET(request: NextRequest, context: any) {
       const key = String(w.winner_id);
       playerMap.set(key, {
         id: String(w.winner_id),
-        name: w.winner_name,
+        name: w.winner_name ?? '',
         ioc: w.winner_ioc ?? '',
         wins: w._count.winner_id,
         losses: 0,
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest, context: any) {
       const existing = playerMap.get(key);
       playerMap.set(key, {
         id: String(l.loser_id),
-        name: l.loser_name,
+        name: l.loser_name ?? '',
         ioc: l.loser_ioc ?? '',
         wins: existing?.wins ?? 0,
         losses: l._count.loser_id,

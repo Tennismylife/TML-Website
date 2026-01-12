@@ -49,7 +49,7 @@ export async function GET(request: Request, context: { params: Promise<{ year: s
         if (!p.id) continue;
         const key = String(p.id);
         if (!uniqueTourneysPerPlayer.has(key)) uniqueTourneysPerPlayer.set(key, new Set());
-        uniqueTourneysPerPlayer.get(key)!.add(m.tourney_id);
+        if (m.tourney_id) uniqueTourneysPerPlayer.get(key)!.add(m.tourney_id);
       }
     }
     const playerTotalEntries = new Map<string, number>();

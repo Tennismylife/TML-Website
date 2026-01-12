@@ -228,7 +228,7 @@ export async function GET(request: NextRequest) {
 
       result.push({
         player_id: pid,
-        player_name: playerInfo.atpname,
+        player_name: playerInfo.atpname ?? '',
         ioc: playerInfo.ioc || '',
         titles: maxTitles,
         tournaments_played: tournamentsPlayed,

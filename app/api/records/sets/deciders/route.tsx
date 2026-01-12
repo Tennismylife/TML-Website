@@ -110,7 +110,7 @@ export async function GET(request: NextRequest) {
       if (!playerStats.has(wKey)) {
         playerStats.set(wKey, {
           id: wKey,
-          name: m.winner_name,
+          name: m.winner_name ?? '',
           ioc: m.winner_ioc ?? '',
           wins: 0,
           total: 0,
@@ -122,7 +122,7 @@ export async function GET(request: NextRequest) {
       if (!playerStats.has(lKey)) {
         playerStats.set(lKey, {
           id: lKey,
-          name: m.loser_name,
+          name: m.loser_name ?? '',
           ioc: m.loser_ioc ?? '',
           wins: 0,
           total: 0,

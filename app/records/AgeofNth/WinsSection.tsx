@@ -174,7 +174,7 @@ export default function WinsSection({
 
   const getPlayerLink = (playerId: string) => {
     let link = playerMatchesUrl(playerId);
-    for (const [key, value] of searchParams.entries()) {
+    for (const [key, value] of (searchParams?.entries() ?? [])) {
       if (!value || key === "tab") continue;
       link += `&${key}=${encodeURIComponent(value)}`;
     }

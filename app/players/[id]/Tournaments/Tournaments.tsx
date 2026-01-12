@@ -164,7 +164,7 @@ export default function Tournaments({ playerId, filters = { tourney: "", level: 
     let order = 0;
 
     for (const m of allMatches) {
-      const y = m.year;
+      const y = typeof m.year === 'number' ? m.year : (m.year ? Number(m.year) : 0);
       const lvl = m.tourney_level || "Unknown";
       const surf = m.surface || "Unknown";
       const name = m.tourney_name || "Unknown";
@@ -183,7 +183,7 @@ export default function Tournaments({ playerId, filters = { tourney: "", level: 
         bestRound: "Unknown",
         champion: false,
         order: order++,
-        tourney_date: m.tourney_date,
+        tourney_date: m.tourney_date ?? undefined,
       };
 
       // Use helpers to support both formats
@@ -277,7 +277,7 @@ export default function Tournaments({ playerId, filters = { tourney: "", level: 
               tourneys={rows.map(r => ({
                 key: r.key,
                 name: r.tourney_name,
-                date: r.tourney_date,
+                date: r.tourney_date ?? new Date(0),
                 surface: r.surface,
                 level: CODE_TO_LABEL[r.level] || r.level,
                 tourney_id: r.tourney_id,
@@ -292,7 +292,7 @@ export default function Tournaments({ playerId, filters = { tourney: "", level: 
             />
           )}
 
-          {filters.sub === "summary" && <TournamentSummary filteredMatches={filteredMatches} />}
+          {filters.sub === "summary" && <TournamentSummary filteredMatches={filteredMatches.map(m => ({ ...m, tourney_name: m.tourney_name ?? "", year: m.year ?? 0 })) as any} />}
         </>
       )}
     </div>

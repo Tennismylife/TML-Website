@@ -118,8 +118,8 @@ export async function GET(
         const key = String(m.winner_id);
         const existing = entryCounts.get(key);
         if (!existing) {
-          entryCounts.set(key, { id: m.winner_id, name: m.winner_name, ioc: m.winner_ioc ?? '', count: 1, tourneys: new Set([m.tourney_id]) });
-        } else if (!existing.tourneys.has(m.tourney_id)) {
+          entryCounts.set(key, { id: m.winner_id, name: m.winner_name, ioc: m.winner_ioc ?? '', count: 1, tourneys: new Set(m.tourney_id ? [m.tourney_id] : []) });
+        } else if (m.tourney_id && !existing.tourneys.has(m.tourney_id)) {
           existing.tourneys.add(m.tourney_id);
           existing.count += 1;
         }
@@ -129,8 +129,8 @@ export async function GET(
         const key = String(m.loser_id);
         const existing = entryCounts.get(key);
         if (!existing) {
-          entryCounts.set(key, { id: m.loser_id, name: m.loser_name, ioc: m.loser_ioc ?? '', count: 1, tourneys: new Set([m.tourney_id]) });
-        } else if (!existing.tourneys.has(m.tourney_id)) {
+          entryCounts.set(key, { id: m.loser_id, name: m.loser_name, ioc: m.loser_ioc ?? '', count: 1, tourneys: new Set(m.tourney_id ? [m.tourney_id] : []) });
+        } else if (m.tourney_id && !existing.tourneys.has(m.tourney_id)) {
           existing.tourneys.add(m.tourney_id);
           existing.count += 1;
         }

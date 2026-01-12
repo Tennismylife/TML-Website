@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
         ioc: p.ioc || '',
         titles_at_age: validAges.filter(a => a <= closestAge).length,
       };
-    }).filter(Boolean);
+    }).filter((x): x is { id: string; name: string; ioc: string; titles_at_age: number } => x != null);
 
     // Ordina decrescente per numero di titoli
     result.sort((a, b) => b.titles_at_age - a.titles_at_age);

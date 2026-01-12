@@ -43,7 +43,7 @@ export default function TournamentGrid({ tourneys, getTourneyLink }: TournamentG
         return (
           <Link
             key={t.key}
-            href={getTourneyLink(t.tourney_id, t.year)}
+            href={getTourneyLink(t.tourney_id ?? undefined, t.year)}
             className="relative block w-full h-full card p-4 flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-300 bg-gray-700/90 rounded-lg"
           >
             {/* Titolo e bestRound */}

@@ -99,8 +99,10 @@ export default function MatchTable({
 
     return [...matches].sort((a, b) => {
       if (sortKey === "round") {
-        const aRank = roundOrder[a.round] ?? Infinity;
-        const bRank = roundOrder[b.round] ?? Infinity;
+        const aRoundKey = a.round ?? "";
+        const bRoundKey = b.round ?? "";
+        const aRank = roundOrder[aRoundKey] ?? Infinity;
+        const bRank = roundOrder[bRoundKey] ?? Infinity;
         return sortDir === "asc" ? aRank - bRank : bRank - aRank;
       }
 
@@ -135,7 +137,8 @@ export default function MatchTable({
           case "l_bp":
             return m.l_bpSaved ?? 0;
           default:
-            return (m as any)[key as SortKey];
+            if (key == null) return null;
+            return (m as any)[String(key)];
         }
       };
 
@@ -216,22 +219,22 @@ export default function MatchTable({
                 <td className="px-4 py-2 text-center text-sm">{m.round}</td>
                 <td className="px-4 py-2 text-center text-sm">{m.winner_rank ?? "-"}</td>
                 <td className="px-4 py-2 flex items-center justify-center gap-2 text-sm">
-                  <span className="text-xl">{getFlagFromIOC(m.winner_ioc)}</span>
+                  <span className="text-xl">{getFlagFromIOC(m.winner_ioc ?? undefined)}</span>
                   <Link
                     href={`/players/${m.winner_id}`}
                     className={m.winner_id === playerId ? "font-bold text-green-400 hover:text-green-300" : "text-gray-200 hover:text-yellow-400 transition"}
                   >
-                    {renderNameWithSeedEntry(m.winner_name, m.winner_seed, m.winner_entry)}
+                    {renderNameWithSeedEntry(m.winner_name ?? "", m.winner_seed, m.winner_entry)}
                   </Link>
                 </td>
                 <td className="px-4 py-2 text-center text-sm">{m.loser_rank ?? "-"}</td>
                 <td className="px-4 py-2 flex items-center justify-center gap-2 text-sm">
-                  <span className="text-xl">{getFlagFromIOC(m.loser_ioc)}</span>
+                  <span className="text-xl">{getFlagFromIOC(m.loser_ioc ?? undefined)}</span>
                   <Link
                     href={`/players/${m.loser_id}`}
                     className={m.loser_id === playerId ? "font-bold text-red-400 hover:text-red-300" : "text-gray-400 hover:text-gray-200 transition"}
                   >
-                    {renderNameWithSeedEntry(m.loser_name, m.loser_seed, m.loser_entry)}
+                    {renderNameWithSeedEntry(m.loser_name ?? "", m.loser_seed, m.loser_entry)}
                   </Link>
                 </td>
                 <td className="px-4 py-2 text-center font-mono text-sm">{m.score}</td>

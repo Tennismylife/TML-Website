@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
           const mapEntry = playerMap[String(e.player_id)];
           finalTitles.push({
             tourney_id: e.tourney_id,
-            tourney_name: e.tourney_name,
+            tourney_name: e.tourney_name ?? '',
             player_id: e.player_id,
             player_name: mapEntry?.player_name ?? 'Unknown',
             ioc: mapEntry?.ioc ?? null,
@@ -124,7 +124,7 @@ export async function GET(request: NextRequest) {
           const mapEntry = playerMap[String(g.player_id)];
           return {
             tourney_id: g.tourney_id,
-            tourney_name: g.tourney_name,
+            tourney_name: g.tourney_name ?? '',
             player_id: g.player_id,
             player_name: mapEntry?.player_name ?? 'Unknown',
             ioc: mapEntry?.ioc ?? null,

@@ -27,9 +27,10 @@ function diffYMD(birth: Date, ref: Date) {
   return { y, m, d };
 }
 
-export default async function YoungestAtTopX({ searchParams }: { searchParams?: Record<string, string | string[]> }) {
-  const top = Number((searchParams?.top as string) ?? (searchParams?.rank as string) ?? 2);
-  const limit = Math.min(500, Math.max(1, Number((searchParams?.limit as string) ?? 200)));
+export default async function YoungestAtTopX({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
+  const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
+  const top = Number((sp.top as string) ?? (sp.rank as string) ?? 2);
+  const limit = Math.min(500, Math.max(1, Number((sp.limit as string) ?? 200)));
 
   const rowsData = await prisma.ranking.findMany({ where: { rank: { lte: top } }, select: { playerId: true, player: { select: { atpname: true, ioc: true, birthdate: true } }, rankingDate: { select: { date: true } } } });
 
@@ -45,14 +46,14 @@ export default async function YoungestAtTopX({ searchParams }: { searchParams?: 
     const ageDays = Math.floor((ref.getTime() - birth.getTime()) / (1000 * 60 * 60 * 24));
     const prev = bestByPlayer.get(id);
     if (!prev || ageDays < prev.ageDays || (ageDays === prev.ageDays && ref < prev.date)) {
-      bestByPlayer.set(id, { name: r.player.atpname, ioc: r.player.ioc, date: ref, birth, ageDays });
+      bestByPlayer.set(id, { name: r.player.atpname ?? '', ioc: r.player.ioc, date: ref, birth, ageDays });
     }
   }
 
   const data: YoungestTopItem[] = Array.from(bestByPlayer.entries()).map(([id, v]) => { const { y, m, d } = diffYMD(v.birth, v.date); return { id, name: v.name, ioc: v.ioc, ageDays: v.ageDays, ageLabel: `${y}y ${m}m ${d}d`, date: v.date.toISOString().slice(0,10) }; }).sort((a, b) => a.ageDays - b.ageDays).slice(0, limit);
 
   const perPage = 20;
-  const page = Number((searchParams?.page as string) ?? '1');
+  const page = Number((sp.page as string) ?? '1');
   const totalPages = Math.ceil(data.length / perPage);
   const start = (page - 1) * perPage;
   const paginatedRows = data.slice(start, start + perPage);

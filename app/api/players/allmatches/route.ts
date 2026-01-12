@@ -22,22 +22,22 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Parametro 'id' mancante" }, { status: 400 });
   }
 
-  const year = url.searchParams.get("year");
-  const level = url.searchParams.get("level");
-  const tourneyId = url.searchParams.get("tourney");
-  const surface = url.searchParams.get("surface");
-  const round = url.searchParams.get("round");
-  const result = url.searchParams.get("result");
-  const vsRank = url.searchParams.get("vsRank");
-  const vsAge = url.searchParams.get("vsAge");
-  const vsHand = url.searchParams.get("vsHand");
-  const vsBackhand = url.searchParams.get("vsBackhand");
-  const vsEntry = url.searchParams.get("vsEntry");
-  const asRank = url.searchParams.get("asRank");
-  const asEntry = url.searchParams.get("asEntry");
-  const set = url.searchParams.get("set");
-  const firstSet = url.searchParams.get("firstSet");
-  const score = url.searchParams.get("score");
+  const year = url.searchParams.get("year") ?? undefined;
+  const level = url.searchParams.get("level") ?? undefined;
+  const tourneyId = url.searchParams.get("tourney") ?? undefined;
+  const surface = url.searchParams.get("surface") ?? undefined;
+  const round = url.searchParams.get("round") ?? undefined;
+  const result = url.searchParams.get("result") ?? undefined;
+  const vsRank = url.searchParams.get("vsRank") ?? undefined;
+  const vsAge = url.searchParams.get("vsAge") ?? undefined;
+  const vsHand = url.searchParams.get("vsHand") ?? undefined;
+  const vsBackhand = url.searchParams.get("vsBackhand") ?? undefined;
+  const vsEntry = url.searchParams.get("vsEntry") ?? undefined;
+  const asRank = url.searchParams.get("asRank") ?? undefined;
+  const asEntry = url.searchParams.get("asEntry") ?? undefined;
+  const set = url.searchParams.get("set") ?? undefined;
+  const firstSet = url.searchParams.get("firstSet") ?? undefined;
+  const score = url.searchParams.get("score") ?? undefined;
 
   try {
     const where: any = { OR: [{ winner_id: playerId }, { loser_id: playerId }] };
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
 
     const matches = await prisma.match.findMany({ where });
 
-    let playerMap: Record<string, string> = {};
+    let playerMap: Record<string, string | null> = {};
     if (vsBackhand) {
       const playerIds: string[] = Array.from(new Set(matches.flatMap(m => [m.winner_id, m.loser_id]).filter((id): id is string => id !== null)));
       const players = await prisma.player.findMany({
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
       const myAge = isWinner ? m.winner_age : m.loser_age;
       const oppAge = isWinner ? m.loser_age : m.winner_age;
       const oppHand = isWinner ? m.loser_hand : m.winner_hand;
-      const oppBack = vsBackhand ? (isWinner ? playerMap[m.loser_id] : playerMap[m.winner_id]) : undefined;
+      const oppBack = vsBackhand ? (isWinner ? playerMap[m.loser_id ?? ''] : playerMap[m.winner_id ?? '']) : undefined;
 
       if (vsBackhand) {
         if (vsBackhand === "Two-handed" && oppBack !== "2H") return false;
@@ -79,9 +79,9 @@ export async function GET(request: NextRequest) {
 
       if (!filterByResult(m, isWinner, result)) return false;
       if (!filterByRank(myRank, oppRank, asRank, vsRank)) return false;
-      if (!filterByAge(myAge, oppAge, vsAge)) return false;
-      if (vsHand && !filterByHand(oppHand, vsHand)) return false;
-      if (!filterByEntry(mySeed, oppSeed, myEntry, oppEntry, asEntry, vsEntry)) return false;
+      if (!filterByAge(myAge ?? undefined, oppAge ?? undefined, vsAge)) return false;
+      if (vsHand && !filterByHand(oppHand ?? '', vsHand)) return false;
+      if (!filterByEntry(mySeed, oppSeed, myEntry ?? undefined, oppEntry ?? undefined, asEntry, vsEntry)) return false;
       if (!filterBySetScore(m, set, firstSet, score, isWinner)) return false;
 
       return true;

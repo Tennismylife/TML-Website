@@ -45,8 +45,8 @@ export default function H2HPage() {
     // Don't redirect if we already have p1/p2 params (legacy redirect will handle it)
     if (searchParamsClient?.has('p1') || searchParamsClient?.has('p2')) return;
     
-    const slugUrl = createH2HUrl(player1.atpname, player2.atpname);
-    const currentSlug = `${player1.atpname}-vs-${player2.atpname}`;
+    const slugUrl = createH2HUrl(player1.atpname ?? '', player2.atpname ?? '');
+    const currentSlug = `${player1.atpname ?? ''}-vs-${player2.atpname ?? ''}`;
     
     // Avoid redirect loop by checking if we've already redirected for this combination
     if (redirectRef.current === currentSlug) return;
@@ -86,7 +86,7 @@ export default function H2HPage() {
             const player2: Player = await res2.json();
 
             // Create slug URL and redirect
-            const slugUrl = createH2HUrl(player1.atpname, player2.atpname);
+            const slugUrl = createH2HUrl(player1.atpname ?? '', player2.atpname ?? '');
             const currentParams = new URLSearchParams(window.location.search);
             // Remove p1, p2 and default sort parameters
             currentParams.delete('p1');

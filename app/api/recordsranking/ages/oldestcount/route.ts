@@ -85,7 +85,7 @@ export async function GET(req: Request) {
       const prev = bestByPlayer.get(id);
       if (!prev || ageDays > prev.ageDays || (ageDays === prev.ageDays && date > prev.date)) {
         bestByPlayer.set(id, {
-          name: r.player.atpname,
+          name: r.player.atpname ?? '',
           ioc: r.player.ioc,
           date,
           birth,

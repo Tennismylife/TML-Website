@@ -82,7 +82,7 @@ const Rounds = ({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled
 
   const getLink = (playerId: string) => {
     let link = playerMatchesUrl(playerId);
-    for (const [key, value] of searchParams.entries()) {
+    for (const [key, value] of (searchParams?.entries() ?? [])) {
       if (key !== "tab") link += `&${key}=${encodeURIComponent(value)}`;
     }
     return link;

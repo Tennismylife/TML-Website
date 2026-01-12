@@ -180,7 +180,7 @@ export default function WinsSection({
                   <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                     <div className="flex items-center gap-2">
                       <span className="text-base">{flag}</span>
-                      <Link href={playerMatchesUrl(s.player_id, linkParams)} className="text-indigo-300 hover:underline">
+                      <Link href={playerMatchesUrl(s.player_id, linkParams as any)} className="text-indigo-300 hover:underline">
                         {s.player_name || `Player ${s.player_id}`}
                       </Link>
                     </div>

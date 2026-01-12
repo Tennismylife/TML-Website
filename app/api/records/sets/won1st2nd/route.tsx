@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
       if (p1First > p2First && p1Second > p2Second) {
         // vincitore ha vinto i primi due set
         comebackPlayerId = m.winner_id;
-        comebackPlayerName = m.winner_name;
+        comebackPlayerName = m.winner_name ?? '';
         comebackPlayerIoc = m.winner_ioc ?? '';
       } else if (p2First > p1First && p2Second > p1Second) {
         // perdente ha vinto i primi due set, ma ha perso il match
@@ -99,9 +99,12 @@ export async function GET(request: NextRequest) {
         continue;
       }
 
-      if (!playerStats.has(comebackPlayerId)) {
-        playerStats.set(comebackPlayerId, {
-          id: comebackPlayerId,
+      if (!comebackPlayerId) continue;
+      const key = String(comebackPlayerId);
+
+      if (!playerStats.has(key)) {
+        playerStats.set(key, {
+          id: key,
           name: comebackPlayerName,
           ioc: comebackPlayerIoc,
           wins: 0,
@@ -110,7 +113,7 @@ export async function GET(request: NextRequest) {
         });
       }
 
-      const stats = playerStats.get(comebackPlayerId)!;
+      const stats = playerStats.get(key)!;
       stats.total += 1;
       stats.wins += 1; // Hanno vinto il match
     }
