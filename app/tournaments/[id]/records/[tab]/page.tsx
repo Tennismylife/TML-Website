@@ -79,13 +79,6 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 
   return baseMeta;
 }
-  return {
-    title: titleText,
-    openGraph: { title: titleText, url: ogUrl, siteName: 'TML', images: [{ url: ogImage, alt: `${display} - ${typeLabel}` }] },
-    twitter: { card: 'summary_large_image', title: titleText, images: [ogImage] },
-    alternates: { canonical: ogUrl },
-  };
-}
 
 export default function RecordsTabPage({
   params,
