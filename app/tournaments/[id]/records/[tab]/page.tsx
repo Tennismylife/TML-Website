@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   // Return deterministic metadata based on the path (fast and reliable)
   const baseMeta: Metadata = {
     title: titleFromParam,
-    openGraph: { title: titleFromParam, url: ogUrlFromParam, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - ${typeLabelFromParam}` }] },
+    openGraph: { title: titleFromParam, url: ogUrlFromParam, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - ${typeLabelFromParam}`, width: 1200, height: 630, type: 'image/png' }] },
     twitter: { card: 'summary_large_image', title: titleFromParam, images: [ogImageFromParam] },
     alternates: { canonical: ogUrlFromParam },
   };

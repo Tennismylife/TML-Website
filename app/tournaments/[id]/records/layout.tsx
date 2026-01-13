@@ -67,7 +67,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
       title: titleFromParam,
       url: ogUrlFromParam,
       siteName: 'TML',
-      images: [{ url: ogImageFromParam, alt: `${displayFromParam} - ${typeLabelFromParam}` }],
+      images: [{ url: ogImageFromParam, alt: `${displayFromParam} - ${typeLabelFromParam}`, width: 1200, height: 630, type: 'image/png' }],
     },
     twitter: {
       card: 'summary_large_image',
