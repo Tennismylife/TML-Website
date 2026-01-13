@@ -159,7 +159,7 @@ function decompressIfGzip(buffer, headers) {
       res.setHeader('X-SSR-COMPLETE', '1');
 
       res.fromCache = true;
-      console.log('[CACHE HIT]', key, body.length);
+      if (process.env.VERBOSE_LOGS === '1') console.log('[CACHE HIT]', key, body.length);
 
       return res.send(body);
     } catch (e) {
@@ -209,7 +209,7 @@ function decompressIfGzip(buffer, headers) {
           if (ct.includes('text/html')) {
             const html = bodyBuffer.toString('utf-8');
             if (!html.includes('__NEXT_DATA__')) {
-              console.warn('[CACHE SKIP] HTML incompleto', key);
+              if (process.env.VERBOSE_LOGS === '1') console.warn('[CACHE SKIP] HTML incompleto', key);
               return originalEnd(chunk, ...args);
             }
           }
@@ -218,7 +218,7 @@ function decompressIfGzip(buffer, headers) {
             key,
             JSON.stringify({ body: bodyBuffer.toString('base64'), type: ct })
           )
-            .then(() => console.log('[CACHE STORED]', key, bodyBuffer.length))
+            .then(() => { if (process.env.VERBOSE_LOGS === '1') console.log('[CACHE STORED]', key, bodyBuffer.length); })
             .catch(err => console.error('[CACHE WRITE ERROR]', err));
 
           if (res.getHeader('X-Cache') === 'UNCACHED') {
