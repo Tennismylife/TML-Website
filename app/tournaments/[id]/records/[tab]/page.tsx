@@ -42,7 +42,32 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     tournament = await prisma.tournament.findUnique({ where: { slug: param }, select: { id: true, name: true, slug: true } });
   }
 
-  if (!tournament) return { title: 'Tournament Records | TML' };
+  if (!tournament) {
+    // fallback: build metadata from the path param so pages still have sensible titles/OG
+    const site = process.env.SITE_URL || 'https://stats.tennismylife.org';
+    const displayFallback = humanizeName(String(param).replace(/-/g, ' '));
+    const tabLabels: Record<string, string> = {
+      count: 'Counts',
+      rounds: 'Rounds',
+      ages: 'Ages',
+      percentage: 'Percentages',
+      timespan: 'Timespans',
+      'rounds-on-entries': 'Rounds on Entries',
+      least: 'Least',
+      'average-age': 'Average Age',
+    };
+    const typeLabelFallback = tab ? (tabLabels[tab] ?? humanizeName(tab || 'Records')) : 'Records';
+    const titleTextFallback = `${displayFallback} | ${typeLabelFallback}`;
+    const ogUrlFallback = `${site}/tournaments/${param}/records${tab ? `/${tab}` : ''}`;
+    const ogImageFallback = `${site}/api/og/tournament/${param}?page=records${tab ? `&tab=${tab}` : ''}`;
+
+    return {
+      title: titleTextFallback,
+      openGraph: { title: titleTextFallback, url: ogUrlFallback, siteName: 'TML', images: [{ url: ogImageFallback, alt: `${displayFallback} - ${typeLabelFallback}` }] },
+      twitter: { card: 'summary_large_image', title: titleTextFallback, images: [ogImageFallback] },
+      alternates: { canonical: ogUrlFallback },
+    };
+  }
 
   const display = tournament.slug
     ? humanizeName(String(tournament.slug).replace(/-/g, ' '))
