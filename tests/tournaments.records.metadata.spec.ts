@@ -21,19 +21,19 @@ describe('tournaments records generateMetadata', () => {
   it('root records title and image', async () => {
     const meta = await generateMetadata({ params: { id: 'australian-open' } });
     expect(meta.title).toBe('Australian Open | Records');
-    expect(meta.openGraph?.images?.[0]?.url).toContain('/og/tournament-records.png');
+    expect(meta.openGraph?.images?.[0]?.url).toContain('/og/site-preview.png');
     expect(meta.twitter?.card).toBe('summary_large_image');
   });
 
   it('ages tab title and image', async () => {
     const meta = await generateMetadata({ params: { id: 'australian-open', segments: ['ages'] } });
     expect(meta.title).toBe('Australian Open | Ages');
-    expect(meta.openGraph?.images?.[0]?.url).toContain('/og/tournament-records.png');
+    expect(meta.openGraph?.images?.[0]?.url).toContain('/og/site-preview.png');
   });
 
   it('ages winners subtab title and image', async () => {
     const meta = await generateMetadata({ params: { id: 'australian-open', segments: ['ages', 'winners'] } });
     expect(meta.title).toBe('Australian Open | Ages — Winners');
-    expect(meta.openGraph?.images?.[0]?.url).toContain('/og/tournament-records.png');
+    expect(meta.openGraph?.images?.[0]?.url).toContain('/og/site-preview.png');
   });
 });

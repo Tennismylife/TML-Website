@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   const titleFromParam = `${displayFromParam} | ${typeLabelFromParam}`;
   const ogUrlFromParam = `${site}/tournaments/${param}/records${tab ? `/${tab}` : ''}`;
   // Simpler: always use the static CTA image for records previews
-  const ogImageFromParam = `${site}/og/tournament-records.png`;
+  const ogImageFromParam = `${site}/og/site-preview.png`; 
 
   // Return deterministic metadata based on the path (fast and reliable)
   const baseMeta: Metadata = {

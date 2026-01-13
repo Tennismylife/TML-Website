@@ -27,9 +27,19 @@ export const metadata: Metadata = {
     description: siteDescription,
     url: '/',
     type: 'website',
+    images: [
+      {
+        url: `${process.env.SITE_URL || 'https://stats.tennismylife.org'}/og/site-preview.png`, 
+        alt: 'Records — TennisMyLife',
+        width: 1200,
+        height: 630,
+        type: 'image/png',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
+    images: [`${process.env.SITE_URL || 'https://stats.tennismylife.org'}/og/site-preview.png`],
   },
   alternates: {
     canonical: '/',

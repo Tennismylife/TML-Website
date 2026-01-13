@@ -159,7 +159,7 @@ export async function GET(request: Request, context: any) {
 
         // try global generic fallback image
         try {
-          const generic = `${site}/og/tournament-records.png`;
+          const generic = `${site}/og/site-preview.png`;
           const gres = await fetch(generic);
           if (gres && gres.ok) {
             const buf2 = await gres.arrayBuffer();

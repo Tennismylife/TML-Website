@@ -58,7 +58,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   const ogUrlFromParam = `${site}/tournaments/${param}/records${tab ? `/${tab}` : ''}${sub ? `/${sub}` : ''}`;
   // Use a simple static CTA image for all Records pages so previews are
   // stable and invite clicks.
-  const ogImageFromParam = `${site}/og/tournament-records.png`;
+  const ogImageFromParam = `${site}/og/site-preview.png`; 
 
   // Return the deterministic metadata immediately.
   // We keep the DB lookup below (best-effort) but do not block the metadata on it.
