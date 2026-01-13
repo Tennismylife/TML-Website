@@ -30,10 +30,9 @@ function humanizeName(name: any) {
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const { id: param, tab } = params || {};
-  if (!param) return { title: 'Tournament Records | TML' };
 
   const site = process.env.SITE_URL || 'https://stats.tennismylife.org';
-  const displayFromParam = humanizeName(String(param).replace(/-/g, ' '));
+  const displayFromParam = humanizeName(String(param ?? 'Tournament').replace(/-/g, ' '));
 
   const tabLabels: Record<string, string> = {
     count: 'Counts',

@@ -32,7 +32,6 @@ function humanizeName(name: any) {
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const { id: param, segments } = params || {};
   const site = process.env.SITE_URL || 'https://stats.tennismylife.org';
-  if (!param) return { title: 'Tournament Records | TML' };
 
   // derive tab/subtab from catch-all segments (if present) up front
   const segs = Array.isArray(segments) ? segments : (segments ? [segments] : []);
@@ -41,7 +40,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 
   // Build deterministic metadata based on the path immediately so we have specific
   // titles and OG images even if DB access is slow or unavailable.
-  const displayFromParam = humanizeName(String(param).replace(/-/g, ' '));
+  const displayFromParam = humanizeName(String(param ?? 'Tournament').replace(/-/g, ' '));
   const tabLabels: Record<string, string> = {
     count: 'Counts',
     rounds: 'Rounds',
