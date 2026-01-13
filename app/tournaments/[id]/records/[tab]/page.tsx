@@ -32,46 +32,8 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   const { id: param, tab } = params || {};
   if (!param) return { title: 'Tournament Records | TML' };
 
-  let tournament: any = null;
-  if (/^\d+$/.test(param)) {
-    const canonicalId = await resolveCanonicalTourneyId(param);
-    if (!canonicalId) return { title: 'Tournament Records | TML' };
-    const idNum = parseInt(canonicalId, 10);
-    tournament = await prisma.tournament.findUnique({ where: { id: idNum }, select: { id: true, name: true, slug: true } });
-  } else {
-    tournament = await prisma.tournament.findUnique({ where: { slug: param }, select: { id: true, name: true, slug: true } });
-  }
-
-  if (!tournament) {
-    // fallback: build metadata from the path param so pages still have sensible titles/OG
-    const site = process.env.SITE_URL || 'https://stats.tennismylife.org';
-    const displayFallback = humanizeName(String(param).replace(/-/g, ' '));
-    const tabLabels: Record<string, string> = {
-      count: 'Counts',
-      rounds: 'Rounds',
-      ages: 'Ages',
-      percentage: 'Percentages',
-      timespan: 'Timespans',
-      'rounds-on-entries': 'Rounds on Entries',
-      least: 'Least',
-      'average-age': 'Average Age',
-    };
-    const typeLabelFallback = tab ? (tabLabels[tab] ?? humanizeName(tab || 'Records')) : 'Records';
-    const titleTextFallback = `${displayFallback} | ${typeLabelFallback}`;
-    const ogUrlFallback = `${site}/tournaments/${param}/records${tab ? `/${tab}` : ''}`;
-    const ogImageFallback = `${site}/api/og/tournament/${param}?page=records${tab ? `&tab=${tab}` : ''}`;
-
-    return {
-      title: titleTextFallback,
-      openGraph: { title: titleTextFallback, url: ogUrlFallback, siteName: 'TML', images: [{ url: ogImageFallback, alt: `${displayFallback} - ${typeLabelFallback}` }] },
-      twitter: { card: 'summary_large_image', title: titleTextFallback, images: [ogImageFallback] },
-      alternates: { canonical: ogUrlFallback },
-    };
-  }
-
-  const display = tournament.slug
-    ? humanizeName(String(tournament.slug).replace(/-/g, ' '))
-    : humanizeName(extractName(tournament.name) || `Tournament ${tournament.id}`);
+  const site = process.env.SITE_URL || 'https://stats.tennismylife.org';
+  const displayFromParam = humanizeName(String(param).replace(/-/g, ' '));
 
   const tabLabels: Record<string, string> = {
     count: 'Counts',
@@ -84,14 +46,39 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     'average-age': 'Average Age',
   };
 
-  const base = tabLabels[tab] ?? humanizeName(tab || 'Records');
-  const typeLabel = base;
+  const typeLabelFromParam = tab ? (tabLabels[tab] ?? humanizeName(tab || 'Records')) : 'Records';
+  const titleFromParam = `${displayFromParam} | ${typeLabelFromParam}`;
+  const ogUrlFromParam = `${site}/tournaments/${param}/records${tab ? `/${tab}` : ''}`;
+  const ogImageFromParam = `${site}/api/og/tournament/${param}?page=records${tab ? `&tab=${tab}` : ''}`;
 
-  const site = 'https://stats.tennismylife.org';
-  const ogUrl = `${site}/tournaments/${tournament.slug || param}/records/${tab || ''}`;
-  const ogImage = `${site}/api/og/tournament/${tournament.slug || param}?page=records${tab ? `&tab=${tab}` : ''}`;
-  const titleText = `${display} | ${typeLabel}`;
+  // Return deterministic metadata based on the path (fast and reliable)
+  const baseMeta: Metadata = {
+    title: titleFromParam,
+    openGraph: { title: titleFromParam, url: ogUrlFromParam, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - ${typeLabelFromParam}` }] },
+    twitter: { card: 'summary_large_image', title: titleFromParam, images: [ogImageFromParam] },
+    alternates: { canonical: ogUrlFromParam },
+  };
 
+  // Best-effort DB lookup (do not block metadata)
+  (async () => {
+    try {
+      let tournament: any = null;
+      if (/^\d+$/.test(param)) {
+        const canonicalId = await resolveCanonicalTourneyId(param);
+        if (canonicalId) {
+          const idNum = parseInt(canonicalId, 10);
+          tournament = await prisma.tournament.findUnique({ where: { id: idNum }, select: { id: true, name: true, slug: true } });
+        }
+      } else {
+        tournament = await prisma.tournament.findUnique({ where: { slug: param }, select: { id: true, name: true, slug: true } });
+      }
+    } catch (err) {
+      // ignore
+    }
+  })();
+
+  return baseMeta;
+}
   return {
     title: titleText,
     openGraph: { title: titleText, url: ogUrl, siteName: 'TML', images: [{ url: ogImage, alt: `${display} - ${typeLabel}` }] },
