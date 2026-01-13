@@ -134,6 +134,46 @@ export async function GET(request: Request, context: any) {
     const typeGradientCss = `linear-gradient(90deg, ${styleForTab.from}, ${styleForTab.to})`;
     const stripeBgCss = `linear-gradient(90deg, ${styleForTab.from}, ${styleForTab.to})`;
 
+    // Fetch top data for records page (Top Items card)
+    let recordsTop: any = null;
+    if (pageParam === 'records') {
+      try {
+        const r = await fetch(`${site}/api/tournaments/${encodeURIComponent(id)}/records/count`, { next: { revalidate: 60 } });
+        if (r.ok) recordsTop = await r.json();
+      } catch (err) {
+        // ignore and fall back to generic image
+      }
+    }
+
+    const renderTopItems = (data: any) => {
+      if (!data) return null;
+      // For overview (count), show 4 columns: Titles, Wins, Played, Entries (top 2 each)
+      const groups = [
+        { key: 'titles', label: 'Titles' },
+        { key: 'wins', label: 'Wins' },
+        { key: 'played', label: 'Played' },
+        { key: 'entries', label: 'Entries' },
+      ];
+
+      return (
+        <div style={{ width: '100%', display: 'flex', gap: 18, marginTop: 28 }}>
+          {groups.map((g) => (
+            <div key={g.key} style={{ width: '23%', display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ fontSize: 18, fontWeight: 800, color: 'white' }}>{g.label}</div>
+              {(data[g.key] || []).slice(0, 2).map((it: any, i: number) => (
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <div style={{ fontSize: 16, color: 'white', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{it.name}</div>
+                  </div>
+                  <div style={{ fontSize: 18, fontWeight: 900, color: 'white' }}>{it.count ?? it.years ?? ''}</div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      );
+    };
+
     // If bgStyle does not reference an external image (no url(...)), return a PNG response immediately with caching headers.
     if (!/url\(/.test(bgStyle)) {
       // Build an ImageResponse using the solid bgStyle (no external assets) and return a Response with cache headers
@@ -168,9 +208,12 @@ export async function GET(request: Request, context: any) {
               <div style={{ width: 160, height: 160, borderRadius: 9999, background: 'linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 56 }}>{iconEmoji}</div>
             </div>
 
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: 36 }}>
-              <div style={{ fontSize: 48, fontWeight: 900, background: typeGradientCss, WebkitBackgroundClip: 'text', color: 'transparent', textShadow: '0 10px 30px rgba(0,0,0,0.6)' }}>{typeLabel}</div>
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: 12 }}>
+              <div style={{ fontSize: 40, fontWeight: 900, background: typeGradientCss, WebkitBackgroundClip: 'text', color: 'transparent', textShadow: '0 10px 30px rgba(0,0,0,0.6)' }}>{typeLabel}</div>
             </div>
+
+            {/* Top items grid (if available) */}
+            {recordsTop ? renderTopItems(recordsTop) : null}
 
             <div style={{ position: 'absolute', right: 36, bottom: 20, fontSize: 14, opacity: 0.95, color: 'rgba(255,255,255,0.85)' }}>TennisMyLife</div>
           </div>
@@ -202,7 +245,7 @@ export async function GET(request: Request, context: any) {
             overflow: 'hidden',
           }}
         >
-          {/* decorative soft stripe */}
+                {/* decorative soft stripe */}
           <div style={{ position: 'absolute', left: -120, top: 40, transform: 'rotate(-22deg)', width: 600, height: 260, background: stripeBgCss, borderRadius: 8, filter: 'blur(20px)', opacity: styleForTab.stripeOpacity }} />
 
           {/* Header: tournament name + small meta + trophy */}
@@ -220,6 +263,9 @@ export async function GET(request: Request, context: any) {
           <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: 36 }}>
             <div style={{ fontSize: 48, fontWeight: 900, background: typeGradientCss, WebkitBackgroundClip: 'text', color: 'transparent', textShadow: '0 10px 30px rgba(0,0,0,0.6)' }}>{typeLabel}</div>
           </div>
+
+          {/* Top items (records) rendered below header */}
+          {recordsTop ? renderTopItems(recordsTop) : null}
 
           {/* footer label */}
           <div style={{ position: 'absolute', right: 36, bottom: 20, fontSize: 14, opacity: 0.95, color: 'rgba(255,255,255,0.85)' }}>TennisMyLife</div>
