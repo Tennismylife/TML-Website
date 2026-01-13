@@ -58,6 +58,9 @@ function getUrl(req: any): string | null {
  */
 export async function trackVisit(req: any, pageTitle?: string): Promise<boolean> {
   try {
+    // Allow disabling tracking entirely via env
+    if (process.env.DISABLE_TRACKING === '1') return false;
+
     const ua = getUserAgent(req) || '';
     if (BOT_RE.test(ua)) {
       // common bots filtered
@@ -76,7 +79,7 @@ export async function trackVisit(req: any, pageTitle?: string): Promise<boolean>
       // ignore
     }
 
-    // Insert into DB, swallow any errors but log them.
+    // Insert into DB, swallow any errors but log them only when verbose logging is enabled.
     try {
       const res: any = await prisma.$queryRaw`
         INSERT INTO tracking_schema.visits (page_url, page_title, user_ip, user_agent, created_at)
@@ -85,11 +88,11 @@ export async function trackVisit(req: any, pageTitle?: string): Promise<boolean>
       `;
       return Array.isArray(res) ? !!res[0]?.id : !!res?.id;
     } catch (dbErr) {
-      console.error('trackVisit: db insert error', dbErr);
+      if (process.env.VERBOSE_LOGS === '1') console.error('trackVisit: db insert error', dbErr);
       return false;
     }
   } catch (err) {
-    console.error('trackVisit error', err);
+    if (process.env.VERBOSE_LOGS === '1') console.error('trackVisit error', err);
     return false;
   }
 }
