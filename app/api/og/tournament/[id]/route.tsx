@@ -143,6 +143,20 @@ export async function GET(request: Request, context: any) {
       } catch (err) {
         // ignore and fall back to generic image
       }
+
+      // If no dynamic data available, try serving a static pre-generated PNG from /public/og
+      if (!recordsTop) {
+        try {
+          const staticUrl = `${site}/og/tournament-${encodeURIComponent(id)}-records.png`;
+          const sresp = await fetch(staticUrl);
+          if (sresp && sresp.ok) {
+            const buf = await sresp.arrayBuffer();
+            return new Response(Buffer.from(buf), { headers: { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=3600, s-maxage=86400' } });
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
     }
 
     const renderTopItems = (data: any) => {
