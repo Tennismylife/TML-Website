@@ -205,7 +205,7 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
   }
 
   return (
-    <nav ref={navRef} className="mb-6 flex flex-wrap gap-3 bg-gray-800/40 rounded-2xl p-4 shadow-lg w-full justify-center" aria-label="Record tabs">
+    <nav ref={navRef} className="mb-4 flex flex-wrap gap-3 bg-gray-800/40 rounded-2xl p-4 shadow-lg w-full justify-center" aria-label="Record tabs">
       {tabs.map(tab => {
         const firstSub = subTabs[tab.key]?.[0]?.key;
         const isActive = tab.key === activeTab;
@@ -231,7 +231,7 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
                 handleSubtabClick(tab.key, firstSub);
               }
             }}
-            className={`px-4 py-2 rounded-2xl font-medium transition-colors duration-200 ${isActive ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white'}`}
+            className={`px-4 py-2 rounded-xl font-medium transition-colors duration-200 ${isActive ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700'}`}
           >
             {tab.label}
           </Link>

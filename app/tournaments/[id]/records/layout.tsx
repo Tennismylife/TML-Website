@@ -30,7 +30,7 @@ function humanizeName(name: any) {
 }
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const { id: param } = params || {};
+  const { id: param, segments } = params || {};
   if (!param) return { title: 'Tournament Records | TML' };
 
   let tournament: any = null;
@@ -50,12 +50,68 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     ? humanizeName(String(tournament.slug).replace(/-/g, ' '))
     : humanizeName(extractName(tournament.name) || `Tournament ${tournament.id}`);
 
+  // derive tab/subtab from catch-all segments (if present)
+  const segs = Array.isArray(segments) ? segments : (segments ? [segments] : []);
+  const tab = segs.length > 0 ? segs[0] : null;
+  const sub = segs.length > 1 ? segs[1] : null;
+
+  // mapping for human-friendly tab/sub labels
+  const tabLabels: Record<string, string> = {
+    count: 'Counts',
+    rounds: 'Rounds',
+    ages: 'Ages',
+    percentage: 'Percentages',
+    timespan: 'Timespans',
+    'rounds-on-entries': 'Rounds on Entries',
+    least: 'Least',
+    'average-age': 'Average Age',
+  };
+
+  const agesSub: Record<string, string> = {
+    main: 'Main',
+    winners: 'Winners',
+    titles: 'Titles',
+    youngestrounds: 'Youngest Rounds',
+    oldestrounds: 'Oldest Rounds',
+  };
+
+  const percSub: Record<string, string> = {
+    overall: 'Overall',
+    'per-round': 'Per Round',
+    rounds: 'Per Round',
+  };
+
+  let typeLabel = 'Records';
+  if (tab) {
+    const base = tabLabels[tab] ?? humanizeName(tab);
+    if (tab === 'ages' && sub) typeLabel = `${base} — ${(agesSub[sub] ?? humanizeName(sub))}`;
+    else if (tab === 'percentage' && sub) typeLabel = `${base} — ${(percSub[sub] ?? humanizeName(sub))}`;
+    else typeLabel = base;
+  }
+
   const site = 'https://stats.tennismylife.org';
-  const ogUrl = `${site}/tournaments/${tournament.slug || param}/records`;
+  const ogUrl = `${site}/tournaments/${tournament.slug || param}/records${tab ? `/${tab}` : ''}${sub ? `/${sub}` : ''}`;
+
+  const titleText = `${display} | ${typeLabel}`;
+
+  // Primary social image: dynamic OG generator with page/tab/sub info
+  const ogImage = `${site}/api/og/tournament/${tournament.slug || param}?page=records${tab ? `&tab=${tab}` : ''}${sub ? `&sub=${sub}` : ''}`;
 
   return {
-    title: `${display} - Records | TML`,
-    openGraph: { title: `${display} - Records | TML`, url: ogUrl, siteName: 'TML' },
+    title: titleText,
+    openGraph: {
+      title: titleText,
+      url: ogUrl,
+      siteName: 'TML',
+      images: [
+        { url: ogImage, alt: `${display} - ${typeLabel}` },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: titleText,
+      images: [ogImage],
+    },
     alternates: { canonical: ogUrl },
   };
 }

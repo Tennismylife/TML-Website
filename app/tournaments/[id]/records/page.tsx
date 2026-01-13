@@ -17,6 +17,33 @@ import RoundsSection from "./RoundsSection";
 import TournamentHeader from "../TournamentHeader";
 import TournamentTabs from "./TournamentTabs";
 
+// Helper functions for display name
+function extractName(nameField: any): string {
+  if (!nameField) return '';
+  if (typeof nameField === 'string') return nameField;
+  if (typeof nameField === 'number' || typeof nameField === 'boolean') return String(nameField);
+  if (Array.isArray(nameField)) {
+    for (const v of nameField) {
+      const r = extractName(v);
+      if (r) return r;
+    }
+    return '';
+  }
+  if (typeof nameField === 'object') {
+    for (const v of Object.values(nameField)) {
+      const r = extractName(v);
+      if (r) return r;
+    }
+    return '';
+  }
+  return '';
+}
+
+function humanizeName(name: any) {
+  const s = String(name || '');
+  return s.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 export default function TournamentPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const tournamentId = Number(id);

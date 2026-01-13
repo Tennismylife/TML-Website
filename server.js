@@ -100,7 +100,9 @@ function decompressIfGzip(buffer, headers) {
   await initRedis();
 
   const server = express();
-  server.use(express.json());
+  // Do NOT register express.json() globally - it consumes the raw request body
+  // and prevents Next.js from converting Node requests into Next Requests.
+  // If we need JSON body parsing for custom endpoints, apply it to those routes only.
 
   /* ---------------- ACTIVE REQUESTS (silenced) ---------------- */
   server.use((req, res, next) => {
