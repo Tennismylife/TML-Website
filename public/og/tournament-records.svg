@@ -1,93 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Generic Tournament Records OG SVG for TennisMyLife -->
+<!-- Generic Tournament Records OG SVG — Green background, yellow accents, bold CTA -->
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
-    <linearGradient id="g1" x1="0" x2="1" y1="0" y2="0">
-      <stop offset="0%" stop-color="#2ECC71" stop-opacity="0.95"/>
-      <stop offset="100%" stop-color="#1F7A3A" stop-opacity="0.95"/>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%" stop-color="#0C7A2A"/>
+      <stop offset="100%" stop-color="#1EC85A"/>
     </linearGradient>
-    <linearGradient id="stripe" x1="0" x2="1">
-      <stop offset="0%" stop-color="#FFF" stop-opacity="0.06"/>
-      <stop offset="100%" stop-color="#FFF" stop-opacity="0.02"/>
+    <linearGradient id="yellow" x1="0" x2="1">
+      <stop offset="0%" stop-color="#FFD700"/>
+      <stop offset="100%" stop-color="#FFB300"/>
     </linearGradient>
+
     <style>
-      .title{font-family: Montserrat, Arial, sans-serif; font-weight:900; fill:#fff}
+      .title{font-family: Inter, Arial, sans-serif; font-weight:900; fill:#fff}
       .subtitle{font-family: Inter, Arial, sans-serif; fill:#fff; opacity:0.95}
-      .groupLabel{font-size:18px; font-weight:800; fill:#fff}
-      .player{font-size:16px; fill:#fff}
-      .value{font-size:18px; font-weight:900; fill:#fff}
+      .cta{font-family: Inter, Arial, sans-serif; font-weight:900; fill:#0B3B66}
+      .small{font-family: Inter, Arial, sans-serif; fill:#fff; opacity:0.9}
+      .brand{font-family: Inter, Arial, sans-serif; font-size:14px; fill:rgba(255,255,255,0.9)}
     </style>
   </defs>
 
-  <!-- Background -->
-  <rect width="1200" height="630" fill="url(#g1)" />
-  <rect x="-200" y="40" width="600" height="260" transform="rotate(-22 100 170)" fill="url(#stripe)" opacity="0.12" rx="12"/>
+  <!-- Main Green Background -->
+  <rect width="1200" height="630" fill="url(#bg)" rx="20" />
 
-  <!-- Header -->
-  <g transform="translate(60,60)">
-    <text x="0" y="40" class="title" font-size="56">Tournament</text>
-    <text x="0" y="92" class="subtitle" font-size="36">Records — Top Players</text>
+  <!-- Aggressive yellow boxes and accents -->
+  <rect x="60" y="60" width="480" height="220" rx="18" fill="url(#yellow)" opacity="0.95" />
+  <rect x="680" y="120" width="420" height="300" rx="18" fill="url(#yellow)" opacity="0.9" />
+
+  <!-- Big title on top of yellow box -->
+  <g transform="translate(90,120)">
+    <text x="0" y="0" class="title" font-size="64">RECORDS</text>
+    <text x="0" y="70" class="subtitle" font-size="24">Top tournament stats</text>
   </g>
 
-  <!-- Icon / badge on right -->
-  <g transform="translate(960,60)">
-    <circle cx="80" cy="80" r="80" fill="rgba(255,255,255,0.06)" />
-    <text x="80" y="100" text-anchor="middle" font-size="56" fill="#fff">🏆</text>
+  <!-- Bold CTA in contrasting yellow pill with dark text -->
+  <g transform="translate(90,260)">
+    <rect x="0" y="0" width="520" height="120" rx="24" fill="#fff" opacity="0.0" />
+    <rect x="0" y="0" width="420" height="96" rx="18" fill="#FFD700" />
+    <text x="32" y="60" class="cta" font-size="34">SEE RECORDS NOW &#187;</text>
+    <text x="32" y="92" class="small" font-size="18">Click to explore top players and stats</text>
   </g>
 
-  <!-- Grid of Top Items (generic examples) -->
-  <g transform="translate(60,180)">
-    <!-- Column 1 -->
-    <g transform="translate(0,0)">
-      <text x="0" y="0" class="groupLabel">Titles</text>
-      <g transform="translate(0,18)">
-        <text x="0" y="32" class="player">Novak Djokovic</text>
-        <text x="260" y="32" class="value">10</text>
-        <text x="0" y="72" class="player">Roger Federer</text>
-        <text x="260" y="72" class="value">6</text>
-      </g>
-    </g>
-
-    <!-- Column 2 -->
-    <g transform="translate(290,0)">
-      <text x="0" y="0" class="groupLabel">Wins</text>
-      <g transform="translate(0,18)">
-        <text x="0" y="32" class="player">Roger Federer</text>
-        <text x="260" y="32" class="value">102</text>
-        <text x="0" y="72" class="player">Novak Djokovic</text>
-        <text x="260" y="72" class="value">99</text>
-      </g>
-    </g>
-
-    <!-- Column 3 -->
-    <g transform="translate(580,0)">
-      <text x="0" y="0" class="groupLabel">Played</text>
-      <g transform="translate(0,18)">
-        <text x="0" y="32" class="player">Roger Federer</text>
-        <text x="260" y="32" class="value">117</text>
-        <text x="0" y="72" class="player">Novak Djokovic</text>
-        <text x="260" y="72" class="value">109</text>
-      </g>
-    </g>
-
-    <!-- Column 4 -->
-    <g transform="translate(870,0)">
-      <text x="0" y="0" class="groupLabel">Entries</text>
-      <g transform="translate(0,18)">
-        <text x="0" y="32" class="player">Roger Federer</text>
-        <text x="200" y="32" class="value">21</text>
-        <text x="0" y="72" class="player">Novak Djokovic</text>
-        <text x="200" y="72" class="value">20</text>
-      </g>
-    </g>
+  <!-- Right-side bold icon for extra emphasis -->
+  <g transform="translate(820,80)">
+    <circle cx="120" cy="120" r="120" fill="#fff" opacity="0.12" />
+    <rect x="40" y="40" width="160" height="160" rx="20" fill="#FFD700" />
+    <text x="120" y="140" text-anchor="middle" font-size="88" fill="#0B3B66" font-family="Inter, Arial, sans-serif" font-weight="900">🏆</text>
   </g>
 
-  <!-- Footer CTA -->
-  <g transform="translate(60,520)">
-    <rect x="0" y="0" width="460" height="60" rx="10" fill="#fff" opacity="0.08" />
-    <text x="20" y="40" font-family="Inter, Arial, sans-serif" font-weight="700" font-size="20" fill="#fff">Explore Records · stats.tennismylife.org</text>
-  </g>
-
-  <!-- Brand small -->
-  <text x="990" y="598" font-family="Inter, Arial, sans-serif" font-size="14" fill="rgba(255,255,255,0.9)">TennisMyLife</text>
+  <!-- Footer brand -->
+  <text x="980" y="600" class="brand">TennisMyLife</text>
 </svg>

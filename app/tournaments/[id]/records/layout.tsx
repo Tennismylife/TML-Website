@@ -53,9 +53,12 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   };
 
   const typeLabelFromParam = tab ? (tab === 'ages' ? 'Ages' : (tabLabels[tab] ?? humanizeName(tab))) : 'Records';
-  const titleFromParam = `${displayFromParam} | ${typeLabelFromParam}`;
+  const subLabel = sub ? ` — ${humanizeName(sub)}` : '';
+  const titleFromParam = `${displayFromParam} | ${typeLabelFromParam}${subLabel}`;
   const ogUrlFromParam = `${site}/tournaments/${param}/records${tab ? `/${tab}` : ''}${sub ? `/${sub}` : ''}`;
-  const ogImageFromParam = `${site}/api/og/tournament/${param}?page=records${tab ? `&tab=${tab}` : ''}${sub ? `&sub=${sub}` : ''}`;
+  // Use a simple static CTA image for all Records pages so previews are
+  // stable and invite clicks.
+  const ogImageFromParam = `${site}/og/tournament-records.png`;
 
   // Return the deterministic metadata immediately.
   // We keep the DB lookup below (best-effort) but do not block the metadata on it.

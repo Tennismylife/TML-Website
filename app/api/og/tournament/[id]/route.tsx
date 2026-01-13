@@ -156,6 +156,18 @@ export async function GET(request: Request, context: any) {
         } catch (e) {
           // ignore
         }
+
+        // try global generic fallback image
+        try {
+          const generic = `${site}/og/tournament-records.png`;
+          const gres = await fetch(generic);
+          if (gres && gres.ok) {
+            const buf2 = await gres.arrayBuffer();
+            return new Response(Buffer.from(buf2), { headers: { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=3600, s-maxage=86400' } });
+          }
+        } catch (e) {
+          // ignore
+        }
       }
     }
 
