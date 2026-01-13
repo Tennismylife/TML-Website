@@ -30,7 +30,7 @@ function humanizeName(name: any) {
 }
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const { id: param, segments } = params || {};
+  const { id: param, segments } = await params;
   const site = process.env.SITE_URL || 'https://stats.tennismylife.org';
 
   // derive tab/subtab from catch-all segments (if present) up front

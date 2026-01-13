@@ -29,7 +29,7 @@ function humanizeName(name: any) {
 }
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const { id: param, tab } = params || {};
+  const { id: param, tab } = await params;
 
   const site = process.env.SITE_URL || 'https://stats.tennismylife.org';
   const displayFromParam = humanizeName(String(param ?? 'Tournament').replace(/-/g, ' '));
