@@ -119,7 +119,6 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     else typeLabel = base;
   }
 
-  const site = 'https://stats.tennismylife.org';
   const ogUrl = `${site}/tournaments/${tournament.slug || param}/records${tab ? `/${tab}` : ''}${sub ? `/${sub}` : ''}`;
 
   const titleText = `${display} | ${typeLabel}`;
