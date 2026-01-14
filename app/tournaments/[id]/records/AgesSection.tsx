@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
-import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
+
+import { useRouter } from 'next/navigation';
 
 interface PlayerStatAge {
   id: string | number;
@@ -38,11 +39,16 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
   const [agesData, setAgesData] = useState<AgesData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // keep modal state hook in place to preserve hook order for consistent hydration
   const [modalData, setModalData] = useState<{ title: string; list: PlayerStatAge[] } | null>(null);
+
 
   // call incremental hook at top-level to keep hooks order stable across renders
   const totalItemsForHook = agesData ? (activeSubTab === 'youngestrounds' ? (agesData.allYoungestItems?.length ?? 0) : (agesData.allOldestItems?.length ?? 0)) : 0;
   const { isMobile, visibleCount, sentinelRef } = useIncrementalCards(totalItemsForHook, { initialVisible: 1, debounceMs: 1000 });
+
+  // Next.js router hook (must remain at top-level and keep position stable)
+  const router = useRouter();
 
   useEffect(() => {
     const fetchAges = async () => {
@@ -71,27 +77,30 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
     return `${years}y ${days}d`;
   };
 
-  const handleViewAll = async (
+  const handleViewAll = (
     type: 'topYoungest' | 'topOldest' | 'topYoungestWinners' | 'topOldestWinners' | 'allYoungestItems' | 'allOldestItems',
     title?: string
   ) => {
     try {
-      const res = await fetch(`/api/tournaments/${id}/records/ages/${activeSubTab}?full=true`);
-      if (!res.ok) throw new Error('Failed to fetch full data');
-      const data = await res.json();
+      // determine which side to show in modal
+      const isYoung = ['topYoungest', 'topYoungestWinners', 'allYoungestItems'].includes(type);
+      const which = isYoung ? 'youngest' : 'oldest';
 
-      let list: PlayerStatAge[] = [];
-      if (type === 'topYoungest') list = data.youngestPlayers;
-      if (type === 'topOldest') list = data.oldestPlayers;
-      if (type === 'topYoungestWinners') list = data.youngestWinners;
-      if (type === 'topOldestWinners') list = data.oldestWinners;
-      if (type === 'allYoungestItems' || type === 'allOldestItems') {
-        const items = type === 'allYoungestItems' ? data.allYoungestItems : data.allOldestItems;
-        const item = items.find((i: any) => i.title === title);
-        if (item) list = item.fullList;
+      // choose section segment based on activeSubTab
+      const sectionSegment = activeSubTab === 'titles' ? 'titles' : 'main';
+
+      const baseId = linkId ?? id;
+      const newPath = `/tournaments/${baseId}/records/ages/${sectionSegment}/${which}`;
+
+      // push history state indicating modal navigation and include which/title and section
+      if (typeof window !== 'undefined') {
+        const state = { modal: true, background: window.location.pathname, which, title, section: sectionSegment };
+        window.history.pushState(state, '', newPath);
+        window.dispatchEvent(new CustomEvent('open-modal', { detail: { section: sectionSegment, which, title } }));
       }
 
-      setModalData({ title: title || type, list });
+      // update router so URL syncs (keeps app state consistent)
+      router.push(newPath);
     } catch (err) {
       console.error(err);
     }
@@ -161,8 +170,6 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
             <button onClick={() => handleViewAll(activeSubTab === 'main' ? 'topOldest' : 'topOldestWinners')} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">View All</button>
           </div>
         </div>
-
-        {modalData && <ModalTournamentsSeasons title={modalData.title} onClose={() => setModalData(null)}>{renderTable(modalData.list)}</ModalTournamentsSeasons>}
       </div>
     );
   }
@@ -195,7 +202,6 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
         )}
       </div>
 
-      {modalData && <ModalTournamentsSeasons title={modalData.title} onClose={() => setModalData(null)}>{renderTable(modalData.list)}</ModalTournamentsSeasons>}
     </div>
   );
 }

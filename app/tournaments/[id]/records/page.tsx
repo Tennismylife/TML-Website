@@ -168,6 +168,38 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
   const navigateToAgeSub = (sub: 'main' | 'winners' | 'titles' | 'youngestrounds' | 'oldestrounds') =>
     navigateToTab('ages', sub);
 
+  const recordTypeLabel = (() => {
+    const map: Record<string, string> = {
+      count: 'Counts',
+      rounds: 'Rounds',
+      ages: 'Ages',
+      percentage: 'Percentages',
+      timespan: 'Timespans',
+      'rounds-on-entries': 'Rounds on Entries',
+      least: 'Least',
+      'average-age': 'Average Age',
+    };
+    let label = map[activeTab] ?? activeTab;
+    if (activeTab === 'ages') {
+      const subMap: Record<string, string> = {
+        main: 'Main Draw',
+        titles: 'Titles',
+        youngestrounds: 'Youngest per Round',
+        oldestrounds: 'Oldest per Round',
+        winners: 'Winners',
+      };
+      if (activeAgeSubTab && subMap[activeAgeSubTab]) label = `${label} — ${subMap[activeAgeSubTab]}`;
+    }
+    if (activeTab === 'percentage') {
+      const subMapPerc: Record<string, string> = {
+        overall: 'Overall Win %',
+        'per-round': 'Win % per Round',
+      };
+      label = `${label} — ${subMapPerc[activePercentageSubTab] ?? activePercentageSubTab}`;
+    }
+    return label;
+  })();
+
   if (loadingTournament) {
     return (
       <div
@@ -197,6 +229,61 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
       </div>
 
       <TournamentHeader id={headerId} />
+
+      <h1 className="text-3xl md:text-4xl font-extrabold text-white text-center mb-2">
+        {`${extractName(tournament?.name || '')} – ${recordTypeLabel}`}
+      </h1>
+
+      {/* Descrizione per ogni tab dei record */}
+      <div className="mb-6 text-center">
+        {activeTab === 'count' && (
+          <p className="text-sm text-gray-300">
+            {`${extractName(tournament?.name || '')} counts records include players with the most titles, wins, matches played and tournament entries in the Open Era`}
+          </p>
+        )}
+
+        {activeTab === 'rounds' && (
+          <p className="text-sm text-gray-300">
+            {`${extractName(tournament?.name || '')} rounds records include players with the best performances and most rounds reached (deep runs) in the Open Era`}
+          </p>
+        )}
+
+        {activeTab === 'ages' && (
+          <p className="text-sm text-gray-300">
+            {`${extractName(tournament?.name || '')} ages records include youngest and oldest players per round and age-related milestones in the Open Era`}
+          </p>
+        )}
+
+        {activeTab === 'percentage' && (
+          <p className="text-sm text-gray-300">
+            {`${extractName(tournament?.name || '')} percentage records include players with the highest win percentages overall and per round in the Open Era`}
+          </p>
+        )}
+
+        {activeTab === 'timespan' && (
+          <p className="text-sm text-gray-300">
+            {`${extractName(tournament?.name || '')} timespan records show players with the longest spans between first and last appearances or titles in the Open Era`}
+          </p>
+        )}
+
+        {activeTab === 'rounds-on-entries' && (
+          <p className="text-sm text-gray-300">
+            {`${extractName(tournament?.name || '')} rounds-on-entries records show players' success rate (rounds reached vs entries) in the Open Era`}
+          </p>
+        )}
+
+        {activeTab === 'least' && (
+          <p className="text-sm text-gray-300">
+            {`${extractName(tournament?.name || '')} least records show minimal or record-low achievements (e.g., fewest cumulative games lost to reach a round) in the Open Era`}
+          </p>
+        )}
+
+        {activeTab === 'average-age' && (
+          <p className="text-sm text-gray-300">
+            {`${extractName(tournament?.name || '')} average age records show average player age per edition and overall trends across the Open Era`}
+          </p>
+        )}
+      </div>
 
       <TournamentTabs
         activeTab={activeTab}

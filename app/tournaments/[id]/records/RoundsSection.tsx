@@ -81,6 +81,20 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
 
   const [modalData, setModalData] = useState<{ title: string; list: PlayerStat[] } | null>(null);
   const [loadingRounds, setLoadingRounds] = useState<{ [round: string]: boolean }>({});
+  const [tourneyName, setTourneyName] = useState<string>(String(tournamentId));
+
+  // tournament name for modal headings
+  useEffect(() => {
+    let mounted = true;
+    const { fetchTournamentHeaderCached } = require('@/lib/tournamentHeaderCache');
+    const p = fetchTournamentHeaderCached(tournamentId);
+    (p && (p as any).then ? (p as any).then((t: any) => {
+      if (!mounted || !t) return;
+      const raw = (t && t.name) ? (Array.isArray(t.name) ? (t.name.map((x: any) => (typeof x === 'string' ? x : JSON.stringify(x))).filter(Boolean).pop()) : t.name) : `Tournament ${t?.id}`;
+      setTourneyName(String(raw).replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()));
+    }) : (async () => { const t = await p; if (!mounted || !t) return; const raw = (t && t.name) ? (Array.isArray(t.name) ? (t.name.map((x: any) => (typeof x === 'string' ? x : JSON.stringify(x))).filter(Boolean).pop()) : t.name) : `Tournament ${t?.id}`; setTourneyName(String(raw).replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())); })());
+    return () => { mounted = false; };
+  }, [tournamentId]);
 
   // how many round cards to show (initially 1 on mobile, all on desktop)
   const [visibleCards, setVisibleCards] = useState<number>(1);
@@ -96,10 +110,29 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
     const round = roundItems.find(r => r.title === roundTitle);
     if (!round) return;
 
-    if (round.fullList?.length) {
-      setModalData({ title: roundTitle, list: round.fullList });
-      return;
+    // show client fallback modal immediately
+    const existing = round.fullList ?? null;
+    setModalData({ title: roundTitle, list: existing ?? [] });
+
+    // hide server-injected modal if present
+    try { const sm = document.getElementById('server-modal'); if (sm) sm.style.display = 'none'; } catch (e) {}
+
+    // push history state so the outlet recognizes modal navigation
+    const target = `/tournaments/${tournamentId}/records/rounds/${encodeURIComponent(roundTitle)}`;
+    const background = typeof window !== 'undefined' ? window.location.pathname + window.location.search : undefined;
+    try {
+      window.history.pushState({ ...(window.history.state || {}), modal: true, background }, '', target);
+      window.dispatchEvent(new PopStateEvent('popstate'));
+      window.dispatchEvent(new CustomEvent('modalchange'));
+
+      // notify outlet with payload
+      const payload = { round: roundTitle, list: existing ?? null };
+      window.dispatchEvent(new CustomEvent('open-modal', { detail: payload }));
+    } catch (e) {
+      // ignore
     }
+
+    if (existing) return;
 
     setLoadingRounds(prev => ({ ...prev, [roundTitle]: true }));
     try {
@@ -256,8 +289,10 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
       )}
 
       {modalData && (
-        <ModalTournamentsSeasons title={`All Reaches for ${modalData.title}`} onClose={() => setModalData(null)}>
-          {renderTable(modalData.list, 'Reaches')}
+        <ModalTournamentsSeasons title={`All Reaches at ${tourneyName} — ${modalData.title}`} onClose={() => setModalData(null)}>
+          <div className="text-center text-lg md:text-xl">
+            {renderTable(modalData.list, 'Reaches')}
+          </div>
         </ModalTournamentsSeasons>
       )}
     </div>

@@ -1,0 +1,17 @@
+import React from 'react';
+import CountFull from '../../_components/CountFull';
+
+export default async function TitlesModalPage({ params }: { params: { id: string } }) {
+  const { id } = params;
+
+  // Render same content as full page; will be injected into layout 'modal' slot when navigated via intercepted route
+  return (
+    <div className="w-full mx-auto p-8 text-white">
+      <main>
+        <h1 className="text-3xl font-extrabold mb-4">{`Titles`}</h1>
+        {/* @ts-ignore */}
+        <CountFull id={id} section="titles" />
+      </main>
+    </div>
+  );
+}

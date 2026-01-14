@@ -100,7 +100,7 @@ export default function TournamentHeader({ id }: TournamentHeaderProps) {
       </div>
 
       <div className="flex flex-col items-center justify-center text-center">
-        <h1 className="text-4xl md:text-5xl font-extrabold drop-shadow-lg break-words whitespace-normal">{displayName}</h1>
+        <h2 className="text-4xl md:text-5xl font-extrabold drop-shadow-lg break-words whitespace-normal">{displayName}</h2>
         {(() => {
           const allNames = extractNames(tournament.name).map((s) => (s || '').trim()).filter(Boolean);
           const displayNorm = String(displayName).trim().toLowerCase();

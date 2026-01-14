@@ -53,12 +53,30 @@ export default function SeasonRecordsPage({ params }: { params: Promise<{ year: 
     { key: "percentage-rounds", label: "Win % per Round" },
   ];
 
-  // Sync tab state with URL 'tab' param and update URL when tabs change
+  // Sync tab state with path segment (e.g. /records/count) and support old ?tab back-compat
   useEffect(() => {
-    const tabParam = searchParams?.get("tab");
-    if (!tabParam) return;
+    const params = new URLSearchParams(Array.from(searchParams?.entries() ?? []));
+    const tabParam = params.get("tab");
 
-    let target = tabParam;
+    // prefer ?tab for backward-compat, but redirect to path-based URL
+    if (tabParam) {
+      let normalized = tabParam;
+      if (normalized === "ages") normalized = "ages-main";
+      if (normalized === "percentage") normalized = "percentage-overall";
+
+      const paramsCopy = new URLSearchParams(Array.from(searchParams?.entries() ?? []));
+      paramsCopy.delete("tab");
+      const qs = paramsCopy.toString();
+      const base = pathname?.replace(/\/(count|rounds|ages-main|ages-titles|ages-youngest|ages-oldest|percentage-overall|percentage-rounds|rounds-on-entries)?\/?$/, "")?.replace(/\/$/, "") ?? pathname?.replace(/\/$/, "");
+      router.replace(`${base}/${normalized}${qs ? `?${qs}` : ""}`);
+      return;
+    }
+
+    const segments = pathname?.split("/").filter(Boolean) ?? [];
+    const last = segments[segments.length - 1] ?? "";
+
+    let target = last || "count";
+    if (target === "records") target = "count";
     if (target === "ages") target = "ages-main";
     if (target === "percentage") target = "percentage-overall";
 
@@ -72,36 +90,46 @@ export default function SeasonRecordsPage({ params }: { params: Promise<{ year: 
       "percentage-overall",
       "percentage-rounds",
       "rounds-on-entries",
-      "ages",
-      "percentage",
     ]);
 
     if (validKeys.has(target)) {
       setActiveTab(target as typeof activeTab);
       setShowAgesSubTabs(target.startsWith("ages"));
       setShowPercentageSubTabs(target.startsWith("percentage"));
+
+      // If URL lacks the tab segment (e.g., ends with /records), ensure canonical path
+      if (!pathname?.endsWith(`/${target}`)) {
+        const paramsCopy = new URLSearchParams(Array.from(searchParams?.entries() ?? []));
+        const qs = paramsCopy.toString();
+        const base = pathname?.replace(/\/(count|rounds|ages-main|ages-titles|ages-youngest|ages-oldest|percentage-overall|percentage-rounds|rounds-on-entries)?\/?$/, "")?.replace(/\/$/, "") ?? pathname?.replace(/\/$/, "");
+        router.replace(`${base}/${target}${qs ? `?${qs}` : ""}`);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
+  }, [pathname, searchParams]);
 
   const updateUrl = (tabKey: string) => {
     const params = new URLSearchParams(Array.from(searchParams?.entries() ?? []));
-    params.set("tab", tabKey);
+    // keep other filters but remove old tab query param
+    params.delete("tab");
     const qs = params.toString();
-    router.push(`${pathname}${qs ? `?${qs}` : ""}`);
+    const base = pathname?.replace(/\/(count|rounds|ages-main|ages-titles|ages-youngest|ages-oldest|percentage-overall|percentage-rounds|rounds-on-entries)?\/?$/, "")?.replace(/\/$/, "") ?? pathname?.replace(/\/$/, "");
+    router.push(`${base}/${tabKey}${qs ? `?${qs}` : ""}`);
   }; 
 
   const handleTabClick = (tabKey: string) => {
     if (tabKey === "ages") {
-      // set local default sub-tab but don't update URL yet
+      // set local default sub-tab and update URL to canonical ages-main
       setActiveTab("ages-main");
       setShowAgesSubTabs(true);
       setShowPercentageSubTabs(false);
+      updateUrl("ages-main");
     } else if (tabKey === "percentage") {
-      // set local default sub-tab but don't update URL yet
+      // set local default sub-tab and update URL to canonical percentage-overall
       setActiveTab("percentage-overall");
       setShowPercentageSubTabs(true);
       setShowAgesSubTabs(false);
+      updateUrl("percentage-overall");
     } else {
       setActiveTab(tabKey as typeof activeTab);
       setShowAgesSubTabs(false);

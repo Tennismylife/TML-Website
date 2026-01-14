@@ -2,8 +2,11 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { getFlagFromIOC } from "@/lib/utils";
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
+import RouteModal from '@/components/RouteModal';
+import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
 
 interface PlayerItem {
   id: string | number;
@@ -19,20 +22,32 @@ interface SectionData {
 
 // Memoized Section card for counts (keeps layout but optimized)
 const SectionCard = React.memo(function SectionCard({
+  id,
   title,
   data,
   onOpen,
   loading
 }: {
+  id?: string;
   title: string;
   data: PlayerItem[];
   onOpen: (key: string) => void;
   loading?: boolean;
 }) {
+  const headingMap: Record<string, string> = {
+    Titles: 'Most Titles',
+    Wins: 'Most Wins',
+    Played: 'Most Matches Played',
+    Entries: 'Most Entries',
+  };
+
+  const heading = headingMap[title] ?? title;
+  const headingId = id ? `${id}-label` : `section-${title.toLowerCase().replace(/\s+/g, '-')}-label`;
+
   return (
-    <div className="p-1 border border-gray-700 bg-gray-800 rounded" style={{ backgroundColor: 'rgba(31,41,55,0.95)', ['--col-1' as any]: 'calc(100% - 80px)', ['--col-2' as any]: '80px' }}>
+    <section id={id} aria-labelledby={headingId} className="p-1 border border-gray-700 bg-gray-800 rounded" style={{ backgroundColor: 'rgba(31,41,55,0.95)', ['--col-1' as any]: 'calc(100% - 80px)', ['--col-2' as any]: '80px' }}>
       <div className="p-3">
-        <h3 className="font-medium mb-2 text-white">{title}</h3>
+        <h2 id={headingId} className="font-medium mb-2 text-white">{heading}</h2>
         <table className="w-full text-sm border-collapse table-fixed">
           <colgroup>
             <col style={{ width: 'var(--col-1)' }} />
@@ -67,7 +82,7 @@ const SectionCard = React.memo(function SectionCard({
           </button>
         </div>
       </div>
-    </div>
+    </section>
   );
 });
 
@@ -85,8 +100,6 @@ export default function CountSection({ tournamentId }: { tournamentId: string })
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeModal, setActiveModal] = useState<null | string>(null);
-  const [loadingModal, setLoadingModal] = useState(false);
 
   // mobile incremental cards: how many section cards to show (1 on mobile, all on desktop)
   const [visibleCards, setVisibleCards] = useState<number>(1);
@@ -224,68 +237,107 @@ export default function CountSection({ tournamentId }: { tournamentId: string })
       }
     };
   }, [isMobile, sectionsArr.length, visibleCards]);
-  // Apri modal e fetch fullList solo se non esiste
-  const openModal = useCallback(async (sectionKey: string) => {
-    const section = sections[sectionKey];
+  // Open modal by navigating to canonical intercepted route
+  const router = useRouter();
 
-    // se già presente, non rifare la richiesta
-    if (section?.fullList?.length) {
-      setActiveModal(sectionKey);
-      return;
+  // Client-side modal fallback state
+  const [clientModal, setClientModal] = useState<{ open: boolean; section?: string; list?: PlayerItem[] | null; loading?: boolean }>({ open: false });
+  const [tourneyName, setTourneyName] = useState<string>(String(tournamentId));
+
+  function extractFirst(value: any): string {
+    if (!value) return '';
+    if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return String(value);
+    if (Array.isArray(value)) return value.map(extractFirst).find(Boolean) || '';
+    if (typeof value === 'object') return Object.values(value).map(extractFirst).find(Boolean) || '';
+    return '';
+  }
+  function humanizeName(name: string) {
+    return name.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  }
+
+  useEffect(() => {
+    let mounted = true;
+    const p = fetchTournamentHeaderCached(tournamentId);
+    (p && (p as any).then ? (p as any).then((t: any) => {
+      if (!mounted || !t) return;
+      const raw = extractFirst(t.name) || `Tournament ${t.id}`;
+      setTourneyName(humanizeName(raw));
+    }) : (async () => { const t = await p; if (!mounted || !t) return; const raw = extractFirst(t.name) || `Tournament ${t.id}`; setTourneyName(humanizeName(raw)); })());
+    return () => { mounted = false; };
+  }, [tournamentId]);
+
+  useEffect(() => {
+    const onPop = () => {
+      const st = (typeof window !== 'undefined' && window.history.state) || null;
+      if (!st || !st.modal) {
+        setClientModal({ open: false });
+      }
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  const openModal = useCallback((sectionKey: string) => {
+    // If already open for same section, ignore
+    if (clientModal.open && clientModal.section === sectionKey) return;
+
+    // show client modal immediately (fallback) and start loading if needed
+    const existing = (sections as any)?.[sectionKey]?.fullList ?? null;
+    setClientModal({ open: true, section: sectionKey, list: existing, loading: !existing });
+
+    if (!existing) {
+      fetch(`/api/tournaments/${tournamentId}/records/count?section=${sectionKey}`)
+        .then((r) => r.json())
+        .then((data) => setClientModal({ open: true, section: sectionKey, list: data.fullList ?? [], loading: false }))
+        .catch(() => setClientModal({ open: true, section: sectionKey, list: [], loading: false }));
     }
 
-    setLoadingModal(true);
+    const target = `/tournaments/${tournamentId}/records/count/${encodeURIComponent(sectionKey)}`;
+    const background = typeof window !== 'undefined' ? window.location.pathname + window.location.search : undefined;
 
     try {
-      const res = await fetch(
-        `/api/tournaments/${tournamentId}/records/count?section=${sectionKey}`
-      );
-      if (!res.ok) throw new Error('Failed to fetch full list');
-
-      const data = await res.json();
-
-      setSections((prev) => ({
-        ...prev,
-        [sectionKey]: {
-          ...prev[sectionKey],
-          fullList: data.fullList ?? [],
-        },
-      }));
-
-      setActiveModal(sectionKey);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-    } finally {
-      setLoadingModal(false);
+      console.debug('[CountSection] pushing modal state (fallback open)', { target, background, prevState: window.history.state });
+      window.history.pushState({ ...(window.history.state || {}), modal: true, background }, '', target);
+      window.dispatchEvent(new PopStateEvent('popstate'));
+      window.dispatchEvent(new CustomEvent('modalchange'));
+      // notify outlet that we opened (with payload)
+      const payload = { section: sectionKey, list: existing ?? null };
+      window.dispatchEvent(new CustomEvent('open-modal', { detail: payload }));
+      console.debug('[CountSection] state pushed (fallback)', window.history.state, 'payload:', payload);
+    } catch (e) {
+      // fallback navigation
+      router.push(target);
     }
-  }, [sections, tournamentId]);
+  }, [tournamentId, router, clientModal.open, clientModal.section, sections]);
 
   const renderTable = (data: PlayerItem[], title: string) => (
     <div style={{ ['--col-1' as any]: '70%', ['--col-2' as any]: '30%' }}>
-      <table className="w-full text-sm border-collapse table-fixed">
+      <table className="w-full text-lg md:text-xl border-collapse table-fixed text-center">
         <colgroup>
           <col style={{ width: 'var(--col-1)' }} />
           <col style={{ width: 'var(--col-2)' }} />
         </colgroup>
         <thead className="bg-gray-900">
           <tr>
-            <th className="text-left py-1 font-medium text-white">Player</th>
-            <th className="text-right py-1 font-medium text-white whitespace-nowrap">{title}</th>
+            <th className="text-center py-1 font-medium text-white">Player</th>
+            <th className="text-center py-1 font-medium text-white whitespace-nowrap">{title}</th>
           </tr>
         </thead>
         <tbody>
           {data.map((item) => (
             <tr key={item.id} className="hover:bg-gray-100">
-              <td className="py-1 flex items-center gap-2">
-                <span className="text-base">{getFlagFromIOC(item.ioc) || ''}</span>
-                <Link
-                  href={`/players/${encodeURIComponent(String(item.id))}`}
-                  className="text-blue-700 hover:underline"
-                >
-                  {item.name}
-                </Link>
+              <td className="py-1 text-center">
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-base">{getFlagFromIOC(item.ioc) || ''}</span>
+                  <Link
+                    href={`/players/${encodeURIComponent(String(item.id))}`}
+                    className="text-blue-700 hover:underline text-lg md:text-xl"
+                  >
+                    {item.name}
+                  </Link>
+                </div>
               </td>
-              <td className="py-1 text-right whitespace-nowrap">{item.count}</td>
+              <td className="py-1 text-center whitespace-nowrap text-lg md:text-xl">{item.count}</td>
             </tr>
           ))}
         </tbody>
@@ -304,7 +356,7 @@ export default function CountSection({ tournamentId }: { tournamentId: string })
           const list = sectionData.list ?? [];
 
           return (
-            <SectionCard key={sec.key} title={sec.title} data={list} onOpen={openModal} loading={loadingModal && activeModal === sec.key} />
+            <SectionCard key={sec.key} title={sec.title} data={list} onOpen={openModal} />
           );
         })}
       </div>
@@ -314,22 +366,28 @@ export default function CountSection({ tournamentId }: { tournamentId: string })
         <div ref={sentinelRef} className="cards-sentinel h-4" />
       )}
 
+      {/* Client-side fallback modal (opens immediately on click) */}
+      {clientModal.open && (
+        // @ts-ignore
+        <RouteModal onClose={() => { window.history.state && window.history.state.modal ? window.history.back() : setClientModal({ open: false }); }}>
+          <div className="text-white">
+            <div className="mb-3 text-center">
+              <h3 className="text-2xl font-semibold">{clientModal.section === 'titles' ? `Most Titles at ${tourneyName}` : clientModal.section === 'wins' ? `Most Wins at ${tourneyName}` : clientModal.section === 'played' ? `Most Matches Played at ${tourneyName}` : `Most Entries at ${tourneyName}`}</h3>
+            </div>
 
-      {activeModal && (
-        <ModalTournamentsSeasons
-          title={sectionsArr.find((s) => s.key === activeModal)?.title || ''}
-          onClose={() => setActiveModal(null)}
-        >
-          {loadingModal ? (
-            <p className="text-white text-center">Loading...</p>
-          ) : (
-            renderTable(
-              sections[activeModal]?.fullList ?? [],
-              sectionsArr.find((s) => s.key === activeModal)?.title || ''
-            )
-          )}
-        </ModalTournamentsSeasons>
+            {clientModal.loading ? (
+              <p className="text-white text-center p-6">Loading...</p>
+            ) : (
+              <div className="overflow-x-auto">
+                {/* render table using same renderer */}
+                {/* @ts-ignore */}
+                {renderTable(clientModal.list ?? [], sectionsArr.find((s) => s.key === clientModal.section)?.title || '')}
+              </div>
+            )}
+          </div>
+        </RouteModal>
       )}
+
     </div>
   );
 }
