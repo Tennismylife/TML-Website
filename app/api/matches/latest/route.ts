@@ -5,6 +5,9 @@ export async function GET(request: NextRequest) {
   try {
     const matches = await prisma.match.findMany({
       orderBy: [{ tourney_date: "desc" }, { id: "desc" }],
+      where: {
+        score: { not: "To play" },
+      },
       take: 10,
       select: {
         id: true,
