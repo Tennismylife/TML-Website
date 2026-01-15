@@ -1,8 +1,8 @@
 import React from 'react';
 import CountFull from '../../_components/CountFull';
 
-export default async function TitlesModalPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default async function TitlesModalPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
 
   // Render same content as full page; will be injected into layout 'modal' slot when navigated via intercepted route
   return (

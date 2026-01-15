@@ -54,11 +54,67 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 
   const typeLabelFromParam = tab ? (tab === 'ages' ? 'Ages' : (tabLabels[tab] ?? humanizeName(tab))) : 'Records';
   const subLabel = sub ? ` — ${humanizeName(sub)}` : '';
-  const titleFromParam = `${displayFromParam} | ${typeLabelFromParam}${subLabel}`;
-  const ogUrlFromParam = `${site}/tournaments/${param}/records${tab ? `/${tab}` : ''}${sub ? `/${sub}` : ''}`;
+
+  // Default title/ogUrl based on path
+  let titleFromParam = `${displayFromParam} | ${typeLabelFromParam}${subLabel}`;
+  let ogUrlFromParam = `${site}/tournaments/${param}/records${tab ? `/${tab}` : ''}${sub ? `/${sub}` : ''}`;
+  const ogImageFromParam = `${site}/og/site-preview.png`;
+
+  // Special-case: specific deep paths
+  if (tab === 'ages' && sub === 'titles' && segs[2] === 'youngest') {
+    const siteTitle = `Youngest Title Winners at ${displayFromParam} | Tennis Records`;
+    const ogUrl = `${site}/tournaments/${param}/records/${tab}/${sub}/${segs[2]}`;
+    return {
+      title: siteTitle,
+      openGraph: { title: siteTitle, url: ogUrl, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Youngest Title Winners`, width: 1200, height: 630, type: 'image/png' }] },
+      twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
+      alternates: { canonical: ogUrl },
+    };
+  }
+
+  // Special-case: specific deep paths
+  if (tab === 'ages' && sub === 'titles' && segs[2] === 'youngest') {
+    const siteTitle = `Youngest Title Winners at ${displayFromParam} | Tennis Records`;
+    const ogUrl = `${site}/tournaments/${param}/records/${tab}/${sub}/${segs[2]}`;
+    return {
+      title: siteTitle,
+      openGraph: { title: siteTitle, url: ogUrl, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Youngest Title Winners`, width: 1200, height: 630, type: 'image/png' }] },
+      twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
+      alternates: { canonical: ogUrl },
+    };
+  }
+
+  if (tab === 'ages' && sub === 'titles' && segs[2] === 'oldest') {
+    const siteTitle = `Oldest Title Winners at ${displayFromParam} | Tennis Records`;
+    const ogUrl = `${site}/tournaments/${param}/records/${tab}/${sub}/${segs[2]}`;
+    return {
+      title: siteTitle,
+      openGraph: { title: siteTitle, url: ogUrl, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Oldest Title Winners`, width: 1200, height: 630, type: 'image/png' }] },
+      twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
+      alternates: { canonical: ogUrl },
+    };
+  }
+
+  // Special-case: when the path is /records/count (no inner subsection), return the requested site-specific title
+  if (tab === 'count' && !sub) {
+    titleFromParam = `${displayFromParam} Open Era Records | Tennis My Life`;
+    ogUrlFromParam = `${site}/tournaments/${param}/records/count`;
+  }
+
   // Use a simple static CTA image for all Records pages so previews are
   // stable and invite clicks.
-  const ogImageFromParam = `${site}/og/site-preview.png`; 
+
+  // Special-case: when path is /records/least (root), return tournament-specific Least title
+  if (tab === 'least' && !sub) {
+    const siteTitle = `${displayFromParam} Least Games Lost to Reach a Round | Tennis Records`;
+    const ogUrl = `${site}/tournaments/${param}/records/least`;
+    return {
+      title: siteTitle,
+      openGraph: { title: siteTitle, url: ogUrl, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Least Games Lost`, width: 1200, height: 630, type: 'image/png' }] },
+      twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
+      alternates: { canonical: ogUrl },
+    };
+  }
 
   // Return the deterministic metadata immediately.
   // We keep the DB lookup below (best-effort) but do not block the metadata on it.
@@ -106,7 +162,27 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 }
 
 
-export default function RecordsLayout({ children }: { children: React.ReactNode }) {
-  // layout just renders children; metadata is handled by generateMetadata
-  return <>{children}</>;
+import CountModalOutlet from '@/components/CountModalOutlet';
+import AgesModalOutlet from '@/components/AgesModalOutlet';
+import PercentageModalOutlet from '@/components/PercentageModalOutlet';
+import TimespanModalOutlet from '@/components/TimespanModalOutlet';
+import RoundOnEntriesModalOutlet from '@/components/RoundOnEntriesModalOutlet';
+import LeastModalOutlet from '@/components/LeastModalOutlet';
+
+export default async function RecordsLayout({ children, params }: { children?: React.ReactNode; params: Promise<{ id: string }> }) {
+  // Mount the modal outlets at the Records level so they're always present for in-app modal opens
+  const { id } = await params;
+  return (
+    <>
+      {children}
+
+      {/* global client-side modal outlets for intercepted-route modals (open via history + open-modal event) */}
+      <CountModalOutlet id={id} />
+      <AgesModalOutlet id={id} />
+      <PercentageModalOutlet id={id} />
+      <TimespanModalOutlet id={id} />
+      <RoundOnEntriesModalOutlet id={id} />
+      <LeastModalOutlet id={id} />
+    </>
+  );
 }

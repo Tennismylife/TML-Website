@@ -274,7 +274,14 @@ export default function CountSection({ tournamentId }: { tournamentId: string })
       }
     };
     window.addEventListener('popstate', onPop);
-    return () => window.removeEventListener('popstate', onPop);
+
+    const handleCloseModal = () => {
+      setClientModal({ open: false });
+      try { const sm = document.getElementById('server-modal'); if (sm) sm.style.display = ''; } catch (e) {}
+    };
+    window.addEventListener('close-modal', handleCloseModal as EventListener);
+
+    return () => { window.removeEventListener('popstate', onPop); window.removeEventListener('close-modal', handleCloseModal as EventListener); };
   }, []);
 
   const openModal = useCallback((sectionKey: string) => {

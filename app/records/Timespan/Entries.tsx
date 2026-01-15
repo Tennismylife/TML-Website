@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
 import { useSearchParams } from 'next/navigation';
@@ -140,7 +141,23 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
 
       <div className="mb-4 flex justify-end">
         <button
-          onClick={() => setShowModal(true)}
+          type="button"
+          onClick={(e) => {
+            try { e.preventDefault(); e.stopPropagation(); } catch (ex) {}
+            // intercept and open modal via intercepted-route at /records/timespan/entries
+            try {
+              const state = { modal: true, background: window.location.pathname, section: 'timespan', title: null };
+              try { (window as any).__lastOpenModalPayload = state; (window as any).__modalBackgroundPath = state.background; } catch (e) {}
+              const newPath = `/records/timespan/entries`;
+              // attempt SPA navigation if router available
+              try {
+                const router = (window as any).__NEXT_ROUTER__;
+                // if our internal hook/router isn't available, fallback to pushState
+              } catch (e) {}
+              try { window.history.replaceState(state, '', newPath); } catch (e) {}
+              try { window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {}
+            } catch (err) { /* ignore */ }
+          }}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
         >
           View All

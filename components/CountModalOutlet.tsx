@@ -13,7 +13,7 @@ export default function CountModalOutlet({ id }: { id: string }) {
   const [section, setSection] = useState<string | null>(null);
   const [list, setList] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(false);
-  const [tourneyName, setTourneyName] = useState<string>(String(id));
+  const [tourneyName, setTourneyName] = useState<string>(String(id).replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()));
   const [openError, setOpenError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -36,16 +36,20 @@ export default function CountModalOutlet({ id }: { id: string }) {
     const parts = currentPath.split('/').filter(Boolean);
     const recordsIndex = parts.indexOf('records');
     const maybeSection = recordsIndex >= 0 && parts.length > recordsIndex + 2 ? parts[recordsIndex + 2] : null;
+    const maybeParent = recordsIndex >= 0 && parts.length > recordsIndex + 1 ? parts[recordsIndex + 1] : null;
+
+    const allowedSections = ['wins','played','entries','titles'];
 
     const openWithPayload = (detail: any) => {
       console.debug('[CountModalOutlet] openWithPayload', detail);
       const sec = detail?.section;
-      if (!sec) return;
+      // only accept whitelisted count sections to avoid collisions with other outlets
+      if (!sec || (typeof sec === 'string' && !allowedSections.includes(String(sec)))) return;
       setSection(sec);
       setShow(true);
       setLoading(true);
       setOpenError(null);
-      try { const sm = document.getElementById('server-modal'); if (sm) sm.style.display = 'none'; } catch (e) {}
+      try { const { hideServerModals } = require('./hideServerModals'); hideServerModals(); } catch (e) {}
 
       if (detail?.list && Array.isArray(detail.list)) {
         setList(detail.list);
@@ -67,15 +71,18 @@ export default function CountModalOutlet({ id }: { id: string }) {
         .finally(() => setLoading(false));
     };
 
-    if (isModal && maybeSection) {
-      console.debug('[CountModalOutlet] opening via history state', maybeSection);
-      openWithPayload({ section: maybeSection, list: null });
+    // auto-open from history state when the parent path is '/records/count'.
+    // If an inner segment (e.g., 'wins') is present and allowed, use it; otherwise default to 'wins'.
+    if (isModal && maybeParent === 'count') {
+      const chosenSection = (maybeSection && allowedSections.includes(String(maybeSection))) ? String(maybeSection) : 'wins';
+      console.debug('[CountModalOutlet] opening via history state', chosenSection);
+      openWithPayload({ section: chosenSection, list: null });
     } else {
       setShow(false);
       setList(null);
       setSection(null);
       setOpenError(null);
-      try { const sm = document.getElementById('server-modal'); if (sm) sm.style.display = ''; } catch (e) {}
+      try { const { showServerModals } = require('./hideServerModals'); showServerModals(); } catch (e) {}
     }
 
     const handleOpenModal = (e: any) => {
@@ -86,16 +93,34 @@ export default function CountModalOutlet({ id }: { id: string }) {
     };
 
     window.addEventListener('open-modal', handleOpenModal as EventListener);
-    return () => window.removeEventListener('open-modal', handleOpenModal as EventListener);
+
+    const handleCloseModal = () => {
+      try { console.debug('[CountModalOutlet] handleCloseModal'); } catch (e) {}
+      setShow(false); setList(null); setSection(null); setOpenError(null);
+      try { const { showServerModals } = require('./hideServerModals'); showServerModals(); } catch (e) {}
+      try { delete (window as any).__lastOpenModalPayload; } catch (e) {}
+    };
+
+    window.addEventListener('close-modal', handleCloseModal as EventListener);
+    return () => { window.removeEventListener('open-modal', handleOpenModal as EventListener); window.removeEventListener('close-modal', handleCloseModal as EventListener); };
   }, [pathname, id]);
 
   if (!show) return null;
+
+  const headingText = (() => {
+    if (section === 'titles') return `Most Titles at ${tourneyName}`;
+    if (section === 'wins') return `Most Wins At ${tourneyName}`;
+    if (section === 'entries') return `Most Entries at ${tourneyName}`;
+    if (section === 'played') return `Most matches played at ${tourneyName}`;
+    if (section) return `All ${section.charAt(0).toUpperCase() + section.slice(1)} at ${tourneyName}`;
+    return `Counts at ${tourneyName}`;
+  })();
 
   return (
     <RouteModal>
       <div className="text-white">
         <div className="mb-3 text-center">
-          <h3 className="text-2xl font-semibold">{section ? `All ${section.charAt(0).toUpperCase() + section.slice(1)} at ${tourneyName}` : `Counts at ${tourneyName}`}</h3>
+          <h3 className="text-2xl font-semibold">{headingText}</h3>
         </div>
 
         {loading ? (

@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { getFlagFromIOC } from "@/lib/utils";
-import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 
 interface PlayerRoundEntry {
   id: string | number;
@@ -31,7 +31,8 @@ export default function RoundsOnEntries({ id }: { id: string }) {
   const [error, setError] = useState<string | null>(null);
 
   const [minEntriesPerRound, setMinEntriesPerRound] = useState<{ [round: string]: number }>({});
-  const [modalData, setModalData] = useState<{ title: string; list: PlayerRoundEntry[] } | null>(null);
+  const router = useRouter();
+  const [loadingViewAll, setLoadingViewAll] = useState<string | null>(null);
 
   // Fetch rounds data
   useEffect(() => {
@@ -78,6 +79,50 @@ export default function RoundsOnEntries({ id }: { id: string }) {
   });
 
   const visibleRoundItems = updatedRoundItems.slice(0, visibleCount);
+
+  // Intercepted-route modal flow like other sections (router.push -> history.replaceState -> dispatch open-modal)
+  const handleViewAll = async (roundTitle: string) => {
+    try {
+      setLoadingViewAll(roundTitle);
+      const section = 'roundsonentries';
+      const newPath = `/tournaments/${id}/records/roundsonentries/rounds/${encodeURIComponent(String(roundTitle))}`;
+      const state = { modal: true, background: window.location.pathname, section, title: roundTitle } as any;
+      try { console.debug('[RoundsOnEntries] handleViewAll start', { newPath, state }); } catch (e) {}
+
+      // write fallback payloads for late-mounted outlets
+      try {
+        (window as any).__lastOpenModalPayload = state;
+        (window as any).__modalBackgroundPath = state.background;
+      } catch (e) {}
+
+      // navigate SPA to mount the layout
+      try {
+        const nav: any = router.push(newPath as any);
+        const doReplaceAndDispatch = () => {
+          try { window.history.replaceState(state, '', newPath); } catch (e) {}
+          try { window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {}
+        };
+
+        if (nav && typeof nav.then === 'function') {
+          nav.then(() => {
+            try { (window as any).__modalOpenedByPush = true; } catch (e) {}
+            doReplaceAndDispatch();
+          }).catch(() => doReplaceAndDispatch());
+        } else {
+          setTimeout(doReplaceAndDispatch, 120);
+        }
+      } catch (e) {
+        try { console.warn('[RoundsOnEntries] handleViewAll navigation failed, dispatching anyway', e); } catch (ex) {}
+        try { window.history.replaceState(state, '', newPath); } catch (e) {}
+        try { window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {}
+      } finally {
+        setLoadingViewAll(null);
+      }
+    } catch (err) {
+      try { console.warn('[RoundsOnEntries] handleViewAll failed', err); } catch (e) {}
+      setLoadingViewAll(null);
+    }
+  };
 
   const PlayerTable = ({ data }: { data: PlayerRoundEntry[] }) => (
     <table className="w-full text-sm border-collapse table-fixed">
@@ -150,10 +195,12 @@ export default function RoundsOnEntries({ id }: { id: string }) {
               <>
                 <PlayerTable data={item.list} />
                 <button
-                  onClick={() => setModalData({ title: item.title, list: item.fullFilteredList })}
+                  type="button"
+                  onClick={(e) => { try { e.preventDefault(); e.stopPropagation(); console.debug('[RoundsOnEntries] View All clicked', item.title); } catch (ex) {} ; handleViewAll(item.title); }}
                   className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                  disabled={loadingViewAll === item.title}
                 >
-                  View All
+                  {loadingViewAll === item.title ? 'Loading...' : 'View All'}
                 </button>
               </>
             ) : (
@@ -168,13 +215,7 @@ export default function RoundsOnEntries({ id }: { id: string }) {
         )}
       </div>
 
-      {modalData && (
-        <ModalTournamentsSeasons title={`${modalData.title}s reached on entries`} onClose={() => setModalData(null)}>
-          <div style={{ ['--pcol-1' as any]: '40%', ['--pcol-2' as any]: '20%', ['--pcol-3' as any]: '20%', ['--pcol-4' as any]: '20%' }}>
-            <PlayerTable data={modalData.list} />
-          </div>
-        </ModalTournamentsSeasons>
-      )}
+
     </div>
   );
 }

@@ -16,6 +16,11 @@ export const metadata: Metadata = {
   alternates: { canonical: url },
 };
 
+import RoundOnEntriesModalOutletRecords from '@/components/RoundOnEntriesModalOutletRecords';
+
 export default function RecordsLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return <>
+    {children}
+    <RoundOnEntriesModalOutletRecords />
+  </>;
 }

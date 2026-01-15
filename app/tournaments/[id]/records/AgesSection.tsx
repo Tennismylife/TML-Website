@@ -67,6 +67,16 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
     fetchAges();
   }, [id, activeSubTab]);
 
+  // Close modal when a global 'close-modal' event is dispatched
+  useEffect(() => {
+    const handleCloseModal = () => {
+      try { setModalData(null); } catch (e) {}
+      try { const sm = document.getElementById('server-modal'); if (sm) sm.style.display = ''; } catch (e) {}
+    };
+    window.addEventListener('close-modal', handleCloseModal as EventListener);
+    return () => window.removeEventListener('close-modal', handleCloseModal as EventListener);
+  }, []);
+
   if (loading) return <div className="text-white">Loading...</div>;
   if (error) return <div className="text-white">Error: {error}</div>;
   if (!agesData) return <div className="text-white">No data</div>;
@@ -87,20 +97,28 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
       const which = isYoung ? 'youngest' : 'oldest';
 
       // choose section segment based on activeSubTab
-      const sectionSegment = activeSubTab === 'titles' ? 'titles' : 'main';
+      const sectionSegment = activeSubTab === 'titles' ? 'titles' : (activeSubTab === 'youngestrounds' || activeSubTab === 'oldestrounds' ? activeSubTab : 'main');
 
       const baseId = linkId ?? id;
-      const newPath = `/tournaments/${baseId}/records/ages/${sectionSegment}/${which}`;
+      // if this is a rounds subtab and a title is provided, include the title in the path
+      const newPath = (sectionSegment === 'youngestrounds' || sectionSegment === 'oldestrounds') && title
+        ? `/tournaments/${baseId}/records/ages/${sectionSegment}/${encodeURIComponent(String(title))}`
+        : `/tournaments/${baseId}/records/ages/${sectionSegment}/${which}`;
 
-      // push history state indicating modal navigation and include which/title and section
+      // push history state indicating modal navigation and include which/title and namespaced section
       if (typeof window !== 'undefined') {
-        const state = { modal: true, background: window.location.pathname, which, title, section: sectionSegment };
+        const dispatchedSection = `ages-${sectionSegment}`;
+        const state = { modal: true, background: window.location.pathname, which, title, section: dispatchedSection };
         window.history.pushState(state, '', newPath);
-        window.dispatchEvent(new CustomEvent('open-modal', { detail: { section: sectionSegment, which, title } }));
+        window.dispatchEvent(new CustomEvent('open-modal', { detail: { section: dispatchedSection, which, title } }));
       }
 
       // update router so URL syncs (keeps app state consistent)
-      router.push(newPath);
+      const nav: any = router.push(newPath);
+      // guard in case router.push returns undefined (some router implementations do)
+      if (nav && typeof nav.then === 'function') {
+        nav.then(() => { try { (window as any).__modalOpenedByPush = true; } catch (e) {} });
+      }
     } catch (err) {
       console.error(err);
     }
@@ -108,6 +126,8 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
 
   const items = activeSubTab === 'youngestrounds' ? agesData.allYoungestItems || [] : agesData.allOldestItems || [];
   const visibleItems = items.slice(0, visibleCount);
+
+
 
   const renderTable = (data: PlayerStatAge[], showYear = true) => (    <table className="w-full text-sm border-collapse table-fixed">
       <colgroup>

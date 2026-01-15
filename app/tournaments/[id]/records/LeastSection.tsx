@@ -54,13 +54,16 @@ export default function LeastSection({ id, linkId }: { id: string; linkId?: stri
     fetchLeast();
   }, [id]);
 
-  // blocca scroll quando il modal è aperto
+  // blocca scroll quando il modal è aperto (kept for server-modals compatibility via global state)
   useEffect(() => {
-    if (modalData) {
-      document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = ''; };
-    }
-  }, [modalData]);
+    const checkModal = () => {
+      const st = (typeof window !== 'undefined' && window.history.state) || null;
+      if (st && st.modal) document.body.style.overflow = 'hidden'; else document.body.style.overflow = '';
+    };
+    checkModal();
+    window.addEventListener('popstate', checkModal);
+    return () => { window.removeEventListener('popstate', checkModal); document.body.style.overflow = ''; };
+  }, []);
 
   const { isMobile, visibleCount, sentinelRef } = useIncrementalCards(leastData?.roundItems?.length ?? 0, { initialVisible: 1, debounceMs: 1000 });
 
@@ -124,23 +127,12 @@ export default function LeastSection({ id, linkId }: { id: string; linkId?: stri
 
   const handleViewAll = async (round: string) => {
     try {
-      setModalLoadingRound(round);
+      // store a last-open fallback so outlets that mount after the click still open
+      try { (window as any).__lastOpenModalPayload = { section: 'least', title: round }; } catch (e) { /* ignore */ }
 
-      // richiedo full dataset
-      const res = await fetch(`/api/tournaments/${id}/records/least?full=true`);
-      const data = await res.json();
-
-      if (!res.ok || data.error) throw new Error(data.error || 'Failed to fetch full data');
-
-      const returnedRound = Array.isArray(data.roundItems)
-        ? data.roundItems.find((r: any) => r.round === round)
-        : null;
-
-      const fullList: RoundData[] = returnedRound ? returnedRound.data : [];
-
-      setModalData({ round, data: fullList });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      // open modal via shared outlet and push history state so direct links work
+      try { window.history.pushState({ modal: true, background: `/tournaments/${id}/records`, section: 'least', title: round }, '', `/tournaments/${id}/records/least/rounds/${encodeURIComponent(String(round))}`); } catch (e) {}
+      try { window.dispatchEvent(new CustomEvent('open-modal', { detail: { section: 'least', title: round } })); } catch (e) { /* lastOpenModalPayload is already set */ }
     } finally {
       setModalLoadingRound(null);
     }
@@ -160,15 +152,15 @@ export default function LeastSection({ id, linkId }: { id: string; linkId?: stri
               <>
                 <PlayerTable data={item.data} />
 
-                <div className="mt-2 flex items-center gap-3">
-                  <button
-                    onClick={() => handleViewAll(item.round)}
-                    className="px-4 py-2 bg-blue-500 text-white rounded"
-                    disabled={modalLoadingRound === item.round}
-                  >
-                    {modalLoadingRound === item.round ? 'Loading...' : 'View All'}
-                  </button>
-                </div>
+                        <div className="mt-2 flex items-center gap-3">
+                <button
+                  onClick={() => handleViewAll(item.round)}
+                  className="px-4 py-2 bg-blue-500 text-white rounded"
+                  disabled={modalLoadingRound === item.round}
+                >
+                  {modalLoadingRound === item.round ? 'Loading...' : 'View All'}
+                </button>
+              </div>
               </>
             ) : (
               <p className="text-gray-400">No data available.</p>

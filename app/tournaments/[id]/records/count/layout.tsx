@@ -1,11 +1,12 @@
 import CountModalOutlet from '@/components/CountModalOutlet';
 
-export default function CountLayout({ children, modal, params }: { children: React.ReactNode; modal?: React.ReactNode; params: { id: string } }) {
+export default async function CountLayout({ children, params }: { children?: React.ReactNode; params: Promise<{ id: string }> }) {
+  const p = await params
+  const modal = (arguments[0] as any).modal
+
   return (
     <div className="relative">
       <div>{children}</div>
-      {/* Render client-side modal outlet that decides whether to show the intercepted modal (in-app navigation) */}
-      <CountModalOutlet id={params.id} />
 
       {/* server-injected modal (rendered into 'modal' slot by Next when using intercepted routes)
           Wrap it in a full-screen overlay so injected content appears as an overlay as well */}

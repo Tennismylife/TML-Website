@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import RouteModal from './RouteModal';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
 import Link from 'next/link';
@@ -12,8 +13,10 @@ export default function AgesModalOutlet({ id }: { id: string }) {
   const [list, setList] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [openError, setOpenError] = useState<string | null>(null);
-  const [tourneyName, setTourneyName] = useState<string>(String(id));
-  const [section, setSection] = useState<'main'|'titles'>('main');
+  const [tourneyName, setTourneyName] = useState<string>(String(id).replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()));
+  const pathname = usePathname();
+  const [section, setSection] = useState<'main'|'titles'|'youngestrounds'|'oldestrounds'>('main');
+  const [activeTitle, setActiveTitle] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -31,15 +34,20 @@ export default function AgesModalOutlet({ id }: { id: string }) {
 
     const openWithPayload = (detail: any) => {
       const w = detail?.which as 'youngest' | 'oldest' | undefined;
-      const sec = detail?.section as 'main' | 'titles' | undefined ?? 'main';
-      if (!w) return;
-      setWhich(w);
-      setSection(sec);
+      // accept both legacy sections (e.g., 'main') and namespaced 'ages-main'
+      const rawSec = detail?.section as string | undefined;
+      const sec = rawSec ? String(rawSec).replace(/^ages-/, '') : 'main';
+      const titleParam = detail?.title as string | undefined;
+      if (!w && !(sec === 'youngestrounds' || sec === 'oldestrounds')) return;
+      setWhich(w ?? null);
+      setSection(sec as any);
+      setActiveTitle(titleParam ?? null);
       setShow(true);
       setLoading(true);
       setOpenError(null);
 
       const url = `/api/tournaments/${id}/records/ages/${sec}?full=true`;
+      try { console.debug('[AgesModalOutlet] openWithPayload normalized', { rawSec, sec, url }); } catch (e) {}
       fetch(url)
         .then((res) => {
           if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
@@ -47,8 +55,19 @@ export default function AgesModalOutlet({ id }: { id: string }) {
         })
         .then((data) => {
           let items: any[] = [];
+
           if (sec === 'titles') {
             items = w === 'youngest' ? (data.youngestWinners ?? data.topYoungestWinners ?? []) : (data.oldestWinners ?? data.topOldestWinners ?? []);
+          } else if (sec === 'youngestrounds' || sec === 'oldestrounds') {
+            const listKey = sec === 'youngestrounds' ? 'allYoungestItems' : 'allOldestItems';
+            const all = data[listKey] ?? [];
+            if (titleParam) {
+              const found = all.find((it: any) => String(it.title) === String(titleParam) || String(it.title) === decodeURIComponent(String(titleParam)));
+              items = (found?.fullList ?? found?.list ?? []) as any[];
+            } else {
+              // flatten to a simple rows list if no specific title requested
+              items = (all || []).flatMap((it: any) => it.list ?? []);
+            }
           } else {
             items = w === 'youngest' ? (data.youngestPlayers ?? data.topYoungest ?? []) : (data.oldestPlayers ?? data.topOldest ?? []);
           }
@@ -63,16 +82,30 @@ export default function AgesModalOutlet({ id }: { id: string }) {
     // open via history state when route has modal state
     const state = (typeof window !== 'undefined' && window.history.state) || null;
     const isModal = state && state.modal && state.background;
-    const pathname = typeof window !== 'undefined' ? window.location.pathname : null;
-    const parts = pathname ? pathname.split('/').filter(Boolean) : [];
-    const maybeWhich = parts.length > 0 && parts[parts.length - 1] === 'youngest' ? 'youngest' : (parts.length > 0 && parts[parts.length - 1] === 'oldest' ? 'oldest' : null);
+    const currentPath = pathname || (typeof window !== 'undefined' ? window.location.pathname : null);
 
-    if (isModal && maybeWhich) {
-      const maybeSection = parts.length > 1 ? parts[parts.length - 2] : 'main';
-      const sec = maybeSection === 'titles' ? 'titles' : 'main';
-      openWithPayload({ which: maybeWhich, section: sec });
+    if (currentPath) {
+      const parts = currentPath.split('/').filter(Boolean);
+      const recordsIndex = parts.indexOf('records');
+      const maybeParent = recordsIndex >= 0 && parts.length > recordsIndex + 1 ? parts[recordsIndex + 1] : null;
+      const maybeSection = recordsIndex >= 0 && parts.length > recordsIndex + 2 ? parts[recordsIndex + 2] : null;
+
+      if (isModal && maybeParent === 'ages' && maybeSection) {
+        if (maybeSection === 'titles') {
+          openWithPayload({ which: parts[parts.length - 1] === 'youngest' ? 'youngest' : 'oldest', section: 'titles' });
+        } else if (maybeSection === 'youngestrounds' || maybeSection === 'oldestrounds') {
+          const titleParam = parts.length > recordsIndex + 3 ? parts[recordsIndex + 3] : parts[parts.length - 1];
+          openWithPayload({ section: maybeSection, title: titleParam });
+        } else if (maybeSection === 'youngest' || maybeSection === 'oldest') {
+          openWithPayload({ which: maybeSection as any, section: 'main' });
+        } else {
+          setShow(false); setWhich(null); setList(null); setOpenError(null); setActiveTitle(null);
+        }
+      } else {
+        setShow(false); setWhich(null); setList(null); setOpenError(null); setActiveTitle(null);
+      }
     } else {
-      setShow(false); setWhich(null); setList(null); setOpenError(null);
+      setShow(false); setWhich(null); setList(null); setOpenError(null); setActiveTitle(null);
     }
 
     const handleOpenModal = (e: any) => {
@@ -81,24 +114,24 @@ export default function AgesModalOutlet({ id }: { id: string }) {
       openWithPayload(detail);
     };
 
-    window.addEventListener('open-modal', handleOpenModal as EventListener);
-
-    const handlePop = () => {
-      const st = (typeof window !== 'undefined' && window.history.state) || null;
-      const isModalNow = st && st.modal && st.background;
-      const pathname = typeof window !== 'undefined' ? window.location.pathname : null;
-      const parts = pathname ? pathname.split('/').filter(Boolean) : [];
-      const maybeWhich = parts.length > 0 && parts[parts.length - 1] === 'youngest' ? 'youngest' : (parts.length > 0 && parts[parts.length - 1] === 'oldest' ? 'oldest' : null);
-
-      if (!isModalNow || !maybeWhich) {
-        setShow(false); setWhich(null); setList(null); setOpenError(null);
-      }
+    const handleCloseModal = () => {
+      setShow(false);
+      setWhich(null);
+      setList(null);
+      setOpenError(null);
+      setActiveTitle(null);
+      try { const { showServerModals } = require('./hideServerModals'); showServerModals(); } catch (e) {}
     };
 
-    window.addEventListener('popstate', handlePop as EventListener);
+    window.addEventListener('open-modal', handleOpenModal);
+    window.addEventListener('close-modal', handleCloseModal);
 
-    return () => { mounted = false; window.removeEventListener('open-modal', handleOpenModal as EventListener); window.removeEventListener('popstate', handlePop as EventListener); };
-  }, [id]);
+    return () => {
+      mounted = false;
+      window.removeEventListener('open-modal', handleOpenModal);
+      window.removeEventListener('close-modal', handleCloseModal);
+    };
+  }, [id, pathname]);
 
   if (!show) return null;
 
@@ -112,9 +145,25 @@ export default function AgesModalOutlet({ id }: { id: string }) {
   return (
     <RouteModal>
       <div className="text-white">
-        <div className="mb-3 text-center">
-          <h3 className="text-2xl font-semibold">{which === 'youngest' ? (section === 'titles' ? `Youngest Winners in Main Draw at ${tourneyName}` : `Youngest Players in Main Draw at ${tourneyName}`) : (section === 'titles' ? `Oldest Winners in Main Draw at ${tourneyName}` : `Oldest Players in Main Draw at ${tourneyName}`)}</h3>
-        </div>
+        {(() => {
+          let headerText = '';
+          if (section === 'titles') {
+            // Titles: show "Title Winners" phrasing
+            headerText = which === 'youngest' ? `Youngest Title Winners at ${tourneyName}` : `Oldest Title Winners at ${tourneyName}`;
+          } else if (section === 'main') {
+            headerText = which === 'youngest' ? `Youngest Players in Main Draw at ${tourneyName}` : `Oldest Players in Main Draw at ${tourneyName}`;
+          } else if (section === 'youngestrounds' || section === 'oldestrounds') {
+            const side = section === 'youngestrounds' ? 'Youngest' : 'Oldest';
+            headerText = activeTitle ? `${side} Players in ${activeTitle} at ${tourneyName}` : `${side} Players at ${tourneyName}`;
+          } else {
+            headerText = which === 'youngest' ? `Youngest Players in Main Draw at ${tourneyName}` : `Oldest Players in Main Draw at ${tourneyName}`;
+          }
+          return (
+            <div className="mb-3 text-center">
+              <h3 className="text-2xl font-semibold">{headerText}</h3>
+            </div>
+          );
+        })()}
 
         {loading ? (
           <p className="text-white text-center p-6">Loading...</p>

@@ -37,7 +37,9 @@ export async function GET(request: NextRequest, context: any) {
     const params = await context?.params;
     const id = String(params?.id ?? '');
 
-    const { searchParams } = new URL(request.url);
+    // request.url may be an absolute URL or a relative path depending on how fetch was called;
+    // prefer using NextRequest.nextUrl when available, otherwise construct a URL with a dummy base
+    const searchParams = (request as any).nextUrl?.searchParams ?? (new URL(request.url, 'http://localhost')).searchParams;
     const full = searchParams.get('full') === 'true';
     const specificRound = searchParams.get('round'); // opzionale: 'R32'|'R16'|'QF'|'SF'|'F'|'W'
 

@@ -143,6 +143,17 @@ export default function RecordsClient({ initialRecord = null, initialSubtab = nu
   });
 
   useEffect(() => {
+    // Avoid updating the document title for the 'least' tab - server SEO should be authoritative for that page
+    try {
+      const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+      const parts = pathname ? pathname.split('/').filter(Boolean) : [];
+      const recordsIndex = parts.indexOf('records');
+      const maybeTab = recordsIndex >= 0 && parts.length > recordsIndex + 1 ? parts[recordsIndex + 1] : null;
+      if (selectedRecord === 'least' || maybeTab === 'least') return;
+      // Also respect any existing server SEO title and do not overwrite it
+      if (typeof document !== 'undefined' && /\| Tennis/.test(document.title || '')) return;
+    } catch (e) { /* ignore */ }
+
     if (!selectedRecord) return;
     const sub = activeSubTabsRef.current[selectedRecord ?? ""];
     const path = buildPath(selectedRecord, sub);
@@ -153,12 +164,17 @@ export default function RecordsClient({ initialRecord = null, initialSubtab = nu
         const currentTitle = typeof document !== 'undefined' ? document.title || '' : '';
         const shouldForceTitle = lastUserActionRef.current === 'click' || lastUserActionRef.current === 'filter';
 
-        // If the user initiated the change, allow the client to overwrite the title (to reflect selected filters).
-        if (shouldForceTitle) {
-          document.title = newTitle;
-          if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') console.debug('[RecordsClient] forced title (user action)', document.title);
+      // If the user initiated the change, allow the client to overwrite the title (to reflect selected filters).
+      if (shouldForceTitle) {
+        document.title = newTitle;
+        if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') console.debug('[RecordsClient] forced title (user action)', document.title);
+      } else {
+        // If the server provided an explicit site SEO title (e.g., "| Tennis My Life" or "| Tennis Records"), preserve it and do NOT overwrite.
+        const currentIsSiteSeo = typeof currentTitle === 'string' && /\| Tennis/.test(currentTitle);
+        if (currentIsSiteSeo) {
+          if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') console.debug('[RecordsClient] preserving server SEO title', currentTitle);
         } else {
-          // Otherwise only set the title if it isn't already an SEO title or differs from the desired title
+          // Otherwise only set the title if it isn't already the client-desired title
           if (!currentTitle.includes('— TML') || currentTitle !== newTitle) {
             document.title = newTitle;
             if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') console.debug('[RecordsClient] set title', document.title);
@@ -166,6 +182,7 @@ export default function RecordsClient({ initialRecord = null, initialSubtab = nu
             if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') console.debug('[RecordsClient] not overwriting server SEO title', currentTitle);
           }
         }
+      }
       } else {
         if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') console.debug('[RecordsClient] skipping title update (no desc)');
       }

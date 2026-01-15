@@ -1,9 +1,55 @@
 import React from 'react';
 import CountFull from '../_components/CountFull';
 import TournamentHeader from '../../../TournamentHeader';
+import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
 
-export default async function PlayedPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+function extractName(nameField: any): string {
+  if (!nameField) return '';
+  if (typeof nameField === 'string') return nameField;
+  if (typeof nameField === 'number' || typeof nameField === 'boolean') return String(nameField);
+  if (Array.isArray(nameField)) {
+    for (const v of nameField) {
+      const r = extractName(v);
+      if (r) return r;
+    }
+    return '';
+  }
+  if (typeof nameField === 'object') {
+    for (const v of Object.values(nameField)) {
+      const r = extractName(v);
+      if (r) return r;
+    }
+    return '';
+  }
+  return '';
+}
+
+function humanize(s: string) {
+  return String(s || '').replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  // default to a humanized version of the id
+  let tournamentName = humanize(String(id).replace(/-/g, ' '));
+  try {
+    const header = await fetchTournamentHeaderCached(id);
+    const raw = extractName(header?.name);
+    if (raw) tournamentName = humanize(raw);
+  } catch (e) {}
+
+  // Match the requested phrasing (lowercase 'matches') and remove site suffix for exact match
+  const title = `Most matches played at ${tournamentName}`;
+  return { title };
+}
+
+export default async function PlayedPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+
+  const tournamentName = await fetchTournamentHeaderCached(id).then((t: any) => {
+    const raw = (t && t.name) ? (Array.isArray(t.name) ? (t.name.map((x: any) => (typeof x === 'string' ? x : JSON.stringify(x))).filter(Boolean).pop()) : t.name) : String(id).replace(/-/g, ' ');
+    return String(raw).replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  }).catch(() => String(id).replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()));
 
   return (
     <div className="w-full mx-auto p-8 text-white">
@@ -12,7 +58,7 @@ export default async function PlayedPage({ params }: { params: { id: string } })
       </div>
 
       <main>
-        <h1 className="text-3xl font-extrabold mb-4">{`Played`}</h1>
+        <h1 className="text-3xl font-extrabold mb-4">{`Most matches played at ${tournamentName}`}</h1>
         <CountFull id={id} section="played" />
       </main>
     </div>

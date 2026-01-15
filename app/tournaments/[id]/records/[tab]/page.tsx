@@ -1,4 +1,6 @@
+import React from 'react';
 import RecordsPage from "../page";
+import { getTournamentName } from '@/lib/recordMetadata';
 import { prisma } from '@/lib/prisma';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
 import type { Metadata } from 'next';
@@ -49,7 +51,73 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   const titleFromParam = `${displayFromParam} | ${typeLabelFromParam}`;
   const ogUrlFromParam = `${site}/tournaments/${param}/records${tab ? `/${tab}` : ''}`;
   // Simpler: always use the static CTA image for records previews
-  const ogImageFromParam = `${site}/og/site-preview.png`; 
+  const ogImageFromParam = `${site}/og/site-preview.png`;
+
+  // Special-case: when viewing the 'rounds' tab root, return the requested title
+  if (tab === 'rounds') {
+    const siteTitle = `${displayFromParam} Records by Round | Tennis Records`;
+    return {
+      title: siteTitle,
+      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Rounds`, width: 1200, height: 630, type: 'image/png' }] },
+      twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
+      alternates: { canonical: ogUrlFromParam },
+    };
+  }
+
+  // Special-case: when viewing the 'count' tab root, return the site-specific SEO title
+  if (tab === 'count') {
+    const siteTitle = `${displayFromParam} Open Era Records | Tennis My Life`;
+    return {
+      title: siteTitle,
+      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Counts`, width: 1200, height: 630, type: 'image/png' }] },
+      twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
+      alternates: { canonical: ogUrlFromParam },
+    };
+  }
+
+  // Special-case: when viewing the 'rounds-on-entries' tab root, return the site-specific Round Efficiency title
+  if (tab === 'rounds-on-entries') {
+    const siteTitle = `${displayFromParam} Round Efficiency by Entries | Tennis Records`;
+    return {
+      title: siteTitle,
+      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Round Efficiency`, width: 1200, height: 630, type: 'image/png' }] },
+      twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
+      alternates: { canonical: ogUrlFromParam },
+    };
+  }
+
+  // Special-case: when viewing the 'least' tab root, return the site-specific Least Games title
+  if (tab === 'least') {
+    const siteTitle = `${displayFromParam} Least Games Lost to Reach a Round | Tennis Records`;
+    return {
+      title: siteTitle,
+      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Least Games`, width: 1200, height: 630, type: 'image/png' }] },
+      twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
+      alternates: { canonical: ogUrlFromParam },
+    };
+  }
+
+  // Special-case: when viewing the 'average-age' tab root, return the site-specific Average Age title
+  if (tab === 'average-age') {
+    const siteTitle = `${displayFromParam} Average Age Records | Tennis Statistics`;
+    return {
+      title: siteTitle,
+      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Average Age`, width: 1200, height: 630, type: 'image/png' }] },
+      twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
+      alternates: { canonical: ogUrlFromParam },
+    };
+  }
+
+  // Special-case: when viewing the 'timespan' tab root, return the site-specific Timespan title
+  if (tab === 'timespan') {
+    const siteTitle = `${displayFromParam} Timespan Records | Tennis My Life`;
+    return {
+      title: siteTitle,
+      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Timespan`, width: 1200, height: 630, type: 'image/png' }] },
+      twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
+      alternates: { canonical: ogUrlFromParam },
+    };
+  }
 
   // Return deterministic metadata based on the path (fast and reliable)
   const baseMeta: Metadata = {
@@ -80,11 +148,60 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   return baseMeta;
 }
 
-export default function RecordsTabPage({
-  params,
-}: {
-  params: Promise<{ id: string; tab: string }>;
-}) {
-  const idPromise = params.then(p => ({ id: p.id }));
-  return <RecordsPage params={idPromise} />;
+export default async function RecordsTabPage({ params }: { params: Promise<{ id: string; tab?: string }> }) {
+  const { id, tab } = await params;
+  // server-rendered tournament name for authoritative H1
+  const tournamentName = await getTournamentName(id);
+  // DEBUG: log server invocation in tests to help diagnose missing H1s
+  if (process.env.NODE_ENV === 'test') {
+    // eslint-disable-next-line no-console
+    console.log('RecordsTabPage server render', { id, tab });
+  }
+
+  const tabLabels: Record<string, string> = {
+    count: 'Open Era Records',
+    rounds: 'Records by Round',
+    ages: 'Ages',
+    percentage: 'Percentages',
+    timespan: 'Timespans',
+    'rounds-on-entries': 'Round Efficiency by Entries',
+    least: 'Least Games Lost to Reach a Round',
+    'average-age': 'Average Age Records',
+  };
+
+  function humanizeName(name: string) {
+    return String(name || '').replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  }
+
+  const recordTitle = tab ? (tabLabels[tab] ?? humanizeName(tab)) : 'Records';
+
+  // H1 should be: "{tournamentName} | {recordTitle}" (server-rendered)
+
+  // H2 headings for each section (anchors)
+  const sectionOrder = [
+    { key: 'count', label: 'Counts' },
+    { key: 'rounds', label: 'Rounds' },
+    { key: 'ages', label: 'Ages' },
+    { key: 'percentage', label: 'Percentages' },
+    { key: 'timespan', label: 'Timespans' },
+    { key: 'rounds-on-entries', label: 'Round Efficiency by Entries' },
+    { key: 'least', label: 'Least' },
+    { key: 'average-age', label: 'Average Age' },
+  ];
+
+  // For server-rendering contexts, normalize to a Promise that resolves to { id }
+  const idPromise = Promise.resolve({ id });
+
+  return (
+    <div>
+      <main className="w-full mx-auto p-8 text-white" style={{ backgroundColor: 'rgba(17,24,39,0.95)', backdropFilter: 'blur(6px)', minHeight: '100vh' }}>
+        <h1 className="text-4xl md:text-5xl font-extrabold mb-6">{`${tournamentName} | ${recordTitle}`}</h1>
+
+
+
+        {/* Client-side interactive page (keeps existing loading/fallback logic for data tables) */}
+        <RecordsPage params={idPromise} />
+      </main>
+    </div>
+  );
 }

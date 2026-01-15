@@ -1,12 +1,11 @@
 import AgesModalOutlet from '@/components/AgesModalOutlet';
 
-export default function AgesLayout({ children, modal, params }: { children: React.ReactNode; modal?: React.ReactNode; params: { id: string } }) {
+export default async function AgesLayout({ children, params }: { children?: React.ReactNode; params: Promise<{ id: string }> }) {
+  const p = await params;
+  const modal = (arguments[0] as any).modal
   return (
     <div className="relative">
       <div>{children}</div>
-
-      {/* Client modal outlet handles in-app navigation */}
-      <AgesModalOutlet id={params.id} />
 
       {/* Server-injected modal (for direct @modal requests) */}
       {modal && (

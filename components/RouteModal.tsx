@@ -4,11 +4,40 @@ import React, { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function RouteModal({ children, onClose }: { children: React.ReactNode; onClose?: (e?: React.MouseEvent) => void }) {
+export default function RouteModal({ children, onClose }: { children: React.ReactNode; onClose?: (e?: React.MouseEvent) => void }): React.ReactElement | null {
   const router = useRouter();
   const internalClose = (e?: React.MouseEvent) => {
     e?.stopPropagation();
     if (onClose) return onClose(e);
+    try {
+      if (typeof window !== 'undefined') {
+        const st = (window as any).history?.state;
+        try { console.debug('[RouteModal] internalClose, history state:', st); } catch (e) {}
+        if (st && st.modal && st.background) {
+          // prefer explicit stored background (global) if present
+          const storedBg = (window as any).__modalBackgroundPath || st.background;
+          try { console.debug('[RouteModal] closing modal, computed background:', { fromState: st.background, storedBg }); } catch (e) {}
+
+          // First ensure modal is hidden immediately by clearing state and dispatching close-modal
+          try {
+            try { window.history.replaceState(null, '', storedBg); } catch (e) { console.debug('[RouteModal] replaceState failed', e); }
+            try { console.debug('[RouteModal] dispatching close-modal'); } catch (e) {}
+            window.dispatchEvent(new CustomEvent('close-modal'));
+            try { delete (window as any).__modalBackgroundPath; } catch (e) {}
+          } catch (e) { try { console.debug('[RouteModal] close dispatch failed', e); } catch (ex) {} }
+
+          // NOTE: avoid calling router.replace() or history.back() here to prevent triggering
+          // a navigation that would re-render server components and cause refetches on the
+          // underlying page. The history was already restored via replaceState above, and
+          // outlets listen for the 'close-modal' event and will hide without causing page reloads.
+          try { delete (window as any).__modalOpenedByPush; } catch (e) {}
+          return;
+
+          return;
+        }
+      }
+    } catch (e) { /* ignore */ }
+    // fallback to router.back() which may still work in apps without history state
     router.back();
   };
 
@@ -48,13 +77,13 @@ export default function RouteModal({ children, onClose }: { children: React.Reac
     if (contentRef.current) {
       mo = new MutationObserver(() => {
         // slightly longer delay to allow layout/async content to settle
-        setTimeout(adjustInitialScroll, 80);
+        setTimeout(adjustInitialScroll, 120);
       });
       mo.observe(contentRef.current, { childList: true, subtree: true });
     }
 
     // initial adjustment in case content already present
-    setTimeout(adjustInitialScroll, 60);
+    setTimeout(adjustInitialScroll, 120);
 
     return () => {
       document.removeEventListener('keydown', onKey);
@@ -66,7 +95,8 @@ export default function RouteModal({ children, onClose }: { children: React.Reac
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-8 md:pt-20"
+        className="fixed inset-0 flex items-start justify-center p-4 pt-8 md:pt-20"
+        style={{ zIndex: 99999 }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -76,7 +106,7 @@ export default function RouteModal({ children, onClose }: { children: React.Reac
         {/* backdrop */}
         <motion.div
           className="absolute inset-0 bg-black/40"
-          onClick={onClose}
+          onClick={() => internalClose()}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

@@ -125,8 +125,8 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
       window.dispatchEvent(new PopStateEvent('popstate'));
       window.dispatchEvent(new CustomEvent('modalchange'));
 
-      // notify outlet with payload
-      const payload = { round: roundTitle, list: existing ?? null };
+      // notify outlet with payload (namespaced to avoid collisions)
+      const payload = { section: 'rounds', title: roundTitle, list: existing ?? null };
       window.dispatchEvent(new CustomEvent('open-modal', { detail: payload }));
     } catch (e) {
       // ignore
@@ -199,6 +199,16 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
       setVisibleCards(prev => Math.max(1, Math.min(prev, roundItems.length)));
     }
   }, [isMobile, roundItems.length]);
+
+  // Close modal when a global 'close-modal' event is dispatched
+  useEffect(() => {
+    const handleCloseModal = () => {
+      setModalData(null);
+      try { const sm = document.getElementById('server-modal'); if (sm) sm.style.display = ''; } catch (e) {}
+    };
+    window.addEventListener('close-modal', handleCloseModal as EventListener);
+    return () => window.removeEventListener('close-modal', handleCloseModal as EventListener);
+  }, []);
 
   // observe a single sentinel at the end to progressively reveal one card at a time on mobile
   useEffect(() => {
@@ -289,7 +299,7 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
       )}
 
       {modalData && (
-        <ModalTournamentsSeasons title={`All Reaches at ${tourneyName} — ${modalData.title}`} onClose={() => setModalData(null)}>
+        <ModalTournamentsSeasons title={`Most ${modalData.title} Appearances at the ${tourneyName}`} onClose={() => setModalData(null)}>
           <div className="text-center text-lg md:text-xl">
             {renderTable(modalData.list, 'Reaches')}
           </div>

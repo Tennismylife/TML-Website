@@ -4,6 +4,7 @@ import { getFlagFromIOC } from '@/lib/utils';
 import { prisma } from '@/lib/prisma';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
 import { metadataBase } from '@/lib/site';
+import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
 
 function extractFirst(value: any): string {
   if (!value) return '';
@@ -24,14 +25,23 @@ export default async function RoundFull({ id, round }: { id: string; round: stri
   const data = await res.json();
   const list = data?.roundItems?.[0]?.fullList ?? [];
 
-  // Resolve tournament name server-side
-  let tourneyName = String(id);
+  // Resolve tournament name server-side; prefer header cache humanized slug for display consistency
+  let tourneyName = humanizeName(String(id).replace(/-/g, ' '));
   try {
-    const canonicalId = await resolveCanonicalTourneyId(id);
-    const lookupId = canonicalId ? parseInt(canonicalId, 10) : (isNaN(Number(id)) ? undefined : Number(id));
-    const tournament = lookupId ? await prisma.tournament.findUnique({ where: { id: lookupId } }) : await prisma.tournament.findUnique({ where: { slug: id } });
-    const rawName = extractFirst(tournament?.name) || `Tournament ${tournament?.id ?? id}`;
-    tourneyName = humanizeName(rawName);
+    const header = await fetchTournamentHeaderCached(id);
+    const rawHeader = extractFirst(header?.name);
+    if (rawHeader) {
+      tourneyName = humanizeName(rawHeader);
+    } else {
+      const canonicalId = await resolveCanonicalTourneyId(id);
+      const lookupId = canonicalId ? parseInt(canonicalId, 10) : (isNaN(Number(id)) ? undefined : Number(id));
+      const tournament = lookupId ? await prisma.tournament.findUnique({ where: { id: lookupId } }) : await prisma.tournament.findUnique({ where: { slug: id } });
+      const rawName = extractFirst(tournament?.name) || `Tournament ${tournament?.id ?? id}`;
+      // only override if DB provides something distinguishable
+      if (rawName && rawName.toLowerCase().indexOf(tourneyName.toLowerCase()) === -1) {
+        tourneyName = humanizeName(rawName);
+      }
+    }
   } catch (e) {
     // ignore
   }
@@ -39,7 +49,7 @@ export default async function RoundFull({ id, round }: { id: string; round: stri
   return (
     <div className="max-w-4xl mx-auto text-white p-4">
       <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
-        <h3 className="text-2xl font-semibold mb-4">{`All Reaches at ${tourneyName} — ${round}`}</h3>
+        <h3 className="text-2xl font-semibold mb-4">{`Most ${round} Appearances at the ${tourneyName}`}</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-lg md:text-xl border-collapse table-fixed text-center">
             <colgroup>

@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useState, useEffect, useRef } from "react";
+import React, { use, useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
 import CountSection from "./CountSection";
@@ -15,7 +15,23 @@ import TournamentHeader from "../TournamentHeader";
 import TournamentTabs from "./TournamentTabs";
 
 export default function RecordsPageClient({ params }: { params: Promise<{ id: string }> } ) {
-  const { id } = use(params);
+  // Accept both a Promise (Next's server use(params)) or a plain object (useful in tests)
+  let id: string = '';
+  if (!params) {
+    id = '';
+  } else if (typeof (params as any).then === 'function') {
+    try {
+      // In a real Next client render this will resolve via `use`
+      // @ts-ignore
+      id = use(params).id;
+    } catch (e) {
+      // In the test environment `use` may not be available; fall back to an empty id and rely on mocked fetches
+      id = '';
+    }
+  } else {
+    id = (params as any).id ?? '';
+  }
+
   const tournamentId = Number(id);
 
   const pathname = usePathname();
@@ -108,7 +124,35 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
+  // Ensure per-round deep paths like /records/ages/youngestrounds/F set a full SEO title on the client
+  // Declared before any early returns to preserve Hook order
+  useEffect(() => {
+    if (!pathname) return;
+    try {
+      const parts = pathname.split('/').filter(Boolean);
+      const recordsIndex = parts.indexOf('records');
+      if (recordsIndex < 0) return;
+      const tab = parts[recordsIndex + 1];
+      const sub = parts[recordsIndex + 2];
+      const titleSeg = parts[recordsIndex + 3];
+      if (!tab || tab !== 'ages') return;
+      if (!(sub === 'youngestrounds' || sub === 'oldestrounds')) return;
+      if (!titleSeg) return;
 
+      const displayName = tournament
+        ? (Array.isArray(tournament.name) ? (tournament.name as any[]).at(-1) || String(id).replace(/-/g, ' ') : (tournament.name as any) || String(id).replace(/-/g, ' '))
+        : String(id).replace(/-/g, ' ');
+      const humanizedDisplayName = String(displayName).replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+
+      const side = sub === 'youngestrounds' ? 'Youngest Players' : 'Oldest Players';
+      const seoTitle = `${side} in ${decodeURIComponent(titleSeg)} at ${humanizedDisplayName} | Tennis Records`;
+      // only set if not already the same
+      const current = typeof document !== 'undefined' ? document.title || '' : '';
+      if (current !== seoTitle) document.title = seoTitle;
+    } catch (e) {
+      // ignore
+    }
+  }, [pathname, tournament, id]);
   // Navigation handler: naviga a /records/:tab or /records/:tab/:sub
   const navigateToTab = (tab: string, sub?: string) => {
     const subSegment = sub ? `/${encodeURIComponent(sub)}` : '';
@@ -142,12 +186,56 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
     );
   }
 
+  // Compute a display name for the H1: prefer DB name when available, otherwise humanize the route id
+  const displayName = tournament
+    ? (Array.isArray(tournament.name) ? (tournament.name as any[]).at(-1) || String(id).replace(/-/g, ' ') : (tournament.name as any) || String(id).replace(/-/g, ' '))
+    : String(id).replace(/-/g, ' ');
+  const humanizedDisplayName = String(displayName).replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+
+
+
+  // Compute the page H1 so it matches the server metadata title (minus the "| Tennis Records" suffix)
+  const pageHeading = (() => {
+    if (!activeTab) return `${humanizedDisplayName} Records`;
+    if (activeTab === 'rounds') return `${humanizedDisplayName} Records by Round`;
+    if (activeTab === 'count') return `${humanizedDisplayName} Open Era Records`;
+    if (activeTab === 'rounds-on-entries') return `${humanizedDisplayName} Round Efficiency by Entries`;
+    if (activeTab === 'least') return `${humanizedDisplayName} Least Games Lost to Reach a Round`;
+    if (activeTab === 'average-age') return `${humanizedDisplayName} Average Age Records`;
+    if (activeTab === 'timespan') return `${humanizedDisplayName} Timespan Records`;
+    const tabLabels: Record<string, string> = {
+      count: 'Open Era Records',
+      rounds: 'Records by Round',
+      ages: 'Ages',
+      percentage: 'Percentages',
+      timespan: 'Timespans',
+      'rounds-on-entries': 'Round Efficiency by Entries',
+      least: 'Least Games Lost to Reach a Round',
+      'average-age': 'Average Age Records',
+    };
+    const typeLabel = tabLabels[activeTab] ?? String(activeTab).replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    return `${humanizedDisplayName} ${typeLabel}`;
+  })();
+
   return (
     <main
       className="w-full mx-auto p-8 text-white"
       style={{ backgroundColor: 'rgba(17,24,39,0.95)', backdropFilter: 'blur(6px)', minHeight: '100vh' }}
     >
+      {/* Page heading is server-rendered to ensure consistent SEO and accessibility; keep client logic for tabs and content */}
+
       <TournamentHeader id={headerId} />
+
+      {/* Intro description (client-rendered under the header) */}
+      <h3 className="text-base text-gray-300 max-w-3xl leading-relaxed mb-6">
+        {(() => {
+          const base = 'Explore match-level data, historical trends, and the players who left their mark on this tournament.';
+          if (activeTab === 'least') return `A curated collection of least games lost to reach a round at ${humanizedDisplayName}. ${base}`;
+          if (activeTab === 'rounds') return `A curated collection of records by round at ${humanizedDisplayName}. ${base}`;
+          if (activeTab === 'count') return `A curated collection of records at ${humanizedDisplayName}. Titles, Wins Matches Played and Apperances. ${base}`;
+          return `A curated collection of ${activeTab ? activeTab.replace(/[-_]+/g, ' ') : 'records'} at ${humanizedDisplayName}. ${base}`;
+        })()}
+      </h3>
 
       <TournamentTabs
         activeTab={activeTab}

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { getFlagFromIOC } from "@/lib/utils";
 import Pagination from "../../../components/Pagination";
-import Modal from "@/components/Modal";
+import Modal from '@/components/Modal';
 
 interface RoundsProps {
   selectedSurfaces: Set<string>;
@@ -133,7 +133,17 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
       {/* VIEW ALL BUTTON */}
       <div className="mb-4 flex justify-end">
         <button
-          onClick={() => setShowModal(true)}
+          type="button"
+          onClick={(e) => {
+            try { e.preventDefault(); e.stopPropagation(); } catch (ex) {}
+            try {
+              const state = { modal: true, background: window.location.pathname, section: 'roundsonentries', title: selectedRounds };
+              try { (window as any).__lastOpenModalPayload = state; (window as any).__modalBackgroundPath = state.background; } catch (e) {}
+              const newPath = `/records/roundsonentries/rounds?round=${encodeURIComponent(String(selectedRounds))}`;
+              try { window.history.replaceState(state, '', newPath); } catch (e) {}
+              try { window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {}
+            } catch (err) {}
+          }}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
         >
           View All

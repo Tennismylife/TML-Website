@@ -109,6 +109,12 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
   // Ensure the browser title stays in sync after navigation: recompute description whenever
   // the active tab/subtab or search params change and set the document title again (with a short debounce)
   useEffect(() => {
+    // Do not let tab logic override carefully crafted site SEO titles for Least records
+    if (activeTabProp === 'least') return;
+
+    // If a server-provided SEO title is present, avoid overwriting it
+    if (typeof document !== 'undefined' && /\| Tennis Records/.test(document.title || '')) return;
+
     let t: any = null;
     try {
       const sp = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams('');
@@ -139,9 +145,13 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
         const mergedClean = Object.fromEntries(Object.entries(merged).map(([k, v]) => [k, v ?? ''])) as Record<string, string>;
         const desc = generateRecordDescription(active, mergedClean, selectedSurfaces, selectedLevels as any, selectedRounds as any, selectedBestOf as any);
         if (desc && typeof document !== 'undefined') {
-          document.title = `${desc} — TML`;
-          // reapply after short delay to avoid being overwritten by other flows
-          t = setTimeout(() => { if (typeof document !== 'undefined') document.title = `${desc} — TML`; }, 200);
+          const currentTitle = typeof document !== 'undefined' ? document.title || '' : '';
+          const currentIsSiteSeo = typeof currentTitle === 'string' && /\| Tennis/.test(currentTitle);
+          if (!currentIsSiteSeo) {
+            document.title = `${desc} — TML`;
+            // reapply after short delay to avoid being overwritten by other flows
+            t = setTimeout(() => { if (typeof document !== 'undefined') document.title = `${desc} — TML`; }, 200);
+          }
         }
       }
     } catch (e) {
@@ -198,7 +208,11 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
       const merged = { ...activeSubTabsDefault, [tabKey]: camel };
       const mergedClean = Object.fromEntries(Object.entries(merged).map(([k, v]) => [k, v ?? ''])) as Record<string, string>;
       const desc = generateRecordDescription(tabKey, mergedClean, selectedSurfaces, selectedLevels as any, selectedRounds as any, selectedBestOf as any);
-      if (desc && typeof document !== 'undefined') document.title = `${desc} — TML`;
+      if (desc && typeof document !== 'undefined') {
+        const currentTitle = typeof document !== 'undefined' ? document.title || '' : '';
+        const currentIsSiteSeo = typeof currentTitle === 'string' && /\| Tennis/.test(currentTitle);
+        if (!currentIsSiteSeo) document.title = `${desc} — TML`;
+      }
     } catch (e) {
       // ignore
     }

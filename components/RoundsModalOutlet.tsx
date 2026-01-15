@@ -13,7 +13,8 @@ export default function RoundsModalOutlet({ id }: { id: string }) {
   const [round, setRound] = useState<string | null>(null);
   const [list, setList] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(false);
-  const [tourneyName, setTourneyName] = useState<string>(String(id));
+  const [openError, setOpenError] = useState<string | null>(null);
+  const [tourneyName, setTourneyName] = useState<string>(String(id).replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()));
 
   useEffect(() => {
     let mounted = true;
@@ -27,36 +28,90 @@ export default function RoundsModalOutlet({ id }: { id: string }) {
   }, [id]);
 
   useEffect(() => {
-    const state = (typeof window !== 'undefined' && window.history.state) || null;
-    const isModal = state && state.modal && state.background;
-    const currentPath = typeof window !== 'undefined' ? window.location.pathname : pathname;
-    if (!currentPath) return;
+    let mounted = true;
 
-    const parts = currentPath.split('/').filter(Boolean);
-    const recordsIndex = parts.indexOf('records');
-    const maybeRound = recordsIndex >= 0 && parts.length > recordsIndex + 2 ? parts[recordsIndex + 2] : null;
+    const openWithPayload = (detail: any) => {
+      try { console.debug('[RoundsModalOutlet] openWithPayload', detail); } catch (e) {}
+      // Accept both older payloads ({ round, list }) and namespaced ({ section: 'rounds', title, list })
+      const sec = detail?.section ? String(detail.section) : null;
+      const titleParam = detail?.title ?? detail?.round ?? null;
+      if (sec && sec !== 'rounds') return; // ignore unrelated sections
 
-    if (isModal && maybeRound) {
-      setRound(maybeRound);
+      if (!titleParam) return;
+      setRound(String(titleParam));
       setShow(true);
       setLoading(true);
+      setOpenError(null);
 
-      // hide server modal
-      try { const sm = document.getElementById('server-modal'); if (sm) sm.style.display = 'none'; } catch (e) {}
+      // hide server-injected modal
+      try { const { hideServerModals } = require('./hideServerModals'); hideServerModals(); } catch (e) {}
 
-      fetch(`/api/tournaments/${id}/records/rounds?round=${encodeURIComponent(maybeRound)}&full=true`)
-        .then(res => res.json())
+      if (detail?.list && Array.isArray(detail.list)) {
+        setList(detail.list);
+        setLoading(false);
+        return;
+      }
+
+      fetch(`/api/tournaments/${id}/records/rounds?round=${encodeURIComponent(String(titleParam))}&full=true`)
+        .then(res => { if (!res.ok) throw new Error(`${res.status} ${res.statusText}`); return res.json(); })
         .then((data) => {
+          if (!mounted) return;
           setList(data.roundItems?.[0]?.fullList ?? []);
         })
-        .catch(() => setList([]))
-        .finally(() => setLoading(false));
+        .catch((e: any) => { if (!mounted) return; setList([]); setOpenError(e?.message || 'Failed to load'); })
+        .finally(() => { if (!mounted) return; setLoading(false); });
+    };
+
+    // fallback: check last open-modal payload stored on window
+    try {
+      const last = (window as any).__lastOpenModalPayload;
+      if (last && (last.round || last.title || (last.section && last.section === 'rounds'))) {
+        try { console.debug('[RoundsModalOutlet] consuming __lastOpenModalPayload', last); } catch (e) {}
+        openWithPayload(last);
+        try { delete (window as any).__lastOpenModalPayload; } catch (e) {}
+      }
+    } catch (e) {}
+
+    // detect modal via history state + pathname as a fallback
+    const state = (typeof window !== 'undefined' && window.history.state) || null;
+    const isModal = state && state.modal && state.background;
+    const currentPath = pathname || (typeof window !== 'undefined' ? window.location.pathname : null);
+    if (currentPath) {
+      const parts = currentPath.split('/').filter(Boolean);
+      const recordsIndex = parts.indexOf('records');
+      const maybeParent = recordsIndex >= 0 && parts.length > recordsIndex + 1 ? parts[recordsIndex + 1] : null;
+      const maybeRound = recordsIndex >= 0 && parts.length > recordsIndex + 2 ? parts[recordsIndex + 2] : null;
+
+      if (isModal && maybeParent === 'rounds' && maybeRound) {
+        openWithPayload({ section: 'rounds', title: maybeRound });
+      } else {
+        setShow(false); setRound(null); setList(null); setOpenError(null);
+        try { document.querySelectorAll('.server-modal-content').forEach((el: any) => { (el as HTMLElement).style.display = ''; }); } catch (e) {}
+      }
     } else {
-      setShow(false);
-      setRound(null);
-      setList(null);
-      try { const sm = document.getElementById('server-modal'); if (sm) sm.style.display = ''; } catch (e) {}
+      setShow(false); setRound(null); setList(null); setOpenError(null);
     }
+
+    const handleOpenModal = (e: any) => {
+      let detail = e?.detail;
+      if ((!detail || (!detail.title && !detail.round && !detail.section)) && (window as any).__lastOpenModalPayload) {
+        detail = (window as any).__lastOpenModalPayload;
+      }
+      if (!detail) return;
+      openWithPayload(detail);
+    };
+
+    const handleCloseModal = () => {
+      try { console.debug('[RoundsModalOutlet] handleCloseModal'); } catch (e) {}
+      setShow(false); setRound(null); setList(null); setOpenError(null);
+        try { const { showServerModals } = require('./hideServerModals'); showServerModals(); } catch (e) {}
+      try { delete (window as any).__lastOpenModalPayload; } catch (e) {}
+    };
+
+    window.addEventListener('open-modal', handleOpenModal);
+    window.addEventListener('close-modal', handleCloseModal);
+
+    return () => { mounted = false; window.removeEventListener('open-modal', handleOpenModal); window.removeEventListener('close-modal', handleCloseModal); };
   }, [pathname, id]);
 
   if (!show) return null;
@@ -65,11 +120,13 @@ export default function RoundsModalOutlet({ id }: { id: string }) {
     <RouteModal>
       <div className="text-white">
         <div className="mb-3 text-center">
-          <h3 className="text-2xl font-semibold">{round ? `All Reaches at ${tourneyName} — ${round}` : `All Reaches at ${tourneyName}`}</h3>
+          <h3 className="text-2xl font-semibold">{round ? `Most ${round} Appearances at the ${tourneyName}` : `Most Reaches at the ${tourneyName}`}</h3>
         </div>
 
         {loading ? (
           <p className="text-white text-center p-6">Loading...</p>
+        ) : openError ? (
+          <p className="text-red-400 text-center p-6">{openError}</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-lg md:text-xl border-collapse table-fixed text-center">

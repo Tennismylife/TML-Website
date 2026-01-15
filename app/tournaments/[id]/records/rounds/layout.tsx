@@ -1,12 +1,14 @@
 import RoundsModalOutlet from '../../../../../components/RoundsModalOutlet';
 
-export default function RoundsLayout({ children, modal, params }: { children: React.ReactNode; modal?: React.ReactNode; params: { id: string } }) {
+export default async function RoundsLayout({ children, params }: { children?: React.ReactNode; params: Promise<{ id: string }> }) {
+  const p = await params
+  const modal = (arguments[0] as any).modal
   return (
     <div className="relative">
       <div>{children}</div>
 
       {/* client-side modal outlet for intercepted in-app navigation */}
-      <RoundsModalOutlet id={params.id} />
+      <RoundsModalOutlet id={p.id} />
 
       {modal && (
         <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-8 md:pt-20">

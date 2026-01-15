@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
@@ -103,40 +104,41 @@ export default function TimespanSection({ id }: { id: string }) {
     backdropFilter: 'blur(4px)',
   };
 
-  // Carica la fullList solo al click su "View All"
+  const router = useRouter();
+
+  // Carica la fullList solo al click su "View All" using intercepted-route modal flow
   const handleViewAll = async (roundTitle: string) => {
-    if (!timespanData) return;
-    const round = timespanData.allRoundItems.find(r => r.title === roundTitle);
-    if (!round) return;
-
-    if (round.fullList?.length) {
-      setModalData({ title: roundTitle, list: round.fullList });
-      return;
-    }
-
     try {
-      setLoadingViewAll(roundTitle);
-      const res = await fetch(`/api/tournaments/${id}/records/timespan?full=true&round=${encodeURIComponent(roundTitle)}`);
-      const data = await res.json();
-      if (!res.ok || data.error) throw new Error(data.error || 'Failed to fetch full round data');
+      const section = 'timespan';
+      const newPath = `/tournaments/${id}/records/timespan/rounds/${encodeURIComponent(String(roundTitle))}`;
+      const state = { modal: true, background: window.location.pathname, section, title: roundTitle };
 
-      const fullRound = Array.isArray(data.allRoundItems)
-        ? data.allRoundItems.find((r: any) => r.title === roundTitle)
-        : null;
+      try { console.debug('[TimespanSection] handleViewAll start', { newPath, state }); } catch (e) {}
 
-      const fullList = fullRound?.fullList ?? [];
-      // Aggiorna localmente
-      setTimespanData(prev => prev ? {
-        allRoundItems: prev.allRoundItems.map(r =>
-          r.title === roundTitle ? { ...r, fullList } : r
-        )
-      } : prev);
+      // write fallback payload
+      try { (window as any).__lastOpenModalPayload = state; (window as any).__modalBackgroundPath = state.background; } catch (e) {}
 
-      setModalData({ title: roundTitle, list: fullList });
+      // navigate SPA to mount the layout
+      try {
+        const nav: any = router.push(newPath);
+        try { console.debug('[TimespanSection] initiated router.push', newPath, 'nav:', nav); } catch (e) {}
+        if (nav && typeof nav.then === 'function') {
+          nav.then(() => {
+            try { (window as any).__modalOpenedByPush = true; } catch (e) {}
+            try { window.history.replaceState(state, '', newPath); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {}
+          }).catch(() => {
+            setTimeout(() => { try { window.history.replaceState(state, '', newPath); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch(e) {} }, 300);
+          });
+        } else {
+          // some routers don't return a promise; delay then dispatch
+          setTimeout(() => { try { window.history.replaceState(state, '', newPath); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch(e) {} }, 350);
+        }
+      } catch (e) {
+        // fallback: replace state and dispatch immediately
+        try { window.history.replaceState(state, '', newPath); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (err) {}
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-    } finally {
-      setLoadingViewAll(null);
+      console.error(err);
     }
   };
 
@@ -159,7 +161,8 @@ export default function TimespanSection({ id }: { id: string }) {
                 <PlayerTable data={item.list} />
                 <div className="mt-2 flex items-center gap-3">
                   <button
-                    onClick={() => handleViewAll(item.title)}
+                    type="button"
+                    onClick={(e) => { try { e.preventDefault(); e.stopPropagation(); console.debug('[TimespanSection] View All clicked', item.title); } catch(ex) {} ; handleViewAll(item.title); }}
                     className="px-4 py-2 bg-blue-500 text-white rounded"
                     disabled={loadingViewAll === item.title}
                   >

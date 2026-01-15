@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import Link from 'next/link';
 import { getFlagFromIOC } from "@/lib/utils";
@@ -36,6 +37,26 @@ export default function PercentageSection({ id, activeSubTab }: { id: string; ac
 
   // call incremental hook early so hooks order is stable even before data loads
   const { isMobile, visibleCount, sentinelRef } = useIncrementalCards(percentageData?.allRoundItems?.length ?? 0, { initialVisible: 1, debounceMs: 1000 });
+
+  // Next.js router hook (used to mount percentage layout via SPA navigation)
+  const router = useRouter();
+
+  // Debug: global click listener to see why View All clicks might be swallowed
+  useEffect(() => {
+    const onDocClick = (e: any) => {
+      try { console.debug('[GlobalClickDebug] click', { target: e.target, closestViewAll: e.target?.closest ? e.target.closest('[data-view-all]') : null }); } catch (err) {}
+    };
+    document.addEventListener('click', onDocClick, true);
+
+    // debug: global listener to see any open-modal events received at window scope
+    const onOpenModalDebug = (e: any) => {
+      try { console.debug('[GlobalOpenModalDebug] event received at window:', e?.detail); } catch (err) {}
+    };
+    window.addEventListener('open-modal', onOpenModalDebug as EventListener);
+
+    return () => { document.removeEventListener('click', onDocClick, true); window.removeEventListener('open-modal', onOpenModalDebug as EventListener); };
+  }, []);
+
 
   // --- Fetch data ---
   useEffect(() => {
@@ -130,7 +151,77 @@ export default function PercentageSection({ id, activeSubTab }: { id: string; ac
   );
 
   const handleViewAll = (list: PlayerPercentage[], title: string) => {
-    setModalData({ title, list });
+    try {
+      const sectionSegment = activeSubTab === 'overall' ? 'percentage-wins' : 'percentage-rounds';
+      const baseId = id;
+      const newPath = sectionSegment === 'percentage-rounds' ? `/tournaments/${baseId}/records/percentage/rounds/${encodeURIComponent(String(title))}` : `/tournaments/${baseId}/records/percentage/wins`;
+
+      if (typeof window !== 'undefined') {
+        const state = { modal: true, background: window.location.pathname, section: sectionSegment, title };
+        // debug: indicate handler ran and state
+        try { console.debug('[PercentageSection] handleViewAll start (navigation first, no pre-push)', { newPath, state }); } catch (e) {}
+        // store on window so late-mounted outlets can pick it up if needed
+        try { (window as any).__lastOpenModalPayload = state; } catch (e) {}
+
+        const doReplaceAndDispatch = () => {
+          try {
+            // replace to ensure modal flag is preserved on the current (navigated) entry
+            window.history.replaceState(state, '', newPath);
+            // explicitly hide any server-injected modal that may have been rendered during navigation
+            try { const sm = document.getElementById('server-modal'); if (sm) sm.style.display = 'none'; } catch (e) {}
+            // ensure fallback global is updated
+            try { (window as any).__lastOpenModalPayload = state; } catch (e) {}
+            try { console.debug('[PercentageSection] replace-and-dispatch'); } catch (e) {}
+            // single dispatch (plus one retry)
+            window.dispatchEvent(new CustomEvent('open-modal', { detail: { section: sectionSegment, title } }));
+            setTimeout(() => { try { window.dispatchEvent(new CustomEvent('open-modal', { detail: { section: sectionSegment, title } })); } catch(e) {} }, 150);
+          } catch (e) { console.error('[PercentageSection] replace-and-dispatch failed', e); }
+        };
+
+        // SPA navigation first to mount the percentage layout
+        try {
+          const nav: any = router.push(newPath);
+          try { console.debug('[PercentageSection] initiated router.push', newPath, 'nav:', nav); } catch (e) {}
+          if (nav && typeof nav.then === 'function') {
+            nav.then(() => {
+              try { (window as any).__modalOpenedByPush = true; } catch (e) {}
+              doReplaceAndDispatch();
+            }).catch(() => setTimeout(doReplaceAndDispatch, 300));
+          } else {
+            // router might not return a promise; wait a bit and then run replace+dispatch
+            setTimeout(doReplaceAndDispatch, 350);
+          }
+        } catch (e) {
+          // if router fails, fall back to replacing history and dispatching immediately
+          try { console.debug('[PercentageSection] router.push threw, falling back to history.replaceState'); } catch (ex) {}
+          window.history.replaceState(state, '', newPath);
+          window.dispatchEvent(new CustomEvent('open-modal', { detail: { section: sectionSegment, title } }));
+        }
+      }
+
+      // Re-apply the modal state after a short delay in case navigation triggered server-rendered modal
+      // some router implementations don't return a promise; reapply state after next tick
+      setTimeout(() => {
+        try {
+          if (typeof window !== 'undefined') {
+            const state = { modal: true, background: window.location.pathname, section: sectionSegment, title };
+            // replace to ensure modal flag is preserved for direct hydration checks
+            window.history.replaceState(state, '', newPath);
+            // explicitly hide any server-injected modal that may have been rendered during navigation
+            try { const sm = document.getElementById('server-modal'); if (sm) sm.style.display = 'none'; } catch (e) {}
+            // ensure fallback global is updated
+            try { (window as any).__lastOpenModalPayload = state; } catch (e) {}
+            try { console.debug('[PercentageSection] replaced state and updated __lastOpenModalPayload'); } catch (e) {}
+            window.dispatchEvent(new CustomEvent('open-modal', { detail: { section: sectionSegment, title } }));
+            // extra retry dispatch in case the outlet mounts slightly later
+            setTimeout(() => { try { window.dispatchEvent(new CustomEvent('open-modal', { detail: { section: sectionSegment, title } })); } catch(e) {} }, 50);
+          }
+        } catch (e) { /* ignore */ }
+      }, 300);
+    } catch (err) {
+      console.error(err);
+      setModalData({ title, list });
+    }
   };
 
   const handleMinMatchesChange = (round: string, value: number) => {
@@ -152,7 +243,7 @@ export default function PercentageSection({ id, activeSubTab }: { id: string; ac
             {topOverall.length > 0 ? (
               <>
                 <PlayerTable data={topOverall} />
-                <button onClick={() => handleViewAll(filteredOverall, 'Overall Win Percentage')} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">View All</button>
+                <button type="button" data-view-all="overall" onClick={(e) => { try { e.preventDefault(); e.stopPropagation(); console.debug('[PercentageSection] View All overall clicked (preventDefault)'); } catch(ex) {} ; handleViewAll(filteredOverall, 'Overall Win Percentage'); }} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">View All</button>
               </>
             ) : (<p className="text-gray-400">No data available.</p>)}
           </div>
@@ -172,7 +263,7 @@ export default function PercentageSection({ id, activeSubTab }: { id: string; ac
                 <h4 className="font-medium mb-2 text-white">{item.title}</h4>
                 <PlayerTable data={item.list} />
 
-                <button onClick={() => handleViewAll(item.fullFilteredList, item.title)} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">
+                <button type="button" data-view-all="round" onClick={(e) => { try { e.preventDefault(); e.stopPropagation(); console.debug('[PercentageSection] View All round clicked (preventDefault)', item.title); } catch(ex) {} ; handleViewAll(item.fullFilteredList, item.title); }} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">
                   View All
                 </button>
               </div>
@@ -184,12 +275,7 @@ export default function PercentageSection({ id, activeSubTab }: { id: string; ac
         </div>
       )}
 
-      {/* --- USA IL NUOVO MODAL QUI --- */}
-      {modalData && (
-        <ModalTournamentsSeasons title={modalData.title} onClose={() => setModalData(null)}>
-          <PlayerTable data={modalData.list} />
-        </ModalTournamentsSeasons>
-      )}
+
     </div>
   );
 }

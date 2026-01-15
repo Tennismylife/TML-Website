@@ -1,8 +1,8 @@
 import React from 'react';
 import CountFull from '../../_components/CountFull';
 
-export default async function EntriesModalPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default async function EntriesModalPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
 
   return (
     <div className="w-full mx-auto p-8 text-white">

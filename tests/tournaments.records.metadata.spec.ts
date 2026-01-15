@@ -36,4 +36,35 @@ describe('tournaments records generateMetadata', () => {
     expect(meta.title).toBe('Australian Open | Ages — Winners');
     expect(meta.openGraph?.images?.[0]?.url).toContain('/og/site-preview.png');
   });
+
+  it('ages titles youngest deep path returns specific title', async () => {
+    const meta = await generateMetadata({ params: { id: 'australian-open', segments: ['ages', 'titles', 'youngest'] } });
+    expect(meta.title).toBe('Youngest Title Winners at Australian Open | Tennis Records');
+    expect(meta.openGraph?.images?.[0]?.url).toContain('/og/site-preview.png');
+  });
+
+  it('page-level generateMetadata for ages/titles/youngest returns specific title', async () => {
+    // import the page directly to test its generateMetadata
+    const page = await import('@/app/tournaments/[id]/records/ages/titles/youngest/page');
+    const meta = await page.generateMetadata({ params: { id: 'australian-open' } });
+    expect(meta.title).toBe('Youngest Title Winners at Australian Open | Tennis Records');
+  });
+
+  it('ages titles oldest deep path returns specific title', async () => {
+    const meta = await generateMetadata({ params: { id: 'australian-open', segments: ['ages', 'titles', 'oldest'] } });
+    expect(meta.title).toBe('Oldest Title Winners at Australian Open | Tennis Records');
+    expect(meta.openGraph?.images?.[0]?.url).toContain('/og/site-preview.png');
+  });
+
+  it('page-level generateMetadata for ages/titles/oldest returns specific title', async () => {
+    const page = await import('@/app/tournaments/[id]/records/ages/titles/oldest/page');
+    const meta = await page.generateMetadata({ params: { id: 'australian-open' } });
+    expect(meta.title).toBe('Oldest Title Winners at Australian Open | Tennis Records');
+  });
+
+  it('page-level generateMetadata for ages/youngestrounds/F returns correct title', async () => {
+    const page = await import('@/app/tournaments/[id]/records/[...segments]/page');
+    const meta = await page.generateMetadata({ params: { id: 'australian-open', segments: ['ages', 'youngestrounds', 'F'] } });
+    expect(meta.title).toBe('Youngest Players in F at Australian Open | Tennis Records');
+  });
 });
