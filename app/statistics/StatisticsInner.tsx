@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Pagination from "@/components/Pagination";
 import Filters from "./Filters";
 import { getFlagFromIOC } from "@/lib/utils";
@@ -57,6 +57,38 @@ export default function StatisticsInner() {
   const [showModal, setShowModal] = useState(false);
 
   const perPage = 30;
+
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Sync state from URL when search params change
+  useEffect(() => {
+    const qStat = searchParams?.get("stat") ?? "aces";
+    const qSurface = searchParams?.get("surface") ?? "all";
+    const qYear = searchParams?.get("year") ?? "all";
+    const qTourneyLevel = searchParams?.get("tourneyLevel") ?? "all";
+    const qMinMatches = Number(searchParams?.get("minMatches") ?? "1") || 1;
+
+    if (qStat !== stat) setStat(qStat);
+    if (qSurface !== surface) setSurface(qSurface);
+    if (qYear !== year) setYear(qYear);
+    if (qTourneyLevel !== tourneyLevel) setTourneyLevel(qTourneyLevel);
+    if (qMinMatches !== minMatches) setMinMatches(qMinMatches);
+  }, [searchParams]);
+
+  // Update URL with given keys (removes params with value 'all' or empty)
+  const updateUrlParams = (updates: Record<string, string | number | null>) => {
+    const params = new URLSearchParams(searchParams?.toString() ?? "");
+    Object.entries(updates).forEach(([k, v]) => {
+      if (v === null || v === "" || v === "all") {
+        params.delete(k);
+      } else {
+        params.set(k, String(v));
+      }
+    });
+    const qs = params.toString();
+    router.push(`${pathname}${qs ? `?${qs}` : ""}`);
+  };
 
   // Fetch stats from API
   useEffect(() => {
@@ -193,7 +225,7 @@ export default function StatisticsInner() {
                 </label>
                 <select
                   value={stat}
-                  onChange={(e) => setStat(e.target.value)}
+                  onChange={(e) => { const v = e.target.value; setStat(v); updateUrlParams({ stat: v }); }}
                   className="w-full sm:w-auto bg-gray-700 text-white border border-gray-600 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
                 >
                   {Object.entries(STAT_LABELS).map(([key, label]) => (
@@ -210,11 +242,11 @@ export default function StatisticsInner() {
       {/* Filters */}
       <Filters
         surface={surface}
-        onSurfaceChange={setSurface}
+        onSurfaceChange={(v) => { setSurface(v); updateUrlParams({ surface: v }); }}
         year={year}
-        onYearChange={setYear}
+        onYearChange={(v) => { setYear(v); updateUrlParams({ year: v }); }}
         tourneyLevel={tourneyLevel}
-        onTourneyLevelChange={setTourneyLevel}
+        onTourneyLevelChange={(v) => { setTourneyLevel(v); updateUrlParams({ tourneyLevel: v }); }}
       />
 
       {/* Min Matches Slider - Mobile Optimized */}
@@ -229,7 +261,7 @@ export default function StatisticsInner() {
               min="1"
               max="100"
               value={minMatches}
-              onChange={(e) => setMinMatches(Number(e.target.value))}
+              onChange={(e) => { const m = Number(e.target.value); setMinMatches(m); updateUrlParams({ minMatches: m }); }}
               className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
             />
             <div className="flex justify-between text-xs text-gray-400 mt-1">
@@ -242,25 +274,25 @@ export default function StatisticsInner() {
           {/* Quick Preset Buttons */}
           <div className="flex gap-2 flex-wrap">
             <button
-              onClick={() => setMinMatches(1)}
+              onClick={() => { setMinMatches(1); updateUrlParams({ minMatches: 1 }); }}
               className="px-3 py-2 bg-gray-700 text-white text-xs rounded hover:bg-gray-600 transition-colors min-h-[36px]"
             >
               Min
             </button>
             <button
-              onClick={() => setMinMatches(10)}
+              onClick={() => { setMinMatches(10); updateUrlParams({ minMatches: 10 }); }}
               className="px-3 py-2 bg-gray-700 text-white text-xs rounded hover:bg-gray-600 transition-colors min-h-[36px]"
             >
               10+
             </button>
             <button
-              onClick={() => setMinMatches(25)}
+              onClick={() => { setMinMatches(25); updateUrlParams({ minMatches: 25 }); }}
               className="px-3 py-2 bg-gray-700 text-white text-xs rounded hover:bg-gray-600 transition-colors min-h-[36px]"
             >
               25+
             </button>
             <button
-              onClick={() => setMinMatches(50)}
+              onClick={() => { setMinMatches(50); updateUrlParams({ minMatches: 50 }); }}
               className="px-3 py-2 bg-gray-700 text-white text-xs rounded hover:bg-gray-600 transition-colors min-h-[36px]"
             >
               50+

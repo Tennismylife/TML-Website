@@ -18,6 +18,9 @@ export default function Filters({
   tourneyLevel: string;
   onTourneyLevelChange: (value: string) => void;
 }) {
+  const START_YEAR = 1968;
+  const CURRENT_YEAR = new Date().getFullYear();
+
   return (
     <div className="bg-gray-800/30 rounded-lg p-4 border border-gray-700 mb-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -44,10 +47,10 @@ export default function Filters({
             className="bg-gray-700 text-white border border-gray-600 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
           >
             <option value="all">All</option>
-            {Array.from({ length: 2025 - 1968 + 1 }, (_, i) => {
-              const y = 2025 - i;
+            {Array.from({ length: CURRENT_YEAR - START_YEAR + 1 }, (_, i) => {
+              const y = CURRENT_YEAR - i;
               return (
-                <option key={y} value={y}>
+                <option key={y} value={String(y)}>
                   {y}
                 </option>
               );
