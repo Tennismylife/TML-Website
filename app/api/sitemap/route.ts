@@ -1,6 +1,8 @@
 ﻿import { NextResponse } from 'next/server';
 import { generateSitemapXml } from '@/lib/sitemap';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     // Short-circuit during build when SKIP_SITEMAP_BUILD=1 to avoid long DB operations
