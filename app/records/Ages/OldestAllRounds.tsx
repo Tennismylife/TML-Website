@@ -4,7 +4,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getFlagFromIOC, getTourneyHref } from "@/lib/utils";
+import Flag from '@/components/Flag';
+import { getTourneyHref } from "@/lib/utils";
 import Pagination from '../../../components/Pagination';
 import Modal from "@/components/Modal";
 
@@ -77,7 +78,7 @@ export default function OldestAllRounds({ selectedSurfaces, selectedLevels, fetc
               <tr key={`${p.id}-${p.tourney_id}-${idx}`} className="hover:bg-gray-800">
                 <td className="border border-gray-700 px-4 py-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm">{getFlagFromIOC(p.ioc) || ""}</span>
+                    <Flag ioc={p.ioc} className="text-sm" />
                     <Link href={`/players/${encodeURIComponent(String(p.id))}`} className="text-blue-400 hover:underline">
                       {p.name}
                     </Link>
@@ -171,7 +172,7 @@ export default function OldestAllRounds({ selectedSurfaces, selectedLevels, fetc
                     <tr key={`${p.id}-${p.tourney_id}-${idx}`} className="hover:bg-gray-800">
                       <td className="border border-gray-700 px-4 py-2">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm">{getFlagFromIOC(p.ioc) || ""}</span>
+                          <Flag ioc={p.ioc} className="text-sm" />
                           <Link href={`/players/${encodeURIComponent(String(p.id))}`} className="text-blue-400 hover:underline">
                             {p.name}
                           </Link>

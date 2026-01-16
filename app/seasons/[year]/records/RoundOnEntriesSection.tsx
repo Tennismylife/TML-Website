@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 import ModalTournamentsSeasons from "@/components/ModalTournamentsSeasons";
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 
@@ -86,7 +86,7 @@ export default function RoundOnEntriesSection({ year, selectedSurfaces, selected
         {data.map(p => (
           <tr key={p.id} className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors">
             <td className="py-1 flex items-center gap-2 text-white">
-              <span>{getFlagFromIOC(p.ioc) || ''}</span>
+              <Flag ioc={p.ioc} className="w-4 h-3" />
               <Link href={`/players/${p.id}`} className="text-blue-400 hover:underline">{p.name}</Link>
             </td>
             <td className="py-1 text-white text-right whitespace-nowrap">{p.reaches}</td>

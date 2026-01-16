@@ -2,9 +2,14 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { trackVisit } from '../../lib/visitTracker';
 import { prisma } from '../../lib/prisma';
 
+// Ensure prisma has $queryRaw available in tests so spies can attach
+vi.mock('@/lib/prisma', () => ({ prisma: { $queryRaw: vi.fn() } }));
+
 describe('trackVisit', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    // ensure fresh $queryRaw per test so call history is isolated
+    (prisma as any).$queryRaw = vi.fn();
   });
 
   it('inserts a visit for normal UA', async () => {

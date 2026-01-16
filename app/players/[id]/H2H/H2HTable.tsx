@@ -4,7 +4,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { getFlagFromIOC, createH2HUrl } from "@/lib/utils";
+import Flag from '@/components/Flag';
+import { createH2HUrl } from "@/lib/utils";
 import type { Match } from "@/types";
 import { useH2HData } from "./useH2HData";
 import Pagination from "@/components/Pagination";
@@ -164,7 +165,7 @@ export default function H2HTable({ playerId, playerName, allMatches, loading, er
                   {/* Opponent */}
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-2">
-                      {r.ioc && <span className="inline-block w-8 h-5">{getFlagFromIOC(r.ioc)}</span>}
+                      <Flag ioc={r.ioc} className="w-8 h-5 inline-block" />
                       <Link
                         href={`/players/${r.oppId}`}
                         className="font-semibold text-white hover:text-purple-400 hover:underline transition"

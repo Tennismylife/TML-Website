@@ -2,7 +2,8 @@
 
 import React, { useRef } from "react";
 import Link from "next/link";
-import { getFlagFromIOC, getLevelFullName, getTourneyHref, extractUniqueSurfaces } from "@/lib/utils";
+import Flag from '@/components/Flag';
+import { getLevelFullName, getTourneyHref, extractUniqueSurfaces } from "@/lib/utils";
 import { getSurfaceColor, getLevelColor } from "@/lib/colors";
 
 interface TourneyTile {
@@ -23,11 +24,7 @@ interface TourneyTile {
   level?: string;
 }
 
-function Flag({ ioc }: { ioc: string }) {
-  if (!ioc) return null;
-  const flag = getFlagFromIOC(ioc);
-  return <span className="mr-1">{flag}</span>;
-}
+
 
 export default function TourneyCard({ tourney }: { tourney: TourneyTile }) {
   const glowRef = useRef<HTMLDivElement>(null);

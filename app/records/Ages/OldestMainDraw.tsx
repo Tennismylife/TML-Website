@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { getFlagFromIOC, getTourneyHref } from "@/lib/utils";
+import Flag from '@/components/Flag';
+import { getTourneyHref } from "@/lib/utils";
 import { playerMatchesUrl } from "../nav";
 import Pagination from "../../../components/Pagination";
 import Modal from "@/components/Modal";
@@ -103,7 +104,6 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
         <tbody>
           {playersList.map((p, idx) => {
             const globalRank = startIndex + idx + 1;
-            const flag = p.ioc ? getFlagFromIOC(p.ioc) : null;
             const year = p.year || (typeof p.tourney_id === "string" ? p.tourney_id.split("-")[1] : "unknown");
             const tourneyId = typeof p.tourney_id === "string" ? p.tourney_id.split("-")[0] : p.tourney_id;
 
@@ -112,7 +112,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
                 <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                   <div className="flex items-center gap-2">
-                    {flag && <span className="text-base">{flag}</span>}
+                    <Flag ioc={p.ioc} className="text-base" />
                     <Link href={getLink(p.id.toString())} className="text-indigo-300 hover:underline">{p.name}</Link>
                   </div>
                 </td>

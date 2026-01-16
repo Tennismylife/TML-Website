@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import Link from 'next/link';
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 
 interface PlayerStat {
@@ -139,7 +139,7 @@ export default function CountSection({ year, selectedSurfaces, selectedLevels }:
         {data.map((p) => (
           <tr key={p.id} className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors">
             <td className="py-1 flex items-center gap-2 text-white">
-              <span>{getFlagFromIOC(p.ioc) || ''}</span>
+              <Flag ioc={p.ioc} className="w-4 h-3" />
               <Link href={`/players/${p.id}`} className="text-blue-400 hover:underline">{p.name}</Link>
             </td>
             <td className="py-1 text-white text-right whitespace-nowrap">{p.count}</td>
@@ -187,7 +187,7 @@ export default function CountSection({ year, selectedSurfaces, selectedLevels }:
                       {section.data.list.map((p) => (
                         <tr key={p.id} className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors">
                           <td className="py-1 flex items-center gap-2 text-white min-w-0">
-                            <span>{getFlagFromIOC(p.ioc) || ''}</span>
+                            <Flag ioc={p.ioc} className="w-4 h-3" />
                             <Link href={`/players/${p.id}`} className="text-blue-400 hover:underline truncate block min-w-0">{p.name}</Link>
                           </td>
                           <td className="py-1 text-white text-right whitespace-nowrap">{p.count}</td>

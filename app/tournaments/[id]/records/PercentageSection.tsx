@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import Link from 'next/link';
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 
 interface PlayerPercentage {
@@ -136,7 +136,7 @@ export default function PercentageSection({ id, activeSubTab }: { id: string; ac
         {data.map(item => (
           <tr key={item.id} className="border-b border-gray-700">
             <td className="py-1 flex items-center gap-2 text-white min-w-0">
-              <span className="text-base">{getFlagFromIOC(item.ioc) || ""}</span>
+              <Flag ioc={item.ioc} className="w-4 h-3" />
               <div className="truncate">
                 <Link href={`/players/${encodeURIComponent(String(item.id))}`} className="text-blue-400 hover:underline">{item.name}</Link>
               </div>

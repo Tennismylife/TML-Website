@@ -1,7 +1,7 @@
 import React from 'react';
 import DropdownNavSelect from '@/components/DropdownNavSelect';
 
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 import { prisma } from "@/lib/prisma";
 
 function diffYMD(a: Date, b: Date) {
@@ -103,7 +103,7 @@ export default async function TopXTimespan({ searchParams }: { searchParams?: Pr
           {list.map((r, idx) => (
             <tr key={r.id} className="hover:bg-gray-800 border-b border-white/10">
               <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{startIndex + idx + 1}</td>
-              <td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{r.ioc && <span className="text-base">{getFlagFromIOC(r.ioc)}</span>}<span>{r.name}</span></div></td>
+              <td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{r.ioc && <Flag ioc={r.ioc} />}<span>{r.name}</span></div></td>
               <td className="border border-white/10 px-4 py-2 text-right text-lg text-indigo-300">{r.timespanLabel}</td>
               <td className="border border-white/10 px-4 py-2 text-gray-300">{r.firstDate}</td>
               <td className="border border-white/10 px-4 py-2 text-gray-300">{r.lastDate}</td>

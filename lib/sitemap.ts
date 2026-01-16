@@ -58,69 +58,20 @@ export async function getSitemapEntries(): Promise<SitemapEntry[]> {
   const globalMax = await prisma.match.aggregate({ _max: { tourney_date: true } });
   const globalMaxDate = globalMax._max.tourney_date ? new Date(globalMax._max.tourney_date).toISOString().split('T')[0] : undefined;
 
-  // --- PLAYERS (avec popularity proxy = total matches, lastmod = latest match) ---
+  // --- PLAYERS ---
   const players = await prisma.player.findMany({ select: { id: true, slug: true } });
-  const playerIds = players.map(p => p.id);
-
-  const winnerStats = await prisma.match.groupBy({
-    by: ['winner_id'],
-    where: { winner_id: { in: playerIds } },
-    _count: { _all: true },
-    _max: { tourney_date: true },
-  });
-  const loserStats = await prisma.match.groupBy({
-    by: ['loser_id'],
-    where: { loser_id: { in: playerIds } },
-    _count: { _all: true },
-    _max: { tourney_date: true },
-  });
-
-  const playerCountMap: Record<string, number> = {};
-  const playerDateMap: Record<string, string | undefined> = {};
-
-  winnerStats.forEach(w => {
-    if (!w.winner_id) return;
-    playerCountMap[w.winner_id] = (playerCountMap[w.winner_id] || 0) + (w._count?._all || 0);
-    if (w._max?.tourney_date) playerDateMap[w.winner_id] = new Date(w._max.tourney_date).toISOString().split('T')[0];
-  });
-  loserStats.forEach(l => {
-    if (!l.loser_id) return;
-    playerCountMap[l.loser_id] = (playerCountMap[l.loser_id] || 0) + (l._count?._all || 0);
-    const d = l._max?.tourney_date ? new Date(l._max.tourney_date).toISOString().split('T')[0] : undefined;
-    if (d) {
-      const prev = playerDateMap[l.loser_id];
-      playerDateMap[l.loser_id] = !prev || d > prev ? d : prev;
-    }
-  });
-
   players.forEach(p => {
     if (!p.slug) return;
-    entries.push({ path: `/players/${p.slug}`, popularity: playerCountMap[p.id] || 0, lastmod: playerDateMap[p.id] });
+    entries.push({ path: `/players/${p.slug}` });
   });
 
   // --- TOURNAMENTS ---
   const tournaments = await prisma.tournament.findMany({ select: { id: true, slug: true, endDate: true } });
-  const tourneyIds = tournaments.map(t => String(t.id));
-  const tourneyStats = await prisma.match.groupBy({
-    by: ['tourney_id'],
-    where: { tourney_id: { in: tourneyIds } },
-    _count: { _all: true },
-    _max: { tourney_date: true },
-  });
-  const tourneyCountMap: Record<string, number> = {};
-  const tourneyDateMap: Record<string, string | undefined> = {};
-  tourneyStats.forEach(s => {
-    if (!s.tourney_id) return;
-    tourneyCountMap[s.tourney_id] = s._count?._all || 0;
-    if (s._max?.tourney_date) tourneyDateMap[s.tourney_id] = new Date(s._max.tourney_date).toISOString().split('T')[0];
-  });
-
   const tournamentMap: Record<string, string> = {};
   tournaments.forEach(t => {
-    if (t.slug) tournamentMap[String(t.id)] = t.slug;
-    const tourneyIdStr = String(t.id);
-    const lastmod = tourneyDateMap[tourneyIdStr] || (t.endDate ? new Date(t.endDate).toISOString().split('T')[0] : undefined);
-    entries.push({ path: `/tournaments/${t.slug}`, popularity: tourneyCountMap[tourneyIdStr] || 0, lastmod });
+    if (!t.slug) return;
+    tournamentMap[String(t.id)] = t.slug;
+    entries.push({ path: `/tournaments/${t.slug}` });
   });
 
   // --- TOURNAMENT EDITIONS ---
@@ -219,10 +170,9 @@ export async function getSitemapEntries(): Promise<SitemapEntry[]> {
   ];
 
   tournaments.filter(t => !!t.slug).forEach(t => {
-    const sid = String(t.id);
     const basePath = `/tournaments/${t.slug}`;
-    entries.push({ path: `${basePath}/records`, popularity: tourneyCountMap[sid] || 0, lastmod: tourneyDateMap[sid] || globalMaxDate });
-    tournamentRecordSegments.forEach(seg => entries.push({ path: `${basePath}/records/${seg}`, popularity: tourneyCountMap[sid] || 0, lastmod: tourneyDateMap[sid] || globalMaxDate }));
+    entries.push({ path: `${basePath}/records` });
+    tournamentRecordSegments.forEach(seg => entries.push({ path: `${basePath}/records/${seg}` }));
   });
 
   // --- DEDUPLICATE: keep the most complete entry per path ---
@@ -233,8 +183,8 @@ export async function getSitemapEntries(): Promise<SitemapEntry[]> {
       map[e.path] = e;
       return;
     }
-    // prefer entries with lastmod and higher popularity
-    const chosen: SitemapEntry = (e.lastmod && !prev.lastmod) || ((e.popularity || 0) > (prev.popularity || 0)) ? e : prev;
+    // prefer entries with lastmod when available
+    const chosen: SitemapEntry = (e.lastmod && !prev.lastmod) ? e : prev;
     map[e.path] = { ...prev, ...chosen };
   });
 
@@ -246,84 +196,33 @@ export async function getSitemapUrls() {
   return Array.from(new Set(entries.map(e => e.path)));
 }
 
-function clamp(v: number, a = 0.1, b = 1.0) {
-  return Math.min(b, Math.max(a, v));
-}
-
-function computeChangefreq(path: string, opts?: { lastmod?: string; popularity?: number; maxPopularity?: number }) {
-  // Priority rules: records and homepage -> daily
+// Simplified changefreq rules (kept simple and fast)
+function computeChangefreq(path: string, opts?: { lastmod?: string }) {
   if (path.includes('/records')) return 'daily';
   if (path === '/') return 'daily';
-
-  // Recency-based rules
   if (opts?.lastmod) {
     const days = (Date.now() - new Date(opts.lastmod).getTime()) / (1000 * 60 * 60 * 24);
     if (days <= 7) return 'daily';
     if (days <= 30) return 'weekly';
     return 'monthly';
   }
-
-  // Base rules when lastmod not available
   if (/^\/(ranking|players|tournaments|statistics|seasons|forecasts|rankingtables)$/.test(path)) return 'weekly';
   if (/^\/players\/[^/]+$/.test(path)) return 'weekly';
   if (/^\/tournaments\/[^/]+$/.test(path)) return 'weekly';
   if (/^\/tournaments\/[^/]+\/\d{4}$/.test(path)) return 'yearly';
-
   return 'monthly';
-}
-
-function computePriority(path: string, opts?: { lastmod?: string; popularity?: number; maxPopularity?: number }) {
-  const segments = path.split('/').filter(Boolean).length;
-
-  // Any URL containing '/records' must have maximum priority (includes tournament-specific records)
-  if (path.includes('/records')) return 1.0;
-
-  // Homepage highest after records
-  if (path === '/') return 1.0;
-
-  // Top-level important pages
-  if (/^\/(ranking|players|tournaments|statistics|seasons|forecasts|rankingtables)$/.test(path)) return 0.9;
-
-  // Player and tournament detail pages
-  if (/^\/players\/[^/]+$/.test(path)) return 0.8;
-  if (/^\/tournaments\/[^/]+$/.test(path)) return 0.8;
-  if (/^\/tournaments\/[^/]+\/\d{4}$/.test(path)) return 0.7;
-
-  // Default/base priority
-  let basePri = 0.5;
-
-  // recency boost
-  let recencyBoost = 0;
-  if (opts?.lastmod) {
-    const days = (Date.now() - new Date(opts.lastmod).getTime()) / (1000 * 60 * 60 * 24);
-    recencyBoost = days <= 7 ? 0.1 : days <= 30 ? 0.05 : 0;
-  }
-
-  // popularity boost (normalized to 0..1 then scaled up to 0.2)
-  let popularityBoost = 0;
-  if (opts?.popularity && opts.maxPopularity && opts.maxPopularity > 0) {
-    const norm = Math.min(1, opts.popularity / opts.maxPopularity);
-    popularityBoost = norm * 0.2;
-  }
-
-  const depthPenalty = Math.max(0, segments - 1) * 0.03;
-  const pri = clamp(+((basePri + recencyBoost + popularityBoost - depthPenalty).toFixed(2)));
-  return pri;
-}
+} 
 
 export async function generateSitemapXml() {
   const base = process.env.SITE_URL || 'https://stats.tennismylife.org';
   const entries = await getSitemapEntries();
 
-  // compute global max popularity for normalization
-  const maxPopularity = entries.reduce((m, e) => Math.max(m, e.popularity || 0), 0);
-
-  // --- GENERATE XML ---
+  // --- GENERATE XML (simple priorities) ---
   const urls = entries
     .map(e => {
-      const priority = computePriority(e.path, { lastmod: e.lastmod, popularity: e.popularity, maxPopularity }).toFixed(2);
       const lastmodTag = e.lastmod ? `    <lastmod>${e.lastmod}</lastmod>\n` : '';
-      const changefreq = computeChangefreq(e.path, { lastmod: e.lastmod, popularity: e.popularity, maxPopularity });
+      const changefreq = computeChangefreq(e.path, { lastmod: e.lastmod });
+      const priority = (e.path.includes('/records') || e.path === '/') ? '1.00' : '0.50';
       return `  <url>\n    <loc>${base}${e.path}</loc>\n${lastmodTag}    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`;
     })
     .join('\n');

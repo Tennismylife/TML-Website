@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
-import { getFlagFromIOC, getTourneyHref } from "@/lib/utils";
+import Flag from '@/components/Flag';
+import { getTourneyHref } from "@/lib/utils";
 import ModalTournamentsSeasons from "@/components/ModalTournamentsSeasons";
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 
@@ -126,7 +127,7 @@ export default function AgeSection({ year, selectedSurfaces, selectedLevels, act
             return (
               <tr key={`${p.id}-${p.tourney_id}`} className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors">
                 <td className="py-1 flex items-center gap-2 text-white">
-                  <span className="text-base">{getFlagFromIOC(p.ioc) || ""}</span>
+                  <Flag ioc={p.ioc} className="w-4 h-3" />
                   <Link href={`/players/${encodeURIComponent(String(p.id))}`} className="text-blue-400 hover:underline">{p.name}</Link>
                 </td>
                 <td className="py-1 text-white text-right whitespace-nowrap">{displayAge}</td>

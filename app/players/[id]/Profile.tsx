@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Player } from "@/types";
-import { getFlagFromIOC, calculateAge } from "@/lib/utils";
+import { calculateAge } from "@/lib/utils";
 import { FaTrophy } from "react-icons/fa";
 
 interface PlayerTabsClientProps {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { prisma } from '@/lib/prisma';
-import { getFlagFromIOC } from '@/lib/utils';
+import Flag from '@/components/Flag';
 import DropdownNavSelect from '../../../../components/DropdownNavSelect';
 
 export default async function EoyTopXStreaks({ searchParams }: { searchParams?: Promise<Record<string,string | string[]>> }) {
@@ -81,7 +81,7 @@ export default async function EoyTopXStreaks({ searchParams }: { searchParams?: 
           {list.map((p, idx) => (
             <tr key={`${p.id}-${p.seasons[0]}-${p.seasons[p.seasons.length-1]}`} className="hover:bg-gray-800 border-b border-white/10">
               <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{startIndex + idx + 1}</td>
-              <td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{p.ioc && <span className="text-base">{getFlagFromIOC(p.ioc)}</span>}<span>{p.name}</span></div></td>
+              <td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{p.ioc && <Flag ioc={p.ioc} />}<span>{p.name}</span></div></td>
               <td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">{p.longestTopStreak}</td>
               <td className="border border-white/10 px-4 py-2 text-gray-300">{p.seasons.join(', ')}</td>
             </tr>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
@@ -119,12 +119,11 @@ export default function Titles({
         <tbody>
           {rows.map((p, idx) => {
             const globalIdx = startIndex + idx + 1;
-            const flag = p.ioc ? getFlagFromIOC(p.ioc) : null;
             return (
               <tr key={`${p.id}-${idx}`} className="hover:bg-gray-800 border-b border-gray-800">
                 <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300 font-medium">{globalIdx}</td>
                 <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200 flex items-center gap-2">
-                  {flag && <span className="text-base">{flag}</span>}
+                  <Flag ioc={p.ioc} className="text-base" />
                   <Link href={getLink(p.id)} className="text-gray-300 hover:underline">{p.name}</Link>
                 </td>
                 <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200">{p.firstTourney}</td>

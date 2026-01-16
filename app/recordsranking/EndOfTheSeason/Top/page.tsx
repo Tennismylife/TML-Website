@@ -1,6 +1,6 @@
 import React from 'react';
 import { prisma } from '@/lib/prisma';
-import { getFlagFromIOC } from '@/lib/utils';
+import Flag from '@/components/Flag';
 import DropdownNavSelect from '../../../../components/DropdownNavSelect';
 
 type Props = { searchParams?: Promise<Record<string,string | string[]>> };
@@ -53,7 +53,7 @@ export default async function RecordsTopX(props: Props) {
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
       <table className="min-w-full border-collapse">
         <thead><tr className="bg-black"><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Top</th><th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Seasons</th><th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Years</th></tr></thead>
-        <tbody>{list.map((p, idx)=>(<tr key={p.id} className="hover:bg-gray-800 border-b border-white/10"><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{startIndex+idx+1}</td><td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{p.ioc && <span className="text-base">{getFlagFromIOC(p.ioc)}</span>}<span>{p.name}</span></div></td><td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">{p.endYearTopCount}</td><td className="border border-white/10 px-4 py-2 text-gray-300">{p.seasons.join(', ')}</td></tr>))}</tbody>
+        <tbody>{list.map((p, idx)=>(<tr key={p.id} className="hover:bg-gray-800 border-b border-white/10"><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{startIndex+idx+1}</td><td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{p.ioc && <Flag ioc={p.ioc} />}<span>{p.name}</span></div></td><td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">{p.endYearTopCount}</td><td className="border border-white/10 px-4 py-2 text-gray-300">{p.seasons.join(', ')}</td></tr>))}</tbody>
       </table>
     </div>
   );

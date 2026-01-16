@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 import PlayerTabs from "./PlayerTabs";
 import { Player } from "@/types";
 
@@ -227,9 +227,7 @@ export default function PlayerClient(props: any) {
       {/* Header */}
       <header className="sticky top-0 z-20 bg-gray-800/95 backdrop-blur-md border-b border-gray-700 py-3 px-0">
         <div className="w-full flex items-center gap-2">
-          {player.ioc && getFlagFromIOC(player.ioc) && (
-            <span>{getFlagFromIOC(player.ioc)}</span>
-          )}
+          {player.ioc && <Flag ioc={player.ioc} className="w-5 h-4 inline-block mr-2" />}
           <h1 className="text-2xl font-bold">{player.atpname}</h1>
         </div>
       </header>

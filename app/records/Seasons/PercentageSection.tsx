@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react';
+import Flag from '@/components/Flag';
 import Link from 'next/link';
-import { getFlagFromIOC } from '@/lib/utils';
 import { playerMatchesUrl } from "../nav";
 import { useSearchParams } from 'next/navigation';
 import Pagination from '../../../components/Pagination';
@@ -105,12 +105,11 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
         <tbody>
           {data.map((player, idx) => {
             const rank = startIndex + idx + 1;
-            const flag = getFlagFromIOC(player.ioc ?? undefined) ?? '';
             return (
               <tr key={`${player.Player}-${player.Year}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-400">{rank}</td>
                 <td className="border border-white/10 px-4 py-2 flex items-center gap-2 text-lg text-gray-200">
-                  {flag && <span className="text-base">{flag}</span>}
+                  {player.ioc ? <Flag ioc={player.ioc} className="w-4 h-3" /> : <span className="text-base">🏳️</span>}
                   <Link href={getPlayerLink(player.PlayerId)} className="hover:underline">
                     {player.Player}
                   </Link>

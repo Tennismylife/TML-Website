@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag'; 
 import * as tf from '@tensorflow/tfjs';
 
 interface Player {
@@ -270,9 +270,9 @@ export default function ForecastsPage() {
 
           {player1 && (
             <div className="mt-2 p-2 bg-gray-100 rounded flex items-center gap-2">
-              {getFlagFromIOC(player1.ioc)} {player1.atpname}
+              <Flag ioc={player1.ioc} className="w-5 h-4" /> {player1.atpname}
             </div>
-          )}
+          )} 
 
           {loading1 && <p className="text-sm text-gray-500 mt-1">Caricamento...</p>}
 
@@ -284,7 +284,7 @@ export default function ForecastsPage() {
                   onClick={() => handleSelect1(p.id)}
                   className="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"
                 >
-                  {getFlagFromIOC(p.ioc)} {p.atpname}
+                  <Flag ioc={p.ioc} className="w-4 h-3" /> {p.atpname}
                 </li>
               ))}
             </ul>
@@ -302,7 +302,7 @@ export default function ForecastsPage() {
 
           {player2 && (
             <div className="mt-2 p-2 bg-gray-100 rounded flex items-center gap-2">
-              {getFlagFromIOC(player2.ioc)} {player2.atpname}
+              <Flag ioc={player2.ioc} className="w-5 h-4" /> {player2.atpname}
             </div>
           )}
 
@@ -316,7 +316,7 @@ export default function ForecastsPage() {
                   onClick={() => handleSelect2(p.id)}
                   className="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"
                 >
-                  {getFlagFromIOC(p.ioc)} {p.atpname}
+                  <Flag ioc={p.ioc} className="w-4 h-3" /> {p.atpname}
                 </li>
               ))}
             </ul>

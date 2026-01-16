@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Modal from "@/components/Modal";
 import Pagination from "@/components/Pagination";
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from "@/components/Flag";
 
 interface RoundSectionProps {
   selectedSurfaces: Set<string>;
@@ -157,13 +157,12 @@ export default function RoundSection({
           ) : (
             list.map((s, idx) => {
               const globalRank = startIndex + idx + 1;
-              const flag = getFlagFromIOC(s.player?.ioc || "") ?? "🏳️";
               return (
                 <tr key={`${s.player?.id ?? "player"}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
                   <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
                   <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                     <div className="flex items-center gap-2">
-                      <span className="text-base">{flag}</span>
+                      <Flag ioc={s.player?.ioc ?? undefined} className="w-4 h-3" />
                       {s.player ? (
                         <Link href={`/players/${encodeURIComponent(s.player.id)}`} className="text-indigo-300 hover:underline">
                           {s.player.name}

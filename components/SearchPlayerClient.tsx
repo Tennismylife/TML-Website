@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 
 export default function SearchPlayerClient() {
   const [query, setQuery] = useState("");
@@ -122,7 +122,7 @@ export default function SearchPlayerClient() {
                       : "hover:bg-gray-700"
                   }`}
                 >
-                  {getFlagFromIOC(p.ioc)} {p.atpname}
+                  {p.ioc && <Flag ioc={p.ioc} className="w-5 h-4" />} {p.atpname}
                 </li>
               ))}
             </ul>

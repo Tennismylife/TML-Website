@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { getFlagFromIOC } from '@/lib/utils';
+import Flag from '@/components/Flag';
 import { getTournamentName, makeLeastLabel } from '@/lib/recordMetadata';
 
 import { metadataBase } from '@/lib/site';
@@ -52,7 +52,7 @@ export default async function LeastFull({ id, title }: { id: string; title?: str
                 <tr key={`${String(r.id ?? r.player?.id ?? i)}-${i}`} className="border-b border-gray-700">
                   <td className="py-2 text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <span className="text-base">{getFlagFromIOC(r.player?.ioc || r.ioc) || ''}</span>
+                      <Flag ioc={r.player?.ioc || r.ioc} />
                       <Link href={`/players/${encodeURIComponent(String(r.player?.id ?? r.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{r.player?.name ?? r.name}</Link>
                     </div>
                   </td>

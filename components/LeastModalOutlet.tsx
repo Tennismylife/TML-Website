@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import RouteModal from './RouteModal';
 import Link from 'next/link';
-import { getFlagFromIOC } from '@/lib/utils';
+import Flag from '@/components/Flag';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
 
 import { makeLeastLabel } from '@/lib/recordMetadata';
@@ -134,7 +134,7 @@ export default function LeastModalOutlet({ id }: { id: string }) {
                   const rowKey = `${String(rawId)}-${title ?? 'all'}-${i}-${String(r.year ?? '')}-${String(r.minGamesLost ?? r.games ?? r.value ?? '')}`;
                   return (
                     <tr key={rowKey} className="border-b border-gray-700">
-                      <td className="py-2 text-center"><div className="flex items-center justify-center gap-2"><span className="text-base">{getFlagFromIOC(r.player?.ioc || r.ioc) || ''}</span><Link href={`/players/${encodeURIComponent(String(r.player?.id ?? r.id ?? rawId))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{r.player?.name ?? r.name}</Link></div></td>
+                      <td className="py-2 text-center"><div className="flex items-center justify-center gap-2">{(r.player?.ioc || r.ioc) && <Flag ioc={r.player?.ioc || r.ioc} className="w-5 h-4" />}<Link href={`/players/${encodeURIComponent(String(r.player?.id ?? r.id ?? rawId))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{r.player?.name ?? r.name}</Link></div></td>
                       <td className="py-2 text-center text-lg md:text-xl text-white">{r.minGamesLost ?? r.games ?? r.value}</td>
                       <td className="py-2 text-center text-lg md:text-xl text-white">{r.year}</td>
                     </tr>

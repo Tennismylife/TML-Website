@@ -1,5 +1,5 @@
 import React from 'react';
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 import { prisma } from "@/lib/prisma";
 import RecordsCountControls from "../../Count/RecordsCountControls";
 import ServerPagination from '@/components/ServerPagination';
@@ -126,13 +126,13 @@ export default async function StreakCount({ searchParams }: { searchParams?: Pro
         <tbody>
           {paginatedPlayers.map((p, idx) => {
             const globalRank = start + idx + 1;
-            const flag = p.ioc ? getFlagFromIOC(p.ioc) : null;
+            const flagEl = p.ioc ? <Flag ioc={p.ioc} /> : null;
             return (
               <tr key={`${p.id ?? p.name}-${start + idx}`} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
                 <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                   <div className="flex items-center gap-2">
-                    {flag && <span className="text-base">{flag}</span>}
+                    {flagEl}
                     {p.id ? (
                       <Link href={`/players/${p.id}`} className="hover:underline">{p.name}</Link>
                     ) : (

@@ -1,8 +1,9 @@
 "use client";
 
+import type { ReactNode } from 'react';
 import { useMemo } from "react";
 import { Match } from "@/types";
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 
 interface SeedsProps {
   id: string;
@@ -16,7 +17,7 @@ export default function Seeds({ id, year, matches }: SeedsProps) {
 
     const seedsMap = new Map<
       number,
-      { name: string; ioc?: string | undefined; lastMatch: Match | null; outcome: string }
+      { name: string; ioc?: string | undefined; lastMatch: Match | null; outcome: ReactNode }
     >();
 
     for (const m of matches) {
@@ -71,13 +72,17 @@ export default function Seeds({ id, year, matches }: SeedsProps) {
       if (lastMatch.round === "F" && isWinner) {
         data.outcome = "Winner 🏆";
       } else if (!isWinner) {
-        data.outcome = `${lastMatch.round}, lost to ${getFlagFromIOC(
-          opponentIOC ?? undefined
-        )} ${opponentName ?? ""}`;
+        data.outcome = (
+          <>
+            {lastMatch.round}, lost to <Flag ioc={opponentIOC ?? undefined} className="w-4 h-3 inline-block mr-1" /> {opponentName ?? ""}
+          </>
+        );
       } else {
-        data.outcome = `Reached ${lastMatch.round}, beat ${getFlagFromIOC(
-          opponentIOC ?? undefined
-        )} ${opponentName ?? ""}`;
+        data.outcome = (
+          <>
+            Reached {lastMatch.round}, beat <Flag ioc={opponentIOC ?? undefined} className="w-4 h-3 inline-block mr-1" /> {opponentName ?? ""}
+          </>
+        );
       }
 
       data.lastMatch = lastMatch;
@@ -106,7 +111,7 @@ export default function Seeds({ id, year, matches }: SeedsProps) {
           {leftColumn.map(({ seed, name, ioc, outcome }) => (
             <div key={seed} className="bg-gray-800 p-2 rounded">
               <span className="font-bold">
-                {seed}. {getFlagFromIOC(ioc)} {name}
+                {seed}. <Flag ioc={ioc} className="w-4 h-3 inline-block mr-1" /> {name}
               </span>{" "}
               ({outcome})
             </div>
@@ -116,7 +121,7 @@ export default function Seeds({ id, year, matches }: SeedsProps) {
           {rightColumn.map(({ seed, name, ioc, outcome }) => (
             <div key={seed} className="bg-gray-800 p-2 rounded">
               <span className="font-bold">
-                {seed}. {getFlagFromIOC(ioc)} {name}
+                {seed}. <Flag ioc={ioc} className="w-4 h-3 inline-block mr-1" /> {name}
               </span>{" "}
               ({outcome})
             </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 import { useSearchParams } from 'next/navigation';
 import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
@@ -113,7 +113,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
                   <>
                     <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300 font-medium" rowSpan={timespans.length}>{globalRank}</td>
                     <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200 flex items-center gap-2 font-medium" rowSpan={timespans.length}>
-                      {entry.ioc && <span className="text-base">{getFlagFromIOC(entry.ioc ?? undefined)}</span>}
+                      <Flag ioc={entry.ioc ?? undefined} className="w-4 h-3 inline-block" />
                       <Link href={getLink(entry.player_id)} className="text-gray-300 hover:underline">{entry.player_name}</Link>
                     </td>
                   </>

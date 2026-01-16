@@ -5,7 +5,8 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Pagination from "../../../components/Pagination";
 import Modal from "@/components/Modal";
-import { getFlagFromIOC, getTourneyHref } from "@/lib/utils";
+import Flag from "@/components/Flag";
+import { getTourneyHref } from "@/lib/utils";
 
 interface WinsSectionProps {
   selectedSurfaces: string[];
@@ -106,12 +107,11 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
         <tbody>
           {data.map((p, idx) => {
             const rank = startIndex + idx + 1;
-            const flag = p.ioc ? getFlagFromIOC(p.ioc) : null;
             return (
               <tr key={`${p.winner_id}-${p.tourney_id}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{rank}</td>
                 <td className="border border-white/10 px-4 py-2 flex items-center gap-2 text-lg text-gray-200">
-                  {flag && <span className="text-base">{flag}</span>}
+                  <Flag ioc={p.ioc} className="text-base" />
                   <Link href={getPlayerLink(p.winner_id)} className="hover:underline">
                     {p.player_name}
                   </Link>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 
@@ -96,7 +96,7 @@ export default function RoundsSection({
         {data.map((item) => (
           <tr key={item.id} className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors">
             <td className="py-1 flex items-center gap-2 text-white">
-              <span className="text-base">{getFlagFromIOC(item.ioc) || ''}</span>
+              <Flag ioc={item.ioc} className="w-4 h-3" />
               <Link href={`/players/${encodeURIComponent(String(item.id))}`} className="text-blue-400 hover:underline">
                 {item.name}
               </Link>

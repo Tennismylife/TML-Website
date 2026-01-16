@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import Link from 'next/link';
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 
 import { useRouter } from 'next/navigation';
 
@@ -147,7 +147,7 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
           <tr key={`${p.id}-${p.year}-${index}`} className="border-b border-gray-700">
             <td className="py-1 min-w-0">
               <div className="flex items-center gap-2 truncate">
-                <span className="text-base">{getFlagFromIOC(p.ioc) || ''}</span>
+                <Flag ioc={p.ioc} className="w-4 h-3" />
                 <Link href={`/players/${encodeURIComponent(String(p.id))}`} className="text-blue-400 hover:underline truncate">{p.name}</Link>
               </div>
             </td>

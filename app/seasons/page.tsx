@@ -2,8 +2,8 @@
 
 import { useEffect, useState, useMemo, useRef } from "react";
 import Link from "next/link";
+import Flag from '@/components/Flag';
 import { getSurfaceColor } from "@/lib/colors";
-import { getFlagFromIOC } from "@/lib/utils";
 
 type SlamCode = "AO" | "RG" | "WIM" | "USO" | "AO-1" | "AO-2";
 
@@ -122,7 +122,6 @@ export default function SeasonsPage() {
               {/* Vincitori Slam */}
               <div className="mt-4 flex flex-col gap-2">
                 {(season.slam_winners ?? []).map((sw) => {
-                  const flag = getFlagFromIOC(sw.winner_ioc ?? undefined) || "🏳️";
                   return (
                     <div
                       key={`${season.year}-${sw.code}-${sw.tourney_date}`}
@@ -132,7 +131,7 @@ export default function SeasonsPage() {
                         {sw.code}
                       </span>
                       <div className="flex items-center gap-2">
-                        <span className="text-lg">{flag}</span>
+                        {sw.winner_ioc ? <Flag ioc={sw.winner_ioc} className="w-5 h-4" /> : <span className="text-lg">🏳️</span>}
                         <span
                           className="text-sm font-medium text-gray-100 truncate max-w-[10rem]"
                           title={sw.winner_name}

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import RouteModal from './RouteModal';
 import Link from 'next/link';
-import { getFlagFromIOC } from '@/lib/utils';
+import Flag from '@/components/Flag';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
 
 export default function CountModalOutlet({ id }: { id: string }) {
@@ -143,7 +143,7 @@ export default function CountModalOutlet({ id }: { id: string }) {
                   <tr key={item.id} className="border-b border-gray-700">
                     <td className="py-2 text-center">
                       <div className="flex items-center justify-center gap-2">
-                        <span className="text-base">{getFlagFromIOC(item.ioc) || ''}</span>
+                        <Flag ioc={item.ioc} className="w-4 h-3" />
                         <Link href={`/players/${encodeURIComponent(String(item.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{item.name}</Link>
                       </div>
                     </td>

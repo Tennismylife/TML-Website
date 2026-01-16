@@ -2,7 +2,6 @@ import React from 'react'
 import ServerWrapper from '../../../components/ServerWrapper'
 import Played from './Played'
 import { metadataBase } from '../../../lib/site'
-import { getFlagFromIOC } from '../../../lib/utils'
 
 type SearchParams = Record<string, string | string[] | undefined>
 

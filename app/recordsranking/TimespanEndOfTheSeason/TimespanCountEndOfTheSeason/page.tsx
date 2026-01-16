@@ -1,6 +1,6 @@
 import React from 'react';
 import { prisma } from '@/lib/prisma';
-import { getFlagFromIOC } from '@/lib/utils';
+import Flag from '@/components/Flag';
 
 function diffYMD(birth: Date, ref: Date) {
   let y = ref.getUTCFullYear() - birth.getUTCFullYear();
@@ -64,7 +64,7 @@ export default async function EoyRankTimespan({ searchParams }: { searchParams?:
             <tr key={`${r.id}-${r.firstYear}-${r.lastYear}`} className="hover:bg-gray-800 border-b border-white/10">
               <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{idx+1}</td>
               <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
-                <div className="flex items-center gap-2">{r.ioc && <span className="text-base">{getFlagFromIOC(r.ioc)}</span>}<span>{r.name}</span></div>
+                <div className="flex items-center gap-2">{r.ioc && <Flag ioc={r.ioc} />}<span>{r.name}</span></div>
               </td>
               <td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">{r.spanYears}</td>
               <td className="border border-white/10 px-4 py-2 text-gray-300">{r.firstYear}</td>

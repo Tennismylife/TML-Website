@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { getFlagFromIOC } from '@/lib/utils';
+import Flag from '@/components/Flag';
 import { metadataBase } from '@/lib/site';
 import { getTournamentName } from '@/lib/recordMetadata';
 
@@ -50,7 +50,7 @@ export default async function PercentageFull({ id, section = 'wins', title }: Pr
                 <tbody>
                   {list.map((r: any) => (
                     <tr key={String(r.id)} className="border-b border-gray-700">
-                      <td className="py-2 text-center"><div className="flex items-center justify-center gap-2"><span className="text-base">{getFlagFromIOC(r.ioc) || ''}</span><Link href={`/players/${encodeURIComponent(String(r.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link></div></td>
+                      <td className="py-2 text-center"><div className="flex items-center justify-center gap-2"><Flag ioc={r.ioc} /><Link href={`/players/${encodeURIComponent(String(r.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link></div></td>
                       <td className="py-2 text-center text-lg md:text-xl text-white">{r.wins}</td>
                       <td className="py-2 text-center text-lg md:text-xl text-white">{r.losses}</td>
                       <td className="py-2 text-center text-lg md:text-xl text-white">{(r.percentage ?? 0).toFixed(1)}%</td>
@@ -89,7 +89,7 @@ export default async function PercentageFull({ id, section = 'wins', title }: Pr
             <tbody>
               {rows.map((r: any) => (
                 <tr key={String(r.id)} className="border-b border-gray-700">
-                  <td className="py-2 text-center"><div className="flex items-center justify-center gap-2"><span className="text-base">{getFlagFromIOC(r.ioc) || ''}</span><Link href={`/players/${encodeURIComponent(String(r.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link></div></td>
+                  <td className="py-2 text-center"><div className="flex items-center justify-center gap-2"><Flag ioc={r.ioc} /><Link href={`/players/${encodeURIComponent(String(r.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link></div></td>
                   <td className="py-2 text-center text-lg md:text-xl text-white">{r.wins}</td>
                   <td className="py-2 text-center text-lg md:text-xl text-white">{r.losses}</td>
                   <td className="py-2 text-center text-lg md:text-xl text-white">{(r.percentage ?? 0).toFixed(1)}%</td>

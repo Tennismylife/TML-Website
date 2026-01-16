@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 
 interface FirstNProps {
   selectedSurfaces: Set<string>;
@@ -132,7 +132,7 @@ export default function FirstN({ selectedSurfaces, selectedLevels, selectedRound
             paginatedRecords.map((p: FirstNRecord, index: number) => (
               <tr key={index} className="border-b">
                 <td className="py-1">
-                  <span className="text-base mr-1">{getFlagFromIOC(p.player.ioc) || ""}</span>
+                  <Flag ioc={p.player.ioc} className="w-4 h-3 inline-block mr-1" />
                   <Link href={`/players/${encodeURIComponent(String(p.player.id))}`} className="text-blue-700 hover:underline">
                     {p.player.name}
                   </Link>

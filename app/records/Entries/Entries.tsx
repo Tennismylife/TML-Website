@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 import { playerMatchesUrl } from "../nav";
 import Pagination from "../../../components/Pagination";
 import Modal from "@/components/Modal";
@@ -99,14 +99,13 @@ else Array.from(searchParams?.entries() ?? []).forEach(([k,v]) => { if (k === 's
         <tbody>
           {entriesList.map((p, idx) => {
             const globalRank = startIndex + idx + 1;
-            const flag = p.ioc ? getFlagFromIOC(p.ioc) : null;
 
             return (
               <tr key={p.id} className="hover:bg-gray-800 border-b border-gray-800">
                 <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
                 <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200">
                   <div className="flex items-center gap-2">
-                    {flag && <span className="text-base">{flag}</span>}
+                    {p.ioc && <Flag ioc={p.ioc} className="text-base" />}
                     <Link href={getLink(p.id)} className="text-indigo-300 hover:underline">{p.name}</Link>
                   </div>
                 </td>

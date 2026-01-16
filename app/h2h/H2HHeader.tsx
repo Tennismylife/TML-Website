@@ -1,6 +1,6 @@
 "use client";
 
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 import Link from "next/link";
 
 interface Player {
@@ -54,7 +54,7 @@ export default function H2HHeader({
       <div className="flex justify-between items-center mb-6 -mt-2">
         {/* Player 1 - sinistra */}
         <div className="flex items-center gap-3">
-          <span className="text-4xl">{getFlagFromIOC(player1.ioc ?? '')}</span>
+          <Flag ioc={player1.ioc ?? undefined} className="text-4xl inline-block" />
           <span className="text-xl font-bold text-gray-100">
             {player1.atpname ?? ''}
           </span>
@@ -65,7 +65,7 @@ export default function H2HHeader({
           <span className="text-xl font-bold text-gray-100 text-right">
             {player2.atpname ?? ''}
           </span>
-          <span className="text-4xl">{getFlagFromIOC(player2.ioc ?? '')}</span>
+          <Flag ioc={player2.ioc ?? undefined} className="text-4xl inline-block" />
         </div>
       </div>
 

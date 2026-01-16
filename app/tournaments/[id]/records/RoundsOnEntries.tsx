@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 
 interface PlayerRoundEntry {
   id: string | number;
@@ -144,7 +144,7 @@ export default function RoundsOnEntries({ id }: { id: string }) {
         {data.map((item) => (
           <tr key={`${item.id}-${item.reaches}`} className="border-b border-gray-700">
             <td className="py-1 flex items-center gap-2 text-white min-w-0">
-              <span className="text-base">{getFlagFromIOC(item.ioc) || ""}</span>
+              <Flag ioc={item.ioc} className="w-4 h-3" />
               <div className="truncate">
                 <Link href={`/players/${encodeURIComponent(String(item.id))}`} className="text-blue-400 hover:underline">
                   {item.name}

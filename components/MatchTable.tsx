@@ -3,7 +3,8 @@
 import React from "react";
 import Link from "next/link";
 import { Match, SortDirection, SortKey } from "@/types";
-import { getFlagFromIOC, getTourneyHref, extractUniqueSurfaces } from "@/lib/utils";
+import Flag from '@/components/Flag';
+import { getTourneyHref, extractUniqueSurfaces } from "@/lib/utils";
 import { useEffect, useState, useMemo, useRef } from "react";
 
 interface MatchTableProps {
@@ -237,7 +238,7 @@ export default function MatchTable({
                   <td className={tdBase}>{m.round}</td>
                   <td className={tdBase}>{m.winner_rank ?? "-"}</td>
                   <td className={tdBase}>
-                    <span className="mr-1">{getFlagFromIOC(m.winner_ioc ?? undefined)}</span>
+                    {m.winner_ioc && <Flag ioc={m.winner_ioc} className="w-4 h-3 mr-1" />}
                     <Link
                       href={`/players/${m.winner_id}`}
                       className={m.winner_id === playerId ? "font-bold text-green-600" : ""}
@@ -247,7 +248,7 @@ export default function MatchTable({
                   </td>
                   <td className={tdBase}>{m.loser_rank ?? "-"}</td>
                   <td className={tdBase}>
-                    <span className="mr-1">{getFlagFromIOC(m.loser_ioc ?? undefined)}</span>
+                    {m.loser_ioc && <Flag ioc={m.loser_ioc} className="w-4 h-3 mr-1" />}
                     <Link
                       href={`/players/${m.loser_id}`}
                       className={m.loser_id === playerId ? "font-bold text-red-600" : ""}

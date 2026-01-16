@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 import Modal from "@/components/Modal";
 
 interface CountSectionProps {
@@ -127,7 +127,7 @@ export default function CountSection({ selectedSurfaces, selectedLevels }: Count
         {data.map(p => (
           <tr key={p.id} className="border-b">
             <td className="py-1 flex items-center gap-2 w-1/2">
-              <span className="text-base">{getFlagFromIOC(p.ioc) || ''}</span>
+              <Flag ioc={p.ioc ?? undefined} className="w-4 h-3 inline-block" />
               <Link href={`/players/${encodeURIComponent(p.id)}`} className="text-blue-700 hover:underline">
                 {p.name}
               </Link>

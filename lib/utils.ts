@@ -166,6 +166,19 @@ export function getFlagFromIOC(ioc?: string): string {
   );
 }
 
+// Return Twemoji SVG URL for a flag given IOC code (or null if not available)
+export function getFlagImgUrl(ioc?: string): string | null {
+  if (!ioc) return null;
+  const iso = IOC_TO_ISO[ioc.toUpperCase()];
+  if (!iso) return null;
+  const code = iso
+    .toUpperCase()
+    .split("")
+    .map((c) => (127397 + c.charCodeAt(0)).toString(16))
+    .join("-");
+  return `https://twemoji.maxcdn.com/v/latest/svg/${code}.svg`;
+}
+
 export function getLevelFullName(level?: any) {
   // Support nested formats (string | string[] | object). Use first string found.
   const s = (typeof level === 'string') ? level : (Array.isArray(level) ? level[0] : (level && typeof level === 'object' ? Object.values(level)[0] : '')) || '';

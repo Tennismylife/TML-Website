@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import Link from 'next/link';
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 
 interface Player {
@@ -106,7 +106,7 @@ export default function LeastSection({ id, linkId }: { id: string; linkId?: stri
           >
             <td className="py-1 min-w-0">
               <div className="flex items-center gap-2 truncate">
-                <span className="text-base">{getFlagFromIOC(item.player.ioc) || ""}</span>
+                {item.player?.ioc && <Flag ioc={item.player.ioc} className="w-4 h-3" />}
                 <Link href={`/players/${encodeURIComponent(String(item.player.id))}`} className="text-blue-400 hover:underline truncate">
                   {item.player.name}
                 </Link>

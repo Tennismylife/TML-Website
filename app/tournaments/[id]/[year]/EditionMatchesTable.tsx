@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Match, SortKey, SortDirection } from "@/types";
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 import { useState, useMemo } from "react";
 
 interface MatchTableProps {
@@ -219,7 +219,7 @@ export default function MatchTable({
                 <td className="px-4 py-2 text-center text-sm">{m.round}</td>
                 <td className="px-4 py-2 text-center text-sm">{m.winner_rank ?? "-"}</td>
                 <td className="px-4 py-2 flex items-center justify-center gap-2 text-sm">
-                  <span className="text-xl">{getFlagFromIOC(m.winner_ioc ?? undefined)}</span>
+                  {m.winner_ioc && <Flag ioc={m.winner_ioc} className="w-6 h-4" />}
                   <Link
                     href={`/players/${m.winner_id}`}
                     className={m.winner_id === playerId ? "font-bold text-green-400 hover:text-green-300" : "text-gray-200 hover:text-yellow-400 transition"}
@@ -229,7 +229,7 @@ export default function MatchTable({
                 </td>
                 <td className="px-4 py-2 text-center text-sm">{m.loser_rank ?? "-"}</td>
                 <td className="px-4 py-2 flex items-center justify-center gap-2 text-sm">
-                  <span className="text-xl">{getFlagFromIOC(m.loser_ioc ?? undefined)}</span>
+                  {m.loser_ioc && <Flag ioc={m.loser_ioc} className="w-6 h-4" />}
                   <Link
                     href={`/players/${m.loser_id}`}
                     className={m.loser_id === playerId ? "font-bold text-red-400 hover:text-red-300" : "text-gray-400 hover:text-gray-200 transition"}

@@ -3,9 +3,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { getFlagFromIOC } from "@/lib/utils";
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 import RouteModal from '@/components/RouteModal';
+import Flag from '@/components/Flag';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
 
 interface PlayerItem {
@@ -64,7 +64,7 @@ const SectionCard = React.memo(function SectionCard({
               <tr key={item.id} className="border-b border-gray-700">
                 <td className="py-1 min-w-0">
                   <div className="flex items-center gap-2 truncate">
-                    <span className="text-base">{getFlagFromIOC(item.ioc) || ''}</span>
+                    <Flag ioc={item.ioc} className="w-4 h-3" />
                     <Link href={`/players/${encodeURIComponent(String(item.id))}`} prefetch={false} className="text-blue-400 hover:underline truncate">
                       {item.name}
                     </Link>
@@ -335,7 +335,7 @@ export default function CountSection({ tournamentId }: { tournamentId: string })
             <tr key={item.id} className="hover:bg-gray-100">
               <td className="py-1 text-center">
                 <div className="flex items-center justify-center gap-2">
-                  <span className="text-base">{getFlagFromIOC(item.ioc) || ''}</span>
+                  <Flag ioc={item.ioc} className="w-5 h-4" />
                   <Link
                     href={`/players/${encodeURIComponent(String(item.id))}`}
                     className="text-blue-700 hover:underline text-lg md:text-xl"

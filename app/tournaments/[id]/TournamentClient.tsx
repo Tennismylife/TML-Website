@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { Trophy, ArrowRight, RefreshCw } from "lucide-react";
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 import { getSurfaceColor, getTextColorForRound } from "@/lib/colors";
 
 interface Match {
@@ -316,7 +316,7 @@ export default function TournamentClient({ id }: { id: number | string }) {
                           href={`/players/${m.winner_id}`}
                           className="flex items-center gap-3 text-gray-200 hover:text-yellow-400 transition"
                         >
-                          <span className="text-2xl">{getFlagFromIOC(m.winner_ioc) || ""}</span>
+                          {m.winner_ioc && <Flag ioc={m.winner_ioc} className="w-6 h-4" />}
                           <span className="font-medium">{m.winner_name}</span>
                         </Link>
                       </td>
@@ -325,7 +325,7 @@ export default function TournamentClient({ id }: { id: number | string }) {
                           href={`/players/${m.loser_id}`}
                           className="flex items-center gap-3 text-gray-400 hover:text-gray-200 transition"
                         >
-                          <span className="text-2xl">{getFlagFromIOC(m.loser_ioc) || ""}</span>
+                          {m.loser_ioc && <Flag ioc={m.loser_ioc} className="w-6 h-4" />}
                           <span>{m.loser_name}</span>
                         </Link>
                       </td>

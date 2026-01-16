@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 import Modal from "@/components/Modal";
 import { playerMatchesUrl } from "../nav";
 
@@ -100,13 +100,13 @@ export default function TimespanSection({ selectedSurfaces, selectedLevels, sele
             players.map(p => (
               <tr key={`${p.player1.id}-${p.player2.id}`} className="border-b">
                 <td className="py-1">
-                  <span className="mr-1 text-base">{getFlagFromIOC(p.player1.ioc) || ""}</span>
+                  {p.player1.ioc && <Flag ioc={p.player1.ioc} className="mr-1 text-base" />}
                   <Link href={playerMatchesUrl(p.player1.id)} className="text-blue-700 hover:underline">
                     {p.player1.name}
                   </Link>
                 </td>
                 <td className="py-1">
-                  <span className="mr-1 text-base">{getFlagFromIOC(p.player2.ioc) || ""}</span>
+                  {p.player2.ioc && <Flag ioc={p.player2.ioc} className="mr-1 text-base" />}
                   <Link href={playerMatchesUrl(p.player2.id)} className="text-blue-700 hover:underline">
                     {p.player2.name}
                   </Link>

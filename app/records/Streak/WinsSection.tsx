@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Pagination from "../../../components/Pagination";
 import Modal from "@/components/Modal";
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 import { playerMatchesUrl } from "../nav";
 
 interface WinsSectionProps {
@@ -172,14 +172,13 @@ export default function WinsSection({
           ) : (
             list.map((s, idx) => {
               const globalRank = startIndex + idx + 1;
-              const flag = getFlagFromIOC(s.player_ioc || '') ?? '🏳️';
 
               return (
                 <tr key={`${s.player_id}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
                   <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
                   <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                     <div className="flex items-center gap-2">
-                      <span className="text-base">{flag}</span>
+                      <Flag ioc={s.player_ioc ?? undefined} className="w-4 h-3 inline-block" />
                       <Link href={playerMatchesUrl(s.player_id, linkParams as any)} className="text-indigo-300 hover:underline">
                         {s.player_name || `Player ${s.player_id}`}
                       </Link>
@@ -255,14 +254,13 @@ export default function WinsSection({
               </thead>
               <tbody>
                 {matches.map((m, idx) => {
-                  const opponentFlag = getFlagFromIOC(m.loser_ioc || '') ?? '🏳️';
                   return (
                     <tr key={`${m.id}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
                       <td className="border border-white/10 px-4 py-2 text-center text-gray-200">{m.tourney_date}</td>
                       <td className="border border-white/10 px-4 py-2 text-gray-200">{m.tourney_name}</td>
                       <td className="border border-white/10 px-4 py-2 text-gray-200">{m.round}</td>
                       <td className="border border-white/10 px-4 py-2 text-gray-200 flex items-center gap-2">
-                        <span className="text-base">{opponentFlag}</span>
+                        <Flag ioc={m.loser_ioc ?? undefined} className="w-4 h-3 inline-block" />
                         {m.opponent_name}
                       </td>
                       <td className="border border-white/10 px-4 py-2 text-center text-gray-200">{m.score}</td>

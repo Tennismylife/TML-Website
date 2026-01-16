@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import RouteModal from './RouteModal';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
 import Link from 'next/link';
-import { getFlagFromIOC } from '@/lib/utils';
+import Flag from '@/components/Flag';
 
 export default function AgesModalOutlet({ id }: { id: string }) {
   const [show, setShow] = useState(false);
@@ -189,7 +189,7 @@ export default function AgesModalOutlet({ id }: { id: string }) {
                   <tr key={`${r.id}-${r.year}-${String(r.age || '')}`} className="border-b border-gray-700">
                     <td className="py-2 text-center">
                       <div className="flex items-center justify-center gap-2">
-                        <span className="text-base">{getFlagFromIOC(r.ioc) || ''}</span>
+                        <Flag ioc={r.ioc} className="w-4 h-3" />
                         <Link href={`/players/${encodeURIComponent(String(r.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link>
                       </div>
                     </td>

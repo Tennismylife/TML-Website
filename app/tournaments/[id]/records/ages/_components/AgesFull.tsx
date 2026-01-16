@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { getFlagFromIOC } from '@/lib/utils';
+import Flag from '@/components/Flag';
 
 import { metadataBase } from '@/lib/site';
 import { getTournamentName } from '@/lib/recordMetadata';
@@ -72,7 +72,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
                 <tr key={`${r.id}-${r.year}-${String(r.age || '')}`} className="border-b border-gray-700">
                   <td className="py-2 text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <span className="text-base">{getFlagFromIOC(r.ioc) || ''}</span>
+                      <Flag ioc={r.ioc} />
                       <Link href={`/players/${encodeURIComponent(String(r.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link>
                     </div>
                   </td>
@@ -86,7 +86,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
       );
 
       // if a specific which is requested, render only that table
-      if ((arguments as any)[0] && (arguments as any)[0].which === 'youngest') {
+      if (which === 'youngest') {
         const tournamentName = await getTournamentName(id);
         return (
           <div className="text-white">
@@ -100,7 +100,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
         );
       }
 
-      if ((arguments as any)[0] && (arguments as any)[0].which === 'oldest') {
+      if (which === 'oldest') {
         const tournamentName = await getTournamentName(id);
         return (
           <div className="text-white">
@@ -172,7 +172,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
                 <tr key={`${r.id}-${r.year}-${String(r.age || '')}`} className="border-b border-gray-700">
                   <td className="py-2 text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <span className="text-base">{getFlagFromIOC(r.ioc) || ''}</span>
+                      <Flag ioc={r.ioc} />
                       <Link href={`/players/${encodeURIComponent(String(r.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link>
                     </div>
                   </td>
@@ -269,7 +269,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
                 <tr key={`${r.id}-${r.year}-${String(r.age || '')}`} className="border-b border-gray-700">
                   <td className="py-2 text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <span className="text-base">{getFlagFromIOC(r.ioc) || ''}</span>
+                      <Flag ioc={r.ioc} />
                       <Link href={`/players/${encodeURIComponent(String(r.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link>
                     </div>
                   </td>

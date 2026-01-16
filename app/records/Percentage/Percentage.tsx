@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 import { playerMatchesUrl } from "../nav";
 import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
@@ -132,7 +132,7 @@ const Percentage = ({ selectedSurfaces, selectedLevels, selectedRounds, selected
               <tr key={`${p.id}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalIdx}</td>
                 <td className="border border-white/10 px-4 py-2 text-lg text-gray-200 flex items-center gap-2">
-                  <span className="text-base">{getFlagFromIOC(p.ioc) || '🏳️'}</span>
+                  <Flag ioc={p.ioc} className="text-base" />
                   <Link href={getLink(String(p.id))} className="text-gray-200 hover:underline">{p.name}</Link>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{wins}</td>

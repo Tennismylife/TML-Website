@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Modal from "@/components/Modal";
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 
 interface TitlesSectionProps {
 	selectedSurfaces: string[];
@@ -144,13 +144,13 @@ export default function TitlesSection({
 					) : (
 						list.map((p, idx) => {
 							const globalRank = startIndex + idx + 1;
-							const flag = getFlagFromIOC(p.ioc) ?? "🏳️";
+							
 							return (
 								<tr key={p.id} className="hover:bg-gray-800 border-b border-white/10">
 									<td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
 									<td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
 										<div className="flex items-center gap-2">
-											<span className="text-base">{flag}</span>
+											{p.ioc && <Flag ioc={p.ioc} className="text-base" /> }
 											<Link href={`/players/${encodeURIComponent(p.id)}`} className="text-indigo-300 hover:underline">
 												{p.name || "Unknown Player"}
 											</Link>

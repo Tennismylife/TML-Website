@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import PlayerSearch from "./PlayerSearch";
 import BarRow from "./BarRow";
 import PercentageRow from "./PercentageRow";
-import { getFlagFromIOC } from "@/lib/utils";
 import type { Match } from "@/types";
 
 interface Player {

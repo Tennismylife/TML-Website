@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import Link from 'next/link';
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 
 function fmtDate(d: Date | string | null | undefined) {
@@ -84,7 +84,7 @@ export default function TimespanSection({ id }: { id: string }) {
           <tr key={`${item.id}-${idx}`} className="border-b border-gray-700">
             <td className="py-1 min-w-0" style={{ maxWidth: '240px', paddingLeft: 0 }}>
               <div className="flex items-center gap-2 truncate min-w-0">
-                <span className="text-base shrink-0">{getFlagFromIOC(item.ioc) || ''}</span>
+                <Flag ioc={item.ioc} className="w-4 h-3 shrink-0" />
                 <Link href={`/players/${encodeURIComponent(String(item.id))}`} className="text-blue-400 hover:underline truncate block min-w-0 overflow-hidden">
                   {item.name}
                 </Link>

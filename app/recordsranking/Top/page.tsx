@@ -1,5 +1,5 @@
 import React from 'react';
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 import { prisma } from "@/lib/prisma";
 import RecordsTopControls from "./RecordsTopControls";
 import ServerPagination from '@/components/ServerPagination';
@@ -74,7 +74,7 @@ export default async function RecordsTopX({ searchParams }: { searchParams?: Pro
               </td>
               <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                 <div className="flex items-center gap-2">
-                  {p.ioc && <span className="text-base">{getFlagFromIOC(p.ioc)}</span>}
+                  {p.ioc && <Flag ioc={p.ioc} />}
                   <span>{p.name}</span>
                 </div>
               </td>

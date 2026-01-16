@@ -1,5 +1,18 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { getSitemapUrls, generateSitemapXml } from '@/lib/sitemap';
+
+// Mock prisma to keep sitemap tests deterministic and fast
+vi.mock('@/lib/prisma', () => ({
+  prisma: {
+    match: {
+      aggregate: vi.fn(async () => ({ _max: { tourney_date: null } })),
+      groupBy: vi.fn(async () => []),
+      findMany: vi.fn(async () => []),
+    },
+    player: { findMany: vi.fn(async () => []) },
+    tournament: { findMany: vi.fn(async () => []) },
+  },
+}));
 
 describe('sitemap generator', () => {
   it('returns basic URL list', async () => {

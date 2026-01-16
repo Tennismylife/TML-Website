@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Pagination from "@/components/Pagination";
 import Filters from "./Filters";
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 
 const STAT_LABELS: Record<string, string> = {
   aces: "Aces",
@@ -151,7 +151,6 @@ export default function StatisticsInner() {
         <tbody>
           {list.map((p, idx) => {
             const globalRank = startIndex + idx + 1;
-            const flag = getFlagFromIOC(p.ioc) ?? "🏳️";
             return (
               <tr key={p.id} className="hover:bg-gray-800 border-b border-white/10 transition-colors">
                 <td className="border border-white/10 px-2 sm:px-4 py-3 text-center text-gray-200 font-medium">
@@ -159,7 +158,7 @@ export default function StatisticsInner() {
                 </td>
                 <td className="border border-white/10 px-2 sm:px-4 py-3 text-gray-200">
                   <div className="flex items-center gap-2">
-                    <span className="text-base sm:text-lg">{flag}</span>
+                    {p.ioc ? <Flag ioc={p.ioc} className="w-4 h-3" /> : <span className="text-base sm:text-lg">🏳️</span>}
                     <Link
                       href={`/players/${p.id}`}
                       className="text-indigo-300 hover:text-indigo-200 hover:underline text-sm sm:text-base transition-colors"

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { getFlagFromIOC } from '@/lib/utils';
+import Flag from '@/components/Flag';
 import { playerMatchesUrl } from "../nav";
 import { useSearchParams } from 'next/navigation';
 import Pagination from '../../../components/Pagination';
@@ -112,12 +112,11 @@ export default function SameRoundSection({ selectedSurfaces, selectedLevels, sel
         <tbody>
           {data.map((p, idx) => {
             const rank = startIndex + idx + 1;
-            const flag = getFlagFromIOC(p.ioc ?? undefined) ?? '';
             return (
               <tr key={`${p.player_id}-${p.tourney_name}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-400 font-semibold">{rank}</td>
                 <td className="border border-white/10 px-4 py-2 flex items-center gap-2 text-lg text-gray-200">
-                  {flag && <span className="text-base">{flag}</span>}
+                  {p.ioc && <Flag ioc={p.ioc ?? undefined} className="text-base" />}
                   <Link href={getPlayerLink(p.player_id)} className="hover:underline">{p.player_name}</Link>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.total_rounds}</td>

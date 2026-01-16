@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import RouteModal from './RouteModal';
 import Link from 'next/link';
-import { getFlagFromIOC } from '@/lib/utils';
+import Flag from '@/components/Flag';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
 
 export default function PercentageModalOutlet({ id }: { id: string }) {
@@ -182,7 +182,7 @@ export default function PercentageModalOutlet({ id }: { id: string }) {
                   <tr key={String(r.id)} className="border-b border-gray-700">
                     <td className="py-2 text-center">
                       <div className="flex items-center justify-center gap-2">
-                        <span className="text-base">{getFlagFromIOC(r.ioc) || ''}</span>
+                        {r.ioc && <Flag ioc={r.ioc} className="w-5 h-4" />}
                         <Link href={`/players/${encodeURIComponent(String(r.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link>
                       </div>
                     </td>

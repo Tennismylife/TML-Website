@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { getFlagFromIOC, getTourneyHref } from "@/lib/utils";
+import { getTourneyHref } from "@/lib/utils";
+import Flag from '@/components/Flag';
 import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
@@ -101,12 +102,11 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
         <tbody>
           {data.map((p, idx) => {
             const rank = startIndex + idx + 1;
-            const flag = getFlagFromIOC(p.ioc) || '';
             return (
               <tr key={`${p.player_id}-${p.tourney_id}`} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{rank}</td>
                 <td className="border border-white/10 px-4 py-2 flex items-center gap-2 text-lg text-gray-200">
-                  {flag && <span className="text-base">{flag}</span>}
+                  {p.ioc && <Flag ioc={p.ioc} className="text-base" />}
                   <Link href={getLink(p.player_id)} className="hover:underline">{p.player_name}</Link>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.total_entries}</td>

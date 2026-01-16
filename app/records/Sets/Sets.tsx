@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 
 interface SetsProps {
   selectedSurfaces: Set<string>;
@@ -121,7 +121,7 @@ export default function Sets({ selectedSurfaces, selectedLevels, selectedRounds,
           data.map(p => (
             <tr key={p.player.id} className="border-b">
               <td className="py-1 flex items-center gap-1">
-                <span>{getFlagFromIOC(p.player.ioc) || ''}</span>
+                <Flag ioc={p.player.ioc ?? undefined} className="w-4 h-3 inline-block" />
                 <Link
                   href={`/players/${encodeURIComponent(String(p.player.id))}`}
                   className="text-blue-700 hover:underline"

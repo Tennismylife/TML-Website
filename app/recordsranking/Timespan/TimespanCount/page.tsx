@@ -1,6 +1,6 @@
 import React from 'react';
 import { prisma } from "@/lib/prisma";
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 
 function diffYMD(birth: Date, ref: Date) {
   let y = ref.getUTCFullYear() - birth.getUTCFullYear();
@@ -77,7 +77,7 @@ export default async function RankTimespan({ searchParams }: { searchParams?: Pr
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
       <table className="min-w-full border-collapse">
         <thead><tr className="bg-black"><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th><th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Timespan</th><th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">First</th><th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Last</th></tr></thead>
-        <tbody>{list.map((r, idx) => (<tr key={`${r.id}-${r.firstDate}-${r.lastDate}`} className="hover:bg-gray-800 border-b border-white/10"><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{startIndex + idx + 1}</td><td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{r.ioc && <span className="text-base">{getFlagFromIOC(r.ioc)}</span>}<span>{r.name}</span></div></td><td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300" title={`${r.timespanDays} days`}>{r.timespanLabel}</td><td className="border border-white/10 px-4 py-2 text-gray-300">{r.firstDate}</td><td className="border border-white/10 px-4 py-2 text-gray-300">{r.lastDate}</td></tr>))}</tbody>
+        <tbody>{list.map((r, idx) => (<tr key={`${r.id}-${r.firstDate}-${r.lastDate}`} className="hover:bg-gray-800 border-b border-white/10"><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{startIndex + idx + 1}</td><td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{r.ioc && <Flag ioc={r.ioc} />}<span>{r.name}</span></div></td><td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300" title={`${r.timespanDays} days`}>{r.timespanLabel}</td><td className="border border-white/10 px-4 py-2 text-gray-300">{r.firstDate}</td><td className="border border-white/10 px-4 py-2 text-gray-300">{r.lastDate}</td></tr>))}</tbody>
       </table>
     </div>
   );

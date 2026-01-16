@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getFlagFromIOC } from "@/lib/utils";
+import Flag from '@/components/Flag';
 
 interface Player {
   id: string;
@@ -63,7 +63,7 @@ export default function PlayerSearch({ label, onSelect }: PlayerSearchProps) {
 
       {selectedPlayer && (
         <div className="mt-2 p-2 bg-gray-700 rounded flex items-center gap-2 text-white">
-          {getFlagFromIOC(selectedPlayer.ioc ?? "")} {selectedPlayer.atpname}
+          {selectedPlayer.ioc ? <Flag ioc={selectedPlayer.ioc} className="w-4 h-3" /> : <span>🏳️</span>} {selectedPlayer.atpname}
         </div>
       )}
 
@@ -77,7 +77,7 @@ export default function PlayerSearch({ label, onSelect }: PlayerSearchProps) {
               onClick={() => handleSelect(p)}
               className="px-3 py-2 hover:bg-gray-700 cursor-pointer flex items-center gap-2"
             >
-              {getFlagFromIOC(p.ioc ?? "")} {p.atpname}
+              {p.ioc ? <Flag ioc={p.ioc} className="w-4 h-3" /> : <span>🏳️</span>} {p.atpname}
             </li>
           ))}
         </ul>

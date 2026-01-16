@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { getFlagFromIOC, getTourneyHref } from "@/lib/utils";
+import Flag from '@/components/Flag';
+import { getTourneyHref } from "@/lib/utils";
 
 interface Match {
   id: string | number;
@@ -23,6 +24,42 @@ interface Match {
 export default function LatestMatches() {
   const [recentMatches, setRecentMatches] = useState<Match[]>([]);
   const [matchesLoading, setMatchesLoading] = useState(false);
+  const [flagEmojiSupported, setFlagEmojiSupported] = useState<boolean | null>(null);
+
+  // Detect whether the browser renders flag emoji as flags (vs two-letter glyphs)
+  useEffect(() => {
+    let mounted = true;
+    const detect = () => {
+      try {
+        const emoji = '🇺🇸';
+        const letters = 'US';
+        const container = document.createElement('div');
+        container.style.position = 'absolute';
+        container.style.left = '-9999px';
+        container.style.top = '0';
+        container.style.visibility = 'hidden';
+        const spanEmoji = document.createElement('span');
+        spanEmoji.textContent = emoji;
+        spanEmoji.style.fontSize = '20px';
+        const spanLetters = document.createElement('span');
+        spanLetters.textContent = letters;
+        spanLetters.style.fontSize = '20px';
+        container.appendChild(spanEmoji);
+        container.appendChild(spanLetters);
+        document.body.appendChild(container);
+        const emojiWidth = spanEmoji.getBoundingClientRect().width;
+        const lettersWidth = spanLetters.getBoundingClientRect().width;
+        document.body.removeChild(container);
+        const supported = emojiWidth > lettersWidth * 0.9; // emoji typically wider than letters
+        if (mounted) setFlagEmojiSupported(Boolean(supported));
+      } catch (e) {
+        if (mounted) setFlagEmojiSupported(false);
+      }
+    };
+    // run on next tick to ensure fonts loaded
+    const t = setTimeout(detect, 50);
+    return () => { mounted = false; clearTimeout(t); };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -50,6 +87,9 @@ export default function LatestMatches() {
           <h2 className="text-base font-semibold text-gray-100">
             Latest Matches
           </h2>
+          <span className="text-xs text-gray-400 ml-3" data-testid="flag-emoji-support">
+            {flagEmojiSupported === null ? 'Checking flags...' : flagEmojiSupported ? 'Flag emoji: supported' : 'Flag emoji: not supported'}
+          </span>
         </div>
         <span className="text-xs text-gray-400">
           Showing last 10 matches
@@ -101,8 +141,7 @@ export default function LatestMatches() {
               ) : (
                 recentMatches.map((m) => {
                   const tourneyId = m.tourney_id ?? null;
-                  const winnerFlag = getFlagFromIOC(m.winner_ioc ?? undefined) ?? "";
-                  const loserFlag = getFlagFromIOC(m.loser_ioc ?? undefined) ?? "";
+
 
                   return (
                     <tr
@@ -138,13 +177,8 @@ export default function LatestMatches() {
 
                       <td className="border border-white/10 px-3 py-1.5 text-gray-200">
                         <div className="flex items-center gap-2">
-                          {winnerFlag && (
-                            <span
-                              className="text-xs"
-                              title={m.winner_ioc || undefined}
-                            >
-                              {winnerFlag}
-                            </span>
+                                  {m.winner_ioc && (
+                            <Flag ioc={m.winner_ioc} className="w-4 h-3" />
                           )}
                           {m.winner_name ? (
                             <Link
@@ -163,13 +197,8 @@ export default function LatestMatches() {
 
                       <td className="border border-white/10 px-3 py-1.5 text-gray-200">
                         <div className="flex items-center gap-2">
-                          {loserFlag && (
-                            <span
-                              className="text-xs"
-                              title={m.loser_ioc || undefined}
-                            >
-                              {loserFlag}
-                            </span>
+                          {m.loser_ioc && (
+                            <Flag ioc={m.loser_ioc} className="w-4 h-3" />
                           )}
                           {m.loser_name ? (
                             <Link

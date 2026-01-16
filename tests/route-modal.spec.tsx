@@ -24,7 +24,7 @@ describe('RouteModal close navigation', () => {
     try { delete (window as any).__modalBackgroundPath; } catch (e) {}
   });
 
-  it('uses router.replace to restore background and avoids history.back when modalOpenedByPush is set', async () => {
+  it('restores background and avoids router navigation when modalOpenedByPush is set', async () => {
     // mark that modal was opened via push
     (window as any).__modalOpenedByPush = true;
 
@@ -37,18 +37,16 @@ describe('RouteModal close navigation', () => {
     const btn = await screen.findByRole('button', { name: /close/i });
     fireEvent.click(btn);
 
-    // wait for the internal timeout (55ms) to run
-    await waitFor(() => expect(replaceSpy).toHaveBeenCalledWith('/tournaments/australian-open'), { timeout: 500 });
+    // wait for replaceState to have set URL to background
+    await waitFor(() => expect(window.location.pathname).toBe('/tournaments/australian-open'), { timeout: 500 });
+    // we should avoid calling router.replace or router.back from the component (history was restored via replaceState)
+    expect(replaceSpy).not.toHaveBeenCalled();
     expect(backSpy).not.toHaveBeenCalled();
   });
 
-  it('falls back to history.back if router.replace throws', async () => {
-    // make replace throw
-    replaceSpy.mockImplementation(() => { throw new Error('router fail'); });
-    (window as any).__modalOpenedByPush = true;
-
-    // spy on history.back
-    const histBack = vi.spyOn(window.history, 'back').mockImplementation(() => {} as any);
+  it('falls back to router.back when no modal history state is present', async () => {
+    // remove modal history state to force fallback
+    try { window.history.replaceState(null, '', '/somewhere-else'); } catch (e) {}
 
     render(
       <RouteModal>
@@ -59,8 +57,6 @@ describe('RouteModal close navigation', () => {
     const btn = await screen.findByRole('button', { name: /close/i });
     fireEvent.click(btn);
 
-    await waitFor(() => expect(histBack).toHaveBeenCalled(), { timeout: 500 });
-
-    histBack.mockRestore();
+    await waitFor(() => expect(backSpy).toHaveBeenCalled(), { timeout: 500 });
   });
 });
