@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 import { getFlagImgUrl, getFlagFromIOC } from '@/lib/utils';
 

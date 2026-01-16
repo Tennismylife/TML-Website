@@ -87,9 +87,7 @@ export default function LatestMatches() {
           <h2 className="text-base font-semibold text-gray-100">
             Latest Matches
           </h2>
-          <span className="text-xs text-gray-400 ml-3" data-testid="flag-emoji-support">
-            {flagEmojiSupported === null ? 'Checking flags...' : flagEmojiSupported ? 'Flag emoji: supported' : 'Flag emoji: not supported'}
-          </span>
+          <span className="text-xs text-gray-400 ml-3" data-testid="flag-emoji-support" aria-hidden="true" />
         </div>
         <span className="text-xs text-gray-400">
           Showing last 10 matches
