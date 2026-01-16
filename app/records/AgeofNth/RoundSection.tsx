@@ -208,7 +208,7 @@ export default function RoundSection({ selectedSurfaces, selectedRounds, selecte
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                   <div className="flex items-center gap-2">
-                    <Flag ioc={p.ioc} className="text-base" />
+                    <Flag ioc={p.ioc} className="w-4 h-3" />
                     <Link href={getPlayerLink(p.id)} className="text-indigo-300 hover:underline">
                       {p.name}
                     </Link>

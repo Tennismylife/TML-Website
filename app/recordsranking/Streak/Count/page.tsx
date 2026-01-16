@@ -126,7 +126,7 @@ export default async function StreakCount({ searchParams }: { searchParams?: Pro
         <tbody>
           {paginatedPlayers.map((p, idx) => {
             const globalRank = start + idx + 1;
-            const flagEl = p.ioc ? <Flag ioc={p.ioc} /> : null;
+            const flagEl = p.ioc ? <Flag ioc={p.ioc} className="w-4 h-3" /> : null;
             return (
               <tr key={`${p.id ?? p.name}-${start + idx}`} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>

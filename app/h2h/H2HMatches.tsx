@@ -281,7 +281,7 @@ export default function H2HMatches({
                   <td className="px-3 py-2 text-center">{m.round}</td>
                   <td className="px-3 py-2 text-center">{m.winner_rank ?? "-"}</td>
                   <td className="px-3 py-2">
-                    <Flag ioc={m.winner_ioc ?? undefined} className="text-xl inline-block mr-1" />
+                    <Flag ioc={m.winner_ioc ?? undefined} className="w-4 h-3 inline-block mr-1" />
                     <Link
                       href={`/players/${String(m.winner_id ?? '')}`}
                       className={isPlayerWinner ? "font-bold text-green-400" : "text-gray-100 hover:text-white"}
@@ -291,7 +291,7 @@ export default function H2HMatches({
                   </td>
                   <td className="px-3 py-2 text-center">{m.loser_rank ?? "-"}</td>
                   <td className="px-3 py-2">
-                    <Flag ioc={m.loser_ioc ?? undefined} className="text-xl inline-block mr-1" />
+                    <Flag ioc={m.loser_ioc ?? undefined} className="w-4 h-3 inline-block mr-1" />
                     <Link
                       href={`/players/${String(m.loser_id ?? '')}`}
                       className={isPlayerLoser ? "font-bold text-red-400" : "text-gray-100 hover:text-white"}

@@ -73,7 +73,7 @@ export default async function RecordsCount({ searchParams }: { searchParams?: Pr
               </td>
               <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                 <div className="flex items-center gap-2">
-                  {p.ioc && <Flag ioc={p.ioc} />}
+                  {p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" />}
                   <span>{p.name}</span>
                 </div>
               </td>

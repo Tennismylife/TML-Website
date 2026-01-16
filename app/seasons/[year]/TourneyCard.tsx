@@ -98,12 +98,12 @@ export default function TourneyCard({ tourney }: { tourney: TourneyTile }) {
         {tourney.hasFinal && (
           <div className="text-sm text-gray-200 mt-2 pb-1 text-left break-keep px-1">
             <span className="inline-flex items-center">
-              🏆<Flag ioc={tourney.winner_ioc} />
+              🏆<Flag ioc={tourney.winner_ioc} className="w-4 h-3" />
               <span className="text-green-400 font-semibold"> {tourney.winner}</span>
             </span>
             <span className="text-gray-400 mx-1">def.</span>
             <span className="inline-flex items-center">
-              <Flag ioc={tourney.loser_ioc} />
+              <Flag ioc={tourney.loser_ioc} className="w-4 h-3" />
               <span className="text-red-400 font-medium">{tourney.loser}</span>
             </span>
             <span className="text-gray-300 ml-1">{tourney.score}</span>

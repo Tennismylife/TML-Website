@@ -116,7 +116,7 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
               <tr key={`${p.player_id}-${p.year}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-400 font-semibold">{rank}</td>
                 <td className="border border-white/10 px-4 py-2 flex items-center gap-2 text-lg text-gray-200">
-                  <Flag ioc={p.ioc ?? undefined} className="text-base" />
+                  <Flag ioc={p.ioc ?? undefined} className="w-4 h-3" />
                   <Link href={getPlayerLink(p.player_id)} className="hover:underline">{p.player_name}</Link>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.total_rounds}</td>

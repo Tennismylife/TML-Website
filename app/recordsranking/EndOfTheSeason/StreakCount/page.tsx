@@ -101,7 +101,7 @@ export default async function EoyRankStreaks({ searchParams }: { searchParams?: 
           {list.map((p, idx) => (
             <tr key={`${p.id}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
               <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{startIndex + idx + 1}</td>
-              <td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{p.ioc && <Flag ioc={p.ioc} />}<span>{p.name}</span></div></td>
+              <td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" />}<span>{p.name}</span></div></td>
               <td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">{p.longestStreak}</td>
               <td className="border border-white/10 px-4 py-2 text-gray-300">{p.seasons?.length ? p.seasons.join(", ") : "—"}</td>
             </tr>

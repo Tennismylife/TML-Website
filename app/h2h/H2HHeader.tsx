@@ -54,7 +54,7 @@ export default function H2HHeader({
       <div className="flex justify-between items-center mb-6 -mt-2">
         {/* Player 1 - sinistra */}
         <div className="flex items-center gap-3">
-          <Flag ioc={player1.ioc ?? undefined} className="text-4xl inline-block" />
+          <Flag ioc={player1.ioc ?? undefined} className="w-6 h-4 inline-block" />
           <span className="text-xl font-bold text-gray-100">
             {player1.atpname ?? ''}
           </span>
@@ -65,7 +65,7 @@ export default function H2HHeader({
           <span className="text-xl font-bold text-gray-100 text-right">
             {player2.atpname ?? ''}
           </span>
-          <Flag ioc={player2.ioc ?? undefined} className="text-4xl inline-block" />
+          <Flag ioc={player2.ioc ?? undefined} className="w-6 h-4 inline-block" />
         </div>
       </div>
 

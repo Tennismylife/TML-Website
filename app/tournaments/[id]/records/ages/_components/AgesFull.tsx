@@ -72,7 +72,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
                 <tr key={`${r.id}-${r.year}-${String(r.age || '')}`} className="border-b border-gray-700">
                   <td className="py-2 text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <Flag ioc={r.ioc} />
+                      <Flag ioc={r.ioc} className="w-4 h-3" />
                       <Link href={`/players/${encodeURIComponent(String(r.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link>
                     </div>
                   </td>
@@ -172,7 +172,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
                 <tr key={`${r.id}-${r.year}-${String(r.age || '')}`} className="border-b border-gray-700">
                   <td className="py-2 text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <Flag ioc={r.ioc} />
+                      <Flag ioc={r.ioc} className="w-4 h-3" />
                       <Link href={`/players/${encodeURIComponent(String(r.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link>
                     </div>
                   </td>
@@ -269,7 +269,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
                 <tr key={`${r.id}-${r.year}-${String(r.age || '')}`} className="border-b border-gray-700">
                   <td className="py-2 text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <Flag ioc={r.ioc} />
+                      <Flag ioc={r.ioc} className="w-4 h-3" />
                       <Link href={`/players/${encodeURIComponent(String(r.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link>
                     </div>
                   </td>

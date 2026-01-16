@@ -172,7 +172,7 @@ export default function OldestAllRounds({ selectedSurfaces, selectedLevels, fetc
                     <tr key={`${p.id}-${p.tourney_id}-${idx}`} className="hover:bg-gray-800">
                       <td className="border border-gray-700 px-4 py-2">
                         <div className="flex items-center gap-2">
-                          <Flag ioc={p.ioc} className="text-sm" />
+                          <Flag ioc={p.ioc} className="w-4 h-3" />
                           <Link href={`/players/${encodeURIComponent(String(p.id))}`} className="text-blue-400 hover:underline">
                             {p.name}
                           </Link>

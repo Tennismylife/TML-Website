@@ -335,7 +335,7 @@ export default function CountSection({ tournamentId }: { tournamentId: string })
             <tr key={item.id} className="hover:bg-gray-100">
               <td className="py-1 text-center">
                 <div className="flex items-center justify-center gap-2">
-                  <Flag ioc={item.ioc} className="w-5 h-4" />
+                  <Flag ioc={item.ioc} className="w-4 h-3" />
                   <Link
                     href={`/players/${encodeURIComponent(String(item.id))}`}
                     className="text-blue-700 hover:underline text-lg md:text-xl"

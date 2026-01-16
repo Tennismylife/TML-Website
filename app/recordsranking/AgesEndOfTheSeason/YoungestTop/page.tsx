@@ -120,7 +120,7 @@ export default async function YoungestEoyTop({ searchParams }: { searchParams?: 
           {list.map((r, idx) => (
             <tr key={`${r.id}-${r.year}`} className="hover:bg-gray-800 border-b border-white/10">
               <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{startIndex + idx + 1}</td>
-              <td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{r.ioc && <Flag ioc={r.ioc} />}<span>{r.name}</span></div></td>
+              <td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{r.ioc && <Flag ioc={r.ioc} className="w-4 h-3" />}<span>{r.name}</span></div></td>
               <td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">{r.ageLabel}</td>
               <td className="border border-white/10 px-4 py-2 text-gray-300">{r.year}</td>
             </tr>

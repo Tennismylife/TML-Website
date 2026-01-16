@@ -67,7 +67,7 @@ export default async function StreakTop({ searchParams }: { searchParams?: Promi
             </thead>
             <tbody>
               {pageRows.map((p, idx)=> (
-                <tr key={`${p.id ?? p.name}-${start + idx}`} className="hover:bg-gray-800 border-b border-white/10"><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{start + idx + 1}</td><td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{p.ioc && <Flag ioc={p.ioc} />}<span>{p.name}</span></div></td><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.weeks}</td><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.startDate}</td><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.endDate}</td></tr>
+                <tr key={`${p.id ?? p.name}-${start + idx}`} className="hover:bg-gray-800 border-b border-white/10"><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{start + idx + 1}</td><td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" />}<span>{p.name}</span></div></td><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.weeks}</td><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.startDate}</td><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.endDate}</td></tr>
               ))}
             </tbody>
           </table>

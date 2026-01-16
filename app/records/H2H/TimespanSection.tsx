@@ -100,13 +100,13 @@ export default function TimespanSection({ selectedSurfaces, selectedLevels, sele
             players.map(p => (
               <tr key={`${p.player1.id}-${p.player2.id}`} className="border-b">
                 <td className="py-1">
-                  {p.player1.ioc && <Flag ioc={p.player1.ioc} className="mr-1 text-base" />}
+                  {p.player1.ioc && <Flag ioc={p.player1.ioc} className="mr-1 w-4 h-3" />}
                   <Link href={playerMatchesUrl(p.player1.id)} className="text-blue-700 hover:underline">
                     {p.player1.name}
                   </Link>
                 </td>
                 <td className="py-1">
-                  {p.player2.ioc && <Flag ioc={p.player2.ioc} className="mr-1 text-base" />}
+                  {p.player2.ioc && <Flag ioc={p.player2.ioc} className="mr-1 w-4 h-3" />}
                   <Link href={playerMatchesUrl(p.player2.id)} className="text-blue-700 hover:underline">
                     {p.player2.name}
                   </Link>

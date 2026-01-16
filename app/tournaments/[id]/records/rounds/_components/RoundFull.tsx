@@ -66,7 +66,7 @@ export default async function RoundFull({ id, round }: { id: string; round: stri
               {list.map((item: any) => (
                 <tr key={item.id} className="border-b border-gray-700">
                   <td className="py-2 text-center">
-                      <div className="flex items-center justify-center gap-2"><Flag ioc={item.ioc} /><Link href={`/players/${encodeURIComponent(String(item.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">
+                      <div className="flex items-center justify-center gap-2"><Flag ioc={item.ioc} className="w-4 h-3" /><Link href={`/players/${encodeURIComponent(String(item.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">
                         {item.name}
                       </Link>
                     </div>

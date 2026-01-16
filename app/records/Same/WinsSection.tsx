@@ -111,7 +111,7 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
               <tr key={`${p.winner_id}-${p.tourney_id}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{rank}</td>
                 <td className="border border-white/10 px-4 py-2 flex items-center gap-2 text-lg text-gray-200">
-                  <Flag ioc={p.ioc} className="text-base" />
+                  <Flag ioc={p.ioc} className="w-4 h-3" />
                   <Link href={getPlayerLink(p.winner_id)} className="hover:underline">
                     {p.player_name}
                   </Link>

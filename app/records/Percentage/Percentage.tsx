@@ -132,7 +132,7 @@ const Percentage = ({ selectedSurfaces, selectedLevels, selectedRounds, selected
               <tr key={`${p.id}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalIdx}</td>
                 <td className="border border-white/10 px-4 py-2 text-lg text-gray-200 flex items-center gap-2">
-                  <Flag ioc={p.ioc} className="text-base" />
+                  <Flag ioc={p.ioc} className="w-4 h-3" />
                   <Link href={getLink(String(p.id))} className="text-gray-200 hover:underline">{p.name}</Link>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{wins}</td>

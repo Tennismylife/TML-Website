@@ -181,7 +181,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
               <tr key={p.player_id} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
                 <td className="border border-white/10 px-4 py-2 flex items-center gap-2 text-lg text-gray-200">
-                  {p.ioc && <Flag ioc={p.ioc} className="text-base" />}
+                  {p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" />}
                   <Link href={getPlayerLink(p.player_id)} className="text-indigo-300 hover:underline">{p.player_name}</Link>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.titles}</td>

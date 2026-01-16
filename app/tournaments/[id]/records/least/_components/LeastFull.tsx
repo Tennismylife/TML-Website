@@ -52,7 +52,7 @@ export default async function LeastFull({ id, title }: { id: string; title?: str
                 <tr key={`${String(r.id ?? r.player?.id ?? i)}-${i}`} className="border-b border-gray-700">
                   <td className="py-2 text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <Flag ioc={r.player?.ioc || r.ioc} />
+                      <Flag ioc={r.player?.ioc || r.ioc} className="w-4 h-3" />
                       <Link href={`/players/${encodeURIComponent(String(r.player?.id ?? r.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{r.player?.name ?? r.name}</Link>
                     </div>
                   </td>
