@@ -24,7 +24,7 @@ export default function Card({
   description?: string;
   colorClass?: string;
   accentColor?: string;
-  badge?: { emoji?: string; text: string; bg?: string; textColor?: string; style?: 'street' | string };
+  badge?: { emoji?: string; text: string; bg?: string; textColor?: string; style?: 'street' | string; live?: boolean };
   footnote?: { text: string; link?: string; color?: string };
   subnote?: { text: string; link?: string; color?: string };
 }) {
@@ -113,31 +113,38 @@ export default function Card({
           const isTransparent = bg === "transparent" || bg === "none";
           const textColor = isTransparent ? (badge.textColor ?? "#f472b6") : "#FFFFFF";
 
-          // Street style: artistic pink text, no background
+          // Street style: artistic badge (supports live indicator)
           if (badge.style === 'street') {
+            const isLive = Boolean((badge as any).live) || String(badge.text).toLowerCase() === 'live';
             return (
-              <div className="absolute top-3 right-3 rounded-md shadow-md px-0 py-0" style={{ filter: 'drop-shadow(0 6px 18px rgba(244,114,182,0.18))' }}>
+              <div className="absolute top-3 right-3 rounded-md shadow-md px-0 py-0" style={{ filter: 'drop-shadow(0 6px 18px rgba(0,0,0,0.18))' }}>
                 <span
                   className="inline-block font-extrabold leading-none"
                   style={{
-                    // Card-like background
-                    backgroundColor: 'rgba(31,41,55,0.7)',
+                    backgroundColor: isLive ? '#dc2626' : 'rgba(31,41,55,0.7)',
                     display: 'inline-block',
                     padding: '8px 12px',
                     borderRadius: '8px',
                     transform: 'rotate(-1deg) skew(-2deg)',
-                    // Solid pink text for clarity (preserve casing)
-                    color: '#ff77b2',
-                    WebkitTextFillColor: '#ff77b2',
-                    WebkitTextStroke: '1px rgba(0,0,0,0.6)',
-                    textShadow: '0 6px 18px rgba(0,0,0,0.85), 0 1px 0 rgba(255,255,255,0.04)',
+                    color: isLive ? '#ffffff' : '#ff77b2',
+                    WebkitTextFillColor: isLive ? '#ffffff' : '#ff77b2',
+                    WebkitTextStroke: isLive ? '0 rgba(0,0,0,0.0)' : '1px rgba(0,0,0,0.6)',
+                    textShadow: isLive ? '0 4px 12px rgba(0,0,0,0.65)' : '0 6px 18px rgba(0,0,0,0.85), 0 1px 0 rgba(255,255,255,0.04)',
                     fontSize: '1.15rem',
                     letterSpacing: '0.2px',
                     lineHeight: 1,
-                    border: '1px solid rgba(255,255,255,0.02)'
+                    border: isLive ? '1px solid rgba(0,0,0,0.25)' : '1px solid rgba(255,255,255,0.02)'
                   }}
                 >
-                  {String(badge.text)}
+                  <span className="inline-flex items-center gap-2">
+                    {isLive && (
+                      <span className="relative inline-block w-2 h-2">
+                        <span className="absolute inline-block w-full h-full rounded-full bg-red-400 opacity-60 animate-ping" />
+                        <span className="relative inline-block w-2 h-2 rounded-full bg-red-600" />
+                      </span>
+                    )}
+                    <span className={isLive ? 'animate-pulse' : ''}>{String(badge.text)}</span>
+                  </span>
                 </span>
               </div>
             );

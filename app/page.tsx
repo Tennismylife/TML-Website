@@ -181,6 +181,26 @@ export default function HomePage() {
       {/* Client Components */}
       <SearchPlayerLoaderClient />
 
+      {/* Australian Open Featured Card */}
+      <div className="w-full mb-6">
+        <Card
+          href="https://stats.tennismylife.org/tournaments/australian-open/records"
+          title="Australian Open Records"
+          subtitle="All Australian Open Records"
+          description="Explore all Australian Open records: titles, match wins, age records, per-round percentages, and historical trivia."
+          large
+          colorClass="text-sky-400 group-hover:text-sky-300"
+          accentColor="#38bdf8"
+          badge={{ emoji: "🎾", text: "Live", style: "street", live: true }}
+        >
+          <svg viewBox="0 0 24 24" className="w-16 h-16" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="8" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4.2 9a9 9 0 0 0 15.6 6" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19.8 15a9 9 0 0 0-15.6-6" />
+          </svg>
+        </Card>
+      </div>
+
       {/* Featured Records Card */}
       <div className="w-full mb-8">
         <Card href="/records" title="Records" subtitle="All-Time Achievements & Milestones" large colorClass="text-yellow-400 group-hover:text-yellow-300" accentColor="#facc15">
