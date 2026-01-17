@@ -34,16 +34,19 @@ export const metadata = {
   openGraph: {
     title: 'Tennis My Life — Tennis Stats, Records & Matches Database',
     description: "Explore tournament calendars, match results, player head-to-head records, rankings and advanced tennis metrics on Tennis My Life.",
+    url: 'https://stats.tennismylife.org/',
+    type: 'website',
     images: [
       {
-        url: '/og-home.avif',
+        url: '/og/site-preview.png',
         width: 1200,
         height: 630,
-        alt: 'Tennis My Life - tennis statistics and records'
+        alt: 'Tennis My Life - tennis statistics and records',
+        type: 'image/png'
       }
     ],
   },
-  twitter: { card: 'summary_large_image' },
+  twitter: { card: 'summary_large_image', images: ['https://stats.tennismylife.org/og/site-preview.png'] },
   alternates: { canonical: '/' }
 } as const; 
 
