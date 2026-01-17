@@ -28,6 +28,8 @@ type NavItem = {
 
 import Card from '@/components/Card'
 
+const METADATA_BASE = process.env.NEXT_PUBLIC_SITE_ORIGIN ?? (process.env.NODE_ENV === 'production' ? 'https://stats.tennismylife.org' : 'http://localhost:3000');
+
 export const metadata = {
   title: 'Tennis My Life — Tennis Stats, Records & Matches Database',
   description: "Explore tournament calendars, match results, player head-to-head records, rankings and advanced tennis metrics on Tennis My Life.",
@@ -38,7 +40,7 @@ export const metadata = {
     type: 'website',
     images: [
       {
-        url: '/og/site-preview.png',
+        url: new URL('/og/site-preview.png', METADATA_BASE).toString(),
         width: 1200,
         height: 630,
         alt: 'Tennis My Life - tennis statistics and records',
@@ -46,7 +48,7 @@ export const metadata = {
       }
     ],
   },
-  twitter: { card: 'summary_large_image', images: ['https://stats.tennismylife.org/og/site-preview.png'] },
+  twitter: { card: 'summary_large_image', images: [new URL('/og/site-preview.png', METADATA_BASE).toString()] },
   alternates: { canonical: '/' }
 } as const; 
 
