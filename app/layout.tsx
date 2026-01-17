@@ -19,7 +19,12 @@ const montserrat = Montserrat({
 const siteTitle = 'TML — Tennis Records Data History Rankings, Matches & GOAT'
 const siteDescription = 'TML aggregates tennis matches, rankings, player profiles and records. Explore player statistics, head-to-heads and historical data. Find the GOAT'
 
+// Resolve metadataBase to a canonical origin for Open Graph/Twitter images
+const METADATA_BASE = process.env.NEXT_PUBLIC_SITE_ORIGIN ?? (process.env.NODE_ENV === 'production' ? 'https://stats.tennismylife.org' : 'http://localhost:3000');
+const METADATA_BASE_URL = new URL(METADATA_BASE);
+
 export const metadata: Metadata = {
+  metadataBase: METADATA_BASE_URL,
   title: siteTitle,
   description: siteDescription,
   openGraph: {
@@ -29,7 +34,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: `${process.env.SITE_URL || 'https://stats.tennismylife.org'}/og/site-preview.png`, 
+        url: new URL('/og/site-preview.png', METADATA_BASE_URL).toString(),
         alt: 'Records — TennisMyLife',
         width: 1200,
         height: 630,
@@ -39,7 +44,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    images: [`${process.env.SITE_URL || 'https://stats.tennismylife.org'}/og/site-preview.png`],
+    images: [new URL('/og/site-preview.png', METADATA_BASE_URL).toString()],
   },
   alternates: {
     canonical: '/',
