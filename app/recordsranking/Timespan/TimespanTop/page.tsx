@@ -4,7 +4,6 @@ import DropdownNavSelect from '@/components/DropdownNavSelect';
 
 import Flag from '@/components/Flag';
 import { prisma } from "@/lib/prisma";
-import React from 'react';
 import RecordsTopControls from '../../Top/RecordsTopControls';
 
 export const metadata: Metadata = { title: 'Top-X Timespan | ATP Ranking Records' };
