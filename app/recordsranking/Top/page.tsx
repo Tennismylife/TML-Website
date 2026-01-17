@@ -1,8 +1,15 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import Flag from '@/components/Flag';
 import { prisma } from "@/lib/prisma";
 import RecordsTopControls from "./RecordsTopControls";
 import ServerPagination from '@/components/ServerPagination';
+
+export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
+  const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
+  const top = Number((Array.isArray(sp.top) ? sp.top[0] : sp.top) ?? 2);
+  return { title: `Weeks at Top ${top} | ATP Ranking Records` };
+}
 
 interface TopXPlayer {
   id: string;
@@ -94,9 +101,9 @@ export default async function RecordsTopX({ searchParams }: { searchParams?: Pro
         <RecordsTopControls initialTop={initialTop} />
       </React.Suspense>
 
-      <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">
+      <h1 className="text-xl font-semibold mb-4 text-gray-200 text-center">
         Weeks at Top {initialTop}
-      </h2>
+      </h1>
 
       {paginatedPlayers.length > 0 ? renderTable(paginatedPlayers, start) : (
         <div className="text-gray-400 py-4 text-center">No data available.</div>

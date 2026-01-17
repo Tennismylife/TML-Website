@@ -1,9 +1,16 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import Flag from '@/components/Flag';
 import { prisma } from "@/lib/prisma";
 import RecordsCountControls from "../../Count/RecordsCountControls";
 import ServerPagination from '@/components/ServerPagination';
 import Link from "next/link";
+
+export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
+  const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
+  const rank = Number((sp.rank as string) ?? 1);
+  return { title: `Consecutive Weeks at No. ${rank} | ATP Ranking Records` };
+}
 
 interface Player {
   id?: string;
@@ -14,7 +21,7 @@ interface Player {
   endDate?: string;
 }
 
-export default async function StreakCount({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
+async function StreakCountMain({ searchParams, showHeading = true }: { searchParams?: Promise<Record<string, string | string[]>>, showHeading?: boolean }) {
   const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
   const rank = Number((sp.rank as string) ?? 1);
   const page = Number((sp.page as string) ?? '1');
@@ -157,9 +164,11 @@ export default async function StreakCount({ searchParams }: { searchParams?: Pro
 
   return (
     <section className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">
-        Consecutive Weeks at No. {rank}
-      </h2>
+      {showHeading !== false && (
+        <h1 className="text-xl font-semibold mb-4 text-gray-200 text-center">
+          Consecutive Weeks at No. {rank}
+        </h1>
+      )}
 
       <React.Suspense fallback={<div className="text-gray-400 py-2 text-center">Loading controls...</div>}>
         <RecordsCountControls initialTop={rank} />
@@ -169,3 +178,10 @@ export default async function StreakCount({ searchParams }: { searchParams?: Pro
     </section>
   );
 }
+
+export default async function StreakCount({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
+  const args: any = arguments[0] ?? {};
+  const showHeading = args.showHeading ?? true;
+  return await StreakCountMain({ searchParams, showHeading });
+}
+

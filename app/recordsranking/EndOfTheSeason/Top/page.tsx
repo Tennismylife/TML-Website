@@ -4,6 +4,13 @@ import Flag from '@/components/Flag';
 import DropdownNavSelect from '../../../../components/DropdownNavSelect';
 
 type Props = { searchParams?: Promise<Record<string,string | string[]>> };
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
+  const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
+  const top = Number((Array.isArray(sp.top) ? sp.top[0] : sp.top) ?? 2);
+  return { title: `Seasons at Year-End Top ${top} | ATP Ranking Records` };
+} 
 
 export default async function RecordsTopX(props: Props) {
   const sp = await Promise.resolve(props.searchParams ?? {}) as Record<string, string | string[]>;
@@ -64,7 +71,7 @@ export default async function RecordsTopX(props: Props) {
         <label className="text-gray-200 font-medium">Top Range:</label>
         <DropdownNavSelect name="top" value={String(top)} options={[1,2,3,4,5,6,7,8,9,10,20,30,50,100].map(n=>({ value: String(n), label: `Top ${n}`}))} />
       </div>
-      <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">Seasons at Year-End Top {top}</h2>
+
       {pageRows.length>0? renderTable(pageRows, start) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
       {totalPages > 1 && (
         <div className="flex gap-2 mt-4 justify-center">

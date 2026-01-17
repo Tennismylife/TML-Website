@@ -1,6 +1,9 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import { prisma } from "@/lib/prisma";
 import Flag from '@/components/Flag';
+
+export const metadata: Metadata = { title: 'Most ATP Points | ATP Ranking Records' };
 
 interface No1MaxPointsItem {
   name: string;
@@ -9,9 +12,9 @@ interface No1MaxPointsItem {
   date: string;
 }
 
+
 export default async function No1MaxPointsRanking({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
   const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
-  const includeAll = (sp.includeAll as string) === '1';
   // replicate API logic server-side
   const grouped = await prisma.ranking.groupBy({ by: ["playerId"], _max: { points: true }, orderBy: [{ _max: { points: 'desc' } }], take: 100 });
   const playerIds = grouped.map(g => g.playerId);
@@ -35,7 +38,7 @@ export default async function No1MaxPointsRanking({ searchParams }: { searchPara
     };
   });
 
-  const rows = includeAll ? result : result.slice(0, 20);
+  const rows = result.slice(0, 20);
 
   const renderTable = (list: No1MaxPointsItem[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
@@ -64,10 +67,9 @@ export default async function No1MaxPointsRanking({ searchParams }: { searchPara
 
   return (
     <section className="mb-8">
-      <h2 className="text-xl text-gray-100 font-semibold mb-3">Most ATP Points</h2>
 
       <div className="mb-4 flex justify-end">
-        <a href={`?includeAll=1`} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500">View All</a>
+
       </div>
 
       {rows.length > 0 ? renderTable(rows, 0) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}

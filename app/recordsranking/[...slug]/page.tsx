@@ -25,7 +25,60 @@ import DiffPointsEoy from "../DiffPoints/EndOfTheSeason/page";
 import TimespanEoyCount from "../TimespanEndOfTheSeason/TimespanCountEndOfTheSeason/page";
 import TimespanEoyTop from "../TimespanEndOfTheSeason/TimespanTopEndOfTheSeason/page";
 
+import type { Metadata } from 'next';
+
 export const dynamic = 'force-dynamic';
+
+export async function generateMetadata({ params, searchParams }: { params?: Promise<{ slug?: string | string[] }>, searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
+  const resolvedParams = await Promise.resolve(params ?? {});
+  const slugParam = (resolvedParams as any)?.slug;
+  const slug = Array.isArray(slugParam) ? slugParam : (slugParam ? [slugParam] : []);
+  const tabRaw = String(slug[0] ?? 'count');
+  const subRaw = slug[1] ? String(slug[1]) : null;
+  const tab = tabRaw.toLowerCase();
+  const sub = subRaw ? subRaw.toLowerCase() : null;
+
+  const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
+  const rank = Number((sp.rank as string) ?? 1);
+  const top = Number((sp.top as string) ?? 2);
+
+  let title = 'Records Ranking | ATP Ranking Records';
+  switch (tab) {
+    case 'count': title = `Weeks at No. ${rank} | ATP Ranking Records`; break;
+    case 'top': title = `Weeks at Top ${top} | ATP Ranking Records`; break;
+    case 'streak': title = sub === 'top' ? `Consecutive Weeks at Top ${top} | ATP Ranking Records` : `Consecutive Weeks at No. ${rank} | ATP Ranking Records`; break;
+    case 'endoftheseason':
+      if (sub === 'streakcount') title = `Consecutive Seasons at Year-End No. ${rank} | ATP Ranking Records`;
+      else if (sub === 'streaktop') title = `Consecutive Seasons at Year-End Top ${top} | ATP Ranking Records`;
+      else title = sub === 'top' ? `Seasons at Year-End Top ${top} | ATP Ranking Records` : `Seasons at Year-End No. ${rank} | ATP Ranking Records`; 
+      break;
+    case 'ages':
+      if (sub === 'youngesttop') title = `Youngest Players at Top ${top} | ATP Ranking Records`;
+      else if (sub === 'oldesttop') title = `Oldest Players at Top ${top} | ATP Ranking Records`;
+      else if (sub === 'youngestcount') title = `Youngest Players to Reach No. ${rank} | ATP Ranking Records`;
+      else title = `Oldest Players to Reach No. ${rank} | ATP Ranking Records`; 
+      break;
+    case 'agesendoftheseason':
+      if (sub === 'youngesttop') title = `Youngest Players to Finish Year-End in the Top ${top} | ATP Ranking Records`;
+      else if (sub === 'oldesttop') title = `Oldest Players to Finish Year-End in the Top ${top} | ATP Ranking Records`;
+      else if (sub === 'youngestcount') title = `Youngest Players at Year-End No. ${rank} | ATP Ranking Records`;
+      else title = `Oldest Players at Year-End No. ${rank} | ATP Ranking Records`; 
+      break;
+    case 'timespan':
+      if (sub === 'top') title = `Timespan between first and last time ranked at Top ${top} | ATP Ranking Records`;
+      else title = `Timespan between first and last time ranked No. ${rank} | ATP Ranking Records`; 
+      break;
+    case 'timespanendoftheseason':
+      if (sub === 'top') title = `Timespan between first and last time ranked at Year-End Top ${top} | ATP Ranking Records`;
+      else title = `Timespan between first and last time ranked at Year-End No. ${rank} | ATP Ranking Records`; 
+      break;
+    case 'mostpoints': title = (sub === 'endoftheseason' || (sp.subtab as string) === 'EndOfTheSeason') ? 'Most ATP Points at the End of The Season | ATP Ranking Records' : 'Most ATP Points | ATP Ranking Records'; break;
+    case 'diffpoints': title = (sub === 'endoftheseason' || (sp.subtab as string) === 'EndOfTheSeason') ? 'Maximum Difference Between No. 1 and No. 2 at the End of The Season | ATP Ranking Records' : 'Maximum Difference Between No. 1 and No. 2 | ATP Ranking Records'; break; 
+    default: title = 'Records Ranking — TML';
+  }
+
+  return { title };
+}
 
 export default async function RecordsRankingSlugPage({
   params,
@@ -63,9 +116,11 @@ export default async function RecordsRankingSlugPage({
   // In production, rendering those modules as JSX can occasionally lead to
   // unexpected reuse of the same module output. Calling them as async functions
   // (and awaiting) is deterministic and also allows us to pass `searchParams`.
+  // We default to telling sub-pages not to render their own H1 (the parent
+  // component will render a single H1 above the tabs).
   const render = async (Comp: any, extraProps?: Record<string, any>) => {
     if (!Comp) return null;
-    return await Comp({ searchParams: resolvedSearchParams, ...(extraProps ?? {}) });
+    return await Comp({ searchParams: resolvedSearchParams, showHeading: false, ...(extraProps ?? {}) });
   };
 
   // map segment to server component
@@ -122,8 +177,44 @@ export default async function RecordsRankingSlugPage({
       content = await render(Count);
   }
 
+  // compute a canonical heading (same text used in metadata but without site suffix)
+  const heading = (() => {
+    const sp = resolvedSearchParams ?? {} as Record<string, string | string[]>;
+    const rank = Number((sp.rank as string) ?? 1);
+    const top = Number((sp.top as string) ?? 2);
+    switch (tabSeg) {
+      case 'count': return `Weeks at No. ${rank}`;
+      case 'top': return `Weeks at Top ${top}`;
+      case 'streak': return subSeg === 'top' ? `Consecutive Weeks at Top ${top}` : `Consecutive Weeks at No. ${rank}`;
+      case 'endoftheseason':
+        if (subSeg === 'streakcount') return `Consecutive Seasons at Year-End No. ${rank}`;
+        if (subSeg === 'streaktop') return `Consecutive Seasons at Year-End Top ${top}`;
+        return subSeg === 'top' ? `Seasons at Year-End Top ${top}` : `Seasons at Year-End No. ${rank}`;
+      case 'ages':
+        if (subSeg === 'youngesttop') return `Youngest Players at Top ${top}`;
+        if (subSeg === 'oldesttop') return `Oldest Players at Top ${top}`;
+        if (subSeg === 'youngestcount') return `Youngest Players to Reach No. ${rank}`;
+        return `Oldest Players to Reach No. ${rank}`;
+      case 'agesendoftheseason':
+        if (subSeg === 'youngesttop') return `Youngest Players to Finish Year-End in the Top ${top}`;
+        if (subSeg === 'oldesttop') return `Oldest Players to Finish Year-End in the Top ${top}`;
+        if (subSeg === 'youngestcount') return `Youngest Players at Year-End No. ${rank}`;
+        return `Oldest Players at Year-End No. ${rank}`;
+      case 'timespan':
+        if (subSeg === 'top') return `Timespan between first and last time ranked at Top ${top}`;
+        return `Timespan between first and last time ranked No. ${rank}`;
+      case 'timespanendoftheseason':
+        if (subSeg === 'top') return `Timespan between first and last time ranked at Year-End Top ${top}`;
+        return `Timespan between first and last time ranked at Year-End No. ${rank}`;
+      case 'mostpoints': return (subSeg === 'endoftheseason' || (resolvedSearchParams as any).subtab === 'EndOfTheSeason') ? 'Most ATP Points at the End of The Season' : 'Most ATP Points';
+      case 'diffpoints': return (subSeg === 'endoftheseason' || (resolvedSearchParams as any).subtab === 'EndOfTheSeason') ? 'Maximum Difference Between No. 1 and No. 2 at the End of The Season' : 'Maximum Difference Between No. 1 and No. 2';
+      default: return 'Records Ranking';
+    }
+  })();
+
   return (
     <main>
+      <h1 className="mb-8 text-3xl font-bold text-center text-gray-100">{heading}</h1>
       <RecordsRankingClient currentTabSeg={tabSeg} currentSubSeg={subSeg} />
       {process.env.RANKING_DEBUG === '1' ? (
         <div

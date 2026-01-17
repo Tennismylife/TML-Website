@@ -117,7 +117,7 @@ export default async function YoungestEoyAtRank({ searchParams }: { searchParams
       <React.Suspense fallback={<div className="text-gray-400 py-2 text-center">Loading controls...</div>}>
         <EndSeasonCountControls initialRank={rank} hideLabel />
       </React.Suspense>
-      <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">Youngest Players at Year-End No. {rank}</h2>
+
 
       {paginatedRows.length > 0 ? renderTable(paginatedRows, start) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
 

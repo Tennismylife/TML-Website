@@ -29,6 +29,14 @@ function diffYMD(birth: Date, ref: Date) {
   return { y, m, d };
 }
 
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
+  const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
+  const rank = Number((sp.rank as string) ?? 1);
+  return { title: `Oldest Players to Reach No. ${rank} | ATP Ranking Records` };
+}
+
 export default async function OldestAtRank({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
   const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
   const rank = Number((sp.rank as string) ?? 1);
@@ -113,7 +121,7 @@ export default async function OldestAtRank({ searchParams }: { searchParams?: Pr
         <OldestCountControls initialRank={rank} />
       </React.Suspense>
 
-      <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">Oldest Players to Reach No. {rank}</h2>
+
 
       {paginatedRows.length > 0 ? renderTable(paginatedRows, start) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
 

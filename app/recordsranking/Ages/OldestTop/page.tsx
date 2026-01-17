@@ -2,6 +2,13 @@ import { prisma } from "@/lib/prisma";
 import ServerPagination from '@/components/ServerPagination';
 import Flag from '@/components/Flag';
 import DropdownNavSelect from '../../../../components/DropdownNavSelect';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
+  const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
+  const top = Number((Array.isArray(sp.top) ? sp.top[0] : sp.top) ?? (Array.isArray(sp.rank) ? sp.rank[0] : sp.rank) ?? 2);
+  return { title: `Oldest Players at Top ${top} | ATP Ranking Records` };
+}
 
 interface OldestTopItem {
   id: string;
@@ -85,7 +92,7 @@ export default async function OldestAtTopX({ searchParams }: { searchParams?: Pr
         <label className="text-gray-200 font-medium">Top:</label>
         <DropdownNavSelect name="top" value={String(top)} options={[1,2,3,4,5,6,7,8,9,10,20,30,50,100].map(n=>({ value: String(n), label: `Top ${n}`}))} />
       </div>
-      <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">Oldest Players at Top {top}</h2>
+
 
       {paginatedRows.length > 0 ? renderTable(paginatedRows, start) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
 

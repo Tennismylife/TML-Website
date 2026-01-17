@@ -1,8 +1,15 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import Flag from '@/components/Flag';
 import { prisma } from "@/lib/prisma";
 import RecordsCountControls from "./RecordsCountControls";
 import ServerPagination from '@/components/ServerPagination';
+
+export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
+  const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
+  const rank = Number((sp.rank as string) ?? 1);
+  return { title: `Weeks at No. ${rank} | ATP Ranking Records` };
+}
 
 interface Player {
   id: string;
@@ -11,7 +18,7 @@ interface Player {
   weeks: number;
 }
 
-export default async function RecordsCount({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
+async function RecordsCountMain({ searchParams, showHeading = true }: { searchParams?: Promise<Record<string, string | string[]>>; showHeading?: boolean }) {
   const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
   const initialTop = Number((sp.rank as string) ?? 1);
   const page = Number((sp.page as string) ?? '1');
@@ -94,9 +101,11 @@ export default async function RecordsCount({ searchParams }: { searchParams?: Pr
         <RecordsCountControls initialTop={initialTop} />
       </React.Suspense>
 
-      <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">
-        Weeks at No. {initialTop}
-      </h2>
+      {showHeading && (
+        <h1 className="text-xl font-semibold mb-4 text-gray-200 text-center">
+          Weeks at No. {initialTop}
+        </h1>
+      )}
 
       {/* Tabella principale (server-rendered) */}
       {paginatedPlayers.length > 0 ? renderTable(paginatedPlayers, start) : (
@@ -113,4 +122,10 @@ export default async function RecordsCount({ searchParams }: { searchParams?: Pr
       )}
     </section>
   );
+}
+
+export default async function RecordsCount({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
+  const args: any = arguments[0] ?? {};
+  const showHeading = args.showHeading ?? true;
+  return await RecordsCountMain({ searchParams, showHeading });
 }

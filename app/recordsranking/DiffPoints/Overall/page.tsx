@@ -3,12 +3,11 @@ import Flag from '@/components/Flag';
 
 export default async function MaxDifferenceNo1No2({ searchParams }: { searchParams?: Promise<Record<string,string | string[]>> }) {
   const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
-  const includeAll = (sp.includeAll as string) === '1';
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000';
   const res = await fetch(`${baseUrl}/api/recordsranking/diffpoints/overall`, { cache: 'no-store' });
   const data = await res.json();
   const rows = Array.isArray(data) ? data : [];
-  const toShow = includeAll ? rows : rows.slice(0, 10);
+  const toShow = rows.slice(0, 10);
 
   const renderTable = (list: any[]) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
@@ -25,10 +24,7 @@ export default async function MaxDifferenceNo1No2({ searchParams }: { searchPara
 
   return (
     <section className="mb-8">
-      <h2 className="text-xl text-gray-100 font-semibold mb-3">Maximum Difference Between No. 1 and No. 2</h2>
-      <div className="mb-4 flex justify-end">
-        {includeAll ? null : <a href={`?includeAll=1`} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500">View All</a>}
-      </div>
+
 
       {rows.length === 0 ? <div className="text-gray-400 py-4 text-center">No data available.</div> : renderTable(toShow)}
     </section>

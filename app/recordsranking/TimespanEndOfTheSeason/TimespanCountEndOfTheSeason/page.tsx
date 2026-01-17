@@ -1,6 +1,14 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import Flag from '@/components/Flag';
+import DropdownNavSelect from '@/components/DropdownNavSelect';
+
+export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
+  const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
+  const rank = Number((sp.rank as string) ?? 1);
+  return { title: `Timespan at EOY Rank ${rank} | ATP Ranking Records` };
+}
 
 function diffYMD(birth: Date, ref: Date) {
   let y = ref.getUTCFullYear() - birth.getUTCFullYear();
@@ -14,7 +22,6 @@ function diffYMD(birth: Date, ref: Date) {
 export default async function EoyRankTimespan({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
   const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
   const rank = Number((sp.rank as string) ?? 1);
-  const includeAll = (sp.includeAll as string) === '1';
 
   if (!Number.isInteger(rank) || rank < 1) {
     return (<section className="mb-8"><div className="text-gray-400 py-4 text-center">Invalid 'rank' param</div></section>);
@@ -45,7 +52,7 @@ export default async function EoyRankTimespan({ searchParams }: { searchParams?:
   const MS_PER_DAY = 1000 * 60 * 60 * 24;
   const data = Array.from(byPlayer.entries()).map(([id, v]) => { const timespanDays = Math.max(0, Math.floor((v.max.getTime() - v.min.getTime()) / MS_PER_DAY)); const { y,m,d } = diffYMD(v.min, v.max); return { id, name: v.name, ioc: v.ioc, firstYear: v.min.getUTCFullYear(), lastYear: v.max.getUTCFullYear(), spanYears: Math.max(0, v.max.getUTCFullYear() - v.min.getUTCFullYear()), timespanDays, timespanLabel: `${y}y ${m}m ${d}d` } }).sort((a,b) => b.timespanDays - a.timespanDays || b.lastYear - a.lastYear || a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }));
 
-  const rows = includeAll ? data : data.slice(0, 20);
+  const rows = data.slice(0, 20);
 
   const renderTable = (list: typeof rows) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
@@ -81,10 +88,10 @@ export default async function EoyRankTimespan({ searchParams }: { searchParams?:
       <div className="flex items-center justify-between mb-4">
         <div>
           <label className="text-gray-200 font-medium mr-2">Rank (EOY):</label>
-          <div className="px-2 py-1 rounded bg-gray-800 text-gray-200 border border-gray-600">No. {rank}</div>
+          <DropdownNavSelect name="rank" value={String(rank)} options={Array.from({ length: 10 }, (_, i) => ({ value: String(i + 1), label: `No. ${i + 1}` }))} />
         </div>
-        <h2 className="text-xl font-semibold text-gray-200 text-center flex-1">Timespan at EOY Rank {rank}</h2>
-        <a href={`?rank=${rank}&includeAll=1`} className="ml-auto px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500">View All</a>
+
+
       </div>
 
       {rows.length > 0 ? renderTable(rows) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}

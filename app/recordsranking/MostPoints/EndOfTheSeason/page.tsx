@@ -1,6 +1,9 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import { prisma } from "@/lib/prisma";
 import Flag from '@/components/Flag';
+
+export const metadata: Metadata = { title: 'Most ATP Points at the End of The Season | ATP Ranking Records' };
 
 interface YearEndMaxPointsItem {
   name: string;
@@ -9,9 +12,8 @@ interface YearEndMaxPointsItem {
   year: number | string;
 }
 
-export default async function No1YearEndMaxPointsRanking({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
+async function No1YearEndMaxPointsRankingMain({ searchParams, showHeading = true }: { searchParams?: Promise<Record<string, string | string[]>>, showHeading?: boolean }) {
   const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
-  const includeAll = (sp.includeAll as string) === '1';
 
   // Server-side replication of API logic
   const allDates = await prisma.rankingDate.findMany({ select: { date: true }, orderBy: { date: 'asc' } });
@@ -40,7 +42,7 @@ export default async function No1YearEndMaxPointsRanking({ searchParams }: { sea
     return { name: row?.player?.atpname ?? 'Unknown', country: row?.player?.ioc ?? 'UNK', points: Number(g._max.points ?? 0), year: year ?? 'N/A' };
   });
 
-  const rows = includeAll ? result : result.slice(0, 20);
+  const rows = result.slice(0, 20);
 
   const renderTable = (list: YearEndMaxPointsItem[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
@@ -57,9 +59,14 @@ export default async function No1YearEndMaxPointsRanking({ searchParams }: { sea
 
   return (
     <section className="mb-8">
-      <h2 className="text-xl text-gray-100 font-semibold mb-3">Most ATP Points (Year-End)</h2>
-      <div className="mb-4 flex justify-end"><a href={`?includeAll=1`} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500">View All</a></div>
+
       {rows.length > 0 ? renderTable(rows, 0) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
     </section>
   );
+}
+
+export default async function No1YearEndMaxPointsRanking({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
+  const args: any = arguments[0] ?? {};
+  const showHeading = args.showHeading ?? true;
+  return await No1YearEndMaxPointsRankingMain({ searchParams, showHeading });
 }

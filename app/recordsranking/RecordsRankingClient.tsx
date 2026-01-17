@@ -71,26 +71,21 @@ export default function RecordsRankingClient({ currentTabSeg = 'count', currentS
 
   return (
     <main className="w-full px-8 py-8 text-white bg-gray-900">
-      <h1 className="mb-8 text-3xl font-bold text-center text-gray-100">Records Ranking</h1>
 
       <nav ref={navRef} className="mb-4 flex flex-wrap gap-3 bg-gray-800/40 rounded-2xl p-4 shadow-lg w-full justify-center" aria-label="Ranking tabs">
         {tabs.map((tab) => {
           const tabSeg = (tabPathMap as any)[tab.key] ?? tab.key;
           const href = `/recordsranking/${tabSeg.replace(/([A-Z])/g,(m)=>m.toLowerCase())}`;
+          const firstSub = (subTabsOptions as any)[tab.key]?.[0]?.key;
+          const linkHref = tab.hasSub && firstSub ? `${href}/${encodeURIComponent(firstSub)}` : href;
           const isActive = activeTabKey === tab.key;
 
           return (
             <div key={tab.key} className="relative" onMouseEnter={() => setHoveredTab(tab.key)} onMouseLeave={() => setHoveredTab(null)}>
               <Link
-                href={href}
+                href={linkHref}
                 className={`px-4 py-2 rounded-xl font-medium transition-colors duration-200 ${isActive ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700'}`}
-                onClick={(e) => {
-                  if (tab.hasSub && typeof window !== 'undefined' && window.innerWidth <= 768) {
-                    e.preventDefault();
-                    setHoveredTab(prev => (prev === tab.key ? null : tab.key));
-                    return;
-                  }
-                }}
+                onClick={() => setHoveredTab(null)}
               >
                 {tab.label}
               </Link>

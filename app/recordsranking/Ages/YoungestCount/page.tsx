@@ -28,6 +28,14 @@ function diffYMD(birth: Date, ref: Date) {
   return { y, m, d };
 }
 
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
+  const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
+  const rank = Number((sp.rank as string) ?? 1);
+  return { title: `Youngest Players to Reach No. ${rank} | ATP Ranking Records` };
+}
+
 export default async function YoungestAtRank({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
   const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
   const rank = Number((sp.rank as string) ?? 1);
@@ -103,7 +111,7 @@ export default async function YoungestAtRank({ searchParams }: { searchParams?: 
         <DropdownNavSelect name="rank" value={String(rank)} options={Array.from({ length: 10 }).map((_, i) => ({ value: String(i + 1), label: `No. ${i + 1}` }))} />
       </div>
 
-      <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">Youngest Players to Reach No. {rank}</h2>
+
 
       {paginatedRows.length > 0 ? renderTable(paginatedRows, start) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
 

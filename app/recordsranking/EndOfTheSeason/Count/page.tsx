@@ -3,6 +3,13 @@ import { prisma } from "@/lib/prisma";
 import Flag from '@/components/Flag';
 import EndSeasonCountControls from "./EndSeasonCountControls";
 import ServerPagination from '@/components/ServerPagination';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
+  const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
+  const rank = Number((sp.rank as string) ?? 1);
+  return { title: `Seasons at Year-End No. ${rank} | ATP Ranking Records` };
+}
 
 interface Player {
   id: string;
@@ -99,7 +106,7 @@ export default async function RecordsCount({ searchParams }: { searchParams?: Pr
         <EndSeasonCountControls initialRank={rank} />
       </React.Suspense>
 
-      <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">Seasons at Year-End No. {rank}</h2>
+
 
       {paginatedPlayers.length > 0 ? renderTable(paginatedPlayers, start) : (
         <div className="text-gray-400 py-4 text-center">No data available.</div>

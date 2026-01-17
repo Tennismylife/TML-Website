@@ -122,7 +122,7 @@ export default async function OldestEoyTop({ searchParams }: { searchParams?: Pr
       <React.Suspense fallback={<div className="text-gray-400 py-2 text-center">Loading controls...</div>}>
         <RecordsTopControls initialTop={initialTop} hideLabel />
       </React.Suspense>
-      <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">Oldest Players to Finish Year-End in the Top {top}</h2>
+
 
       {paginatedRows.length > 0 ? renderTable(paginatedRows, start) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
 

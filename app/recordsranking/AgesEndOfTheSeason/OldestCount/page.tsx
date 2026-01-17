@@ -86,7 +86,7 @@ export default async function OldestEoyAtRank({ searchParams }: { searchParams?:
         <EndSeasonCountControls initialRank={rank} hideLabel />
       </React.Suspense>
 
-      <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">Oldest Players at Year-End No. {rank}</h2>
+
 
       {pageRows.length>0? renderTable(pageRows, start): (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
 

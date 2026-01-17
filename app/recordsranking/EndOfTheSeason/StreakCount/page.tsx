@@ -24,11 +24,17 @@ function computeStreaks(sortedYears: number[]): number[][] {
 }
 
 import StreakCountControls from "./StreakCountControls";
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
+  const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
+  const rank = Number((sp.rank as string) ?? 1);
+  return { title: `Consecutive Seasons at Year-End No. ${rank} | ATP Ranking Records` };
+}
 
 export default async function EoyRankStreaks({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
   const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
   const rank = Number((sp.rank as string) ?? 1);
-  const includeAll = (sp.includeAll as string) === '1';
 
   // get last per year
   const dateWhere: any = {};
@@ -70,10 +76,7 @@ export default async function EoyRankStreaks({ searchParams }: { searchParams?: 
 
     for (const s of streaks) {
       const info = playersMap.get(playerId)!;
-      data.push(includeAll
-        ? { id: playerId, name: info.name, ioc: info.ioc, longestStreak: s.length, seasons: s, streaks: streaks.map(st => ({ length: st.length, seasons: st })) }
-        : { id: playerId, name: info.name, ioc: info.ioc, longestStreak: s.length, seasons: s }
-      );
+      data.push({ id: playerId, name: info.name, ioc: info.ioc, longestStreak: s.length, seasons: s });
     }
   }
 
@@ -114,7 +117,7 @@ export default async function EoyRankStreaks({ searchParams }: { searchParams?: 
   return (
     <section className="mb-8">
       <StreakCountControls initialRank={rank} />
-      <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">Consecutive Seasons at Year-End No. {rank}</h2>
+
 
       {paginatedPlayers.length > 0 ? renderTable(paginatedPlayers, start) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
 

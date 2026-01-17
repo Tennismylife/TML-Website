@@ -1,7 +1,14 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import Flag from '@/components/Flag';
 import DropdownNavSelect from '@/components/DropdownNavSelect';
+
+export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
+  const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
+  const top = Number((Array.isArray(sp.top) ? sp.top[0] : sp.top) ?? 2);
+  return { title: `Consecutive Weeks at Top ${top} | ATP Ranking Records` };
+} 
 
 function formatDate(d: Date) { return d.toISOString().slice(0,10); }
 
@@ -58,7 +65,7 @@ export default async function StreakTop({ searchParams }: { searchParams?: Promi
         <DropdownNavSelect name="top" value={String(top)} options={[1,2,3,4,5,6,7,8,9,10,20,30,50,100].map(n => ({ value: String(n), label: `Top ${n}`}))} />
       </div>
 
-      <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">Consecutive Weeks at Top {top}</h2>
+
       {pageRows.length === 0 ? (<div className="text-gray-400 py-4 text-center">No data available.</div>) : (
         <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
           <table className="min-w-full border-collapse">

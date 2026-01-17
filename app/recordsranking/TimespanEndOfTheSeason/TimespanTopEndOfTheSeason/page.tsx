@@ -1,7 +1,10 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import Flag from '@/components/Flag';
 import DropdownNavSelect from '../../../../components/DropdownNavSelect';
+
+export const metadata: Metadata = { title: 'Top-X Timespan (EOY) | ATP Ranking Records' };
 
 function diffYMD(a: Date, b: Date) { let y=b.getUTCFullYear()-a.getUTCFullYear(); let m=b.getUTCMonth()-a.getUTCMonth(); let d=b.getUTCDate()-a.getUTCDate(); if (d<0){const prev=new Date(Date.UTC(b.getUTCFullYear(),b.getUTCMonth(),0)); d+=prev.getUTCDate(); m-=1;} if(m<0){m+=12;y-=1;} return {y,m,d}; }
 
@@ -76,9 +79,9 @@ export default async function EoyTopTimespan(props: Props) {
     <section className="mb-8">
       <div className="flex items-center gap-4 mb-4">
         <label className="text-gray-200 font-medium">Top-X (EOY):</label>
-        <DropdownNavSelect name="top" value={String(top)} options={[5,10,20,50,100].map(t=>({ value: String(t), label: `Top ${t}`}))} />
+        <DropdownNavSelect name="top" value={String(top)} options={Array.from({ length: 10 }, (_, i) => i + 1).map(t => ({ value: String(t), label: `Top ${t}` }))} />
       </div>
-      <h2 className="flex-1 text-center text-xl font-semibold text-gray-200">Top-X Timespan (EOY)</h2>
+
       {rowsToShow.length > 0 ? renderTable(rowsToShow) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
     </section>
   );

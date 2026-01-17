@@ -1,8 +1,11 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import DropdownNavSelect from '@/components/DropdownNavSelect';
 
 import Flag from '@/components/Flag';
 import { prisma } from "@/lib/prisma";
+
+export const metadata: Metadata = { title: 'Top-X Timespan | ATP Ranking Records' };
 
 function diffYMD(a: Date, b: Date) {
   let y = b.getUTCFullYear() - a.getUTCFullYear();
@@ -23,7 +26,6 @@ function diffYMD(a: Date, b: Date) {
 export default async function TopXTimespan({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
   const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
   const top = Number((sp.top as string) ?? 5);
-  const includeAll = (sp.includeAll as string) === '1';
   const eoy = (sp.eoy as string) === '1';
 
   const fromYear = sp.fromYear ? Number(sp.fromYear as string) : null;
@@ -80,7 +82,7 @@ export default async function TopXTimespan({ searchParams }: { searchParams?: Pr
     return { id, name: v.name, ioc: v.ioc, firstDate: v.min.toISOString().slice(0,10), lastDate: v.max.toISOString().slice(0,10), timespanDays, timespanLabel: `${y}y ${m}m ${d}d` };
   }).sort((a,b) => b.timespanDays - a.timespanDays || b.lastDate.localeCompare(a.lastDate) || a.name.localeCompare(b.name, 'en', { sensitivity: 'base' })).slice(0, limit);
 
-  const rowsToShow = includeAll ? data : data.slice(0, 20);
+  const rowsToShow = data.slice(0, 20);
   const perPage = 20;
   const page = Number((sp.page as string) ?? 1);
   const totalPages = Math.ceil(data.length / perPage);
@@ -115,7 +117,6 @@ export default async function TopXTimespan({ searchParams }: { searchParams?: Pr
   );
 
   const baseQuery = (q: URLSearchParams) => {
-    if (includeAll) q.set('includeAll','1');
     if (eoy) q.set('eoy','1');
     if (fromYear !== null) q.set('fromYear',String(fromYear));
     if (toYear !== null) q.set('toYear',String(toYear));
@@ -130,9 +131,9 @@ export default async function TopXTimespan({ searchParams }: { searchParams?: Pr
           <DropdownNavSelect name="top" value={String(top)} options={[5,10,20,50,100].map(t => ({ value: String(t), label: `Top ${t}` }))} />
         </div>
 
-        <h2 className="flex-1 text-center text-xl font-semibold text-gray-200">Top-X Timespan</h2>
+  
 
-        <a href={"?top="+top+"&includeAll=1"} className="ml-auto px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500">View All</a>
+
       </div>
 
       {pageRows.length > 0 ? renderTable(pageRows, start) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
@@ -144,7 +145,7 @@ export default async function TopXTimespan({ searchParams }: { searchParams?: Pr
         <div className="flex gap-2 mt-4">
           {Array.from({length: totalPages}).map((_,i)=>{
             const p = i+1;
-            const q = new URLSearchParams(); q.set('top',String(top)); if (p>1) q.set('page',String(p)); if (includeAll) q.set('includeAll','1'); if (eoy) q.set('eoy','1'); if (fromYear !== null) q.set('fromYear',String(fromYear)); if (toYear !== null) q.set('toYear',String(toYear));
+            const q = new URLSearchParams(); q.set('top',String(top)); if (p>1) q.set('page',String(p)); if (eoy) q.set('eoy','1'); if (fromYear !== null) q.set('fromYear',String(fromYear)); if (toYear !== null) q.set('toYear',String(toYear));
             const href = `/recordsranking/Timespan/TimespanTop?${q.toString()}`;
             return <a key={p} href={href} className={`px-2 py-1 rounded ${p===page? 'bg-blue-700 text-white':'bg-gray-800 text-gray-200'}`}>{p}</a>
           })}

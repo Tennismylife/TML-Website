@@ -97,7 +97,7 @@ export default async function EoyTopXStreaks({ searchParams }: { searchParams?: 
         <label className="text-gray-200 font-medium">Top:</label>
         <DropdownNavSelect name="top" value={String(top)} options={[1,2,3,4,5,6,7,8,9,10,20,30,50,100].map(n=>({ value: String(n), label: `Top ${n}`}))} />
       </div>
-      <h2 className="text-xl font-semibold mb-4 text-gray-200 text-center">Consecutive Seasons at Year-End Top {top}</h2>
+
 
       {pageRows.length === 0 ? (<div className="text-gray-400 py-4 text-center">No data available.</div>) : renderTable(pageRows, start)}
 
