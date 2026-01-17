@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import Flag from '@/components/Flag';
 import DropdownNavSelect from '../../../../components/DropdownNavSelect';
+import RecordsTopControls from '../../Top/RecordsTopControls';
 
 export const metadata: Metadata = { title: 'Top-X Timespan (EOY) | ATP Ranking Records' };
 
@@ -77,10 +78,9 @@ export default async function EoyTopTimespan(props: Props) {
 
   return (
     <section className="mb-8">
-      <div className="flex items-center gap-4 mb-4">
-        <label className="text-gray-200 font-medium">Top-X (EOY):</label>
-        <DropdownNavSelect name="top" value={String(top)} options={Array.from({ length: 10 }, (_, i) => i + 1).map(t => ({ value: String(t), label: `Top ${t}` }))} />
-      </div>
+      <React.Suspense fallback={<div className="text-gray-400 py-2 text-center">Loading controls...</div>}>
+        <RecordsTopControls initialTop={top} />
+      </React.Suspense>
 
       {rowsToShow.length > 0 ? renderTable(rowsToShow) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
     </section>

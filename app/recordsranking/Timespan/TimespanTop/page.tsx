@@ -4,6 +4,8 @@ import DropdownNavSelect from '@/components/DropdownNavSelect';
 
 import Flag from '@/components/Flag';
 import { prisma } from "@/lib/prisma";
+import React from 'react';
+import RecordsTopControls from '../../Top/RecordsTopControls';
 
 export const metadata: Metadata = { title: 'Top-X Timespan | ATP Ranking Records' };
 
@@ -125,16 +127,9 @@ export default async function TopXTimespan({ searchParams }: { searchParams?: Pr
 
   return (
     <section className="mb-8">
-      <div className="flex items-center gap-4 mb-4">
-        <label className="text-gray-200 font-medium">Top-X:</label>
-        <div className="flex gap-2">
-          <DropdownNavSelect name="top" value={String(top)} options={[5,10,20,50,100].map(t => ({ value: String(t), label: `Top ${t}` }))} />
-        </div>
-
-  
-
-
-      </div>
+      <React.Suspense fallback={<div className="text-gray-400 py-2 text-center">Loading controls...</div>}>
+        <RecordsTopControls initialTop={top} />
+      </React.Suspense>
 
       {pageRows.length > 0 ? renderTable(pageRows, start) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
 
