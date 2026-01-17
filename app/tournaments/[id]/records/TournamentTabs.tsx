@@ -81,7 +81,7 @@ export default function TournamentTabs({
   };
 
   return (
-    <div className="relative mb-6 flex flex-wrap gap-2 bg-gray-800/40 rounded-2xl p-2 shadow-lg">
+    <div className="relative mb-6 flex flex-wrap gap-2 bg-gray-800/40 rounded-2xl py-2 px-0 shadow-lg">
       {tabs.map(tab => (
         <div
           key={tab.key}

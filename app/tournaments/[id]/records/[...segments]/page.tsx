@@ -169,9 +169,9 @@ export default async function RecordsCatchAllPage({
 
   return (
     <div>
-      <main className="w-full mx-auto p-8 text-white" style={{ backgroundColor: 'rgba(17,24,39,0.95)', backdropFilter: 'blur(6px)', minHeight: '100vh' }}>
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-6">{`${humanTournament} | ${recordTitle}`}</h1>
-        <RecordsPage params={idPromise} />
+      <main className="w-full mx-auto py-8 px-0 text-white" style={{ backgroundColor: 'rgba(17,24,39,0.95)', backdropFilter: 'blur(6px)', minHeight: '100vh' }}>
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-6 text-center">{`${humanTournament} | ${recordTitle}`}</h1>
+          <RecordsPage params={idPromise} />
       </main>
     </div>
   );

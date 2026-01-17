@@ -177,12 +177,7 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
 
   if (loadingTournament) {
     return (
-      <div
-        className="w-full mx-auto p-8 text-white"
-        style={{ backgroundColor: 'rgba(17,24,39,0.95)', backdropFilter: 'blur(6px)', minHeight: '100vh' }}
-      >
-        Loading...
-      </div>
+      <div className="p-8 text-white">Loading...</div>
     );
   }
 
@@ -218,16 +213,11 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
   })();
 
   return (
-    <main
-      className="w-full mx-auto p-8 text-white"
-      style={{ backgroundColor: 'rgba(17,24,39,0.95)', backdropFilter: 'blur(6px)', minHeight: '100vh' }}
-    >
-      {/* Page heading is server-rendered to ensure consistent SEO and accessibility; keep client logic for tabs and content */}
-
+    <>
       <TournamentHeader id={headerId} />
 
       {/* Intro description (client-rendered under the header) */}
-      <h3 className="text-base text-gray-300 max-w-3xl leading-relaxed mb-6">
+      <h3 className="text-base text-gray-300 w-full leading-relaxed mb-6">
         {(() => {
           const base = 'Explore match-level data, historical trends, and the players who left their mark on this tournament.';
           if (activeTab === 'least') return `A curated collection of least games lost to reach a round at ${humanizedDisplayName}. ${base}`;
@@ -247,7 +237,7 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
       />
 
       <div
-        className="rounded-2xl bg-gray-900/50 p-4 shadow-inner"
+        className="rounded-2xl bg-gray-900/50 py-4 px-0 shadow-inner"
         style={{
           ['--col-1' as any]: '240px',
           ['--col-2' as any]: '110px',
@@ -279,6 +269,6 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
         {activeTab === 'least' && <LeastSection id={id} linkId={linkId} />}
         {activeTab === 'average-age' && <AverageAgeSection id={id} />}
       </div>
-    </main>
+    </>
   );
 }

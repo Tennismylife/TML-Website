@@ -12,6 +12,12 @@ export default function RecordsPage({ params }: { params: Promise<{ id: string }
   }
 
   // Render the client records page which contains the interactive tabs
+  // Wrap in the same main wrapper we previously had in the client so the layout is consistent
   // @ts-ignore - this is a client component that expects a Promise for use() hook
-  return <RecordsPageClient params={idPromise} />;
+  return (
+    <main className="w-full mx-auto p-8 text-white" style={{ backgroundColor: 'rgba(17,24,39,0.95)', backdropFilter: 'blur(6px)', minHeight: '100vh' }}>
+      {/* @ts-ignore */}
+      <RecordsPageClient params={idPromise} />
+    </main>
+  );
 }

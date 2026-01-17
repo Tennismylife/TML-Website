@@ -65,8 +65,8 @@ export default function TournamentHeader({ id }: TournamentHeaderProps) {
   const editionRanges = tournament.editions && tournament.editions.length > 0 ? formatEditionRanges(tournament.editions) : [];
 
   return (
-    <header className="relative bg-gradient-to-r from-green-700 via-green-500 to-yellow-400 text-white p-8 rounded-2xl mb-8 w-full shadow-xl overflow-hidden">
-      <div className="absolute top-4 right-6 flex flex-wrap gap-2 z-20">
+    <header className="relative bg-gradient-to-r from-green-700 via-green-500 to-yellow-400 text-white py-8 px-0 rounded-2xl mb-8 w-full shadow-xl overflow-hidden">
+      <div className="md:absolute top-4 right-6 flex flex-wrap gap-2 z-20 md:justify-end justify-center">
         {(() => {
           // Use ONLY tournament.category (deduplicated, preserve order)
           const sourceCats = (extractNames(tournament?.category || []) as string[]);
@@ -127,7 +127,7 @@ export default function TournamentHeader({ id }: TournamentHeaderProps) {
         )}
       </div>
 
-      <div className="absolute bottom-4 left-6 flex flex-wrap gap-2">
+      <div className="md:absolute bottom-4 left-6 flex flex-wrap gap-2 md:justify-start justify-center mt-4 md:mt-0">
         {surfaces.map((surface, i) => (
           <span key={i} className="text-base md:text-lg font-medium px-3 py-1 rounded-full shadow-md" style={{ backgroundColor: getSurfaceColor(surface) ?? '#888', color: getTextColorForRound(getSurfaceColor(surface) ?? '#888') }}>{surface}</span>
         ))}

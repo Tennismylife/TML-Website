@@ -194,13 +194,13 @@ export default async function RecordsTabPage({ params }: { params: Promise<{ id:
 
   return (
     <div>
-      <main className="w-full mx-auto p-8 text-white" style={{ backgroundColor: 'rgba(17,24,39,0.95)', backdropFilter: 'blur(6px)', minHeight: '100vh' }}>
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-6">{`${tournamentName} | ${recordTitle}`}</h1>
+      <main className="w-full mx-auto py-8 px-0 text-white" style={{ backgroundColor: 'rgba(17,24,39,0.95)', backdropFilter: 'blur(6px)', minHeight: '100vh' }}>
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-6 text-center">{`${tournamentName} | ${recordTitle}`}</h1>
 
 
 
-        {/* Client-side interactive page (keeps existing loading/fallback logic for data tables) */}
-        <RecordsPage params={idPromise} />
+          {/* Client-side interactive page (keeps existing loading/fallback logic for data tables) */}
+          <RecordsPage params={idPromise} />
       </main>
     </div>
   );
