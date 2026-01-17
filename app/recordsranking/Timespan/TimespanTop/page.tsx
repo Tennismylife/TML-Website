@@ -5,6 +5,7 @@ import DropdownNavSelect from '@/components/DropdownNavSelect';
 import Flag from '@/components/Flag';
 import { prisma } from "@/lib/prisma";
 import RecordsTopControls from '../../Top/RecordsTopControls';
+import ServerPagination from '@/components/ServerPagination';
 
 export const metadata: Metadata = { title: 'Top-X Timespan | ATP Ranking Records' };
 
@@ -134,16 +135,8 @@ export default async function TopXTimespan({ searchParams }: { searchParams?: Pr
 
 
 
-      {/* Simple pagination links */}
       {totalPages > 1 && (
-        <div className="flex gap-2 mt-4">
-          {Array.from({length: totalPages}).map((_,i)=>{
-            const p = i+1;
-            const q = new URLSearchParams(); q.set('top',String(top)); if (p>1) q.set('page',String(p)); if (eoy) q.set('eoy','1'); if (fromYear !== null) q.set('fromYear',String(fromYear)); if (toYear !== null) q.set('toYear',String(toYear));
-            const href = `/recordsranking/Timespan/TimespanTop?${q.toString()}`;
-            return <a key={p} href={href} className={`px-2 py-1 rounded ${p===page? 'bg-blue-700 text-white':'bg-gray-800 text-gray-200'}`}>{p}</a>
-          })}
-        </div>
+        <ServerPagination page={page} totalPages={totalPages} getHref={(p) => `?top=${top}${eoy ? '&eoy=1' : ''}${fromYear !== null ? `&fromYear=${fromYear}` : ''}${toYear !== null ? `&toYear=${toYear}` : ''}${p > 1 ? `&page=${p}` : ''}`} />
       )}
     </section>
   );

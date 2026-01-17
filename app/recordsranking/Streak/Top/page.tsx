@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import Flag from '@/components/Flag';
 import DropdownNavSelect from '@/components/DropdownNavSelect';
+import ServerPagination from '@/components/ServerPagination';
 
 export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
   const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
@@ -82,18 +83,7 @@ export default async function StreakTop({ searchParams }: { searchParams?: Promi
       )}
 
       {totalPages > 1 && (
-        <div className="flex gap-2 mt-4 justify-center">
-          {Array.from({ length: totalPages }).map((_, i) => {
-            const p = i + 1;
-            const q = new URLSearchParams(); q.set('top', String(top)); if (p > 1) q.set('page', String(p));
-            const href = `/recordsranking/Streak/Top${q.toString() ? `?${q.toString()}` : ''}`;
-            return (
-              <a key={p} href={href} className={`px-2 py-1 rounded ${p === page ? 'bg-blue-700 text-white' : 'bg-gray-800 text-gray-200'}`}>
-                {p}
-              </a>
-            );
-          })}
-        </div>
+        <ServerPagination page={page} totalPages={totalPages} getHref={(p) => `?top=${top}&page=${p}`} />
       )} 
     </section>
   );

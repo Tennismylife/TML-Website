@@ -2,6 +2,7 @@ import React from 'react';
 import { prisma } from '@/lib/prisma';
 import Flag from '@/components/Flag';
 import DropdownNavSelect from '../../../../components/DropdownNavSelect';
+import ServerPagination from '@/components/ServerPagination';
 
 type Props = { searchParams?: Promise<Record<string,string | string[]>> };
 import type { Metadata } from 'next';
@@ -74,14 +75,7 @@ export default async function RecordsTopX(props: Props) {
 
       {pageRows.length>0? renderTable(pageRows, start) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
       {totalPages > 1 && (
-        <div className="flex gap-2 mt-4 justify-center">
-          {Array.from({ length: totalPages }).map((_, i) => {
-            const p = i + 1;
-            const q = new URLSearchParams(); q.set('top', String(top)); if (fromYear !== null) q.set('fromYear', String(fromYear)); if (toYear !== null) q.set('toYear', String(toYear)); if (p > 1) q.set('page', String(p));
-            const href = `/recordsranking/EndOfTheSeason/Top${q.toString() ? `?${q.toString()}` : ''}`;
-            return <a key={p} href={href} className={`px-2 py-1 rounded ${p === page ? 'bg-blue-700 text-white' : 'bg-gray-800 text-gray-200'}`}>{p}</a>;
-          })}
-        </div>
+        <ServerPagination page={page} totalPages={totalPages} getHref={(p) => `?top=${top}${fromYear !== null ? `&fromYear=${fromYear}` : ''}${toYear !== null ? `&toYear=${toYear}` : ''}${p > 1 ? `&page=${p}` : ''}`} />
       )} 
     </section>
   );
