@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
+import ViewAllModalButton from '@/components/ViewAllModalButton';
 
 import { metadataBase } from '@/lib/site';
 import { getTournamentName } from '@/lib/recordMetadata';
@@ -314,7 +315,13 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
                   <h4 className="text-white font-medium mb-2">{item.title}</h4>
                   {renderTable(item.list ?? [])}
                   <div className="mt-2">
-                    <a href={`/tournaments/${id}/records/ages/${safeSection}/${encodeURIComponent(String(item.title))}`} className="mt-2 inline-block px-4 py-2 bg-blue-500 text-white rounded">View All</a>
+                    <ViewAllModalButton
+                      href={`/tournaments/${id}/records/ages/${safeSection}/${encodeURIComponent(String(item.title))}`}
+                      section={`ages-${safeSection}`}
+                      title={item.title}
+                    >
+                      View All
+                    </ViewAllModalButton>
                   </div>
                 </div>
               </div>

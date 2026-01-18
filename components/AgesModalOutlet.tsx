@@ -110,7 +110,7 @@ export default function AgesModalOutlet({ id }: { id: string }) {
 
     const handleOpenModal = (e: any) => {
       const detail = e?.detail;
-      if (!detail || !detail.which) return;
+      if (!detail) return;
       openWithPayload(detail);
     };
 

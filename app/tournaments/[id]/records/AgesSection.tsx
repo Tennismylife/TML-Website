@@ -92,32 +92,40 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
     title?: string
   ) => {
     try {
-      // determine which side to show in modal
       const isYoung = ['topYoungest', 'topYoungestWinners', 'allYoungestItems'].includes(type);
       const which = isYoung ? 'youngest' : 'oldest';
-
-      // choose section segment based on activeSubTab
       const sectionSegment = activeSubTab === 'titles' ? 'titles' : (activeSubTab === 'youngestrounds' || activeSubTab === 'oldestrounds' ? activeSubTab : 'main');
 
       const baseId = linkId ?? id;
-      // if this is a rounds subtab and a title is provided, include the title in the path
       const newPath = (sectionSegment === 'youngestrounds' || sectionSegment === 'oldestrounds') && title
         ? `/tournaments/${baseId}/records/ages/${sectionSegment}/${encodeURIComponent(String(title))}`
         : `/tournaments/${baseId}/records/ages/${sectionSegment}/${which}`;
 
-      // push history state indicating modal navigation and include which/title and namespaced section
       if (typeof window !== 'undefined') {
         const dispatchedSection = `ages-${sectionSegment}`;
         const state = { modal: true, background: window.location.pathname, which, title, section: dispatchedSection };
-        window.history.pushState(state, '', newPath);
-        window.dispatchEvent(new CustomEvent('open-modal', { detail: { section: dispatchedSection, which, title } }));
-      }
 
-      // update router so URL syncs (keeps app state consistent)
-      const nav: any = router.push(newPath);
-      // guard in case router.push returns undefined (some router implementations do)
-      if (nav && typeof nav.then === 'function') {
-        nav.then(() => { try { (window as any).__modalOpenedByPush = true; } catch (e) {} });
+        // write fallback payload for non-promise routers
+        try { (window as any).__lastOpenModalPayload = state; (window as any).__modalBackgroundPath = state.background; } catch (e) {}
+
+        // Navigate first, then replace state + dispatch open-modal after navigation completes so the modal outlet is mounted
+        try {
+          const nav: any = router.push(newPath);
+          if (nav && typeof nav.then === 'function') {
+            nav.then(() => {
+              try { (window as any).__modalOpenedByPush = true; } catch (e) {}
+              try { window.history.replaceState(state, '', newPath); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {}
+            }).catch(() => {
+              setTimeout(() => { try { window.history.replaceState(state, '', newPath); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {} }, 300);
+            });
+          } else {
+            // fallback for routers that don't return a promise
+            setTimeout(() => { try { window.history.replaceState(state, '', newPath); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {} }, 350);
+          }
+        } catch (e) {
+          // ultimate fallback: replace state and dispatch
+          try { window.history.replaceState(state, '', newPath); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (err) {}
+        }
       }
     } catch (err) {
       console.error(err);
