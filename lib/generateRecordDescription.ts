@@ -220,16 +220,36 @@ export function generateRecordDescription(
     }
   } else if (selectedRecord === 'counterseasons') {
     const sub = activeSubTabs.counterseasons;
-    // For the 'round' subtab, show a generic phrasing that includes the round abbreviation and an N placeholder
+    // resolve a provided numeric parameter (n/min/seasons) if present
+    const nParam = (appliedParams && (appliedParams.n ?? appliedParams.min ?? appliedParams.seasons)) ?? undefined;
+    // Default to 1 when no explicit number is provided so UI reflects selector default
+    const nVal = Number.isFinite(Number(nParam)) ? Number(nParam) : 1;
+
+    const makeRoundLabel = (count: number | undefined) => {
+      const raw = selectedRounds ? (roundNames[selectedRounds] || (roundAbbreviations[selectedRounds] || selectedRounds)) : 'rounds';
+      const singular = String(raw).endsWith('s') ? String(raw).slice(0, -1) : raw;
+      const plural = String(raw).endsWith('s') ? raw : `${raw}s`;
+      return count === 1 ? singular : plural;
+    };
+
     if (sub === 'round') {
-      const roundAbbr = selectedRounds ? (roundAbbreviations[selectedRounds] || selectedRounds) : 'rounds';
-      if (selectedRounds) {
-        description = `Seasons with at least N ${roundAbbr} (select a number)`;
+      if (nVal) {
+        const label = makeRoundLabel(nVal);
+        description = `Seasons with at least ${nVal} ${label}`;
+      } else if (selectedRounds) {
+        const label = makeRoundLabel(undefined);
+        description = `Seasons with at least N ${label} (select a number)`;
       } else {
         description = `Seasons with at least N rounds (select a number)`;
       }
     } else if (sub === 'titles') {
-      description = `Seasons with at least N Titles (select a number)`;
+      const noun = nVal === 1 ? 'title' : 'titles';
+      if (nVal) description = `Seasons with at least ${nVal} ${noun}`;
+      else description = `Seasons with at least N titles (select a number)`;
+    } else if (sub === 'wins') {
+      const noun = nVal === 1 ? 'win' : 'wins';
+      if (nVal) description = `Seasons with at least ${nVal} ${noun}`;
+      else description = `Seasons with at least N wins (select a number)`;
     } else {
       description = `Most consecutive seasons with at least one ${subTabLabels.counterseasons[sub] || sub}`;
     }
@@ -271,7 +291,7 @@ export function generateRecordDescription(
     filters.push(`on ${surfaces.join(' or ')}`);
   }
 
-  if (selectedRounds && !(selectedRecord === 'timespan' && activeSubTabs.timespan === 'rounds') && !(selectedRecord === 'roundsonentries' && activeSubTabs.roundsonentries === 'round') && !(selectedRecord === 'same' && activeSubTabs.same === 'round') && !(selectedRecord === 'seasons' && activeSubTabs.seasons === 'round') && !(selectedRecord === 'streak' && activeSubTabs.streak === 'round')) {
+  if (selectedRounds && !(selectedRecord === 'timespan' && activeSubTabs.timespan === 'rounds') && !(selectedRecord === 'roundsonentries' && activeSubTabs.roundsonentries === 'round') && !(selectedRecord === 'same' && activeSubTabs.same === 'round') && !(selectedRecord === 'seasons' && activeSubTabs.seasons === 'round') && !(selectedRecord === 'streak' && activeSubTabs.streak === 'round') && !(selectedRecord === 'counterseasons' && activeSubTabs.counterseasons === 'round')) {
     filters.push(`in ${roundNames[selectedRounds] || selectedRounds}`);
   }
 

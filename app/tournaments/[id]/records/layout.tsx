@@ -2,6 +2,12 @@ import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import React from 'react';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
+import CountModalOutlet from '@/components/CountModalOutlet';
+import AgesModalOutlet from '@/components/AgesModalOutlet';
+import PercentageModalOutlet from '@/components/PercentageModalOutlet';
+import TimespanModalOutlet from '@/components/TimespanModalOutlet';
+import RoundOnEntriesModalOutlet from '@/components/RoundOnEntriesModalOutlet';
+import LeastModalOutlet from '@/components/LeastModalOutlet';
 
 // Helper to extract name (server-side)
 function extractName(nameField: any): string {
@@ -24,22 +30,42 @@ function extractName(nameField: any): string {
   }
   return '';
 }
+
+// Convert slug or param to human-readable title
 function humanizeName(name: any) {
   const s = String(name || '');
   return s.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+// Generate JSON-LD for Discover / SEO
+function generateJsonLd(title: string, description: string, url: string, image: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": title,
+    "description": description,
+    "url": url,
+    "image": image,
+  };
+}
+
+// Generate keywords dynamically
+function generateKeywords(displayName: string, tab: string | null, sub: string | null) {
+  const baseKeywords = ['tennis', 'records', 'stats', 'tournament', displayName];
+  if (tab) baseKeywords.push(tab);
+  if (sub) baseKeywords.push(sub);
+  return baseKeywords.join(', ');
+}
+
+// ---------------- METADATA ----------------
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const { id: param, segments } = await params;
   const site = process.env.SITE_URL || 'https://stats.tennismylife.org';
 
-  // derive tab/subtab from catch-all segments (if present) up front
   const segs = Array.isArray(segments) ? segments : (segments ? [segments] : []);
   const tab = segs.length > 0 ? segs[0] : null;
   const sub = segs.length > 1 ? segs[1] : null;
 
-  // Build deterministic metadata based on the path immediately so we have specific
-  // titles and OG images even if DB access is slow or unavailable.
   const displayFromParam = humanizeName(String(param ?? 'Tournament').replace(/-/g, ' '));
   const tabLabels: Record<string, string> = {
     count: 'Counts',
@@ -55,128 +81,99 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   const typeLabelFromParam = tab ? (tab === 'ages' ? 'Ages' : (tabLabels[tab] ?? humanizeName(tab))) : 'Records';
   const subLabel = sub ? ` — ${humanizeName(sub)}` : '';
 
-  // Default title/ogUrl based on path
   let titleFromParam = `${displayFromParam} | ${typeLabelFromParam}${subLabel}`;
   let ogUrlFromParam = `${site}/tournaments/${param}/records${tab ? `/${tab}` : ''}${sub ? `/${sub}` : ''}`;
   const ogImageFromParam = `${site}/og/site-preview.png`;
+  const fallbackDescription = `A curated collection of records at ${displayFromParam}. Explore Titles, Wins, Matches Played and Appearances, and discover historical trends in tournament history.`;
+  const keywords = generateKeywords(displayFromParam, tab, sub);
 
-  // Special-case: specific deep paths
+  // Special-case: Youngest Title
   if (tab === 'ages' && sub === 'titles' && segs[2] === 'youngest') {
     const siteTitle = `Youngest Title Winners at ${displayFromParam} | Tennis Records`;
     const ogUrl = `${site}/tournaments/${param}/records/${tab}/${sub}/${segs[2]}`;
     return {
       title: siteTitle,
-      openGraph: { title: siteTitle, url: ogUrl, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Youngest Title Winners`, width: 1200, height: 630, type: 'image/png' }] },
-      twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
+      description: fallbackDescription,
+      keywords,
+      openGraph: {
+        title: siteTitle,
+        url: ogUrl,
+        siteName: 'Tennis My Life',
+        description: fallbackDescription,
+        images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Youngest Title Winners`, width: 1200, height: 630, type: 'image/png' }],
+      },
+      twitter: { card: 'summary_large_image', title: siteTitle, description: fallbackDescription, images: [ogImageFromParam] },
       alternates: { canonical: ogUrl },
+      other: {
+        'script[type="application/ld+json"]': JSON.stringify(generateJsonLd(siteTitle, fallbackDescription, ogUrl, ogImageFromParam)),
+      },
     };
   }
 
-  // Special-case: specific deep paths
-  if (tab === 'ages' && sub === 'titles' && segs[2] === 'youngest') {
-    const siteTitle = `Youngest Title Winners at ${displayFromParam} | Tennis Records`;
-    const ogUrl = `${site}/tournaments/${param}/records/${tab}/${sub}/${segs[2]}`;
-    return {
-      title: siteTitle,
-      openGraph: { title: siteTitle, url: ogUrl, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Youngest Title Winners`, width: 1200, height: 630, type: 'image/png' }] },
-      twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
-      alternates: { canonical: ogUrl },
-    };
-  }
-
+  // Special-case: Oldest Title
   if (tab === 'ages' && sub === 'titles' && segs[2] === 'oldest') {
     const siteTitle = `Oldest Title Winners at ${displayFromParam} | Tennis Records`;
     const ogUrl = `${site}/tournaments/${param}/records/${tab}/${sub}/${segs[2]}`;
     return {
       title: siteTitle,
-      openGraph: { title: siteTitle, url: ogUrl, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Oldest Title Winners`, width: 1200, height: 630, type: 'image/png' }] },
-      twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
+      description: fallbackDescription,
+      keywords,
+      openGraph: {
+        title: siteTitle,
+        url: ogUrl,
+        siteName: 'Tennis My Life',
+        description: fallbackDescription,
+        images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Oldest Title Winners`, width: 1200, height: 630, type: 'image/png' }],
+      },
+      twitter: { card: 'summary_large_image', title: siteTitle, description: fallbackDescription, images: [ogImageFromParam] },
       alternates: { canonical: ogUrl },
+      other: {
+        'script[type="application/ld+json"]': JSON.stringify(generateJsonLd(siteTitle, fallbackDescription, ogUrl, ogImageFromParam)),
+      },
     };
   }
 
-  // Special-case: when the path is /records/count (no inner subsection), return the requested site-specific title
-  if (tab === 'count' && !sub) {
-    titleFromParam = `${displayFromParam} Open Era Records | Tennis My Life`;
-    ogUrlFromParam = `${site}/tournaments/${param}/records/count`;
-  }
-
-  // Use a simple static CTA image for all Records pages so previews are
-  // stable and invite clicks.
-
-  // Special-case: when path is /records/least (root), return tournament-specific Least title
-  if (tab === 'least' && !sub) {
-    const siteTitle = `${displayFromParam} Least Games Lost to Reach a Round | Tennis Records`;
-    const ogUrl = `${site}/tournaments/${param}/records/least`;
-    return {
-      title: siteTitle,
-      openGraph: { title: siteTitle, url: ogUrl, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Least Games Lost`, width: 1200, height: 630, type: 'image/png' }] },
-      twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
-      alternates: { canonical: ogUrl },
-    };
-  }
-
-  // Return the deterministic metadata immediately.
-  // We keep the DB lookup below (best-effort) but do not block the metadata on it.
-  // If you later want enriched metadata (e.g., different display name from DB),
-  // we can update to use that, but this guarantees consistent previews now.
+  // Default metadata for other pages
   const baseMeta: Metadata = {
     title: titleFromParam,
+    description: fallbackDescription,
+    keywords,
     openGraph: {
       title: titleFromParam,
       url: ogUrlFromParam,
-      siteName: 'TML',
+      siteName: 'Tennis My Life',
+      description: fallbackDescription,
       images: [{ url: ogImageFromParam, alt: `${displayFromParam} - ${typeLabelFromParam}`, width: 1200, height: 630, type: 'image/png' }],
     },
     twitter: {
       card: 'summary_large_image',
       title: titleFromParam,
+      description: fallbackDescription,
       images: [ogImageFromParam],
     },
     alternates: { canonical: ogUrlFromParam },
+    other: {
+      'script[type="application/ld+json"]': JSON.stringify(generateJsonLd(titleFromParam, fallbackDescription, ogUrlFromParam, ogImageFromParam)),
+    },
   };
-
-  // Best-effort DB lookup (do not change behavior if it fails)
-  (async () => {
-    try {
-      let tournament: any = null;
-      if (/^\d+$/.test(param)) {
-        const canonicalId = await resolveCanonicalTourneyId(param);
-        if (canonicalId) {
-          const idNum = parseInt(canonicalId, 10);
-          tournament = await prisma.tournament.findUnique({ where: { id: idNum }, select: { id: true, name: true, slug: true } });
-        }
-      } else {
-        tournament = await prisma.tournament.findUnique({ where: { slug: param }, select: { id: true, name: true, slug: true } });
-      }
-
-      // We're intentionally not returning a different metadata object here to keep
-      // metadata deterministic and fast. This async lookup is only for potential
-      // future improvements (logging/metrics), not to delay metadata.
-    } catch (err) {
-      // ignore
-    }
-  })();
 
   return baseMeta;
 }
 
-
-import CountModalOutlet from '@/components/CountModalOutlet';
-import AgesModalOutlet from '@/components/AgesModalOutlet';
-import PercentageModalOutlet from '@/components/PercentageModalOutlet';
-import TimespanModalOutlet from '@/components/TimespanModalOutlet';
-import RoundOnEntriesModalOutlet from '@/components/RoundOnEntriesModalOutlet';
-import LeastModalOutlet from '@/components/LeastModalOutlet';
-
-export default async function RecordsLayout({ children, params }: { children?: React.ReactNode; params: Promise<{ id: string }> }) {
-  // Mount the modal outlets at the Records level so they're always present for in-app modal opens
+// ---------------- RECORDS LAYOUT ----------------
+export default async function RecordsLayout({
+  children,
+  params,
+}: {
+  children?: React.ReactNode;
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
   return (
     <>
       {children}
 
-      {/* global client-side modal outlets for intercepted-route modals (open via history + open-modal event) */}
+      {/* Global client-side modal outlets */}
       <CountModalOutlet id={id} />
       <AgesModalOutlet id={id} />
       <PercentageModalOutlet id={id} />

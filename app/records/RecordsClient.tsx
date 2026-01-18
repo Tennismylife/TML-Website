@@ -98,6 +98,7 @@ const subTabs: Record<string, { key: string; label: string }[]> = {
   neededto: [{ key: "titles", label: "Titles" }],
   counterseasons: [
     { key: "round", label: "Rounds" },
+    { key: "wins", label: "Wins" },
     { key: "titles", label: "Titles" },
   ],
   streak: [

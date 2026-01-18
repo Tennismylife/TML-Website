@@ -58,7 +58,7 @@ export async function generateStaticParams() {
     atage: ['wins','played','entries','titles','slams','round'],
     ageofnth: ['wins','played','entries','titles','slams','round'],
     neededto: ['titles'],
-    counterseasons: ['round','titles'],
+    counterseasons: ['round','wins','titles'],
     streak: ['wins','round'],
     h2h: ['count'],
   };
@@ -174,13 +174,20 @@ export async function generateMetadata(
     h2h: 'count',
   };
 
+  const nParam = (() => {
+    const v = (sp.n ?? sp.seasons);
+    const parsed = v !== undefined ? Number(Array.isArray(v) ? v[0] : v) : undefined;
+    return Number.isFinite(parsed) ? parsed : undefined;
+  })();
+
   const desc = generateRecordDescription(
     record,
     activeSubTabsDefault,
     selectedSurfaces,
     selectedLevels,
     selectedRounds,
-    selectedBestOf
+    selectedBestOf,
+    { n: nParam }
   );
 
   const canonicalPath = record
@@ -313,13 +320,23 @@ export default async function SlugPage({ params, searchParams }: Props) {
     const selectedBestOf = sp.bestOf ? Number(sp.bestOf) : null;
     const activeSubResolved = sub ?? (typeof sp.subtab === 'string' ? kebabToKey(sp.subtab) : undefined);
 
+    // Default the displayed round to Finals (F) when visiting CounterSeasons → round without explicit round param
+    const selectedRoundsForDesc = (record === 'counterseasons' && (activeSubResolved === 'round' || sub === 'round')) ? (selectedRounds || 'F') : selectedRounds;
+
+    const nParam = (() => {
+      const v = (sp.n ?? sp.seasons);
+      const parsed = v !== undefined ? Number(Array.isArray(v) ? v[0] : v) : undefined;
+      return Number.isFinite(parsed) ? parsed : undefined;
+    })();
+
     const description = generateRecordDescription(
       record,
       { ...activeSubTabsDefault, [record || '']: activeSubResolved || activeSubTabsDefault[record || ''] },
       selectedSurfaces,
       selectedLevels,
-      selectedRounds,
-      selectedBestOf
+      selectedRoundsForDesc,
+      selectedBestOf,
+      { n: nParam }
     );
 
     const canonicalUrl = resolveUrl(`/records/${record}${sub ? `/${sub}` : ''}`);
@@ -337,7 +354,7 @@ export default async function SlugPage({ params, searchParams }: Props) {
           )}
           <RecordsTabs activeTab={record} activeSubTab={activeSubResolved || null} />
           <RecordsFilters activeTab={record} activeSubTab={activeSubResolved || null} searchParams={sp} />
-          <ServerComponent searchParams={sp} record={record} sub={activeSubResolved} canonicalUrl={canonicalFull} description={''} />
+          <ServerComponent searchParams={sp} record={record} sub={activeSubResolved} canonicalUrl={canonicalFull} description={description} />
         </React.Suspense>
       </main>
     );

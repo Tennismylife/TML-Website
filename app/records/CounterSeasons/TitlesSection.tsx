@@ -44,7 +44,30 @@ export default function TitlesSection({
 	const [error, setError] = useState<string | null>(null);
 	const [hasFetched, setHasFetched] = useState(!!initialData);
 	const [showModal, setShowModal] = useState(false);
-	const [minTitlesPerSeason, setMinTitlesPerSeason] = useState(Math.max(1, initialSeasons || 1));
+	const [minTitlesPerSeason, setMinTitlesPerSeason] = useState(() => {
+		try {
+			if (typeof window !== 'undefined') {
+				const sp = new URLSearchParams(window.location.search);
+				const nParam = sp.get('n') ?? sp.get('seasons') ?? sp.get('min');
+				const parsed = Number(nParam);
+				if (Number.isFinite(parsed) && parsed > 0) return parsed;
+			}
+		} catch (e) { /* ignore */ }
+		return Math.max(1, initialSeasons || 1);
+	});
+
+	// Applied value only changes when the user presses Apply
+	const [appliedMinTitlesPerSeason, setAppliedMinTitlesPerSeason] = useState(() => {
+		try {
+			if (typeof window !== 'undefined') {
+				const sp = new URLSearchParams(window.location.search);
+				const nParam = sp.get('n') ?? sp.get('seasons') ?? sp.get('min');
+				const parsed = Number(nParam);
+				if (Number.isFinite(parsed) && parsed > 0) return parsed;
+			}
+		} catch (e) { /* ignore */ }
+		return Math.max(1, initialSeasons || 1);
+	});
 
 	const lastRequestIdRef = useRef<string | null>(null);
   const router = useRouter();
@@ -55,9 +78,7 @@ export default function TitlesSection({
 		return parts.length ? ` ${parts.join(" ")}` : "";
 	}, [selectedLevels, selectedSurfaces]);
 
-	const headerText = hasFetched
-		? `Seasons with at least ${minTitlesPerSeason} titles${filtersText}`
-		: description ?? "";
+	const headerText = `Seasons with at least ${appliedMinTitlesPerSeason} ${appliedMinTitlesPerSeason === 1 ? 'title' : 'titles'}${filtersText}`;
 
 	const fetchPlayers = async (limit = 100, force = false) => {
 		if (!fetchEnabled && !force) return;
@@ -79,8 +100,8 @@ export default function TitlesSection({
 			if (!res.ok) throw new Error(`HTTP ${res.status}`);
 			const data = await res.json();
 			const list: Player[] = Array.isArray(data.players) ? data.players : [];
-			setPlayers(list);
-			try {
+			setPlayers(list);				// Apply the selector so the H1 reflects the applied value
+				try { setAppliedMinTitlesPerSeason(minTitlesPerSeason); } catch (e) { /* ignore */ }			try {
 				const path = window.location.pathname;
 				const newQuery = new URLSearchParams();
 				newQuery.set('n', String(minTitlesPerSeason));
@@ -105,6 +126,14 @@ export default function TitlesSection({
 				if (!(sameN && sameSurface && sameLevel && sameBestOf)) {
 					router.replace(`${path}?${newQuery.toString()}`);
 				}
+				// Apply and update title to reflect applied filters (do not overwrite server SEO titles)
+				try { setAppliedMinTitlesPerSeason(minTitlesPerSeason); } catch (e) { /* ignore */ }
+				try {
+					const newTitle = `${headerText} — TML`;
+					const currentTitle = typeof document !== 'undefined' ? document.title || '' : '';
+					const currentIsSiteSeo = typeof currentTitle === 'string' && /\| Tennis/.test(currentTitle);
+					if (!currentIsSiteSeo && typeof document !== 'undefined') document.title = newTitle;
+				} catch(e) { /* ignore */ }
 			} catch (e) {
 				// ignore
 			}		} catch (err: any) {
@@ -122,6 +151,8 @@ export default function TitlesSection({
 		fetchPlayers();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [fetchEnabled, fetchRequestId]);
+
+
 
 	const renderTable = (list: Player[], startIndex = 0) => (
 		<div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow mt-0">
@@ -212,7 +243,7 @@ export default function TitlesSection({
 			<Modal
 				show={showModal}
 				onClose={() => setShowModal(false)}
-				title={`Seasons with at least ${minTitlesPerSeason} titles${filtersText}`}
+				title={`Seasons with at least ${appliedMinTitlesPerSeason} ${appliedMinTitlesPerSeason === 1 ? 'title' : 'titles'}${filtersText}`}
 			>
 				{renderTable(players, 0)}
 			</Modal>

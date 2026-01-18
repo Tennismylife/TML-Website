@@ -222,7 +222,7 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
           const base = 'Explore match-level data, historical trends, and the players who left their mark on this tournament.';
           if (activeTab === 'least') return `A curated collection of least games lost to reach a round at ${humanizedDisplayName}. ${base}`;
           if (activeTab === 'rounds') return `A curated collection of records by round at ${humanizedDisplayName}. ${base}`;
-          if (activeTab === 'count') return `A curated collection of records at ${humanizedDisplayName}. Titles, Wins Matches Played and Apperances. ${base}`;
+          if (activeTab === 'count') return `A curated collection of records at ${humanizedDisplayName}. Titles, Wins Matches Played and Appearances. ${base}`;
           return `A curated collection of ${activeTab ? activeTab.replace(/[-_]+/g, ' ') : 'records'} at ${humanizedDisplayName}. ${base}`;
         })()}
       </h3>

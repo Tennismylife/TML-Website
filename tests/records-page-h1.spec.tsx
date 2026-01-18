@@ -106,7 +106,7 @@ describe('RecordsPage H1', () => {
     expect(h1).toHaveTextContent('Australian Open | Open Era Records');
 
     const h3 = await screen.findByRole('heading', { level: 3 });
-    expect(h3).toHaveTextContent('A curated collection of records at Australian Open. Titles, Wins Matches Played and Apperances. Explore match-level data, historical trends, and the players who left their mark on this tournament.');
+    expect(h3).toHaveTextContent('A curated collection of records at Australian Open. Titles, Wins Matches Played and Appearances. Explore match-level data, historical trends, and the players who left their mark on this tournament.');
     expect(screen.queryByRole('heading', { level: 2 })).toBeNull();
   });
 

@@ -3,6 +3,7 @@
 import React from 'react';
 import TitlesSection from './TitlesSection';
 import RoundsSection from './RoundsSection';
+import WinsSection from './WinsSection';
 
 interface CounterSeasonsSectionProps {
   selectedSurfaces: Set<string>;
@@ -45,6 +46,20 @@ export default function CounterSeasonsSection({ selectedSurfaces, selectedLevels
           fetchRequestId={fetchRequestId}
           description={description}
           initialData={prefetchedData?.rounds as any[]}
+          initialSeasons={initialSeasons}
+        />
+      )}
+      {activeSubTab === 'wins' && (
+        <WinsSection
+          selectedSurfaces={Array.from(selectedSurfaces)}
+          selectedLevels={Array.from(selectedLevels)}
+          selectedRound={selectedRounds || ''}
+          selectedBestOf={selectedBestOf}
+          fetchEnabled={fetchEnabled}
+          setFetchEnabled={setFetchEnabled}
+          fetchRequestId={fetchRequestId}
+          description={description}
+          initialData={prefetchedData?.wins as any[]}
           initialSeasons={initialSeasons}
         />
       )}

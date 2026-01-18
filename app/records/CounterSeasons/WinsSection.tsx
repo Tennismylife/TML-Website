@@ -6,10 +6,10 @@ import { useRouter } from "next/navigation";
 import Modal from "@/components/Modal";
 import Flag from '@/components/Flag';
 
-interface RoundsSectionProps {
+interface WinsSectionProps {
   selectedSurfaces: string[];
   selectedLevels: string[];
-  selectedRound: string;
+  selectedRound?: string;
   selectedBestOf: number | null;
   fetchEnabled?: boolean;
   setFetchEnabled?: (v: boolean) => void;
@@ -29,7 +29,7 @@ interface Player {
 
 const viewLimit = 20;
 
-export default function RoundsSection({
+export default function WinsSection({
   selectedSurfaces,
   selectedLevels,
   selectedRound,
@@ -40,13 +40,13 @@ export default function RoundsSection({
   initialData,
   initialSeasons,
   description,
-}: RoundsSectionProps) {
+}: WinsSectionProps) {
   const [players, setPlayers] = useState<Player[]>(initialData ?? []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasFetched, setHasFetched] = useState(!!initialData);
   const [showModal, setShowModal] = useState(false);
-  const [minRoundPerSeason, setMinRoundPerSeason] = useState(() => {
+  const [minWinsPerSeason, setMinWinsPerSeason] = useState(() => {
     try {
       if (typeof window !== 'undefined') {
         const sp = new URLSearchParams(window.location.search);
@@ -58,8 +58,9 @@ export default function RoundsSection({
     return Math.max(1, initialSeasons || 1);
   });
 
-  // Applied value only changes when the user presses Apply
-  const [appliedMinRoundPerSeason, setAppliedMinRoundPerSeason] = useState(() => {
+  // The "applied" value is the value reflected in the page (H1, modal titles, document.title)
+  // and only changes when the user presses "Apply" (i.e., when we fetch data).
+  const [appliedMinWinsPerSeason, setAppliedMinWinsPerSeason] = useState(() => {
     try {
       if (typeof window !== 'undefined') {
         const sp = new URLSearchParams(window.location.search);
@@ -73,7 +74,6 @@ export default function RoundsSection({
 
   const lastRequestIdRef = useRef<string | null>(null);
   const router = useRouter();
-
   const roundAbbreviations: Record<string, string> = {
     R128: "R128s",
     R64: "R64s",
@@ -83,14 +83,6 @@ export default function RoundsSection({
     SF: "SFs",
     F: "Fs",
   };
-
-  const filtersText = useMemo(() => {
-    const parts: string[] = [];
-    if (selectedLevels.length) parts.push(`in ${selectedLevels.join(" or ")}`);
-    if (selectedSurfaces.length) parts.push(`on ${selectedSurfaces.join(" or ")}`);
-    return parts.length ? ` ${parts.join(" ")}` : "";
-  }, [selectedLevels, selectedSurfaces]);
-
   const roundNames: Record<string, string> = {
     R128: "Round of 128",
     R64: "Round of 64",
@@ -100,17 +92,29 @@ export default function RoundsSection({
     SF: "Semifinals",
     F: "Finals",
   };
-  const roundLabelRaw = selectedRound ? (roundNames[selectedRound] ? roundNames[selectedRound] : (roundAbbreviations[selectedRound] ?? selectedRound)) : '';
-  const roundLabel = appliedMinRoundPerSeason === 1
-    ? (String(roundLabelRaw).endsWith('s') ? String(roundLabelRaw).slice(0, -1) : String(roundLabelRaw).replace(/s$/, ''))
-    : (String(roundLabelRaw).endsWith('s') ? String(roundLabelRaw) : `${roundLabelRaw}s`);
+
+  const getRoundLabel = (code?: string, count?: number) => {
+    if (!code) return '';
+    const raw = roundNames[code] ?? (roundAbbreviations[code] ?? code);
+    const singular = String(raw).endsWith('s') ? String(raw).slice(0, -1) : raw;
+    const plural = String(raw).endsWith('s') ? raw : `${raw}s`;
+    return count === 1 ? singular : plural;
+  };
+
+  const filtersText = useMemo(() => {
+    const parts: string[] = [];
+    if (selectedLevels.length) parts.push(`in ${selectedLevels.join(" or ")}`);
+    if (selectedSurfaces.length) parts.push(`on ${selectedSurfaces.join(" or ")}`);
+    // do not include selectedRound in filtersText to avoid duplication with header
+    return parts.length ? ` ${parts.join(" ")}` : "";
+  }, [selectedLevels, selectedSurfaces]);
+
   const headerText = selectedRound
-    ? `Seasons with at least ${appliedMinRoundPerSeason} ${roundLabel}${filtersText}`
-    : description ?? "";
+    ? `Seasons with at least ${appliedMinWinsPerSeason} ${getRoundLabel(selectedRound, appliedMinWinsPerSeason)}${filtersText}`
+    : `Seasons with at least ${appliedMinWinsPerSeason} ${appliedMinWinsPerSeason === 1 ? 'win' : 'wins'}${filtersText}`;
 
   const fetchPlayers = async (limit = 100, force = false) => {
     if (!fetchEnabled && !force) return;
-    if (!selectedRound) return;
     if (fetchRequestId && !force && lastRequestIdRef.current === fetchRequestId) return;
 
     setLoading(true);
@@ -121,27 +125,34 @@ export default function RoundsSection({
       const q = new URLSearchParams();
       selectedSurfaces.forEach((s) => q.append("surface", s));
       selectedLevels.forEach((l) => q.append("level", l));
-      q.append("round", selectedRound);
+      if (selectedRound) q.append("round", selectedRound);
       if (selectedBestOf) q.append("best_of", String(selectedBestOf));
-      q.append("min", String(minRoundPerSeason));
+      q.append("minWinsPerSeason", String(minWinsPerSeason));
       q.append("limit", String(limit));
 
-      const res = await fetch(`/api/records/counterseasons/rounds?${q.toString()}`);
+      const res = await fetch(`/api/records/counterseasons/wins?${q.toString()}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       const list: Player[] = Array.isArray(data.players) ? data.players : [];
       setPlayers(list);
-      // Update the "applied" selector value so the H1 and modal reflect the applied filter
-      try { setAppliedMinRoundPerSeason(minRoundPerSeason); } catch (e) { /* ignore */ }
 
+      // Compute header text for the newly applied value (use minWinsPerSeason directly to avoid stale closures)
+      const appliedHeader = selectedRound
+        ? `Seasons with at least ${minWinsPerSeason} ${getRoundLabel(selectedRound, minWinsPerSeason)}${filtersText}`
+        : `Seasons with at least ${minWinsPerSeason} ${minWinsPerSeason === 1 ? 'win' : 'wins'}${filtersText}`;
+
+      // Apply the selector so the H1 reflects the applied value
+      try { setAppliedMinWinsPerSeason(minWinsPerSeason); } catch (e) { /* ignore */ }
+
+      // Update canonical URL and document.title (client-side) to reflect the applied filters.
       try {
         const path = window.location.pathname;
         const newQuery = new URLSearchParams();
-        newQuery.set('n', String(minRoundPerSeason));
+        newQuery.set('n', String(minWinsPerSeason));
         selectedSurfaces.forEach(s => newQuery.append('surface', s));
         selectedLevels.forEach(l => newQuery.append('level', l));
-        if (selectedRound) newQuery.set('round', selectedRound);
         if (selectedBestOf != null) newQuery.set('bestOf', String(selectedBestOf));
+        if (selectedRound) newQuery.set('round', selectedRound);
 
         const current = (typeof window !== 'undefined') ? new URLSearchParams(window.location.search) : new URLSearchParams();
         const compareMulti = (a: URLSearchParams, b: URLSearchParams, key: string) => {
@@ -164,11 +175,11 @@ export default function RoundsSection({
 
         // Update title to reflect applied filters (do not overwrite server SEO titles)
         try {
-          const newTitle = `${headerText} — TML`;
           const currentTitle = typeof document !== 'undefined' ? document.title || '' : '';
           const currentIsSiteSeo = typeof currentTitle === 'string' && /\| Tennis/.test(currentTitle);
-          if (!currentIsSiteSeo && typeof document !== 'undefined') document.title = newTitle;
+          if (!currentIsSiteSeo && typeof document !== 'undefined') document.title = `${appliedHeader} — TML`;
         } catch(e) { /* ignore */ }
+
       } catch (e) {
         // ignore
       }
@@ -186,7 +197,23 @@ export default function RoundsSection({
     if (!fetchEnabled) return;
     fetchPlayers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchEnabled, fetchRequestId, selectedRound]);
+  }, [fetchEnabled, fetchRequestId]);
+
+  // Ensure that when the page is loaded directly (e.g., /records/counterseasons/wins?n=7)
+  // we pick up the `n` query parameter and apply it so the H1/modal show the correct value.
+  useEffect(() => {
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      const nParam = sp.get('n') ?? sp.get('seasons') ?? sp.get('min');
+      const parsed = Number(nParam);
+      if (Number.isFinite(parsed) && parsed > 0) {
+        if (parsed !== minWinsPerSeason) setMinWinsPerSeason(parsed);
+        if (parsed !== appliedMinWinsPerSeason) setAppliedMinWinsPerSeason(parsed);
+      }
+    } catch (e) { /* ignore */ }
+    // run only on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
 
 
@@ -211,12 +238,13 @@ export default function RoundsSection({
           ) : (
             list.map((p, idx) => {
               const globalRank = startIndex + idx + 1;
+
               return (
                 <tr key={p.id} className="hover:bg-gray-800 border-b border-white/10">
                   <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
                   <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                     <div className="flex items-center gap-2">
-                      {p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" />}
+                      {p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" /> }
                       <Link href={`/players/${encodeURIComponent(p.id)}`} className="text-indigo-300 hover:underline">
                         {p.name || "Unknown Player"}
                       </Link>
@@ -240,20 +268,20 @@ export default function RoundsSection({
       {headerText && <h1 className="mb-6 text-center text-2xl font-semibold text-white">{headerText}</h1>} 
 
       <div className="mb-4 flex items-center gap-2">
-        <label htmlFor="minRoundPerSeason" className="text-gray-200">
-          Min rounds per season:
+        <label htmlFor="minWinsPerSeason" className="text-gray-200">
+          Min wins per season:
         </label>
         <input
-          id="minRoundPerSeason"
+          id="minWinsPerSeason"
           type="number"
           min={1}
-          value={minRoundPerSeason}
-          onChange={(e) => setMinRoundPerSeason(Math.max(1, parseInt(e.target.value, 10) || 1))}
+          value={minWinsPerSeason}
+          onChange={(e) => setMinWinsPerSeason(Math.max(1, parseInt(e.target.value, 10) || 1))}
           className="w-20 rounded border border-white/30 bg-gray-800 px-2 py-1 text-sm text-gray-200"
         />
         <button
           onClick={() => fetchPlayers(100, true)}
-          disabled={loading || !selectedRound}
+          disabled={loading}
           className="rounded bg-blue-600 px-3 py-1 text-white hover:bg-blue-500 disabled:opacity-50"
         >
           {loading ? "Loading…" : "Apply"}
@@ -278,7 +306,7 @@ export default function RoundsSection({
       <Modal
         show={showModal}
         onClose={() => setShowModal(false)}
-        title={`Seasons with at least ${appliedMinRoundPerSeason} ${roundLabel}${filtersText}`}
+        title={selectedRound ? `Seasons with at least ${appliedMinWinsPerSeason} ${getRoundLabel(selectedRound, appliedMinWinsPerSeason)}${filtersText}` : `Seasons with at least ${appliedMinWinsPerSeason} ${appliedMinWinsPerSeason === 1 ? 'win' : 'wins'}${filtersText}`}
       >
         {renderTable(players, 0)}
       </Modal>

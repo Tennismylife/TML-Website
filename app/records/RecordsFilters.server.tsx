@@ -62,6 +62,9 @@ export default function RecordsFilters({ activeTab, activeSubTab, searchParams =
   const selectedRounds = typeof searchParams.round === 'string' ? String(searchParams.round) : '';
   const selectedBestOf = searchParams.bestOf ? Number(searchParams.bestOf as string) : null;
 
+  // When activeTab is counterseasons and effectiveSub is 'round', default round for display to 'F' (Finals)
+  const effectiveRoundForDisplay = selectedRounds || ((activeTab === 'counterseasons' && effectiveSub === 'round') ? 'F' : '');
+
   const surfaceEmojis: Record<string, string> = {
     Hard: "🟦",
     Clay: "🟧",
@@ -169,6 +172,11 @@ export default function RecordsFilters({ activeTab, activeSubTab, searchParams =
       return ['levels','surfaces'].includes(filter);
     }
 
+    // CounterSeasons → wins subtab
+    if (activeTab === 'counterseasons' && activeSubTab === 'wins') {
+      return ['levels','surfaces','bestOf','rounds'].includes(filter);
+    }
+
     return false;
   };
 
@@ -265,16 +273,18 @@ export default function RecordsFilters({ activeTab, activeSubTab, searchParams =
         <fieldset className="mb-4 p-4 rounded-xl border border-gray-600 bg-gray-900">
           <legend className="text-lg font-semibold mb-3 text-white px-2">Rounds</legend>
           <div className="flex flex-wrap gap-3">
-            <a
-              href={(() => {
-                const params = buildSearch(Array.from(selectedSurfaces), Array.from(selectedLevels));
-                const subParam = effectiveSub ? `subtab=${encodeURIComponent(effectiveSub)}` : '';
-                const qs = [subParam, params].filter(Boolean).join('&');
-                return buildCanonicalPath(activeTab) + (qs ? `?${qs}` : '');
-              })()}
-              className={`px-5 py-2 rounded-full font-medium ${selectedRounds === '' ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
-              All
-            </a>
+            {!(activeTab === 'counterseasons' && effectiveSub === 'round') && (
+              <a
+                href={(() => {
+                  const params = buildSearch(Array.from(selectedSurfaces), Array.from(selectedLevels));
+                  const subParam = effectiveSub ? `subtab=${encodeURIComponent(effectiveSub)}` : '';
+                  const qs = [subParam, params].filter(Boolean).join('&');
+                  return buildCanonicalPath(activeTab) + (qs ? `?${qs}` : '');
+                })()}
+                className={`px-5 py-2 rounded-full font-medium ${selectedRounds === '' ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
+                All
+              </a>
+            )}
             {ROUND_LIST.map(r => (
               <a
                 key={r}
@@ -284,7 +294,7 @@ export default function RecordsFilters({ activeTab, activeSubTab, searchParams =
                   const qs = [subParam, params].filter(Boolean).join('&');
                   return buildCanonicalPath(activeTab) + (qs ? `?${qs}` : '');
                 })()}
-                className={`px-5 py-2 rounded-full font-medium ${selectedRounds === r ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
+                className={`px-5 py-2 rounded-full font-medium ${effectiveRoundForDisplay === r ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
                 {r}
               </a>
             ))}

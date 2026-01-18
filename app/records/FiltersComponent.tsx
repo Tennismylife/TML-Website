@@ -167,6 +167,11 @@ export default function FiltersComponent({
       return ["levels","surfaces"].includes(filter);
     }
 
+    // CounterSeasons → wins subtab
+    if (activeTab === "counterseasons" && activeSubTab === "wins") {
+      return ["levels","surfaces","bestOf","rounds"].includes(filter);
+    }
+
     return false;
   };
 
@@ -221,6 +226,10 @@ export default function FiltersComponent({
     // Use single-letter level code (e.g. 'G') in the URL
     Array.from(selectedLevels).sort().forEach(l => params.append("level", String(l).toUpperCase()));
     if (selectedRounds) params.set("round", String(selectedRounds).toUpperCase());
+    // If we're on CounterSeasons → round subtab and URL has no round, preselect Finals (F)
+    if (activeTab === 'counterseasons' && activeSubTab === 'round' && !(searchParams?.get('round'))) {
+      params.set('round', 'F');
+    }
     if (selectedBestOf !== null) params.set("bestOf", selectedBestOf.toString());
 
     // Preserve incoming tab/subtab value but normalize to use only `subtab` in the URL
@@ -406,7 +415,7 @@ export default function FiltersComponent({
         <fieldset className="mb-4 p-4 rounded-xl border border-gray-600 bg-gray-900">
           <legend className="text-lg font-semibold mb-3 text-white px-2">Rounds</legend>
           <div className="flex flex-wrap gap-3">
-            {showAllRounds && (
+            {showAllRounds && !(activeTab === 'counterseasons' && activeSubTab === 'round') && (
               <FilterButton
                 isActive={selectedRounds === ""}
                 onClick={() => setSelectedRounds("")}
