@@ -27,7 +27,7 @@ export default async function LeastFull({ id, title }: { id: string; title?: str
   }
 
   return (
-    <div className="w-full mx-auto p-8 text-white">
+    <div className="w-full mx-auto text-white">
       <h1 className="text-3xl font-bold mb-4">{title ? `${makeLeastLabel(title)} at ${tourneyName}` : `Least Records at ${tourneyName}`}</h1>
 
       {items.length === 0 ? (

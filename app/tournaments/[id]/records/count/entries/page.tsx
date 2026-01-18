@@ -15,7 +15,7 @@ export default async function EntriesPage({ params }: { params: Promise<{ id: st
   const tournamentName = await getTournamentName(id);
 
   return (
-    <div className="w-full mx-auto p-8 text-white">
+    <div className="w-full mx-auto text-white">
       <div className="mb-6">
         <TournamentHeader id={Number(id)} />
       </div>

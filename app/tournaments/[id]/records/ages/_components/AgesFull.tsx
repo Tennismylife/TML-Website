@@ -1,7 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
-import ViewAllModalButton from '@/components/ViewAllModalButton';
 
 import { metadataBase } from '@/lib/site';
 import { getTournamentName } from '@/lib/recordMetadata';
@@ -29,6 +28,7 @@ async function fetchAgesApi(id: string, segment: string, full = true) {
 }
 
 export default async function AgesFull({ id, section = 'titles', which, title }: Props) {
+  try { console.log('[AgesFull] props', { id, section, which, title }); } catch(e) {}
   if (!id) {
     return (
       <div className="text-white">
@@ -88,7 +88,9 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
 
       // if a specific which is requested, render only that table
       if (which === 'youngest') {
+        console.log('[AgesFull] branch youngest - fetching tournamentName');
         const tournamentName = await getTournamentName(id);
+        console.log('[AgesFull] tournamentName resolved', tournamentName);
         return (
           <div className="text-white">
             <div className="mb-3 text-center">
@@ -102,7 +104,9 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
       }
 
       if (which === 'oldest') {
+        console.log('[AgesFull] branch oldest - fetching tournamentName');
         const tournamentName = await getTournamentName(id);
+        console.log('[AgesFull] tournamentName resolved', tournamentName);
         return (
           <div className="text-white">
             <div className="mb-3 text-center">
@@ -315,13 +319,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
                   <h4 className="text-white font-medium mb-2">{item.title}</h4>
                   {renderTable(item.list ?? [])}
                   <div className="mt-2">
-                    <ViewAllModalButton
-                      href={`/tournaments/${id}/records/ages/${safeSection}/${encodeURIComponent(String(item.title))}`}
-                      section={`ages-${safeSection}`}
-                      title={item.title}
-                    >
-                      View All
-                    </ViewAllModalButton>
+                    <a href={`/tournaments/${id}/records/ages/${safeSection}/${encodeURIComponent(String(item.title))}`} className="mt-2 inline-block px-4 py-2 bg-blue-500 text-white rounded">View All</a>
                   </div>
                 </div>
               </div>

@@ -42,6 +42,8 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
   // keep modal state hook in place to preserve hook order for consistent hydration
   const [modalData, setModalData] = useState<{ title: string; list: PlayerStatAge[] } | null>(null);
 
+  // Client-side fallback modal state (like CountSection) - declare early to keep hooks order stable
+  const [clientModal, setClientModal] = useState<{ open: boolean; section?: string; title?: string | null; list?: PlayerStatAge[] | null; loading?: boolean }>({ open: false });
 
   // call incremental hook at top-level to keep hooks order stable across renders
   const totalItemsForHook = agesData ? (activeSubTab === 'youngestrounds' ? (agesData.allYoungestItems?.length ?? 0) : (agesData.allOldestItems?.length ?? 0)) : 0;
@@ -72,6 +74,7 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
     const handleCloseModal = () => {
       try { setModalData(null); } catch (e) {}
       try { const sm = document.getElementById('server-modal'); if (sm) sm.style.display = ''; } catch (e) {}
+      try { setClientModal({ open: false }); } catch(e) {}
     };
     window.addEventListener('close-modal', handleCloseModal as EventListener);
     return () => window.removeEventListener('close-modal', handleCloseModal as EventListener);
@@ -92,40 +95,16 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
     title?: string
   ) => {
     try {
+      const sectionSegment = activeSubTab === 'titles' ? 'titles' : (activeSubTab === 'youngestrounds' || activeSubTab === 'oldestrounds' ? activeSubTab : 'main');
+      // For rounds, pass title, for others pass which via which variable
       const isYoung = ['topYoungest', 'topYoungestWinners', 'allYoungestItems'].includes(type);
       const which = isYoung ? 'youngest' : 'oldest';
-      const sectionSegment = activeSubTab === 'titles' ? 'titles' : (activeSubTab === 'youngestrounds' || activeSubTab === 'oldestrounds' ? activeSubTab : 'main');
 
-      const baseId = linkId ?? id;
-      const newPath = (sectionSegment === 'youngestrounds' || sectionSegment === 'oldestrounds') && title
-        ? `/tournaments/${baseId}/records/ages/${sectionSegment}/${encodeURIComponent(String(title))}`
-        : `/tournaments/${baseId}/records/ages/${sectionSegment}/${which}`;
-
-      if (typeof window !== 'undefined') {
-        const dispatchedSection = `ages-${sectionSegment}`;
-        const state = { modal: true, background: window.location.pathname, which, title, section: dispatchedSection };
-
-        // write fallback payload for non-promise routers
-        try { (window as any).__lastOpenModalPayload = state; (window as any).__modalBackgroundPath = state.background; } catch (e) {}
-
-        // Navigate first, then replace state + dispatch open-modal after navigation completes so the modal outlet is mounted
-        try {
-          const nav: any = router.push(newPath);
-          if (nav && typeof nav.then === 'function') {
-            nav.then(() => {
-              try { (window as any).__modalOpenedByPush = true; } catch (e) {}
-              try { window.history.replaceState(state, '', newPath); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {}
-            }).catch(() => {
-              setTimeout(() => { try { window.history.replaceState(state, '', newPath); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {} }, 300);
-            });
-          } else {
-            // fallback for routers that don't return a promise
-            setTimeout(() => { try { window.history.replaceState(state, '', newPath); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {} }, 350);
-          }
-        } catch (e) {
-          // ultimate fallback: replace state and dispatch
-          try { window.history.replaceState(state, '', newPath); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (err) {}
-        }
+      if (sectionSegment === 'youngestrounds' || sectionSegment === 'oldestrounds') {
+        openModal(sectionSegment, title ?? null);
+      } else {
+        // main or titles: open appropriate which
+        openModal(sectionSegment, null, which);
       }
     } catch (err) {
       console.error(err);
@@ -134,6 +113,71 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
 
   const items = activeSubTab === 'youngestrounds' ? agesData.allYoungestItems || [] : agesData.allOldestItems || [];
   const visibleItems = items.slice(0, visibleCount);
+
+
+  const openModal = (sectionKey: string, titleParam?: string | null, whichParam?: 'youngest' | 'oldest' | null) => {
+    if (clientModal.open && clientModal.section === sectionKey && clientModal.title === titleParam && clientModal.list) return;
+
+    // find existing fullList if present
+    let existing: PlayerStatAge[] | null = null;
+
+    if (sectionKey === 'main' || sectionKey === 'titles') {
+      // if main/titles and which provided, existing lists are in agesData
+      if (whichParam) {
+        existing = whichParam === 'youngest' ? (agesData.topYoungest ?? null) as any : (agesData.topOldest ?? null) as any;
+      }
+    } else if (sectionKey === 'youngestrounds' || sectionKey === 'oldestrounds') {
+      const listKey = sectionKey === 'youngestrounds' ? 'allYoungestItems' : 'allOldestItems';
+      const all = (agesData as any)[listKey] ?? [];
+      if (titleParam) {
+        const found = all.find((it: any) => String(it.title) === String(titleParam) || String(it.title) === decodeURIComponent(String(titleParam)));
+        existing = (found?.fullList ?? found?.list ?? null) as any;
+      }
+    }
+
+    setClientModal({ open: true, section: sectionKey, title: titleParam ?? null, list: existing, loading: !existing });
+
+    if (!existing) {
+      // fetch full list
+      const seg = (sectionKey === 'main' || sectionKey === 'titles') ? 'main' : sectionKey;
+      fetch(`/api/tournaments/${id}/records/ages/${seg}${titleParam ? `&title=${encodeURIComponent(String(titleParam))}` : ''}?full=true`)
+        .then((r) => r.json())
+        .then((data) => {
+          let rows: any[] = [];
+          if (seg === 'titles') {
+            rows = whichParam === 'youngest' ? (data.youngestWinners ?? data.topYoungestWinners ?? []) : (data.oldestWinners ?? data.topOldestWinners ?? []);
+          } else if (seg === 'youngestrounds' || seg === 'oldestrounds') {
+            const listKey = seg === 'youngestrounds' ? 'allYoungestItems' : 'allOldestItems';
+            const all = data[listKey] ?? [];
+            if (titleParam) {
+              const found = all.find((it: any) => String(it.title) === String(titleParam) || String(it.title) === decodeURIComponent(String(titleParam)));
+              rows = (found?.fullList ?? found?.list ?? []) as any[];
+            } else {
+              rows = (all || []).flatMap((it: any) => it.list ?? []);
+            }
+          } else {
+            rows = whichParam === 'youngest' ? (data.topYoungest ?? data.youngestPlayers ?? []) : (data.topOldest ?? data.oldestPlayers ?? []);
+          }
+          setClientModal({ open: true, section: sectionKey, title: titleParam ?? null, list: rows as any[], loading: false });
+        }).catch(() => setClientModal({ open: true, section: sectionKey, title: titleParam ?? null, list: [], loading: false }));
+    }
+
+    const target = sectionKey === 'main' || sectionKey === 'titles'
+      ? `/tournaments/${id}/records/ages/${sectionKey}/${whichParam ?? ''}`
+      : `/tournaments/${id}/records/ages/${sectionKey}/${titleParam ? encodeURIComponent(String(titleParam)) : ''}`;
+
+    const background = typeof window !== 'undefined' ? window.location.pathname + window.location.search : undefined;
+
+    try {
+      const payload = { section: `ages-${sectionKey}`, which: whichParam ?? null, title: titleParam ?? null, list: existing ?? null };
+      window.history.pushState({ ...(window.history.state || {}), modal: true, background }, '', target);
+      window.dispatchEvent(new PopStateEvent('popstate'));
+      window.dispatchEvent(new CustomEvent('modalchange'));
+      window.dispatchEvent(new CustomEvent('open-modal', { detail: payload }));
+    } catch (e) {
+      router.push(target);
+    }
+  };
 
 
 

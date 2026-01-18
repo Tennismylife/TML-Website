@@ -6,7 +6,7 @@ export default async function TitlesModalPage({ params }: { params: Promise<{ id
 
   // Render same content as full page; will be injected into layout 'modal' slot when navigated via intercepted route
   return (
-    <div className="w-full mx-auto p-8 text-white">
+    <div className="w-full mx-auto text-white">
       <main>
         <h1 className="text-3xl font-extrabold mb-4">{`Titles`}</h1>
         {/* @ts-ignore */}

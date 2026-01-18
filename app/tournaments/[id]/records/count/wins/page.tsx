@@ -51,7 +51,7 @@ export default async function WinsPage({ params }: { params: Promise<{ id: strin
   }).catch(() => String(id).replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()));
 
   return (
-    <div className="w-full mx-auto p-8 text-white">
+    <div className="w-full mx-auto text-white">
       <div className="mb-6">
         <TournamentHeader id={Number(id)} />
       </div>

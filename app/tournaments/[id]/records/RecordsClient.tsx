@@ -177,7 +177,7 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
 
   if (loadingTournament) {
     return (
-      <div className="p-8 text-white">Loading...</div>
+      <div className="text-white">Loading...</div>
     );
   }
 

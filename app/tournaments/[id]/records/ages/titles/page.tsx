@@ -18,8 +18,8 @@ export default async function Page({ params }: any) {
   // Render a server-side H1 so this page has an authoritative title like "{Tournament} | Title Age Records"
   return (
     <div>
-      <main className="w-full mx-auto p-8 text-white">
-        <h1 className="text-3xl font-extrabold mb-4">{`${tournamentName} | Title Age Records`}</h1>
+      <main className="w-full mx-auto text-white">
+        <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">{`${tournamentName} | Title Age Records`}</h1>
         <TitlesClient id={id} />
       </main>
     </div>

@@ -5,7 +5,7 @@ export default async function PlayedModalPage({ params }: { params: Promise<{ id
   const { id } = await params;
 
   return (
-    <div className="w-full mx-auto p-8 text-white">
+    <div className="w-full mx-auto text-white">
       <main>
         <h1 className="text-3xl font-extrabold mb-4">{`Played`}</h1>
         {/* @ts-ignore */}
