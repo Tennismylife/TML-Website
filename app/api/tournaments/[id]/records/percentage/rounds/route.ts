@@ -88,7 +88,18 @@ export async function GET(request: NextRequest, context: any) {
         return (ia === -1 ? 100 : ia) - (ib === -1 ? 100 : ib);
       });
 
-    return NextResponse.json({ allRoundItems });
+    try {
+      const allPlayerIds = Array.from(new Set(allRoundItems.flatMap(it => (it.fullList || []).map((p: any) => String(p.id)))));
+      const { mapIdsToSlugs } = await import('@/lib/player-slugs');
+      const slugMap = await mapIdsToSlugs(allPlayerIds);
+      const enriched = allRoundItems.map(it => ({
+        ...it,
+        fullList: (it.fullList || []).map((p: any) => ({ ...p, slug: slugMap[String(p.id)] ?? null })),
+      }));
+      return NextResponse.json({ allRoundItems: enriched });
+    } catch (e) {
+      return NextResponse.json({ allRoundItems });
+    }
   } catch (error) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }

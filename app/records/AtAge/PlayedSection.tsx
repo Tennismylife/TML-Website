@@ -163,14 +163,7 @@ export default function PlayedSection({
   const start = (page - 1) * perPage;
   const currentPlayers = data.slice(start, start + perPage);
 
-  const getPlayerLink = (playerId: string) => {
-    let link = playerMatchesUrl(playerId);
-    for (const [key, value] of (searchParams?.entries() ?? [])) {
-      if (!value || key === "tab") continue;
-      link += `&${key}=${encodeURIComponent(value)}`;
-    }
-    return link;
-  };
+
 
   const renderTable = (players: Player[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow mt-0">
@@ -192,7 +185,7 @@ export default function PlayedSection({
                 <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                   <div className="flex items-center gap-2">
                     <Flag ioc={p.ioc ?? undefined} className="w-4 h-3" />
-                    <Link href={getPlayerLink(p.id)} className="text-indigo-300 hover:underline">{p.name}</Link>
+                    <Link href={playerMatchesUrl(String(p.id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="text-indigo-300 hover:underline">{p.name}</Link>
                   </div>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.played_at_age}</td>

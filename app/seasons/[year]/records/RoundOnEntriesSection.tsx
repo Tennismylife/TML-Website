@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
+import { getPlayerHref } from '@/lib/utils';
 import ModalTournamentsSeasons from "@/components/ModalTournamentsSeasons";
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 
@@ -87,7 +88,7 @@ export default function RoundOnEntriesSection({ year, selectedSurfaces, selected
           <tr key={p.id} className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors">
             <td className="py-1 flex items-center gap-2 text-white">
               <Flag ioc={p.ioc} className="w-4 h-3" />
-              <Link href={`/players/${p.id}`} className="text-blue-400 hover:underline">{p.name}</Link>
+              <Link href={getPlayerHref((p as any).slug ?? String(p.id))} className="text-blue-400 hover:underline">{p.name}</Link>
             </td>
             <td className="py-1 text-white text-right whitespace-nowrap">{p.reaches}</td>
             <td className="py-1 text-white text-right whitespace-nowrap">{p.totalEntries}</td>

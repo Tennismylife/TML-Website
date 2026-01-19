@@ -25,8 +25,11 @@ describe('Ages titles youngest heading and title', () => {
   it('renders youngest winners title heading using tournament name', async () => {
     global.fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ youngestWinners: [{ id: 'p1', name: 'Player One', ioc: 'USA', age: 17, year: 2022 }] }) });
 
+    let el: any;
+
     await act(async () => {
-      render(<AgesFull id={"australian-open"} section="titles" which="youngest" /> as any);
+      el = await (AgesFull as any)({ id: 'australian-open', section: 'titles', which: 'youngest' });
+      render(el as any);
     });
 
     expect(getTournamentName).toHaveBeenCalledWith('australian-open');

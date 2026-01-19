@@ -25,6 +25,10 @@ export default function useTrackPageView() {
       const ua = typeof navigator !== 'undefined' ? (navigator.userAgent || '') : '';
       if (BOT_RE.test(String(ua))) return; // do not fire for bots (client-side safeguard)
 
+      // Skip client-side tracking in local/dev environments to avoid Matomo noise
+      const isLocal = process.env.NODE_ENV === 'development' || (typeof window !== 'undefined' && String(window.location.hostname || '').includes('localhost')) || process.env.NEXT_PUBLIC_DISABLE_TRACKING === '1';
+      if (isLocal) return;
+
       const pageTitle = derivePageTitle(pathname);
       const pageUrl = typeof window !== 'undefined' ? window.location.href : pathname;
 

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
+import { getPlayerHref } from '@/lib/utils';
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 
 interface PlayerStat {
@@ -51,7 +52,7 @@ const RoundCard = React.memo(function RoundCard({
               <td className="py-1 flex items-center gap-2 text-white min-w-0">
                 <Flag ioc={it.ioc} className="w-4 h-3" />
                 <div className="truncate">
-                  <Link href={`/players/${encodeURIComponent(String(it.id))}`} prefetch={false} className="text-blue-400 hover:underline">
+                  <Link href={getPlayerHref((it as any).slug ?? String(it.id))} prefetch={false} className="text-blue-400 hover:underline">
                     {it.name}
                   </Link>
                 </div>
@@ -268,7 +269,7 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
           <tr key={item.id} className="border-b border-gray-700">
             <td className="py-1 flex items-center gap-2 text-white">
               <Flag ioc={item.ioc} className="w-4 h-3" />
-              <Link href={`/players/${encodeURIComponent(String(item.id))}`} prefetch={false} className="text-blue-400">
+              <Link href={getPlayerHref((item as any).slug ?? String(item.id))} prefetch={false} className="text-blue-400">
                 {item.name}
               </Link>
             </td>

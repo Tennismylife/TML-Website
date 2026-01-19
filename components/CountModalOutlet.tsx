@@ -6,6 +6,7 @@ import RouteModal from './RouteModal';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
+import { getPlayerHref } from '@/lib/utils';
 
 export default function CountModalOutlet({ id }: { id: string }) {
   const pathname = usePathname();
@@ -144,7 +145,7 @@ export default function CountModalOutlet({ id }: { id: string }) {
                     <td className="py-2 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <Flag ioc={item.ioc} className="w-4 h-3" />
-                        <Link href={`/players/${encodeURIComponent(String(item.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{item.name}</Link>
+                        <Link href={getPlayerHref(item.slug ?? String(item.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{item.name}</Link>
                       </div>
                     </td>
                     <td className="py-2 text-center text-lg md:text-xl">{item.count}</td>

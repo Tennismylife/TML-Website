@@ -7,6 +7,7 @@ type Props = {
 };
 
 import { metadataBase } from '@/lib/site';
+import { getPlayerHref } from '@/lib/utils';
 
 async function fetchFull(id: string) {
   const url = new URL(`/api/tournaments/${id}/records/roundsonentries?full=true`, metadataBase).toString();
@@ -50,7 +51,7 @@ export default async function RoundOnEntriesFull({ params }: Props) {
             <tbody>
               {list.map((r: any, i: number) => (
                 <tr key={`${String(r.id)}-${i}`} className="border-b">
-                  <td className="py-2"><Link href={`/players/${encodeURIComponent(String(r.id))}`} className="text-blue-600">{r.name}</Link></td>
+                  <td className="py-2"><Link href={getPlayerHref(r.slug ?? String(r.id))} className="text-blue-600">{r.name}</Link></td>
                   <td className="py-2 text-center">{r.reaches}</td>
                   <td className="py-2 text-center">{r.totalEntries}</td>
                   <td className="py-2 text-center">{(r.percentage ?? 0).toFixed(1)}%</td>

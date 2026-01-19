@@ -24,8 +24,11 @@ describe('Ages titles oldest heading and title', () => {
   it('renders oldest winners title heading using tournament name', async () => {
     global.fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ oldestWinners: [{ id: 'p1', name: 'Player One', ioc: 'USA', age: 34, year: 1998 }] }) });
 
+    let el: any;
+
     await act(async () => {
-      render(<AgesFull id={"australian-open"} section="titles" which="oldest" /> as any);
+      el = await (AgesFull as any)({ id: 'australian-open', section: 'titles', which: 'oldest' });
+      render(el as any);
     });
 
     expect(getTournamentName).toHaveBeenCalledWith('australian-open');

@@ -87,7 +87,7 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
   const start = (page - 1) * perPage;
   const currentData = seasonPercentageData.slice(start, start + perPage);
 
-  const getPlayerLink = (playerId: string | number) => playerMatchesUrl(String(playerId));
+ 
 
   const renderTable = (data: PercentageRecord[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
@@ -110,7 +110,7 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-400">{rank}</td>
                 <td className="border border-white/10 px-4 py-2 flex items-center gap-2 text-lg text-gray-200">
                   {player.ioc ? <Flag ioc={player.ioc} className="w-4 h-3" /> : <span className="text-base">🏳️</span>}
-                  <Link href={getPlayerLink(player.PlayerId)} className="hover:underline">
+                  <Link href={playerMatchesUrl(String(player.PlayerId), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="hover:underline">
                     {player.Player}
                   </Link>
                 </td>

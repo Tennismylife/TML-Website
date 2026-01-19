@@ -87,7 +87,21 @@ export async function GET(request: NextRequest) {
       return true;
     });
 
-    return NextResponse.json(filteredMatches);
+    // Add slug fields for clients to build canonical hrefs (prefer slug over id when available)
+    try {
+      const playerIds = Array.from(new Set(filteredMatches.flatMap(m => [m.winner_id, m.loser_id]).filter((id): id is string => !!id)));
+      const { mapIdsToSlugs } = await import('@/lib/player-slugs');
+      const slugMap = await mapIdsToSlugs(playerIds);
+      const enriched = filteredMatches.map((m) => ({
+        ...m,
+        winner_slug: m.winner_id ? (slugMap[String(m.winner_id)] ?? null) : null,
+        loser_slug: m.loser_id ? (slugMap[String(m.loser_id)] ?? null) : null,
+      }));
+      return NextResponse.json(enriched);
+    } catch (e) {
+      // fallback: return unmodified matches if slug resolution fails
+      return NextResponse.json(filteredMatches);
+    }
   } catch (err) {
     console.error("Errore recupero match:", err);
     return NextResponse.json({ error: "Errore server durante il recupero dei match" }, { status: 500 });

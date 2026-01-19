@@ -1,5 +1,7 @@
+import { getPlayerHref } from '@/lib/utils';
+
 export function playerUrl(playerId: string, params?: Record<string, string | number | boolean | string[]>) {
-  const id = encodeURIComponent(String(playerId));
+  const id = String(playerId);
   const qs = new URLSearchParams();
   if (params) {
     Object.entries(params).forEach(([k, v]) => {
@@ -9,7 +11,7 @@ export function playerUrl(playerId: string, params?: Record<string, string | num
     });
   }
   const q = qs.toString();
-  return `/players/${id}${q ? `?${q}` : ""}`;
+  return `${getPlayerHref(id)}${q ? `?${q}` : ""}`;
 }
 
 export function playerMatchesUrl(playerId: string, extra?: Record<string, string | number | boolean | string[]>) {

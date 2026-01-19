@@ -7,6 +7,7 @@ import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 import RouteModal from '@/components/RouteModal';
 import Flag from '@/components/Flag';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
+import { getPlayerHref } from '@/lib/utils';
 
 interface PlayerItem {
   id: string | number;
@@ -65,7 +66,7 @@ const SectionCard = React.memo(function SectionCard({
                 <td className="py-1 min-w-0">
                   <div className="flex items-center gap-2 truncate">
                     <Flag ioc={item.ioc} className="w-4 h-3" />
-                    <Link href={`/players/${encodeURIComponent(String(item.id))}`} prefetch={false} className="text-blue-400 hover:underline truncate">
+                    <Link href={getPlayerHref((item as any).slug ?? String(item.id))} prefetch={false} className="text-blue-400 hover:underline truncate">
                       {item.name}
                     </Link>
                   </div>
@@ -337,7 +338,7 @@ export default function CountSection({ tournamentId }: { tournamentId: string })
                 <div className="flex items-center justify-center gap-2">
                   <Flag ioc={item.ioc} className="w-4 h-3" />
                   <Link
-                    href={`/players/${encodeURIComponent(String(item.id))}`}
+                    href={getPlayerHref((item as any).slug ?? String(item.id))}
                     className="text-blue-700 hover:underline text-lg md:text-xl"
                   >
                     {item.name}

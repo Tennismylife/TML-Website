@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
+import { getPlayerHref } from '@/lib/utils';
 
 import { metadataBase } from '@/lib/site';
 import { getTournamentName } from '@/lib/recordMetadata';
@@ -74,7 +75,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
                   <td className="py-2 text-center">
                     <div className="flex items-center justify-center gap-2">
                       <Flag ioc={r.ioc} className="w-4 h-3" />
-                      <Link href={`/players/${encodeURIComponent(String(r.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link>
+                      <Link href={getPlayerHref(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link>
                     </div>
                   </td>
                   <td className="py-2 text-center text-lg md:text-xl text-white">{formatAge(r.age)}</td>
@@ -178,7 +179,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
                   <td className="py-2 text-center">
                     <div className="flex items-center justify-center gap-2">
                       <Flag ioc={r.ioc} className="w-4 h-3" />
-                      <Link href={`/players/${encodeURIComponent(String(r.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link>
+                      <Link href={getPlayerHref(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link>
                     </div>
                   </td>
                   <td className="py-2 text-center text-lg md:text-xl text-white">{formatAge(r.age)}</td>
@@ -275,7 +276,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
                   <td className="py-2 text-center">
                     <div className="flex items-center justify-center gap-2">
                       <Flag ioc={r.ioc} className="w-4 h-3" />
-                      <Link href={`/players/${encodeURIComponent(String(r.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link>
+                      <Link href={getPlayerHref(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link>
                     </div>
                   </td>
                   <td className="py-2 text-center text-lg md:text-xl text-white">{formatAge(r.age)}</td>

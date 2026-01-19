@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Flag from '@/components/Flag';
+import { getPlayerHref } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
 import { playerTournamentsUrl } from "../nav";
@@ -91,13 +92,7 @@ export default function Titles({ selectedSurfaces, selectedLevels, topTitles, fe
   const start = (page - 1) * perPage;
   const currentData = allTitles.slice(start, start + perPage);
 
-  const getLink = (playerId: string) => {
-    const params: Record<string, string> = { tab: 'tournaments', round: 'W' };
-    for (const [key, value] of (searchParams?.entries() ?? [])) {
-      if (key !== 'tab' && key !== 'round') params[key] = value;
-    }
-    return playerTournamentsUrl(playerId, params as any);
-  };
+
 
   const renderTable = (data: PlayerData[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
@@ -118,13 +113,13 @@ export default function Titles({ selectedSurfaces, selectedLevels, topTitles, fe
                 <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                   <div className="flex items-center gap-2">
                     <Flag ioc={p.ioc} className="w-4 h-3" />
-                    <Link href={`/players/${p.id}`} className="text-indigo-300 hover:underline">
+                    <Link href={getPlayerHref((p as any).slug ?? p.id)} className="text-indigo-300 hover:underline">
                       {p.name}
                     </Link>
                   </div>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
-                  <Link href={getLink(p.id)} className="text-indigo-300 hover:underline">
+                  <Link href={playerTournamentsUrl(p.id, (() => { const params: Record<string, string | string[]> = { tab: 'tournaments', round: 'W' }; for (const [key, value] of (searchParams?.entries() ?? [])) { if (key === 'tab' || key === 'round' || !value) continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })() )} className="text-indigo-300 hover:underline">
                     {p.count}
                   </Link>
                 </td>

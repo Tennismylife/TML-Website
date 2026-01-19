@@ -44,5 +44,17 @@ export async function GET(request: NextRequest, context: any) {
     return orderA - orderB;
   });
 
-  return Response.json({ matches });
+  try {
+    const playerIds = Array.from(new Set(matches.flatMap(m => [m.winner_id, m.loser_id]).filter((id): id is string => !!id)));
+    const { mapIdsToSlugs } = await import('@/lib/player-slugs');
+    const slugMap = await mapIdsToSlugs(playerIds);
+    const enriched = matches.map((m) => ({
+      ...m,
+      winner_slug: m.winner_id ? (slugMap[String(m.winner_id)] ?? null) : null,
+      loser_slug: m.loser_id ? (slugMap[String(m.loser_id)] ?? null) : null,
+    }));
+    return Response.json({ matches: enriched });
+  } catch (e) {
+    return Response.json({ matches });
+  }
 }

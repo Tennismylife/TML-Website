@@ -6,6 +6,7 @@ import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
+import { getPlayerHref } from '@/lib/utils';
 
 interface PlayerPercentage {
   id: string | number;
@@ -138,7 +139,7 @@ export default function PercentageSection({ id, activeSubTab }: { id: string; ac
             <td className="py-1 flex items-center gap-2 text-white min-w-0">
               <Flag ioc={item.ioc} className="w-4 h-3" />
               <div className="truncate">
-                <Link href={`/players/${encodeURIComponent(String(item.id))}`} className="text-blue-400 hover:underline">{item.name}</Link>
+                <Link href={getPlayerHref((item as any).slug ?? String(item.id))} className="text-blue-400 hover:underline">{item.name}</Link>
               </div>
             </td>
             <td className="py-1 text-white text-right whitespace-nowrap">{item.wins}</td>

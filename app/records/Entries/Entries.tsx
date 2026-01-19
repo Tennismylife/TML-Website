@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Flag from '@/components/Flag';
+import { getPlayerHref } from "@/lib/utils";
 import { playerMatchesUrl } from "../nav";
 import Pagination from "../../../components/Pagination";
 import Modal from "@/components/Modal";
@@ -77,14 +78,7 @@ else Array.from(searchParams?.entries() ?? []).forEach(([k,v]) => { if (k === 's
   const start = (page - 1) * perPage;
   const currentEntries = allEntries.slice(start, start + perPage);
 
-  const getLink = (playerId: string) => {
-    const params: Record<string, string> = {};
-    for (const [key, value] of (searchParams?.entries() ?? [])) {
-      if (key === 'tab') continue;
-      params[key] = value;
-    }
-    return playerMatchesUrl(playerId, params as any);
-  }; 
+ 
 
   const renderTable = (entriesList: Entry[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-gray-800 bg-gray-900 shadow">
@@ -106,11 +100,11 @@ else Array.from(searchParams?.entries() ?? []).forEach(([k,v]) => { if (k === 's
                 <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200">
                   <div className="flex items-center gap-2">
                     {p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" />}
-                    <Link href={getLink(p.id)} className="text-indigo-300 hover:underline">{p.name}</Link>
+                    <Link href={playerMatchesUrl(String(p.id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="text-indigo-300 hover:underline">{p.name}</Link>
                   </div>
                 </td>
                 <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-200">
-                  <Link href={`/players/${p.id}?tab=tournaments`} className="text-indigo-300 hover:underline">
+                  <Link href={`${getPlayerHref((p as any).slug ?? p.id)}?tab=tournaments`} className="text-indigo-300 hover:underline">
                     {p.entries}
                   </Link>
                 </td>

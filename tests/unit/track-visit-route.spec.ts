@@ -31,4 +31,20 @@ describe('/api/track-visit route', () => {
     const body = await res.json();
     expect(body.ok).toBe(true);
   });
+
+  it('skips Matomo tracking when running in development', async () => {
+    const originalEnv = process.env.NODE_ENV;
+    try {
+      process.env.NODE_ENV = 'development';
+      const spy = vi.spyOn(Tracker, 'trackVisit').mockResolvedValueOnce(true as any);
+      const res: any = await Route.POST(makeReq({ pageTitle: 'dev' }, { 'x-original-user-agent': 'UA' }));
+      expect(res.status).toBe(200);
+      const body = await res.json();
+      expect(body.ok).toBe(true);
+      expect(body.skipped).toBe(true);
+      expect(spy).not.toHaveBeenCalled();
+    } finally {
+      process.env.NODE_ENV = originalEnv;
+    }
+  });
 });

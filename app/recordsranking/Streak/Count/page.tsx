@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Flag from '@/components/Flag';
+import { getPlayerHref } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
 import RecordsCountControls from "../../Count/RecordsCountControls";
 import ServerPagination from '@/components/ServerPagination';
@@ -141,7 +142,7 @@ async function StreakCountMain({ searchParams, showHeading = true }: { searchPar
                   <div className="flex items-center gap-2">
                     {flagEl}
                     {p.id ? (
-                      <Link href={`/players/${p.id}`} className="hover:underline">{p.name}</Link>
+                      <Link href={getPlayerHref((p as any).slug ?? String(p.id))} className="hover:underline">{p.name}</Link>
                     ) : (
                       <span>{p.name}</span>
                     )}

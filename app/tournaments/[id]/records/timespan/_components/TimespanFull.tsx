@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Flag from '@/components/Flag';
 import { metadataBase } from '@/lib/site';
 import { getTournamentName } from '@/lib/recordMetadata';
+import { getPlayerHref } from '@/lib/utils';
 
 type Props = { id: string; title?: string; section?: string };
 
@@ -49,7 +50,7 @@ export default async function TimespanFull({ id, title, section = 'rounds' }: Pr
               <tbody>
                 {rows.map((r: any, i: number) => (
                   <tr key={`${String(r.id)}-${i}`} className="border-b border-gray-700">
-                    <td className="py-2 text-center"><div className="flex items-center justify-center gap-2"><Flag ioc={r.ioc} className="w-4 h-3" /><Link href={`/players/${encodeURIComponent(String(r.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link></div></td>
+                    <td className="py-2 text-center"><div className="flex items-center justify-center gap-2"><Flag ioc={r.ioc} className="w-4 h-3" /><Link href={getPlayerHref(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link></div></td>
                     <td className="py-2 text-center text-lg md:text-xl text-white">{r.firstDate ? String(r.firstDate).slice(0,10) : ''}</td>
                     <td className="py-2 text-center text-lg md:text-xl text-white">{r.lastDate ? String(r.lastDate).slice(0,10) : ''}</td>
                     <td className="py-2 text-center text-lg md:text-xl text-white">{String(r.days)}</td>
@@ -75,7 +76,7 @@ export default async function TimespanFull({ id, title, section = 'rounds' }: Pr
                 <table className="w-full text-lg md:text-xl border-collapse table-fixed text-center">
                   <tbody>
                     {(item.list || []).slice(0,5).map((r: any, i: number) => (
-                      <tr key={`${String(r.id)}-${i}`} className="border-b border-gray-700"><td className="py-2 text-center"><div className="flex items-center justify-center gap-2"><Flag ioc={r.ioc} className="w-4 h-3" /><Link href={`/players/${encodeURIComponent(String(r.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link></div></td><td className="py-2 text-center text-white">{r.days}</td></tr>
+                      <tr key={`${String(r.id)}-${i}`} className="border-b border-gray-700"><td className="py-2 text-center"><div className="flex items-center justify-center gap-2"><Flag ioc={r.ioc} className="w-4 h-3" /><Link href={getPlayerHref(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link></div></td><td className="py-2 text-center text-white">{r.days}</td></tr>
                     ))}
                   </tbody>
                 </table>

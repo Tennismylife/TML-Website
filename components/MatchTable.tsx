@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Match, SortDirection, SortKey } from "@/types";
 import Flag from '@/components/Flag';
-import { getTourneyHref, extractUniqueSurfaces } from "@/lib/utils";
+import { getTourneyHref, extractUniqueSurfaces, getPlayerHref } from "@/lib/utils";
 import { useEffect, useState, useMemo, useRef } from "react";
 
 interface MatchTableProps {
@@ -240,7 +240,7 @@ export default function MatchTable({
                   <td className={tdBase}>
                     {m.winner_ioc && <Flag ioc={m.winner_ioc} className="w-4 h-3 mr-1" />}
                     <Link
-                      href={`/players/${m.winner_id}`}
+                      href={getPlayerHref((m as any).winner_slug ?? String(m.winner_id))}
                       className={m.winner_id === playerId ? "font-bold text-green-600" : ""}
                     >
                       {renderNameWithSeedEntry(m.winner_name ?? "", m.winner_seed, m.winner_entry)}
@@ -250,7 +250,7 @@ export default function MatchTable({
                   <td className={tdBase}>
                     {m.loser_ioc && <Flag ioc={m.loser_ioc} className="w-4 h-3 mr-1" />}
                     <Link
-                      href={`/players/${m.loser_id}`}
+                      href={getPlayerHref((m as any).loser_slug ?? String(m.loser_id))}
                       className={m.loser_id === playerId ? "font-bold text-red-600" : ""}
                     >
                       {renderNameWithSeedEntry(m.loser_name ?? "", m.loser_seed, m.loser_entry)}

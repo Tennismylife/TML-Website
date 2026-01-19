@@ -133,6 +133,29 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     };
   }
 
+  // Special-case: Least root (tournament-specific phrasing)
+  if (tab === 'least' && !sub) {
+    const siteTitle = `${displayFromParam} Least Games Lost to Reach a Round | Tennis Records`;
+    const ogUrl = `${site}/tournaments/${param}/records/least`;
+    return {
+      title: siteTitle,
+      description: fallbackDescription,
+      keywords,
+      openGraph: {
+        title: siteTitle,
+        url: ogUrl,
+        siteName: 'Tennis My Life',
+        description: fallbackDescription,
+        images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Least Games Lost`, width: 1200, height: 630, type: 'image/png' }],
+      },
+      twitter: { card: 'summary_large_image', title: siteTitle, description: fallbackDescription, images: [ogImageFromParam] },
+      alternates: { canonical: ogUrl },
+      other: {
+        'script[type="application/ld+json"]': JSON.stringify(generateJsonLd(siteTitle, fallbackDescription, ogUrl, ogImageFromParam)),
+      },
+    };
+  }
+
   // Default metadata for other pages
   const baseMeta: Metadata = {
     title: titleFromParam,

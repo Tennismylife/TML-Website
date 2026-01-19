@@ -5,6 +5,7 @@ import RouteModal from './RouteModal';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
+import { getPlayerHref } from '@/lib/utils';
 
 export default function RoundOnEntriesModalOutlet({ id }: { id: string }) {
   const [show, setShow] = useState(false);
@@ -144,7 +145,7 @@ export default function RoundOnEntriesModalOutlet({ id }: { id: string }) {
               <tbody>
                 {(list || []).map((r: any, i: number) => (
                   <tr key={`${String(r.id)}-${i}`} className="border-b border-gray-700">
-                    <td className="py-2 text-center"><div className="flex items-center justify-center gap-2">{r.ioc && <Flag ioc={r.ioc} className="w-5 h-4" />}<Link href={`/players/${encodeURIComponent(String(r.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link></div></td>
+                    <td className="py-2 text-center"><div className="flex items-center justify-center gap-2">{r.ioc && <Flag ioc={r.ioc} className="w-5 h-4" />}<Link href={getPlayerHref(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link></div></td>
                     <td className="py-2 text-center text-lg md:text-xl text-white">{r.reaches}</td>
                     <td className="py-2 text-center text-lg md:text-xl text-white">{r.totalEntries}</td>
                     <td className="py-2 text-center text-lg md:text-xl text-white">{(r.percentage ?? 0).toFixed(1)}%</td>

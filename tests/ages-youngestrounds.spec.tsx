@@ -25,8 +25,11 @@ describe('Ages youngestrounds per-round heading and title', () => {
     const mockItems = [{ title: 'F', list: [ { id: 'p1', name: 'Player One', ioc: 'USA', age: 17, year: 2022 } ], fullList: [ { id: 'p1', name: 'Player One', ioc: 'USA', age: 17, year: 2022 } ] }];
     global.fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ allYoungestItems: mockItems }) });
 
+    let el: any;
+
     await act(async () => {
-      render(<AgesFull id={"australian-open"} section="youngestrounds" title="F" /> as any);
+      el = await (AgesFull as any)({ id: 'australian-open', section: 'youngestrounds', title: 'F' });
+      render(el as any);
     });
 
     expect(getTournamentName).toHaveBeenCalledWith('australian-open');

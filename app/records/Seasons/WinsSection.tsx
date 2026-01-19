@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
+import { getPlayerHref } from '@/lib/utils';
+import { playerMatchesUrl } from '../nav';
 import { useSearchParams } from 'next/navigation';
 import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
@@ -84,15 +86,7 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
   const start = (page - 1) * perPage;
   const currentData = topSameTournamentWins.slice(start, start + perPage);
 
-  const getPlayerLink = (playerId: string) => {
-    const params: Record<string, string> = {};
-    for (const [key, value] of (searchParams?.entries() ?? [])) {
-      if (key === 'tab') continue;
-      params[key] = value;
-    }
-    const query = new URLSearchParams(params).toString();
-    return `/players/${playerId}/matches${query ? `?${query}` : ''}`;
-  };
+
 
   const renderTable = (data: WinRecord[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
@@ -113,7 +107,7 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-grayy-400 font-semibold">{rank}</td>
                 <td className="border border-white/10 px-4 py-2 flex items-center gap-2 text-lg text-gray-200">
                   <Flag ioc={p.ioc ?? undefined} className="w-4 h-3" />
-                  <Link href={getPlayerLink(p.winner_id)} className="hover:underline">{p.player_name}</Link>
+                  <Link href={playerMatchesUrl(String(p.winner_id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="hover:underline">{p.player_name}</Link>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.total_wins}</td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-300">{p.year}</td>

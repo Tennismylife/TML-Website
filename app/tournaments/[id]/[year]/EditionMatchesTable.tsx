@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Match, SortKey, SortDirection } from "@/types";
 import Flag from '@/components/Flag';
 import { useState, useMemo } from "react";
+import { getPlayerHref } from '@/lib/utils';
+import { playerMatchesUrl } from '../../../records/nav';
 
 interface MatchTableProps {
   matches: Match[];
@@ -221,7 +223,7 @@ export default function MatchTable({
                 <td className="px-4 py-2 flex items-center justify-center gap-2 text-sm">
                   {m.winner_ioc && <Flag ioc={m.winner_ioc} className="w-6 h-4" />}
                   <Link
-                    href={`/players/${m.winner_id}`}
+                    href={playerMatchesUrl((m as any).winner_slug ?? (m as any).winnerSlug ?? (m as any).winner?.slug ?? String(m.winner_id))}
                     className={m.winner_id === playerId ? "font-bold text-green-400 hover:text-green-300" : "text-gray-200 hover:text-yellow-400 transition"}
                   >
                     {renderNameWithSeedEntry(m.winner_name ?? "", m.winner_seed, m.winner_entry)}
@@ -231,7 +233,7 @@ export default function MatchTable({
                 <td className="px-4 py-2 flex items-center justify-center gap-2 text-sm">
                   {m.loser_ioc && <Flag ioc={m.loser_ioc} className="w-6 h-4" />}
                   <Link
-                    href={`/players/${m.loser_id}`}
+                    href={playerMatchesUrl((m as any).loser_slug ?? (m as any).loserSlug ?? (m as any).loser?.slug ?? String(m.loser_id))}
                     className={m.loser_id === playerId ? "font-bold text-red-400 hover:text-red-300" : "text-gray-400 hover:text-gray-200 transition"}
                   >
                     {renderNameWithSeedEntry(m.loser_name ?? "", m.loser_seed, m.loser_entry)}

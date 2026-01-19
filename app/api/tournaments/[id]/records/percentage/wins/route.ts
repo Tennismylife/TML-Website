@@ -67,7 +67,16 @@ export async function GET(request: NextRequest, context: any) {
       .map((p) => ({ ...p, percentage: computePercentage(p) }))
       .sort((a, b) => b.percentage - a.percentage || b.wins - a.wins);
 
-    return NextResponse.json({ sortedOverall });
+    // Attach slugs when available so clients can build canonical hrefs
+    try {
+      const ids = Array.from(new Set(sortedOverall.map(p => String(p.id))));
+      const { mapIdsToSlugs } = await import('@/lib/player-slugs');
+      const slugMap = await mapIdsToSlugs(ids);
+      const enriched = sortedOverall.map(p => ({ ...p, slug: slugMap[String(p.id)] ?? null }));
+      return NextResponse.json({ sortedOverall: enriched });
+    } catch (e) {
+      return NextResponse.json({ sortedOverall });
+    }
   } catch (error) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }

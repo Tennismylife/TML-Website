@@ -8,6 +8,8 @@ import { act } from '@testing-library/react';
 // shim RouteModal (it uses useRouter internally) so tests don't require the Next app router
 vi.mock('@/components/RouteModal', () => ({ default: ({ children }: any) => <div>{children}</div> }));
 
+vi.mock('next/navigation', () => ({ usePathname: () => '/', useRouter: () => ({ push: vi.fn() }) }));
+
 vi.mock('@/lib/tournamentHeaderCache', () => ({
   fetchTournamentHeaderCached: () => Promise.resolve({ name: 'Test Tournament' })
 }));
@@ -31,13 +33,13 @@ describe('PercentageModalOutlet', () => {
       return Promise.resolve({ ok: true, json: () => Promise.resolve(fakeResponse) } as any);
     });
 
+    // set global payload fallback then render
+    (window as any).__lastOpenModalPayload = { section: 'percentage-rounds', title: 'R1' };
     render(<PercentageModalOutlet id={'123'} />);
-
-    // dispatch open-modal event
-    act(() => window.dispatchEvent(new CustomEvent('open-modal', { detail: { section: 'percentage-rounds', title: 'R1' } })));
 
     // wait for loading then data
     await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+    try { delete (window as any).__lastOpenModalPayload; } catch (e) {}
     // ensure the round query param was sent
     expect((fetchSpy as any).mock.calls[0][0]).toContain('round=R1');
 

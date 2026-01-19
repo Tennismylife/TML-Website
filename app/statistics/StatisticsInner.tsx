@@ -6,6 +6,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Pagination from "@/components/Pagination";
 import Filters from "./Filters";
 import Flag from '@/components/Flag';
+import { getPlayerHref } from '@/lib/utils';
 
 const STAT_LABELS: Record<string, string> = {
   aces: "Aces",
@@ -160,7 +161,7 @@ export default function StatisticsInner() {
                   <div className="flex items-center gap-2">
                     {p.ioc ? <Flag ioc={p.ioc} className="w-4 h-3" /> : <span className="text-base sm:text-lg">🏳️</span>}
                     <Link
-                      href={`/players/${p.id}`}
+                      href={getPlayerHref((p as any).slug ?? String(p.id))}
                       className="text-indigo-300 hover:text-indigo-200 hover:underline text-sm sm:text-base transition-colors"
                     >
                       {p.name}

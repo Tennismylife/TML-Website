@@ -3,12 +3,15 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Flag from '@/components/Flag';
+import { getPlayerHref } from '@/lib/utils';
+import { playerMatchesUrl } from '../nav';
 import { useSearchParams } from "next/navigation";
 import Pagination from "../../../components/Pagination";
 import Modal from "@/components/Modal";
 
 interface Player {
   id: string;
+  slug?: string | null;
   name: string;
   ioc?: string;
   totalPlayed: number;
@@ -91,20 +94,7 @@ export default function Played({ topPlayed, fetchEnabled, description, selectedS
   const players = allPlayers.slice(start, end);
 
   // Generate player link with filters
-  const getLink = (playerId: string) => {
-    let link = `/players/${playerId}?tab=matches&result=Played`;
-    for (const [key, value] of (searchParams?.entries() ?? [])) {
-      if (!value || key === "tab") continue;
-      if (key === "bestOf") {
-        const bestOfValues = value.split(",").filter(Boolean);
-        const boMap: Record<string, string> = { "1": "All+Best+of+1", "3": "All+Best+of+3", "5": "All+Best+of+5" };
-        if (bestOfValues.length === 1) link += `&set=${boMap[bestOfValues[0]]}`;
-      } else {
-        link += `&${key}=${encodeURIComponent(value)}`;
-      }
-    }
-    return link;
-  };
+
 
   // Render table of players
   const renderTable = (playersList: Player[], startIndex = 0) => (
@@ -127,13 +117,13 @@ export default function Played({ topPlayed, fetchEnabled, description, selectedS
                 <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                   <div className="flex items-center gap-2">
                     <Flag ioc={p.ioc} className="w-4 h-3" />
-                    <Link href={`/players/${p.id}`} className="text-indigo-300 hover:underline">
+                    <Link href={getPlayerHref(p.slug ?? p.id)} className="text-indigo-300 hover:underline">
                       {p.name}
                     </Link>
                   </div>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
-                  <Link href={getLink(p.id)} className="text-indigo-300 hover:underline">
+                  <Link href={playerMatchesUrl(String(p.id), (() => { const params: Record<string, string | string[]> = { tab: 'matches', result: 'Played' }; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (key === 'bestOf') { const bestOfValues = value.split(',').filter(Boolean); const boMap: Record<string,string> = { '1': 'All+Best+of+1', '3': 'All+Best+of+3', '5': 'All+Best+of+5' }; if (bestOfValues.length === 1) params['set'] = boMap[bestOfValues[0]]; } else { if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } } return params; })())} className="text-indigo-300 hover:underline">
                     {p.totalPlayed}
                   </Link>
                 </td>

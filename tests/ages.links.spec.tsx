@@ -3,6 +3,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import AgesSection from '../app/tournaments/[id]/records/AgesSection';
 import { vi } from 'vitest';
 
+vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn() }) }));
+
 describe('AgesSection link behavior', () => {
   afterEach(() => {
     vi.restoreAllMocks();

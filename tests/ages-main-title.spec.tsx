@@ -25,8 +25,11 @@ describe('Ages full main headings and titles', () => {
   it('renders youngest main heading using tournament name', async () => {
     global.fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ topYoungest: [{ id: 'p1', name: 'Player One', ioc: 'USA', age: 17, year: 2022 }] }) });
 
+    let el: any;
+
     await act(async () => {
-      render(<AgesFull id={"australian-open"} section="main" which="youngest" /> as any);
+      el = await (AgesFull as any)({ id: 'australian-open', section: 'main', which: 'youngest' });
+      render(el as any);
     });
 
     expect(getTournamentName).toHaveBeenCalledWith('australian-open');
@@ -36,8 +39,11 @@ describe('Ages full main headings and titles', () => {
   it('renders oldest main heading using tournament name', async () => {
     global.fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ topOldest: [{ id: 'p2', name: 'Player Two', ioc: 'GBR', age: 40, year: 1995 }] }) });
 
+    let el: any;
+
     await act(async () => {
-      render(<AgesFull id={"australian-open"} section="main" which="oldest" /> as any);
+      el = await (AgesFull as any)({ id: 'australian-open', section: 'main', which: 'oldest' });
+      render(el as any);
     });
 
     expect(getTournamentName).toHaveBeenCalledWith('australian-open');

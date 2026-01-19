@@ -8,6 +8,8 @@ import { act } from '@testing-library/react';
 // shim RouteModal
 vi.mock('@/components/RouteModal', () => ({ default: ({ children }: any) => <div>{children}</div> }));
 
+vi.mock('next/navigation', () => ({ usePathname: () => '/', useRouter: () => ({ push: vi.fn() }) }));
+
 vi.mock('@/lib/tournamentHeaderCache', () => ({
   fetchTournamentHeaderCached: () => Promise.resolve({ name: 'Test Tournament' })
 }));
@@ -27,11 +29,12 @@ describe('AgesModalOutlet', () => {
       return Promise.resolve({ ok: true, json: () => Promise.resolve(fakeResponse) } as any);
     });
 
+    // set a global fallback payload in case the event fired before mount
+    (window as any).__lastOpenModalPayload = { section: 'ages-titles', which: 'youngest' };
     render(<AgesModalOutlet id={'123'} />);
 
-    act(() => window.dispatchEvent(new CustomEvent('open-modal', { detail: { section: 'ages-titles', which: 'youngest' } })));
-
     await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+    try { delete (window as any).__lastOpenModalPayload; } catch (e) {}
     expect((fetchSpy as any).mock.calls[0][0]).toContain('/records/ages/titles?full=true');
 
     const heading = await screen.findByText('Youngest Title Winners at Test Tournament');

@@ -2,6 +2,7 @@ import React from 'react';
 import PlayerClient from './PlayerClient';
 import { prisma } from '../../../lib/prisma';
 import { redirect } from 'next/navigation';
+import { getPlayerHref } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -59,7 +60,7 @@ export default async function PlayerPage({ params, searchParams }: any) {
   // Redirect ID → slug
   if (!isSlug && player.slug) {
     const search = tabValue !== 'overview' ? `?tab=${tabValue}` : '';
-    redirect(`/players/${player.slug}${search}`);
+    redirect(`${getPlayerHref(player.slug)}${search}`);
   }
 
   const name = player.atpname || player.player;

@@ -94,13 +94,7 @@ export default function Titles({
   const start = (page - 1) * perPage;
   const currentData = data.slice(start, start + perPage);
 
-  const getLink = (playerId: string) => {
-    let link = playerMatchesUrl(playerId);
-    for (const [key, value] of (searchParams?.entries() ?? [])) {
-      if (key !== "tab") link += `&${key}=${encodeURIComponent(value)}`;
-    }
-    return link;
-  };
+
 
   const renderTable = (rows: any[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-gray-800 bg-gray-900 shadow">
@@ -124,7 +118,7 @@ export default function Titles({
                 <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300 font-medium">{globalIdx}</td>
                 <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200 flex items-center gap-2">
                   <Flag ioc={p.ioc} className="w-4 h-3" />
-                  <Link href={getLink(p.id)} className="text-gray-300 hover:underline">{p.name}</Link>
+                  <Link href={playerMatchesUrl(String(p.id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="text-gray-300 hover:underline">{p.name}</Link>
                 </td>
                 <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200">{p.firstTourney}</td>
                 <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">{p.firstDate}</td>

@@ -28,7 +28,19 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(matches);
+    try {
+      const ids = Array.from(new Set(matches.flatMap(m => [m.winner_id, m.loser_id]).filter((id): id is string => !!id).map(String)));
+      const { mapIdsToSlugs } = await import('@/lib/player-slugs');
+      const slugMap = await mapIdsToSlugs(ids);
+      const enriched = matches.map(m => ({
+        ...m,
+        winner_slug: m.winner_id ? (slugMap[String(m.winner_id)] ?? null) : null,
+        loser_slug: m.loser_id ? (slugMap[String(m.loser_id)] ?? null) : null,
+      }));
+      return NextResponse.json(enriched);
+    } catch (e) {
+      return NextResponse.json(matches);
+    }
   } catch (error) {
     console.error("Error fetching latest matches:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

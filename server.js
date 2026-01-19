@@ -1,22 +1,30 @@
-// server.js — Next.js + Redis v4 + logging avanzato
-// Sicurezza massima: homepage NON cachata, asset statici esclusi
+
+// server.js — Next.js + Express + Redis v4 + Compression + Cache HIT/MISS
+// Obiettivo: cache server-side realmente efficace per HTML e API
+// - Nessun taglio dei dati (mostri tutto), ma risposte veloci e leggere
+// - Chiavi stabili (query ordinata), TTL, niente skip su 'chunked'
+// - Bypass per RSC/prefetch (Next App Router) e per richieste con nocache/x-refresh
 
 const express = require('express');
 const { createClient } = require('redis');
 const next = require('next');
+const compression = require('compression');
 const zlib = require('zlib');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { execSync } = require('child_process');
 
-const dev = false;
+const dev = false; // produzione
 const nextApp = next({ dev, dir: '.', conf: { distDir: '.next' } });
 const handle = nextApp.getRequestHandler();
 
+// Parametri di controllo che NON entrano nella cache key
 const CONTROL_PARAMS = new Set(['nocache', 'x-refresh']);
 let redis = null;
 let activeRequests = 0;
 
+/* ---------------- Helpers build info ---------------- */
 function safeReadBuildId() {
   try {
     const buildIdPath = path.join(process.cwd(), '.next', 'BUILD_ID');
@@ -29,17 +37,18 @@ function safeReadBuildId() {
 
 function safeReadGitSha() {
   try {
-    return String(execSync('git rev-parse HEAD', { cwd: process.cwd(), stdio: ['ignore', 'pipe', 'ignore'] }) || '').trim() || null;
+    return String(
+      execSync('git rev-parse HEAD', { cwd: process.cwd(), stdio: ['ignore', 'pipe', 'ignore'] }) || ''
+    ).trim() || null;
   } catch {
     return null;
   }
 }
 
-/* ---------------- GLOBAL ERROR HANDLING ---------------- */
+/* ---------------- Global error handling ---------------- */
 process.on('uncaughtException', (err) => {
   console.error('💥 Uncaught Exception:', err);
 });
-
 process.on('unhandledRejection', (reason, promise) => {
   console.error('💥 Unhandled Rejection at:', promise, 'reason:', reason);
 });
@@ -47,51 +56,67 @@ process.on('unhandledRejection', (reason, promise) => {
 /* ---------------- Redis init ---------------- */
 async function initRedis() {
   try {
-    redis = createClient({ url: 'redis://127.0.0.1:6379' });
-    redis.on('error', err => console.warn('Redis error:', err));
+    redis = createClient({ url: process.env.REDIS_URL || 'redis://127.0.0.1:6379' });
+    redis.on('error', (err) => console.warn('Redis error:', err));
     await redis.connect();
     console.log('Redis connesso ✅ Cache attiva');
   } catch (err) {
     redis = null;
-    console.warn('Redis NON disponibile ❌ Cache disattivata', err);
+    console.warn('Redis NON disponibile ❌ Cache disattivata', err?.message || err);
   }
 }
 
-/* ---------------- Utils ---------------- */
+/* ---------------- Cache utils ---------------- */
 function shouldBypassCache(req) {
-  // Next.js App Router uses special headers for Flight/RSC navigation and prefetch.
-  // Those responses are content-negotiated (HTML vs text/x-component) and must not
-  // be served from the same HTML cache key, otherwise client navigation can break
-  // and appear to "stick" to the first rendered page.
+  // Bypass:
+  // - Metodi non GET
+  // - Parametri/headers di controllo
+  // - RSC/Prefetch/App Router (content-negotiation testo x-component)
   const accept = String(req.headers['accept'] || '');
   const isRsc =
     req.headers['rsc'] === '1' ||
     typeof req.headers['next-router-state-tree'] !== 'undefined' ||
     typeof req.headers['next-router-prefetch'] !== 'undefined' ||
+    typeof req.headers['next-router-segment-prefetch'] !== 'undefined' ||
     accept.includes('text/x-component');
 
-  return req.method !== 'GET' || req.query.nocache || req.headers['x-refresh'] === '1' || isRsc;
+  return (
+    req.method !== 'GET' ||
+    req.query?.nocache ||
+    req.headers['x-refresh'] === '1' ||
+    isRsc
+  );
 }
 
 function buildCacheKey(req, type) {
   const proto = req.headers['x-forwarded-proto'] || req.protocol;
   const url = new URL(`${proto}://${req.headers.host}${req.originalUrl}`);
   const params = new URLSearchParams(url.search);
-  const normalized = new URLSearchParams();
 
-  for (const k of [...params.keys()].filter(k => !CONTROL_PARAMS.has(k))) {
-    normalized.append(k, params.get(k));
-  }
+  // Normalizza: rimuovi parametri di controllo e ORDINA le chiavi per stabilità
+  const keys = [...params.keys()]
+    .filter((k) => !CONTROL_PARAMS.has(k))
+    .sort();
+
+  const normalized = new URLSearchParams();
+  for (const k of keys) normalized.append(k, params.get(k));
 
   const qs = normalized.toString();
   return `tennismylife:${type}:${req.path}${qs ? `?${qs}` : ''}`;
 }
 
 function decompressIfGzip(buffer, headers) {
-  if (headers && headers['content-encoding'] === 'gzip') {
+  const enc = (headers && (headers['content-encoding'] || headers['Content-Encoding'])) || '';
+  if (String(enc).includes('gzip')) {
     try { return zlib.gunzipSync(buffer); } catch { return buffer; }
   }
   return buffer;
+}
+
+function strongETag(buffer) {
+  try {
+    return '"' + crypto.createHash('sha1').update(buffer).digest('hex') + '"';
+  } catch { return undefined; }
 }
 
 /* ---------------- Bootstrap ---------------- */
@@ -100,24 +125,20 @@ function decompressIfGzip(buffer, headers) {
   await initRedis();
 
   const server = express();
-  // Do NOT register express.json() globally - it consumes the raw request body
-  // and prevents Next.js from converting Node requests into Next Requests.
-  // If we need JSON body parsing for custom endpoints, apply it to those routes only.
 
-  /* ---------------- ACTIVE REQUESTS (silenced) ---------------- */
+  // ⚠️ NON registrare express.json() globalmente: Next ha bisogno del raw body per i suoi handler
+
+  /* 1) Compressione Gzip (PRIMA dei middleware di cache) */
+  server.use(compression({ level: 6, threshold: 1024 }));
+
+  /* 2) Active requests counter (silenced) */
   server.use((req, res, next) => {
     activeRequests++;
-    // Active request counters are maintained but per-request console logs removed to reduce noise
-
-    res.on('finish', () => {
-      activeRequests--;
-      // logging intentionally omitted
-    });
-
+    res.on('finish', () => { activeRequests--; });
     next();
   });
 
-  /* Header sempre presente */
+  /* 3) Header informativi */
   server.use((req, res, next) => {
     res.setHeader('X-Cache', 'UNCACHED');
     const sha = safeReadGitSha();
@@ -127,7 +148,7 @@ function decompressIfGzip(buffer, headers) {
     next();
   });
 
-  // Minimal version endpoint for production verification
+  /* 4) Version endpoint */
   server.get('/_version', (req, res) => {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     return res.status(200).send(JSON.stringify({
@@ -139,7 +160,7 @@ function decompressIfGzip(buffer, headers) {
     }));
   });
 
-  /* ---------------- CACHE READ ---------------- */
+  /* 5) CACHE READ */
   server.use(async (req, res, next) => {
     if (!redis || shouldBypassCache(req)) return next();
 
@@ -153,13 +174,18 @@ function decompressIfGzip(buffer, headers) {
       const cached = JSON.parse(cachedStr);
       const body = Buffer.from(cached.body, 'base64');
 
-      res.setHeader('Content-Type', cached.type);
+      // Header minimi: tipo, ETag, marker, cache-control (no client cache hard)
+      res.setHeader('Content-Type', cached.type || 'text/html; charset=utf-8');
+      try {
+        const etag = strongETag(body);
+        if (etag) res.setHeader('ETag', etag);
+      } catch {}
       res.setHeader('Cache-Control', 'private, max-age=0');
       res.setHeader('X-Cache', `${type.toUpperCase()}-HIT`);
       res.setHeader('X-SSR-COMPLETE', '1');
 
       res.fromCache = true;
-      if (process.env.VERBOSE_LOGS === '1') console.log('[CACHE HIT]', key, body.length);
+      if (process.env.VERBOSE_LOGS === '1') console.log('[CACHE HIT]', key, body.length, 'bytes');
 
       return res.send(body);
     } catch (e) {
@@ -168,12 +194,13 @@ function decompressIfGzip(buffer, headers) {
     }
   });
 
-  /* ---------------- CACHE WRITE ---------------- */
+  /* 6) CACHE WRITE */
   server.use((req, res, next) => {
     if (!redis || shouldBypassCache(req) || res.fromCache) return next();
 
     const type = req.path.startsWith('/api') ? 'api' : 'page';
 
+    // Non cachiamo asset statici (Next già gestisce) e, salvo override, non la homepage
     if (type === 'page' && req.path === '/' && process.env.CACHE_HOME !== '1') return next();
     if (req.path.match(/\.(png|jpg|jpeg|gif|webp|svg|ico|css|js|map)$/i)) return next();
 
@@ -187,45 +214,41 @@ function decompressIfGzip(buffer, headers) {
       return originalWrite(chunk, ...args);
     };
 
-    res.end = (chunk, ...args) => {
+    res.end = async (chunk, ...args) => {
       if (chunk) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
 
       try {
         if (res.statusCode === 200) {
           const headers = res.getHeaders();
-          const ct = headers['content-type'] || '';
+          const ct = String(headers['content-type'] || '');
 
-          if (
-            headers['transfer-encoding'] === 'chunked' ||
-            ct.includes('text/x-component') ||
-            ct.includes('application/octet-stream')
-          ) {
-            return originalEnd(chunk, ...args);
-          }
-
+          // Abbiamo già catturato tutto il body: anche se la sorgente era "chunked", ora è completo
           let bodyBuffer = Buffer.concat(chunks);
           bodyBuffer = decompressIfGzip(bodyBuffer, headers);
 
-          if (ct.includes('text/html')) {
-            const html = bodyBuffer.toString('utf-8');
-            if (!html.includes('__NEXT_DATA__')) {
-              if (process.env.VERBOSE_LOGS === '1') console.warn('[CACHE SKIP] HTML incompleto', key);
-              return originalEnd(chunk, ...args);
+          // Facoltativo: per HTML, scarta body minuscoli (render parziale)
+          if (ct.includes('text/html') && bodyBuffer.length < 512) {
+            if (process.env.VERBOSE_LOGS === '1') console.warn('[CACHE SKIP] HTML troppo piccolo', key);
+          } else {
+            // TTL configurabili
+            const ttl = req.path.startsWith('/api')
+              ? Number(process.env.CACHE_TTL_API || 3600)   // 1h API
+              : Number(process.env.CACHE_TTL_PAGE || 900);  // 15m HTML
+
+            await redis.set(
+              key,
+              JSON.stringify({ body: bodyBuffer.toString('base64'), type: ct }),
+              { EX: ttl }
+            );
+
+            if (res.getHeader('X-Cache') === 'UNCACHED') {
+              res.setHeader('X-Cache', `${type.toUpperCase()}-STORED`);
             }
-          }
+            res.setHeader('X-SSR-COMPLETE', '1');
+            res.setHeader('Cache-Control', 'private, max-age=0');
 
-          redis.set(
-            key,
-            JSON.stringify({ body: bodyBuffer.toString('base64'), type: ct })
-          )
-            .then(() => { if (process.env.VERBOSE_LOGS === '1') console.log('[CACHE STORED]', key, bodyBuffer.length); })
-            .catch(err => console.error('[CACHE WRITE ERROR]', err));
-
-          if (res.getHeader('X-Cache') === 'UNCACHED') {
-            res.setHeader('X-Cache', `${type.toUpperCase()}-STORED`);
+            if (process.env.VERBOSE_LOGS === '1') console.log('[CACHE STORED]', key, bodyBuffer.length, 'bytes');
           }
-          res.setHeader('X-SSR-COMPLETE', '1');
-          res.setHeader('Cache-Control', 'private, max-age=0');
         }
       } catch (e) {
         console.error('[CACHE PROCESS ERROR]', e);
@@ -237,29 +260,19 @@ function decompressIfGzip(buffer, headers) {
     next();
   });
 
-  /* ---------------- GA4 FALLBACK ENDPOINT (REMOVED) ---------------- */
-  // Removed GA4 fallback endpoints: /ga4-fallback, /_events/collect, /p, /p.gif, /r, /r.gif and debug stats.
-  // These routes were intentionally removed to stop receiving fallback POST requests.
-  // If you need to restore them, reintroduce the handler and `lib/ga4-fallback.js` implementation.
-
-
-  // No GA4 fallback handlers (removed).
-  // Debug stats endpoint removed.
-
-
-  /* ---------------- NEXT.JS FALLBACK ---------------- */
+  /* 7) Next.js fallback */
   server.all(/.*/, (req, res) => handle(req, res));
 
-  /* ---------------- START SERVER ---------------- */
+  /* 8) Start server */
   const PORT = process.env.PORT || 3000;
   const srv = server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server avviato ✅ http://localhost:${PORT}`);
     console.log(redis ? 'Redis cache attiva' : 'Cache disattivata');
   });
 
-  /* ---------------- GRACEFUL SHUTDOWN ---------------- */
+  /* 9) Graceful shutdown */
   const shutdown = async (signal) => {
-    console.log(`⚠️ Shutdown triggered by signal: ${signal}`);
+    console.log(`⚠️  Shutdown triggered by signal: ${signal}`);
     console.log(`Active requests at shutdown: ${activeRequests}`);
     srv.close(() => console.log('Server chiuso'));
     if (redis) {

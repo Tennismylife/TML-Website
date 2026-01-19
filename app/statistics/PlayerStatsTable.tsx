@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Dispatch, SetStateAction } from "react";
 import Flag from '@/components/Flag';
+import { getPlayerHref } from '@/lib/utils';
 interface PlayerStatsTableProps {
   stat: string;
   playerStats: any[];
@@ -66,7 +67,7 @@ export default function PlayerStatsTable({
                     <div className="flex items-center gap-1">
                       {p.ioc ? <Flag ioc={p.ioc} className="w-4 h-3" /> : <span className="text-sm">🏳️</span>}
                       <Link
-                        href={`/players/${encodeURIComponent(p.id)}`}
+                        href={getPlayerHref(p.slug ?? String(p.id))}
                         className="text-blue-400 hover:underline text-sm truncate"
                       >
                         {p.name}

@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { getTourneyHref } from "@/lib/utils";
+import { getTourneyHref, getPlayerHref } from "@/lib/utils";
+import { playerMatchesUrl } from "../nav";
 import Flag from '@/components/Flag';
 import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
@@ -78,15 +79,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
   const start = (page - 1) * perPage;
   const currentData = allTitles.slice(start, start + perPage);
 
-  const getPlayerLink = (playerId: string) => {
-    const params: Record<string, string> = {};
-    for (const [key, value] of (searchParams?.entries() ?? [])) {
-      if (key === 'tab') continue;
-      params[key] = value;
-    }
-    const query = new URLSearchParams(params).toString();
-    return `/players/${encodeURIComponent(playerId)}${query ? `?${query}` : ''}`;
-  };
+
 
   const renderTable = (data: TitleRecord[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
@@ -107,7 +100,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{rank}</td>
                 <td className="border border-white/10 px-4 py-2 flex items-center gap-2 text-lg text-gray-200">
                   {p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" />}
-                  <Link href={getPlayerLink(p.player_id)} className="hover:underline">{p.player_name}</Link>
+                  <Link href={playerMatchesUrl(String(p.player_id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="hover:underline">{p.player_name}</Link>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.total_titles}</td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">

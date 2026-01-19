@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import Flag from '@/components/Flag';
+import { getPlayerHref } from "@/lib/utils";
+import { playerMatchesUrl } from "../nav";
 import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
@@ -76,17 +78,7 @@ const Rounds = ({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled
 
   const getTitle = () => `Biggest timespan between ${selectedRounds} rounds`;
 
-  const playerMatchesUrl = (playerId: string) => {
-    return `/players/${encodeURIComponent(playerId)}?tab=matches`;
-  };
 
-  const getLink = (playerId: string) => {
-    let link = playerMatchesUrl(playerId);
-    for (const [key, value] of (searchParams?.entries() ?? [])) {
-      if (key !== "tab") link += `&${key}=${encodeURIComponent(value)}`;
-    }
-    return link;
-  };
 
   const renderTable = (rows: any[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-gray-800 bg-gray-900 shadow">
@@ -110,7 +102,7 @@ const Rounds = ({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled
                 <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300 font-medium">{globalIdx}</td>
                 <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200 flex items-center gap-2">
                   {p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" />}
-                  <Link href={getLink(p.id)} className="text-indigo-300 hover:underline">{p.name}</Link>
+                  <Link href={playerMatchesUrl(String(p.id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="text-indigo-300 hover:underline">{p.name}</Link>
                 </td>
                 <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200">{p.firstTourney}</td>
                 <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">{p.firstDate}</td>

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
+import { getPlayerHref } from "@/lib/utils";
 
 interface SetsProps {
   selectedSurfaces: Set<string>;
@@ -123,7 +124,7 @@ export default function Sets({ selectedSurfaces, selectedLevels, selectedRounds,
               <td className="py-1 flex items-center gap-1">
                 <Flag ioc={p.player.ioc ?? undefined} className="w-4 h-3 inline-block" />
                 <Link
-                  href={`/players/${encodeURIComponent(String(p.player.id))}`}
+                  href={getPlayerHref((p.player as any)?.slug ?? String(p.player.id))}
                   className="text-blue-700 hover:underline"
                 >
                   {p.player.name}

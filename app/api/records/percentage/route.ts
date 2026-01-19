@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    const topWinPercentages: PlayerWinPercentage[] = Array.from(statsMap.values())
+    let topWinPercentages: PlayerWinPercentage[] = Array.from(statsMap.values())
       .map(p => ({
         ...p,
         matchesPlayed: p.wins + p.losses,

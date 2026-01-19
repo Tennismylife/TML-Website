@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
       selectedRounds.length ||
       selectedBestOf.length;
 
-    let topWinners = [];
+    let topWinners: Array<{ id: any; name: string; ioc?: string | null; wins: number; slug?: string | null }> = [];
     let totalCount = 0;
 
     if (hasFilters) {
@@ -49,6 +49,20 @@ export async function GET(request: NextRequest) {
         ioc: w.winner_ioc,
         wins: w._count.winner_id,     // ✔ CONTEGGIO PRECISO
       }));
+
+      // Fetch slugs for returned players to provide canonical URLs
+      try {
+        const ids = topWinners.map(t => t.id).filter(Boolean);
+        if (ids.length) {
+          const players = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+          const slugMap: Record<string | number, string | null> = {};
+          players.forEach(p => { slugMap[p.id] = p.slug ?? null; });
+          topWinners = topWinners.map(t => ({ ...t, slug: slugMap[t.id] ?? null }));
+        }
+      } catch (e) {
+        // non-critical: if slug lookup fails, continue without slugs
+        console.warn('Failed to fetch player slugs for wins', e);
+      }
     } else {
       const winners = await prisma.mVTopWinners.findMany({
         orderBy: { total_wins: "desc" },
@@ -63,6 +77,20 @@ export async function GET(request: NextRequest) {
         ioc: w.winner_ioc,
         wins: w.total_wins,
       }));
+
+      // Fetch slugs for returned players to provide canonical URLs
+      try {
+        const ids = topWinners.map(t => t.id).filter(Boolean);
+        if (ids.length) {
+          const players = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+          const slugMap: Record<string | number, string | null> = {};
+          players.forEach(p => { slugMap[p.id] = p.slug ?? null; });
+          topWinners = topWinners.map(t => ({ ...t, slug: slugMap[t.id] ?? null }));
+        }
+      } catch (e) {
+        // non-critical: if slug lookup fails, continue without slugs
+        console.warn('Failed to fetch player slugs for wins', e);
+      }
     }
 
     return NextResponse.json({ topWinners, totalCount });

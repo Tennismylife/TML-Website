@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Flag from '@/components/Flag';
+import { getPlayerHref } from '@/lib/utils';
 
 export default function SearchPlayerClient() {
   const [query, setQuery] = useState("");
@@ -44,7 +45,7 @@ export default function SearchPlayerClient() {
   }, [query]);
 
   const handleSelect = (player: any) => {
-    router.push(`/players/${player.slug}`);
+    router.push(getPlayerHref(player.slug));
     setQuery("");
     setResults([]);
   };

@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
-import { getTourneyHref } from "@/lib/utils";
+import { getTourneyHref, getPlayerHref } from "@/lib/utils";
 import Pagination from '../../../components/Pagination';
 import Modal from "@/components/Modal";
 
@@ -84,7 +84,7 @@ export default function YoungestAllRounds({ selectedSurfaces, selectedLevels, fe
                 <td className="border border-gray-700 px-4 py-2">
                   <div className="flex items-center gap-2">
                     <Flag ioc={p.ioc} className="text-sm" />
-                    <Link href={`/players/${encodeURIComponent(String(p.id))}`} className="text-blue-400 hover:underline">
+                    <Link href={getPlayerHref((p as any).slug ?? String(p.id))} className="text-blue-400 hover:underline">
                       {p.name}
                     </Link>
                   </div>
@@ -172,7 +172,7 @@ export default function YoungestAllRounds({ selectedSurfaces, selectedLevels, fe
                       <td className="border border-gray-700 px-4 py-2">
                         <div className="flex items-center gap-2">
                           <Flag ioc={p.ioc} className="w-4 h-3" />
-                          <Link href={`/players/${encodeURIComponent(String(p.id))}`} className="text-blue-400 hover:underline">
+                          <Link href={getPlayerHref((p as any).slug ?? String(p.id))} className="text-blue-400 hover:underline">
                             {p.name}
                           </Link>
                         </div>

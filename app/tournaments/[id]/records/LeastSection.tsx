@@ -6,6 +6,7 @@ import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
+import { getPlayerHref } from '@/lib/utils';
 
 interface Player {
   id: string | number;
@@ -107,7 +108,7 @@ export default function LeastSection({ id, linkId }: { id: string; linkId?: stri
             <td className="py-1 min-w-0">
               <div className="flex items-center gap-2 truncate">
                 {item.player?.ioc && <Flag ioc={item.player.ioc} className="w-4 h-3" />}
-                <Link href={`/players/${encodeURIComponent(String(item.player.id))}`} className="text-blue-400 hover:underline truncate">
+                <Link href={getPlayerHref((item.player as any).slug ?? String(item.player.id))} className="text-blue-400 hover:underline truncate">
                   {item.player.name}
                 </Link>
               </div>

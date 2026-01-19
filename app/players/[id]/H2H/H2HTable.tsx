@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Flag from '@/components/Flag';
-import { createH2HUrl } from "@/lib/utils";
+import { createH2HUrl, getPlayerHref } from "@/lib/utils";
 import type { Match } from "@/types";
 import { useH2HData } from "./useH2HData";
 import Pagination from "@/components/Pagination";
@@ -167,7 +167,7 @@ export default function H2HTable({ playerId, playerName, allMatches, loading, er
                     <div className="flex items-center gap-2">
                       <Flag ioc={r.ioc} className="w-8 h-5 inline-block" />
                       <Link
-                        href={`/players/${r.oppId}`}
+                        href={getPlayerHref((r as any).oppSlug ?? String(r.oppId))}
                         className="font-semibold text-white hover:text-purple-400 hover:underline transition"
                       >
                         {r.oppName}

@@ -6,6 +6,7 @@ import RouteModal from './RouteModal';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
+import { getPlayerHref } from '@/lib/utils';
 
 export default function AgesModalOutlet({ id }: { id: string }) {
   const [show, setShow] = useState(false);
@@ -78,6 +79,19 @@ export default function AgesModalOutlet({ id }: { id: string }) {
         .catch((e: any) => { if (!mounted) return; setList([]); setOpenError(e?.message || 'Failed to load'); })
         .finally(() => { if (!mounted) return; setLoading(false); });
     };
+
+    // fallback: consume a global lastOpenModal payload if present (in case event fired before outlet mounted)
+    try {
+      const last = (window as any).__lastOpenModalPayload;
+      if (last && last.section && String(last.section).startsWith('ages-')) {
+        const sec = String(last.section).replace(/^ages-/, '');
+        const titleParam = last.title ?? null;
+        const whichParam = last.which ?? null;
+        try { console.debug('[AgesModalOutlet] consuming __lastOpenModalPayload', last); } catch(e) {}
+        openWithPayload({ section: last.section, which: whichParam, title: titleParam });
+        try { delete (window as any).__lastOpenModalPayload; } catch(e) {}
+      }
+    } catch (e) {}
 
     // open via history state when route has modal state
     const state = (typeof window !== 'undefined' && window.history.state) || null;
@@ -190,7 +204,7 @@ export default function AgesModalOutlet({ id }: { id: string }) {
                     <td className="py-2 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <Flag ioc={r.ioc} className="w-4 h-3" />
-                        <Link href={`/players/${encodeURIComponent(String(r.id))}`} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link>
+                        <Link href={getPlayerHref(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link>
                       </div>
                     </td>
                     <td className="py-2 text-center text-lg md:text-xl text-white">{formatAge(r.age)}</td>

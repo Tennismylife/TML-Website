@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Trophy, ArrowRight, RefreshCw } from "lucide-react";
 import Flag from '@/components/Flag';
 import { getSurfaceColor, getTextColorForRound } from "@/lib/colors";
+import { getPlayerHref } from '@/lib/utils';
+import { playerMatchesUrl } from '../../records/nav';
 
 interface Match {
   year: number;
@@ -313,7 +315,7 @@ export default function TournamentClient({ id }: { id: number | string }) {
                       <td className="px-4 py-3 text-center text-gray-400">{m.draw_size || "–"}</td>
                       <td className="px-4 py-3">
                         <Link
-                          href={`/players/${m.winner_id}`}
+                          href={playerMatchesUrl((m as any).winner_slug ?? (m as any).winnerSlug ?? (m as any).winner?.slug ?? String(m.winner_id))}
                           className="flex items-center gap-3 text-gray-200 hover:text-yellow-400 transition"
                         >
                           {m.winner_ioc && <Flag ioc={m.winner_ioc} className="w-6 h-4" />}
@@ -322,7 +324,7 @@ export default function TournamentClient({ id }: { id: number | string }) {
                       </td>
                       <td className="px-4 py-3">
                         <Link
-                          href={`/players/${m.loser_id}`}
+                          href={playerMatchesUrl((m as any).loser_slug ?? (m as any).loserSlug ?? (m as any).loser?.slug ?? String(m.loser_id))}
                           className="flex items-center gap-3 text-gray-400 hover:text-gray-200 transition"
                         >
                           {m.loser_ioc && <Flag ioc={m.loser_ioc} className="w-6 h-4" />}

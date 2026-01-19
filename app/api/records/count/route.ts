@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
     const playerMap = new Map(players.map(p => [p.id, p]));
 
     // Combina count + info anagrafiche
-    const top = playerCounts
+    let top = playerCounts
       .filter(p => topIds.includes(p.player_id))
       .map(p => {
         const info = playerMap.get(p.player_id);

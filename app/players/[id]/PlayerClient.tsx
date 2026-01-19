@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Flag from '@/components/Flag';
 import PlayerTabs from "./PlayerTabs";
 import { Player } from "@/types";
+import { getPlayerHref } from '@/lib/utils';
 
 export default function PlayerClient(props: any) {
   const params = props.params ?? {};
@@ -80,7 +81,7 @@ export default function PlayerClient(props: any) {
           .trim()
           .replace(/\s+/g, "-");
 
-        const desired = `/players/${encodeURIComponent(slug)}${window.location.search}`;
+        const desired = `${getPlayerHref(slug)}${window.location.search}`;
         window.history.replaceState(null, "", desired);
       } catch (err) {
         if (!(err instanceof DOMException && err.name === "AbortError")) {

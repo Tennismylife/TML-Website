@@ -375,6 +375,23 @@ export const getTourneyLink = (tourneyId?: string) => {
     return `/tournaments/${tourneyId}`;
   };
 
+/**
+ * Build a canonical player href.
+ * Prefer slug when available; fallback to ID (encoded) to preserve legacy links.
+ * Accepts either an object with `{ slug, id }` or a plain id/slug string.
+ */
+export function getPlayerHref(input?: { id?: string | number | null; slug?: string | null } | string | null) {
+  if (!input) return '#';
+  if (typeof input === 'string') {
+    // treat as slug preferably (may be numeric id as well)
+    return `/players/${encodeURIComponent(String(input))}`;
+  }
+  const slug = (input && (input as any).slug) ? String((input as any).slug) : null;
+  if (slug) return `/players/${encodeURIComponent(slug)}`;
+  const id = (input && (input as any).id) ? String((input as any).id) : '';
+  return id ? `/players/${encodeURIComponent(id)}` : '#';
+}
+
 // Create a URL-friendly slug from text. Reused across the app.
 export function createSlug(text?: string | null): string {
   if (!text) return '';

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Modal from "@/components/Modal";
 import Flag from '@/components/Flag';
+import { getPlayerHref } from '@/lib/utils';
 
 interface RoundsSectionProps {
   selectedSurfaces: string[];
@@ -217,7 +218,7 @@ export default function RoundsSection({
                   <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                     <div className="flex items-center gap-2">
                       {p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" />}
-                      <Link href={`/players/${encodeURIComponent(p.id)}`} className="text-indigo-300 hover:underline">
+                      <Link href={getPlayerHref((p as any).slug ?? String(p.id))} className="text-indigo-300 hover:underline">
                         {p.name || "Unknown Player"}
                       </Link>
                     </div>
