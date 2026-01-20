@@ -16,7 +16,7 @@ test('tournaments: suggestions appear while typing and navigate on click', async
     });
   });
 
-  const base = process.env.BASE_URL || 'http://localhost:3001';
+  const base = process.env.BASE_URL || 'http://localhost:3000';
   await page.goto(`${base}/tournaments`);
 
   await page.waitForSelector('#tournament-search');

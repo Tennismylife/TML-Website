@@ -130,6 +130,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return { title };
 }
 
+import { redirect } from 'next/navigation';
+
 export default async function RecordsCatchAllPage({
   params,
 }: {
@@ -137,6 +139,11 @@ export default async function RecordsCatchAllPage({
 }) {
   const p = await params;
   const { id, segments } = p;
+
+  // Redirect disallowed tournament-specific path /records/ages/winners to the parent ages page
+  if (segments && segments.length >= 2 && segments[0] === 'ages' && segments[1] === 'winners') {
+    redirect(`/tournaments/${id}/records/ages`);
+  }
 
   // Compute a server-side H1 for deeper record routes (percentage/overall, percentage/per-round, ages per-round overviews, etc.)
   let tournamentName = String(id || '').replace(/-/g, ' ');
@@ -152,6 +159,9 @@ export default async function RecordsCatchAllPage({
 
   let recordTitle = chooseRecordLabel(segments);
   // Special-cases to align with existing metadata phrasing
+  if (segments && segments.length >= 1 && segments[0] === 'streak') {
+    recordTitle = 'Longest Winning Streaks';
+  }
   if (segments && segments.length >= 2 && segments[0] === 'percentage' && segments[1] === 'overall') {
     recordTitle = 'Percentage Records';
   }
@@ -169,8 +179,8 @@ export default async function RecordsCatchAllPage({
 
   return (
     <div>
-      <main className="w-full mx-auto py-8 px-0 text-white" style={{ backgroundColor: 'rgba(17,24,39,0.95)', backdropFilter: 'blur(6px)', minHeight: '100vh' }}>
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-6 text-center">{`${humanTournament} | ${recordTitle}`}</h1>
+      <main className="w-full mx-auto pt-24 md:pt-32 py-8 px-0 text-white" style={{ backgroundColor: 'rgba(17,24,39,0.95)', backdropFilter: 'blur(6px)', minHeight: '100vh' }}>
+          <h1 className="relative z-50 mt-8 text-4xl md:text-5xl font-extrabold mb-6 text-center text-white">{`${humanTournament} | ${recordTitle}`}</h1>
           <RecordsPage params={idPromise} />
       </main>
     </div>

@@ -22,14 +22,14 @@ export async function GET(request: NextRequest, context: any) {
 
     const winners = await prisma.match.groupBy({
       by: ['winner_id', 'winner_name', 'winner_ioc'],
-      where: { OR: tourneyIdFilters },
+      where: { AND: [{ OR: tourneyIdFilters }, { status: true }] },
       _count: { winner_id: true },
     });
 
     // Conteggio sconfitte
     const losers = await prisma.match.groupBy({
       by: ['loser_id', 'loser_name', 'loser_ioc'],
-      where: { OR: tourneyIdFilters },
+      where: { AND: [{ OR: tourneyIdFilters }, { status: true }] },
       _count: { loser_id: true },
     });
 

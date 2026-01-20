@@ -11,11 +11,7 @@ export async function GET(req: NextRequest) {
     .filter(Boolean);
 
   const matches = await prisma.match.findMany({
-    where: { id: { in: ids } },
-    orderBy: [
-      { tourney_date: 'asc' },
-      { id: 'asc' }
-    ],
+    where: { id: { in: ids }, status: true },
     select: {
       id: true,
       tourney_date: true,
@@ -26,6 +22,17 @@ export async function GET(req: NextRequest) {
       loser_name: true,
       loser_ioc: true,
     },
+  });
+
+  // Sort matches by date asc then by round according to tournament progression
+  const roundOrder: Record<string, number> = { R128: 0, R64: 1, R32: 2, R16: 3, QF: 4, SF: 5, F: 6, '1R': 0, '2R': 1, '3R': 2, '4R': 3, Q: 4, S: 5 };
+  matches.sort((a, b) => {
+    const da = a.tourney_date ? (a.tourney_date instanceof Date ? a.tourney_date.toISOString() : String(a.tourney_date)) : '';
+    const db = b.tourney_date ? (b.tourney_date instanceof Date ? b.tourney_date.toISOString() : String(b.tourney_date)) : '';
+    if (da !== db) return String(da).localeCompare(String(db));
+    const ra = (a.round && (roundOrder[a.round] !== undefined)) ? roundOrder[a.round] : 999;
+    const rb = (b.round && (roundOrder[b.round] !== undefined)) ? roundOrder[b.round] : 999;
+    return ra - rb;
   });
 
   return NextResponse.json(

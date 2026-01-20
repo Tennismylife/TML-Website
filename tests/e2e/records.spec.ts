@@ -7,7 +7,8 @@ test('records: single fetch after filter change', async ({ page }) => {
   await page.goto(`${BASE}/records`);
 
   // Click the Wins tab to ensure a concrete record is selected
-  await page.click('button:has-text("Wins")');
+  // The tab is rendered as a link (<a>), so use a generic text selector
+  await page.click('text=Wins');
 
   // Wait for initial fetch to complete
   await page.waitForResponse(r => r.url().includes('/api/records/wins') && r.status() === 200, { timeout: 10000 });

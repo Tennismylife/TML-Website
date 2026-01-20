@@ -19,7 +19,7 @@ test('tournaments: keyboard navigation with arrows + enter navigates to suggesti
     });
   });
 
-  const base = process.env.BASE_URL || 'http://localhost:3001';
+  const base = process.env.BASE_URL || 'http://localhost:3000';
   await page.goto(`${base}/tournaments`, { waitUntil: 'networkidle' });
   // wait for the input to be attached to the DOM (may be animated into view)
   await page.waitForSelector('#tournament-search', { state: 'attached', timeout: 15_000 });

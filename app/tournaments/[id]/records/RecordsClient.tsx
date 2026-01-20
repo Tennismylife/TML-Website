@@ -10,8 +10,7 @@ import TimespanSection from "./TimespanSection";
 import RoundsOnEntries from "./RoundsOnEntries";
 import LeastSection from "./LeastSection";
 import AverageAgeSection from "./AverageAgeSection";
-import RoundsSection from "./RoundsSection";
-import TournamentHeader from "../TournamentHeader";
+import RoundsSection from "./RoundsSection";import StreakSection from './StreakSection';import TournamentHeader from "../TournamentHeader";
 import TournamentTabs from "./TournamentTabs";
 
 export default function RecordsPageClient({ params }: { params: Promise<{ id: string }> } ) {
@@ -107,8 +106,8 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
         // support both old '/rounds' path and new '/per-round' path
         setActivePercentageSubTab(subFromPath === 'per-round' || subFromPath === 'rounds' ? 'per-round' : 'overall');
       } else if (tabFromPath === 'ages') {
-        // map accepted age subtabs, fallback to 'main'
-        const validAges = new Set(['main', 'winners', 'titles', 'youngestrounds', 'oldestrounds']);
+        // map accepted age subtabs, fallback to 'main' (note: 'winners' subtab is not available per tournament pages)
+        const validAges = new Set(['main', 'titles', 'youngestrounds', 'oldestrounds']);
         setActiveAgeSubTab(validAges.has(subFromPath || '') ? (subFromPath as any) : 'main');
       }
 
@@ -195,6 +194,7 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
     if (activeTab === 'rounds') return `${humanizedDisplayName} Records by Round`;
     if (activeTab === 'count') return `${humanizedDisplayName} Open Era Records`;
     if (activeTab === 'rounds-on-entries') return `${humanizedDisplayName} Round Efficiency by Entries`;
+    if (activeTab === 'streak') return `${humanizedDisplayName} Longest Winning Streaks`;
     if (activeTab === 'least') return `${humanizedDisplayName} Least Games Lost to Reach a Round`;
     if (activeTab === 'average-age') return `${humanizedDisplayName} Average Age Records`;
     if (activeTab === 'timespan') return `${humanizedDisplayName} Timespan Records`;
@@ -205,6 +205,7 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
       percentage: 'Percentages',
       timespan: 'Timespans',
       'rounds-on-entries': 'Round Efficiency by Entries',
+      streak: 'Longest Winning Streaks',
       least: 'Least Games Lost to Reach a Round',
       'average-age': 'Average Age Records',
     };
@@ -266,6 +267,7 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
         )}
         {activeTab === 'timespan' && <TimespanSection id={id} />}
         {activeTab === 'rounds-on-entries' && <RoundsOnEntries id={id} />}
+        {activeTab === 'streak' && <StreakSection id={id} />}
         {activeTab === 'least' && <LeastSection id={id} linkId={linkId} />}
         {activeTab === 'average-age' && <AverageAgeSection id={id} />}
       </div>

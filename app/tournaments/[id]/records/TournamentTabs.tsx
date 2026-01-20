@@ -44,6 +44,7 @@ export default function TournamentTabs({
     { key: "percentage", label: "Percentages", hasSubTabs: true },
     { key: "timespan", label: "Timespans" },
     { key: "rounds-on-entries", label: "Rounds on Entries" },
+    { key: "streak", label: "Streak" },
     { key: "least", label: "Least" },
     { key: "average-age", label: "Average Age" },
   ];
