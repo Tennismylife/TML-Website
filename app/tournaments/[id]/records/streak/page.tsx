@@ -4,8 +4,8 @@ import { getTournamentName } from '@/lib/recordMetadata';
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const p = await params;
   const tournamentName = await getTournamentName(p.id);
-  // Title required by product: "{[Tournament Name]} Longest Winning Strreaks ! Tennis Records"
-  return { title: `${tournamentName} Longest Winning Strreaks ! Tennis Records` } as any;
+  // Title required by product: "{[Tournament Name]} Longest Winning Streaks ! Tennis Records"
+  return { title: `${tournamentName} Longest Winning Streaks ! Tennis Records` } as any;
 }
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
