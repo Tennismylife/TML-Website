@@ -4,6 +4,7 @@ import Flag from '@/components/Flag';
 import { prisma } from '@/lib/prisma';
 import { getPlayerHref } from '@/lib/utils';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
+import { getRoundFullName } from '@/lib/utils';
 import { metadataBase } from '@/lib/site';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
 
@@ -50,7 +51,7 @@ export default async function RoundFull({ id, round }: { id: string; round: stri
   return (
     <div className="max-w-4xl mx-auto text-white p-4">
       <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
-        <h3 className="text-2xl font-semibold mb-4">{`Most ${round} Appearances at the ${tourneyName}`}</h3>
+        <h2 className="sr-only">{`Most ${getRoundFullName(round)} Appearances at the ${tourneyName}`}</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-lg md:text-xl border-collapse table-fixed text-center">
             <colgroup>

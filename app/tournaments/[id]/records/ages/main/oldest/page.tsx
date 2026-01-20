@@ -1,5 +1,6 @@
 import AgesFull from '@/app/tournaments/[id]/records/ages/_components/AgesFull';
 import { getTournamentName } from '@/lib/recordMetadata';
+import ViewRecordsCTA from '../../../ViewRecordsCTA';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const p = await params;
@@ -11,5 +12,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 export default async function Page({ params }: any) {
   const p = await params;
   const { id } = p;
-  return <AgesFull id={id} section="main" which="oldest" />;
+  return (
+    <div className="w-full mx-auto text-white relative">
+      <ViewRecordsCTA id={id} className="absolute top-4 left-4 z-50" />
+      <AgesFull id={id} section="main" which="oldest" />
+    </div>
+  );
 }

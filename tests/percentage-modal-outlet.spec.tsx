@@ -84,7 +84,7 @@ describe('PercentageModalOutlet', () => {
     expect((fetchSpy as any).mock.calls[0][0]).toContain('round=F');
 
     // ensure heading uses exact phrasing
-    const heading = await screen.findByText('Best winning percentage in F at Test Tournament');
+    const heading = await screen.findByText('Best winning percentage in Finals at Test Tournament');
     expect(heading).toBeInTheDocument();
 
     const name = await screen.findByText('Player A');

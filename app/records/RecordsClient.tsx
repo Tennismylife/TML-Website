@@ -52,8 +52,8 @@ const subTabs: Record<string, { key: string; label: string }[]> = {
   ages: [
     { key: "oldest", label: "Oldest Main Draw" },
     { key: "youngest", label: "Youngest Main Draw" },
-    { key: "oldest-winners", label: "Oldest Winners" },
-    { key: "youngest-winners", label: "Youngest Winners" },
+    { key: "oldest-winners", label: "Oldest Title Winners" },
+    { key: "youngest-winners", label: "Youngest Title Winners" },
   ],
   timespan: [
     { key: "entries", label: "2 entries" },

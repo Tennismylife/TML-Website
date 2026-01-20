@@ -81,9 +81,11 @@ export default function AgesModalOutlet({ id }: { id: string }) {
     };
 
     // fallback: consume a global lastOpenModal payload if present (in case event fired before outlet mounted)
+    let consumedEarlyPayload = false;
     try {
       const last = (window as any).__lastOpenModalPayload;
       if (last && last.section && String(last.section).startsWith('ages-')) {
+        consumedEarlyPayload = true;
         const sec = String(last.section).replace(/^ages-/, '');
         const titleParam = last.title ?? null;
         const whichParam = last.which ?? null;
@@ -104,7 +106,15 @@ export default function AgesModalOutlet({ id }: { id: string }) {
       const maybeParent = recordsIndex >= 0 && parts.length > recordsIndex + 1 ? parts[recordsIndex + 1] : null;
       const maybeSection = recordsIndex >= 0 && parts.length > recordsIndex + 2 ? parts[recordsIndex + 2] : null;
 
-      if (isModal && maybeParent === 'ages' && maybeSection) {
+      // prefer explicit history state if present (useful for tests/navigation)
+      if (isModal && state && (state as any).section && String((state as any).section).startsWith('ages')) {
+        // normalize legacy 'ages' history state when it stores title like 'youngest'/'oldest' to the Titles section
+        if (String((state as any).section) === 'ages' && ((state as any).title === 'youngest' || (state as any).title === 'oldest')) {
+          openWithPayload({ section: 'titles', which: (state as any).title, title: null });
+        } else {
+          openWithPayload({ section: (state as any).section, which: (state as any).which ?? null, title: (state as any).title ?? null });
+        }
+      } else if (isModal && maybeParent === 'ages' && maybeSection) {
         if (maybeSection === 'titles') {
           openWithPayload({ which: parts[parts.length - 1] === 'youngest' ? 'youngest' : 'oldest', section: 'titles' });
         } else if (maybeSection === 'youngestrounds' || maybeSection === 'oldestrounds') {
@@ -112,13 +122,13 @@ export default function AgesModalOutlet({ id }: { id: string }) {
           openWithPayload({ section: maybeSection, title: titleParam });
         } else if (maybeSection === 'youngest' || maybeSection === 'oldest') {
           openWithPayload({ which: maybeSection as any, section: 'main' });
-        } else {
+        } else if (!consumedEarlyPayload) {
           setShow(false); setWhich(null); setList(null); setOpenError(null); setActiveTitle(null);
         }
-      } else {
+      } else if (!consumedEarlyPayload) {
         setShow(false); setWhich(null); setList(null); setOpenError(null); setActiveTitle(null);
       }
-    } else {
+    } else if (!consumedEarlyPayload) {
       setShow(false); setWhich(null); setList(null); setOpenError(null); setActiveTitle(null);
     }
 

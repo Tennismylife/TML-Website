@@ -25,7 +25,7 @@ describe('RoundsModalOutlet', () => {
     expect(fetchSpy.mock.calls.some((c: any[]) => String(c[0]).includes('/records/rounds'))).toBe(true);
 
     // heading should reflect requested phrasing
-    await waitFor(() => expect(document.body.textContent || '').toContain('Most R128 Appearances at the Australian Open'));
+    await waitFor(() => expect(document.body.textContent || '').toContain('Most Round of 128 Appearances at the Australian Open'));
 
     fetchSpy.mockRestore();
   });

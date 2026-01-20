@@ -93,12 +93,14 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
         const tournamentName = await getTournamentName(id);
         console.log('[AgesFull] tournamentName resolved', tournamentName);
         return (
-          <div className="text-white">
-            <div className="mb-3 text-center">
-              <h3 className="text-2xl font-semibold">{`Youngest Players in Main Draw at ${tournamentName}`}</h3>
-            </div>
-            <div className="p-1 border border-gray-700 bg-gray-800 rounded">
-              <div className="p-3">{renderTable(topYoungest)}</div>
+          <div className="max-w-4xl mx-auto text-white p-4">
+            <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
+              <h3 className="text-2xl font-semibold mb-3">{`Youngest Players in Main Draw at ${tournamentName}`}</h3>
+              <div className="overflow-x-auto">
+                <div className="p-1 border border-gray-700 bg-gray-800 rounded">
+                  <div className="p-3">{renderTable(topYoungest)}</div>
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -109,12 +111,14 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
         const tournamentName = await getTournamentName(id);
         console.log('[AgesFull] tournamentName resolved', tournamentName);
         return (
-          <div className="text-white">
-            <div className="mb-3 text-center">
-              <h3 className="text-2xl font-semibold">{`Oldest Players in Main Draw at ${tournamentName}`}</h3>
-            </div>
-            <div className="p-1 border border-gray-700 bg-gray-800 rounded">
-              <div className="p-3">{renderTable(topOldest)}</div>
+          <div className="max-w-4xl mx-auto text-white p-4">
+            <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
+              <h3 className="text-2xl font-semibold mb-3">{`Oldest Players in Main Draw at ${tournamentName}`}</h3>
+              <div className="overflow-x-auto">
+                <div className="p-1 border border-gray-700 bg-gray-800 rounded">
+                  <div className="p-3">{renderTable(topOldest)}</div>
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -130,14 +134,14 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
           <div className="grid md:grid-cols-2 gap-4">
             <div className="p-1 border border-gray-700 bg-gray-800 rounded">
               <div className="p-3">
-                <h4 className="text-white font-medium mb-2">Youngest Players</h4>
+                <h4 className="text-white font-medium mb-2">Youngest Players in Main Draw</h4>
                 {renderTable(topYoungest)}
               </div>
             </div>
 
             <div className="p-1 border border-gray-700 bg-gray-800 rounded">
               <div className="p-3">
-                <h4 className="text-white font-medium mb-2">Oldest Players</h4>
+                <h4 className="text-white font-medium mb-2">Oldest Players in Main Draw</h4>
                 {renderTable(topOldest)}
               </div>
             </div>
@@ -193,12 +197,14 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
       const tournamentName = await getTournamentName(id);
       if (which === 'youngest') {
         return (
-          <div className="text-white">
-            <div className="mb-3 text-center">
-              <h3 className="text-2xl font-semibold">{`Youngest Title Winners at ${tournamentName}`}</h3>
-            </div>
-            <div className="p-1 border border-gray-700 bg-gray-800 rounded">
-              <div className="p-3">{renderTable(topYoungest)}</div>
+          <div className="max-w-4xl mx-auto text-white p-4">
+            <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
+              <h3 className="text-2xl font-semibold mb-3">{`Youngest Title Winners at ${tournamentName}`}</h3>
+              <div className="overflow-x-auto">
+                <div className="p-1 border border-gray-700 bg-gray-800 rounded">
+                  <div className="p-3">{renderTable(topYoungest)}</div>
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -206,12 +212,14 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
 
       if (which === 'oldest') {
         return (
-          <div className="text-white">
-            <div className="mb-3 text-center">
-              <h3 className="text-2xl font-semibold">{`Oldest Title Winners at ${tournamentName}`}</h3>
-            </div>
-            <div className="p-1 border border-gray-700 bg-gray-800 rounded">
-              <div className="p-3">{renderTable(topOldest)}</div>
+          <div className="max-w-4xl mx-auto text-white p-4">
+            <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
+              <h3 className="text-2xl font-semibold mb-3">{`Oldest Title Winners at ${tournamentName}`}</h3>
+              <div className="overflow-x-auto">
+                <div className="p-1 border border-gray-700 bg-gray-800 rounded">
+                  <div className="p-3">{renderTable(topOldest)}</div>
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -220,20 +228,20 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
       return (
         <div className="text-white">
           <div className="mb-3 text-center">
-            <h3 className="text-2xl font-semibold">{`Youngest & Oldest Winners at ${tournamentName}`}</h3>
+            <h3 className="text-2xl font-semibold">{`Youngest & Oldest Title Winners at ${tournamentName}`}</h3>
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
             <div className="p-1 border border-gray-700 bg-gray-800 rounded">
               <div className="p-3">
-                <h4 className="text-white font-medium mb-2">Youngest Winners</h4>
+                <h4 className="text-white font-medium mb-2">Youngest Title Winners</h4>
                 {renderTable(topYoungest)}
               </div>
             </div>
 
             <div className="p-1 border border-gray-700 bg-gray-800 rounded">
               <div className="p-3">
-                <h4 className="text-white font-medium mb-2">Oldest Winners</h4>
+                <h4 className="text-white font-medium mb-2">Oldest Title Winners</h4>
                 {renderTable(topOldest)}
               </div>
             </div>
@@ -295,12 +303,14 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
         const tournamentName = await getTournamentName(id);
         const side = safeSection === 'youngestrounds' ? 'Youngest Players' : 'Oldest Players';
         return (
-          <div className="text-white">
-            <div className="mb-3 text-center">
-              <h3 className="text-2xl font-semibold">{`${side} in ${title} at ${tournamentName}`}</h3>
-            </div>
-            <div className="p-1 border border-gray-700 bg-gray-800 rounded">
-              <div className="p-3">{renderTable(rows)}</div>
+          <div className="max-w-4xl mx-auto text-white p-4">
+            <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
+              <h3 className="text-2xl font-semibold mb-3">{`${side} in ${title} at ${tournamentName}`}</h3>
+              <div className="overflow-x-auto">
+                <div className="p-1 border border-gray-700 bg-gray-800 rounded">
+                  <div className="p-3">{renderTable(rows)}</div>
+                </div>
+              </div>
             </div>
           </div>
         );

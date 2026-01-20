@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Flag from '@/components/Flag';
 import { getPlayerHref } from '@/lib/utils';
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
+import { getRoundFullName } from '@/lib/utils';
 
 interface PlayerStat {
   id: string | number;
@@ -32,7 +33,7 @@ const RoundCard = React.memo(function RoundCard({
   return (
     <div className="border rounded p-4 bg-gray-900 text-white overflow-hidden">
       <div className="pb-2">
-        <h4 className="font-medium">{item.title}</h4>
+        <h4 className="font-medium">{getRoundFullName(item.title)}</h4>
       </div>
 
       <table className="w-full text-sm border-collapse table-fixed">
@@ -300,7 +301,7 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
       )}
 
       {modalData && (
-        <ModalTournamentsSeasons title={`Most ${modalData.title} Appearances at the ${tourneyName}`} onClose={() => setModalData(null)}>
+        <ModalTournamentsSeasons title={`Most ${getRoundFullName(modalData.title)} Appearances at the ${tourneyName}`} onClose={() => setModalData(null)}>
           <div className="text-center text-lg md:text-xl">
             {renderTable(modalData.list, 'Reaches')}
           </div>

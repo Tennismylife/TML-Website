@@ -1,4 +1,6 @@
 import React from 'react';
+import Link from 'next/link';
+import ViewRecordsCTA from '../../ViewRecordsCTA';
 import CountFull from '../_components/CountFull';
 import TournamentHeader from '../../../TournamentHeader';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
@@ -52,13 +54,15 @@ export default async function PlayedPage({ params }: { params: Promise<{ id: str
   }).catch(() => String(id).replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()));
 
   return (
-    <div className="w-full mx-auto text-white">
+    <div className="w-full mx-auto text-white relative">
+      <ViewRecordsCTA id={id} />
+
       <div className="mb-6">
         <TournamentHeader id={Number(id)} />
       </div>
 
       <main>
-        <h1 className="text-3xl font-extrabold mb-4">{`Most matches played at ${tournamentName}`}</h1>
+        <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">{`Most matches played at ${tournamentName}`}</h1>
         <CountFull id={id} section="played" />
       </main>
     </div>

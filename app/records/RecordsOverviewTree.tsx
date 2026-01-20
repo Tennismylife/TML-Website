@@ -14,8 +14,8 @@ const treeData: Node[] = [
     children: [
       { key: 'oldest', label: 'Oldest Main Draw', href: '/records/ages/oldest' },
       { key: 'youngest', label: 'Youngest Main Draw', href: '/records/ages/youngest' },
-      { key: 'oldest-winners', label: 'Oldest Winners', href: '/records/ages/oldest-winners' },
-      { key: 'youngest-winners', label: 'Youngest Winners', href: '/records/ages/youngest-winners' },
+      { key: 'oldest-winners', label: 'Oldest Title Winners', href: '/records/ages/oldest-winners' },
+      { key: 'youngest-winners', label: 'Youngest Title Winners', href: '/records/ages/youngest-winners' },
       { key: 'allrounds', label: 'All Rounds (Top lists)', href: '/records/ages/allrounds' },
     ],
   },

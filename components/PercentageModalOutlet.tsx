@@ -6,7 +6,7 @@ import RouteModal from './RouteModal';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
-import { getPlayerHref } from '@/lib/utils';
+import { getPlayerHref, getRoundFullName } from '@/lib/utils';
 
 export default function PercentageModalOutlet({ id }: { id: string }) {
   const [show, setShow] = useState(false);
@@ -76,16 +76,13 @@ export default function PercentageModalOutlet({ id }: { id: string }) {
     };
 
     // fallback: check last open-modal payload stored on window (in case event fired before outlet mounted)
+    let consumedEarlyPayload = false;
     try {
       const last = (window as any).__lastOpenModalPayload;
       const allowedSections = ['percentage-wins','percentage-rounds'];
-      // confirm current pathname indicates the 'percentage' parent before consuming the global payload
-      const _currentPath = pathname || (typeof window !== 'undefined' ? window.location.pathname : null);
-      const _parts = _currentPath ? _currentPath.split('/').filter(Boolean) : [];
-      const _recordsIndex = _parts.indexOf('records');
-      const _maybeParent = _recordsIndex >= 0 && _parts.length > _recordsIndex + 1 ? _parts[_recordsIndex + 1] : null;
 
-      if (last && last.section && allowedSections.includes(String(last.section).startsWith('percentage-') ? String(last.section) : `percentage-${String(last.section)}`) && _maybeParent === 'percentage') {
+      if (last && last.section && allowedSections.includes(String(last.section).startsWith('percentage-') ? String(last.section) : `percentage-${String(last.section)}`)) {
+        consumedEarlyPayload = true;
         try { console.debug('[PercentageModalOutlet] consuming __lastOpenModalPayload', last); } catch (e) {}
         openWithPayload({ section: last.section, title: last.title });
         try { delete (window as any).__lastOpenModalPayload; } catch (e) {}
@@ -103,14 +100,17 @@ export default function PercentageModalOutlet({ id }: { id: string }) {
       const maybeSection = recordsIndex >= 0 && parts.length > recordsIndex + 2 ? parts[recordsIndex + 2] : null;
       const allowedRaw = ['wins', 'rounds'];
 
-      if (isModal && maybeParent === 'percentage' && maybeSection && allowedRaw.includes(String(maybeSection))) {
+      // Extra robustness: if history state already names the section (useful in tests and some navigation flows), prefer it
+      if (isModal && state && (state as any).section && String((state as any).section).startsWith('percentage-')) {
+        openWithPayload({ section: (state as any).section, title: (state as any).title });
+      } else if (isModal && maybeParent === 'percentage' && maybeSection && allowedRaw.includes(String(maybeSection))) {
         const titleParam = maybeSection === 'rounds' ? (parts.length > recordsIndex + 3 ? parts[recordsIndex + 3] : null) : null;
         openWithPayload({ section: `percentage-${maybeSection}`, title: titleParam });
-      } else {
+      } else if (!consumedEarlyPayload) {
         setShow(false); setSection(null); setList(null); setOpenError(null); setTitle(null);
         try { document.querySelectorAll('.server-modal-content').forEach((el: any) => { (el as HTMLElement).style.display = ''; }); } catch (e) {}
       }
-    } else {
+    } else if (!consumedEarlyPayload) {
       setShow(false); setSection(null); setList(null); setOpenError(null); setTitle(null);
     }
 
@@ -154,7 +154,7 @@ export default function PercentageModalOutlet({ id }: { id: string }) {
     <RouteModal>
       <div className="text-white">
         <div className="mb-3 text-center">
-          <h3 className="text-2xl font-semibold">{section && section.startsWith('percentage-rounds') ? (title ? `Best winning percentage in ${title} at ${tourneyName}` : `Best winning percentage per Round at ${tourneyName}`) : `Overall Win Percentage at ${tourneyName}`}</h3>
+          <h3 className="text-2xl font-semibold">{section && section.startsWith('percentage-rounds') ? (title ? `Best winning percentage in ${getRoundFullName(title)} at ${tourneyName}` : `Best winning percentage per Round at ${tourneyName}`) : `Overall Win Percentage at ${tourneyName}`}</h3>
         </div>
 
         {loading ? (

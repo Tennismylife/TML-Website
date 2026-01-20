@@ -1,5 +1,6 @@
 import AgesFull from '@/app/tournaments/[id]/records/ages/_components/AgesFull';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
+import ViewRecordsCTA from '../../../ViewRecordsCTA';
 
 function extractName(nameField: any): string {
   if (!nameField) return '';
@@ -52,5 +53,10 @@ export async function generateMetadata({ params }: any) {
 export default async function Page({ params }: any) {
   const p = await params;
   const { id } = p;
-  return <AgesFull id={id} section="titles" which="youngest" />;
+  return (
+    <div className="w-full mx-auto text-white relative">
+      <ViewRecordsCTA id={id} className="absolute top-4 left-4 z-50" />
+      <AgesFull id={id} section="titles" which="youngest" />
+    </div>
+  );
 }

@@ -19,7 +19,7 @@ describe('RoundFull server component', () => {
     });
 
     const markup = renderToStaticMarkup(await RoundFull({ id: 'australian-open', round: 'R128' } as any));
-    expect(markup).toContain('Most R128 Appearances at the Australian Open');
+    expect(markup).toContain('Most Round of 128 Appearances at the Australian Open');
 
     fetchSpy.mockRestore();
   });

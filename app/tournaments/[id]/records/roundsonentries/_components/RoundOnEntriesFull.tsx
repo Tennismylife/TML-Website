@@ -1,6 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
 import { getTournamentName } from '@/lib/recordMetadata';
+import { getRoundFullName } from '@/lib/utils';
+import HydrationDebugClient from '@/components/HydrationDebugClient';
+import Flag from '@/components/Flag';
 
 type Props = {
   params: { id: string, title?: string },
@@ -28,38 +31,49 @@ export default async function RoundOnEntriesFull({ params }: Props) {
     const found = rounds.find((r: any) => String(r.title) === String(title) || decodeURIComponent(String(r.title)) === String(title));
     const list = found?.fullFilteredList ?? found?.fullList ?? found?.list ?? [];
     const normalized = String(title || '').trim();
-    const displayTitle = normalized.toLowerCase() === 'winner' ? 'Titles' : `${normalized}s`;
+    const displayTitle = normalized.toLowerCase() === 'winner' ? 'Titles' : getRoundFullName(normalized);
+    const tableId = `roundonentries-${encodeURIComponent(String(normalized))}`;
     return (
-      <div>
-        <h3 className="text-2xl font-semibold mb-4">Most {displayTitle} on Entries at {tourneyName}</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-lg md:text-xl border-collapse table-fixed text-center">
-            <colgroup>
-              <col style={{ width: '40%' }} />
-              <col style={{ width: '20%' }} />
-              <col style={{ width: '20%' }} />
-              <col style={{ width: '20%' }} />
-            </colgroup>
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="text-center py-2">Player</th>
-                <th className="text-center py-2">Reaches</th>
-                <th className="text-center py-2">Entries</th>
-                <th className="text-center py-2">Percentage</th>
-              </tr>
-            </thead>
-            <tbody>
-              {list.map((r: any, i: number) => (
-                <tr key={`${String(r.id)}-${i}`} className="border-b">
-                  <td className="py-2"><Link href={getPlayerHref(r.slug ?? String(r.id))} className="text-blue-600">{r.name}</Link></td>
-                  <td className="py-2 text-center">{r.reaches}</td>
-                  <td className="py-2 text-center">{r.totalEntries}</td>
-                  <td className="py-2 text-center">{(r.percentage ?? 0).toFixed(1)}%</td>
+      <div className="max-w-4xl mx-auto text-white p-4">
+        <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">Most {displayTitle} on Entries at {tourneyName}</h1>
+        {/* Keep an sr-only H2 for accessibility like CountFull */}
+        <h2 className="sr-only">Most {displayTitle} on Entries at {tourneyName}</h2>
+        <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
+          <div className="overflow-x-auto">
+            <table id={tableId} className="w-full text-lg md:text-xl border-collapse table-fixed text-center">
+              <colgroup>
+                <col style={{ width: '40%' }} />
+                <col style={{ width: '20%' }} />
+                <col style={{ width: '20%' }} />
+                <col style={{ width: '20%' }} />
+              </colgroup>
+              <thead className="bg-gray-800">
+                <tr>
+                  <th className="text-center py-2 text-gray-300">Player</th>
+                  <th className="text-center py-2 text-gray-300">Reaches</th>
+                  <th className="text-center py-2 text-gray-300">Entries</th>
+                  <th className="text-center py-2 text-gray-300">Percentage</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody data-ssr-rows={list.length}>
+                {list.map((r: any, i: number) => (
+                  <tr key={`${String(r.id)}-${i}`} className="border-b border-gray-700">
+                    <td className="py-2 text-center">
+                      <div className="flex items-center justify-center gap-2">
+                        <Flag ioc={r.ioc} className="w-4 h-3" />
+                        <Link href={getPlayerHref(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link>
+                      </div>
+                    </td>
+                    <td className="py-2 text-center">{r.reaches}</td>
+                    <td className="py-2 text-center">{r.totalEntries}</td>
+                    <td className="py-2 text-center">{(r.percentage ?? 0).toFixed(1)}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
+        <HydrationDebugClient tableId={tableId} expected={list.length} />
       </div>
     );
   }

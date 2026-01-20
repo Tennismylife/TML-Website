@@ -37,7 +37,8 @@ export default async function CountFull({ id, section }: { id: string; section: 
   return (
     <div className="max-w-4xl mx-auto text-white p-4">
       <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
-        <h3 className="text-2xl font-semibold mb-4">{heading}</h3>
+        {/* Heading is handled by page/modal h1; keep sr-only H2 for accessibility */}
+        <h2 className="sr-only">{heading}</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-lg md:text-xl border-collapse table-fixed text-center">
             <colgroup>

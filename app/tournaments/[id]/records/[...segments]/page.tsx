@@ -1,4 +1,6 @@
 import React from 'react';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import RecordsPage from "../page";
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
 
@@ -179,7 +181,18 @@ export default async function RecordsCatchAllPage({
 
   return (
     <div>
-      <main className="w-full mx-auto pt-24 md:pt-32 py-8 px-0 text-white" style={{ backgroundColor: 'rgba(17,24,39,0.95)', backdropFilter: 'blur(6px)', minHeight: '100vh' }}>
+      <main className="w-full mx-auto pt-24 md:pt-32 py-8 px-0 text-white relative" style={{ backgroundColor: 'rgba(17,24,39,0.95)', backdropFilter: 'blur(6px)', minHeight: '100vh' }}>
+          <Link
+            href={`/tournaments/${id}/records`}
+            className="group relative inline-flex items-center gap-3 px-5 py-2 bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-black text-sm md:text-base rounded-full shadow-2xl hover:shadow-yellow-500/50 transform hover:scale-105 transition-all duration-300 overflow-hidden absolute top-6 left-6 z-50"
+            title="View Records of the Tournament"
+            aria-label="View Records of the Tournament"
+          >
+            <div className="absolute inset-0 bg-white/30 translate-x-[-100%] group-hover:translate-x-full transition-transform duration-1000" />
+            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-2 transition-transform" />
+            <span className="uppercase">VIEW RECORDS</span>
+          </Link>
+
           <h1 className="relative z-50 mt-8 text-4xl md:text-5xl font-extrabold mb-6 text-center text-white">{`${humanTournament} | ${recordTitle}`}</h1>
           <RecordsPage params={idPromise} />
       </main>

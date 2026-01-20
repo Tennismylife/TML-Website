@@ -6,7 +6,7 @@ import RouteModal from './RouteModal';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
-import { getPlayerHref } from '@/lib/utils';
+import { getPlayerHref, getRoundFullName } from '@/lib/utils';
 
 export default function RoundsModalOutlet({ id }: { id: string }) {
   const pathname = usePathname();
@@ -31,6 +31,14 @@ export default function RoundsModalOutlet({ id }: { id: string }) {
   useEffect(() => {
     let mounted = true;
 
+    // proactively hide any server-injected modal on mount to avoid race conditions with open-modal events
+    try { const { hideServerModals } = require('./hideServerModals'); hideServerModals(); } catch (e) {}
+    try { document.querySelectorAll('.server-modal-content').forEach((el: any) => { (el as HTMLElement).style.display = 'none'; }); } catch (e) {}
+
+    // capture events that may fire before the main handler is attached so we don't miss open-modal payloads
+    const __earlyHandler = (e: any) => { try { (window as any).__lastOpenModalPayload = e?.detail; } catch (err) {} };
+    window.addEventListener('open-modal', __earlyHandler);
+
     const openWithPayload = (detail: any) => {
       try { console.debug('[RoundsModalOutlet] openWithPayload', detail); } catch (e) {}
       // Accept both older payloads ({ round, list }) and namespaced ({ section: 'rounds', title, list })
@@ -45,7 +53,8 @@ export default function RoundsModalOutlet({ id }: { id: string }) {
       setOpenError(null);
 
       // hide server-injected modal
-      try { const { hideServerModals } = require('./hideServerModals'); hideServerModals(); } catch (e) {}
+      try { const { hideServerModals } = require('./hideServerModals'); hideServerModals(); try { console.debug('[RoundsModalOutlet] hideServerModals called'); } catch (e) {} } catch (e) { }
+      try { document.querySelectorAll('.server-modal-content').forEach((el: any) => { (el as HTMLElement).style.display = 'none'; }); try { console.debug('[RoundsModalOutlet] direct hide applied'); } catch (e) {} } catch (e) {}
 
       if (detail?.list && Array.isArray(detail.list)) {
         setList(detail.list);
@@ -112,7 +121,18 @@ export default function RoundsModalOutlet({ id }: { id: string }) {
     window.addEventListener('open-modal', handleOpenModal);
     window.addEventListener('close-modal', handleCloseModal);
 
-    return () => { mounted = false; window.removeEventListener('open-modal', handleOpenModal); window.removeEventListener('close-modal', handleCloseModal); };
+    // If an early event was captured before main handler was attached, consume it now
+    try {
+      const last = (window as any).__lastOpenModalPayload;
+      if (last && (last.round || last.title || (last.section && last.section === 'rounds'))) {
+        try { console.debug('[RoundsModalOutlet] consuming early payload', last); } catch (e) {}
+        openWithPayload(last);
+        try { document.querySelectorAll('.server-modal-content').forEach((el: any) => { (el as HTMLElement).style.display = 'none'; }); } catch (e) {}
+        try { delete (window as any).__lastOpenModalPayload; } catch (e) {}
+      }
+    } catch (e) {}
+
+    return () => { mounted = false; window.removeEventListener('open-modal', handleOpenModal); window.removeEventListener('close-modal', handleCloseModal); try { window.removeEventListener('open-modal', __earlyHandler); } catch (e) {} };
   }, [pathname, id]);
 
   if (!show) return null;
@@ -121,7 +141,7 @@ export default function RoundsModalOutlet({ id }: { id: string }) {
     <RouteModal>
       <div className="text-white">
         <div className="mb-3 text-center">
-          <h3 className="text-2xl font-semibold">{round ? `Most ${round} Appearances at the ${tourneyName}` : `Most Reaches at the ${tourneyName}`}</h3>
+          <h3 className="text-2xl font-semibold">{round ? `Most ${getRoundFullName(round)} Appearances at the ${tourneyName}` : `Most Reaches at the ${tourneyName}`}</h3>
         </div>
 
         {loading ? (

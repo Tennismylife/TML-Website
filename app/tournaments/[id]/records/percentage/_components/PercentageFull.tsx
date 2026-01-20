@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Flag from '@/components/Flag';
 import { metadataBase } from '@/lib/site';
 import { getTournamentName } from '@/lib/recordMetadata';
-import { getPlayerHref } from '@/lib/utils';
+import { getPlayerHref, getRoundFullName } from '@/lib/utils';
 
 type Props = { id: string; section?: string; title?: string };
 
@@ -104,10 +104,15 @@ export default async function PercentageFull({ id, section = 'wins', title }: Pr
       if (title) {
         const found = items.find((it: any) => String(it.title) === String(title) || String(it.title) === decodeURIComponent(String(title)));
         const rows = found ? (found.fullFilteredList ?? found.fullList ?? found.list ?? []) : [];
+        const roundLabel = getRoundFullName(String(title));
         return (
-          <div className="text-white">
-            <div className="mb-3 text-center"><h3 className="text-2xl font-semibold">Best winning percentage in {title} at {tournamentName}</h3></div>
-            <div className="p-1 border border-gray-700 bg-gray-800 rounded"><div className="p-3">{renderTable(rows)}</div></div>
+          <div className="max-w-4xl mx-auto text-white p-4">
+            <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
+              <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">{`Best winning percentage in ${roundLabel} at ${tournamentName}`}</h1>
+              <div className="overflow-x-auto">
+                <div className="p-1 border border-gray-700 bg-gray-800 rounded"><div className="p-3">{renderTable(rows)}</div></div>
+              </div>
+            </div>
           </div>
         );
       }

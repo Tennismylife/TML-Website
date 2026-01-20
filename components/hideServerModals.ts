@@ -30,3 +30,14 @@ export function showServerModals() {
     // ignore
   }
 }
+
+// As a safety net, register a global handler that hides server-injected modals when
+// any 'open-modal' event is dispatched. This prevents race conditions where the
+// event happens before modal outlets attach their listeners (useful in tests).
+try {
+  if (typeof window !== 'undefined') {
+    window.addEventListener('open-modal', () => {
+      try { document.querySelectorAll('.server-modal-content').forEach((el: any) => { (el as HTMLElement).style.display = 'none'; }); } catch (e) {}
+    });
+  }
+} catch (e) {}

@@ -382,7 +382,7 @@ describe('Records - single fetch on filter change', () => {
     await userEvent.hover(agesBtn);
     await userEvent.click(agesBtn); // activate ages tab
 
-    const owMatches = screen.getAllByRole('button', { name: /Oldest Winners/i });
+    const owMatches = screen.getAllByRole('button', { name: /Oldest Title Winners/i });
     const owBtn = owMatches.find(b => b.className?.includes('px-3')) || owMatches[0];
     await userEvent.click(owBtn);
 

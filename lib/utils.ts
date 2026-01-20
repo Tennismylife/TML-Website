@@ -267,6 +267,30 @@ export function getRoundStyle(round?: string | null) {
   }
 }
 
+/**
+ * Convert round short codes to human-friendly full names for display.
+ */
+export function getRoundFullName(round?: string | null) {
+  if (!round) return '';
+  const r = String(round).toUpperCase().trim();
+  switch (r) {
+    case 'W': return 'Winner';
+    case 'F': return 'Finals';
+    case 'SF': return 'Semifinals';
+    case 'QF': return 'Quarterfinals';
+    case 'R16': return 'Round of 16';
+    case 'R32': return 'Round of 32';
+    case 'R64': return 'Round of 64';
+    case 'R128': return 'Round of 128';
+    case 'RR': return 'Round Robin';
+    case 'BR': return 'Bronze (3rd place)';
+    case 'Q3':
+    case 'Q2':
+    case 'Q1': return 'Qualifying';
+    default: return String(round);
+  }
+}
+
 export function getSurfaceColors(surface?: string | null) {
   const s = (surface ?? "").toLowerCase();
   if (s.includes("grass")) return { bar: "bg-green-500", chipBg: "bg-green-200", chipText: "text-green-900" };

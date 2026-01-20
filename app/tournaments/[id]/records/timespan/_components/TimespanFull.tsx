@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Flag from '@/components/Flag';
 import { metadataBase } from '@/lib/site';
 import { getTournamentName } from '@/lib/recordMetadata';
-import { getPlayerHref } from '@/lib/utils';
+import { getPlayerHref, getRoundFullName } from '@/lib/utils';
 
 type Props = { id: string; title?: string; section?: string };
 
@@ -27,43 +27,47 @@ export default async function TimespanFull({ id, title, section = 'rounds' }: Pr
       const rows = found ? (found.fullList ?? found.list ?? []) : [];
       // fetch tournament display name (humanized) if possible
       const tourneyName = await getTournamentName(id);
+      const roundLabel = getRoundFullName(String(title));
 
       return (
-        <div className="text-white">
-          <div className="mb-3 text-center"><h3 className="text-2xl font-semibold">{`Biggest timespan between 2 ${title}s at ${tourneyName}`}</h3></div>
-          <div className="p-1 border border-gray-700 bg-gray-800 rounded"><div className="p-3 overflow-x-auto">
-            <table className="w-full text-lg md:text-xl border-collapse table-fixed text-center">
-              <colgroup>
-                <col style={{ width: '40%' }} />
-                <col style={{ width: '20%' }} />
-                <col style={{ width: '20%' }} />
-                <col style={{ width: '20%' }} />
-              </colgroup>
-              <thead className="bg-gray-800">
-                <tr>
-                  <th className="text-center py-2 text-gray-300">Player</th>
-                  <th className="text-center py-2 text-gray-300">First Date</th>
-                  <th className="text-center py-2 text-gray-300">Last Date</th>
-                  <th className="text-center py-2 text-gray-300">Timespan</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r: any, i: number) => (
-                  <tr key={`${String(r.id)}-${i}`} className="border-b border-gray-700">
-                    <td className="py-2 text-center"><div className="flex items-center justify-center gap-2"><Flag ioc={r.ioc} className="w-4 h-3" /><Link href={getPlayerHref(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link></div></td>
-                    <td className="py-2 text-center text-lg md:text-xl text-white">{r.firstDate ? String(r.firstDate).slice(0,10) : ''}</td>
-                    <td className="py-2 text-center text-lg md:text-xl text-white">{r.lastDate ? String(r.lastDate).slice(0,10) : ''}</td>
-                    <td className="py-2 text-center text-lg md:text-xl text-white">{String(r.days)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div></div>
+        <div className="max-w-4xl mx-auto text-white p-4">
+          <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
+            <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">{`Biggest timespan between 2 ${roundLabel} at ${tourneyName}`}</h1>
+            <div className="overflow-x-auto">
+              <div className="p-1 border border-gray-700 bg-gray-800 rounded"><div className="p-3 overflow-x-auto">
+                <table className="w-full text-lg md:text-xl border-collapse table-fixed text-center">
+                  <colgroup>
+                    <col style={{ width: '40%' }} />
+                    <col style={{ width: '20%' }} />
+                    <col style={{ width: '20%' }} />
+                    <col style={{ width: '20%' }} />
+                  </colgroup>
+                  <thead className="bg-gray-800">
+                    <tr>
+                      <th className="text-center py-2 text-gray-300">Player</th>
+                      <th className="text-center py-2 text-gray-300">First Date</th>
+                      <th className="text-center py-2 text-gray-300">Last Date</th>
+                      <th className="text-center py-2 text-gray-300">Timespan</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map((r: any, i: number) => (
+                      <tr key={`${String(r.id)}-${i}`} className="border-b border-gray-700">
+                        <td className="py-2 text-center"><div className="flex items-center justify-center gap-2"><Flag ioc={r.ioc} className="w-4 h-3" /><Link href={getPlayerHref(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link></div></td>
+                        <td className="py-2 text-center text-lg md:text-xl text-white">{r.firstDate ? String(r.firstDate).slice(0,10) : ''}</td>
+                        <td className="py-2 text-center text-lg md:text-xl text-white">{r.lastDate ? String(r.lastDate).slice(0,10) : ''}</td>
+                        <td className="py-2 text-center text-lg md:text-xl text-white">{String(r.days)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div></div>
+            </div>
+          </div>
         </div>
-      );
+    );
     }
 
-    // default: render per-round cards with a View All link (use humanized tournament name)
     const tourneyName = await getTournamentName(id);
     return (
       <div className="text-white">

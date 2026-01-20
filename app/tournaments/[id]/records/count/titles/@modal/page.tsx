@@ -8,7 +8,7 @@ export default async function TitlesModalPage({ params }: { params: Promise<{ id
   return (
     <div className="w-full mx-auto text-white">
       <main>
-        <h1 className="text-3xl font-extrabold mb-4">{`Titles`}</h1>
+        <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">{`Titles`}</h1>
         {/* @ts-ignore */}
         <CountFull id={id} section="titles" />
       </main>

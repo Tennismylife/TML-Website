@@ -16,7 +16,7 @@ export default async function Page({ params }: any) {
   // Render a server-side H1 for the Youngest per-round overview
   return (
     <div>
-      <main className="w-full mx-auto text-white">
+      <main className="w-full mx-auto text-white relative">
         <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">{`Youngest per Round at ${tournamentName}`}</h1>
         {/* Pass tab so the client renders the AgesSection in the correct subtab */}
         {/* @ts-ignore - TournamentPage is a client component */}

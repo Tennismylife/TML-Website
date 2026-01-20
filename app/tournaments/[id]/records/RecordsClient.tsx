@@ -1,6 +1,6 @@
 'use client'
 
-import React, { use, useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
 import CountSection from "./CountSection";
@@ -15,21 +15,27 @@ import TournamentTabs from "./TournamentTabs";
 
 export default function RecordsPageClient({ params }: { params: Promise<{ id: string }> } ) {
   // Accept both a Promise (Next's server use(params)) or a plain object (useful in tests)
-  let id: string = '';
-  if (!params) {
-    id = '';
-  } else if (typeof (params as any).then === 'function') {
-    try {
-      // In a real Next client render this will resolve via `use`
-      // @ts-ignore
-      id = use(params).id;
-    } catch (e) {
-      // In the test environment `use` may not be available; fall back to an empty id and rely on mocked fetches
-      id = '';
-    }
-  } else {
-    id = (params as any).id ?? '';
-  }
+  // Resolve params into a stable `id` state so hooks and effects run predictably
+  const [id, setId] = useState<string>('');
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        if (params && typeof (params as any).then === 'function') {
+          const p = await params;
+          if (!mounted) return;
+          setId(p?.id ?? '');
+        } else {
+          setId((params as any)?.id ?? '');
+        }
+      } catch (e) {
+        if (!mounted) return;
+        setId('');
+      }
+    })();
+    return () => { mounted = false; };
+  }, [params]);
 
   const tournamentId = Number(id);
 

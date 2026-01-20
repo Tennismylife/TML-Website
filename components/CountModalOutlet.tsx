@@ -29,6 +29,14 @@ export default function CountModalOutlet({ id }: { id: string }) {
   }, [id]);
 
   useEffect(() => {
+    // proactively hide any server-injected modal on mount to avoid race conditions with open-modal events
+    try { const { hideServerModals } = require('./hideServerModals'); hideServerModals(); } catch (e) {}
+    try { document.querySelectorAll('.server-modal-content').forEach((el: any) => { (el as HTMLElement).style.display = 'none'; }); } catch (e) {}
+
+    // capture events that may fire before the main handler is attached so we don't miss open-modal payloads
+    const __earlyHandler = (e: any) => { try { (window as any).__lastOpenModalPayload = e?.detail; } catch (err) {} };
+    window.addEventListener('open-modal', __earlyHandler);
+
     const state = (typeof window !== 'undefined' && window.history.state) || null;
     const isModal = state && state.modal && state.background;
     const currentPath = typeof window !== 'undefined' ? window.location.pathname : pathname;
@@ -103,7 +111,18 @@ export default function CountModalOutlet({ id }: { id: string }) {
     };
 
     window.addEventListener('close-modal', handleCloseModal as EventListener);
-    return () => { window.removeEventListener('open-modal', handleOpenModal as EventListener); window.removeEventListener('close-modal', handleCloseModal as EventListener); };
+
+    // If an early event was captured before main handler was attached, consume it now
+    try {
+      const last = (window as any).__lastOpenModalPayload;
+      if (last && last.section && ['wins','played','entries','titles'].includes(String(last.section))) {
+        try { console.debug('[CountModalOutlet] consuming early payload', last); } catch (e) {}
+        openWithPayload(last);
+        try { delete (window as any).__lastOpenModalPayload; } catch (e) {}
+      }
+    } catch (e) {}
+
+    return () => { window.removeEventListener('open-modal', handleOpenModal as EventListener); window.removeEventListener('close-modal', handleCloseModal as EventListener); try { window.removeEventListener('open-modal', __earlyHandler); } catch (e) {} };
   }, [pathname, id]);
 
   if (!show) return null;

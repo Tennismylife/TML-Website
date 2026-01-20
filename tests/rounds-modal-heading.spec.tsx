@@ -21,7 +21,7 @@ describe('RoundsModalOutlet heading', () => {
 
     act(() => window.dispatchEvent(new CustomEvent('open-modal', { detail: { section: 'rounds', title: 'R128' } }))); 
 
-    await waitFor(() => expect(document.body.textContent || '').toContain('Most R128 Appearances at the Australian Open'));
+    await waitFor(() => expect(document.body.textContent || '').toContain('Most Round of 128 Appearances at the Australian Open'));
 
     fetchSpy.mockRestore();
   });

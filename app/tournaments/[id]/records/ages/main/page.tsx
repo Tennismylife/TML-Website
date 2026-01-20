@@ -17,7 +17,7 @@ export default async function Page({ params }: any) {
   // Render a server-side H1 so this page has an authoritative title like "{tournamentName} | Ages"
   return (
     <div>
-      <main className="w-full mx-auto text-white">
+      <main className="w-full mx-auto text-white relative">
         <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">{`${tournamentName} | Ages`}</h1>
         {/* Render the full Tournament records page (client) so the page includes header, tabs and the AgesSection */}
         {/* Pass params as a resolved promise so the client component receives the same shape it expects */}

@@ -21,7 +21,12 @@ describe('RoundOnEntriesFull component', () => {
 
     const el = await RoundOnEntriesFull({ params: { id: 'australian-open', title: 'F' } as any } as any);
     const html = renderToStaticMarkup(el as any);
-    expect(html).toContain('Most Fs on Entries at Australian Open');
+    expect(html).toContain('Most Finals on Entries at Australian Open');
+    expect(html).toContain('<h1');
+    expect(html).toContain('data-ssr-rows="1"');
+    expect(html).toContain('bg-gray-800');
+    expect(html).toContain('text-blue-400');
+    expect(html).toContain('border-gray-700');
 
     fetchSpy.mockRestore();
 
@@ -34,6 +39,7 @@ describe('RoundOnEntriesFull component', () => {
     const el3 = await RoundOnEntriesFull({ params: { id: 'australian-open', title: 'Winner' } as any } as any);
     const html3 = renderToStaticMarkup(el3 as any);
     expect(html3).toContain('Most Titles on Entries at Australian Open');
+    expect(html3).toContain('data-ssr-rows="1"');
 
     fetchSpy3.mockRestore();
 
@@ -45,7 +51,8 @@ describe('RoundOnEntriesFull component', () => {
 
     const el2 = await RoundOnEntriesFull({ params: { id: 'australian-open', title: 'F' } as any } as any);
     const html2 = renderToStaticMarkup(el2 as any);
-    expect(html2).toContain('Most Fs on Entries at Australian Open');
+    expect(html2).toContain('Most Finals on Entries at Australian Open');
+    expect(html2).toContain('data-ssr-rows="1"');
 
     fetchSpy2.mockRestore();
   });

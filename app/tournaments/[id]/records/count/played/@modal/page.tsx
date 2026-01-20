@@ -7,7 +7,7 @@ export default async function PlayedModalPage({ params }: { params: Promise<{ id
   return (
     <div className="w-full mx-auto text-white">
       <main>
-        <h1 className="text-3xl font-extrabold mb-4">{`Played`}</h1>
+        <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">{`Played`}</h1>
         {/* @ts-ignore */}
         <CountFull id={id} section="played" />
       </main>

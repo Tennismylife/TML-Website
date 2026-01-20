@@ -223,8 +223,8 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
   if (activeSubTab === 'main' || activeSubTab === 'titles') {
     const leftData = activeSubTab === 'main' ? agesData.topYoungest : agesData.topYoungestWinners;
     const rightData = activeSubTab === 'main' ? agesData.topOldest : agesData.topOldestWinners;
-    const leftTitle = activeSubTab === 'main' ? "Youngest Players" : "Youngest Winners";
-    const rightTitle = activeSubTab === 'main' ? "Oldest Players" : "Oldest Winners";
+    const leftTitle = activeSubTab === 'main' ? "Youngest Players in Main Draw" : (activeSubTab === 'titles' ? "Youngest Title Winners" : "Youngest Winners");
+    const rightTitle = activeSubTab === 'main' ? "Oldest Players in Main Draw" : (activeSubTab === 'titles' ? "Oldest Title Winners" : "Oldest Winners");
 
     return (
       <div className="grid md:grid-cols-2 gap-4" style={{ ['--col-1' as any]: '60%', ['--col-2' as any]: '20%', ['--col-2-alt' as any]: '40%', ['--col-3' as any]: '20%' }}>
