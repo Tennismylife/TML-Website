@@ -20,17 +20,18 @@ const siteTitle = 'TML — Tennis Records Data History Rankings, Matches & GOAT'
 const siteDescription = 'TML aggregates tennis matches, rankings, player profiles and records. Explore player statistics, head-to-heads and historical data. Find the GOAT'
 
 // Resolve metadataBase to a canonical origin for Open Graph/Twitter images
-const METADATA_BASE = process.env.NEXT_PUBLIC_SITE_ORIGIN ?? (process.env.NODE_ENV === 'production' ? 'https://stats.tennismylife.org' : 'http://localhost:3000');
+// Prefer explicit env var; fallback to production origin to ensure no localhost is used in metadata.
+const METADATA_BASE = process.env.NEXT_PUBLIC_SITE_ORIGIN ?? 'https://stats.tennismylife.org';
 const METADATA_BASE_URL = new URL(METADATA_BASE);
 
 export const metadata: Metadata = {
-  metadataBase: METADATA_BASE_URL,
+  metadataBase: new URL('https://stats.tennismylife.org'),
   title: siteTitle,
   description: siteDescription,
   openGraph: {
     title: siteTitle,
     description: siteDescription,
-    url: '/',
+    url: new URL('/', METADATA_BASE_URL).toString(),
     type: 'website',
     images: [
       {
@@ -45,9 +46,11 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     images: [new URL('/og/site-preview.png', METADATA_BASE_URL).toString()],
+    site: '@TennisMyLife68',
+    creator: '@TennisMyLife68',
   },
   alternates: {
-    canonical: '/',
+    canonical: new URL('/', METADATA_BASE_URL).toString(),
   },
 } 
 
@@ -88,6 +91,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               '@type': 'WebSite',
               url: 'https://stats.tennismylife.org',
               name: 'TML — Tennis Rankings, Matches & Records',
+              potentialAction: {
+                '@type': 'SearchAction',
+                target: 'https://stats.tennismylife.org/search?q={search_term_string}',
+                'query-input': 'required name=search_term_string'
+              }
             }),
           }}
         />

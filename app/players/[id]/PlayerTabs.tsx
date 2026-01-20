@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Profile from "./Profile";
 import AllMatches from "./Matches/AllMatches";
 import Seasons from "./Seasons/Seasons";
@@ -30,35 +30,50 @@ interface PlayerTabsProps {
 
 export default function PlayerTabs({ player, tabs, initialTab, setTab, tournamentsFilters, setTournamentsFilters, h2hFilters, setH2HFilters }: PlayerTabsProps) {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const router = useRouter();
 
-  const tabParam = searchParams?.get("tab");
+  // derive tab from pathname (/players/:slug/:tab) or fall back to initialTab
+  const pathTab = typeof pathname === 'string' ? pathname.split('/')[3] : null;
 
   const activeTab = useMemo(() => {
-    const tab = tabParam || initialTab || "profile";
+    const tab = pathTab || initialTab || "profile";
     return tabs.some(t => t.id === tab) ? tab : "profile";
-  }, [tabParam, initialTab, tabs]);
+  }, [pathTab, initialTab, tabs]);
 
   const lastNavRef = useRef<{ url: string; t: number } | null>(null);
 
   const handleTabClick = (tabId: string) => {
-    // Build a new query string based on current search params
+    // Build a new query string based on current search params (preserve filters, but don't use ?tab=)
     const params = new URLSearchParams(Array.from(searchParams?.entries() ?? []));
-    params.set("tab", tabId);
-    if (tabId !== "tournaments") params.delete("sub");
+    // Only keep 'sub' for season. If navigating to 'season' and no 'sub' present, restore last-seen season sub if available
+    if (tabId !== "season") {
+      params.delete("sub");
+    } else {
+      if (!params.has("sub") && typeof window !== 'undefined') {
+        const last = (window as any).__player_last_season_sub;
+        if (last) params.set("sub", last);
+      }
+    }
 
     const newQs = params.toString();
     const currentQs = typeof window !== "undefined" ? window.location.search.replace(/^\?/, "") : "";
 
-    // Avoid triggering navigation if nothing actually changed
-    if (newQs === currentQs) {
-      // dev: log suppressed navigation
-      // eslint-disable-next-line no-console
-      console.debug('[PlayerTabs] handleTabClick: no-op navigation suppressed (qs unchanged)');
+    // Build new pathname with tab as segment
+    const parts = typeof window !== 'undefined' ? window.location.pathname.split('/') : ['','players','','matches'];
+    parts[3] = tabId;
+    const newPathname = parts.join('/');
+
+    // Avoid triggering navigation if nothing actually changed (both pathname and qs)
+    if (newQs === currentQs && newPathname === window.location.pathname) {
+      if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-console
+        console.debug('[PlayerTabs] handleTabClick: no-op navigation suppressed (pathname+qs unchanged)');
+      }
       return;
     }
 
-    const newUrl = `${window.location.pathname}${newQs ? `?${newQs}` : ""}`;
+    const newUrl = `${newPathname}${newQs ? `?${newQs}` : ""}`;
 
     // Suppress duplicate navigations within 2000ms
     const now = Date.now();
@@ -78,12 +93,14 @@ export default function PlayerTabs({ player, tabs, initialTab, setTab, tournamen
       console.debug('[PlayerTabs] navigate to', newUrl);
     }
 
-    // Use lifted setter if available to centralize URL updates
+    // Use lifted setter to update client state and always navigate to the canonical path immediately
     if (setTab) {
       setTab(tabId);
-    } else {
-      router.push(newUrl, { scroll: false });
     }
+    // Set a short-lived flag so other client-side URL-syncers don't overwrite explicit navigation
+    if (typeof window !== 'undefined') (window as any).__player_navigation_recent = Date.now();
+    // Navigate immediately to the canonical path to avoid race conditions
+    router.push(newUrl, { scroll: false });
   };
 
   const content = useMemo(() => {

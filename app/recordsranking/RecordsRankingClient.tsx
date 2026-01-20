@@ -63,16 +63,17 @@ export default function RecordsRankingClient({ currentTabSeg = 'count', currentS
           const isActive = activeTabKey === tab.key;
 
           return (
-            <div key={tab.key} className="relative">
+            <div key={tab.key} className="relative group inline-block">
               <Link
                 href={linkHref}
+                aria-haspopup={tab.hasSub ? 'menu' : undefined}
                 className={`px-4 py-2 rounded-xl font-medium transition-colors duration-200 ${isActive ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700'}`}
               >
                 {tab.label}
               </Link>
 
               {tab.hasSub && (
-                <div className="mt-2 flex gap-2">
+                <div role="menu" className="absolute left-0 top-full mt-2 flex flex-col gap-2 opacity-0 pointer-events-none group-hover:opacity-100 group-focus-within:opacity-100 group-hover:pointer-events-auto group-focus-within:pointer-events-auto transition-opacity duration-150 z-10 bg-gray-800 rounded px-2 py-2 min-w-[12rem]">
                   {(subTabsOptions[tab.key] || []).map(st => {
                     const subHref = `${href}/${encodeURIComponent(st.key)}`;
                     const isSubActive = currentSubSeg && currentSubSeg.toLowerCase() === st.key.toLowerCase();
@@ -80,6 +81,7 @@ export default function RecordsRankingClient({ currentTabSeg = 'count', currentS
                       <Link
                         key={st.key}
                         href={subHref}
+                        role="menuitem"
                         className={`px-2 py-1 rounded text-sm ${isSubActive ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}`}
                       >
                         {st.label}

@@ -104,7 +104,7 @@ else Array.from(searchParams?.entries() ?? []).forEach(([k,v]) => { if (k === 's
                   </div>
                 </td>
                 <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-200">
-                  <Link href={`${getPlayerHref((p as any).slug ?? p.id)}?tab=tournaments`} className="text-indigo-300 hover:underline">
+                  <Link href={`${getPlayerHref((p as any).slug ?? p.id)}/tournaments`} className="text-indigo-300 hover:underline">
                     {p.entries}
                   </Link>
                 </td>

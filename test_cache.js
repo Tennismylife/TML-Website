@@ -2,7 +2,7 @@ const fetch = require("node-fetch");
 
 const URLS = [
   "https://stats.tennismylife.org/tournaments/580",
-  "https://stats.tennismylife.org/players/C044?tab=matches"
+  "https://stats.tennismylife.org/players/C044/matches"
 ];
 
 async function testCache() {

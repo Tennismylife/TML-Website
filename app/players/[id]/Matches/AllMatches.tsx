@@ -16,6 +16,7 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
 
   const [allMatches, setAllMatches] = useState<Match[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
+  const [loadingMatches, setLoadingMatches] = useState<boolean>(false);
   const [sortKey, setSortKey] = useState<SortKey>("tourney_date");
   const [sortDir, setSortDir] = useState<SortDirection>("desc");  // Changed from "asc" to "desc" to show latest matches first
   // show all matches by default (allow table to overflow if needed)
@@ -58,25 +59,11 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
   const explicitDeletedRef = useRef(new Set<string>());
 
 
-  // DEV DEBUG: wrap history.replaceState/pushState to log who calls them (stack trace)
+  // DEV DEBUG: history wrapper removed to reduce noisy stack traces in test logs
+  // (previously wrapped history.replaceState/pushState to print stacks during development)
   useMemo(() => {
-    if (typeof window === 'undefined' || process.env.NODE_ENV === 'production') return;
-    const origReplace = window.history.replaceState;
-    const origPush = window.history.pushState;
-    window.history.replaceState = function (...args: any[]) {
-      console.debug('[AllMatches] history.replaceState called', { args });
-      console.debug(new Error('replaceState stack').stack);
-      return origReplace.apply(this, args as any);
-    } as any;
-    window.history.pushState = function (...args: any[]) {
-      console.debug('[AllMatches] history.pushState called', { args });
-      console.debug(new Error('pushState stack').stack);
-      return origPush.apply(this, args as any);
-    } as any;
-    return () => {
-      window.history.replaceState = origReplace;
-      window.history.pushState = origPush;
-    };
+    // intentionally no-op in browser to keep Playwright/CI logs clean
+    if (typeof window === 'undefined') return;
   }, []);
 
   useEffect(() => {
@@ -103,12 +90,15 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
     const controller = new AbortController();
     (async () => {
       try {
+        setLoadingMatches(true);
         const res = await fetch(endpoint, { signal: controller.signal, cache: "no-store" });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data: Match[] = await res.json();
         setMatches(data);
       } catch (err: any) {
         if (!controller.signal.aborted) console.error(err);
+      } finally {
+        setLoadingMatches(false);
       }
     })();
     return () => controller.abort();
@@ -177,8 +167,18 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
       return;
     }
 
+    // If the current active tab is not 'matches', abstain from updating the URL to avoid clobbering navigations
+    if (typeof window !== 'undefined') {
+      const currentTab = window.location.pathname.split('/')[3];
+      if (currentTab !== 'matches') {
+        console.debug('[AllMatches] updateUrl aborted: not on matches tab (currentTab=', currentTab, ')');
+        return;
+      }
+    }
+
     const url = new URL(window.location.href);
-    url.searchParams.set("tab", "matches");
+    // Do NOT force the pathname tab segment here; keep current pathname and only update search params
+
     Object.entries(filters).forEach(([key, value]) => {
       const currentHas = typeof window !== 'undefined' ? new URL(window.location.href).searchParams.has(key) : false;
       const explicitDeleted = explicitDeletedRef.current.has(key);
@@ -206,9 +206,8 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
       }
     });
     // Build a relative path and use history.replaceState to avoid a full page reload
-    const pathname = window.location.pathname;
     const searchString = url.searchParams.toString();
-    const newPath = pathname + (searchString ? '?' + searchString : '');
+    const newPath = url.pathname + (searchString ? '?' + searchString : '');
     console.debug('[AllMatches] replace ->', newPath, '(using history.replaceState)');
     if (typeof window !== 'undefined' && window.history && typeof window.history.replaceState === 'function') {
       window.history.replaceState(null, '', newPath);
@@ -219,9 +218,17 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
 
   // explicit change handler: used when user explicitly clicks a filter (will force delete even if it existed initially)
   const updateUrlExplicit = (key: string, value: string | number) => {
-    const pathname = window.location.pathname;
+    // If not on matches tab, ignore explicit updates to avoid clobbering navigation
+    if (typeof window !== 'undefined') {
+      const currentTab = window.location.pathname.split('/')[3];
+      if (currentTab !== 'matches') {
+        console.debug('[AllMatches] updateUrlExplicit aborted: not on matches tab (currentTab=', currentTab, ')');
+        return;
+      }
+    }
+
     const searchParams = new URLSearchParams(window.location.search);
-    searchParams.set("tab", "matches");
+
     if (!value || value === "All" || value === "") {
       console.debug('[AllMatches] explicit delete:', key);
       searchParams.delete(key);
@@ -238,7 +245,7 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
       explicitDeletedRef.current.delete(key);
     }
     const newSearch = searchParams.toString();
-    const newUrl = pathname + (newSearch ? '?' + newSearch : '');
+    const newUrl = window.location.pathname + (newSearch ? '?' + newSearch : '');
     if (typeof window !== 'undefined' && window.history && typeof window.history.replaceState === 'function') {
       window.history.replaceState(null, '', newUrl);
     } else {
@@ -274,6 +281,7 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
             </div>
             <MatchTable
               matches={showAll ? sortedMatches : sortedMatches.slice(0, DEFAULT_INITIAL_COUNT)}
+              loading={loadingMatches}
               sortKey={sortKey}
               sortDir={sortDir}
               setSortKey={(key) => setSortKey(key)}

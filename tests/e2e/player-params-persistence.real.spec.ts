@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 // This test runs against the real dev server (no network interception) and collects console logs
 test('players page (real server): filters persist after multiple reloads and inspect console', async ({ page, baseURL }) => {
-  const targetPath = '/players/roger-federer?tab=matches&year=2021&tourney=520&vsRank=Top100';
+  const targetPath = '/players/roger-federer/matches?year=2021&tourney=520&vsRank=Top100';
   const fullUrl = (baseURL || '') + targetPath;
 
   const consoleMessages: string[] = [];

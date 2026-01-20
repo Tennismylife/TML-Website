@@ -41,6 +41,7 @@ export default async function PlayerPage({ params, searchParams }: any) {
 
   // searchParams can be a Promise — await it before accessing properties
   const resolvedSearchParams = await searchParams;
+  const hasTab = Boolean(resolvedSearchParams && Object.prototype.hasOwnProperty.call(resolvedSearchParams, 'tab'));
   const tabValue = resolvedSearchParams?.tab || 'overview';
   const isSlug = !/^\d+$/.test(String(slugParam)); // treat any non-all-digits as slug
 
@@ -57,10 +58,28 @@ export default async function PlayerPage({ params, searchParams }: any) {
 
   if (!player) return <div>Player not found: {slugParam}</div>;
 
-  // Redirect ID → slug
+  // If a ?tab query param was used, redirect to the path-based equivalent and preserve other params
+  if (hasTab) {
+    const desiredTab = tabValue || 'matches';
+    // rebuild search without 'tab'
+    const params = new URLSearchParams();
+    Object.entries(resolvedSearchParams || {}).forEach(([k, v]) => {
+      if (k === 'tab') return;
+      if (v === undefined || v === null) return;
+      params.set(k, String(v));
+    });
+    const qs = params.toString();
+    const base = getPlayerHref(player.slug || slugParam);
+    redirect(`${base}/${encodeURIComponent(desiredTab)}${qs ? `?${qs}` : ''}`);
+  }
+
+  // No tab segment and no ?tab param — redirect to canonical '/matches'
   if (!isSlug && player.slug) {
-    const search = tabValue !== 'overview' ? `?tab=${tabValue}` : '';
-    redirect(`${getPlayerHref(player.slug)}${search}`);
+    redirect(`${getPlayerHref(player.slug)}/matches`);
+  }
+  // If already a slug but this route is used (no tab segment), redirect to include matches
+  if (isSlug) {
+    redirect(`${getPlayerHref(player.slug || slugParam)}/matches`);
   }
 
   const name = player.atpname || player.player;

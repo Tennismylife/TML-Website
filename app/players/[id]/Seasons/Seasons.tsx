@@ -149,6 +149,17 @@ export default function Seasons({ playerId }: SeasonsProps) {
     if (!Number.isNaN(y)) setSelectedYear(y);
   }, [searchParams]);
 
+  // Remember last-seen 'sub' for season so that navigating back to season can restore it
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const sub = searchParams?.get('sub');
+    if (sub) {
+      (window as any).__player_last_season_sub = sub;
+    } else {
+      delete (window as any).__player_last_season_sub;
+    }
+  }, [searchParams]);
+
   const updateUrlYear = (year: number | null) => {
     // guard: ensure we have a pathname
     if (!pathname) return;

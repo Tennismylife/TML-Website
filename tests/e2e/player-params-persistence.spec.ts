@@ -35,8 +35,8 @@ test('players page: filters from URL are visible and persist after reload', asyn
     });
   });
 
-  // Navigate to player page with filters in query
-  await page.goto('/players/roger-federer?tab=matches&year=2021&tourney=520&vsRank=Top100');
+  // Navigate to player page with filters in query (path-based tab)
+  await page.goto('/players/roger-federer/matches?year=2021&tourney=520&vsRank=Top100');
 
   // Wait for filter inputs to appear and be checked
   await page.waitForSelector('input[name="Season"][value="2021"]');

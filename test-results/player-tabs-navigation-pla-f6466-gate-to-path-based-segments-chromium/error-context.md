@@ -1,0 +1,57 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "Site logo" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - img "Site logo" [ref=e5]
+      - navigation [ref=e6]:
+        - link "Home" [ref=e7] [cursor=pointer]:
+          - /url: /
+        - link "Tournaments" [ref=e8] [cursor=pointer]:
+          - /url: /tournaments
+        - link "Seasons" [ref=e9] [cursor=pointer]:
+          - /url: /seasons
+        - link "Statistics" [ref=e10] [cursor=pointer]:
+          - /url: /statistics
+        - link "H2H" [ref=e11] [cursor=pointer]:
+          - /url: /h2h
+        - link "Player vs Player" [ref=e12] [cursor=pointer]:
+          - /url: /player-vs-player
+        - link "Rankings" [ref=e13] [cursor=pointer]:
+          - /url: /ranking
+        - link "Ranking Tables" [ref=e14] [cursor=pointer]:
+          - /url: /rankingtables
+        - link "Match Records" [ref=e15] [cursor=pointer]:
+          - /url: /records
+        - link "Ranking Records" [ref=e16] [cursor=pointer]:
+          - /url: /recordsranking
+  - main [ref=e17]:
+    - main [ref=e18]:
+      - generic [ref=e20]:
+        - img "🇷🇸" [ref=e21]
+        - heading "Novak Djokovic" [level=1] [ref=e22]
+      - generic [ref=e23]:
+        - tablist [ref=e25]:
+          - tab "Profile" [active] [ref=e26] [cursor=pointer]
+          - tab "Matches" [ref=e27] [cursor=pointer]
+          - tab "Seasons" [selected] [ref=e28] [cursor=pointer]
+          - tab "Tournaments" [ref=e29] [cursor=pointer]
+          - tab "H2H" [ref=e30] [cursor=pointer]
+          - tab "Performance" [ref=e31] [cursor=pointer]
+          - tab "Statistics" [ref=e32] [cursor=pointer]
+        - generic [ref=e35]:
+          - generic [ref=e36]:
+            - generic [ref=e37]: "Season:"
+            - button "Select Year" [ref=e38] [cursor=pointer]:
+              - text: Select Year
+              - img [ref=e39]
+          - generic [ref=e41]: Loading...
+          - generic [ref=e42]: Select a season
+  - contentinfo [ref=e44]: © 2026 TennisMyLife - Tennis Data Records History
+  - button "Open Next.js Dev Tools" [ref=e50] [cursor=pointer]:
+    - img [ref=e51]
+  - alert [ref=e54]
+```

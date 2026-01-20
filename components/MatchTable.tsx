@@ -9,6 +9,7 @@ import { useEffect, useState, useMemo, useRef } from "react";
 
 interface MatchTableProps {
   matches: Match[];
+  loading?: boolean;
   sortKey: SortKey;
   sortDir: SortDirection;
   setSortKey: (key: SortKey) => void;
@@ -41,6 +42,7 @@ function ratio(num?: number | null, den?: number | null) {
 
 export default function MatchTable({
   matches,
+  loading = false,
   sortKey,
   sortDir,
   setSortKey,
@@ -163,7 +165,8 @@ export default function MatchTable({
     return arr;
   }, [matches, sortKey, sortDir]);
 
-  if (!sortedMatches || sortedMatches.length === 0) return <p className="m-0 p-0">No matches found.</p>;
+  if (loading) return <p className="m-0 p-0 text-gray-400">Loading...</p>;
+  if (!sortedMatches || sortedMatches.length === 0) return <p className="m-0 p-0 text-gray-400">No matches found.</p>;
 
   // Compact mobile styles: tiny paddings and font so the full table can fit in one viewport
   const thBase = "first:pl-0 px-1 py-0.5 text-gray-200 text-[10px] text-center whitespace-nowrap sm:first:pl-0 sm:px-2 sm:py-1 sm:text-sm";

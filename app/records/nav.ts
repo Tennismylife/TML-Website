@@ -3,15 +3,20 @@ import { getPlayerHref } from '@/lib/utils';
 export function playerUrl(playerId: string, params?: Record<string, string | number | boolean | string[]>) {
   const id = String(playerId);
   const qs = new URLSearchParams();
+  let tabSegment: string | null = null;
   if (params) {
     Object.entries(params).forEach(([k, v]) => {
       if (v === undefined || v === null) return;
+      if (k === 'tab') {
+        tabSegment = String(v);
+        return;
+      }
       if (Array.isArray(v)) v.forEach((x) => qs.append(k, String(x)));
       else qs.set(k, String(v));
     });
   }
   const q = qs.toString();
-  return `${getPlayerHref(id)}${q ? `?${q}` : ""}`;
+  return `${getPlayerHref(id)}${tabSegment ? `/${encodeURIComponent(tabSegment)}` : ''}${q ? `?${q}` : ""}`;
 }
 
 export function playerMatchesUrl(playerId: string, extra?: Record<string, string | number | boolean | string[]>) {

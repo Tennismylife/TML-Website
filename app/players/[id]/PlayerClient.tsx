@@ -20,9 +20,12 @@ export default function PlayerClient(props: any) {
   // Lifted UI state for child tabs (filters)
   const [activeTab, setActiveTab] = useState<string>(() => {
     try {
-      return (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('tab')) || 'profile';
+      if (typeof window === 'undefined') return 'matches';
+      const parts = window.location.pathname.split('/');
+      const pathTab = parts[3] || null; // /players/<slug>/<tab>
+      return pathTab || (new URLSearchParams(window.location.search).get('tab')) || 'matches';
     } catch {
-      return 'profile';
+      return 'matches';
     }
   });
 
@@ -81,7 +84,14 @@ export default function PlayerClient(props: any) {
           .trim()
           .replace(/\s+/g, "-");
 
-        const desired = `${getPlayerHref(slug)}${window.location.search}`;
+        // Build canonical path-based URL preserving other query params and mapping any existing ?tab to path segment
+        const params = new URLSearchParams(window.location.search);
+        const explicitTab = params.get('tab');
+        if (explicitTab) params.delete('tab');
+        const tabFromPath = window.location.pathname.split('/')[3];
+        const finalTab = explicitTab || tabFromPath || 'matches';
+        const search = params.toString();
+        const desired = `${getPlayerHref(slug)}/${encodeURIComponent(finalTab)}${search ? `?${search}` : ''}`;
         window.history.replaceState(null, "", desired);
       } catch (err) {
         if (!(err instanceof DOMException && err.name === "AbortError")) {
@@ -135,9 +145,29 @@ export default function PlayerClient(props: any) {
   // Centralized URL sync for lifted state
   useEffect(() => {
     const buildAndReplace = () => {
+      // If the location's path-based tab doesn't match our activeTab, respect the path and update state instead
+      try {
+        const pathTabNow = typeof window !== 'undefined' ? window.location.pathname.split('/')[3] : null;
+        if (pathTabNow && pathTabNow !== activeTab) {
+          // If a user-initiated navigation was initiated very recently, do not override it; wait for it to settle
+          const recent = typeof window !== 'undefined' && (window as any).__player_navigation_recent && (Date.now() - (window as any).__player_navigation_recent < 1200);
+          if (recent) {
+            console.debug('[PlayerClient] buildAndReplace: recent navigation to', pathTabNow, 'in-flight — skipping sync');
+            return;
+          }
+          // otherwise sync local state to the path and avoid clobbering
+          setActiveTab(pathTabNow);
+          console.debug('[PlayerClient] buildAndReplace: observed external nav to', pathTabNow, '— syncing state and skipping replace');
+          return;
+        }
+      } catch (e) {
+        // ignore
+      }
+
       // Preserve existing query parameters and merge with updated ones for the current tab
       const params = new URLSearchParams(window.location.search);
-      params.set('tab', activeTab);
+      // Remove any legacy 'tab' param so it doesn't coexist with path-based tab
+      params.delete('tab');
 
       // For tournaments tab, explicitly set (or delete) tournament-related params according to state
       if (activeTab === 'tournaments') {
@@ -160,6 +190,7 @@ export default function PlayerClient(props: any) {
         else params.delete('search');
 
         if (tournamentsFilters.sub) params.set('sub', tournamentsFilters.sub);
+        else params.delete('sub');
       }
 
       // For h2h tab, explicitly set / delete relevant params
@@ -183,17 +214,34 @@ export default function PlayerClient(props: any) {
         else params.delete('opponent');
       }
 
-      // For other tabs (e.g. matches/profile), we intentionally preserve any existing params
+      // Only keep 'sub' for tabs that accept it (season)
+      if (activeTab !== 'season') {
+        params.delete('sub');
+      }
+
+      // Build new pathname with the active tab as the 3rd segment
+      const pathParts = window.location.pathname.split('/');
+      pathParts[3] = activeTab;
       const newQs = params.toString();
-      const newUrl = `${window.location.pathname}${newQs ? `?${newQs}` : ''}`;
+      const newUrl = `${pathParts.join('/')}${newQs ? `?${newQs}` : ''}`;
 
       if (lastAppliedRef.current === newUrl) return;
       lastAppliedRef.current = newUrl;
       if (replaceTimerRef.current) clearTimeout(replaceTimerRef.current);
       replaceTimerRef.current = window.setTimeout(() => {
         try {
+          // If a user-initiated navigation to the desired path happened very recently, avoid overwriting it
+          const recent = typeof window !== 'undefined' && (window as any).__player_navigation_recent && (Date.now() - (window as any).__player_navigation_recent < 1200);
+          if (recent) {
+            console.debug('[PlayerClient] skipping replace due to recent user navigation ->', newUrl);
+            (window as any).__player_navigation_recent = 0;
+            lastAppliedRef.current = null;
+            replaceTimerRef.current = null;
+            return;
+          }
+
           console.debug('[PlayerClient] buildAndReplace ->', newUrl);
-      router.replace(newUrl, { scroll: false });
+          router.replace(newUrl, { scroll: false });
         } catch (err) {
           // eslint-disable-next-line no-console
           console.debug('[PlayerPage] router.replace failed:', err);
@@ -237,7 +285,7 @@ export default function PlayerClient(props: any) {
       <PlayerTabs
         player={player}
         tabs={tabs}
-        initialTab={"profile"}
+        initialTab={"matches"}
         setTab={setActiveTab}
         tournamentsFilters={tournamentsFilters}
         // pass partial-setter wrapper so children can call setFilters({ sub: 'events' })

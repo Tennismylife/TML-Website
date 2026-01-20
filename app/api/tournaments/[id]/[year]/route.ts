@@ -32,8 +32,11 @@ export async function GET(request: NextRequest, context: any) {
 
   const matches = await prisma.match.findMany({
     where: {
-      OR: tourneyIdFilters,
-      year: yearNum,
+      AND: [
+        { OR: tourneyIdFilters },
+        { year: yearNum },
+        { score: { not: "To play" } },
+      ],
     },
   });
 

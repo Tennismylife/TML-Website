@@ -15,8 +15,8 @@ export default async function RecordsRankingPage({ searchParams }: { searchParam
   // default server-rendered content is Count
   return (
     <main>
+      <h1 className="mb-6 text-3xl font-bold text-center text-gray-100">Weeks at No. {initialRank}</h1>
       <RecordsRankingClient currentTabSeg={'count'} currentSubSeg={null} />
-      <h1 className="mb-8 text-3xl font-bold text-center text-gray-100">Weeks at No. {initialRank}</h1>
       <div className="mt-6 w-full">
         {await Count({ searchParams, showHeading: false } as any)}
       </div>
