@@ -40,7 +40,7 @@ npm install
 
 - Create a `.env` file based on `.env.example` and set database and other secrets.
 - Useful env flags:
-  - `SITE_URL` – canonical site URL
+  - `NEXT_PUBLIC_SITE_URL` – canonical site URL (e.g. `https://stats.tennismylife.org`). **Setta questo valore in produzione** per garantire che i redirect nel middleware puntino direttamente all'host canonico.
   - `DATABASE_URL` – connection string for Prisma
   - `SKIP_SITEMAP_BUILD` – set to `1` to short-circuit sitemap generation during constrained builds
 

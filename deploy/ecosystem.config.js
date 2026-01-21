@@ -37,6 +37,8 @@ module.exports = {
         // Prefer setting real values via `pm2 restart tml --update-env` or an external env file
         // (e.g. /etc/default/tml) with secure permissions (chmod 600).
         PORT: '3000',
+        // Canonical site origin for middleware redirects and metadata
+        NEXT_PUBLIC_SITE_URL: 'https://stats.tennismylife.org',
         NEXT_PUBLIC_GA4_MEASUREMENT_ID: 'G-71D4H6D4VN',
         GA4_MEASUREMENT_ID: 'G-71D4H6D4VN',
         GA4_API_SECRET: 'uamHcS3AT1miokEH0aeGtg',

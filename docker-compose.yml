@@ -20,6 +20,8 @@ services:
       - db
     environment:
       DATABASE_URL: postgres://postgres:postgres@db:5432/tennis
+      # Canonical site origin used by middleware for redirects
+      NEXT_PUBLIC_SITE_URL: 'https://stats.tennismylife.org'
     ports:
       - "3000:3000"
     volumes:

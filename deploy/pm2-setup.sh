@@ -41,6 +41,13 @@ echo "DATABASE_URL=\"$DATABASE_URL\"" > "$APP_DIR/deploy/refresh-mvs.env"
 echo "MV_REFRESH_DEBOUNCE_MS=${MV_REFRESH_DEBOUNCE_MS:-5000}" >> "$APP_DIR/deploy/refresh-mvs.env"
 echo "REFRESH_CONCURRENTLY=${REFRESH_CONCURRENTLY:-0}" >> "$APP_DIR/deploy/refresh-mvs.env"
 
+# Optionally create an env file for the main web process so PM2 can load site-specific envs (e.g., NEXT_PUBLIC_SITE_URL)
+SITE_URL=${4:-${NEXT_PUBLIC_SITE_URL:-https://stats.tennismylife.org}}
+# Create or overwrite a tml env file with canonical site origin and DATABASE_URL
+echo "NEXT_PUBLIC_SITE_URL=\"${SITE_URL}\"" > "$APP_DIR/deploy/tml.env"
+echo "DATABASE_URL=\"$DATABASE_URL\"" >> "$APP_DIR/deploy/tml.env"
+# You can add additional production envs here as needed
+
 # Start via pm2 with the tmp ecosystem (it reads env from the file we created)
 pm2 start "$TMP_ECOSYS" --env production
 pm2 save
