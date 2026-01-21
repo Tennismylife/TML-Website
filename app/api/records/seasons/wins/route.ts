@@ -161,6 +161,14 @@ export async function GET(request: NextRequest) {
     // Ordinamento top 100
     finalWins.sort((a, b) => b.total_wins - a.total_wins);
 
+    // Attach slugs when available
+    const ids = Array.from(new Set(finalWins.map(p => String(p.player_id))));
+    if (ids.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
+      finalWins = finalWins.map(p => ({ ...p, slug: slugMap.get(String(p.player_id)) ?? null, winner_slug: slugMap.get(String(p.player_id)) ?? null }));
+    }
+
     return jsonResponse(finalWins.slice(0, limit));
   } catch (error) {
     console.error('GET /records/same/year-wins error:', error);

@@ -158,10 +158,27 @@ export async function GET(request: NextRequest) {
       }));
 
       if (result.length > 0) {
+        // Attach slugs for MV result
+        const ids = Array.from(new Set(result.map(r => String(r.player.id)))).filter(Boolean);
+        if (ids.length > 0) {
+          const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+          const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
+          const enriched = result.map(r => ({ ...r, player: { ...r.player, slug: slugMap.get(String(r.player.id)) ?? null } }));
+          return NextResponse.json({ streaks: enriched });
+        }
         return NextResponse.json({ streaks: result });
       }
       // Fallback se MV vuota
-      return NextResponse.json({ streaks: await computeLive() });
+      const live = await computeLive();
+      // Attach slugs to live result
+      const liveIds = Array.from(new Set(live.map(r => String(r.player.id)))).filter(Boolean);
+      if (liveIds.length > 0) {
+        const rowsLive = await prisma.player.findMany({ where: { id: { in: liveIds } }, select: { id: true, slug: true } });
+        const slugMapLive = new Map(rowsLive.map(r => [r.id, r.slug] as [string, string | null]));
+        const enrichedLive = live.map(r => ({ ...r, player: { ...r.player, slug: slugMapLive.get(String(r.player.id)) ?? null } }));
+        return NextResponse.json({ streaks: enrichedLive });
+      }
+      return NextResponse.json({ streaks: live });
     }
 
     return NextResponse.json({ streaks: await computeLive() });

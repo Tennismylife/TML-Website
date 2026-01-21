@@ -16,12 +16,12 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 // --- Helper per arricchire H2H con dati giocatori ---
 function enrichH2H(
   h2hArray: { player1_id: string; player2_id: string; wins1: number; wins2: number; total: number; wins_player1?: number; wins_player2?: number; total_matches?: number }[],
-  players: { id: number | string; atpname: string; ioc: string }[]
+  players: { id: number | string; atpname: string; ioc: string; slug?: string | null }[]
 ): H2HRecord[] {
-  const playerMap = Object.fromEntries(players.map(p => [p.id.toString(), { name: p.atpname, ioc: p.ioc }]));
+  const playerMap = Object.fromEntries(players.map(p => [p.id.toString(), { name: p.atpname, ioc: p.ioc, slug: p.slug ?? null }]));
   return h2hArray.map(p => ({
-    player_1: { id: p.player1_id, name: playerMap[p.player1_id]?.name ?? '', ioc: playerMap[p.player1_id]?.ioc ?? '' },
-    player_2: { id: p.player2_id, name: playerMap[p.player2_id]?.name ?? '', ioc: playerMap[p.player2_id]?.ioc ?? '' },
+    player_1: { id: p.player1_id, name: playerMap[p.player1_id]?.name ?? '', ioc: playerMap[p.player1_id]?.ioc ?? '', slug: playerMap[p.player1_id]?.slug ?? null },
+    player_2: { id: p.player2_id, name: playerMap[p.player2_id]?.name ?? '', ioc: playerMap[p.player2_id]?.ioc ?? '', slug: playerMap[p.player2_id]?.slug ?? null },
     wins_player1: p.wins1 ?? p.wins_player1 ?? 0,
     wins_player2: p.wins2 ?? p.wins_player2 ?? 0,
     total_h2h: p.total ?? p.total_matches ?? 0,
@@ -71,10 +71,10 @@ export async function GET(request: NextRequest) {
 
       const players = await prisma.player.findMany({
         where: { id: { in: playerIds } },
-        select: { id: true, atpname: true, ioc: true },
+        select: { id: true, atpname: true, ioc: true, slug: true },
       });
 
-      return NextResponse.json({ h2h: enrichH2H(output, players.map(p => ({ id: p.id, atpname: p.atpname ?? '', ioc: p.ioc ?? '' }))) });
+      return NextResponse.json({ h2h: enrichH2H(output, players.map(p => ({ id: p.id, atpname: p.atpname ?? '', ioc: p.ioc ?? '', slug: p.slug ?? null }))) });
     }
 
     // --- CASO 2: multi-filtro, calcolo H2H dinamico ---
@@ -115,10 +115,10 @@ export async function GET(request: NextRequest) {
     const playerIds = Array.from(new Set(h2hArray.flatMap(p => [p.player1_id, p.player2_id])));
     const players = await prisma.player.findMany({
       where: { id: { in: playerIds } },
-      select: { id: true, atpname: true, ioc: true },
+      select: { id: true, atpname: true, ioc: true, slug: true },
     });
 
-    return NextResponse.json({ h2h: enrichH2H(h2hArray, players.map(p => ({ id: p.id, atpname: p.atpname ?? '', ioc: p.ioc ?? '' }))) });
+    return NextResponse.json({ h2h: enrichH2H(h2hArray, players.map(p => ({ id: p.id, atpname: p.atpname ?? '', ioc: p.ioc ?? '', slug: p.slug ?? null }))) });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

@@ -124,6 +124,18 @@ export async function GET(request: NextRequest) {
         age_at_win: formatAge(p.age_at_win),
       }));
 
+      // Attach slugs when available
+      const ids = formattedResult.map(p => String(p.id));
+      if (ids.length > 0) {
+        const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+        const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
+        const withSlugs = formattedResult.map(p => ({ ...p, slug: slugMap.get(String(p.id)) ?? null }));
+
+        console.timeEnd("Use MV mv_wins_ages");
+        console.timeEnd("Total API");
+        return NextResponse.json(withSlugs);
+      }
+
       console.timeEnd("Use MV mv_wins_ages");
       console.timeEnd("Total API");
       return NextResponse.json(formattedResult);
@@ -187,6 +199,19 @@ export async function GET(request: NextRequest) {
       ...p,
       age_at_win: formatAge(p.age_at_win),
     }));
+
+    // Attach slugs when available
+    const ids2 = formattedResult2.map(p => String(p.id));
+    if (ids2.length > 0) {
+      const rows2 = await prisma.player.findMany({ where: { id: { in: ids2 } }, select: { id: true, slug: true } });
+      const slugMap2 = new Map(rows2.map(r => [r.id, r.slug] as [string, string | null]));
+      const withSlugs2 = formattedResult2.map(p => ({ ...p, slug: slugMap2.get(String(p.id)) ?? null }));
+
+      console.timeEnd("Use dynamic filtered algorithm");
+      console.timeEnd("Total API");
+
+      return NextResponse.json(withSlugs2);
+    }
 
     console.timeEnd("Use dynamic filtered algorithm");
     console.timeEnd("Total API");

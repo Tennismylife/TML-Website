@@ -78,6 +78,14 @@ export async function GET(request: NextRequest) {
 
     // ----------- sort descending -----------
     result.sort((a, b) => b.appearances_at_age - a.appearances_at_age);
+    // Attach slugs when available
+    const ids = result.map(r => String(r.id)).filter(Boolean);
+    if (ids.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
+      const enriched = result.map(r => ({ ...r, slug: slugMap.get(String(r.id)) ?? null }));
+      return NextResponse.json(enriched.slice(0, limit));
+    }
     return NextResponse.json(result.slice(0, limit));
 
   } catch (error) {

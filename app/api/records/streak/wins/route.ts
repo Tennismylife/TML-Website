@@ -12,7 +12,7 @@ async function enrichStreaks(streaks: any[]) {
 
   const players = await prisma.player.findMany({
     where: { id: { in: playerIds } },
-    select: { id: true, atpname: true, ioc: true }
+    select: { id: true, atpname: true, ioc: true, slug: true }
   });
 
   const playerMap = Object.fromEntries(players.map(p => [p.id, p]));
@@ -20,7 +20,8 @@ async function enrichStreaks(streaks: any[]) {
   return streaks.map(s => ({
     ...s,
     player_name: playerMap[s.player_id]?.atpname || `Player ${s.player_id}`,
-    player_ioc: playerMap[s.player_id]?.ioc || ""
+    player_ioc: playerMap[s.player_id]?.ioc || "",
+    slug: playerMap[s.player_id]?.slug ?? null,
   }));
 }
 

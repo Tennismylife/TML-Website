@@ -89,6 +89,15 @@ export async function GET(request: NextRequest) {
     // --- Limita a primi 100 ---
     const topResults = results.slice(0, limit);
 
+    // Attach slugs when available
+    const ids = topResults.map(r => String(r.id)).filter(Boolean);
+    if (ids.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = Object.fromEntries(rows.map(r => [r.id, r.slug]));
+      const enriched = topResults.map(r => ({ ...r, slug: slugMap[String(r.id)] ?? null }));
+      return NextResponse.json(enriched);
+    }
+
     return NextResponse.json(topResults);
 
   } catch (error) {

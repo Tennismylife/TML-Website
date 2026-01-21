@@ -159,6 +159,15 @@ export async function GET(req: NextRequest) {
       return { player_id: r.player_id, player_name: r.player_name, ioc: r.ioc, overall_timespan: r.overall_timespan };
     });
 
+    // Attach slugs when available
+    const ids = filteredJSON.map(f => String(f.player_id));
+    if (ids.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
+      const enriched = filteredJSON.map(f => ({ ...f, slug: slugMap.get(String(f.player_id)) ?? null }));
+      return NextResponse.json(enriched);
+    }
+
     return NextResponse.json(filteredJSON);
   } catch (err) {
     console.error(err);

@@ -31,6 +31,15 @@ export async function GET(request: NextRequest) {
       count: t._count.winner_id,
     }));
 
+    // Attach slugs when available
+    const ids = formattedTitles.map(p => String(p.id));
+    if (ids.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
+      const withSlugs = formattedTitles.map(p => ({ ...p, slug: slugMap.get(String(p.id)) ?? null }));
+      return NextResponse.json({ topTitles: withSlugs });
+    }
+
     return NextResponse.json({ topTitles: formattedTitles });
   } catch (error) {
     console.error("Error fetching titles:", error);

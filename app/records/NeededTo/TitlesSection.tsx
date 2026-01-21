@@ -175,7 +175,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
                 <td className="border border-white/10 px-4 py-2 flex items-center gap-2 text-lg text-gray-200">
                   {p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" />}
-                  <Link href={playerMatchesUrl(String(p.player_id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="text-indigo-300 hover:underline">{p.player_name}</Link>
+                  <Link href={playerMatchesUrl((p as any).slug ?? String(p.player_id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="text-indigo-300 hover:underline">{p.player_name}</Link>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.titles}</td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.tournaments_played}</td>

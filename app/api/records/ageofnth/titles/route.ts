@@ -92,6 +92,15 @@ export async function GET(request: NextRequest) {
 
     finalResult = finalResult.slice(0, limit);
 
+    // Attach slugs when available
+    const ids = finalResult.map(p => String(p.id)).filter(Boolean);
+    if (ids.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
+      const withSlugs = finalResult.map(p => ({ ...p, slug: slugMap.get(String(p.id)) ?? null }));
+      return NextResponse.json(withSlugs);
+    }
+
     return NextResponse.json(finalResult);
   } catch (error) {
     console.error("API Error:", error);

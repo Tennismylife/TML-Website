@@ -69,6 +69,15 @@ export async function GET(request: NextRequest) {
     .sort((a, b) => b.spanDays - a.spanDays)
     .slice(0, topN);
 
+    // Attach slugs when available
+    const ids = results.map(r => String(r.id));
+    if (ids.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
+      const enriched = results.map(r => ({ ...r, slug: slugMap.get(String(r.id)) ?? null }));
+      return NextResponse.json({ data: enriched });
+    }
+
     return NextResponse.json({ data: results });
   } catch (error) {
     console.error("Error fetching winners timespan:", error);

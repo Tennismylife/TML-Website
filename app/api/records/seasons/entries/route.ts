@@ -142,6 +142,15 @@ if (selectedSurfaces.length === 1 && selectedLevels.length === 1) {
     // Ordinamento top 100
     finalEntries.sort((a, b) => b.total_entries - a.total_entries);
 
+    // Attach slugs when available
+    const ids = finalEntries.map(e => String(e.player_id));
+    if (ids.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = Object.fromEntries(rows.map(r => [r.id, r.slug]));
+      const enriched = finalEntries.map(e => ({ ...e, slug: slugMap[String(e.player_id)] ?? null }));
+      return jsonResponse(enriched.slice(0, limit));
+    }
+
     return jsonResponse(finalEntries.slice(0, limit));
   } catch (error) {
     console.error('GET /records/tournaments/entries error:', error);

@@ -143,6 +143,14 @@ export async function GET(request: NextRequest) {
     const limitParam = Number(url.searchParams.get('limit') ?? '100');
     const limit = Number.isFinite(limitParam) ? Math.min(1000, Math.max(1, Math.floor(limitParam))) : 100;
 
+    // Attach slugs when available
+    const ids = playersData.map(p => String(p.id));
+    if (ids.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
+      playersData = playersData.map(p => ({ ...p, slug: slugMap.get(String(p.id)) ?? null }));
+    }
+
     return NextResponse.json(playersData.slice(0, limit));
 
   } catch (error) {

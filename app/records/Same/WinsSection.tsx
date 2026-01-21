@@ -105,7 +105,7 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{rank}</td>
                 <td className="border border-white/10 px-4 py-2 flex items-center gap-2 text-lg text-gray-200">
                   <Flag ioc={p.ioc} className="w-4 h-3" />
-                  <Link href={playerMatchesUrl(String(p.winner_id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="hover:underline">
+                  <Link href={playerMatchesUrl((p as any).winner_slug ?? String(p.winner_id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="hover:underline">
                     {p.player_name}
                   </Link>
                 </td>

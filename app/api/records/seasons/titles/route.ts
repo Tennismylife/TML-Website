@@ -138,6 +138,14 @@ export async function GET(request: NextRequest) {
     finalTitles.sort((a, b) => b.total_titles - a.total_titles);
     finalTitles = finalTitles.slice(0, limit);
 
+    // Attach slugs when available
+    const ids = Array.from(new Set(finalTitles.map(p => String(p.player_id))));
+    if (ids.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
+      finalTitles = finalTitles.map(p => ({ ...p, slug: slugMap.get(String(p.player_id)) ?? null }));
+    }
+
     return jsonResponse(finalTitles);
   } catch (error) {
     console.error('GET /records/seasons/titles error:', error);

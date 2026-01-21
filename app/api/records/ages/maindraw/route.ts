@@ -73,6 +73,15 @@ export async function GET(request: NextRequest) {
 
     const responseKey = isYoungest ? "youngestPlayers" : "oldestPlayers";
 
+    // Attach slugs when available
+    const ids = playersSorted.map(p => String(p.id)).filter(Boolean);
+    if (ids.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
+      const enriched = playersSorted.map(p => ({ ...p, slug: slugMap.get(String(p.id)) ?? null }));
+      return NextResponse.json({ [responseKey]: enriched });
+    }
+
     return NextResponse.json({ [responseKey]: playersSorted });
   } catch (error) {
     console.error("Error fetching players:", error);

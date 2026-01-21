@@ -99,13 +99,13 @@ export default function SameTournamentSection({ selectedSurfaces, selectedLevels
               <tr key={`${p.player1.id}-${p.player2.id}-${p.tourney_id}`} className="border-b">
                 <td className="py-1">
                   <Flag ioc={p.player1.ioc} className="w-4 h-3" />
-                  <Link href={playerMatchesUrl(String(p.player1.id))} className="text-blue-700 hover:underline">
+                  <Link href={playerMatchesUrl((p.player1 as any).slug ?? String(p.player1.id))} className="text-blue-700 hover:underline">
                     {p.player1.name}
                   </Link>
                 </td>
                 <td className="py-1">
                   <Flag ioc={p.player2.ioc} className="w-4 h-3" />
-                  <Link href={playerMatchesUrl(String(p.player2.id))} className="text-blue-700 hover:underline">
+                  <Link href={playerMatchesUrl((p.player2 as any).slug ?? String(p.player2.id))} className="text-blue-700 hover:underline">
                     {p.player2.name}
                   </Link>
                 </td>

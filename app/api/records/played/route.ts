@@ -94,6 +94,14 @@ export async function GET(request: NextRequest) {
       }));
     }
 
+    // Attach slugs when available so frontend can prefer slug-based URLs
+    const ids = players.map(p => String(p.id));
+    if (ids.length > 0) {
+      const playerRows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = new Map(playerRows.map(r => [r.id, r.slug] as [string, string | null]));
+      players = players.map(p => ({ ...p, slug: slugMap.get(String(p.id)) ?? null }));
+    }
+
     return NextResponse.json({ players, totalCount });
   } catch (error) {
     console.error("Error in GET /records/played:", error);

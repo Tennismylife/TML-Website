@@ -29,6 +29,7 @@ export async function GET(request: NextRequest) {
     const selectedRounds = getMultiParam(url, 'round');
     const selectedBestOf = getMultiParam(url, 'best_of');
     const limit = Math.max(1, Math.min(1000, Number(url.searchParams.get('limit') ?? 100)));
+    const minPlayed = Number(url.searchParams.get('minPlayed') ?? 10); // configurable minimum for played matches (default 10)
 
     const totalFilters =
       selectedSurfaces.length + selectedLevels.length + selectedRounds.length + selectedBestOf.length;
@@ -53,7 +54,7 @@ export async function GET(request: NextRequest) {
       );
 
       finalData = records
-        .filter(r => r.total_played >= 10)
+        .filter(r => r.total_played >= minPlayed)
         .map(r => {
           const player = nameMap[r.player_id];
           let wins = r.total_wins;
@@ -80,8 +81,12 @@ export async function GET(request: NextRequest) {
           const winRate = total > 0 ? ((wins / total) * 100).toFixed(2) + '%' : '0%';
 
           return {
+            // original keys kept for compatibility with the frontend component
             Player: player.player_name,
             PlayerId: player.id, // ID preso dalla tabella Player
+            // convenience aliases for other consumers
+            id: player.id,
+            name: player.player_name,
             Wins: wins,
             Total: total,
             Percentage: winRate,
@@ -152,6 +157,9 @@ export async function GET(request: NextRequest) {
         return {
           Player: player?.player_name ?? 'Unknown',
           PlayerId: player?.id ?? pid, // ID preso dalla tabella Player
+          // convenience aliases
+          id: player?.id ?? pid,
+          name: player?.player_name ?? 'Unknown',
           Wins: stats.wins,
           Total: stats.played,
           Percentage: ((stats.wins / stats.played) * 100).toFixed(2) + '%',
@@ -159,6 +167,14 @@ export async function GET(request: NextRequest) {
           ioc: player?.ioc ?? null,
         };
       });
+    }
+
+    // --- Attach slugs when available ---
+    const ids = finalData.map(p => String((p as any).PlayerId ?? (p as any).id)).filter(Boolean);
+    if (ids.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = Object.fromEntries(rows.map(r => [r.id, r.slug]));
+      finalData = finalData.map(p => ({ ...p, slug: slugMap[String((p as any).PlayerId ?? (p as any).id)] ?? null }));
     }
 
     // --- ORDINA PER PERCENTUALE DECRESCENTE E ASSEGNA RANK ---

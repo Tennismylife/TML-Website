@@ -195,6 +195,14 @@ export async function GET(request: NextRequest) {
       record.rank = index + 1; // rank 1,2,3,...
     });
 
+    // Attach slugs when available
+    const ids = Array.from(new Set(finalMatches.map(m => String(m.player_id))));
+    if (ids.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
+      finalMatches = finalMatches.map(m => ({ ...m, slug: slugMap.get(String(m.player_id)) ?? null }));
+    }
+
     return jsonResponse(finalMatches);
   } catch (error) {
     console.error('GET /records/tournaments/played error:', error);

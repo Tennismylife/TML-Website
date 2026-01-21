@@ -83,6 +83,15 @@ export async function GET(request: NextRequest) {
     // Sort players by totalSeasons descending, then name ascending
     players.sort((a, b) => b.totalSeasons - a.totalSeasons || a.name.localeCompare(b.name));
 
+    // Attach slugs when available
+    const ids = players.map(p => String(p.id));
+    if (ids.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
+      const enriched = players.map(p => ({ ...p, slug: slugMap.get(String(p.id)) ?? null }));
+      return NextResponse.json({ players: enriched.slice(0, limit) });
+    }
+
     return NextResponse.json({ players: players.slice(0, limit) });
   } catch (error) {
     console.error(error);

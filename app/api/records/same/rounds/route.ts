@@ -142,6 +142,14 @@ export async function GET(request: NextRequest) {
     // Ordinamento top 100
     finalRounds.sort((a, b) => b.total_rounds - a.total_rounds);
 
+    // Attach slugs when available
+    const ids = Array.from(new Set(finalRounds.map(p => String(p.player_id))));
+    if (ids.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
+      finalRounds = finalRounds.map(p => ({ ...p, slug: slugMap.get(String(p.player_id)) ?? null }));
+    }
+
     return jsonResponse(finalRounds.slice(0, limit));
   } catch (error) {
     console.error('GET /records/same/tournament-rounds error:', error);

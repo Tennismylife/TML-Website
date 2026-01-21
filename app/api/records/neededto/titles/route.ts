@@ -172,6 +172,15 @@ export async function GET(request: NextRequest) {
         })
         .slice(0, limit);
 
+      // Attach slugs
+      const ids = result.map(r => String(r.player_id));
+      if (ids.length > 0) {
+        const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+        const slugMap = Object.fromEntries(rows.map(r => [r.id, r.slug]));
+        const enriched = result.map(r => ({ ...r, slug: slugMap[String(r.player_id)] ?? null }));
+        return NextResponse.json(enriched);
+      }
+
       return NextResponse.json(result);
     }
 
@@ -240,6 +249,15 @@ export async function GET(request: NextRequest) {
       const db = b.tournaments_played ?? 0;
       return orderAsc ? da - db : db - da;
     });
+
+    // Attach slugs
+    const ids = result.map(r => String(r.player_id));
+    if (ids.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = Object.fromEntries(rows.map(r => [r.id, r.slug]));
+      const enriched = result.map(r => ({ ...r, slug: slugMap[String(r.player_id)] ?? null }));
+      return NextResponse.json(enriched.slice(0, limit));
+    }
 
     return NextResponse.json(result.slice(0, limit));
   } catch (error) {

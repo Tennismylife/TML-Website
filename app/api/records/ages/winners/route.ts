@@ -64,7 +64,16 @@ export async function GET(request: NextRequest) {
       .sort((a, b) => (isYoungest ? a.age - b.age : b.age - a.age))
       .slice(0, limitParam);
 
-    const responseKey = isYoungest ? "youngestWinners" : "oldestWinners";
+    const responseKey = isYoungest ? "youngestwinners" : "oldestwinners";
+
+    // Attach slugs when available
+    const ids = playersSorted.map(p => String(p.id));
+    if (ids.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = Object.fromEntries(rows.map(r => [r.id, r.slug]));
+      const enriched = playersSorted.map(p => ({ ...p, slug: slugMap[String(p.id)] ?? null }));
+      return NextResponse.json({ [responseKey]: enriched });
+    }
 
     return NextResponse.json({ [responseKey]: playersSorted });
   } catch (error) {

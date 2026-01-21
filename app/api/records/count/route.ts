@@ -57,6 +57,14 @@ export async function GET(request: NextRequest) {
       })
       .sort((a, b) => b.count - a.count);
 
+    // Attach slugs when available
+    const ids = top.map(t => String(t.id));
+    if (ids.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
+      top = top.map(t => ({ ...t, slug: slugMap.get(String(t.id)) ?? null }));
+    }
+
     return NextResponse.json({ top });
   } catch (error) {
     console.error("Error fetching player tournament counts:", error);

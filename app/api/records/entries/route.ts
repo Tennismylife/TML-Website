@@ -84,6 +84,14 @@ export async function GET(request: NextRequest) {
 
     totalCount = topEntries.length;
 
+    // Attach slugs when available
+    const ids = topEntries.map(p => String(p.id)).filter(Boolean);
+    if (ids.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
+      topEntries = topEntries.map(p => ({ ...p, slug: slugMap.get(String(p.id)) ?? null }));
+    }
+
     return NextResponse.json({ topEntries, totalCount });
   } catch (error) {
     console.error("[GET /records/participations] Error:", error);

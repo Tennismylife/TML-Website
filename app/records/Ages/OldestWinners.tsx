@@ -108,7 +108,7 @@ const OldestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRe
                 <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                   <div className="flex items-center gap-2">
                     <Flag ioc={p.ioc} className="w-4 h-3" />
-                    <Link href={playerMatchesUrl(String(p.id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="text-indigo-300 hover:underline">
+                    <Link href={playerMatchesUrl((p as any).slug ?? String(p.id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="text-indigo-300 hover:underline">
                       {p.name}
                     </Link>
                   </div>

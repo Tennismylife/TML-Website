@@ -112,6 +112,22 @@ export async function GET(request: NextRequest) {
       if (item.fullList.length > 0) allRoundsItems.push(item);
     }
 
+    // Attach slugs when available across all rounds
+    const allIds = Array.from(new Set(allRoundsItems.flatMap(it => it.fullList.map(p => String(p.id))))).filter(Boolean);
+    if (allIds.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: allIds } }, select: { id: true, slug: true } });
+      const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
+      const enrichedItems = allRoundsItems.map(it => ({
+        ...it,
+        list: it.list.map(p => ({ ...p, slug: slugMap.get(String(p.id)) ?? null })),
+        fullList: it.fullList.map(p => ({ ...p, slug: slugMap.get(String(p.id)) ?? null })),
+      }));
+
+      return NextResponse.json(
+        typeParam === "youngest" ? { allYoungestItems: enrichedItems } : { allOldestItems: enrichedItems }
+      );
+    }
+
     return NextResponse.json(
       typeParam === "youngest" ? { allYoungestItems: allRoundsItems } : { allOldestItems: allRoundsItems }
     );

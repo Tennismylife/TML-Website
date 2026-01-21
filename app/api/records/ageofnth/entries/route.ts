@@ -88,6 +88,15 @@ export async function GET(request: NextRequest) {
         .slice(0, limit)
         .map(({ numeric_age, ...rest }) => rest);
 
+      // Attach slugs when available
+      const ids = result.map(r => String(r.id));
+      if (ids.length > 0) {
+        const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+        const slugMap = Object.fromEntries(rows.map(r => [r.id, r.slug]));
+        const enriched = result.map(r => ({ ...r, slug: slugMap[String(r.id)] ?? null }));
+        return NextResponse.json(enriched);
+      }
+
       return NextResponse.json(result);
     }
 
@@ -155,6 +164,15 @@ export async function GET(request: NextRequest) {
       .sort((a, b) => a.numeric_age - b.numeric_age)
       .slice(0, limit)
       .map(({ numeric_age, ...rest }) => rest);
+
+    // Attach slugs when available
+    const ids = finalResult.map(r => String(r.id));
+    if (ids.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = Object.fromEntries(rows.map(r => [r.id, r.slug]));
+      const enriched = finalResult.map(r => ({ ...r, slug: slugMap[String(r.id)] ?? null }));
+      return NextResponse.json(enriched);
+    }
 
     return NextResponse.json(finalResult);
   } catch (error) {

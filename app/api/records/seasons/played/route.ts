@@ -153,6 +153,14 @@ export async function GET(request: NextRequest) {
     // Ordinamento top 100
     finalPlayed.sort((a, b) => b.total_played - a.total_played);
 
+    // Attach slugs when available
+    const ids = Array.from(new Set(finalPlayed.map(p => String(p.player_id))));
+    if (ids.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
+      finalPlayed = finalPlayed.map(p => ({ ...p, slug: slugMap.get(String(p.player_id)) ?? null }));
+    }
+
     return jsonResponse(finalPlayed.slice(0, limit));
   } catch (error) {
     console.error('GET /records/same/year-played error:', error);

@@ -5,10 +5,10 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 const url = `${siteUrl}/records`;
 
 export const metadata: Metadata = {
-  title: 'Records — TML',
+  title: 'Records — Tennismylife',
   description: 'Browse tennis records: wins, streaks, ages and more.',
   openGraph: {
-    title: 'Records — TML',
+    title: 'Records — Tennismylife',
     description: 'Browse tennis records: wins, streaks, ages and more.',
     url,
     type: 'website',

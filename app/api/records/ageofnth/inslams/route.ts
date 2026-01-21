@@ -91,6 +91,15 @@ export async function GET(request: NextRequest) {
       .sort((a, b) => a!.age_nth_win.localeCompare(b!.age_nth_win)) // ascending
       .slice(0, limit);
 
+    // Attach slugs when available
+    const ids = output.map(o => String(o.id)).filter(Boolean);
+    if (ids.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = Object.fromEntries(rows.map(r => [r.id, r.slug]));
+      const enriched = output.map(o => ({ ...o, slug: slugMap[String(o.id)] ?? null }));
+      return NextResponse.json(enriched);
+    }
+
     return NextResponse.json(output);
   } catch (err) {
     console.error(err);

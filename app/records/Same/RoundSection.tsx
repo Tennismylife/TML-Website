@@ -110,7 +110,7 @@ export default function SameRoundSection({ selectedSurfaces, selectedLevels, sel
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-400 font-semibold">{rank}</td>
                 <td className="border border-white/10 px-4 py-2 flex items-center gap-2 text-lg text-gray-200">
                   {p.ioc && <Flag ioc={p.ioc ?? undefined} className="w-4 h-3" />}
-                  <Link href={playerMatchesUrl(String(p.player_id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="hover:underline">{p.player_name}</Link>
+                  <Link href={playerMatchesUrl((p as any).slug ?? String(p.player_id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="hover:underline">{p.player_name}</Link>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.total_rounds}</td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-300">{p.tourney_name}</td>

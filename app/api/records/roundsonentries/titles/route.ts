@@ -74,8 +74,17 @@ export async function GET(request: NextRequest) {
       .sort((a, b) => b.percentage - a.percentage || b.wins - a.wins)
       .slice(0, limitParam);
 
+    // Attach slugs when available
+    const ids = result.map(r => String(r.id)).filter(Boolean);
+    let finalResultWithSlugs = result;
+    if (ids.length > 0) {
+      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+      const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
+      finalResultWithSlugs = result.map(r => ({ ...r, slug: slugMap.get(String(r.id)) ?? null }));
+    }
+
     return NextResponse.json({
-      FinalWins: result,
+      FinalWins: finalResultWithSlugs,
       definition: 'entries = unique tournaments played, wins = tournaments won, percentage = (wins / entries) * 100',
     });
 
