@@ -55,7 +55,6 @@ function chooseRecordLabel(segments: string[] | undefined) {
     return 'Ages';
   }
 
-  if (tab === 'rounds') return 'Rounds Reached';
   if (tab === 'timespan') return 'Timespan Between Appearances';
   if (tab === 'rounds-on-entries') return 'Rounds per Entry';
   if (tab === 'least') return 'Least Records';
