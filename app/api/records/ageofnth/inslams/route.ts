@@ -87,20 +87,21 @@ export async function GET(request: NextRequest) {
           perSlam: perSlamN,
         };
       })
-      .filter(Boolean)
-      .sort((a, b) => a!.age_nth_win.localeCompare(b!.age_nth_win)) // ascending
+      .filter((x): x is { id: string; name: string; ioc: string; age_nth_win: string; perSlam: Record<string, number> } => x !== null)
+      .sort((a, b) => a.age_nth_win.localeCompare(b.age_nth_win)) // ascending
       .slice(0, limit);
 
     // Attach slugs when available
-    const ids = output.map(o => String(o.id)).filter(Boolean);
+    const nonNullOutput = output; // already narrowed by the typed filter
+    const ids = nonNullOutput.map(o => String(o.id)).filter(Boolean);
     if (ids.length > 0) {
       const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
       const slugMap = Object.fromEntries(rows.map(r => [r.id, r.slug]));
-      const enriched = output.map(o => ({ ...o, slug: slugMap[String(o.id)] ?? null }));
+      const enriched = nonNullOutput.map(o => ({ ...o, slug: slugMap[String(o.id)] ?? null }));
       return NextResponse.json(enriched);
     }
 
-    return NextResponse.json(output);
+    return NextResponse.json(nonNullOutput);
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
