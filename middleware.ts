@@ -76,10 +76,8 @@ export async function middleware(req: NextRequest) {
       const normalizedPath = '/' + lowerSegments.join('/');
       const currentPath = req.nextUrl.pathname.replace(/\/$/, '');
       if (normalizedPath !== currentPath) {
-        const dest = new URL(req.url);      const canonicalOrigin = process.env.NEXT_PUBLIC_SITE_URL ? new URL(process.env.NEXT_PUBLIC_SITE_URL).origin : req.nextUrl.origin.replace(/^http:/, 'https:');
-      const originUrl = new URL(canonicalOrigin);
-      dest.protocol = originUrl.protocol;
-      dest.host = originUrl.host;        dest.pathname = normalizedPath;
+        const dest = new URL(req.url);
+        dest.pathname = normalizedPath;
         dest.search = req.nextUrl.search;
         return new Response(null, { status: 301, headers: { Location: dest.toString() } });
       }
@@ -120,10 +118,8 @@ export async function middleware(req: NextRequest) {
         // Only redirect when the subtab is provided as a query and not already present as a path segment
         if (subtabParam && !(segments.length > 2)) {
           const normalized = normalizeSubtab(subtabParam);
-          const dest = new URL(req.url);        const canonicalOrigin = process.env.NEXT_PUBLIC_SITE_URL ? new URL(process.env.NEXT_PUBLIC_SITE_URL).origin : req.nextUrl.origin.replace(/^http:/, 'https:');
-        const originUrl = new URL(canonicalOrigin);
-        dest.protocol = originUrl.protocol;
-        dest.host = originUrl.host;          dest.pathname = `/records/${encodeURIComponent(recordSegment)}/${encodeURIComponent(String(normalized))}`;
+          const dest = new URL(req.url);
+          dest.pathname = `/records/${encodeURIComponent(recordSegment)}/${encodeURIComponent(String(normalized))}`;
           // Preserve other query params except `subtab`
           const newParams = new URLSearchParams(req.nextUrl.searchParams as any);
           newParams.delete('subtab');
@@ -151,10 +147,6 @@ export async function middleware(req: NextRequest) {
         };
         const normalized = normalizeSubtab(subtabParam);
         const dest = new URL(req.url);
-        const canonicalOrigin = process.env.NEXT_PUBLIC_SITE_URL ? new URL(process.env.NEXT_PUBLIC_SITE_URL).origin : req.nextUrl.origin.replace(/^http:/, 'https:');
-        const originUrl = new URL(canonicalOrigin);
-        dest.protocol = originUrl.protocol;
-        dest.host = originUrl.host;
         dest.pathname = `/records/${encodeURIComponent(recordParam)}${normalized ? '/' + encodeURIComponent(normalized) : ''}`;
         // Preserve other query params except `record` and `subtab`
         const newParams = new URLSearchParams(req.nextUrl.searchParams as any);
@@ -185,10 +177,6 @@ export async function middleware(req: NextRequest) {
           const slugFromApi = body?.slug;
           if (slugFromApi) {
             const dest = new URL(req.url);
-            const canonicalOrigin = process.env.NEXT_PUBLIC_SITE_URL ? new URL(process.env.NEXT_PUBLIC_SITE_URL).origin : req.nextUrl.origin.replace(/^http:/, 'https:');
-            const originUrl = new URL(canonicalOrigin);
-            dest.protocol = originUrl.protocol;
-            dest.host = originUrl.host;
             dest.pathname = `/${resource}/${slugFromApi}${rest ? '/' + rest : ''}`;
             dest.search = search;
             return new Response(null, { status: 301, headers: { Location: dest.toString() } });
@@ -250,10 +238,6 @@ export async function middleware(req: NextRequest) {
     // Redirect 301 al canonical slug
     if (slug) {
       const dest = new URL(req.url);
-      const canonicalOrigin = process.env.NEXT_PUBLIC_SITE_URL ? new URL(process.env.NEXT_PUBLIC_SITE_URL).origin : req.nextUrl.origin.replace(/^http:/, 'https:');
-      const originUrl = new URL(canonicalOrigin);
-      dest.protocol = originUrl.protocol;
-      dest.host = originUrl.host;
       dest.pathname = `/${resource}/${slug}${rest ? '/' + rest : ''}`;
       dest.search = search;
       return new Response(null, { status: 301, headers: { Location: dest.toString() } });
