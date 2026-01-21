@@ -11,11 +11,11 @@ import Script from 'next/script';
 
 export const dynamic = 'force-dynamic';
 
-type PageParams = { params: any };
+type PageParams = { params: Promise<{ id: string }> };
 
 // ---------- METADATA ----------
 export async function generateMetadata({ params }: PageParams) {
-  const { id } = params;
+  const { id } = await params;
   const tournamentName = await getTournamentName(id);
 
   const title = `Most Titles at ${tournamentName} | Tennis Records`;
@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: PageParams) {
 
 // ---------- PAGE ----------
 export default async function TitlesPage({ params }: PageParams) {
-  const { id } = params;
+  const { id } = await params;
   const tournamentName = await getTournamentName(id);
 
   const list = await getCountSection(id, 'titles');
