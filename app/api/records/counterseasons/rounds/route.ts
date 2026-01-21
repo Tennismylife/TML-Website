@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(1000, Math.max(1, Number.isFinite(limitParam) ? limitParam : 100));
 
     // Build where clause
-    const where: any = { status: true, team_event: false };
+    const where: any = {team_event: false };
     if (selectedSurfaces.length) where.surface = { in: selectedSurfaces };
     if (selectedLevels.length) where.tourney_level = { in: selectedLevels };
     if (selectedRound) where.round = { equals: selectedRound, mode: 'insensitive' };
