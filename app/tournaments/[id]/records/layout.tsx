@@ -104,9 +104,6 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
       },
       twitter: { card: 'summary_large_image', title: siteTitle, description: fallbackDescription, images: [ogImageFromParam] },
       alternates: { canonical: ogUrl },
-      other: {
-        'script[type="application/ld+json"]': JSON.stringify(generateJsonLd(siteTitle, fallbackDescription, ogUrl, ogImageFromParam)),
-      },
     };
   }
 
@@ -127,9 +124,6 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
       },
       twitter: { card: 'summary_large_image', title: siteTitle, description: fallbackDescription, images: [ogImageFromParam] },
       alternates: { canonical: ogUrl },
-      other: {
-        'script[type="application/ld+json"]': JSON.stringify(generateJsonLd(siteTitle, fallbackDescription, ogUrl, ogImageFromParam)),
-      },
     };
   }
 
@@ -150,9 +144,6 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
       },
       twitter: { card: 'summary_large_image', title: siteTitle, description: fallbackDescription, images: [ogImageFromParam] },
       alternates: { canonical: ogUrl },
-      other: {
-        'script[type="application/ld+json"]': JSON.stringify(generateJsonLd(siteTitle, fallbackDescription, ogUrl, ogImageFromParam)),
-      },
     };
   }
 
@@ -175,9 +166,6 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
       images: [ogImageFromParam],
     },
     alternates: { canonical: ogUrlFromParam },
-    other: {
-      'script[type="application/ld+json"]': JSON.stringify(generateJsonLd(titleFromParam, fallbackDescription, ogUrlFromParam, ogImageFromParam)),
-    },
   };
 
   return baseMeta;

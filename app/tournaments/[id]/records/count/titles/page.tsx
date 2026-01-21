@@ -6,7 +6,10 @@ import ViewRecordsCTA from '../../ViewRecordsCTA';
 import CountFull from '../_components/CountFull';
 import TournamentHeader from '../../../TournamentHeader';
 import { getTournamentName } from '@/lib/recordMetadata';
+import { getCountSection } from '@/lib/records/count';
 import Script from 'next/script';
+
+export const dynamic = 'force-dynamic';
 
 type PageParams = { params: any };
 
@@ -18,7 +21,7 @@ export async function generateMetadata({ params }: PageParams) {
   const title = `Most Titles at ${tournamentName} | Tennis Records`;
   const description = `ATP men's singles record: most ${tournamentName} titles in the Open Era. Interactive table with counts and years won.`;
   const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
-  const ogUrl = `${site}/tournaments/${id}/records/count/titles`;
+  const ogUrl = 'https://stats.tennismylife.org/tournaments/australian-open/records/titles';
   const ogImage = `${site}/og/site-preview.png`;
 
   // FAQ JSON-LD for SEO (server-side as well as client-side via Script)
@@ -65,6 +68,8 @@ export async function generateMetadata({ params }: PageParams) {
 export default async function TitlesPage({ params }: PageParams) {
   const { id } = params;
   const tournamentName = await getTournamentName(id);
+
+  const list = await getCountSection(id, 'titles');
 
   // FAQ JSON-LD (iniezione corretta come <script type="application/ld+json">)
   const faq = {
@@ -139,7 +144,7 @@ export default async function TitlesPage({ params }: PageParams) {
 
       <main>
         <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">{`Most Titles at ${tournamentName}`}</h1>
-        <CountFull id={id} section="titles" />
+        <CountFull id={id} section="titles" list={list} tourneyName={tournamentName} />
       </main>
     </div>
   );

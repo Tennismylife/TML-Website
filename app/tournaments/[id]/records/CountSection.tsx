@@ -38,7 +38,7 @@ const SectionCard = React.memo(function SectionCard({
   const headingMap: Record<string, string> = {
     Titles: 'Most Titles',
     Wins: 'Most Wins',
-    Played: 'Most Matches Played',
+    Played: 'Most matches played',
     Entries: 'Most Entries',
   };
 

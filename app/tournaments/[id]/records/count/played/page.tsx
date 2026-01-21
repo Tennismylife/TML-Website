@@ -4,6 +4,9 @@ import ViewRecordsCTA from '../../ViewRecordsCTA';
 import CountFull from '../_components/CountFull';
 import TournamentHeader from '../../../TournamentHeader';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
+import { getCountSection } from '@/lib/records/count';
+
+export const dynamic = 'force-dynamic';
 
 function extractName(nameField: any): string {
   if (!nameField) return '';
@@ -42,16 +45,77 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   // Match the requested phrasing (lowercase 'matches') and remove site suffix for exact match
   const title = `Most matches played at ${tournamentName}`;
-  return { title };
+  const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
+  const canonical = `${site}/tournaments/${id}/records/count/played`;
+  const description = `A list of players with the most matches played at ${tournamentName} (men's singles main draw), aggregated across tournament editions.`;
+
+  // Explicitly avoid injecting parent 'script[type="application/ld+json"]' as a meta entry
+  // (we include proper <script type="application/ld+json"> JSON-LD tags in the page body)
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      images: [{ url: `${site}/og/site-preview.png`, alt: `${tournamentName} - Most matches played`, width: 1200, height: 630 }],
+    },
+    alternates: { canonical },
+    other: {
+      'script[type="application/ld+json"]': undefined as any,
+    },
+  };
 }
 
 export default async function PlayedPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   const tournamentName = await fetchTournamentHeaderCached(id).then((t: any) => {
-    const raw = (t && t.name) ? (Array.isArray(t.name) ? (t.name.map((x: any) => (typeof x === 'string' ? x : JSON.stringify(x))).filter(Boolean).pop()) : t.name) : String(id).replace(/-/g, ' ');
-    return String(raw).replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-  }).catch(() => String(id).replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()));
+    const raw = extractName(t?.name);
+    if (raw) return humanize(raw);
+    return humanize(String(id).replace(/-/g, ' '));
+  }).catch(() => humanize(String(id).replace(/-/g, ' ')));
+
+  const list = await getCountSection(id, 'played');
+
+  const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
+  const canonical = `${site}/tournaments/${id}/records/count/played`;
+
+  const webPageJson = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: `Most matches played at ${tournamentName}`,
+    description: `A list of players with the most matches played at ${tournamentName} (men's singles main draw).`,
+    url: canonical,
+  };
+
+  const faqJson = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      { '@type': 'Question', 'name': 'What does "Most matches played" at the Australian Open mean?', 'acceptedAnswer': { '@type': 'Answer', 'text': 'It indicates the total number of matches played by each player in the men\'s singles main draw at the Australian Open, summed across all editions they participated in.' } },
+      { '@type': 'Question', 'name': 'Does the list cover the Open Era?', 'acceptedAnswer': { '@type': 'Answer', 'text': 'Yes — the list covers the Open Era; any pre‑Open inclusions (if present) will be noted on the tournament\'s page.' } },
+      { '@type': 'Question', 'name': 'How do you handle ties (same number of matches)?', 'acceptedAnswer': { '@type': 'Answer', 'text': 'In case of a tie we show players with the same count at the same rank, then order by name or by most recent year played (consistent with the table behavior).' } },
+      { '@type': 'Question', 'name': 'Does the page include qualifying matches or only the main draw?', 'acceptedAnswer': { '@type': 'Answer', 'text': 'It includes only the men\'s singles main draw, not qualifying matches.' } },
+      { '@type': 'Question', 'name': 'How frequently is the data updated?', 'acceptedAnswer': { '@type': 'Answer', 'text': 'Data is updated after each tournament edition and whenever historical dataset corrections are applied.' } },
+      { '@type': 'Question', 'name': 'Why do some big names have fewer matches than others?', 'acceptedAnswer': { '@type': 'Answer', 'text': 'Totals depend on how many editions a player has entered and how deep they went in each edition (i.e., run depth).' } },
+      { '@type': 'Question', 'name': 'Where can I verify player profiles or full match lists?', 'acceptedAnswer': { '@type': 'Answer', 'text': 'Each name in the table links to the player profile with matches, seasons and detailed records.' } },
+      { '@type': 'Question', 'name': 'Can I see the same ranking for other Grand Slams?', 'acceptedAnswer': { '@type': 'Answer', 'text': 'Yes — from the tournaments page you can navigate to other events and their corresponding record pages.' } },
+    ],
+  };
+
+  const breadcrumb = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: site + '/' },
+      { '@type': 'ListItem', position: 2, name: 'Tournaments', item: site + '/tournaments' },
+      { '@type': 'ListItem', position: 3, name: tournamentName, item: site + `/tournaments/${id}` },
+      { '@type': 'ListItem', position: 4, name: 'Records', item: site + `/tournaments/${id}/records` },
+      { '@type': 'ListItem', position: 5, name: 'Counts', item: site + `/tournaments/${id}/records/count` },
+      { '@type': 'ListItem', position: 6, name: 'Most matches played', item: canonical },
+    ],
+  };
 
   return (
     <div className="w-full mx-auto text-white relative">
@@ -61,9 +125,14 @@ export default async function PlayedPage({ params }: { params: Promise<{ id: str
         <TournamentHeader id={Number(id)} />
       </div>
 
+      {/* Server-rendered JSON-LD scripts (WebPage, FAQPage, BreadcrumbList) */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJson) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJson) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
+
       <main>
         <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">{`Most matches played at ${tournamentName}`}</h1>
-        <CountFull id={id} section="played" />
+        <CountFull id={id} section="played" list={list} tourneyName={tournamentName} />
       </main>
     </div>
   );

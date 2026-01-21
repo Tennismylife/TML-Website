@@ -6,8 +6,15 @@ const nextConfig = {
   output: 'standalone',
 
   // Opzionale ma fortemente consigliato in produzione
-  swcMinify: true,
   poweredByHeader: false,
+
+  turbopack: {
+    root: process.cwd(),
+  },
+
+  experimental: {
+    disableOptimizedLoading: true,
+  },
 
   // Se vuoi forzare la porta (utile se non usi variabile d'ambiente)
   // env: {

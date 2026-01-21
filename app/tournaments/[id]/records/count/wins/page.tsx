@@ -4,6 +4,9 @@ import ViewRecordsCTA from '../../ViewRecordsCTA';
 import CountFull from '../_components/CountFull';
 import TournamentHeader from '../../../TournamentHeader';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
+import { getCountSection } from '@/lib/records/count';
+
+export const dynamic = 'force-dynamic';
 
 function extractName(nameField: any): string {
   if (!nameField) return '';
@@ -42,15 +45,64 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   // Use the exact phrasing requested for SEO title
   const title = `Most Wins At ${tournamentName}`;
-  return { title };
+  const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
+  const canonical = 'https://stats.tennismylife.org/tournaments/australian-open/records/wins';
+  const description = `Discover the players with the most wins in the men's singles main draw at ${tournamentName}. This page lists historical records from the Open Era, updated after each tournament edition.`;
+
+  // Explicitly avoid injecting parent 'script[type="application/ld+json"]' as a meta entry
+  // (we include proper <script type="application/ld+json"> JSON-LD tags in the page body)
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      images: [{ url: `${site}/og/site-preview.png`, alt: `${tournamentName} - Most wins`, width: 1200, height: 630 }],
+    },
+    alternates: { canonical },
+    other: {
+      'script[type="application/ld+json"]': undefined as any,
+    },
+  };
 }
 
 export default async function WinsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const tournamentName = await fetchTournamentHeaderCached(id).then((t: any) => {
-    const raw = (t && t.name) ? (Array.isArray(t.name) ? (t.name.map((x: any) => (typeof x === 'string' ? x : JSON.stringify(x))).filter(Boolean).pop()) : t.name) : String(id).replace(/-/g, ' ');
-    return String(raw).replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-  }).catch(() => String(id).replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()));
+    const raw = extractName(t?.name);
+    if (raw) return humanize(raw);
+    return humanize(String(id).replace(/-/g, ' '));
+  }).catch(() => humanize(String(id).replace(/-/g, ' ')));
+
+  const list = await getCountSection(id, 'wins');
+
+  const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
+  const canonical = `${site}/tournaments/${id}/records/count/wins`;
+
+  const description = `Discover the players with the most wins in the men's singles main draw at ${tournamentName}. This page lists historical records from the Open Era, updated after each tournament edition.`;
+
+  const webPageJson = { '@context': 'https://schema.org', '@type': 'WebPage', name: `Most wins at ${tournamentName}`, description: description, url: canonical };
+
+  const faqJson = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+    { '@type': 'Question', name: 'What does "Most wins" at the Australian Open mean?', acceptedAnswer: { '@type': 'Answer', text: 'It indicates the total number of match wins by each player in the men\'s singles main draw at the Australian Open, summed across all editions they participated in.' } },
+    { '@type': 'Question', name: 'Does the list cover the Open Era?', acceptedAnswer: { '@type': 'Answer', text: 'Yes — the list covers the Open Era; any pre‑Open inclusions (if present) will be noted on the tournament\'s page.' } },
+    { '@type': 'Question', name: 'How do you handle ties (same number of wins)?', acceptedAnswer: { '@type': 'Answer', text: 'In case of a tie we show players with the same count at the same rank, then order by name or by most recent year played (consistent with the table behavior).' } },
+    { '@type': 'Question', name: 'Does the page include qualifying matches or only the main draw?', acceptedAnswer: { '@type': 'Answer', text: 'It includes only the men\'s singles main draw, not qualifying matches.' } },
+    { '@type': 'Question', name: 'How frequently is the data updated?', acceptedAnswer: { '@type': 'Answer', text: 'Data is updated after each tournament edition and whenever historical dataset corrections are applied.' } },
+    { '@type': 'Question', name: 'Why do some big names have fewer wins than others?', acceptedAnswer: { '@type': 'Answer', text: 'Totals depend on how many editions a player has entered and how deep they went in each edition (i.e., run depth).' } },
+    { '@type': 'Question', name: 'Where can I verify player profiles or full match lists?', acceptedAnswer: { '@type': 'Answer', text: 'Each name in the table links to the player profile with matches, seasons and detailed records.' } },
+    { '@type': 'Question', name: 'Can I see the same ranking for other Grand Slams?', acceptedAnswer: { '@type': 'Answer', text: 'Yes — from the tournaments page you can navigate to other events and their corresponding record pages.' } },
+  ] };
+
+  const breadcrumb = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: site + '/' },
+    { '@type': 'ListItem', position: 2, name: 'Tournaments', item: site + '/tournaments' },
+    { '@type': 'ListItem', position: 3, name: tournamentName, item: site + `/tournaments/${id}` },
+    { '@type': 'ListItem', position: 4, name: 'Records', item: site + `/tournaments/${id}/records` },
+    { '@type': 'ListItem', position: 5, name: 'Counts', item: site + `/tournaments/${id}/records/count` },
+    { '@type': 'ListItem', position: 6, name: 'Most wins', item: canonical },
+  ] };
 
   return (
     <div className="w-full mx-auto text-white relative">
@@ -60,9 +112,14 @@ export default async function WinsPage({ params }: { params: Promise<{ id: strin
         <TournamentHeader id={Number(id)} />
       </div>
 
+      {/* Server-rendered JSON-LD scripts (WebPage, FAQPage, BreadcrumbList) */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJson) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJson) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
+
       <main>
-        <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">{`Most Wins At ${tournamentName}`}</h1>
-        <CountFull id={id} section="wins" />
+        <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">{`Most wins at ${tournamentName}`}</h1>
+        <CountFull id={id} section="wins" list={list} tourneyName={tournamentName} />
       </main>
     </div>
   );
