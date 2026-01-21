@@ -14,6 +14,7 @@ interface Entry {
   name: string;
   ioc?: string;
   entries: number;
+  slug?: string | null;
 }
 
 export default function Entries({ fetchEnabled, description, topEntries, selectedSurfaces, selectedLevels }: { fetchEnabled?: boolean; description?: string; topEntries?: Entry[]; selectedSurfaces?: Set<string>; selectedLevels?: Set<string>; }) {

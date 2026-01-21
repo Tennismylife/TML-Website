@@ -15,6 +15,7 @@ interface Winner {
   name: string;
   ioc?: string;
   wins: number;
+  slug?: string | null;
 }
 
 interface WinsProps { topWinners?: Winner[]; fetchEnabled?: boolean; description?: string }
