@@ -120,6 +120,35 @@ pm2 start npm --name tml -- start
 
 ---
 
+## 📥 Download all CSVs — one-line commands (any user)
+Want all CSVs as they are (no ZIP)? Paste one of these commands in your shell and the files will be downloaded with their original names.
+
+- CMD (Windows, copy to cmd.exe):
+
+```cmd
+mkdir tml-data & powershell -NoProfile -Command "Try { $files=(Invoke-RestMethod 'https://stats.tennismylife.org/api/data-files').files; New-Item -ItemType Directory -Path 'tml-data' -Force | Out-Null; foreach($f in $files){ Write-Host 'Downloading ' $f.name; Invoke-WebRequest -Uri $f.url -OutFile (Join-Path 'tml-data' $f.name) } } Catch { Write-Error $_.Exception.Message; exit 1 }"
+```
+
+- PowerShell (Windows):
+
+```powershell
+New-Item -ItemType Directory -Force -Path .\tml-data | Out-Null; Invoke-RestMethod -Uri 'https://stats.tennismylife.org/api/data-files' | Select-Object -ExpandProperty files | ForEach-Object { Invoke-WebRequest -Uri $_.url -OutFile (Join-Path -Path '.\tml-data' -ChildPath $_.name) }
+```
+
+- Bash / WSL / macOS (requires `curl` + `jq`):
+
+```bash
+mkdir -p tml-data && curl -s 'https://stats.tennismylife.org/api/data-files' | jq -r '.files[] | "\(.url)\t\(.name)"' | while IFS=$'\t' read -r url name; do curl -sSL "$url" -o "tml-data/$name"; done
+```
+
+Notes:
+- Replace `https://stats.tennismylife.org` with your site URL if needed (e.g., `http://localhost:3000` for local dev).
+- For a packaged option, see `scripts/download_all.ps1` and `scripts/download_all.sh` in this repo (they download files *as-is* into a `tml-data` folder).
+
+---
+
+---
+
 ## 🤝 Contributing
 - Fork → branch → PR. Please:
   - Include tests for logic added/changed

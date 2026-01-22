@@ -14,6 +14,12 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { execSync } = require('child_process');
+// CSV parsing for /api/matches endpoint. Uses csv-parse so we keep CSV reading robust to quoted values.
+// Place CSV files in a top-level `data/` directory (see `data/README.md`). These files are served
+// from `https://<your-site>/data/<file>.csv` so they remain on the site domain.
+const { parse } = require('csv-parse/sync');
+// Archiver to stream ZIPs on-the-fly for bulk download endpoint
+const archiver = require('archiver');
 
 const dev = false; // produzione
 const nextApp = next({ dev, dir: '.', conf: { distDir: '.next' } });
@@ -258,6 +264,186 @@ function strongETag(buffer) {
     };
 
     next();
+  });
+
+  /* --------------------------------------------
+     Serve CSVs from /data and expose /api/matches
+     --------------------------------------------
+     - CSV files should be placed in the project `data/` directory (not GitHub). Example:
+         data/matches.csv
+         data/players.csv
+         data/rankings.csv
+     - Files in `data/` are served directly from the site domain at `/data/<file>.csv`.
+     - API `/api/matches` reads and parses `data/matches.csv` and supports query params:
+         player=<substring>, year=<YYYY>, surface=<surface>
+       Returns JSON with `count` and `results` (array of row objects). See comments below for
+       extension points (limit, offset, more filters).
+  */
+
+  // Serve CSVs as downloadable files from /data
+  server.use(
+    '/data',
+    express.static(path.join(process.cwd(), 'data'), {
+      // Hint browsers to download by default (optional); content-disposition used for convenience
+      setHeaders: (res, filePath) => {
+        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+        // Optional: force download behavior on browsers
+        res.setHeader('Content-Disposition', `attachment; filename="${path.basename(filePath)}"`);
+      },
+    })
+  );
+
+  // API: /api/matches
+  server.get('/api/matches', async (req, res) => {
+    try {
+      // Find CSV source. Priority:
+      // 1) process.env.MATCHES_CSV
+      // 2) data/matches.csv
+      // 3) data/ATP_Database.csv
+      // 4) all yearly files matching /data/\d{4}\.csv (will be concatenated)
+      const dataDir = path.join(process.cwd(), 'data');
+      const configured = process.env.MATCHES_CSV ? path.join(process.cwd(), 'data', process.env.MATCHES_CSV) : null;
+
+      let csvFiles = [];
+      if (configured && fs.existsSync(configured)) csvFiles.push(configured);
+
+      const pMatches = path.join(dataDir, 'matches.csv');
+      const pAtp = path.join(dataDir, 'ATP_Database.csv');
+
+      if (csvFiles.length === 0 && fs.existsSync(pMatches)) csvFiles.push(pMatches);
+      if (csvFiles.length === 0 && fs.existsSync(pAtp)) csvFiles.push(pAtp);
+
+      if (csvFiles.length === 0) {
+        // look for yearly CSVs like 2006.csv, 2007.csv etc.
+        if (!fs.existsSync(dataDir)) {
+          return res.status(404).json({ error: 'data directory not found. Place CSVs in /data.' });
+        }
+        const yearly = fs.readdirSync(dataDir).filter((f) => /^\d{4}\.csv$/.test(f)).map((f) => path.join(dataDir, f));
+        if (yearly.length > 0) csvFiles = csvFiles.concat(yearly);
+      }
+
+      if (csvFiles.length === 0) {
+        return res.status(404).json({ error: 'No matches CSV found. Place matches.csv or yearly CSVs in /data.' });
+      }
+
+      // Read and parse all CSVs (concatenate rows)
+      let records = [];
+      for (const f of csvFiles) {
+        const raw = fs.readFileSync(f, 'utf8');
+        const recs = parse(raw, { columns: true, skip_empty_lines: true });
+        records = records.concat(recs);
+      }
+
+      // Query parameters: player (substring, case-insensitive), year (YYYY), surface (case-insensitive)
+      const qPlayer = (req.query.player || '').toString().trim().toLowerCase();
+      const qYear = (req.query.year || '').toString().trim();
+      const qSurface = (req.query.surface || '').toString().trim().toLowerCase();
+
+      let filtered = records.filter((r) => {
+        if (qPlayer) {
+          const p1 = (r.player1 || '').toString().toLowerCase();
+          const p2 = (r.player2 || '').toString().toLowerCase();
+          if (!p1.includes(qPlayer) && !p2.includes(qPlayer)) return false;
+        }
+        if (qYear) {
+          const date = (r.match_date || r.date || '').toString();
+          const y = date ? new Date(date).getFullYear().toString() : '';
+          if (y !== qYear) return false;
+        }
+        if (qSurface) {
+          const surf = (r.surface || '').toString().toLowerCase();
+          if (surf !== qSurface) return false;
+        }
+        return true;
+      });
+
+      // Support ?all=1 (return all filtered results) or limit=0
+      const allFlag = String(req.query.all || '') === '1' || Number(req.query.limit || 1) === 0;
+      if (allFlag) {
+        const max = Number(process.env.MAX_MATCHES_JSON || 200000);
+        if (filtered.length > max) {
+          return res.status(413).json({ error: `Result too large (${filtered.length}). Narrow filters or use pagination.` });
+        }
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        return res.status(200).json({ count: filtered.length, results: filtered });
+      }
+
+      // Optional pagination (limit, offset)
+      const limit = Math.min(1000, Number(req.query.limit || 100)); // safety cap
+      const offset = Math.max(0, Number(req.query.offset || 0));
+      const paginated = filtered.slice(offset, offset + limit);
+
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      return res.status(200).json({ count: filtered.length, results: paginated });
+    } catch (err) {
+      console.error('Error in /api/matches', err);
+      return res.status(500).json({ error: 'Internal server error reading CSV.' });
+    }
+  });
+
+  // API: /api/data-files — returns list of CSV files available in /data
+  server.get('/api/data-files', async (req, res) => {
+    try {
+      const dataDir = path.join(process.cwd(), 'data');
+      if (!fs.existsSync(dataDir)) return res.status(404).json({ error: 'data directory not found' });
+
+      const files = fs.readdirSync(dataDir).filter((f) => /\.csv$/i.test(f));
+      // Build absolute URLs using incoming request host/proto so links point to this domain
+      const proto = req.headers['x-forwarded-proto'] || req.protocol;
+      const host = req.headers.host || 'localhost:3000';
+      const base = `${proto}://${host}`;
+
+      const results = files.map((f) => {
+        const st = fs.statSync(path.join(dataDir, f));
+        return { name: f, url: `${base}/data/${encodeURIComponent(f)}`, size: st.size, mtime: st.mtime.toISOString() };
+      });
+
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      return res.status(200).json({ count: results.length, files: results });
+    } catch (err) {
+      console.error('Error in /api/data-files', err);
+      return res.status(500).json({ error: 'Internal server error listing data files.' });
+    }
+  });
+
+  // API: /api/download-all — create a ZIP on-the-fly containing all or selected CSVs
+  server.get('/api/download-all', async (req, res) => {
+    try {
+      const dataDir = path.join(process.cwd(), 'data');
+      if (!fs.existsSync(dataDir)) return res.status(404).send('data directory not found');
+
+      // Optional query parameter `files=name1.csv,name2.csv` to include a subset
+      const requested = req.query.files ? req.query.files.toString().split(',').map((s) => s.trim()).filter(Boolean) : null;
+
+      let files = fs.readdirSync(dataDir).filter((f) => /\.csv$/i.test(f));
+      if (requested && requested.length) {
+        files = files.filter((f) => requested.includes(f));
+      }
+
+      if (files.length === 0) return res.status(404).send('No CSV files to include in ZIP');
+
+      res.setHeader('Content-Type', 'application/zip');
+      res.setHeader('Content-Disposition', 'attachment; filename="tml-data.zip"');
+
+      const archive = archiver('zip', { zlib: { level: 9 } });
+      archive.on('error', (err) => {
+        console.error('Archive error', err);
+        if (!res.headersSent) res.status(500).end();
+      });
+
+      // Pipe archive data to the response
+      archive.pipe(res);
+
+      for (const f of files) {
+        const p = path.join(dataDir, f);
+        archive.file(p, { name: f });
+      }
+
+      await archive.finalize();
+    } catch (err) {
+      console.error('Error in /api/download-all', err);
+      return res.status(500).send('Internal server error creating ZIP');
+    }
   });
 
   /* 7) Next.js fallback */

@@ -64,6 +64,8 @@ export default function Header() {
           <Link href="/rankingtables" className={linkClass("/rankingtables")}>Ranking Tables</Link>
           <Link href="/records" className={linkClass("/records")}>Match Records</Link>
           <Link href="/recordsranking" className={linkClass("/recordsranking")}>Ranking Records</Link>
+          {/* Link alla nuova pagina Tennis Match Database */}
+          <Link href="/tennis-match-database" className={linkClass("/tennis-match-database")}>Match Database</Link>
         </nav>
 
       </div>

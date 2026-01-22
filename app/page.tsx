@@ -96,7 +96,7 @@ export default function HomePage() {
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18M6 7v11M18 7v11M6 18h12" />
       </svg>
     )},
-    { href: "https://github.com/Tennismylife/TML-Database", title: "TML Database", subtitle: "Open-source Match DB", description: "Open-source tennis match database available for researchers and developers — clone, explore the schema, and download matche data on GitHub.", colorClass: "text-slate-400 group-hover:text-slate-300", accentColor: "#94a3b8", icon: (
+    { href: "/tennis-match-database", title: "TML Database", subtitle: "Official Match DB", description: "Official TennisMyLife match database page with CSV downloads, documentation, and dataset access.", colorClass: "text-slate-400 group-hover:text-slate-300", accentColor: "#94a3b8", icon: (
       <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor" stroke="none">
         <path d="M12 .297c-6.6 0-12 5.4-12 12 0 5.3 3.4 9.8 8.2 11.4.6.1.8-.3.8-.6v-2c-3.3.7-4-1.4-4-1.4-.6-1.5-1.4-1.9-1.4-1.9-1.1-.8.1-.8.1-.8 1.2.1 1.9 1.3 1.9 1.3 1.1 1.9 2.9 1.4 3.6 1 .1-.8.4-1.4.8-1.7-2.7-.3-5.6-1.4-5.6-6 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2.9-.3 1.8-.4 2.8-.4s1.9.1 2.8.4c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.8 1.2 3.1 0 4.6-2.9 5.7-5.6 6 .5.4.9 1.1.9 2.3v3.5c0 .3.2.7.8.6 4.8-1.6 8.2-6.2 8.2-11.4 0-6.6-5.4-12-12-12z" />
       </svg>

@@ -16,7 +16,7 @@ const montserrat = Montserrat({
 })
 
 
-const siteTitle = 'TML — Tennis Records Data History Rankings, Matches & GOAT'
+const siteTitle = 'TennisMyLife – Complete Match Database & Stats'
 const siteDescription = 'TML aggregates tennis matches, rankings, player profiles and records. Explore player statistics, head-to-heads and historical data. Find the GOAT'
 
 // Resolve metadataBase to a canonical origin for Open Graph/Twitter images
