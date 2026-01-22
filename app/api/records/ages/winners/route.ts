@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
       .sort((a, b) => (isYoungest ? a.age - b.age : b.age - a.age))
       .slice(0, limitParam);
 
-    const responseKey = isYoungest ? "youngestwinners" : "oldestwinners";
+    const responseKey = isYoungest ? "youngestWinners" : "oldestWinners";
 
     // Attach slugs when available
     const ids = playersSorted.map(p => String(p.id));

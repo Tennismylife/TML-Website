@@ -28,10 +28,14 @@ export async function generateMetadata({ params }: any) {
   const slug = player?.slug || String(slugParam);
   const site = 'https://stats.tennismylife.org';
   const ogUrl = `${site}/players/${slug}`;
+  // The canonical player page is the 'matches' view — the base player path redirects
+  // to `/players/:slug/matches`. Use the matches URL as the canonical to avoid
+  // Google selecting a different canonical based on redirects.
+  const canonicalWithMatches = `${ogUrl}/matches`;
   return {
     title: `${name} | Tennis Statistics, Match Results & Rankings`,
-    openGraph: { url: ogUrl },
-    alternates: { canonical: ogUrl },
+    openGraph: { url: canonicalWithMatches },
+    alternates: { canonical: canonicalWithMatches },
   }; 
 }
 

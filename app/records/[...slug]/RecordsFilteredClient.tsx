@@ -26,7 +26,16 @@ export default function RecordsFilteredClient({ record, sub, filters = {}, canon
 
     const kebabToKey = (s: string | undefined) => {
       if (!s) return s;
-      return s.split('-').map((part, idx) => idx === 0 ? part : (part.charAt(0).toUpperCase() + part.slice(1))).join('');
+      if (s.includes('-')) return s.split('-').map((part, idx) => idx === 0 ? part : (part.charAt(0).toUpperCase() + part.slice(1))).join('');
+      const suffixMap: Record<string, string> = { winners: 'Winners', maindraw: 'MainDraw' };
+      const lower = s.toLowerCase();
+      for (const [suffix, camel] of Object.entries(suffixMap)) {
+        if (lower.endsWith(suffix)) {
+          const prefix = s.slice(0, s.length - suffix.length);
+          return prefix + camel;
+        }
+      }
+      return s;
     };
     const activeSubTabsDefault: Record<string,string> = {
       ages: 'oldest',

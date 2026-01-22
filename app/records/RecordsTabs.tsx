@@ -15,7 +15,22 @@ type RecordsTabsProps = {
 
 const kebabToKey = (s: string | undefined) => {
   if (!s) return s;
-  return s.split('-').map((part, idx) => idx === 0 ? part : (part.charAt(0).toUpperCase() + part.slice(1))).join('');
+  // Handle kebab-case first (e.g. 'oldest-winners' -> 'oldestWinners')
+  if (s.includes('-')) {
+    return s.split('-').map((part, idx) => idx === 0 ? part : (part.charAt(0).toUpperCase() + part.slice(1))).join('');
+  }
+
+  // Handle concatenated forms (e.g. 'oldestwinners' -> 'oldestWinners', 'oldestmaindraw' -> 'oldestMainDraw')
+  const suffixMap: Record<string, string> = { winners: 'Winners', maindraw: 'MainDraw' };
+  const lower = s.toLowerCase();
+  for (const [suffix, camel] of Object.entries(suffixMap)) {
+    if (lower.endsWith(suffix)) {
+      const prefix = s.slice(0, s.length - suffix.length);
+      return prefix + camel;
+    }
+  }
+
+  return s;
 };
 
 const tabs: Tab[] = [
@@ -42,8 +57,8 @@ const subTabs: Record<string, Tab[]> = {
   ages: [
     { key: 'oldest', label: 'Oldest Main Draw' },
     { key: 'youngest', label: 'Youngest Main Draw' },
-    { key: 'oldestwinners', label: 'Oldest Title Winners' },
-    { key: 'youngestwinners', label: 'Youngest Title Winners' },
+    { key: 'oldest-winners', label: 'Oldest Title Winners' },
+    { key: 'youngest-winners', label: 'Youngest Title Winners' },
   ],
   timespan: [
     { key: 'entries', label: '2 entries' },
