@@ -19,6 +19,7 @@ export async function GET(request: NextRequest, context: any) {
       where: { OR: tourneyIdFilters },
       select: {
         year: true,
+        event_id: true,
         round: true,
         winner_id: true,
         winner_name: true,
@@ -34,18 +35,20 @@ export async function GET(request: NextRequest, context: any) {
     // Filtra finali
     const finals = tournamentMatches.filter((m) => ["F", "W", "Final"].includes(m.round ?? ''));
 
-    // Calcolo delle entries totali (anni unici)
+    // Calcolo delle entries totali (eventi unici)
+    // Raccogliamo gli event_id per ogni giocatore in modo da considerare
+    // ogni singolo evento (es. Australian Open Jan e Dec dello stesso anno) separatamente.
     const playerEntries = new Map<string, {
       id: string | number;
       name: string;
       ioc: string;
-      years: Set<number>;
+      events: Set<string>;
       totalEntries: number;
     }>();
 
     for (const m of tournamentMatches) {
-      const year = m.year;
-      if (!year) continue;
+      const eventId = String((m as any).event_id ?? '');
+      if (!eventId) continue;
 
       // Winner
       if (m.winner_id && m.winner_name) {
@@ -56,11 +59,11 @@ export async function GET(request: NextRequest, context: any) {
             id: m.winner_id,
             name: m.winner_name,
             ioc: m.winner_ioc ?? "",
-            years: new Set([year]),
+            events: new Set([eventId]),
             totalEntries: 0,
           });
         } else {
-          existing.years.add(year);
+          existing.events.add(eventId);
         }
       }
 
@@ -73,21 +76,52 @@ export async function GET(request: NextRequest, context: any) {
             id: m.loser_id,
             name: m.loser_name,
             ioc: m.loser_ioc ?? "",
-            years: new Set([year]),
+            events: new Set([eventId]),
             totalEntries: 0,
           });
         } else {
-          existing.years.add(year);
+          existing.events.add(eventId);
         }
       }
     }
 
-    // Totale entries
+    // Totale entries (per event_id)
     for (const player of playerEntries.values()) {
-      player.totalEntries = player.years.size;
+      player.totalEntries = player.events.size;
     }
 
-    // Calcolo reaches per round
+    // Calcolo reaches per round (una reach per event_id)
+    // Per evitare di contare più match nello stesso evento come più reaches,
+    // manteniamo un Set di event_id per giocatore per ciascun round e poi
+    // usiamo la dimensione del set come numero di reaches.
+    const roundEventSets = new Map<string, Map<string, Set<string>>>(); // round -> (playerId -> set(event_id))
+
+    for (const m of tournamentMatches) {
+      const round = m.round || "Unknown";
+      if (["R128", "R64"].includes(round)) continue; // 🔥 Esclusione richiesta
+
+      const eventId = String((m as any).event_id ?? '');
+      if (!eventId) continue;
+
+      if (!roundEventSets.has(round)) roundEventSets.set(round, new Map());
+      const players = roundEventSets.get(round)!;
+
+      // Winner
+      if (m.winner_id && m.winner_name) {
+        const key = String(m.winner_id);
+        if (!players.has(key)) players.set(key, new Set());
+        players.get(key)!.add(eventId);
+      }
+
+      // Loser
+      if (m.loser_id && m.loser_name) {
+        const key = String(m.loser_id);
+        if (!players.has(key)) players.set(key, new Set());
+        players.get(key)!.add(eventId);
+      }
+    }
+
+    // Convert sets to stats objects
     const roundReaches = new Map<string, Map<string, {
       id: string | number;
       name: string;
@@ -97,50 +131,20 @@ export async function GET(request: NextRequest, context: any) {
       percentage: number;
     }>>();
 
-    for (const m of tournamentMatches) {
-      const round = m.round || "Unknown";
-      if (["R128", "R64"].includes(round)) continue; // 🔥 Esclusione richiesta
-
-      if (!roundReaches.has(round)) roundReaches.set(round, new Map());
-      const players = roundReaches.get(round)!;
-
-      // Winner
-      if (m.winner_id && m.winner_name) {
-        const key = String(m.winner_id);
-        const existing = players.get(key);
-        if (!existing) {
-          const entry = playerEntries.get(key);
-          players.set(key, {
-            id: m.winner_id,
-            name: m.winner_name,
-            ioc: m.winner_ioc ?? "",
-            reaches: 1,
-            totalEntries: entry?.totalEntries || 0,
-            percentage: 0,
-          });
-        } else {
-          existing.reaches++;
-        }
+    for (const [round, playersMap] of roundEventSets.entries()) {
+      const playersStats = new Map<string, any>();
+      for (const [pid, events] of playersMap.entries()) {
+        const entry = playerEntries.get(pid);
+        playersStats.set(pid, {
+          id: pid,
+          name: entry?.name ?? '',
+          ioc: entry?.ioc ?? '',
+          reaches: events.size,
+          totalEntries: entry?.totalEntries || 0,
+          percentage: 0,
+        });
       }
-
-      // Loser
-      if (m.loser_id && m.loser_name) {
-        const key = String(m.loser_id);
-        const existing = players.get(key);
-        if (!existing) {
-          const entry = playerEntries.get(key);
-          players.set(key, {
-            id: m.loser_id,
-            name: m.loser_name,
-            ioc: m.loser_ioc ?? "",
-            reaches: 1,
-            totalEntries: entry?.totalEntries || 0,
-            percentage: 0,
-          });
-        } else {
-          existing.reaches++;
-        }
-      }
+      roundReaches.set(round, playersStats);
     }
 
     // Percentuali
