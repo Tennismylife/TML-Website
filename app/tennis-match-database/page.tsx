@@ -1,7 +1,31 @@
 import TennisMatchDatabaseClient from '@/components/TennisMatchDatabaseClient';
 import DataFileListClient from '@/components/DataFileListClient';
 
+import fs from 'fs';
+import path from 'path';
+
 export default function Page() {
+  const dataDir = path.join(process.cwd(), 'data');
+  let minYear = 1968;
+  let maxYear = 2026;
+
+  try {
+    if (fs.existsSync(dataDir)) {
+      const files = fs.readdirSync(dataDir).filter(f => /\d{4}/.test(f));
+      const years: number[] = [];
+      files.forEach(f => {
+        const m = f.match(/(\d{4})/g);
+        if (m) m.forEach(y => years.push(parseInt(y, 10)));
+      });
+      if (years.length) {
+        minYear = Math.min(...years);
+        maxYear = Math.max(...years);
+      }
+    }
+  } catch (e) {
+    // ignore
+  }
+
   return (
     <main>
       <h1 className="text-4xl sm:text-5xl font-bold text-center">Tennis Match Database</h1>
@@ -62,6 +86,16 @@ export default function Page() {
           <p className="mt-4">
             We welcome collaborations and bug reports. Help us improve the quality of this tennis database and make it the most reliable source for ATP stats, match history, and player analytics.
           </p>
+
+          <div className="mt-6 text-sm text-gray-300">
+            <strong>Creator:</strong> Tennis My Life
+            <br />
+            <strong>License:</strong> <a className="underline" href="https://opensource.org/licenses/MIT">MIT License</a>
+            <br />
+            <strong>Temporal coverage:</strong> {minYear}–{maxYear}
+            <br />
+            <strong>Access:</strong> Free to use (isAccessibleForFree)
+          </div>
         </div>
       </section>
 
