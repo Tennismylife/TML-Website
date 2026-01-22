@@ -137,7 +137,7 @@ export default function RecordsAdapterClient({ record, sub, filters = {}, topDat
     case 'timespan':
       return <Timespan selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedTab={sub || 'entries'} fetchEnabled={fetchEnabled} description={description} />;
     case 'ages':
-      return <Ages selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={sub || undefined} fetchEnabled={fetchEnabled} description={description} />;
+      return <Ages selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={sub || undefined} fetchEnabled={fetchEnabled} fetchRequestId={params.toString() || null} description={description} />;
     case 'percentage':
       return <Percentage selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} fetchEnabled={fetchEnabled} description={description} />;
     case 'roundsonentries':
