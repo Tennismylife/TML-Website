@@ -10,6 +10,7 @@ export default function DataFileList({ full = false }: { full?: boolean }) {
   const [visible, setVisible] = React.useState(20);
   const [copyStatus, setCopyStatus] = React.useState<string | null>(null);
   const cmdCmd = `mkdir tml-data & powershell -NoProfile -Command "Try { $files=(Invoke-RestMethod 'https://stats.tennismylife.org/api/data-files').files; New-Item -ItemType Directory -Path 'tml-data' -Force | Out-Null; foreach($f in $files){ Write-Host 'Downloading ' $f.name; Invoke-WebRequest -Uri $f.url -OutFile (Join-Path 'tml-data' $f.name) } } Catch { Write-Error $_.Exception.Message; exit 1 }"`;
+  // Ensure pre blocks wrap long single-line commands visually (allow line breaks)
   const psCmd = `New-Item -ItemType Directory -Force -Path .\\tml-data | Out-Null; Invoke-RestMethod -Uri 'https://stats.tennismylife.org/api/data-files' | Select-Object -ExpandProperty files | ForEach-Object { Invoke-WebRequest -Uri $_.url -OutFile (Join-Path -Path '.\\tml-data' -ChildPath $_.name) }`;
   const bashCmd = `mkdir -p tml-data && curl -s 'https://stats.tennismylife.org/api/data-files' | jq -r '.files[] | "\\(.url)\\t\\(.name)"' | while IFS=$'\\t' read -r url name; do curl -sSL "$url" -o "tml-data/$name"; done`;
   const showMore = () => setVisible((v) => v + 20);
@@ -69,30 +70,30 @@ export default function DataFileList({ full = false }: { full?: boolean }) {
               <div className="font-semibold text-lg text-gray-100 mb-1">Quick commands</div>
               <div className="text-sm text-gray-400 mb-2">Copy & paste one of these commands to download all CSVs <strong>as they are</strong> into a <code>tml-data</code> folder. Choose the one matching your shell.</div>
               <div className="grid gap-3">
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <div className="text-sm font-medium text-gray-200 mb-1">CMD (Windows - cmd.exe)</div>
-                    <pre className="bg-gray-900 text-sm p-3 rounded overflow-auto"><code>{cmdCmd}</code></pre>
+                    <pre className="bg-gray-900 text-sm p-3 rounded overflow-auto whitespace-pre-wrap break-words"><code>{cmdCmd}</code></pre>
                   </div>
                   <div className="flex-shrink-0">
                     <button onClick={async () => { try { await navigator.clipboard.writeText(cmdCmd); setCopyStatus('Copied CMD'); setTimeout(()=>setCopyStatus(null),2000); } catch (e) { setCopyStatus('Copy failed'); setTimeout(()=>setCopyStatus(null),2000); } }} className="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow">Copy</button>
                   </div>
                 </div>
 
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <div className="text-sm font-medium text-gray-200 mb-1">PowerShell (Windows)</div>
-                    <pre className="bg-gray-900 text-sm p-3 rounded overflow-auto"><code>{psCmd}</code></pre>
+                    <pre className="bg-gray-900 text-sm p-3 rounded overflow-auto whitespace-pre-wrap break-words"><code>{psCmd}</code></pre>
                   </div>
                   <div className="flex-shrink-0">
                     <button onClick={async () => { try { await navigator.clipboard.writeText(psCmd); setCopyStatus('Copied PowerShell'); setTimeout(()=>setCopyStatus(null),2000); } catch (e) { setCopyStatus('Copy failed'); setTimeout(()=>setCopyStatus(null),2000); } }} className="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow">Copy</button>
                   </div>
                 </div>
 
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <div className="text-sm font-medium text-gray-200 mb-1">Bash / Linux / macOS</div>
-                    <pre className="bg-gray-900 text-sm p-3 rounded overflow-auto"><code>{bashCmd}</code></pre>
+                    <pre className="bg-gray-900 text-sm p-3 rounded overflow-auto whitespace-pre-wrap break-words"><code>{bashCmd}</code></pre>
                     <div className="text-xs text-gray-400 mt-1">Requires <code>curl</code> and <code>jq</code> (or Python fallback script available in <code>scripts/download_all.sh</code>).</div>
                   </div>
                   <div className="flex-shrink-0">
