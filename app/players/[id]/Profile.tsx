@@ -43,7 +43,21 @@ export default function PlayerTabsClient({ player }: PlayerTabsClientProps) {
       try {
         setLoading(true);
         const res = await fetch(`/api/matches?player_id=${player.id}`);
-        const matches = res.ok ? await res.json() : [];
+        const matchesBody = res.ok ? await res.json() : [];
+        // Support both plain-array responses and paginated shapes { count, results }
+        const matches = Array.isArray(matchesBody)
+          ? matchesBody
+          : Array.isArray(matchesBody?.results)
+          ? matchesBody.results
+          : Array.isArray(matchesBody?.data)
+          ? matchesBody.data
+          : [];
+
+        if (!Array.isArray(matches) && process.env.NODE_ENV !== 'production') {
+          // defensive log for debugging in dev
+          // eslint-disable-next-line no-console
+          console.debug('[Profile] unexpected matches response shape', matchesBody);
+        }
 
         const newStats: Stats = {
           titles: 0,

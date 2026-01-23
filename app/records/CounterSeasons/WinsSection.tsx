@@ -178,7 +178,7 @@ export default function WinsSection({
         try {
           const currentTitle = typeof document !== 'undefined' ? document.title || '' : '';
           const currentIsSiteSeo = typeof currentTitle === 'string' && /\| Tennis/.test(currentTitle);
-          if (!currentIsSiteSeo && typeof document !== 'undefined') document.title = `${appliedHeader} — TML`;
+          if (!currentIsSiteSeo && typeof document !== 'undefined') document.title = `${appliedHeader} | Tennis Records`; 
         } catch(e) { /* ignore */ }
 
       } catch (e) {

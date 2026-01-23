@@ -23,8 +23,38 @@ export async function GET(request: NextRequest) {
   if (surface) where.surface = surface;
 
   try {
-    const matches = await prisma.match.findMany({ where });
-    return NextResponse.json(matches);
+    // pagination params (optional)
+    const limitParam = searchParams.get('limit');
+    const offsetParam = searchParams.get('offset');
+    const limit = limitParam ? Math.max(0, Number(limitParam)) : undefined;
+    const offset = offsetParam ? Math.max(0, Number(offsetParam)) : undefined;
+
+    // Only select the commonly used fields to keep payload compact
+    const select = {
+      id: true,
+      year: true,
+      round: true,
+      surface: true,
+      winner_id: true,
+      winner_name: true,
+      winner_ioc: true,
+      loser_id: true,
+      loser_name: true,
+      loser_ioc: true,
+      score: true,
+      status: true,
+      tourney_name: true,
+      tourney_level: true,
+      team_event: true,
+      tourney_date: true,
+    } as const;
+
+    const [count, results] = await Promise.all([
+      prisma.match.count({ where }),
+      prisma.match.findMany({ where, take: limit, skip: offset, orderBy: { tourney_date: 'desc' }, select }),
+    ]);
+
+    return NextResponse.json({ count, results });
   } catch (error) {
     console.error("Error fetching matches:", error);
     return NextResponse.json(

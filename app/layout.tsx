@@ -57,7 +57,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
 
   return (
-    <html lang="it" className={montserrat.variable}>
+    <html lang="en" className={montserrat.variable}>
       <head>
         {/* Favicon: provide canonical root favicon.ico and handy fallbacks for other platforms */}
         <link rel="icon" href="/favicon.ico" />
@@ -108,7 +108,17 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <MatomoClient />
         <Header />
         <main className="w-full px-0 py-6">
-          {children}
+          {(() => {
+            try {
+              return children;
+            } catch (e: any) {
+              // Log thrown objects from child rendering (detect Next HTTP fallback digest)
+              // eslint-disable-next-line no-console
+              console.error('RootLayout caught error rendering children', { error: e, isHttpFallback: !!(e && typeof e === 'object' && 'digest' in e && String((e as any).digest).startsWith('NEXT_HTTP_ERROR_FALLBACK')), digest: (e && (e as any).digest) || null, stack: (e && (e as any).stack) || null });
+              // Rethrow so Next's boundary handling proceeds as normal
+              throw e;
+            }
+          })()}
         </main>
 
         <footer className="text-sm text-gray-400 py-6 text-center">

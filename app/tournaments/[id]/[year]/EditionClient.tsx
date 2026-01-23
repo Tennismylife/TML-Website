@@ -45,8 +45,10 @@ export default function TournamentEditionClient(props: any) {
     let cancelled = false;
     async function maybeRedirect() {
       try {
+        if (!id || !year) return;
         const res = await fetch(`/api/tournaments/${id}/header`);
-        if (!res.ok) return;
+        if (res.status === 404) return; // no header -> nothing to do
+        if (!res.ok) return; // transient error -> ignore redirect
         const data = await res.json();
         const slug = data?.slug;
         if (slug && !cancelled) {
@@ -56,7 +58,7 @@ export default function TournamentEditionClient(props: any) {
           }
         }
       } catch (e) {
-        // ignore
+        // ignore transient fetch errors
       }
     }
     maybeRedirect();
@@ -80,11 +82,17 @@ export default function TournamentEditionClient(props: any) {
         const res = await fetch(`/api/tournaments/${id}/${year}`, {
           signal: controller.signal,
         });
+        if (res.status === 404) {
+          // No matches found for this edition
+          setMatches([]);
+          setError(`No matches found for ${year}.`);
+          return;
+        }
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setMatches(data.matches || []);
       } catch (e: any) {
-        if (e.name !== "AbortError") setError(e.message);
+        if (e.name !== "AbortError") setError(e.message || 'Failed to load matches');
       } finally {
         setLoading(false);
       }

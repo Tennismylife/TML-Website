@@ -224,11 +224,11 @@ export async function generateMetadata(
   // All records pages are indexable regardless of filters.
 
   return {
-    title: `${desc || record || 'Records'} — TML`,
+    title: `${desc || record || 'Records'} | Tennis Records`,
     description: desc || 'TML records and statistics',
     alternates: { canonical: canonicalFull },
     robots: { index: true, follow: true },
-  };
+  };                                        
 }
 
 export default async function SlugPage({ params, searchParams }: Props) {

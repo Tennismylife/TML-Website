@@ -161,7 +161,7 @@ export default function RecordsClient({ initialRecord = null, initialSubtab = nu
     try {
       const desc = generateRecordDescription(selectedRecord, activeSubTabsRef.current, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf);
       if (desc && typeof document !== 'undefined') {
-        const newTitle = `${desc} — TML`;
+        const newTitle = `${desc} | Tennis Records`;
         const currentTitle = typeof document !== 'undefined' ? document.title || '' : '';
         const shouldForceTitle = lastUserActionRef.current === 'click' || lastUserActionRef.current === 'filter';
 
@@ -176,7 +176,7 @@ export default function RecordsClient({ initialRecord = null, initialSubtab = nu
           if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') console.debug('[RecordsClient] preserving server SEO title', currentTitle);
         } else {
           // Otherwise only set the title if it isn't already the client-desired title
-          if (!currentTitle.includes('— TML') || currentTitle !== newTitle) {
+          if (!currentTitle.includes('| Tennis Records') || currentTitle !== newTitle) {
             document.title = newTitle;
             if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') console.debug('[RecordsClient] set title', document.title);
           } else {

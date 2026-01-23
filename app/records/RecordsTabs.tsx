@@ -164,9 +164,9 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
           const currentTitle = typeof document !== 'undefined' ? document.title || '' : '';
           const currentIsSiteSeo = typeof currentTitle === 'string' && /\| Tennis/.test(currentTitle);
           if (!currentIsSiteSeo) {
-            document.title = `${desc} — TML`;
+            document.title = `${desc} | Tennis Records`;
             // reapply after short delay to avoid being overwritten by other flows
-            t = setTimeout(() => { if (typeof document !== 'undefined') document.title = `${desc} — TML`; }, 200);
+            t = setTimeout(() => { if (typeof document !== 'undefined') document.title = `${desc} | Tennis Records`; }, 200);
           }
         }
       }
@@ -227,7 +227,7 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
       if (desc && typeof document !== 'undefined') {
         const currentTitle = typeof document !== 'undefined' ? document.title || '' : '';
         const currentIsSiteSeo = typeof currentTitle === 'string' && /\| Tennis/.test(currentTitle);
-        if (!currentIsSiteSeo) document.title = `${desc} — TML`;
+        if (!currentIsSiteSeo) document.title = `${desc} | Tennis Records`;
       }
     } catch (e) {
       // ignore

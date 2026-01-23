@@ -27,7 +27,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Record<
   if (selectedRecord && subtab) activeSubTabs[selectedRecord] = subtab;
 
   const description = generateRecordDescription(selectedRecord, activeSubTabs, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf);
-  const title = description ? `${description} — TML Records` : 'Records — TML';
+  const title = description ? `${description} | Tennis Records` : 'Records | Tennis Records';
   const url = '/records' + (new URLSearchParams(searchParams as any).toString() ? '?' + new URLSearchParams(searchParams as any).toString() : '');
 
   return {

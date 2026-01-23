@@ -165,7 +165,7 @@ export default function RoundsSection({
 
         // Update title to reflect applied filters (do not overwrite server SEO titles)
         try {
-          const newTitle = `${headerText} — TML`;
+          const newTitle = `${headerText} | Tennis Records`;
           const currentTitle = typeof document !== 'undefined' ? document.title || '' : '';
           const currentIsSiteSeo = typeof currentTitle === 'string' && /\| Tennis/.test(currentTitle);
           if (!currentIsSiteSeo && typeof document !== 'undefined') document.title = newTitle;

@@ -56,7 +56,7 @@ export default function RecordsFilteredClient({ record, sub, filters = {}, canon
     const description = generateRecordDescription(record, { ...activeSubTabsDefault, [record || '']: effectiveSub || activeSubTabsDefault[record || ''] }, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf);
 
     if (description) {
-      document.title = `${description} — TML`;
+      document.title = `${description} | Tennis Records`;
       if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') console.debug('[RecordsFilteredClient] set title', document.title);
     } else {
       // Skip setting a placeholder title (e.g. "Filters applied") to avoid briefly overwriting a correct title
