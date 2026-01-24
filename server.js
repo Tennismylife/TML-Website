@@ -336,15 +336,22 @@ function strongETag(buffer) {
 
       // Query parameters: player (substring, case-insensitive), year (YYYY), surface (case-insensitive)
       const qPlayer = (req.query.player || '').toString().trim().toLowerCase();
+      const qPlayerId = (req.query.player_id || '').toString().trim();
       const qYear = (req.query.year || '').toString().trim();
       const qSurface = (req.query.surface || '').toString().trim().toLowerCase();
 
       let filtered = records.filter((r) => {
-        if (qPlayer) {
+        // Support direct player id filtering (winner_id/loser_id) for production parity with Prisma API
+        if (qPlayerId) {
+          const wid = (r.winner_id || '').toString();
+          const lid = (r.loser_id || '').toString();
+          if (wid !== qPlayerId && lid !== qPlayerId) return false;
+        } else if (qPlayer) {
           const p1 = (r.player1 || '').toString().toLowerCase();
           const p2 = (r.player2 || '').toString().toLowerCase();
           if (!p1.includes(qPlayer) && !p2.includes(qPlayer)) return false;
         }
+
         if (qYear) {
           const date = (r.match_date || r.date || '').toString();
           const y = date ? new Date(date).getFullYear().toString() : '';
