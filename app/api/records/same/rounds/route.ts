@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
 
     // --- Caso 2: ≥2 filtri → query diretta su Match ---
     if (selectedSurfaces.length + selectedLevels.length + selectedRounds.length >= 2) {
-      const where: any = { status: true };
+      const where: any = {};
       if (selectedSurfaces.length === 1) where.surface = selectedSurfaces[0];
       if (selectedLevels.length === 1) where.tourney_level = selectedLevels[0];
       if (selectedRounds.length === 1) where.round = selectedRounds[0];
