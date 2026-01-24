@@ -367,20 +367,7 @@ function strongETag(buffer) {
       const filtered = results;
       const totalCount = count;
 
-      // Support ?all=1 (return all filtered results) or limit=0
-      const allFlag = String(req.query.all || '') === '1' || Number(req.query.limit || 1) === 0;
-      if (allFlag) {
-        const max = Number(process.env.MAX_MATCHES_JSON || 200000);
-        if (filtered.length > max) {
-          return res.status(413).json({ error: `Result too large (${filtered.length}). Narrow filters or use pagination.` });
-        }
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        return res.status(200).json({ count: filtered.length, results: filtered });
-      }
 
-      // Optional pagination (limit, offset)
-      const limit = Math.min(1000, Number(req.query.limit || 100)); // safety cap
-      const offset = Math.max(0, Number(req.query.offset || 0));
 
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
       return res.status(200).json({ count: totalCount ?? filtered.length, results: filtered });

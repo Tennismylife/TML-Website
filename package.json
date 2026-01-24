@@ -32,12 +32,12 @@
     "stop:detached": "node scripts/stop-detached.js",
     "start:standalone": "node scripts/start-standalone.js"
   },
-
   "dependencies": {
     "@langchain/ollama": "^0.2.4",
     "@prisma/client": "^6.19.0",
     "@tensorflow/tfjs": "^4.22.0",
     "archiver": "^5.3.2",
+    "compression": "^1.8.1",
     "critters": "^0.0.23",
     "csv-parse": "^5.4.8",
     "express": "^5.2.1",
