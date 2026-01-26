@@ -334,8 +334,8 @@ export async function generateSitemapXml(opts?: { excludePlayers?: boolean; excl
   // Defensive filter: ensure sections sitemap cannot contain players, tournaments, records or recordsranking
   const filtered = entries.filter(e => {
     if (opts?.excludePlayers && e.path.startsWith('/players')) return false;
-    // allow the top-level '/tournaments' listing even when excluding tournament details
-    if (opts?.excludeTournaments && e.path.startsWith('/tournaments/') ) return false;
+    // If excluding tournaments, remove both the top-level '/tournaments' page and any tournament-specific paths
+    if (opts?.excludeTournaments && (e.path === '/tournaments' || e.path.startsWith('/tournaments/'))) return false;
     if (opts?.excludeRecords && e.path.startsWith('/records')) return false;
     if (opts?.excludeRecordsranking && (e.path.startsWith('/recordsranking') || e.path.startsWith('/api/recordsranking'))) return false;
     return true;

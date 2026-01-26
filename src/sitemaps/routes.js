@@ -109,8 +109,8 @@ async function* getTournamentsForSitemap() {
 }
 
 async function* getSectionUrlsForSitemap() {
-  // Yield static pages first
-  const sections = ['/', '/records', '/ranking', '/players', '/tournaments', '/tennis-match-database', '/h2h', '/statistics', '/seasons', '/forecasts', '/rankingtables'];
+  // Yield static pages first (NOTE: tournaments and their editions are intentionally excluded here)
+  const sections = ['/', '/records', '/ranking', '/players', '/tennis-match-database', '/h2h', '/statistics', '/seasons', '/forecasts', '/rankingtables'];
   for (const s of sections) yield { loc: s, changefreq: 'weekly', priority: '0.50' };
 
   // static record pages
@@ -123,23 +123,8 @@ async function* getSectionUrlsForSitemap() {
   ];
   for (const r of staticRecordPages) yield { loc: r, changefreq: 'daily', priority: '1.00' };
 
+  // Tournament editions are intentionally excluded from the sections sitemap; they are provided by the tournaments sitemap generator.
 
-  // Tournament editions (from matches distinct tourney_id/year)
-  // We'll stream distinct pairs using raw SQL for efficiency
-  try {
-    const res = await prisma.$queryRaw`SELECT DISTINCT tourney_id, year, MAX(tourney_date) AS last_date FROM "Match" GROUP BY tourney_id, year ORDER BY tourney_id, year`;
-    for (const r of res) {
-      // map tourney_id to slug if possible
-      const mapping = await prisma.tournament.findUnique({ where: { id: Number(r.tourney_id) }, select: { slug: true } }).catch(() => null);
-      if (mapping && mapping.slug && r.year) {
-        const path = `/tournaments/${mapping.slug}/${r.year}`;
-        const lastmod = r.last_date ? new Date(r.last_date).toISOString().split('T')[0] : undefined;
-        yield { loc: path, changefreq: 'weekly', priority: '0.50', lastmod };
-      }
-    }
-  } catch (e) {
-    // ignore if query raw fails on some envs
-  }
 
   // Dynamic records pages (generateStaticParams) - best-effort
   try {
