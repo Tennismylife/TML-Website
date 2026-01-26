@@ -5,7 +5,7 @@ const fs = require('fs');
 async function main() {
   try {
     const jiti = require('jiti')(__filename);
-    const sitemapMod = jiti(path.join(__dirname, '..', 'lib', 'sitemap.ts'));
+    const sitemapMod = jiti(path.join(process.cwd(), 'lib', 'sitemap.ts'));
     if (!sitemapMod || typeof sitemapMod.generateSitemapXml !== 'function') {
       throw new Error('generateSitemapXml not found in lib/sitemap.ts');
     }

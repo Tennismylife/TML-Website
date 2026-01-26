@@ -6,20 +6,20 @@ export type SitemapEntry = {
   popularity?: number; // raw count proxy
 };
 
-export async function getSitemapEntries(): Promise<SitemapEntry[]> {
+export async function getSitemapEntries(opts?: { excludePlayers?: boolean; excludeTournaments?: boolean; excludeRecords?: boolean; excludeRecordsranking?: boolean }): Promise<SitemapEntry[]> {
   // --- STATIC ROUTES ---
   const staticRoutes = [
     '/',
     '/records',
     '/ranking',
-    '/players',
-    '/tournaments',
+    '/tennis-match-database',
     '/h2h',
     '/player-vs-player',
     '/statistics',
     '/seasons',
     '/forecasts',
     '/rankingtables',
+    '/tournaments',
 
     // --- RECORDS DAILY ---
     '/records/same/playeddaily',
@@ -52,128 +52,240 @@ export async function getSitemapEntries(): Promise<SitemapEntry[]> {
     '/records/h2h/countdaily',
   ];
 
-  const entries: SitemapEntry[] = staticRoutes.map(p => ({ path: p }));
+  let entries: SitemapEntry[] = staticRoutes.map(p => ({ path: p }));
+
+  // Optionally remove all /records static entries early when requested
+  if (opts?.excludeRecords) {
+    entries = entries.filter(e => !e.path.startsWith('/records'));
+  }
 
   // global latest match date (used for records pages lastmod)
   const globalMax = await prisma.match.aggregate({ _max: { tourney_date: true } });
   const globalMaxDate = globalMax._max.tourney_date ? new Date(globalMax._max.tourney_date).toISOString().split('T')[0] : undefined;
 
   // --- PLAYERS ---
-  const players = await prisma.player.findMany({ select: { id: true, slug: true } });
-  players.forEach(p => {
-    if (!p.slug) return;
-    entries.push({ path: `/players/${p.slug}` });
-  });
+  // Player profile pages are normally included here; they can be excluded when generating
+  // the sections sitemap by passing { excludePlayers: true } to getSitemapEntries.
+  if (!opts?.excludePlayers) {
+    const players = await prisma.player.findMany({ select: { id: true, slug: true } });
+    // Build set of slugs for canonical detection
+    const slugSet = new Set(players.filter(p => p.slug).map(p => String(p.slug).toLowerCase()));
+
+    // Aggregate popularity / lastmod per player (wins + losses) using groupBy
+    const playerIds = players.map(p => p.id).filter(Boolean);
+    const popularityMap: Record<string, { count: number; lastmod?: string }> = {};
+    if (playerIds.length) {
+      try {
+        // wins
+        const wins = await prisma.match.groupBy({ by: ['winner_id'], _count: { _all: true }, _max: { tourney_date: true }, where: { winner_id: { in: playerIds } } as any });
+        for (const w of wins) {
+          if (!w.winner_id) continue;
+          popularityMap[String(w.winner_id)] = popularityMap[String(w.winner_id)] || { count: 0 };
+          popularityMap[String(w.winner_id)].count += w._count?._all || 0;
+          if (w._max?.tourney_date) popularityMap[String(w.winner_id)].lastmod = (new Date(w._max.tourney_date)).toISOString().split('T')[0];
+        }
+        // losses
+        const losses = await prisma.match.groupBy({ by: ['loser_id'], _count: { _all: true }, _max: { tourney_date: true }, where: { loser_id: { in: playerIds } } as any });
+        for (const l of losses) {
+          if (!l.loser_id) continue;
+          popularityMap[String(l.loser_id)] = popularityMap[String(l.loser_id)] || { count: 0 };
+          popularityMap[String(l.loser_id)].count += l._count?._all || 0;
+          const ldate = l._max?.tourney_date ? (new Date(l._max.tourney_date)).toISOString().split('T')[0] : undefined;
+          if (ldate) {
+            const cur = popularityMap[String(l.loser_id)].lastmod;
+            if (!cur || new Date(ldate) > new Date(cur)) popularityMap[String(l.loser_id)].lastmod = ldate;
+          }
+        }
+      } catch (e) {
+        // ignore grouping errors
+      }
+    }
+
+    for (const p of players) {
+      if (!p.slug) continue;
+      const slug = String(p.slug).toLowerCase();
+      // Exclude anonymous or qualifier placeholder slugs
+      if (slug.startsWith('unknown-') || slug.startsWith('qualifier-')) continue;
+
+      // Try to normalize variant slugs to a base canonical slug present in DB
+      let canonical = slug;
+      try {
+        const { normalizePlayerSlugVariant } = await import('./utils');
+        const base = normalizePlayerSlugVariant(slug);
+        if (base && slugSet.has(base)) canonical = base;
+      } catch (e) {
+        // ignore
+      }
+
+      // Only include canonical profiles in sitemap to avoid duplicates
+      if (canonical !== slug) continue;
+
+      const pop = popularityMap[String(p.id)];
+      entries.push({ path: `/players/${slug}`, popularity: pop?.count, lastmod: pop?.lastmod });
+    }
+  }
 
   // --- TOURNAMENTS ---
-  const tournaments = await prisma.tournament.findMany({ select: { id: true, slug: true, endDate: true } });
-  const tournamentMap: Record<string, string> = {};
-  tournaments.forEach(t => {
-    if (!t.slug) return;
-    tournamentMap[String(t.id)] = t.slug;
-    entries.push({ path: `/tournaments/${t.slug}` });
-  });
+  // Tournaments are normally included here; they can be excluded when generating the
+  // sections sitemap by passing { excludeTournaments: true } to getSitemapEntries.
+  if (!opts?.excludeTournaments) {
+    const tournaments = await prisma.tournament.findMany({ select: { id: true, slug: true, endDate: true } });
+    const tournamentMap: Record<string, string> = {};
+    tournaments.forEach(t => {
+      if (!t.slug) return;
+      tournamentMap[String(t.id)] = t.slug;
+      entries.push({ path: `/tournaments/${t.slug}` });
+    });
+
+    // --- TOURNAMENT EDITIONS ---
+    const editions = await prisma.match.findMany({ select: { tourney_id: true, year: true }, distinct: ['tourney_id', 'year'] });
+    for (const e of editions) {
+      if (!e.tourney_id || !e.year) continue;
+      const sid = String(e.tourney_id);
+      if (!tournamentMap[sid]) continue;
+      const agg = await prisma.match.aggregate({
+        _count: { _all: true },
+        _max: { tourney_date: true },
+        where: { tourney_id: sid, year: e.year },
+      });
+      const lastmod = agg._max?.tourney_date ? new Date(agg._max.tourney_date).toISOString().split('T')[0] : undefined;
+      entries.push({ path: `/tournaments/${tournamentMap[sid]}/${e.year}`, popularity: agg._count?._all || 0, lastmod });
+    }
+
+    // --- COMBINE tournament-specific record pages ---
+    const tournamentRecordSegments = [
+      /* Count */
+      'count/titles',
+      'count/wins',
+      'count/played',
+      'count/entries',
+
+      /* Percentage */
+      'percentage/wins',
+      'percentage/rounds/R128',
+      'percentage/rounds/R64',
+      'percentage/rounds/R32',
+      'percentage/rounds/R16',
+      'percentage/rounds/QF',
+      'percentage/rounds/SF',
+      'percentage/rounds/F',
+
+      /* Timespan */
+      'timespan/rounds/Titles',
+      'timespan/rounds/R128',
+      'timespan/rounds/R64',
+      'timespan/rounds/R32',
+      'timespan/rounds/R16',
+      'timespan/rounds/QF',
+      'timespan/rounds/SF',
+      'timespan/rounds/F',
+
+      /* Rounds on entries */
+      'roundsonentries/rounds/Winner',
+      'roundsonentries/rounds/R32',
+      'roundsonentries/rounds/R16',
+      'roundsonentries/rounds/QF',
+      'roundsonentries/rounds/SF',
+      'roundsonentries/rounds/F',
+
+      /* Least */
+      'least/rounds/R32',
+      'least/rounds/R16',
+      'least/rounds/QF',
+      'least/rounds/SF',
+      'least/rounds/F',
+      'least/rounds/W',
+
+      /* Ages */
+      'ages/main/youngest',
+      'ages/main/oldest',
+      'ages/titles/youngest',
+      'ages/titles/oldest',
+      'ages/youngestrounds/R128',
+      'ages/youngestrounds/R64',
+      'ages/youngestrounds/R32',
+      'ages/youngestrounds/R16',
+      'ages/youngestrounds/QF',
+      'ages/youngestrounds/SF',
+      'ages/youngestrounds/F',
+      'ages/oldestrounds/R128',
+      'ages/oldestrounds/R64',
+      'ages/oldestrounds/R32',
+      'ages/oldestrounds/R16',
+      'ages/oldestrounds/QF',
+      'ages/oldestrounds/SF',
+      'ages/oldestrounds/F',
+    ];
+
+    tournaments.filter(t => !!t.slug).forEach(t => {
+      const basePath = `/tournaments/${t.slug}`;
+      entries.push({ path: `${basePath}/records` });
+      tournamentRecordSegments.forEach(seg => entries.push({ path: `${basePath}/records/${seg}` }));
+    });
+  }
 
   // --- TOURNAMENT EDITIONS ---
-  const editions = await prisma.match.findMany({ select: { tourney_id: true, year: true }, distinct: ['tourney_id', 'year'] });
-  for (const e of editions) {
-    if (!e.tourney_id || !e.year) continue;
-    const sid = String(e.tourney_id);
-    if (!tournamentMap[sid]) continue;
-    const agg = await prisma.match.aggregate({
-      _count: { _all: true },
-      _max: { tourney_date: true },
-      where: { tourney_id: sid, year: e.year },
-    });
-    const lastmod = agg._max?.tourney_date ? new Date(agg._max.tourney_date).toISOString().split('T')[0] : undefined;
-    entries.push({ path: `/tournaments/${tournamentMap[sid]}/${e.year}`, popularity: agg._count?._all || 0, lastmod });
-  }
+  // Tournament editions are excluded from the sections sitemap.
+  // Editions (per-year pages) are provided by the tournaments sitemap instead.
 
   // --- RECORDS DINAMICI ---
   let recordUrls: string[] = [];
-  try {
-    const mod = await import('../app/records/[...slug]/page');
-    if (mod && typeof mod.generateStaticParams === 'function') {
-      const params = await mod.generateStaticParams();
-      if (Array.isArray(params)) {
-        recordUrls = params.map((p: any) => (Array.isArray(p.slug) ? `/records/${p.slug.join('/')}` : `/records`)).filter(Boolean);
+  if (!opts?.excludeRecords) {
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      const possibleFiles = ['page.tsx', 'page.ts', 'page.js', 'page.jsx'];
+      const pageDir = path.join(process.cwd(), 'app', 'records', '[...slug]');
+      let found = false;
+      for (const f of possibleFiles) {
+        if (fs.existsSync(path.join(pageDir, f))) { found = true; break; }
       }
+      if (found) {
+        const mod = await import('../app/records/[...slug]/page');
+        if (mod && typeof mod.generateStaticParams === 'function') {
+          const params = await mod.generateStaticParams();
+          if (Array.isArray(params)) {
+            recordUrls = params.map((p: any) => (Array.isArray(p.slug) ? `/records/${p.slug.join('/')}` : `/records`)).filter(Boolean);
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Could not load dynamic record URLs:', e);
     }
-  } catch (e) {
-    console.warn('Could not load dynamic record URLs:', e);
+    recordUrls.forEach(r => entries.push({ path: r, lastmod: globalMaxDate, popularity: undefined }));
   }
-  recordUrls.forEach(r => entries.push({ path: r, lastmod: globalMaxDate, popularity: undefined }));
 
-  // --- COMBINE tournament-specific record pages ---
-  const tournamentRecordSegments = [
-    /* Count */
-    'count/titles',
-    'count/wins',
-    'count/played',
-    'count/entries',
+  // --- API: recordsranking (include API endpoints under app/api/recordsranking) ---
+  if (!opts?.excludeRecordsranking) {
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      const apiBase = path.join(process.cwd(), 'app', 'api', 'recordsranking');
+      function walk(dir: string, out: string[] = []) {
+        const items = fs.readdirSync(dir, { withFileTypes: true });
+        for (const item of items) {
+          const p = path.join(dir, item.name);
+          if (item.isDirectory()) walk(p, out);
+          else if (/^route\.(t|j)sx?$/.test(item.name)) out.push(p);
+        }
+        return out;
+      }
+      if (fs.existsSync(apiBase)) {
+        const routeFiles = walk(apiBase);
+        routeFiles.forEach(f => {
+          const rel = path.relative(apiBase, path.dirname(f)).split(path.sep).filter(Boolean);
+          const apiPath = '/api/recordsranking' + (rel.length ? '/' + rel.join('/') : '');
+          entries.push({ path: apiPath });
+        });
+      }
+    } catch (e) {
+      console.warn('Could not gather API recordsranking routes:', e);
+    }
+  }
 
-    /* Percentage */
-    'percentage/wins',
-    'percentage/rounds/R128',
-    'percentage/rounds/R64',
-    'percentage/rounds/R32',
-    'percentage/rounds/R16',
-    'percentage/rounds/QF',
-    'percentage/rounds/SF',
-    'percentage/rounds/F',
-
-    /* Timespan */
-    'timespan/rounds/Titles',
-    'timespan/rounds/R128',
-    'timespan/rounds/R64',
-    'timespan/rounds/R32',
-    'timespan/rounds/R16',
-    'timespan/rounds/QF',
-    'timespan/rounds/SF',
-    'timespan/rounds/F',
-
-    /* Rounds on entries */
-    'roundsonentries/rounds/Winner',
-    'roundsonentries/rounds/R32',
-    'roundsonentries/rounds/R16',
-    'roundsonentries/rounds/QF',
-    'roundsonentries/rounds/SF',
-    'roundsonentries/rounds/F',
-
-    /* Least */
-    'least/rounds/R32',
-    'least/rounds/R16',
-    'least/rounds/QF',
-    'least/rounds/SF',
-    'least/rounds/F',
-    'least/rounds/W',
-
-    /* Ages */
-    'ages/main/youngest',
-    'ages/main/oldest',
-    'ages/titles/youngest',
-    'ages/titles/oldest',
-    'ages/youngestrounds/R128',
-    'ages/youngestrounds/R64',
-    'ages/youngestrounds/R32',
-    'ages/youngestrounds/R16',
-    'ages/youngestrounds/QF',
-    'ages/youngestrounds/SF',
-    'ages/youngestrounds/F',
-    'ages/oldestrounds/R128',
-    'ages/oldestrounds/R64',
-    'ages/oldestrounds/R32',
-    'ages/oldestrounds/R16',
-    'ages/oldestrounds/QF',
-    'ages/oldestrounds/SF',
-    'ages/oldestrounds/F',
-  ];
-
-  tournaments.filter(t => !!t.slug).forEach(t => {
-    const basePath = `/tournaments/${t.slug}`;
-    entries.push({ path: `${basePath}/records` });
-    tournamentRecordSegments.forEach(seg => entries.push({ path: `${basePath}/records/${seg}` }));
-  });
+  // --- TOURNAMENT RECORDS (excluded) ---
+  // Tournament record pages/segments are intentionally omitted from the sections sitemap;
+  // they are provided by the tournaments sitemap.
 
   // --- DEDUPLICATE: keep the most complete entry per path ---
   const map: Record<string, SitemapEntry> = {};
@@ -200,6 +312,8 @@ export async function getSitemapUrls() {
 function computeChangefreq(path: string, opts?: { lastmod?: string }) {
   if (path.includes('/records')) return 'daily';
   if (path === '/') return 'daily';
+  // players should be considered frequently updated
+  if (/^\/players(?:\/|$)/.test(path)) return 'daily';
   if (opts?.lastmod) {
     const days = (Date.now() - new Date(opts.lastmod).getTime()) / (1000 * 60 * 60 * 24);
     if (days <= 7) return 'daily';
@@ -213,12 +327,22 @@ function computeChangefreq(path: string, opts?: { lastmod?: string }) {
   return 'monthly';
 } 
 
-export async function generateSitemapXml() {
+export async function generateSitemapXml(opts?: { excludePlayers?: boolean; excludeTournaments?: boolean; excludeRecords?: boolean; excludeRecordsranking?: boolean }) {
   const base = process.env.SITE_URL || 'https://stats.tennismylife.org';
-  const entries = await getSitemapEntries();
+  const entries = await getSitemapEntries(opts);
+
+  // Defensive filter: ensure sections sitemap cannot contain players, tournaments, records or recordsranking
+  const filtered = entries.filter(e => {
+    if (opts?.excludePlayers && e.path.startsWith('/players')) return false;
+    // allow the top-level '/tournaments' listing even when excluding tournament details
+    if (opts?.excludeTournaments && e.path.startsWith('/tournaments/') ) return false;
+    if (opts?.excludeRecords && e.path.startsWith('/records')) return false;
+    if (opts?.excludeRecordsranking && (e.path.startsWith('/recordsranking') || e.path.startsWith('/api/recordsranking'))) return false;
+    return true;
+  });
 
   // --- GENERATE XML (simple priorities) ---
-  const urls = entries
+  const urls = filtered
     .map(e => {
       const lastmodTag = e.lastmod ? `    <lastmod>${e.lastmod}</lastmod>\n` : '';
       const changefreq = computeChangefreq(e.path, { lastmod: e.lastmod });

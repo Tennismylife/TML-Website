@@ -6,8 +6,8 @@ describe('robots.txt', () => {
   it('exists and references sitemap', () => {
     const file = path.resolve(__dirname, '..', 'public', 'robots.txt');
     const content = fs.readFileSync(file, 'utf8');
-    // accept absolute or relative sitemap URL
-    expect(content).toMatch(/Sitemap:\s*(https?:\/\/[^\s]+\/sitemap.xml|\/sitemap.xml)/i);
+    // accept absolute or relative sitemap XML or sitemap index
+    expect(content).toMatch(/Sitemap:\s*(https?:\/\/[^"]+\/(?:sitemap_index\.xml|sitemap\.xml)|\/(?:sitemap_index\.xml|sitemap\.xml))/i);
     expect(content).toMatch(/User-agent:\s*\*/i);
   });
 });

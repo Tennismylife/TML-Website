@@ -400,6 +400,23 @@ export const getTourneyLink = (tourneyId?: string) => {
   };
 
 /**
+ * Normalize a player slug that looks like a variant (e.g. "martin-damm-D214")
+ * by stripping trailing disambiguator segments. Returns the base slug or null
+ * if no clear normalization candidate is found.
+ */
+export function normalizePlayerSlugVariant(slug?: string): string | null {
+  if (!slug) return null;
+  const s = String(slug).toLowerCase().trim();
+  // Pattern: name-D123 (single letter followed by digits), common in some exports
+  const m1 = s.match(/^(.+?)-[A-Za-z]\d+$/i);
+  if (m1) return m1[1];
+  // Pattern: name-XYZ or name-abc123 (short suffix up to 6 chars)
+  const m2 = s.match(/^(.+?)-[A-Za-z0-9]{1,6}$/i);
+  if (m2) return m2[1];
+  return null;
+}
+
+/**
  * Build a canonical player href.
  * Prefer slug when available; fallback to ID (encoded) to preserve legacy links.
  * Accepts either an object with `{ slug, id }` or a plain id/slug string.

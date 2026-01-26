@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://stats.tennismylife.org/sitemap.xml
+Sitemap: https://stats.tennismylife.org/sitemap_index.xml

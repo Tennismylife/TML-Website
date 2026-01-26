@@ -41,10 +41,32 @@ export async function GET(request: NextRequest) {
     ]);
 
     const playersMap: Record<string, string> = {};
+    // Build a set of existing canonical slugs (lowercase) so we can detect
+    // when a variant like 'martin-damm-D214' should map to base 'martin-damm'.
+    const slugSet = new Set(players.filter(p => p.slug).map(p => String(p.slug).toLowerCase()));
     for (const p of players) {
       if (!p.slug) continue;
+      const slugLower = String(p.slug).toLowerCase();
+
+      // map numeric id -> canonical slug
       playersMap[String(p.id)] = p.slug;
+
+      // default: exact slug uppercased -> canonical slug
       playersMap[String(p.slug).toUpperCase()] = p.slug;
+
+      // If this slug looks like a variant (has a trailing disambiguator) and the
+      // base slug exists in the DB, map the variant uppercased to the base
+      // canonical slug, so lookups using the variant will resolve to the base.
+      try {
+        const { normalizePlayerSlugVariant } = await import('@/lib/utils');
+        const base = normalizePlayerSlugVariant(slugLower);
+        if (base && slugSet.has(base)) {
+          // Map variant -> base canonical
+          playersMap[String(p.slug).toUpperCase()] = base;
+        }
+      } catch (err) {
+        // ignore utils import errors (should not happen)
+      }
     }
 
     const tournamentsMap: Record<string, string> = {};

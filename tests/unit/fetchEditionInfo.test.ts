@@ -17,7 +17,7 @@ vi.mock('@/lib/tournament', () => ({
   resolveCanonicalTourneyId: vi.fn(),
 }));
 
-import { fetchEditionInfo } from '../../../app/tournaments/[id]/[year]/layout';
+import { fetchEditionInfo } from '../../app/tournaments/[id]/[year]/layout';
 import { prisma } from '@/lib/prisma';
 import { resolveTourneyIds, resolveCanonicalTourneyId } from '@/lib/tournament';
 

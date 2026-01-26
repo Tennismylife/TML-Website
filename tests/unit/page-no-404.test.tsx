@@ -3,17 +3,19 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock the layout helpers and the client component used by Page
-vi.mock('../../../app/tournaments/[id]/[year]/layout', () => ({
+vi.mock('../../app/tournaments/[id]/[year]/layout', () => ({
   fetchEditionInfo: vi.fn(),
   buildTournamentJsonLdFromDb: vi.fn(),
 }));
-vi.mock('../../../app/tournaments/[id]/[year]/EditionClient', () => ({
+vi.mock('../../app/tournaments/[id]/[year]/EditionClient', () => ({
   __esModule: true,
   default: (props: any) => React.createElement('div', null, `Client:${props?.params?.id || ''}:${props?.params?.year || ''}`),
 }));
 
-import Page from '../../../app/tournaments/[id]/[year]/page';
-import { fetchEditionInfo, buildTournamentJsonLdFromDb } from '../../../app/tournaments/[id]/[year]/layout';
+import Page from '../../app/tournaments/[id]/[year]/page';
+import { fetchEditionInfo, buildTournamentJsonLdFromDb } from '../../app/tournaments/[id]/[year]/layout';
+
+
 
 const mockedFetch = fetchEditionInfo as unknown as any;
 const mockedBuildJson = buildTournamentJsonLdFromDb as unknown as any;
@@ -45,7 +47,7 @@ describe('Tournament page – no ghost 404', () => {
 
   it('renders normal page when edition exists', async () => {
     mockedFetch.mockResolvedValue({ tourneyRow: { slug: 'australian-open', name: 'Australian Open' }, tourneyIds: ['AO'], hasMatches: true });
-    mockedBuildJson.mockResolvedValue('<script type="application/ld+json">{}'</);
+    mockedBuildJson.mockResolvedValue('<script type="application/ld+json">{}</script>');
 
     const markup = renderToStaticMarkup(await Page({ params: { id: 'australian-open', year: '1971' } } as any));
 

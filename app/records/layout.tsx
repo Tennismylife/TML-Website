@@ -1,17 +1,24 @@
 import type { Metadata } from 'next';
 import React from 'react';
+import { metadataBase } from '@/lib/site';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-const url = `${siteUrl}/records`;
+const url = new URL('/records', metadataBase).toString();
+const title = 'Records | Tennis Records';
+const description = 'Browse tennis records: wins, streaks, ages and more.';
 
 export const metadata: Metadata = {
-  title: 'Records — Tennismylife',
-  description: 'Browse tennis records: wins, streaks, ages and more.',
+  title,
+  description,
   openGraph: {
-    title: 'Records — Tennismylife',
-    description: 'Browse tennis records: wins, streaks, ages and more.',
+    title,
+    description,
     url,
     type: 'website',
+    siteName: 'TML',
+  },
+  twitter: {
+    title,
+    description,
   },
   alternates: { canonical: url },
 };

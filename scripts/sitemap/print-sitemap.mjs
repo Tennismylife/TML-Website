@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 const jiti = require('jiti')(__filename);
+const path = require('path');
 (async () => {
   try {
-    const sitemap = jiti('../lib/sitemap.ts');
+    const sitemap = jiti(path.join(process.cwd(), 'lib', 'sitemap.ts'));
     const { generateSitemapXml, getSitemapEntries } = sitemap;
     const xml = await generateSitemapXml();
     console.log('--- GENERATED SITEMAP (truncated to first 2000 chars) ---\n');

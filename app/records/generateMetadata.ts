@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { generateRecordDescription } from '../../lib/generateRecordDescription';
+import { metadataBase } from '@/lib/site';
 
 export async function generateMetadata({ searchParams }: { searchParams: Record<string, any> }): Promise<Metadata> {
   const selectedRecord = searchParams?.record ?? null;
@@ -28,7 +29,8 @@ export async function generateMetadata({ searchParams }: { searchParams: Record<
 
   const description = generateRecordDescription(selectedRecord, activeSubTabs, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf);
   const title = description ? `${description} | Tennis Records` : 'Records | Tennis Records';
-  const url = '/records' + (new URLSearchParams(searchParams as any).toString() ? '?' + new URLSearchParams(searchParams as any).toString() : '');
+  const path = '/records' + (new URLSearchParams(searchParams as any).toString() ? '?' + new URLSearchParams(searchParams as any).toString() : '');
+  const url = new URL(path, metadataBase).toString();
 
   return {
     title,

@@ -442,6 +442,21 @@ function strongETag(buffer) {
     }
   });
 
+  // Sitemaps endpoints (if available)
+  try {
+    server.use('/sitemaps', require('./src/sitemaps/routes.js'));
+  } catch (e) {
+    console.warn('Sitemaps router not available', e?.message || e);
+  }
+
+  // robots.txt exposes canonical sitemap index
+  server.get('/robots.txt', (req, res) => {
+    const siteRoot = (process.env.SITE_ROOT || 'https://stats.tennismylife.org').replace(/\/$/, '/') ;
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    // Expose canonical sitemap index at root
+    res.send(`User-agent: *\nAllow: /\nSitemap: ${siteRoot}sitemap_index.xml\n`);
+  });
+
   /* 7) Next.js fallback */
   server.all(/.*/, (req, res) => handle(req, res));
 
