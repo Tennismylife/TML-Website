@@ -206,6 +206,11 @@ tr:hover td {
   transform: translateY(-0.25rem);
 }
 
+/* Make badge text black (overrides global white) */
+.badge-text-black {
+  color: #000000 !important;
+}
+
 /* ----------------------
    WLStatTable Progress Bars
 ----------------------- */
@@ -239,5 +244,10 @@ tr:hover td {
 .table-row-text {
   color: inherit !important; /* usa il colore inline passato da React */
   text-shadow: none;
+}
+
+/* Force white for bar labels when necessary */
+.bar-label--white {
+  fill: #ffffff !important;
 }
 

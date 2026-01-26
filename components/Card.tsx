@@ -111,7 +111,8 @@ export default function Card({
         (() => {
           const bg = badge.bg ?? "#ec4899";
           const isTransparent = bg === "transparent" || bg === "none";
-          const textColor = isTransparent ? (badge.textColor ?? "#f472b6") : "#FFFFFF";
+          // Use explicit badge.textColor if provided; otherwise default to pink for transparent badges and black for solid badges
+          const textColor = isTransparent ? (badge.textColor ?? "#f472b6") : (badge.textColor ?? "#000000");
 
           // Street style: artistic badge (supports live indicator)
           if (badge.style === 'street') {
@@ -126,9 +127,9 @@ export default function Card({
                     padding: '8px 12px',
                     borderRadius: '8px',
                     transform: 'rotate(-1deg) skew(-2deg)',
-                    color: isLive ? '#ffffff' : '#ff77b2',
-                    WebkitTextFillColor: isLive ? '#ffffff' : '#ff77b2',
-                    WebkitTextStroke: isLive ? '0 rgba(0,0,0,0.0)' : '1px rgba(0,0,0,0.6)',
+                    color: isLive ? '#ffffff' : (badge.textColor ?? '#000000'),
+                    WebkitTextFillColor: isLive ? '#ffffff' : (badge.textColor ?? '#000000'),
+                    WebkitTextStroke: isLive ? '0 rgba(0,0,0,0.0)' : '0 rgba(0,0,0,0.0)',
                     textShadow: isLive ? '0 4px 12px rgba(0,0,0,0.65)' : '0 6px 18px rgba(0,0,0,0.85), 0 1px 0 rgba(255,255,255,0.04)',
                     fontSize: '1.15rem',
                     letterSpacing: '0.2px',
