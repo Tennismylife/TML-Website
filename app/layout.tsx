@@ -16,8 +16,7 @@ const montserrat = Montserrat({
 })
 
 
-const siteTitle = 'TennisMyLife – Complete Match Database & Stats'
-const siteDescription = 'TML aggregates tennis matches, rankings, player profiles and records. Explore player statistics, head-to-heads and historical data. Find the GOAT'
+const siteDescription = 'TML aggregates tennis matches, rankings, player profiles and records.'
 
 // Resolve metadataBase to a canonical origin for Open Graph/Twitter images
 // Prefer explicit env var; fallback to production origin to ensure no localhost is used in metadata.
@@ -26,33 +25,12 @@ const METADATA_BASE_URL = new URL(METADATA_BASE);
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://stats.tennismylife.org'),
-  title: siteTitle,
-  description: siteDescription,
-  openGraph: {
-    title: siteTitle,
-    description: siteDescription,
-    url: new URL('/', METADATA_BASE_URL).toString(),
-    type: 'website',
-    images: [
-      {
-        url: new URL('/og/site-preview.png', METADATA_BASE_URL).toString(),
-        alt: 'Records — TennisMyLife',
-        width: 1200,
-        height: 630,
-        type: 'image/png',
-      },
-    ],
+  title: {
+    default: 'TML — Tennis Rankings, Matches & Records',
+    template: '%s — TML',
   },
-  twitter: {
-    card: 'summary_large_image',
-    images: [new URL('/og/site-preview.png', METADATA_BASE_URL).toString()],
-    site: '@TennisMyLife68',
-    creator: '@TennisMyLife68',
-  },
-  alternates: {
-    canonical: new URL('/', METADATA_BASE_URL).toString(),
-  },
-} 
+  description: 'Tennis data, rankings, stats and records.',
+}; 
 
 export default function RootLayout({ children }: { children: ReactNode }) {
 

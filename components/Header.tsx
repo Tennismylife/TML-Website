@@ -53,7 +53,7 @@ export default function Header() {
         </Link>
 
         {/* NAV */}
-        <nav ref={navRef} className="flex flex-wrap gap-4">
+        <nav ref={navRef} aria-label="Primary" className="flex flex-wrap gap-4">
           <Link href="/" className={linkClass("/")}>Home</Link>
           <Link href="/tournaments" className={linkClass("/tournaments")}>Tournaments</Link>
           <Link href="/seasons" className={linkClass("/seasons")}>Seasons</Link>

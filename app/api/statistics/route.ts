@@ -525,7 +525,17 @@ export async function GET(request: NextRequest) {
       })
       .sort((a, b) => b.total - a.total);
 
-    return NextResponse.json(sortedStats);
+    // Honor optional 'top' query parameter to allow clients to request only the first N entries
+    const topParam = url.searchParams.get('top');
+    let finalStats = sortedStats;
+    if (topParam !== null) {
+      const topN = Number.parseInt(topParam, 10);
+      if (!Number.isNaN(topN) && topN > 0) {
+        finalStats = sortedStats.slice(0, topN);
+      }
+    }
+
+    return NextResponse.json(finalStats);
   } catch (error) {
     console.error('Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

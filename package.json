@@ -24,6 +24,7 @@
     "optimize-images": "node scripts/optimize-images.js",
     "generate:avif": "node scripts/generate-avif.js",
     "generate-og": "node scripts/generate-og.js",
+    "generate:statistics-sitemap": "node scripts/generate-statistics-sitemap.js",
     "refresh-mvs": "node ./scripts/refresh-mvs-listener.js --once",
     "start-mvs-listener": "node ./scripts/refresh-mvs-listener.js",
     "test:match-visibility": "node ./tests/test_match_visibility.js",
