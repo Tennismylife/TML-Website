@@ -8,12 +8,13 @@ import { metadataBase } from '../../lib/site';
 import { generateRecordDescription } from '../../lib/generateRecordDescription';
 import type { Metadata } from 'next';
 
+const ogImage = new URL('/og/site-preview.png', metadataBase).toString();
+
 export const metadata: Metadata = {
   title: {
     absolute: 'Tennis Records – TennisMyLife',
   },
   description: 'Browse tennis records: wins, streaks, ages and more.',
-  const ogImage = new URL('/og/site-preview.png', metadataBase).toString();
   openGraph: {
     title: 'Tennis Records – TennisMyLife',
     description: 'Browse tennis records: wins, streaks, ages and more.',
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
   twitter: {
     title: 'Tennis Records – TennisMyLife',
     description: 'Browse tennis records: wins, streaks, ages and more.',
-    images: ['/og/site-preview.png'],
+    images: [ogImage],
   },
   alternates: { canonical: 'https://stats.tennismylife.org/records' },
 };

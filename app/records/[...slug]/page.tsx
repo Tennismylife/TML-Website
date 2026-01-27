@@ -244,7 +244,7 @@ export async function generateMetadata(
     twitter: {
       title: `${desc || record || 'Records'} | Tennis Records`,
       description: desc || 'TML records and statistics',
-      images: ['/og/site-preview.png'],
+      images: [new URL('/og/site-preview.png', metadataBase).toString()],
     },
     alternates: { canonical: canonicalFull },
     robots: { index: true, follow: true },
