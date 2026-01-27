@@ -237,7 +237,7 @@ export async function generateMetadata(
     openGraph: {
       title: `${desc || record || 'Records'} | Tennis Records`,
       description: desc || 'TML records and statistics',
-      images: ['/og/site-preview.png'],
+      images: [new URL('/og/site-preview.png', metadataBase).toString()],
       url: canonicalFull,
       siteName: 'TennisMyLife',
     },

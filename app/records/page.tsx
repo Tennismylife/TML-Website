@@ -13,10 +13,11 @@ export const metadata: Metadata = {
     absolute: 'Tennis Records – TennisMyLife',
   },
   description: 'Browse tennis records: wins, streaks, ages and more.',
+  const ogImage = new URL('/og/site-preview.png', metadataBase).toString();
   openGraph: {
     title: 'Tennis Records – TennisMyLife',
     description: 'Browse tennis records: wins, streaks, ages and more.',
-    images: ['/og/site-preview.png'],
+    images: [ogImage],
     url: 'https://stats.tennismylife.org/records',
     siteName: 'TennisMyLife',
   },

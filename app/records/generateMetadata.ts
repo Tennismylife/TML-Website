@@ -32,6 +32,8 @@ export async function generateMetadata({ searchParams }: { searchParams: Record<
   const path = '/records' + (new URLSearchParams(searchParams as any).toString() ? '?' + new URLSearchParams(searchParams as any).toString() : '');
   const url = new URL(path, metadataBase).toString();
 
+  const ogImage = new URL('/og/site-preview.png', metadataBase).toString();
+
   return {
     title: {
       absolute: title,
@@ -42,10 +44,12 @@ export async function generateMetadata({ searchParams }: { searchParams: Record<
       description,
       url,
       siteName: 'TennisMyLife',
+      images: [ogImage],
     },
     twitter: {
       title,
       description,
+      images: [ogImage],
     },
   };
 }
