@@ -6,6 +6,27 @@ import RecordsFilteredServer from './RecordsFiltered.server';
 import RecordsOverviewTree from './RecordsOverviewTree';
 import { metadataBase } from '../../lib/site';
 import { generateRecordDescription } from '../../lib/generateRecordDescription';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: {
+    absolute: 'Tennis Records – TennisMyLife',
+  },
+  description: 'Browse tennis records: wins, streaks, ages and more.',
+  openGraph: {
+    title: 'Tennis Records – TennisMyLife',
+    description: 'Browse tennis records: wins, streaks, ages and more.',
+    images: ['/og/site-preview.png'],
+    url: 'https://stats.tennismylife.org/records',
+    siteName: 'TML',
+  },
+  twitter: {
+    title: 'Tennis Records – TennisMyLife',
+    description: 'Browse tennis records: wins, streaks, ages and more.',
+    images: ['/og/site-preview.png'],
+  },
+  alternates: { canonical: 'https://stats.tennismylife.org/records' },
+};
 
 // Server-rendered Records landing page.
 // If the request is to `/records` with no query params, perform a server-side redirect
