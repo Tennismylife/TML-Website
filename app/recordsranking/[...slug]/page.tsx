@@ -74,10 +74,10 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
       break;
     case 'mostpoints': title = (sub === 'endoftheseason' || (sp.subtab as string) === 'EndOfTheSeason') ? 'Most ATP Points at the End of The Season | ATP Ranking Records' : 'Most ATP Points | ATP Ranking Records'; break;
     case 'diffpoints': title = (sub === 'endoftheseason' || (sp.subtab as string) === 'EndOfTheSeason') ? 'Maximum Difference Between No. 1 and No. 2 at the End of The Season | ATP Ranking Records' : 'Maximum Difference Between No. 1 and No. 2 | ATP Ranking Records'; break; 
-    default: title = 'Records Ranking — TML';
+    default: title = 'Records Ranking - TennisMyLife';
   }
 
-  return { title };
+  return { title: { absolute: title } };
 }
 
 export default async function RecordsRankingSlugPage({

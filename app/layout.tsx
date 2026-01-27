@@ -26,8 +26,8 @@ const METADATA_BASE_URL = new URL(METADATA_BASE);
 export const metadata: Metadata = {
   metadataBase: new URL('https://stats.tennismylife.org'),
   title: {
-    default: 'TML — Tennis Rankings, Matches & Records',
-    template: '%s — TML',
+    default: 'Tennis Rankings, Matches & Records - TennisMyLife',
+    template: '%s - TennisMyLife',
   },
   description: 'Tennis data, rankings, stats and records.',
 }; 
@@ -67,7 +67,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               '@context': 'https://schema.org',
               '@type': 'WebSite',
               url: 'https://stats.tennismylife.org',
-              name: 'TML — Tennis Rankings, Matches & Records',
+              name: 'TennisMyLife — Tennis Rankings, Matches & Records',
               potentialAction: {
                 '@type': 'SearchAction',
                 target: 'https://stats.tennismylife.org/search?q={search_term_string}',

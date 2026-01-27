@@ -239,7 +239,7 @@ export async function generateMetadata(
       description: desc || 'TML records and statistics',
       images: ['/og/site-preview.png'],
       url: canonicalFull,
-      siteName: 'TML',
+      siteName: 'TennisMyLife',
     },
     twitter: {
       title: `${desc || record || 'Records'} | Tennis Records`,

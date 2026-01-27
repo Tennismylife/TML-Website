@@ -2,10 +2,10 @@ import type { Metadata } from 'next';
 import React from 'react';
 
 export const metadata: Metadata = {
-  title: 'Forecasts — TML',
+  title: { absolute: 'Forecasts - TennisMyLife' },
   description: 'Match and tournament forecasts and predictions.',
   openGraph: {
-    title: 'Forecasts — TML',
+    title: 'Forecasts - TennisMyLife',
     description: 'Match and tournament forecasts and predictions.',
     url: '/forecasts',
     type: 'website',

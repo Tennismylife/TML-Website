@@ -41,7 +41,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Record<
       title,
       description,
       url,
-      siteName: 'TML',
+      siteName: 'TennisMyLife',
     },
     twitter: {
       title,

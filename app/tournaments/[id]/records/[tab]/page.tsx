@@ -58,7 +58,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     const siteTitle = `${displayFromParam} Records by Round | Tennis Records`;
     return {
       title: siteTitle,
-      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Rounds`, width: 1200, height: 630, type: 'image/png' }] },
+      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Rounds`, width: 1200, height: 630, type: 'image/png' }] },
       twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
       alternates: { canonical: ogUrlFromParam },
     };
@@ -69,7 +69,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     const siteTitle = `${displayFromParam} Open Era Records | Tennis My Life`;
     return {
       title: siteTitle,
-      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Counts`, width: 1200, height: 630, type: 'image/png' }] },
+      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Counts`, width: 1200, height: 630, type: 'image/png' }] },
       twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
       alternates: { canonical: ogUrlFromParam },
     };
@@ -80,7 +80,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     const siteTitle = `${displayFromParam} Round Efficiency by Entries | Tennis Records`;
     return {
       title: siteTitle,
-      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Round Efficiency`, width: 1200, height: 630, type: 'image/png' }] },
+      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Round Efficiency`, width: 1200, height: 630, type: 'image/png' }] },
       twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
       alternates: { canonical: ogUrlFromParam },
     };
@@ -91,7 +91,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     const siteTitle = `${displayFromParam} Least Games Lost to Reach a Round | Tennis Records`;
     return {
       title: siteTitle,
-      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Least Games`, width: 1200, height: 630, type: 'image/png' }] },
+      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Least Games`, width: 1200, height: 630, type: 'image/png' }] },
       twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
       alternates: { canonical: ogUrlFromParam },
     };
@@ -102,7 +102,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     const siteTitle = `${displayFromParam} Average Age Records | Tennis Statistics`;
     return {
       title: siteTitle,
-      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Average Age`, width: 1200, height: 630, type: 'image/png' }] },
+      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Average Age`, width: 1200, height: 630, type: 'image/png' }] },
       twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
       alternates: { canonical: ogUrlFromParam },
     };
@@ -113,7 +113,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     const siteTitle = `${displayFromParam} Timespan Records | Tennis My Life`;
     return {
       title: siteTitle,
-      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Timespan`, width: 1200, height: 630, type: 'image/png' }] },
+      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Rounds`, width: 1200, height: 630, type: 'image/png' }] },
       twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
       alternates: { canonical: ogUrlFromParam },
     };
@@ -122,7 +122,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   // Return deterministic metadata based on the path (fast and reliable)
   const baseMeta: Metadata = {
     title: titleFromParam,
-    openGraph: { title: titleFromParam, url: ogUrlFromParam, siteName: 'TML', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - ${typeLabelFromParam}`, width: 1200, height: 630, type: 'image/png' }] },
+    openGraph: { title: titleFromParam, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - ${typeLabelFromParam}`, width: 1200, height: 630, type: 'image/png' }] },
     twitter: { card: 'summary_large_image', title: titleFromParam, images: [ogImageFromParam] },
     alternates: { canonical: ogUrlFromParam },
   };

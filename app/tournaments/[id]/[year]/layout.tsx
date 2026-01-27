@@ -326,10 +326,10 @@ export async function generateMetadata({ params }: { params: { id: string; year:
     const ogUrl = `${site}/tournaments/${slug}/${year}`;
 
     return {
-      title: `${display} | Tournament Stats, History, Draws, Match Results & Winners | TennisMyLife`,
+      title: { absolute: `${display} | Tournament Stats, History, Draws, Match Results & Winners - TennisMyLife` },
       description: DESCRIPTION,
       alternates: { canonical: ogUrl },
-      openGraph: { url: ogUrl, title: `${display} | Tournament — TML`, description: DESCRIPTION },
+      openGraph: { url: ogUrl, title: `${display} | Tournament - TennisMyLife`, description: DESCRIPTION },
     };
   } catch (err) {
     const isHttpFallback = !!(err && typeof err === 'object' && 'digest' in err && String((err as any).digest).startsWith('NEXT_HTTP_ERROR_FALLBACK'));

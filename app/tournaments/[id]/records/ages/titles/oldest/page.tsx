@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: any) {
   const ogImage = `${site}/og/site-preview.png`;
   return {
     title,
-    openGraph: { title, url: ogUrl, siteName: 'TML', images: [{ url: ogImage, alt: `${tournamentName} - Oldest Title Winners`, width: 1200, height: 630, type: 'image/png' }] },
+    openGraph: { title, url: ogUrl, siteName: 'TennisMyLife', images: [{ url: ogImage, alt: `${tournamentName} - Oldest Title Winners`, width: 1200, height: 630, type: 'image/png' }] },
     twitter: { card: 'summary_large_image', title, images: [ogImage] },
     alternates: { canonical: ogUrl },
   };

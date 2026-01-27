@@ -2,10 +2,10 @@ import type { Metadata } from 'next';
 import React from 'react';
 
 export const metadata: Metadata = {
-  title: 'Player vs Player — TML',
+  title: { absolute: 'Player vs Player - TennisMyLife' },
   description: 'Compare two players head-to-head and stats.',
   openGraph: {
-    title: 'Player vs Player — TML',
+    title: 'Player vs Player - TennisMyLife',
     description: 'Compare two players head-to-head and stats.',
     url: '/player-vs-player',
     type: 'website',

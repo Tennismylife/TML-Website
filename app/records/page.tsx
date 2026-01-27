@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     description: 'Browse tennis records: wins, streaks, ages and more.',
     images: ['/og/site-preview.png'],
     url: 'https://stats.tennismylife.org/records',
-    siteName: 'TML',
+    siteName: 'TennisMyLife',
   },
   twitter: {
     title: 'Tennis Records – TennisMyLife',

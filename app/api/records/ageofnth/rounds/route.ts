@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     const selectedLevels = url.searchParams.getAll('level');
 
     // --- Filtro base ---
-    const where: any = { status: true };
+    const where: any = {};
     if (selectedSurfaces.length > 0) where.surface = { in: selectedSurfaces };
     if (selectedRounds.length > 0) where.round = { in: selectedRounds };
     if (selectedLevels.length > 0) where.tourney_level = { in: selectedLevels };

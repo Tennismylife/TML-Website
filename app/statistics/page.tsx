@@ -8,12 +8,12 @@ export const metadata: Metadata = {
   description: 'Player and match statistics across seasons and tournaments.',
   alternates: { canonical: 'https://stats.tennismylife.org/statistics' },
   openGraph: {
-    title: 'Statistics — TML',
+    title: 'Statistics - TennisMyLife',
     description: 'Player and match statistics across seasons and tournaments.',
     url: 'https://stats.tennismylife.org/statistics',
     type: 'website',
     images: [
-      { url: 'https://stats.tennismylife.org/og/site-preview.png', width: 1200, height: 630, alt: 'Statistics — TML' }
+      { url: 'https://stats.tennismylife.org/og/site-preview.png', width: 1200, height: 630, alt: 'Statistics - TennisMyLife' }
     ],
   },
   twitter: {

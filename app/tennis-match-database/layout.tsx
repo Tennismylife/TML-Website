@@ -139,7 +139,7 @@ export async function generateMetadata() {
   const { site, title, description, minYear, maxYear, keywords } = await getDatasetMetadata();
 
   return {
-    title,
+    title: { absolute: title },
     description,
     metadataBase: new URL(site),
     keywords,

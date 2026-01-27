@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: PageParams) {
       title,
       description,
       url: ogUrl,
-      siteName: 'TML',
+      siteName: 'TennisMyLife',
       images: [{ url: ogImage, alt: `${tournamentName} - Most Titles`, width: 1200, height: 630, type: 'image/png' }],
       type: 'website'
     },

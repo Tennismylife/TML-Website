@@ -2,13 +2,13 @@ import type { Metadata } from 'next';
 import React from 'react';
 
 export const metadata: Metadata = {
-  title: 'Tournaments — TML',
+  title: { absolute: 'Tournaments - TennisMyLife' },
   description: 'Tournament listings, past champions and records.',
   alternates: {
     canonical: '/tournaments',
   },
   openGraph: {
-    title: 'Tournaments — TML',
+    title: 'Tournaments - TennisMyLife',
     description: 'Tournament listings, past champions and records.',
     url: '/tournaments',
     type: 'website',
