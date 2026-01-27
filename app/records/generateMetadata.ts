@@ -33,7 +33,9 @@ export async function generateMetadata({ searchParams }: { searchParams: Record<
   const url = new URL(path, metadataBase).toString();
 
   return {
-    title,
+    title: {
+      absolute: title,
+    },
     description,
     openGraph: {
       title,

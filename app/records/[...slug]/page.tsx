@@ -191,9 +191,15 @@ export async function generateMetadata(
     return Number.isFinite(parsed) ? parsed : undefined;
   })();
 
+  // Use the subtab from URL if present, otherwise use default
+  const activeSubResolved = sub ? kebabToKey(sub) : (typeof sp.subtab === 'string' ? kebabToKey(sp.subtab) : undefined);
+  const activeSubTabsWithUrl = record && activeSubResolved 
+    ? { ...activeSubTabsDefault, [record]: activeSubResolved }
+    : activeSubTabsDefault;
+
   const desc = generateRecordDescription(
     record,
-    activeSubTabsDefault,
+    activeSubTabsWithUrl,
     selectedSurfaces,
     selectedLevels,
     selectedRounds,
@@ -224,8 +230,22 @@ export async function generateMetadata(
   // All records pages are indexable regardless of filters.
 
   return {
-    title: `${desc || record || 'Records'} | Tennis Records`,
+    title: {
+      absolute: `${desc || record || 'Records'} | Tennis Records`,
+    },
     description: desc || 'TML records and statistics',
+    openGraph: {
+      title: `${desc || record || 'Records'} | Tennis Records`,
+      description: desc || 'TML records and statistics',
+      images: ['/og/site-preview.png'],
+      url: canonicalFull,
+      siteName: 'TML',
+    },
+    twitter: {
+      title: `${desc || record || 'Records'} | Tennis Records`,
+      description: desc || 'TML records and statistics',
+      images: ['/og/site-preview.png'],
+    },
     alternates: { canonical: canonicalFull },
     robots: { index: true, follow: true },
   };                                        
