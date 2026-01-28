@@ -7,13 +7,21 @@ import { Player} from "@/types";
 interface PlayerSearchProps {
   label: string;
   onSelect: (player: Player) => void;
+  initialPlayer?: Player | { atpname: string | null; ioc?: string | null; id: string };
 }
 
-export default function PlayerSearch({ label, onSelect }: PlayerSearchProps) {
+export default function PlayerSearch({ label, onSelect, initialPlayer }: PlayerSearchProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+  const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(initialPlayer as Player ?? null);
+
+  // Aggiorna quando cambia initialPlayer
+  useEffect(() => {
+    if (initialPlayer) {
+      setSelectedPlayer(initialPlayer as Player);
+    }
+  }, [initialPlayer]);
 
   // Fetch player search
   useEffect(() => {

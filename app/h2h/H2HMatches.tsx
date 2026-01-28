@@ -198,7 +198,7 @@ export default function H2HMatches({
         ref={topScrollRef}
         className="overflow-x-auto rounded border border-white/20 bg-gray-900/90 shadow-xl"
       >
-        <table className="min-w-full border-collapse text-xs">
+        <table className="min-w-full border-collapse text-sm">
           <thead>
             <tr className="bg-black/80">
               {[...baseColumns, ...statsColumns].map((col) => {

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import React from 'react';
-import TournamentClient from './TournamentClient';
-import TournamentHeader from './TournamentHeader';
+import TournamentServer from './TournamentServer';
+import TournamentHeaderServer from './TournamentHeaderServer';
 import { prisma } from '../../../lib/prisma';
 import { redirect } from 'next/navigation';
 import { resolveCanonicalTourneyId, resolveTourneyIds } from '@/lib/tournament';
@@ -70,29 +70,31 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   const ogImage = `${site}/api/og/tournament/${tournament?.slug || param}`;
 
   const metaTitle = `${humanized} | Tournament Stats, History, Match Results & Winners`;
-  const metaDescription = `Results, history, champions and match statistics for ${humanized}.`;
+  const metaDescription = `Comprehensive results, champions, schedules and match statistics for ${humanized} — browse past winners, draws, player records and historical data.`;
 
   return {
     title: metaTitle,
     description: metaDescription,
     openGraph: {
       type: 'article',
-      title: humanized,
+      title: metaTitle,
       description: metaDescription,
       url: ogUrl,
       images: [
         {
           url: ogImage,
-          alt: `${humanized} - Tournament`,
+          alt: metaTitle,
+          width: 1200,
+          height: 630,
         },
       ],
       siteName: 'TennisMyLife',
     },
     twitter: {
       card: 'summary_large_image',
-      title: humanized,
+      title: metaTitle,
       description: metaDescription,
-      images: [ogImage],
+      images: [{ url: ogImage, alt: metaTitle }],
     },
     alternates: { canonical: ogUrl },
   };
@@ -109,8 +111,10 @@ export default async function TournamentPage({ params }: TournamentPageProps) {
     redirect(`/tournaments/${tournament.slug}`);
   }
 
-  // Estrazione valori dai campi JSON
-  const name = extractFirst(tournament.name) || `Tournament ${tournament.id}`;
+  // Estrazione valori dai campi JSON - usa l'ultimo nome (più recente) per H1
+  const name = Array.isArray(tournament.name)
+    ? (tournament.name as any[]).map((n) => extractFirst(n)).filter(Boolean).pop() || extractFirst(tournament.name) || `Tournament ${tournament.id}`
+    : extractFirst(tournament.name) || `Tournament ${tournament.id}`;
   const humanizedName = humanizeName(name);
 
   const locationName = extractFirst(tournament.city) || "TBD";
@@ -135,20 +139,40 @@ export default async function TournamentPage({ params }: TournamentPageProps) {
 
   const indoor = extractFirst(tournament.indoor) || "TBD";
 
-  const startDate = tournament.startDate ? tournament.startDate.toISOString() : new Date().toISOString();
-  const endDate = tournament.endDate ? tournament.endDate.toISOString() : new Date().toISOString();
-
   const url = `https://stats.tennismylife.org/tournaments/${tournament.slug}`;
 
   const description = `Tournament page for ${humanizedName} – results, past champions and records.`;
+  const ogImage = `https://stats.tennismylife.org/api/og/tournament/${tournament?.slug || param}`;
 
-  // Server-side: resolve tourney ids and find most recent edition info (winner, top seed, match count)
+  // Server-side: resolve tourney ids and find first/last edition dates + most recent edition info
   let winner = "TBD";
   let topSeed = "TBD";
   let matchCount = 0;
+  let startDate = tournament.startDate ? tournament.startDate.toISOString() : new Date().toISOString();
+  let endDate = tournament.endDate ? tournament.endDate.toISOString() : new Date().toISOString();
 
   try {
     const tourneyIds = (await resolveTourneyIds(param)) ?? [String(tournament.id)];
+
+    // Get first and last edition dates
+    const firstEdition = await prisma.match.findFirst({
+      where: { tourney_id: { in: tourneyIds } },
+      orderBy: { tourney_date: 'asc' },
+      select: { tourney_date: true },
+    });
+
+    const lastEdition = await prisma.match.findFirst({
+      where: { tourney_id: { in: tourneyIds } },
+      orderBy: { tourney_date: 'desc' },
+      select: { tourney_date: true },
+    });
+
+    if (firstEdition?.tourney_date) {
+      startDate = new Date(firstEdition.tourney_date).toISOString().split('T')[0];
+    }
+    if (lastEdition?.tourney_date) {
+      endDate = new Date(lastEdition.tourney_date).toISOString().split('T')[0];
+    }
 
     const years = await prisma.match.findMany({
       where: { tourney_id: { in: tourneyIds } },
@@ -243,6 +267,7 @@ export default async function TournamentPage({ params }: TournamentPageProps) {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "SportsEvent",
+            "@id": url,
             name: humanizedName,
             sport: "Tennis",
             url,
@@ -251,7 +276,7 @@ export default async function TournamentPage({ params }: TournamentPageProps) {
             startDate,
             endDate,
             eventStatus: "https://schema.org/EventScheduled",
-            image: "https://example.com/default-tournament.jpg",
+            image: { "@type": "ImageObject", url: ogImage },
             location: {
               "@type": "Place",
               name: locationName,
@@ -272,9 +297,26 @@ export default async function TournamentPage({ params }: TournamentPageProps) {
         }}
       />
 
+      {/* Breadcrumb JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: "https://stats.tennismylife.org/" },
+              { "@type": "ListItem", position: 2, name: "Tournaments", item: "https://stats.tennismylife.org/tournaments" },
+              { "@type": "ListItem", position: 3, name: humanizedName, item: url }
+            ]
+          }),
+        }}
+      />
+
       {/* Componenti UI */}
-      <TournamentHeader id={tournament.id} />
-      <TournamentClient id={tournament.id} />
+      <h1 className="sr-only">{humanizedName}</h1>
+      <TournamentHeaderServer id={tournament.id} />
+      <TournamentServer id={tournament.id} />
     </>
   );
 }

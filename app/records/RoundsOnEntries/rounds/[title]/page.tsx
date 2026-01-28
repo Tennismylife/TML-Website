@@ -30,18 +30,21 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   );
 
   const ogImage = new URL('/og/site-preview.png', metadataBase).toString();
+  const pageTitle = desc || 'Round on entries';
 
   return {
-    title: { absolute: `${desc || 'Round on entries'} | Tennis Records` },
+    title: {
+      absolute: `${pageTitle} | Tennis Records`,
+    },
     description: desc || 'Round on entries records',
     openGraph: {
-      title: `${desc || 'Round on entries'} | Tennis Records`,
+      title: `${pageTitle} | Tennis Records`,
       description: desc || 'Round on entries records',
       images: [ogImage],
       siteName: 'TennisMyLife',
     },
     twitter: {
-      title: `${desc || 'Round on entries'} | Tennis Records`,
+      title: `${pageTitle} | Tennis Records`,
       description: desc || 'Round on entries records',
       images: [ogImage],
     },
