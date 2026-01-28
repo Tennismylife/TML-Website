@@ -5,6 +5,8 @@ import { getPlayerHref } from '@/lib/utils';
 
 import { metadataBase } from '@/lib/site';
 import { getTournamentName } from '@/lib/recordMetadata';
+import { getRoundFullName } from '@/lib/utils';
+import AgesFullClient from './AgesFullClient';
 
 type Props = {
   id: string;
@@ -43,7 +45,8 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
 
   try {
     if (seg === 'main') {
-      const data = await fetchAgesApi(id, 'main', true);
+      // server fallback: fetch only top lists (no full) for quicker render
+      const data = await fetchAgesApi(id, 'main', false);
       const topYoungest = data.topYoungest ?? data.youngestPlayers ?? [];
       const topOldest = data.topOldest ?? data.oldestPlayers ?? [];
 
@@ -87,21 +90,26 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
         </div>
       );
 
-      // if a specific which is requested, render only that table
+      // if a specific which is requested, render only that table but mount client to fetch full list
       if (which === 'youngest') {
         console.log('[AgesFull] branch youngest - fetching tournamentName');
         const tournamentName = await getTournamentName(id);
         console.log('[AgesFull] tournamentName resolved', tournamentName);
         return (
-          <div className="max-w-4xl mx-auto text-white p-4">
-            <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
-              <h3 className="text-2xl font-semibold mb-3">{`Youngest Players in Main Draw at ${tournamentName}`}</h3>
-              <div className="overflow-x-auto">
-                <div className="p-1 border border-gray-700 bg-gray-800 rounded">
-                  <div className="p-3">{renderTable(topYoungest)}</div>
+          <div>
+            <div id={`ages-full-static-main-youngest`} className="max-w-4xl mx-auto text-white p-4">
+              <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
+                <div className="overflow-x-auto">
+                  <div className="p-1 border border-gray-700 bg-gray-800 rounded">
+                    <div className="p-3">{renderTable(topYoungest)}</div>
+                  </div>
                 </div>
               </div>
             </div>
+
+            {/* client replaces with full virtualized list */}
+            {/* @ts-ignore - client component */}
+            <AgesFullClient id={id} section={'main'} which={'youngest'} initialRows={topYoungest} />
           </div>
         );
       }
@@ -111,15 +119,20 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
         const tournamentName = await getTournamentName(id);
         console.log('[AgesFull] tournamentName resolved', tournamentName);
         return (
-          <div className="max-w-4xl mx-auto text-white p-4">
-            <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
-              <h3 className="text-2xl font-semibold mb-3">{`Oldest Players in Main Draw at ${tournamentName}`}</h3>
-              <div className="overflow-x-auto">
-                <div className="p-1 border border-gray-700 bg-gray-800 rounded">
-                  <div className="p-3">{renderTable(topOldest)}</div>
+          <div>
+            <div id={`ages-full-static-main-oldest`} className="max-w-4xl mx-auto text-white p-4">
+              <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
+                <div className="overflow-x-auto">
+                  <div className="p-1 border border-gray-700 bg-gray-800 rounded">
+                    <div className="p-3">{renderTable(topOldest)}</div>
+                  </div>
                 </div>
               </div>
             </div>
+
+            {/* client replaces with full virtualized list */}
+            {/* @ts-ignore - client component */}
+            <AgesFullClient id={id} section={'main'} which={'oldest'} initialRows={topOldest} />
           </div>
         );
       }
@@ -146,6 +159,10 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
               </div>
             </div>
           </div>
+
+          {/* client fetches both full lists and replaces the server fallback */}
+          {/* @ts-ignore - client component */}
+          <AgesFullClient id={id} section={'main'} initialRows={[...topYoungest, ...topOldest]} />
         </div>
       );
     }
@@ -153,9 +170,10 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
     // For titles/youngest/oldest sections, render winners lists
     const safeSection = seg;
     if (safeSection === 'titles') {
-      const data = await fetchAgesApi(id, 'titles', true);
-      const topYoungest = data.youngestWinners ?? data.topYoungestWinners ?? [];
-      const topOldest = data.oldestWinners ?? data.topOldestWinners ?? [];
+      // server fallback: fetch only top lists (no full) for quicker render
+      const data = await fetchAgesApi(id, 'titles', false);
+      const topYoungest = data.topYoungestWinners ?? data.youngestWinners ?? [];
+      const topOldest = data.topOldestWinners ?? data.oldestWinners ?? [];
 
       const formatAge = (age: number) => {
         const a = Number(age) || 0;
@@ -197,30 +215,42 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
       const tournamentName = await getTournamentName(id);
       if (which === 'youngest') {
         return (
-          <div className="max-w-4xl mx-auto text-white p-4">
-            <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
-              <h3 className="text-2xl font-semibold mb-3">{`Youngest Title Winners at ${tournamentName}`}</h3>
-              <div className="overflow-x-auto">
-                <div className="p-1 border border-gray-700 bg-gray-800 rounded">
-                  <div className="p-3">{renderTable(topYoungest)}</div>
+          <div>
+            <div id={`ages-full-static-titles-youngest`} className="max-w-4xl mx-auto text-white p-4">
+              <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
+                <h3 className="text-2xl font-semibold mb-3">{`Youngest Title Winners at ${tournamentName}`}</h3>
+                <div className="overflow-x-auto">
+                  <div className="p-1 border border-gray-700 bg-gray-800 rounded">
+                    <div className="p-3">{renderTable(topYoungest)}</div>
+                  </div>
                 </div>
               </div>
             </div>
+
+            {/* client replaces with full virtualized list */}
+            {/* @ts-ignore - client component */}
+            <AgesFullClient id={id} section={'titles'} which={'youngest'} initialRows={topYoungest} />
           </div>
         );
       }
 
       if (which === 'oldest') {
         return (
-          <div className="max-w-4xl mx-auto text-white p-4">
-            <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
-              <h3 className="text-2xl font-semibold mb-3">{`Oldest Title Winners at ${tournamentName}`}</h3>
-              <div className="overflow-x-auto">
-                <div className="p-1 border border-gray-700 bg-gray-800 rounded">
-                  <div className="p-3">{renderTable(topOldest)}</div>
+          <div>
+            <div id={`ages-full-static-titles-oldest`} className="max-w-4xl mx-auto text-white p-4">
+              <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
+                <h3 className="text-2xl font-semibold mb-3">{`Oldest Title Winners at ${tournamentName}`}</h3>
+                <div className="overflow-x-auto">
+                  <div className="p-1 border border-gray-700 bg-gray-800 rounded">
+                    <div className="p-3">{renderTable(topOldest)}</div>
+                  </div>
                 </div>
               </div>
             </div>
+
+            {/* client replaces with full virtualized list */}
+            {/* @ts-ignore - client component */}
+            <AgesFullClient id={id} section={'titles'} which={'oldest'} initialRows={topOldest} />
           </div>
         );
       }
@@ -252,7 +282,8 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
 
     // Support for youngest/oldest per-round sections
     if (safeSection === 'youngestrounds' || safeSection === 'oldestrounds') {
-      const data = await fetchAgesApi(id, safeSection, true);
+      // server overview: do NOT fetch full lists (keeps page fast; avoids full=true on /oldestrounds and /youngestrounds)
+      const data = await fetchAgesApi(id, safeSection, false);
       const listKey = safeSection === 'youngestrounds' ? 'allYoungestItems' : 'allOldestItems';
       const items = data[listKey] ?? [];
 
@@ -298,20 +329,32 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
 
       // if title provided, render only that round's fullList
       if (title) {
-        const found = items.find((it: any) => String(it.title) === String(title) || String(it.title) === decodeURIComponent(String(title)));
-        const rows = found ? (found.fullList ?? found.list ?? []) : [];
+        // Server fallback: fetch only top lists (no full) so the page/modal renders quickly
+        const dataShort = await fetchAgesApi(id, safeSection, false);
+        const listKey = safeSection === 'youngestrounds' ? 'allYoungestItems' : 'allOldestItems';
+        const itemsShort = dataShort[listKey] ?? [];
+        const foundShort = itemsShort.find((it: any) => String(it.title) === String(title) || String(it.title) === decodeURIComponent(String(title)));
+        const rows = foundShort ? (foundShort.list ?? []) : [];
         const tournamentName = await getTournamentName(id);
         const side = safeSection === 'youngestrounds' ? 'Youngest Players' : 'Oldest Players';
+        const roundLabel = getRoundFullName(decodeURIComponent(String(title)));
+
         return (
-          <div className="max-w-4xl mx-auto text-white p-4">
-            <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
-              <h3 className="text-2xl font-semibold mb-3">{`${side} in ${title} at ${tournamentName}`}</h3>
-              <div className="overflow-x-auto">
-                <div className="p-1 border border-gray-700 bg-gray-800 rounded">
-                  <div className="p-3">{renderTable(rows)}</div>
+          <div>
+            <div id={`ages-full-static-${safeSection}-${encodeURIComponent(String(title))}`} className="max-w-4xl mx-auto text-white p-4">
+              <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
+                <h3 className="text-2xl font-semibold mb-3">{`${side} in ${roundLabel} at ${tournamentName}`}</h3>
+                <div className="overflow-x-auto">
+                  <div className="p-1 border border-gray-700 bg-gray-800 rounded">
+                    <div className="p-3">{renderTable(rows)}</div>
+                  </div>
                 </div>
               </div>
             </div>
+
+            {/* Client-side: fetch full list and replace server fallback with virtualized table */}
+            {/* @ts-ignore - client component */}
+            <AgesFullClient id={id} section={safeSection} title={String(title)} initialRows={rows} />
           </div>
         );
       }
@@ -327,7 +370,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
             {items.map((item: any) => (
               <div key={item.title} className="p-1 border border-gray-700 bg-gray-800 rounded">
                 <div className="p-3">
-                  <h4 className="text-white font-medium mb-2">{item.title}</h4>
+                  <h4 className="text-white font-medium mb-2">{getRoundFullName(String(item.title))}</h4>
                   {renderTable(item.list ?? [])}
                   <div className="mt-2">
                     <a href={`/tournaments/${id}/records/ages/${safeSection}/${encodeURIComponent(String(item.title))}`} className="mt-2 inline-block px-4 py-2 bg-blue-500 text-white rounded">View All</a>

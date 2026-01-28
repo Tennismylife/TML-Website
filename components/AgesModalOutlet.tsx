@@ -39,6 +39,10 @@ export default function AgesModalOutlet({ id }: { id: string }) {
       const rawSec = detail?.section as string | undefined;
       const sec = rawSec ? String(rawSec).replace(/^ages-/, '') : 'main';
       const titleParam = detail?.title as string | undefined;
+      // For per-round sections, we only open a modal when a specific round title is provided.
+      if ((sec === 'youngestrounds' || sec === 'oldestrounds') && (!titleParam || String(titleParam) === sec)) {
+        return;
+      }
       if (!w && !(sec === 'youngestrounds' || sec === 'oldestrounds')) return;
       setWhich(w ?? null);
       setSection(sec as any);
@@ -47,37 +51,80 @@ export default function AgesModalOutlet({ id }: { id: string }) {
       setLoading(true);
       setOpenError(null);
 
-      const url = `/api/tournaments/${id}/records/ages/${sec}?full=true`;
-      try { console.debug('[AgesModalOutlet] openWithPayload normalized', { rawSec, sec, url }); } catch (e) {}
-      fetch(url)
-        .then((res) => {
-          if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-          return res.json();
-        })
-        .then((data) => {
-          let items: any[] = [];
+      // First fetch a short/top response so the modal can show quickly, then fetch the full response to replace it
+      const shortUrl = `/api/tournaments/${id}/records/ages/${sec}`;
+      const fullUrl = `${shortUrl}?full=true`;
 
-          if (sec === 'titles') {
-            items = w === 'youngest' ? (data.youngestWinners ?? data.topYoungestWinners ?? []) : (data.oldestWinners ?? data.topOldestWinners ?? []);
-          } else if (sec === 'youngestrounds' || sec === 'oldestrounds') {
-            const listKey = sec === 'youngestrounds' ? 'allYoungestItems' : 'allOldestItems';
-            const all = data[listKey] ?? [];
-            if (titleParam) {
-              const found = all.find((it: any) => String(it.title) === String(titleParam) || String(it.title) === decodeURIComponent(String(titleParam)));
-              items = (found?.fullList ?? found?.list ?? []) as any[];
+      try { console.debug('[AgesModalOutlet] openWithPayload normalized (short fetch)', { rawSec, sec, shortUrl, fullUrl }); } catch (e) {}
+
+      if (sec === 'titles') {
+        // For titles, fetch the full data immediately (keeps existing behavior and tests expectations)
+        try { console.debug('[AgesModalOutlet] fetching titles full list directly', fullUrl); } catch (e) {}
+        fetch(fullUrl)
+          .then((res) => { if (!res.ok) throw new Error(`${res.status} ${res.statusText}`); return res.json(); })
+          .then((data) => {
+            const items = w === 'youngest' ? (data.youngestWinners ?? data.topYoungestWinners ?? []) : (data.oldestWinners ?? data.topOldestWinners ?? []);
+            if (!mounted) return; setList(items);
+          })
+          .catch((e: any) => { if (!mounted) return; setList([]); setOpenError(e?.message || 'Failed to load'); })
+          .finally(() => { if (!mounted) return; setLoading(false); });
+      } else {
+        // Short fetch (no full) -> show top lists immediately, then background full fetch
+        fetch(shortUrl)
+          .then((res) => {
+            if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+            return res.json();
+          })
+          .then((data) => {
+            let items: any[] = [];
+
+            if (sec === 'youngestrounds' || sec === 'oldestrounds') {
+              const listKey = sec === 'youngestrounds' ? 'allYoungestItems' : 'allOldestItems';
+              const all = data[listKey] ?? [];
+              if (titleParam) {
+                const found = all.find((it: any) => String(it.title) === String(titleParam) || String(it.title) === decodeURIComponent(String(titleParam)));
+                items = (found?.list ?? []) as any[]; // top list only
+              } else {
+                // flatten to a simple rows list if no specific title requested
+                items = (all || []).flatMap((it: any) => it.list ?? []);
+              }
             } else {
-              // flatten to a simple rows list if no specific title requested
-              items = (all || []).flatMap((it: any) => it.list ?? []);
+              items = w === 'youngest' ? (data.topYoungest ?? data.youngestPlayers ?? []) : (data.topOldest ?? data.oldestPlayers ?? []);
             }
-          } else {
-            items = w === 'youngest' ? (data.youngestPlayers ?? data.topYoungest ?? []) : (data.oldestPlayers ?? data.topOldest ?? []);
-          }
 
-          if (!mounted) return;
-          setList(items);
-        })
-        .catch((e: any) => { if (!mounted) return; setList([]); setOpenError(e?.message || 'Failed to load'); })
-        .finally(() => { if (!mounted) return; setLoading(false); });
+            if (!mounted) return;
+            setList(items);
+
+            // now fetch the full data in background and replace when ready
+            setLoading(true);
+            fetch(fullUrl)
+              .then((res2) => {
+                if (!res2.ok) throw new Error(`${res2.status} ${res2.statusText}`);
+                return res2.json();
+              })
+              .then((fullData) => {
+                let fullItems: any[] = [];
+                if (sec === 'youngestrounds' || sec === 'oldestrounds') {
+                  const listKey = sec === 'youngestrounds' ? 'allYoungestItems' : 'allOldestItems';
+                  const all = fullData[listKey] ?? [];
+                  if (titleParam) {
+                    const found = all.find((it: any) => String(it.title) === String(titleParam) || String(it.title) === decodeURIComponent(String(titleParam)));
+                    fullItems = (found?.fullList ?? found?.list ?? []) as any[];
+                  } else {
+                    fullItems = (all || []).flatMap((it: any) => it.fullList ?? it.list ?? []);
+                  }
+                } else {
+                  fullItems = w === 'youngest' ? (fullData.youngestPlayers ?? fullData.topYoungest ?? []) : (fullData.oldestPlayers ?? fullData.topOldest ?? []);
+                }
+
+                if (!mounted) return;
+                setList(fullItems);
+              })
+              .catch((e: any) => { if (!mounted) return; /* keep short list and show error inline */ setOpenError(e?.message || 'Failed to load full list'); })
+              .finally(() => { if (!mounted) return; setLoading(false); });
+          })
+          .catch((e: any) => { if (!mounted) return; setList([]); setOpenError(e?.message || 'Failed to load'); });
+      }
     };
 
     // fallback: consume a global lastOpenModal payload if present (in case event fired before outlet mounted)
@@ -118,8 +165,9 @@ export default function AgesModalOutlet({ id }: { id: string }) {
         if (maybeSection === 'titles') {
           openWithPayload({ which: parts[parts.length - 1] === 'youngest' ? 'youngest' : 'oldest', section: 'titles' });
         } else if (maybeSection === 'youngestrounds' || maybeSection === 'oldestrounds') {
-          const titleParam = parts.length > recordsIndex + 3 ? parts[recordsIndex + 3] : parts[parts.length - 1];
-          openWithPayload({ section: maybeSection, title: titleParam });
+          // Only treat this as a modal route when a title segment exists after the section.
+          const titleParam = parts.length > recordsIndex + 3 ? parts[recordsIndex + 3] : null;
+          if (titleParam) openWithPayload({ section: maybeSection, title: titleParam });
         } else if (maybeSection === 'youngest' || maybeSection === 'oldest') {
           openWithPayload({ which: maybeSection as any, section: 'main' });
         } else if (!consumedEarlyPayload) {

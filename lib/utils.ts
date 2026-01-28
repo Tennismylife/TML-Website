@@ -278,10 +278,11 @@ export function getRoundFullName(round?: string | null) {
     case 'F': return 'Finals';
     case 'SF': return 'Semifinals';
     case 'QF': return 'Quarterfinals';
-    case 'R16': return 'Round of 16';
-    case 'R32': return 'Round of 32';
-    case 'R64': return 'Round of 64';
-    case 'R128': return 'Round of 128';
+    case 'R16':
+    case 'R32':
+    case 'R64':
+    case 'R128':
+      return r;
     case 'RR': return 'Round Robin';
     case 'BR': return 'Bronze (3rd place)';
     case 'Q3':

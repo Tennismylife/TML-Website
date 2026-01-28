@@ -8,6 +8,9 @@ type TournamentHeader = {
 const cache = new Map<string, Promise<TournamentHeader>>();
 
 export function fetchTournamentHeaderCached(idOrSlug: string): Promise<TournamentHeader> {
+  if (!idOrSlug || !String(idOrSlug).trim()) {
+    return Promise.reject(new Error('Missing tournament id/slug'));
+  }
   if (cache.has(idOrSlug)) return cache.get(idOrSlug)!;
 
   const p = (async () => {

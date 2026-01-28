@@ -140,8 +140,11 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
 
     if (!existing) {
       // fetch full list
-      const seg = (sectionKey === 'main' || sectionKey === 'titles') ? 'main' : sectionKey;
-      fetch(`/api/tournaments/${id}/records/ages/${seg}${titleParam ? `&title=${encodeURIComponent(String(titleParam))}` : ''}?full=true`)
+      const seg = sectionKey;
+      const qs = new URLSearchParams();
+      qs.set('full', 'true');
+      if (titleParam) qs.set('title', String(titleParam));
+      fetch(`/api/tournaments/${id}/records/ages/${seg}?${qs.toString()}`)
         .then((r) => r.json())
         .then((data) => {
           let rows: any[] = [];

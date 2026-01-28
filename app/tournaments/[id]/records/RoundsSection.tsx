@@ -6,6 +6,9 @@ import Flag from '@/components/Flag';
 import { getPlayerHref } from '@/lib/utils';
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 import { getRoundFullName } from '@/lib/utils';
+import dynamic from 'next/dynamic';
+
+const TableVirtuoso = dynamic(() => import('react-virtuoso').then(mod => mod.TableVirtuoso), { ssr: false });
 
 interface PlayerStat {
   id: string | number;
@@ -112,9 +115,9 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
     const round = roundItems.find(r => r.title === roundTitle);
     if (!round) return;
 
-    // show client fallback modal immediately
+    // show client fallback modal immediately (use top10 if full list not yet available)
     const existing = round.fullList ?? null;
-    setModalData({ title: roundTitle, list: existing ?? [] });
+    setModalData({ title: roundTitle, list: existing ?? round.list ?? [] });
 
     // hide server-injected modal if present
     try { const sm = document.getElementById('server-modal'); if (sm) sm.style.display = 'none'; } catch (e) {}
@@ -302,8 +305,43 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
 
       {modalData && (
         <ModalTournamentsSeasons title={`Most ${getRoundFullName(modalData.title)} Appearances at the ${tourneyName}`} onClose={() => setModalData(null)}>
-          <div className="text-center text-lg md:text-xl">
-            {renderTable(modalData.list, 'Reaches')}
+          <div className="max-w-4xl mx-auto text-white p-4">
+            <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
+              <div className="overflow-x-auto">
+                <TableVirtuoso
+                  data={modalData.list}
+                  components={{
+                    TableRow: ({ style, ...props }) => (
+                      <tr className="border-b border-gray-700" style={style} {...props} />
+                    ),
+                  }}
+                  fixedHeaderContent={() => (
+                    <tr>
+                      <th className="text-center py-2 text-gray-300">Player</th>
+                      <th className="text-center py-2 text-gray-300">Reaches</th>
+                    </tr>
+                  )}
+                  itemContent={(index, item: PlayerStat) => (
+                    <>
+                      <td className="py-2 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <Flag ioc={item.ioc} className="w-4 h-3" />
+                          <Link href={getPlayerHref((item as any).slug ?? String(item.id))} className="text-blue-400 hover:underline text-lg md:text-xl">
+                            {item.name}
+                          </Link>
+                        </div>
+                      </td>
+                      <td className="py-2 text-center text-lg md:text-xl">{item.count}</td>
+                    </>
+                  )}
+                  style={{ height: '600px' }}
+                />
+                {/* loading indicator when more items are being fetched */}
+                {loadingRounds[modalData.title] && (
+                  <div className="mt-2 text-sm text-gray-300">Loading more…</div>
+                )}
+              </div>
+            </div>
           </div>
         </ModalTournamentsSeasons>
       )}
