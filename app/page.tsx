@@ -91,7 +91,7 @@ export default function HomePage() {
       </svg>
     )},
 
-    { href: "/rankingtables", title: "Rankings Tables", subtitle: "Historical Systems", description: "Browse ranking tables for different historical systems (1973, 1974–75, 1976–78, etc.)", badge: { emoji: "🌟", text: "EXCLUSIVE", style: "street" }, colorClass: "text-amber-400 group-hover:text-amber-300", accentColor: "#f59e0b", icon: (
+    { href: "/rankingtables", title: "Rankings Tables", subtitle: "Historical Systems", description: "Browse ranking tables for different historical systems (1973, 1974–75, 1976–78, etc.)", badge: { emoji: "🌟", text: "EXCLUSIVE", style: "street", textColor: "#ff77b2" }, colorClass: "text-amber-400 group-hover:text-amber-300", accentColor: "#f59e0b", icon: (
       <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18M6 7v11M18 7v11M6 18h12" />
       </svg>
@@ -231,7 +231,7 @@ export default function HomePage() {
             subnote={item.subnote}
             colorClass={item.colorClass}
             accentColor={item.accentColor}
-            badge={item.badge || (item.title === "Rankings" ? { text: "Vilas #1", style: 'street' } : undefined)}
+            badge={item.badge || (item.title === "Rankings" ? { text: "Vilas #1", style: 'street', textColor: "#ff77b2" } : undefined)}
           >
             {item.icon}
           </Card>
