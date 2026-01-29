@@ -180,7 +180,12 @@ export default function FilteredMatchesCalculation(
 
 if (firstSetFilter !== "All") {
   
-  if (!m.status || setsParsed.length === 0) return false;
+  // First check: Exclude W/O matches and matches where entire score is just "RET" (no sets played)
+  const scoreUpper = m.score?.toUpperCase().trim() || "";
+  if (scoreUpper.includes("W/O") || scoreUpper === "RET") return false;
+  
+  // Second check: Exclude matches with status false, null, or undefined, and matches without valid score
+  if (m.status !== true || setsParsed.length === 0) return false;
 
   const [s1, s2, s3] = setsParsed;
   const w = isWinner;

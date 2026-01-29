@@ -26,9 +26,11 @@ interface PlayerTabsProps {
   setTournamentsFilters?: (f: any) => void;
   h2hFilters?: any;
   setH2HFilters?: (f: any) => void;
+  initialMatches?: any[];
+  initialHeading?: string;
 }
 
-export default function PlayerTabs({ player, tabs, initialTab, setTab, tournamentsFilters, setTournamentsFilters, h2hFilters, setH2HFilters }: PlayerTabsProps) {
+export default function PlayerTabs({ player, tabs, initialTab, setTab, tournamentsFilters, setTournamentsFilters, h2hFilters, setH2HFilters, initialMatches, initialHeading }: PlayerTabsProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -108,7 +110,7 @@ export default function PlayerTabs({ player, tabs, initialTab, setTab, tournamen
       case "profile":
         return <Profile player={player} />;
       case "matches":
-        return <AllMatches playerId={player.id} />;
+        return <AllMatches playerId={player.id} initialMatches={initialMatches} initialHeading={initialHeading} />;
       case "season":
         return <Seasons playerId={player.id} />;
       case "tournaments":
@@ -129,7 +131,7 @@ export default function PlayerTabs({ player, tabs, initialTab, setTab, tournamen
       default:
         return null;
     }
-  }, [activeTab, player, tournamentsFilters, setTournamentsFilters, h2hFilters, setH2HFilters]);
+  }, [activeTab, player, tournamentsFilters, setTournamentsFilters, h2hFilters, setH2HFilters, initialMatches]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     const index = tabs.findIndex(t => t.id === activeTab);

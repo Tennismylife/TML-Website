@@ -10,6 +10,8 @@ import { getPlayerHref } from '@/lib/utils';
 export default function PlayerClient(props: any) {
   const params = props.params ?? {};
   const playerId = params?.id ?? props.params?.id;
+  const initialMatches = props.initialMatches;
+  const initialHeading = props.initialHeading;
 
   const [player, setPlayer] = useState<Player | null>(null);
   const [loading, setLoading] = useState(false);
@@ -292,6 +294,8 @@ export default function PlayerClient(props: any) {
         setTournamentsFilters={setTournamentsFiltersPartial}
         h2hFilters={h2hFilters}
         setH2HFilters={(partial: Partial<typeof h2hFilters>) => setH2HFilters(prev => ({ ...prev, ...partial }))}
+        initialMatches={initialMatches}
+        initialHeading={initialHeading}
       />
 
       {/* Content */}

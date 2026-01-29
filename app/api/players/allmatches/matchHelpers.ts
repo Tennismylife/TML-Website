@@ -150,7 +150,14 @@ export function filterBySetScore(
     }
   }
 
-  if (firstSet && setsParsed.length > 0) {
+  if (firstSet) {
+    // Exclude W/O matches and matches where entire score is just "RET" (no sets played)
+    const scoreUpper = m.score?.toUpperCase().trim() || "";
+    if (scoreUpper.includes("W/O") || scoreUpper === "RET") return false;
+    
+    // Exclude matches with status false, null, or undefined, and matches without valid score
+    if (m.status !== true || setsParsed.length === 0) return false;
+    
     const [s1, s2, s3] = setsParsed;
     const w = isWinner;
     const bestOf5 = setsParsed.length >= 3;

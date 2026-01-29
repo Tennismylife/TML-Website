@@ -8,17 +8,25 @@ import { Match, SortKey, SortDirection } from "@/types";
 
 interface AllMatchesProps {
   playerId: string;
+  initialMatches?: Match[];
+  initialHeading?: string;
 }
 
-export default function AllMatches({ playerId }: AllMatchesProps) {
+export default function AllMatches({ playerId, initialMatches, initialHeading }: AllMatchesProps) {
   const search = useSearchParams();
   const router = useRouter();
 
-  const [allMatches, setAllMatches] = useState<Match[]>([]);
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [loadingMatches, setLoadingMatches] = useState<boolean>(false);
+  // When SSR provides initialMatches (10 matches), keep allMatches empty until full data is fetched
+  // This ensures filters are populated with all options, not just from initial 10 matches
+  const [allMatches, setAllMatches] = useState<Match[]>(!initialMatches || initialMatches.length !== 10 ? (initialMatches ?? []) : []);
+  const [matches, setMatches] = useState<Match[]>(initialMatches ?? []);
+  const [loadingMatches, setLoadingMatches] = useState<boolean>(!initialMatches);
+  const [mounted, setMounted] = useState<boolean>(!initialMatches);
   const [sortKey, setSortKey] = useState<SortKey>("tourney_date");
   const [sortDir, setSortDir] = useState<SortDirection>("desc");  // Changed from "asc" to "desc" to show latest matches first
+  const [showAll, setShowAll] = useState<boolean>(false);
+  const [loadingAllMatches, setLoadingAllMatches] = useState<boolean>(false);
+  const [allMatchesFetched, setAllMatchesFetched] = useState<boolean>(false);
   // show all matches by default (allow table to overflow if needed)
 
   const initialFilters: Record<string, string> = useMemo(() => {
@@ -29,6 +37,124 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
     });
     return obj;
   }, [search]);
+
+  // Track current filters selected in the filter panel (updated via onFiltersChange callback)
+  const [currentFilters, setCurrentFilters] = useState<Record<string,string>>(initialFilters);
+
+  // Use currentFilters (from UI) when available, and drop empty/All values
+  const sanitizedFilters = useMemo(() => {
+    const source = currentFilters ?? initialFilters;
+    return Object.fromEntries(
+      Object.entries(source)
+        .filter(([, v]) => v != null && String(v) !== '' && String(v) !== 'All')
+        .map(([k, v]) => [k, String(v)])
+    ) as Record<string,string>;
+  }, [currentFilters, initialFilters]);
+
+  // Compute heading from current filters (client-side) or fall back to SSR initialHeading
+
+  const heading = useMemo(() => {
+    const filters = currentFilters ?? initialFilters;
+    const isAll = (v?: string) => !v || String(v).trim() === '' || String(v).toLowerCase() === 'all';
+    const parts: string[] = [];
+    const levelMap: Record<string, string> = {
+      G: 'Grand Slams',
+      M: 'Masters 1000',
+      A: 'Other',
+      F: 'Finals',
+      D: 'Davis Cup',
+      O: 'Olympics'
+    };
+    const roundMap: Record<string, string> = {
+      R128: 'Round of 128',
+      R64: 'Round of 64',
+      R32: 'Round of 32',
+      R16: 'Round of 16',
+      QF: 'Quarterfinals',
+      SF: 'Semifinals',
+      F: 'Final',
+      RR: 'Round Robin',
+      '3rd/4th': '3rd/4th Place',
+      BR: 'Bronze Match'
+    };
+    const rankLabel = (v?: string) => {
+      if (!v) return '';
+      if (v === 'Top1') return '#1';
+      if (v === 'Top5') return 'Top 5';
+      if (v === 'Top10') return 'Top 10';
+      if (v === 'Top20') return 'Top 20';
+      if (v === 'Top50') return 'Top 50';
+      if (v === 'Top100') return 'Top 100';
+      if (v === '11+') return '11+';
+      if (v === '21+') return '21+';
+      if (v === '51+') return '51+';
+      if (v === '101+') return '101+';
+      if (v === 'Higher') return 'Higher than opponent';
+      if (v === 'Lower') return 'Lower than opponent';
+      return v;
+    };
+
+    const year = filters.year;
+    const level = filters.level;
+    const surface = filters.surface;
+    const round = filters.round;
+    const firstSet = filters.firstSet;
+    const result = filters.result;
+    const tourney = filters.tourney;
+    const vsRank = filters.vsRank;
+    const asRank = filters.asRank;
+    const vsAge = filters.vsAge;
+    const vsHand = filters.vsHand;
+    const vsBackhand = filters.vsBackhand;
+    const vsEntry = filters.vsEntry;
+    const asEntry = filters.asEntry;
+    const set = filters.set;
+    const score = filters.score;
+
+    if (!isAll(year)) parts.push(`Year: ${year}`);
+    if (!isAll(level)) parts.push(`Level: ${levelMap[level] ?? level}`);
+    if (!isAll(tourney)) {
+      let tn = String(tourney);
+      const m = (allMatches || []).find(x => String(x.tourney_id) === String(tourney) && x.tourney_name);
+      if (m && m.tourney_name) tn = m.tourney_name;
+      parts.push(`Tournament: ${tn}`);
+    }
+    if (!isAll(surface)) parts.push(`Surface: ${surface}`);
+    if (!isAll(round)) parts.push(`Round: ${roundMap[round] ?? round}`);
+    if (!isAll(result)) parts.push(`Result: ${result}`);
+    if (!isAll(set)) parts.push(`Sets: ${set}`);
+    if (!isAll(firstSet)) parts.push(`First Set: ${firstSet}`);
+    if (!isAll(score)) parts.push(`Score: ${score}`);
+    if (!isAll(vsRank)) parts.push(`Opp Rank: ${rankLabel(vsRank)}`);
+    if (!isAll(asRank)) parts.push(`Player Rank: ${rankLabel(asRank)}`);
+    if (!isAll(vsAge)) parts.push(`Opp Age: ${vsAge}`);
+    if (!isAll(vsHand)) parts.push(`Opp Hand: ${vsHand}`);
+    if (!isAll(vsBackhand)) parts.push(`Opp Backhand: ${vsBackhand}`);
+    if (!isAll(vsEntry)) parts.push(`Opp Entry: ${vsEntry}`);
+    if (!isAll(asEntry)) parts.push(`Player Entry: ${asEntry}`);
+
+    const activeKeys = Object.keys(filters).filter(k => !isAll(filters[k]));
+    if (activeKeys.length === 1 && !isAll(year)) {
+      return `Matches in ${year}`;
+    }
+    if (activeKeys.length === 1 && !isAll(tourney)) {
+      const tname = parts.find(p => p.startsWith('Tournament: '))?.replace('Tournament: ', '') || String(tourney);
+      return `Matches at ${tname}`;
+    }
+    if (activeKeys.length === 1 && !isAll(surface)) {
+      return `Matches on ${surface}`;
+    }
+
+    if (parts.length === 0) return initialHeading ?? 'Matches';
+    return `Matches — ${parts.join(' · ')}`;
+  }, [currentFilters, initialFilters, allMatches, initialHeading]);
+
+  // Keep document title synchronized with the H1 on client interactions
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const playerName = (document.querySelector('header h1')?.textContent || '').trim();
+    if (playerName) document.title = `${playerName} – ${heading}`;
+  }, [heading]);
 
   // Track which query keys were present when the page was opened (external links)
   const initialQueryKeysRef = useRef<Set<string>>(new Set());
@@ -66,7 +192,13 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
     if (typeof window === 'undefined') return;
   }, []);
 
+  // Mount immediately (server render is already hidden with CSS)
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (initialMatches) return; // Skip fetch if we have SSR data
     const controller = new AbortController();
     (async () => {
       try {
@@ -79,14 +211,35 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
       }
     })();
     return () => controller.abort();
-  }, [playerId]);
+  }, [playerId, initialMatches]);
 
-  const endpoint = useMemo(
-    () => `/api/players/allmatches?id=${playerId}&${new URLSearchParams(initialFilters)}`,
-    [playerId, initialFilters]
-  );
+  // If we have limited initial data (SSR with only 10 matches), fetch ALL matches in background for W-L and filters
+  useEffect(() => {
+    if (!initialMatches || initialMatches.length !== DEFAULT_INITIAL_COUNT) return;
+    if (allMatchesFetched) return;
+
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const res = await fetch(`/api/players/allmatches?id=${playerId}`, { signal: controller.signal, cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data: Match[] = await res.json();
+        setAllMatches(data);
+        setAllMatchesFetched(true);
+      } catch (err: any) {
+        if (!controller.signal.aborted) console.error(err);
+      }
+    })();
+    return () => controller.abort();
+  }, [playerId, initialMatches, allMatchesFetched, initialFilters]);
+
+  const endpoint = useMemo(() => {
+    const params = new URLSearchParams(sanitizedFilters).toString();
+    return `/api/players/allmatches?id=${playerId}${params ? `&${params}` : ''}`;
+  }, [playerId, sanitizedFilters]);
 
   useEffect(() => {
+    if (initialMatches && Object.keys(sanitizedFilters).length === 0) return; // Skip filtered fetch if using SSR data without filters
     const controller = new AbortController();
     (async () => {
       try {
@@ -102,7 +255,35 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
       }
     })();
     return () => controller.abort();
-  }, [endpoint]);
+  }, [endpoint, initialMatches, sanitizedFilters]);
+
+  // When filters are cleared, ensure all matches are shown (and fetch full set if needed)
+  useEffect(() => {
+    if (Object.keys(sanitizedFilters).length !== 0) return;
+    if (allMatches && allMatches.length > 0) {
+      setMatches(allMatches);
+      setShowAll(true);
+      return;
+    }
+
+    if (!allMatchesFetched) {
+      const controller = new AbortController();
+      (async () => {
+        try {
+          const res = await fetch(`/api/players/allmatches?id=${playerId}`, { signal: controller.signal, cache: "no-store" });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data: Match[] = await res.json();
+          setAllMatches(data);
+          setMatches(data);
+          setAllMatchesFetched(true);
+          setShowAll(true);
+        } catch (err: any) {
+          if (!controller.signal.aborted) console.error(err);
+        }
+      })();
+      return () => controller.abort();
+    }
+  }, [sanitizedFilters, allMatches, allMatchesFetched, playerId]);
 
   const sortedMatches = useMemo(() => {
     if (sortKey === null) return [...matches];
@@ -123,7 +304,19 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
     });
   }, [matches, sortKey, sortDir]);
 
-  // compute W-L for display above the table
+  // compute W-L TOTAL (always from allMatches, shown initially)
+  const { totalWins, totalLosses, totalWinPercentage } = useMemo(() => {
+    let w = 0; let l = 0;
+    (allMatches || []).forEach(m => {
+      if (!m.status) return;
+      if (String(m.winner_id) === String(playerId)) w++;
+      else if (String(m.loser_id) === String(playerId)) l++;
+    });
+    const pct = (w + l > 0) ? ((w / (w + l)) * 100).toFixed(2) : "0.00";
+    return { totalWins: w, totalLosses: l, totalWinPercentage: pct };
+  }, [allMatches, playerId]);
+
+  // compute W-L for FILTERED matches (updates dynamically with filters)
   const { wins, losses, winPercentage } = useMemo(() => {
     let w = 0; let l = 0;
     (matches || []).forEach(m => {
@@ -134,6 +327,11 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
     const pct = (w + l > 0) ? ((w / (w + l)) * 100).toFixed(2) : "0.00";
     return { wins: w, losses: l, winPercentage: pct };
   }, [matches, playerId]);
+
+  // Check if filters are applied (URL has filter params)
+  const hasFilters = useMemo(() => {
+    return Object.keys(sanitizedFilters).length > 0;
+  }, [sanitizedFilters]);
 
   // Note: we intentionally allow the table to render all rows and overflow the container
 
@@ -155,7 +353,6 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
 
   // show only last N matches by default
   const DEFAULT_INITIAL_COUNT = 10;
-  const [showAll, setShowAll] = useState<boolean>(false);
 
   const queuedPayloadRef = useRef<Record<string,string> | null>(null);
 
@@ -244,6 +441,11 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
       // clear explicit deletion flag if present
       explicitDeletedRef.current.delete(key);
     }
+    // Keep local filter state in sync for immediate H1/title updates
+    setCurrentFilters(prev => ({
+      ...(prev || {}),
+      [key]: !value || value === "All" || value === "" ? "All" : String(value)
+    }));
     const newSearch = searchParams.toString();
     const newUrl = window.location.pathname + (newSearch ? '?' + newSearch : '');
     if (typeof window !== 'undefined' && window.history && typeof window.history.replaceState === 'function') {
@@ -251,6 +453,51 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
     } else {
       router.replace(newUrl, { scroll: false });
     }
+  };
+
+  // Handler to load all matches when user clicks "Show All"
+  const handleShowAllClick = async () => {
+    const hasFilterParams = Object.keys(sanitizedFilters).length > 0;
+
+    // If filters are active, fetch only the filtered matches and DO NOT overwrite allMatches
+    if (hasFilterParams) {
+      setLoadingAllMatches(true);
+      try {
+        const filterParams = new URLSearchParams(sanitizedFilters);
+        const url = `/api/players/allmatches?id=${playerId}${filterParams.toString() ? '&' + filterParams.toString() : ''}`;
+        const res = await fetch(url, { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data: Match[] = await res.json();
+        setMatches(data);
+      } catch (err: any) {
+        console.error(err);
+      } finally {
+        setLoadingAllMatches(false);
+      }
+      setShowAll(true);
+      return;
+    }
+
+    // No filters: show ALL matches (unfiltered)
+    if (!allMatchesFetched && allMatches.length <= DEFAULT_INITIAL_COUNT) {
+      setLoadingAllMatches(true);
+      try {
+        const res = await fetch(`/api/players/allmatches?id=${playerId}`, { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data: Match[] = await res.json();
+        setAllMatches(data);
+        setMatches(data);
+        setAllMatchesFetched(true);
+      } catch (err: any) {
+        console.error(err);
+      } finally {
+        setLoadingAllMatches(false);
+      }
+    } else if (allMatches.length > DEFAULT_INITIAL_COUNT) {
+      setMatches(allMatches);
+    }
+
+    setShowAll(true);
   };
 
   return (
@@ -268,6 +515,7 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
                 displayedMatches={sortedMatches}
                 updateUrl={updateUrl}
                 onExplicitChange={updateUrlExplicit}
+                onFiltersChange={setCurrentFilters}
               />
             </div>
           </div>
@@ -277,7 +525,17 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
         <div className="flex-1 min-w-0 p-0">
           <div className="w-full">
             <div ref={wlRef} className="w-full text-center mb-2">
-              <div className="font-semibold text-xl sm:text-2xl leading-none">W-L: {wins}-{losses} ({winPercentage}%)</div>
+              <div className="font-semibold text-xl sm:text-2xl leading-none">
+                W-L: {hasFilters ? `${wins}-${losses} (${winPercentage}%)` : `${totalWins}-${totalLosses} (${totalWinPercentage}%)`}
+              </div>
+              {/* Heading: prefer client-side dynamic heading (updates immediately), fall back to SSR-provided heading */}
+              {(heading) && (
+                <div className="mt-2">
+                  <h1 className="text-base sm:text-lg font-semibold text-gray-200" suppressHydrationWarning>
+                    {heading}
+                  </h1>
+                </div>
+              )}
             </div>
             <MatchTable
               matches={showAll ? sortedMatches : sortedMatches.slice(0, DEFAULT_INITIAL_COUNT)}
@@ -290,13 +548,14 @@ export default function AllMatches({ playerId }: AllMatchesProps) {
               onHeaderHeightChange={setTableHeaderHeight}
             />
             {/* table may overflow the viewport so all rows remain visible */}
-            {sortedMatches.length > DEFAULT_INITIAL_COUNT && (
+            {!showAll && (sortedMatches.length > DEFAULT_INITIAL_COUNT || (initialMatches && initialMatches.length === DEFAULT_INITIAL_COUNT)) && (
               <div className="w-full flex justify-center mt-2">
                 <button
-                  className="px-3 py-1 bg-gray-800 border border-gray-700 text-sm text-white rounded hover:bg-gray-700"
-                  onClick={() => setShowAll(!showAll)}
+                  className="px-3 py-1 bg-gray-800 border border-gray-700 text-sm text-white rounded hover:bg-gray-700 disabled:opacity-50"
+                  onClick={handleShowAllClick}
+                  disabled={loadingAllMatches}
                 >
-                  {showAll ? `Show latest ${DEFAULT_INITIAL_COUNT}` : `Show All matches`}
+                  {loadingAllMatches ? 'Loading...' : 'Show All matches'}
                 </button>
               </div>
             )}

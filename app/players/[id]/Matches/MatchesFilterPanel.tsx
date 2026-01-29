@@ -14,7 +14,11 @@ interface Props {
   displayedMatches?: Match[];
   updateUrl: (filters: Record<string, string>) => void;
   onExplicitChange?: (key: string, value: string) => void;
-}
+  // Callback to notify parent about current selected filters (for dynamic headings etc.)
+  onFiltersChange?: (filters: Record<string, string>) => void;
+} 
+
+// ... later in the file, after filteredMatches and wins/losses state, add effect to notify parent when filters change
 
 const TOURNEY_LEVELS = [
   { code: "G", label: "Grand Slam" },
@@ -25,7 +29,7 @@ const TOURNEY_LEVELS = [
   { code: "O", label: "Olympics" },
 ];
 
-export default function MatchesFilterPanel({ playerId, matches, allMatches, displayedMatches, updateUrl, onExplicitChange }: Props) {
+export default function MatchesFilterPanel({ playerId, matches, allMatches, displayedMatches, updateUrl, onExplicitChange, onFiltersChange }: Props) {
   const searchParams = useSearchParams();
   const urlYear = searchParams?.get("year");
   const urlTourney = searchParams?.get("tourney");
@@ -208,6 +212,36 @@ export default function MatchesFilterPanel({ playerId, matches, allMatches, disp
   // --- Stato W-L ---
   const [wins, setWins] = useState(0);
   const [losses, setLosses] = useState(0);
+
+  // Notify parent about current filters so UI such as headings can update immediately
+  useEffect(() => {
+    if (!onFiltersChange) return;
+    const payload: Record<string,string> = {
+      year: selectedYear,
+      level: tourneyLevelFilter,
+      tourney: tourneyIdFilter,
+      surface: surfaceFilter,
+      round: roundFilter,
+      result: resultFilter,
+      vsRank: vsRankFilter,
+      vsAge: vsAgeFilter,
+      vsHand: vsHandFilter,
+      vsBackhand: vsBackhandFilter,
+      vsEntry: vsEntryFilter,
+      asRank: asRankFilter,
+      asEntry: asEntryFilter,
+      set: matchSetFilter,
+      firstSet: firstSetFilter,
+      score: scoreFilter,
+    };
+    try {
+      onFiltersChange(payload);
+    } catch (e) {
+      // swallow
+    }
+  }, [selectedYear, tourneyLevelFilter, tourneyIdFilter, surfaceFilter, roundFilter, resultFilter,
+      vsRankFilter, vsAgeFilter, vsHandFilter, vsBackhandFilter, vsEntryFilter, asRankFilter, asEntryFilter,
+      matchSetFilter, firstSetFilter, scoreFilter, onFiltersChange]);
 
 // --- Calcolo W-L solo per match con status true ---
 useEffect(() => {
