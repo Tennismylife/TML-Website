@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from 'react';
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Match } from "@/types";
 import Flag from '@/components/Flag';
 
@@ -102,6 +102,29 @@ export default function Seeds({ id, year, matches }: SeedsProps) {
   const mid = Math.ceil(seedOutcomes.length / 2);
   const leftColumn = seedOutcomes.slice(0, mid);
   const rightColumn = seedOutcomes.slice(mid);
+
+  // Ensure we don't render the client seeds until we've removed any server-side seeds
+  const [mounted, setMounted] = useState<boolean>(() => !(matches && matches.length));
+
+  useEffect(() => {
+    if (!matches || !matches.length) {
+      setMounted(true);
+      return;
+    }
+
+    const el = typeof document !== 'undefined' ? document.getElementById('server-seeds') : null;
+    try {
+      if (el) {
+        (el as any).style = (el as any).style || {};
+        (el as any).style.display = 'none';
+      }
+    } catch (e) {
+      // ignore
+    }
+    requestAnimationFrame(() => setMounted(true));
+  }, [matches]);
+
+  if (!mounted) return null;
 
   return (
     <div className="p-4 text-white">

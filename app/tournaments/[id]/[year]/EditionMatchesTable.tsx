@@ -79,20 +79,20 @@ export default function MatchTable({
   const statsColumns = useMemo(() => {
     return showWinnerStats
       ? [
-          { id: "w_ace", label: "WA", title: "Winner Ace", key: "w_ace" as SortKey },
-          { id: "w_df", label: "WDF", title: "Winner Double Faults", key: "w_df" as SortKey },
-          { id: "w_1stIn", label: "W1st In", title: "W 1st In", key: "w_1stIn" as SortKey },
-          { id: "w_1stPct", label: "W1st%", title: "W 1st%", key: "w_1stPct" as SortKey },
-          { id: "w_2ndPct", label: "W2nd%", title: "W 2nd%", key: "w_2ndPct" as SortKey },
-          { id: "w_bp", label: "BPSvd", title: "W BP Saved / BP Faced", key: "w_bp" as SortKey },
+          { id: "w_ace", label: "WA", title: "Winner Aces: number of aces served by the winner", key: "w_ace" as SortKey },
+          { id: "w_df", label: "WDF", title: "Winner Double Faults: number of double faults by the winner", key: "w_df" as SortKey },
+          { id: "w_1stIn", label: "W1stIn%", title: "Winner 1st Serve In: 1st serves in / total service points", key: "w_1stIn" as SortKey },
+          { id: "w_1stPct", label: "W1st%", title: "Winner 1st Serve Won %: 1st serves won / 1st serves in", key: "w_1stPct" as SortKey },
+          { id: "w_2ndPct", label: "W2nd%", title: "Winner 2nd Serve Won %: 2nd serves won / 2nd serve points", key: "w_2ndPct" as SortKey },
+          { id: "w_bp", label: "BPSvd", title: "Winner Break Points Saved / Break Points Faced", key: "w_bp" as SortKey },
         ]
       : [
-          { id: "l_ace", label: "LA", title: "Loser Ace", key: "l_ace" as SortKey },
-          { id: "l_df", label: "LDF", title: "Loser Double Faults", key: "l_df" as SortKey },
-          { id: "l_1stIn", label: "L1st In", title: "L 1st In", key: "l_1stIn" as SortKey },
-          { id: "l_1stPct", label: "L1st%", title: "L 1st%", key: "l_1stPct" as SortKey },
-          { id: "l_2ndPct", label: "L2nd%", title: "L 2nd%", key: "l_2ndPct" as SortKey },
-          { id: "l_bp", label: "BPSvd", title: "L BP Saved / BP Faced", key: "l_bp" as SortKey },
+          { id: "l_ace", label: "LA", title: "Loser Aces: number of aces served by the loser", key: "l_ace" as SortKey },
+          { id: "l_df", label: "LDF", title: "Loser Double Faults: number of double faults by the loser", key: "l_df" as SortKey },
+          { id: "l_1stIn", label: "L1stIn%", title: "Loser 1st Serve In: 1st serves in / total service points", key: "l_1stIn" as SortKey },
+          { id: "l_1stPct", label: "L1st%", title: "Loser 1st Serve Won %: 1st serves won / 1st serves in", key: "l_1stPct" as SortKey },
+          { id: "l_2ndPct", label: "L2nd%", title: "Loser 2nd Serve Won %: 2nd serves won / 2nd serve points", key: "l_2ndPct" as SortKey },
+          { id: "l_bp", label: "BPSvd", title: "Loser Break Points Saved / Break Points Faced", key: "l_bp" as SortKey },
         ];
   }, [showWinnerStats]);
 
@@ -247,18 +247,18 @@ export default function MatchTable({
                   <>
                     <td className="px-4 py-2 text-center text-sm">{m.w_ace ?? "-"}</td>
                     <td className="px-4 py-2 text-center text-sm">{m.w_df ?? "-"}</td>
-                    <td className="px-4 py-2 text-center text-sm">{pct(w1stIn, wSvpt) ?? "-"}</td>
-                    <td className="px-4 py-2 text-center text-sm">{pct(m.w_1stWon ?? null, w1stIn) ?? "-"}</td>
-                    <td className="px-4 py-2 text-center text-sm">{pct(m.w_2ndWon ?? null, w2ndPts) ?? "-"}</td>
+                    <td className="px-4 py-2 text-center text-sm">{pct(w1stIn, wSvpt) != null ? `${pct(w1stIn, wSvpt)}%` : "-"}</td>
+                    <td className="px-4 py-2 text-center text-sm">{pct(m.w_1stWon ?? null, w1stIn) != null ? `${pct(m.w_1stWon ?? null, w1stIn)}%` : "-"}</td>
+                    <td className="px-4 py-2 text-center text-sm">{pct(m.w_2ndWon ?? null, w2ndPts) != null ? `${pct(m.w_2ndWon ?? null, w2ndPts)}%` : "-"}</td>
                     <td className="px-4 py-2 text-center text-sm">{ratio(m.w_bpSaved ?? null, m.w_bpFaced ?? null)}</td>
                   </>
                 ) : (
                   <>
                     <td className="px-4 py-2 text-center text-sm">{m.l_ace ?? "-"}</td>
                     <td className="px-4 py-2 text-center text-sm">{m.l_df ?? "-"}</td>
-                    <td className="px-4 py-2 text-center text-sm">{pct(l1stIn, lSvpt) ?? "-"}</td>
-                    <td className="px-4 py-2 text-center text-sm">{pct(m.l_1stWon ?? null, l1stIn) ?? "-"}</td>
-                    <td className="px-4 py-2 text-center text-sm">{pct(m.l_2ndWon ?? null, l2ndPts) ?? "-"}</td>
+                    <td className="px-4 py-2 text-center text-sm">{pct(l1stIn, lSvpt) != null ? `${pct(l1stIn, lSvpt)}%` : "-"}</td>
+                    <td className="px-4 py-2 text-center text-sm">{pct(m.l_1stWon ?? null, l1stIn) != null ? `${pct(m.l_1stWon ?? null, l1stIn)}%` : "-"}</td>
+                    <td className="px-4 py-2 text-center text-sm">{pct(m.l_2ndWon ?? null, l2ndPts) != null ? `${pct(m.l_2ndWon ?? null, l2ndPts)}%` : "-"}</td>
                     <td className="px-4 py-2 text-center text-sm">{ratio(m.l_bpSaved ?? null, m.l_bpFaced ?? null)}</td>
                   </>
                 )}

@@ -77,20 +77,20 @@ export default function MatchTable({
 
   const statsColumns = useMemo(() => showWinnerStats
     ? [
-        { id: "WA", label: "WA", title: "Winner Aces" },
-        { id: "WDF", label: "WDF", title: "Winner Double Faults" },
-        { id: "W1stIn", label: "W1stIn", title: "Winner 1st Serve In = 1st Serve In/ Total Service Points" },
-        { id: "W1stPct", label: "W1st%", title: "Winner 1st% =  1st Serve Won/ 1st Serve In" },
-        { id: "W2ndPct", label: "W2nd%", title: "Winner 2nd% = 2nd Serve Won /(Total Service Points-1st Serve In)" },
-        { id: "WBPSvd", label: "BPSvd", title: "Winner Break Points Faced / Break Points Saved" },
+        { id: "w_ace", label: "WA", title: "Winner Aces: number of aces served by the winner" },
+        { id: "w_df", label: "WDF", title: "Winner Double Faults: number of double faults by the winner" },
+        { id: "w_1stIn", label: "W1stIn", title: "Winner 1st Serve In: 1st serves in / total service points" },
+        { id: "w_1stPct", label: "W1st%", title: "Winner 1st Serve Won %: 1st serves won / 1st serves in" },
+        { id: "w_2ndPct", label: "W2nd%", title: "Winner 2nd Serve Won %: 2nd serves won / 2nd serve points" },
+        { id: "w_bpSaved", label: "BPSvd", title: "Winner Break Points Saved / Break Points Faced" },
       ]
     : [
-        { id: "LA", label: "LA", title: "Loser Ace" },
-        { id: "LDF", label: "LDF", title: "Loser Double Faults" },
-        { id: "L1stIn", label: "L1stIn", title: "Loser 1st Serve In = 1st Serve In/ Total Service Points" },
-        { id: "L1stPct", label: "L1st%", title: "Loser 1st% =  1st Serve Won/ 1st Serve In" },
-        { id: "L2ndPct", label: "L2nd%", title: "Loser 2nd% = 2nd Serve Won /(Total Service Points-1st Serve In)" },
-        { id: "LBPSvd", label: "BPSvd", title: "Loser Break Points Faced / Break Points Saved" },
+        { id: "l_ace", label: "LA", title: "Loser Aces: number of aces served by the loser" },
+        { id: "l_df", label: "LDF", title: "Loser Double Faults: number of double faults by the loser" },
+        { id: "l_1stIn", label: "L1stIn", title: "Loser 1st Serve In: 1st serves in / total service points" },
+        { id: "l_1stPct", label: "L1st%", title: "Loser 1st Serve Won %: 1st serves won / 1st serves in" },
+        { id: "l_2ndPct", label: "L2nd%", title: "Loser 2nd Serve Won %: 2nd serves won / 2nd serve points" },
+        { id: "l_bpSaved", label: "BPSvd", title: "Loser Break Points Saved / Break Points Faced" },
       ], [showWinnerStats]);
 
 
@@ -125,6 +125,12 @@ export default function MatchTable({
     const arr = [...matches];
     const dir = sortDir === 'asc' ? 1 : -1;
 
+    const numPct = (num?: number | null, den?: number | null) => {
+      if (num == null || den == null || den <= 0) return null;
+      const v = (num / den) * 100;
+      return Number.isFinite(v) ? v : null;
+    };
+
     arr.sort((a, b) => {
       // Special handling when sorting by tourney_date: keep rounds ordering within same tournament
       if (sortKey === 'tourney_date') {
@@ -150,16 +156,40 @@ export default function MatchTable({
         return (ad - bd) * dir;
       }
 
-      // Generic sort for other keys (string/number fields)
-      const av = typeof sortKey === 'string' ? (a as any)[sortKey] : null;
-      const bv = typeof sortKey === 'string' ? (b as any)[sortKey] : null;
-      if (av == null && bv == null) return 0;
-      if (av == null) return 1 * dir;
-      if (bv == null) return -1 * dir;
-      // numeric comparison
-      if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * dir;
-      // fallback string compare
-      return String(av).localeCompare(String(bv)) * dir;
+      // Handle stat-derived keys specially
+      const getVal = (m: Match, key: string | null) => {
+        if (!key) return null;
+        switch (key) {
+          case 'w_1stPct':
+            return numPct(m.w_1stWon ?? null, m.w_1stIn ?? null) ?? -1;
+          case 'w_2ndPct':
+            return numPct(m.w_2ndWon ?? null, (m.w_svpt ?? 0) - (m.w_1stIn ?? 0)) ?? -1;
+          case 'l_1stPct':
+            return numPct(m.l_1stWon ?? null, m.l_1stIn ?? null) ?? -1;
+          case 'l_2ndPct':
+            return numPct(m.l_2ndWon ?? null, (m.l_svpt ?? 0) - (m.l_1stIn ?? 0)) ?? -1;
+          case 'w_1stIn':
+            return numPct(m.w_1stIn ?? null, m.w_svpt ?? null) ?? -1;
+          case 'l_1stIn':
+            return numPct(m.l_1stIn ?? null, m.l_svpt ?? null) ?? -1;
+          case 'w_bpSaved':
+            return m.w_bpSaved ?? -1;
+          case 'l_bpSaved':
+            return m.l_bpSaved ?? -1;
+          default:
+            return (m as any)[String(key)];
+        }
+      };
+
+      const aVal = getVal(a, sortKey as string);
+      const bVal = getVal(b, sortKey as string);
+
+      if (aVal == null && bVal == null) return 0;
+      if (aVal == null) return 1 * dir;
+      if (bVal == null) return -1 * dir;
+
+      if (typeof aVal === 'number' && typeof bVal === 'number') return (aVal - bVal) * dir;
+      return String(aVal).localeCompare(String(bVal)) * dir;
     });
 
     return arr;

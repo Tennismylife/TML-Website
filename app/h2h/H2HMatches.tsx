@@ -55,27 +55,53 @@ export default function H2HMatches({
 }: H2HMatchesProps) {
   const [showWinnerStats, setShowWinnerStats] = useState(true);
 
-  // Sorting client-side (con gestione corretta della data!)
+  // Sorting client-side (con gestione corretta della data!) — extended to handle stat columns
   const sortedMatches = useMemo(() => {
     if (!matches?.length) return [];
     if (sortKey === null) return [...matches];
 
-    return [...matches].sort((a, b) => {
-      let aVal: any = a[sortKey as keyof typeof a];
-      let bVal: any = b[sortKey as keyof typeof b];
+    const dir = sortDir === 'asc' ? 1 : -1;
 
-      // Gestione speciale per la data
-      if (sortKey === "tourney_date") {
-        aVal = a.tourney_date ? new Date(a.tourney_date).getTime() : null;
-        bVal = b.tourney_date ? new Date(b.tourney_date).getTime() : null;
+    const getVal = (m: Match, key: string | null) => {
+      if (!key) return null;
+
+      if (key === 'tourney_date') return m.tourney_date ? new Date(m.tourney_date).getTime() : null;
+
+      switch (key) {
+        case 'w_1stPct':
+          return numPct(m.w_1stWon, m.w_1stIn) ?? -1;
+        case 'w_2ndPct':
+          return numPct(m.w_2ndWon, m.w_svpt && m.w_1stIn ? m.w_svpt - m.w_1stIn : null) ?? -1;
+        case 'w_1stIn':
+          return numPct(m.w_1stIn, m.w_svpt) ?? -1;
+        case 'w_bpSaved':
+          return m.w_bpSaved ?? -1;
+
+        case 'l_1stPct':
+          return numPct(m.l_1stWon, m.l_1stIn) ?? -1;
+        case 'l_2ndPct':
+          return numPct(m.l_2ndWon, m.l_svpt && m.l_1stIn ? m.l_svpt - m.l_1stIn : null) ?? -1;
+        case 'l_1stIn':
+          return numPct(m.l_1stIn, m.l_svpt) ?? -1;
+        case 'l_bpSaved':
+          return m.l_bpSaved ?? -1;
+
+        default:
+          const v = (m as any)[String(key)];
+          return v == null ? null : v;
       }
+    };
 
-      if (aVal == null) return sortDir === "asc" ? -1 : 1;
-      if (bVal == null) return sortDir === "asc" ? 1 : -1;
+    return [...matches].sort((a, b) => {
+      const aVal = getVal(a, sortKey as string);
+      const bVal = getVal(b, sortKey as string);
 
-      if (aVal < bVal) return sortDir === "asc" ? -1 : 1;
-      if (aVal > bVal) return sortDir === "asc" ? 1 : -1;
-      return 0;
+      if (aVal == null && bVal == null) return 0;
+      if (aVal == null) return 1 * dir;
+      if (bVal == null) return -1 * dir;
+
+      if (typeof aVal === 'number' && typeof bVal === 'number') return (aVal - bVal) * dir;
+      return String(aVal).localeCompare(String(bVal)) * dir;
     });
   }, [matches, sortKey, sortDir]);
 
@@ -141,26 +167,33 @@ export default function H2HMatches({
     };
   }, [sortedMatches]);
 
-  // Colonne statistiche (winner / loser)
+  // Colonne statistiche (winner / loser) — ora con chiavi usabili per il sorting
   const statsColumns = useMemo(() => {
     return showWinnerStats
       ? [
-          { id: "WA", label: "WA", title: "Winner Aces" },
-          { id: "WDF", label: "WDF", title: "Winner Double Faults" },
-          { id: "W1stIn", label: "W1stIn", title: "W 1st Serve In %" },
-          { id: "W1stPct", label: "W1st%", title: "W 1st Serve Won %" },
-          { id: "W2ndPct", label: "W2nd%", title: "W 2nd Serve Won %" },
-          { id: "WBPSvd", label: "BPSvd", title: "W Break Points Saved" },
+          { id: "w_ace", label: "WA", title: "Winner Aces: number of aces served by the winner", key: "w_ace" as SortKey },
+          { id: "w_df", label: "WDF", title: "Winner Double Faults: number of double faults by the winner", key: "w_df" as SortKey },
+          { id: "w_1stIn", label: "W1stIn", title: "Winner 1st Serve In: 1st serves in / total service points", key: "w_1stIn" as SortKey },
+          { id: "w_1stPct", label: "W1st%", title: "Winner 1st Serve Won %: 1st serves won / 1st serves in", key: "w_1stPct" as SortKey },
+          { id: "w_2ndPct", label: "W2nd%", title: "Winner 2nd Serve Won %: 2nd serves won / 2nd serve points", key: "w_2ndPct" as SortKey },
+          { id: "w_bpSaved", label: "BPSvd", title: "Winner Break Points Saved / Break Points Faced", key: "w_bpSaved" as SortKey },
         ]
       : [
-          { id: "LA", label: "LA", title: "Loser Aces" },
-          { id: "LDF", label: "LDF", title: "Loser Double Faults" },
-          { id: "L1stIn", label: "L1stIn", title: "L 1st Serve In %" },
-          { id: "L1stPct", label: "L1st%", title: "L 1st Serve Won %" },
-          { id: "L2ndPct", label: "L2nd%", title: "L 2nd Serve Won %" },
-          { id: "LBPSvd", label: "BPSvd", title: "L Break Points Saved" },
+          { id: "l_ace", label: "LA", title: "Loser Aces: number of aces served by the loser", key: "l_ace" as SortKey },
+          { id: "l_df", label: "LDF", title: "Loser Double Faults: number of double faults by the loser", key: "l_df" as SortKey },
+          { id: "l_1stIn", label: "L1stIn", title: "Loser 1st Serve In: 1st serves in / total service points", key: "l_1stIn" as SortKey },
+          { id: "l_1stPct", label: "L1st%", title: "Loser 1st Serve Won %: 1st serves won / 1st serves in", key: "l_1stPct" as SortKey },
+          { id: "l_2ndPct", label: "L2nd%", title: "Loser 2nd Serve Won %: 2nd serves won / 2nd serve points", key: "l_2ndPct" as SortKey },
+          { id: "l_bpSaved", label: "BPSvd", title: "Loser Break Points Saved / Break Points Faced", key: "l_bpSaved" as SortKey },
         ];
   }, [showWinnerStats]);
+
+  // Numeric percentage helper for sorting
+  function numPct(num?: number | null, den?: number | null) {
+    if (num == null || den == null || den <= 0) return null;
+    const val = (num / den) * 100;
+    return Number.isFinite(val) ? val : null;
+  }
 
   // Colonne base della tabella
   const baseColumns = [

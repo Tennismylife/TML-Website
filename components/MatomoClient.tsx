@@ -25,7 +25,16 @@ export default function MatomoClient() {
       const adBlocked =
         bait.offsetParent === null || bait.offsetHeight === 0;
 
-      document.body.removeChild(bait);
+      try {
+        if (typeof (bait as any).remove === 'function') {
+          (bait as any).remove();
+        } else if (bait.parentNode) {
+          bait.parentNode.removeChild(bait);
+        }
+      } catch (e) {
+        // ignore removal errors
+      }
+
       window.adBlockDetected = adBlocked;
 
       console.log('AdBlock attivo:', adBlocked ? 'Yes' : 'No');

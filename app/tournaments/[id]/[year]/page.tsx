@@ -1,6 +1,8 @@
 import TournamentEditionClient from './EditionClient';
 import { buildTournamentJsonLdFromDb, fetchEditionInfo, getEditionValue } from './layout';
 import Breadcrumbs from './Breadcrumbs';
+import EditionMatchesServer from './EditionMatchesServer';
+import SeedsServer from './SeedsServer';
 import { prisma } from '@/lib/prisma';
 
 // Local helpers
@@ -77,6 +79,37 @@ export default async function Page(props: any) {
   } catch (e) {
     // JSON-LD generation failed; continue without it
     jsonLd = '';
+  }
+
+  // Server-side fetch of matches so page can be SSR-rendered when data exists.
+  // This mirrors the logic used by the API route and will be passed to the
+  // client component as `initialMatches` to avoid double-fetching on the client.
+  let initialMatches: any[] | null = null;
+  try {
+    if (id && year) {
+      const { resolveTourneyIds } = await import('@/lib/tournament');
+      const tourneyIds = await resolveTourneyIds(id);
+      if (tourneyIds && Array.isArray(tourneyIds) && tourneyIds.length) {
+        const yearNum = Number(year);
+        const tourneyIdFilters = tourneyIds.flatMap((tid: string) => [ { tourney_id: tid }, { tourney_id: { endsWith: `-${tid}` } } ]);
+        const matches = await prisma.match.findMany({ where: { AND: [ { OR: tourneyIdFilters }, { year: yearNum }, { score: { not: 'To play' } } ] } });
+        if (matches && matches.length) {
+          // enrich with slugs (same as API)
+          const playerIds = Array.from(new Set(matches.flatMap(m => [m.winner_id, m.loser_id]).filter(Boolean)));
+          try {
+            const { mapIdsToSlugs } = await import('@/lib/player-slugs');
+            const slugMap = await mapIdsToSlugs(playerIds as string[]);
+            initialMatches = matches.map((m: any) => ({ ...m, winner_slug: m.winner_id ? (slugMap[String(m.winner_id)] ?? null) : null, loser_slug: m.loser_id ? (slugMap[String(m.loser_id)] ?? null) : null }));
+          } catch (e) {
+            initialMatches = matches;
+          }
+          // If we found matches, don't treat edition as missing
+          if (initialMatches.length) editionMissing = false;
+        }
+      }
+    }
+  } catch (e) {
+    // ignore; we'll render client-only fallback if needed
   }
 
   // Ensure SportsEvent startDate aligns with edition official date.
@@ -201,7 +234,18 @@ export default async function Page(props: any) {
       {/* SEO-only link: visually hidden for users, present in the DOM for crawlers */}
       <a href={`/tournaments/${id}/${year}/records`} className="sr-only">View Records of the Tournament</a>
 
-      <TournamentEditionClient {...props} />
+      {/* Server-rendered matches table for SSR (visible in HTML when data exists) */}
+      {initialMatches && initialMatches.length ? (
+        <EditionMatchesServer matches={initialMatches} />
+      ) : null}
+
+      {/* Server-rendered seeds (SSR) */}
+      {initialMatches && initialMatches.length ? (
+        <SeedsServer id={id} year={year} matches={initialMatches} />
+      ) : null}
+
+      {/* Client interactive edition (receives initialMatches so it can skip fetching) */}
+      <TournamentEditionClient params={resolvedParams} initialMatches={initialMatches ?? undefined} />
     </>
   );
 }

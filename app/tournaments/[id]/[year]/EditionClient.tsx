@@ -65,13 +65,42 @@ export default function TournamentEditionClient(props: any) {
     return () => { cancelled = true; };
   }, [id, year, router]);
 
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Support `initialMatches` passed from the server for SSR.
+  // If `initialMatches` are provided, use them and skip the client fetch.
+  const [matches, setMatches] = useState<Match[]>(props?.initialMatches ?? []);
+  const [loading, setLoading] = useState<boolean>(!props?.initialMatches);
   const [error, setError] = useState<string | null>(null);
   const [sortKey, setSortKey] = useState<SortKey>("round");
   const [sortDir, setSortDir] = useState<SortDirection>("asc");
+  // Ensure we don't render the client table until we've removed the server table
+  const [mounted, setMounted] = useState<boolean>(!props?.initialMatches);
 
   useEffect(() => {
+    if (!props?.initialMatches) {
+      setMounted(true);
+      return;
+    }
+
+    // When server rendered table exists, remove it on first mount then allow
+    // the client table to render. This prevents having two tables at once.
+    const el = typeof document !== 'undefined' ? document.getElementById('server-matches') : null;
+    try {
+      // Instead of removing nodes (which in some environments may throw),
+      // hide the server-rendered element so the client table can render in
+      // its place without visual duplication.
+      if (el) {
+        (el as any).style = (el as any).style || {};
+        (el as any).style.display = 'none';
+      }
+    } catch (e) {
+      // ignore
+    }
+    // Allow a tick for the DOM to settle before rendering client table
+    requestAnimationFrame(() => setMounted(true));
+  }, [props?.initialMatches]);
+
+  useEffect(() => {
+    if (props?.initialMatches) return; // already have initial data from SSR
     if (!id || !year) return;
 
     const controller = new AbortController();
@@ -100,7 +129,7 @@ export default function TournamentEditionClient(props: any) {
 
     load();
     return () => controller.abort();
-  }, [id, year]);
+  }, [id, year, props?.initialMatches]);
 
   if (!resolvedParams) return <div>Loading parameters...</div>;
   if (loading) return <div>Loading data...</div>;
@@ -148,14 +177,17 @@ export default function TournamentEditionClient(props: any) {
       </div>
 
       <div className="w-full">
-        <MatchTable
-          matches={matches}
-          sortKey={sortKey}
-          sortDir={sortDir}
-          setSortKey={setSortKey}
-          setSortDir={setSortDir}
-          playerId=""
-        />
+        {/* Render client table only after we've removed any server-side table to avoid duplicates */}
+        {mounted ? (
+          <MatchTable
+            matches={matches}
+            sortKey={sortKey}
+            sortDir={sortDir}
+            setSortKey={setSortKey}
+            setSortDir={setSortDir}
+            playerId=""
+          />
+        ) : null}
       </div>
 
       <div className="w-full">
