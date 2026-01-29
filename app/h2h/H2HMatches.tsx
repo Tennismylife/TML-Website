@@ -235,11 +235,12 @@ export default function H2HMatches({
           <thead>
             <tr className="bg-black/80">
               {[...baseColumns, ...statsColumns].map((col) => {
-                const isSortable = "key" in col;
-                const currentSort = isSortable && sortKey === col.key;
-                const colTitle = "title" in col ? (col.title ?? col.label) : col.label;
-                const align = isSortable && "align" in col ? col.align : "center";
-                const keyId = isSortable ? col.key : col.id;
+                const anyCol = col as any;
+                const isSortable = Boolean(anyCol.key);
+                const currentSort = isSortable && sortKey === anyCol.key;
+                const colTitle = anyCol.title ?? anyCol.label;
+                const align = anyCol.align ?? "center";
+                const keyId = anyCol.key ?? anyCol.id ?? String(anyCol.label);
 
                 return (
                   <th
@@ -248,7 +249,7 @@ export default function H2HMatches({
                     className={`border border-white/20 px-3 py-2 text-${align} font-medium text-gray-200 select-none ${
                       isSortable ? "cursor-pointer hover:bg-gray-800" : ""
                     }`}
-                    onClick={() => (isSortable ? handleSort(col.key) : undefined)}
+                    onClick={() => (isSortable ? handleSort(anyCol.key) : undefined)}
                     aria-sort={
                       currentSort
                         ? sortDir === "asc"
@@ -259,7 +260,7 @@ export default function H2HMatches({
                     title={colTitle}
                   >
                     <div className="flex items-center justify-center gap-1">
-                      {col.label}
+                      {anyCol.label}
                       {currentSort && (
                         <span className="text-xs">{sortDir === "asc" ? "▲" : "▼"}</span>
                       )}
