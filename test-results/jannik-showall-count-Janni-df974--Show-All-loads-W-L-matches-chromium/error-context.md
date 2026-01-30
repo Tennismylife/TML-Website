@@ -1,0 +1,12224 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "Site logo" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - img "Site logo" [ref=e5]
+      - navigation "Primary" [ref=e6]:
+        - link "Home" [ref=e7] [cursor=pointer]:
+          - /url: /
+        - link "Tournaments" [ref=e8] [cursor=pointer]:
+          - /url: /tournaments
+        - link "Seasons" [ref=e9] [cursor=pointer]:
+          - /url: /seasons
+        - link "Statistics" [ref=e10] [cursor=pointer]:
+          - /url: /statistics
+        - link "H2H" [ref=e11] [cursor=pointer]:
+          - /url: /h2h
+        - link "Player vs Player" [ref=e12] [cursor=pointer]:
+          - /url: /player-vs-player
+        - link "Rankings" [ref=e13] [cursor=pointer]:
+          - /url: /ranking
+        - link "Ranking Tables" [ref=e14] [cursor=pointer]:
+          - /url: /rankingtables
+        - link "Match Records" [ref=e15] [cursor=pointer]:
+          - /url: /records
+        - link "Ranking Records" [ref=e16] [cursor=pointer]:
+          - /url: /recordsranking
+        - link "Match Database" [ref=e17] [cursor=pointer]:
+          - /url: /tennis-match-database
+  - main [ref=e18]:
+    - heading "Matches" [level=1] [ref=e19]
+    - main [ref=e20]:
+      - generic [ref=e22]:
+        - img "🇮🇹" [ref=e23]
+        - heading "Jannik Sinner" [level=1] [ref=e24]
+      - generic [ref=e25]:
+        - tablist [ref=e27]:
+          - tab "Profile" [ref=e28] [cursor=pointer]
+          - tab "Matches" [selected] [ref=e29] [cursor=pointer]
+          - tab "Seasons" [ref=e30] [cursor=pointer]
+          - tab "Tournaments" [ref=e31] [cursor=pointer]
+          - tab "H2H" [ref=e32] [cursor=pointer]
+          - tab "Performance" [ref=e33] [cursor=pointer]
+          - tab "Statistics" [ref=e34] [cursor=pointer]
+        - generic [ref=e38]:
+          - complementary [ref=e39]:
+            - generic [ref=e44]:
+              - generic [ref=e46] [cursor=pointer]:
+                - generic [ref=e47]: ▶
+                - generic [ref=e48]: Season
+              - generic [ref=e50] [cursor=pointer]:
+                - generic [ref=e51]: ▶
+                - generic [ref=e52]: Tourney
+              - generic [ref=e54] [cursor=pointer]:
+                - generic [ref=e55]: ▶
+                - generic [ref=e56]: Level
+              - generic [ref=e58] [cursor=pointer]:
+                - generic [ref=e59]: ▶
+                - generic [ref=e60]: Surface
+              - generic [ref=e62] [cursor=pointer]:
+                - generic [ref=e63]: ▶
+                - generic [ref=e64]: Round
+              - generic [ref=e66] [cursor=pointer]:
+                - generic [ref=e67]: ▶
+                - generic [ref=e68]: Result
+              - generic [ref=e70] [cursor=pointer]:
+                - generic [ref=e71]: ▶
+                - generic [ref=e72]: vs Rank
+              - generic [ref=e74] [cursor=pointer]:
+                - generic [ref=e75]: ▶
+                - generic [ref=e76]: vs Age
+              - generic [ref=e78] [cursor=pointer]:
+                - generic [ref=e79]: ▶
+                - generic [ref=e80]: vs Hand
+              - generic [ref=e82] [cursor=pointer]:
+                - generic [ref=e83]: ▶
+                - generic [ref=e84]: vs Backhand
+              - generic [ref=e86] [cursor=pointer]:
+                - generic [ref=e87]: ▶
+                - generic [ref=e88]: vs Entry
+              - generic [ref=e90] [cursor=pointer]:
+                - generic [ref=e91]: ▶
+                - generic [ref=e92]: Player Rank
+              - generic [ref=e94] [cursor=pointer]:
+                - generic [ref=e95]: ▶
+                - generic [ref=e96]: Player Entry
+              - generic [ref=e98] [cursor=pointer]:
+                - generic [ref=e99]: ▶
+                - generic [ref=e100]: Sets
+              - generic [ref=e102] [cursor=pointer]:
+                - generic [ref=e103]: ▶
+                - generic [ref=e104]: First Sets
+              - generic [ref=e106] [cursor=pointer]:
+                - generic [ref=e107]: ▶
+                - generic [ref=e108]: Score
+          - generic [ref=e110]:
+            - generic [ref=e111]:
+              - generic [ref=e112]: "W-L: 322-86 (78.92%)"
+              - heading "Matches" [level=1] [ref=e114]
+            - generic [ref=e115]:
+              - button "Show Loser Stats" [ref=e117] [cursor=pointer]
+              - table [ref=e119]:
+                - rowgroup [ref=e120]:
+                  - row "Date ▼ Tourney Surface Round Wrk Winner Lrk Loser Score BoF Min WA WDF W1stIn W1st% W2nd% BPSvd" [ref=e121]:
+                    - columnheader "Date ▼" [ref=e122] [cursor=pointer]
+                    - columnheader "Tourney" [ref=e123] [cursor=pointer]
+                    - columnheader "Surface" [ref=e124] [cursor=pointer]
+                    - columnheader "Round" [ref=e125] [cursor=pointer]
+                    - columnheader "Wrk" [ref=e126] [cursor=pointer]
+                    - columnheader "Winner" [ref=e127] [cursor=pointer]
+                    - columnheader "Lrk" [ref=e128] [cursor=pointer]
+                    - columnheader "Loser" [ref=e129] [cursor=pointer]
+                    - columnheader "Score" [ref=e130] [cursor=pointer]
+                    - columnheader "BoF" [ref=e131] [cursor=pointer]
+                    - columnheader "Min" [ref=e132] [cursor=pointer]
+                    - columnheader "WA" [ref=e133] [cursor=pointer]
+                    - columnheader "WDF" [ref=e134] [cursor=pointer]
+                    - columnheader "W1stIn" [ref=e135] [cursor=pointer]
+                    - columnheader "W1st%" [ref=e136] [cursor=pointer]
+                    - columnheader "W2nd%" [ref=e137] [cursor=pointer]
+                    - columnheader "BPSvd" [ref=e138] [cursor=pointer]
+                - rowgroup [ref=e139]:
+                  - row "2026-01-20 Australian Open Hard R128 2 🇮🇹 Jannik Sinner (2) 93 🇫🇷 Hugo Gaston 6-2 6-1 RET 5 71 6 0 64.4% 86.2% 50.0% 3/3" [ref=e140]:
+                    - cell "2026-01-20" [ref=e141]
+                    - cell "Australian Open" [ref=e142]:
+                      - link "Australian Open" [ref=e143] [cursor=pointer]:
+                        - /url: /tournaments/580/2026
+                    - cell "Hard" [ref=e144]
+                    - cell "R128" [ref=e145]
+                    - cell "2" [ref=e146]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e147]:
+                      - img "🇮🇹" [ref=e148]
+                      - link "Jannik Sinner (2)" [ref=e149] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e150]: (2)
+                    - cell "93" [ref=e151]
+                    - cell "🇫🇷 Hugo Gaston" [ref=e152]:
+                      - img "🇫🇷" [ref=e153]
+                      - link "Hugo Gaston" [ref=e154] [cursor=pointer]:
+                        - /url: /players/hugo-gaston
+                    - cell "6-2 6-1 RET" [ref=e155]
+                    - cell "5" [ref=e156]
+                    - cell "71" [ref=e157]
+                    - cell "6" [ref=e158]
+                    - cell "0" [ref=e159]
+                    - cell "64.4%" [ref=e160]
+                    - cell "86.2%" [ref=e161]
+                    - cell "50.0%" [ref=e162]
+                    - cell "3/3" [ref=e163]
+                  - row "2025-11-10 ATP Finals Hard RR 2 🇮🇹 Jannik Sinner (2) 8 🇨🇦 Felix Auger-Aliassime (8) 7-5 6-1 3 100 3 1 70.6% 88.9% 60.0% 0/0" [ref=e164]:
+                    - cell "2025-11-10" [ref=e165]
+                    - cell "ATP Finals" [ref=e166]:
+                      - link "ATP Finals" [ref=e167] [cursor=pointer]:
+                        - /url: /tournaments/605/2025
+                    - cell "Hard" [ref=e168]
+                    - cell "RR" [ref=e169]
+                    - cell "2" [ref=e170]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e171]:
+                      - img "🇮🇹" [ref=e172]
+                      - link "Jannik Sinner (2)" [ref=e173] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e174]: (2)
+                    - cell "8" [ref=e175]
+                    - cell "🇨🇦 Felix Auger-Aliassime (8)" [ref=e176]:
+                      - img "🇨🇦" [ref=e177]
+                      - link "Felix Auger-Aliassime (8)" [ref=e178] [cursor=pointer]:
+                        - /url: /players/felix-auger-aliassime
+                        - text: Felix Auger-Aliassime
+                        - generic [ref=e179]: (8)
+                    - cell "7-5 6-1" [ref=e180]
+                    - cell "3" [ref=e181]
+                    - cell "100" [ref=e182]
+                    - cell "3" [ref=e183]
+                    - cell "1" [ref=e184]
+                    - cell "70.6%" [ref=e185]
+                    - cell "88.9%" [ref=e186]
+                    - cell "60.0%" [ref=e187]
+                    - cell "0/0" [ref=e188]
+                  - row "2025-11-10 ATP Finals Hard RR 2 🇮🇹 Jannik Sinner (2) 5 🇺🇸 Ben Shelton (5) 6-3 7-6(3) 3 94 11 0 74.6% 80.9% 56.3% 1/1" [ref=e189]:
+                    - cell "2025-11-10" [ref=e190]
+                    - cell "ATP Finals" [ref=e191]:
+                      - link "ATP Finals" [ref=e192] [cursor=pointer]:
+                        - /url: /tournaments/605/2025
+                    - cell "Hard" [ref=e193]
+                    - cell "RR" [ref=e194]
+                    - cell "2" [ref=e195]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e196]:
+                      - img "🇮🇹" [ref=e197]
+                      - link "Jannik Sinner (2)" [ref=e198] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e199]: (2)
+                    - cell "5" [ref=e200]
+                    - cell "🇺🇸 Ben Shelton (5)" [ref=e201]:
+                      - img "🇺🇸" [ref=e202]
+                      - link "Ben Shelton (5)" [ref=e203] [cursor=pointer]:
+                        - /url: /players/ben-shelton
+                        - text: Ben Shelton
+                        - generic [ref=e204]: (5)
+                    - cell "6-3 7-6(3)" [ref=e205]
+                    - cell "3" [ref=e206]
+                    - cell "94" [ref=e207]
+                    - cell "11" [ref=e208]
+                    - cell "0" [ref=e209]
+                    - cell "74.6%" [ref=e210]
+                    - cell "80.9%" [ref=e211]
+                    - cell "56.3%" [ref=e212]
+                    - cell "1/1" [ref=e213]
+                  - row "2025-11-10 ATP Finals Hard RR 2 🇮🇹 Jannik Sinner (2) 3 🇩🇪 Alexander Zverev (3) 6-4 6-3 3 97 12 0 70.6% 83.3% 35.0% 7/7" [ref=e214]:
+                    - cell "2025-11-10" [ref=e215]
+                    - cell "ATP Finals" [ref=e216]:
+                      - link "ATP Finals" [ref=e217] [cursor=pointer]:
+                        - /url: /tournaments/605/2025
+                    - cell "Hard" [ref=e218]
+                    - cell "RR" [ref=e219]
+                    - cell "2" [ref=e220]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e221]:
+                      - img "🇮🇹" [ref=e222]
+                      - link "Jannik Sinner (2)" [ref=e223] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e224]: (2)
+                    - cell "3" [ref=e225]
+                    - cell "🇩🇪 Alexander Zverev (3)" [ref=e226]:
+                      - img "🇩🇪" [ref=e227]
+                      - link "Alexander Zverev (3)" [ref=e228] [cursor=pointer]:
+                        - /url: /players/alexander-zverev
+                        - text: Alexander Zverev
+                        - generic [ref=e229]: (3)
+                    - cell "6-4 6-3" [ref=e230]
+                    - cell "3" [ref=e231]
+                    - cell "97" [ref=e232]
+                    - cell "12" [ref=e233]
+                    - cell "0" [ref=e234]
+                    - cell "70.6%" [ref=e235]
+                    - cell "83.3%" [ref=e236]
+                    - cell "35.0%" [ref=e237]
+                    - cell "7/7" [ref=e238]
+                  - row "2025-11-10 ATP Finals Hard F 2 🇮🇹 Jannik Sinner (2) 1 🇪🇸 Carlos Alcaraz (1) 7-6(4) 7-5 3 135 8 5 55.1% 83.7% 54.3% 2/3" [ref=e239]:
+                    - cell "2025-11-10" [ref=e240]
+                    - cell "ATP Finals" [ref=e241]:
+                      - link "ATP Finals" [ref=e242] [cursor=pointer]:
+                        - /url: /tournaments/605/2025
+                    - cell "Hard" [ref=e243]
+                    - cell "F" [ref=e244]
+                    - cell "2" [ref=e245]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e246]:
+                      - img "🇮🇹" [ref=e247]
+                      - link "Jannik Sinner (2)" [ref=e248] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e249]: (2)
+                    - cell "1" [ref=e250]
+                    - cell "🇪🇸 Carlos Alcaraz (1)" [ref=e251]:
+                      - img "🇪🇸" [ref=e252]
+                      - link "Carlos Alcaraz (1)" [ref=e253] [cursor=pointer]:
+                        - /url: /players/carlos-alcaraz
+                        - text: Carlos Alcaraz
+                        - generic [ref=e254]: (1)
+                    - cell "7-6(4) 7-5" [ref=e255]
+                    - cell "3" [ref=e256]
+                    - cell "135" [ref=e257]
+                    - cell "8" [ref=e258]
+                    - cell "5" [ref=e259]
+                    - cell "55.1%" [ref=e260]
+                    - cell "83.7%" [ref=e261]
+                    - cell "54.3%" [ref=e262]
+                    - cell "2/3" [ref=e263]
+                  - row "2025-11-10 ATP Finals Hard SF 2 🇮🇹 Jannik Sinner (2) 7 🇦🇺 Alex de Minaur (7) 7-5 6-2 3 112 7 0 74.6% 84.1% 46.7% 4/4" [ref=e264]:
+                    - cell "2025-11-10" [ref=e265]
+                    - cell "ATP Finals" [ref=e266]:
+                      - link "ATP Finals" [ref=e267] [cursor=pointer]:
+                        - /url: /tournaments/605/2025
+                    - cell "Hard" [ref=e268]
+                    - cell "SF" [ref=e269]
+                    - cell "2" [ref=e270]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e271]:
+                      - img "🇮🇹" [ref=e272]
+                      - link "Jannik Sinner (2)" [ref=e273] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e274]: (2)
+                    - cell "7" [ref=e275]
+                    - cell "🇦🇺 Alex de Minaur (7)" [ref=e276]:
+                      - img "🇦🇺" [ref=e277]
+                      - link "Alex de Minaur (7)" [ref=e278] [cursor=pointer]:
+                        - /url: /players/alex-de-minaur
+                        - text: Alex de Minaur
+                        - generic [ref=e279]: (7)
+                    - cell "7-5 6-2" [ref=e280]
+                    - cell "3" [ref=e281]
+                    - cell "112" [ref=e282]
+                    - cell "7" [ref=e283]
+                    - cell "0" [ref=e284]
+                    - cell "74.6%" [ref=e285]
+                    - cell "84.1%" [ref=e286]
+                    - cell "46.7%" [ref=e287]
+                    - cell "4/4" [ref=e288]
+                  - row "2025-10-27 Paris Masters Hard F 2 🇮🇹 Jannik Sinner (2) 10 🇨🇦 Felix Auger-Aliassime (9) 6-4 7-6(4) 3 112 6 2 72.1% 90.9% 64.7% 0/0" [ref=e289]:
+                    - cell "2025-10-27" [ref=e290]
+                    - cell "Paris Masters" [ref=e291]:
+                      - link "Paris Masters" [ref=e292] [cursor=pointer]:
+                        - /url: /tournaments/352/2025
+                    - cell "Hard" [ref=e293]
+                    - cell "F" [ref=e294]
+                    - cell "2" [ref=e295]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e296]:
+                      - img "🇮🇹" [ref=e297]
+                      - link "Jannik Sinner (2)" [ref=e298] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e299]: (2)
+                    - cell "10" [ref=e300]
+                    - cell "🇨🇦 Felix Auger-Aliassime (9)" [ref=e301]:
+                      - img "🇨🇦" [ref=e302]
+                      - link "Felix Auger-Aliassime (9)" [ref=e303] [cursor=pointer]:
+                        - /url: /players/felix-auger-aliassime
+                        - text: Felix Auger-Aliassime
+                        - generic [ref=e304]: (9)
+                    - cell "6-4 7-6(4)" [ref=e305]
+                    - cell "3" [ref=e306]
+                    - cell "112" [ref=e307]
+                    - cell "6" [ref=e308]
+                    - cell "2" [ref=e309]
+                    - cell "72.1%" [ref=e310]
+                    - cell "90.9%" [ref=e311]
+                    - cell "64.7%" [ref=e312]
+                    - cell "0/0" [ref=e313]
+                  - row "2025-10-27 Paris Masters Hard SF 2 🇮🇹 Jannik Sinner (2) 3 🇩🇪 Alexander Zverev (3) 6-0 6-1 3 62 8 0 67.7% 90.5% 50.0% 0/0" [ref=e314]:
+                    - cell "2025-10-27" [ref=e315]
+                    - cell "Paris Masters" [ref=e316]:
+                      - link "Paris Masters" [ref=e317] [cursor=pointer]:
+                        - /url: /tournaments/352/2025
+                    - cell "Hard" [ref=e318]
+                    - cell "SF" [ref=e319]
+                    - cell "2" [ref=e320]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e321]:
+                      - img "🇮🇹" [ref=e322]
+                      - link "Jannik Sinner (2)" [ref=e323] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e324]: (2)
+                    - cell "3" [ref=e325]
+                    - cell "🇩🇪 Alexander Zverev (3)" [ref=e326]:
+                      - img "🇩🇪" [ref=e327]
+                      - link "Alexander Zverev (3)" [ref=e328] [cursor=pointer]:
+                        - /url: /players/alexander-zverev
+                        - text: Alexander Zverev
+                        - generic [ref=e329]: (3)
+                    - cell "6-0 6-1" [ref=e330]
+                    - cell "3" [ref=e331]
+                    - cell "62" [ref=e332]
+                    - cell "8" [ref=e333]
+                    - cell "0" [ref=e334]
+                    - cell "67.7%" [ref=e335]
+                    - cell "90.5%" [ref=e336]
+                    - cell "50.0%" [ref=e337]
+                    - cell "0/0" [ref=e338]
+                  - row "2025-10-27 Paris Masters Hard QF 2 🇮🇹 Jannik Sinner (2) 7 🇺🇸 Ben Shelton (5) 6-3 6-3 3 69 4 0 75.0% 80.0% 80.0% 0/1" [ref=e339]:
+                    - cell "2025-10-27" [ref=e340]
+                    - cell "Paris Masters" [ref=e341]:
+                      - link "Paris Masters" [ref=e342] [cursor=pointer]:
+                        - /url: /tournaments/352/2025
+                    - cell "Hard" [ref=e343]
+                    - cell "QF" [ref=e344]
+                    - cell "2" [ref=e345]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e346]:
+                      - img "🇮🇹" [ref=e347]
+                      - link "Jannik Sinner (2)" [ref=e348] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e349]: (2)
+                    - cell "7" [ref=e350]
+                    - cell "🇺🇸 Ben Shelton (5)" [ref=e351]:
+                      - img "🇺🇸" [ref=e352]
+                      - link "Ben Shelton (5)" [ref=e353] [cursor=pointer]:
+                        - /url: /players/ben-shelton
+                        - text: Ben Shelton
+                        - generic [ref=e354]: (5)
+                    - cell "6-3 6-3" [ref=e355]
+                    - cell "3" [ref=e356]
+                    - cell "69" [ref=e357]
+                    - cell "4" [ref=e358]
+                    - cell "0" [ref=e359]
+                    - cell "75.0%" [ref=e360]
+                    - cell "80.0%" [ref=e361]
+                    - cell "80.0%" [ref=e362]
+                    - cell "0/1" [ref=e363]
+                  - row "2025-10-27 Paris Masters Hard R16 2 🇮🇹 Jannik Sinner (2) 21 🇦🇷 Francisco Cerundolo 7-5 6-1 3 85 4 2 71.4% 82.9% 42.9% 1/3" [ref=e364]:
+                    - cell "2025-10-27" [ref=e365]
+                    - cell "Paris Masters" [ref=e366]:
+                      - link "Paris Masters" [ref=e367] [cursor=pointer]:
+                        - /url: /tournaments/352/2025
+                    - cell "Hard" [ref=e368]
+                    - cell "R16" [ref=e369]
+                    - cell "2" [ref=e370]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e371]:
+                      - img "🇮🇹" [ref=e372]
+                      - link "Jannik Sinner (2)" [ref=e373] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e374]: (2)
+                    - cell "21" [ref=e375]
+                    - cell "🇦🇷 Francisco Cerundolo" [ref=e376]:
+                      - img "🇦🇷" [ref=e377]
+                      - link "Francisco Cerundolo" [ref=e378] [cursor=pointer]:
+                        - /url: /players/francisco-cerundolo
+                    - cell "7-5 6-1" [ref=e379]
+                    - cell "3" [ref=e380]
+                    - cell "85" [ref=e381]
+                    - cell "4" [ref=e382]
+                    - cell "2" [ref=e383]
+                    - cell "71.4%" [ref=e384]
+                    - cell "82.9%" [ref=e385]
+                    - cell "42.9%" [ref=e386]
+                    - cell "1/3" [ref=e387]
+                  - row "2025-10-27 Paris Masters Hard R32 2 🇮🇹 Jannik Sinner (2) 41 🇧🇪 Zizou Bergs 6-4 6-2 3 87 0 2 64.6% 77.4% 70.6% 0/0" [ref=e388]:
+                    - cell "2025-10-27" [ref=e389]
+                    - cell "Paris Masters" [ref=e390]:
+                      - link "Paris Masters" [ref=e391] [cursor=pointer]:
+                        - /url: /tournaments/352/2025
+                    - cell "Hard" [ref=e392]
+                    - cell "R32" [ref=e393]
+                    - cell "2" [ref=e394]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e395]:
+                      - img "🇮🇹" [ref=e396]
+                      - link "Jannik Sinner (2)" [ref=e397] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e398]: (2)
+                    - cell "41" [ref=e399]
+                    - cell "🇧🇪 Zizou Bergs" [ref=e400]:
+                      - img "🇧🇪" [ref=e401]
+                      - link "Zizou Bergs" [ref=e402] [cursor=pointer]:
+                        - /url: /players/zizou-bergs
+                    - cell "6-4 6-2" [ref=e403]
+                    - cell "3" [ref=e404]
+                    - cell "87" [ref=e405]
+                    - cell "0" [ref=e406]
+                    - cell "2" [ref=e407]
+                    - cell "64.6%" [ref=e408]
+                    - cell "77.4%" [ref=e409]
+                    - cell "70.6%" [ref=e410]
+                    - cell "0/0" [ref=e411]
+                  - row "2025-10-20 Vienna Hard F 2 🇮🇹 Jannik Sinner (1) 3 🇩🇪 Alexander Zverev (2) 3-6 6-3 7-5 3 148 11 1 67.9% 82.5% 59.3% 3/4" [ref=e412]:
+                    - cell "2025-10-20" [ref=e413]
+                    - cell "Vienna" [ref=e414]:
+                      - link "Vienna" [ref=e415] [cursor=pointer]:
+                        - /url: /tournaments/337/2025
+                    - cell "Hard" [ref=e416]
+                    - cell "F" [ref=e417]
+                    - cell "2" [ref=e418]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e419]:
+                      - img "🇮🇹" [ref=e420]
+                      - link "Jannik Sinner (1)" [ref=e421] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e422]: (1)
+                    - cell "3" [ref=e423]
+                    - cell "🇩🇪 Alexander Zverev (2)" [ref=e424]:
+                      - img "🇩🇪" [ref=e425]
+                      - link "Alexander Zverev (2)" [ref=e426] [cursor=pointer]:
+                        - /url: /players/alexander-zverev
+                        - text: Alexander Zverev
+                        - generic [ref=e427]: (2)
+                    - cell "3-6 6-3 7-5" [ref=e428]
+                    - cell "3" [ref=e429]
+                    - cell "148" [ref=e430]
+                    - cell "11" [ref=e431]
+                    - cell "1" [ref=e432]
+                    - cell "67.9%" [ref=e433]
+                    - cell "82.5%" [ref=e434]
+                    - cell "59.3%" [ref=e435]
+                    - cell "3/4" [ref=e436]
+                  - row "2025-10-20 Vienna Hard SF 2 🇮🇹 Jannik Sinner (1) 7 🇦🇺 Alex de Minaur (3) 6-3 6-4 3 87 4 0 66.7% 73.7% 52.6% 0/2" [ref=e437]:
+                    - cell "2025-10-20" [ref=e438]
+                    - cell "Vienna" [ref=e439]:
+                      - link "Vienna" [ref=e440] [cursor=pointer]:
+                        - /url: /tournaments/337/2025
+                    - cell "Hard" [ref=e441]
+                    - cell "SF" [ref=e442]
+                    - cell "2" [ref=e443]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e444]:
+                      - img "🇮🇹" [ref=e445]
+                      - link "Jannik Sinner (1)" [ref=e446] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e447]: (1)
+                    - cell "7" [ref=e448]
+                    - cell "🇦🇺 Alex de Minaur (3)" [ref=e449]:
+                      - img "🇦🇺" [ref=e450]
+                      - link "Alex de Minaur (3)" [ref=e451] [cursor=pointer]:
+                        - /url: /players/alex-de-minaur
+                        - text: Alex de Minaur
+                        - generic [ref=e452]: (3)
+                    - cell "6-3 6-4" [ref=e453]
+                    - cell "3" [ref=e454]
+                    - cell "87" [ref=e455]
+                    - cell "4" [ref=e456]
+                    - cell "0" [ref=e457]
+                    - cell "66.7%" [ref=e458]
+                    - cell "73.7%" [ref=e459]
+                    - cell "52.6%" [ref=e460]
+                    - cell "0/2" [ref=e461]
+                  - row "2025-10-20 Vienna Hard QF 2 🇮🇹 Jannik Sinner (1) 16 🇰🇿 Alexander Bublik (8) 6-4 6-4 3 76 8 0 66.7% 93.3% 80.0% 0/0" [ref=e462]:
+                    - cell "2025-10-20" [ref=e463]
+                    - cell "Vienna" [ref=e464]:
+                      - link "Vienna" [ref=e465] [cursor=pointer]:
+                        - /url: /tournaments/337/2025
+                    - cell "Hard" [ref=e466]
+                    - cell "QF" [ref=e467]
+                    - cell "2" [ref=e468]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e469]:
+                      - img "🇮🇹" [ref=e470]
+                      - link "Jannik Sinner (1)" [ref=e471] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e472]: (1)
+                    - cell "16" [ref=e473]
+                    - cell "🇰🇿 Alexander Bublik (8)" [ref=e474]:
+                      - img "🇰🇿" [ref=e475]
+                      - link "Alexander Bublik (8)" [ref=e476] [cursor=pointer]:
+                        - /url: /players/alexander-bublik
+                        - text: Alexander Bublik
+                        - generic [ref=e477]: (8)
+                    - cell "6-4 6-4" [ref=e478]
+                    - cell "3" [ref=e479]
+                    - cell "76" [ref=e480]
+                    - cell "8" [ref=e481]
+                    - cell "0" [ref=e482]
+                    - cell "66.7%" [ref=e483]
+                    - cell "93.3%" [ref=e484]
+                    - cell "80.0%" [ref=e485]
+                    - cell "0/0" [ref=e486]
+                  - row "2025-10-20 Vienna Hard R16 2 🇮🇹 Jannik Sinner (1) 22 🇮🇹 Flavio Cobolli 6-2 7-6(4) 3 107 4 1 64.6% 69.0% 78.3% 0/0" [ref=e487]:
+                    - cell "2025-10-20" [ref=e488]
+                    - cell "Vienna" [ref=e489]:
+                      - link "Vienna" [ref=e490] [cursor=pointer]:
+                        - /url: /tournaments/337/2025
+                    - cell "Hard" [ref=e491]
+                    - cell "R16" [ref=e492]
+                    - cell "2" [ref=e493]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e494]:
+                      - img "🇮🇹" [ref=e495]
+                      - link "Jannik Sinner (1)" [ref=e496] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e497]: (1)
+                    - cell "22" [ref=e498]
+                    - cell "🇮🇹 Flavio Cobolli" [ref=e499]:
+                      - img "🇮🇹" [ref=e500]
+                      - link "Flavio Cobolli" [ref=e501] [cursor=pointer]:
+                        - /url: /players/flavio-cobolli
+                    - cell "6-2 7-6(4)" [ref=e502]
+                    - cell "3" [ref=e503]
+                    - cell "107" [ref=e504]
+                    - cell "4" [ref=e505]
+                    - cell "1" [ref=e506]
+                    - cell "64.6%" [ref=e507]
+                    - cell "69.0%" [ref=e508]
+                    - cell "78.3%" [ref=e509]
+                    - cell "0/0" [ref=e510]
+                  - row "2025-10-20 Vienna Hard R32 2 🇮🇹 Jannik Sinner (1) 51 🇩🇪 Daniel Altmaier 6-0 6-2 3 58 5 0 59.4% 94.7% 76.9% 0/0" [ref=e511]:
+                    - cell "2025-10-20" [ref=e512]
+                    - cell "Vienna" [ref=e513]:
+                      - link "Vienna" [ref=e514] [cursor=pointer]:
+                        - /url: /tournaments/337/2025
+                    - cell "Hard" [ref=e515]
+                    - cell "R32" [ref=e516]
+                    - cell "2" [ref=e517]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e518]:
+                      - img "🇮🇹" [ref=e519]
+                      - link "Jannik Sinner (1)" [ref=e520] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e521]: (1)
+                    - cell "51" [ref=e522]
+                    - cell "🇩🇪 Daniel Altmaier" [ref=e523]:
+                      - img "🇩🇪" [ref=e524]
+                      - link "Daniel Altmaier" [ref=e525] [cursor=pointer]:
+                        - /url: /players/daniel-altmaier
+                    - cell "6-0 6-2" [ref=e526]
+                    - cell "3" [ref=e527]
+                    - cell "58" [ref=e528]
+                    - cell "5" [ref=e529]
+                    - cell "0" [ref=e530]
+                    - cell "59.4%" [ref=e531]
+                    - cell "94.7%" [ref=e532]
+                    - cell "76.9%" [ref=e533]
+                    - cell "0/0" [ref=e534]
+                  - row "2025-09-24 Shanghai Hard R32 31 🇳🇱 Tallon Griekspoor (27) 2 🇮🇹 Jannik Sinner (2) 6-7(3) 7-5 3-2 RET 3 156 17 1 68.7% 77.9% 48.4% 6/6" [ref=e535]:
+                    - cell "2025-09-24" [ref=e536]
+                    - cell "Shanghai" [ref=e537]:
+                      - link "Shanghai" [ref=e538] [cursor=pointer]:
+                        - /url: /tournaments/5014/2025
+                    - cell "Hard" [ref=e539]
+                    - cell "R32" [ref=e540]
+                    - cell "31" [ref=e541]
+                    - cell "🇳🇱 Tallon Griekspoor (27)" [ref=e542]:
+                      - img "🇳🇱" [ref=e543]
+                      - link "Tallon Griekspoor (27)" [ref=e544] [cursor=pointer]:
+                        - /url: /players/tallon-griekspoor
+                        - text: Tallon Griekspoor
+                        - generic [ref=e545]: (27)
+                    - cell "2" [ref=e546]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e547]:
+                      - img "🇮🇹" [ref=e548]
+                      - link "Jannik Sinner (2)" [ref=e549] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e550]: (2)
+                    - cell "6-7(3) 7-5 3-2 RET" [ref=e551]
+                    - cell "3" [ref=e552]
+                    - cell "156" [ref=e553]
+                    - cell "17" [ref=e554]
+                    - cell "1" [ref=e555]
+                    - cell "68.7%" [ref=e556]
+                    - cell "77.9%" [ref=e557]
+                    - cell "48.4%" [ref=e558]
+                    - cell "6/6" [ref=e559]
+                  - row "2025-09-24 Shanghai Hard R64 2 🇮🇹 Jannik Sinner (2) 50 🇩🇪 Daniel Altmaier 6-3 6-3 3 98 3 0 63.0% 88.2% 45.0% 2/2" [ref=e560]:
+                    - cell "2025-09-24" [ref=e561]
+                    - cell "Shanghai" [ref=e562]:
+                      - link "Shanghai" [ref=e563] [cursor=pointer]:
+                        - /url: /tournaments/5014/2025
+                    - cell "Hard" [ref=e564]
+                    - cell "R64" [ref=e565]
+                    - cell "2" [ref=e566]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e567]:
+                      - img "🇮🇹" [ref=e568]
+                      - link "Jannik Sinner (2)" [ref=e569] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e570]: (2)
+                    - cell "50" [ref=e571]
+                    - cell "🇩🇪 Daniel Altmaier" [ref=e572]:
+                      - img "🇩🇪" [ref=e573]
+                      - link "Daniel Altmaier" [ref=e574] [cursor=pointer]:
+                        - /url: /players/daniel-altmaier
+                    - cell "6-3 6-3" [ref=e575]
+                    - cell "3" [ref=e576]
+                    - cell "98" [ref=e577]
+                    - cell "3" [ref=e578]
+                    - cell "0" [ref=e579]
+                    - cell "63.0%" [ref=e580]
+                    - cell "88.2%" [ref=e581]
+                    - cell "45.0%" [ref=e582]
+                    - cell "2/2" [ref=e583]
+                  - row "2025-09-24 Beijing Hard F 2 🇮🇹 Jannik Sinner (1) 52 🇺🇸 Learner Tien 6-2 6-2 3 72 10 1 66.0% 77.1% 55.6% 2/2" [ref=e584]:
+                    - cell "2025-09-24" [ref=e585]
+                    - cell "Beijing" [ref=e586]:
+                      - link "Beijing" [ref=e587] [cursor=pointer]:
+                        - /url: /tournaments/747/2025
+                    - cell "Hard" [ref=e588]
+                    - cell "F" [ref=e589]
+                    - cell "2" [ref=e590]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e591]:
+                      - img "🇮🇹" [ref=e592]
+                      - link "Jannik Sinner (1)" [ref=e593] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e594]: (1)
+                    - cell "52" [ref=e595]
+                    - cell "🇺🇸 Learner Tien" [ref=e596]:
+                      - img "🇺🇸" [ref=e597]
+                      - link "Learner Tien" [ref=e598] [cursor=pointer]:
+                        - /url: /players/learner-tien
+                    - cell "6-2 6-2" [ref=e599]
+                    - cell "3" [ref=e600]
+                    - cell "72" [ref=e601]
+                    - cell "10" [ref=e602]
+                    - cell "1" [ref=e603]
+                    - cell "66.0%" [ref=e604]
+                    - cell "77.1%" [ref=e605]
+                    - cell "55.6%" [ref=e606]
+                    - cell "2/2" [ref=e607]
+                  - row "2025-09-24 Beijing Hard SF 2 🇮🇹 Jannik Sinner (1) 8 🇦🇺 Alex de Minaur (3) 6-3 4-6 6-2 3 140 7 0 63.5% 82.0% 45.7% 11/12" [ref=e608]:
+                    - cell "2025-09-24" [ref=e609]
+                    - cell "Beijing" [ref=e610]:
+                      - link "Beijing" [ref=e611] [cursor=pointer]:
+                        - /url: /tournaments/747/2025
+                    - cell "Hard" [ref=e612]
+                    - cell "SF" [ref=e613]
+                    - cell "2" [ref=e614]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e615]:
+                      - img "🇮🇹" [ref=e616]
+                      - link "Jannik Sinner (1)" [ref=e617] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e618]: (1)
+                    - cell "8" [ref=e619]
+                    - cell "🇦🇺 Alex de Minaur (3)" [ref=e620]:
+                      - img "🇦🇺" [ref=e621]
+                      - link "Alex de Minaur (3)" [ref=e622] [cursor=pointer]:
+                        - /url: /players/alex-de-minaur
+                        - text: Alex de Minaur
+                        - generic [ref=e623]: (3)
+                    - cell "6-3 4-6 6-2" [ref=e624]
+                    - cell "3" [ref=e625]
+                    - cell "140" [ref=e626]
+                    - cell "7" [ref=e627]
+                    - cell "0" [ref=e628]
+                    - cell "63.5%" [ref=e629]
+                    - cell "82.0%" [ref=e630]
+                    - cell "45.7%" [ref=e631]
+                    - cell "11/12" [ref=e632]
+                  - row "2025-09-24 Beijing Hard QF 2 🇮🇹 Jannik Sinner (1) 57 🇭🇺 Fabian Marozsan 6-1 7-5 3 80 7 1 56.6% 70.0% 60.9% 1/2" [ref=e633]:
+                    - cell "2025-09-24" [ref=e634]
+                    - cell "Beijing" [ref=e635]:
+                      - link "Beijing" [ref=e636] [cursor=pointer]:
+                        - /url: /tournaments/747/2025
+                    - cell "Hard" [ref=e637]
+                    - cell "QF" [ref=e638]
+                    - cell "2" [ref=e639]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e640]:
+                      - img "🇮🇹" [ref=e641]
+                      - link "Jannik Sinner (1)" [ref=e642] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e643]: (1)
+                    - cell "57" [ref=e644]
+                    - cell "🇭🇺 Fabian Marozsan" [ref=e645]:
+                      - img "🇭🇺" [ref=e646]
+                      - link "Fabian Marozsan" [ref=e647] [cursor=pointer]:
+                        - /url: /players/fabian-marozsan
+                    - cell "6-1 7-5" [ref=e648]
+                    - cell "3" [ref=e649]
+                    - cell "80" [ref=e650]
+                    - cell "7" [ref=e651]
+                    - cell "1" [ref=e652]
+                    - cell "56.6%" [ref=e653]
+                    - cell "70.0%" [ref=e654]
+                    - cell "60.9%" [ref=e655]
+                    - cell "1/2" [ref=e656]
+                  - row "2025-09-24 Beijing Hard R16 2 🇮🇹 Jannik Sinner (1) 68 🇫🇷 Terence Atmane 6-4 5-7 6-0 3 141 3 0 63.0% 69.0% 47.1% 6/9" [ref=e657]:
+                    - cell "2025-09-24" [ref=e658]
+                    - cell "Beijing" [ref=e659]:
+                      - link "Beijing" [ref=e660] [cursor=pointer]:
+                        - /url: /tournaments/747/2025
+                    - cell "Hard" [ref=e661]
+                    - cell "R16" [ref=e662]
+                    - cell "2" [ref=e663]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e664]:
+                      - img "🇮🇹" [ref=e665]
+                      - link "Jannik Sinner (1)" [ref=e666] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e667]: (1)
+                    - cell "68" [ref=e668]
+                    - cell "🇫🇷 Terence Atmane" [ref=e669]:
+                      - img "🇫🇷" [ref=e670]
+                      - link "Terence Atmane" [ref=e671] [cursor=pointer]:
+                        - /url: /players/terence-atmane
+                    - cell "6-4 5-7 6-0" [ref=e672]
+                    - cell "3" [ref=e673]
+                    - cell "141" [ref=e674]
+                    - cell "3" [ref=e675]
+                    - cell "0" [ref=e676]
+                    - cell "63.0%" [ref=e677]
+                    - cell "69.0%" [ref=e678]
+                    - cell "47.1%" [ref=e679]
+                    - cell "6/9" [ref=e680]
+                  - row "2025-09-24 Beijing Hard R32 2 🇮🇹 Jannik Sinner (1) 97 🇭🇷 Marin Cilic 6-2 6-2 3 81 3 0 76.6% 75.0% 63.6% 1/1" [ref=e681]:
+                    - cell "2025-09-24" [ref=e682]
+                    - cell "Beijing" [ref=e683]:
+                      - link "Beijing" [ref=e684] [cursor=pointer]:
+                        - /url: /tournaments/747/2025
+                    - cell "Hard" [ref=e685]
+                    - cell "R32" [ref=e686]
+                    - cell "2" [ref=e687]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e688]:
+                      - img "🇮🇹" [ref=e689]
+                      - link "Jannik Sinner (1)" [ref=e690] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e691]: (1)
+                    - cell "97" [ref=e692]
+                    - cell "🇭🇷 Marin Cilic" [ref=e693]:
+                      - img "🇭🇷" [ref=e694]
+                      - link "Marin Cilic" [ref=e695] [cursor=pointer]:
+                        - /url: /players/marin-cilic
+                    - cell "6-2 6-2" [ref=e696]
+                    - cell "3" [ref=e697]
+                    - cell "81" [ref=e698]
+                    - cell "3" [ref=e699]
+                    - cell "0" [ref=e700]
+                    - cell "76.6%" [ref=e701]
+                    - cell "75.0%" [ref=e702]
+                    - cell "63.6%" [ref=e703]
+                    - cell "1/1" [ref=e704]
+                  - row "2025-08-24 US Open Hard F 2 🇪🇸 Carlos Alcaraz (2) 1 🇮🇹 Jannik Sinner (1) 6-2 3-6 6-1 6-4 5 164 10 0 60.7% 83.3% 54.3% 0/1" [ref=e705]:
+                    - cell "2025-08-24" [ref=e706]
+                    - cell "US Open" [ref=e707]:
+                      - link "US Open" [ref=e708] [cursor=pointer]:
+                        - /url: /tournaments/560/2025
+                    - cell "Hard" [ref=e709]
+                    - cell "F" [ref=e710]
+                    - cell "2" [ref=e711]
+                    - cell "🇪🇸 Carlos Alcaraz (2)" [ref=e712]:
+                      - img "🇪🇸" [ref=e713]
+                      - link "Carlos Alcaraz (2)" [ref=e714] [cursor=pointer]:
+                        - /url: /players/carlos-alcaraz
+                        - text: Carlos Alcaraz
+                        - generic [ref=e715]: (2)
+                    - cell "1" [ref=e716]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e717]:
+                      - img "🇮🇹" [ref=e718]
+                      - link "Jannik Sinner (1)" [ref=e719] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e720]: (1)
+                    - cell "6-2 3-6 6-1 6-4" [ref=e721]
+                    - cell "5" [ref=e722]
+                    - cell "164" [ref=e723]
+                    - cell "10" [ref=e724]
+                    - cell "0" [ref=e725]
+                    - cell "60.7%" [ref=e726]
+                    - cell "83.3%" [ref=e727]
+                    - cell "54.3%" [ref=e728]
+                    - cell "0/1" [ref=e729]
+                  - row "2025-08-24 US Open Hard SF 1 🇮🇹 Jannik Sinner (1) 27 🇨🇦 Felix Auger-Aliassime (25) 6-1 3-6 6-3 6-4 5 199 11 4 58.7% 76.6% 62.2% 9/10" [ref=e730]:
+                    - cell "2025-08-24" [ref=e731]
+                    - cell "US Open" [ref=e732]:
+                      - link "US Open" [ref=e733] [cursor=pointer]:
+                        - /url: /tournaments/560/2025
+                    - cell "Hard" [ref=e734]
+                    - cell "SF" [ref=e735]
+                    - cell "1" [ref=e736]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e737]:
+                      - img "🇮🇹" [ref=e738]
+                      - link "Jannik Sinner (1)" [ref=e739] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e740]: (1)
+                    - cell "27" [ref=e741]
+                    - cell "🇨🇦 Felix Auger-Aliassime (25)" [ref=e742]:
+                      - img "🇨🇦" [ref=e743]
+                      - link "Felix Auger-Aliassime (25)" [ref=e744] [cursor=pointer]:
+                        - /url: /players/felix-auger-aliassime
+                        - text: Felix Auger-Aliassime
+                        - generic [ref=e745]: (25)
+                    - cell "6-1 3-6 6-3 6-4" [ref=e746]
+                    - cell "5" [ref=e747]
+                    - cell "199" [ref=e748]
+                    - cell "11" [ref=e749]
+                    - cell "4" [ref=e750]
+                    - cell "58.7%" [ref=e751]
+                    - cell "76.6%" [ref=e752]
+                    - cell "62.2%" [ref=e753]
+                    - cell "9/10" [ref=e754]
+                  - row "2025-08-24 US Open Hard QF 1 🇮🇹 Jannik Sinner (1) 10 🇮🇹 Lorenzo Musetti (10) 6-1 6-4 6-2 5 120 10 0 61.3% 91.3% 48.3% 7/7" [ref=e755]:
+                    - cell "2025-08-24" [ref=e756]
+                    - cell "US Open" [ref=e757]:
+                      - link "US Open" [ref=e758] [cursor=pointer]:
+                        - /url: /tournaments/560/2025
+                    - cell "Hard" [ref=e759]
+                    - cell "QF" [ref=e760]
+                    - cell "1" [ref=e761]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e762]:
+                      - img "🇮🇹" [ref=e763]
+                      - link "Jannik Sinner (1)" [ref=e764] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e765]: (1)
+                    - cell "10" [ref=e766]
+                    - cell "🇮🇹 Lorenzo Musetti (10)" [ref=e767]:
+                      - img "🇮🇹" [ref=e768]
+                      - link "Lorenzo Musetti (10)" [ref=e769] [cursor=pointer]:
+                        - /url: /players/lorenzo-musetti
+                        - text: Lorenzo Musetti
+                        - generic [ref=e770]: (10)
+                    - cell "6-1 6-4 6-2" [ref=e771]
+                    - cell "5" [ref=e772]
+                    - cell "120" [ref=e773]
+                    - cell "10" [ref=e774]
+                    - cell "0" [ref=e775]
+                    - cell "61.3%" [ref=e776]
+                    - cell "91.3%" [ref=e777]
+                    - cell "48.3%" [ref=e778]
+                    - cell "7/7" [ref=e779]
+                  - row "2025-08-24 US Open Hard R16 1 🇮🇹 Jannik Sinner (1) 24 🇰🇿 Alexander Bublik (23) 6-1 6-1 6-1 5 83 8 1 58.5% 80.6% 72.7% 1/1" [ref=e780]:
+                    - cell "2025-08-24" [ref=e781]
+                    - cell "US Open" [ref=e782]:
+                      - link "US Open" [ref=e783] [cursor=pointer]:
+                        - /url: /tournaments/560/2025
+                    - cell "Hard" [ref=e784]
+                    - cell "R16" [ref=e785]
+                    - cell "1" [ref=e786]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e787]:
+                      - img "🇮🇹" [ref=e788]
+                      - link "Jannik Sinner (1)" [ref=e789] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e790]: (1)
+                    - cell "24" [ref=e791]
+                    - cell "🇰🇿 Alexander Bublik (23)" [ref=e792]:
+                      - img "🇰🇿" [ref=e793]
+                      - link "Alexander Bublik (23)" [ref=e794] [cursor=pointer]:
+                        - /url: /players/alexander-bublik
+                        - text: Alexander Bublik
+                        - generic [ref=e795]: (23)
+                    - cell "6-1 6-1 6-1" [ref=e796]
+                    - cell "5" [ref=e797]
+                    - cell "83" [ref=e798]
+                    - cell "8" [ref=e799]
+                    - cell "1" [ref=e800]
+                    - cell "58.5%" [ref=e801]
+                    - cell "80.6%" [ref=e802]
+                    - cell "72.7%" [ref=e803]
+                    - cell "1/1" [ref=e804]
+                  - row "2025-08-24 US Open Hard R32 1 🇮🇹 Jannik Sinner (1) 29 🇨🇦 Denis Shapovalov (27) 5-7 6-4 6-3 6-3 5 194 2 5 59.1% 84.6% 48.9% 3/6" [ref=e805]:
+                    - cell "2025-08-24" [ref=e806]
+                    - cell "US Open" [ref=e807]:
+                      - link "US Open" [ref=e808] [cursor=pointer]:
+                        - /url: /tournaments/560/2025
+                    - cell "Hard" [ref=e809]
+                    - cell "R32" [ref=e810]
+                    - cell "1" [ref=e811]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e812]:
+                      - img "🇮🇹" [ref=e813]
+                      - link "Jannik Sinner (1)" [ref=e814] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e815]: (1)
+                    - cell "29" [ref=e816]
+                    - cell "🇨🇦 Denis Shapovalov (27)" [ref=e817]:
+                      - img "🇨🇦" [ref=e818]
+                      - link "Denis Shapovalov (27)" [ref=e819] [cursor=pointer]:
+                        - /url: /players/denis-shapovalov
+                        - text: Denis Shapovalov
+                        - generic [ref=e820]: (27)
+                    - cell "5-7 6-4 6-3 6-3" [ref=e821]
+                    - cell "5" [ref=e822]
+                    - cell "194" [ref=e823]
+                    - cell "2" [ref=e824]
+                    - cell "5" [ref=e825]
+                    - cell "59.1%" [ref=e826]
+                    - cell "84.6%" [ref=e827]
+                    - cell "48.9%" [ref=e828]
+                    - cell "3/6" [ref=e829]
+                  - row "2025-08-24 US Open Hard R64 1 🇮🇹 Jannik Sinner (1) 36 🇦🇺 Alexei Popyrin 6-3 6-2 6-2 5 123 6 4 54.9% 77.8% 59.5% 5/5" [ref=e830]:
+                    - cell "2025-08-24" [ref=e831]
+                    - cell "US Open" [ref=e832]:
+                      - link "US Open" [ref=e833] [cursor=pointer]:
+                        - /url: /tournaments/560/2025
+                    - cell "Hard" [ref=e834]
+                    - cell "R64" [ref=e835]
+                    - cell "1" [ref=e836]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e837]:
+                      - img "🇮🇹" [ref=e838]
+                      - link "Jannik Sinner (1)" [ref=e839] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e840]: (1)
+                    - cell "36" [ref=e841]
+                    - cell "🇦🇺 Alexei Popyrin" [ref=e842]:
+                      - img "🇦🇺" [ref=e843]
+                      - link "Alexei Popyrin" [ref=e844] [cursor=pointer]:
+                        - /url: /players/alexei-popyrin
+                    - cell "6-3 6-2 6-2" [ref=e845]
+                    - cell "5" [ref=e846]
+                    - cell "123" [ref=e847]
+                    - cell "6" [ref=e848]
+                    - cell "4" [ref=e849]
+                    - cell "54.9%" [ref=e850]
+                    - cell "77.8%" [ref=e851]
+                    - cell "59.5%" [ref=e852]
+                    - cell "5/5" [ref=e853]
+                  - row "2025-08-24 US Open Hard R128 1 🇮🇹 Jannik Sinner (1) 89 🇨🇿 Vit Kopriva 6-1 6-1 6-2 5 100 7 1 58.8% 82.5% 53.6% 2/2" [ref=e854]:
+                    - cell "2025-08-24" [ref=e855]
+                    - cell "US Open" [ref=e856]:
+                      - link "US Open" [ref=e857] [cursor=pointer]:
+                        - /url: /tournaments/560/2025
+                    - cell "Hard" [ref=e858]
+                    - cell "R128" [ref=e859]
+                    - cell "1" [ref=e860]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e861]:
+                      - img "🇮🇹" [ref=e862]
+                      - link "Jannik Sinner (1)" [ref=e863] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e864]: (1)
+                    - cell "89" [ref=e865]
+                    - cell "🇨🇿 Vit Kopriva" [ref=e866]:
+                      - img "🇨🇿" [ref=e867]
+                      - link "Vit Kopriva" [ref=e868] [cursor=pointer]:
+                        - /url: /players/vit-kopriva
+                    - cell "6-1 6-1 6-2" [ref=e869]
+                    - cell "5" [ref=e870]
+                    - cell "100" [ref=e871]
+                    - cell "7" [ref=e872]
+                    - cell "1" [ref=e873]
+                    - cell "58.8%" [ref=e874]
+                    - cell "82.5%" [ref=e875]
+                    - cell "53.6%" [ref=e876]
+                    - cell "2/2" [ref=e877]
+                  - row "2025-08-07 Cincinnati Masters Hard F 2 🇪🇸 Carlos Alcaraz (2) 1 🇮🇹 Jannik Sinner (1) 5-0 RET 3 23 1 0 46.2% 83.3% 57.1% 0/0" [ref=e878]:
+                    - cell "2025-08-07" [ref=e879]
+                    - cell "Cincinnati Masters" [ref=e880]:
+                      - link "Cincinnati Masters" [ref=e881] [cursor=pointer]:
+                        - /url: /tournaments/422/2025
+                    - cell "Hard" [ref=e882]
+                    - cell "F" [ref=e883]
+                    - cell "2" [ref=e884]
+                    - cell "🇪🇸 Carlos Alcaraz (2)" [ref=e885]:
+                      - img "🇪🇸" [ref=e886]
+                      - link "Carlos Alcaraz (2)" [ref=e887] [cursor=pointer]:
+                        - /url: /players/carlos-alcaraz
+                        - text: Carlos Alcaraz
+                        - generic [ref=e888]: (2)
+                    - cell "1" [ref=e889]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e890]:
+                      - img "🇮🇹" [ref=e891]
+                      - link "Jannik Sinner (1)" [ref=e892] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e893]: (1)
+                    - cell "5-0 RET" [ref=e894]
+                    - cell "3" [ref=e895]
+                    - cell "23" [ref=e896]
+                    - cell "1" [ref=e897]
+                    - cell "0" [ref=e898]
+                    - cell "46.2%" [ref=e899]
+                    - cell "83.3%" [ref=e900]
+                    - cell "57.1%" [ref=e901]
+                    - cell "0/0" [ref=e902]
+                  - row "2025-08-07 Cincinnati Masters Hard SF 1 🇮🇹 Jannik Sinner (1) 132 🇫🇷 Terence Atmane 7-6(4) 6-2 3 86 6 0 58.3% 91.4% 68.0% 0/0" [ref=e903]:
+                    - cell "2025-08-07" [ref=e904]
+                    - cell "Cincinnati Masters" [ref=e905]:
+                      - link "Cincinnati Masters" [ref=e906] [cursor=pointer]:
+                        - /url: /tournaments/422/2025
+                    - cell "Hard" [ref=e907]
+                    - cell "SF" [ref=e908]
+                    - cell "1" [ref=e909]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e910]:
+                      - img "🇮🇹" [ref=e911]
+                      - link "Jannik Sinner (1)" [ref=e912] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e913]: (1)
+                    - cell "132" [ref=e914]
+                    - cell "🇫🇷 Terence Atmane" [ref=e915]:
+                      - img "🇫🇷" [ref=e916]
+                      - link "Terence Atmane" [ref=e917] [cursor=pointer]:
+                        - /url: /players/terence-atmane
+                    - cell "7-6(4) 6-2" [ref=e918]
+                    - cell "3" [ref=e919]
+                    - cell "86" [ref=e920]
+                    - cell "6" [ref=e921]
+                    - cell "0" [ref=e922]
+                    - cell "58.3%" [ref=e923]
+                    - cell "91.4%" [ref=e924]
+                    - cell "68.0%" [ref=e925]
+                    - cell "0/0" [ref=e926]
+                  - row "2025-08-07 Cincinnati Masters Hard QF 1 🇮🇹 Jannik Sinner (1) 28 🇨🇦 Felix Auger-Aliassime (23) 6-0 6-2 3 71 2 2 59.0% 78.3% 62.5% 0/1" [ref=e927]:
+                    - cell "2025-08-07" [ref=e928]
+                    - cell "Cincinnati Masters" [ref=e929]:
+                      - link "Cincinnati Masters" [ref=e930] [cursor=pointer]:
+                        - /url: /tournaments/422/2025
+                    - cell "Hard" [ref=e931]
+                    - cell "QF" [ref=e932]
+                    - cell "1" [ref=e933]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e934]:
+                      - img "🇮🇹" [ref=e935]
+                      - link "Jannik Sinner (1)" [ref=e936] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e937]: (1)
+                    - cell "28" [ref=e938]
+                    - cell "🇨🇦 Felix Auger-Aliassime (23)" [ref=e939]:
+                      - img "🇨🇦" [ref=e940]
+                      - link "Felix Auger-Aliassime (23)" [ref=e941] [cursor=pointer]:
+                        - /url: /players/felix-auger-aliassime
+                        - text: Felix Auger-Aliassime
+                        - generic [ref=e942]: (23)
+                    - cell "6-0 6-2" [ref=e943]
+                    - cell "3" [ref=e944]
+                    - cell "71" [ref=e945]
+                    - cell "2" [ref=e946]
+                    - cell "2" [ref=e947]
+                    - cell "59.0%" [ref=e948]
+                    - cell "78.3%" [ref=e949]
+                    - cell "62.5%" [ref=e950]
+                    - cell "0/1" [ref=e951]
+                  - row "2025-08-07 Cincinnati Masters Hard R16 1 🇮🇹 Jannik Sinner (1) 94 🇫🇷 Adrian Mannarino 6-4 7-6(4) 3 108 12 2 51.6% 96.9% 56.7% 0/1" [ref=e952]:
+                    - cell "2025-08-07" [ref=e953]
+                    - cell "Cincinnati Masters" [ref=e954]:
+                      - link "Cincinnati Masters" [ref=e955] [cursor=pointer]:
+                        - /url: /tournaments/422/2025
+                    - cell "Hard" [ref=e956]
+                    - cell "R16" [ref=e957]
+                    - cell "1" [ref=e958]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e959]:
+                      - img "🇮🇹" [ref=e960]
+                      - link "Jannik Sinner (1)" [ref=e961] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e962]: (1)
+                    - cell "94" [ref=e963]
+                    - cell "🇫🇷 Adrian Mannarino" [ref=e964]:
+                      - img "🇫🇷" [ref=e965]
+                      - link "Adrian Mannarino" [ref=e966] [cursor=pointer]:
+                        - /url: /players/adrian-mannarino
+                    - cell "6-4 7-6(4)" [ref=e967]
+                    - cell "3" [ref=e968]
+                    - cell "108" [ref=e969]
+                    - cell "12" [ref=e970]
+                    - cell "2" [ref=e971]
+                    - cell "51.6%" [ref=e972]
+                    - cell "96.9%" [ref=e973]
+                    - cell "56.7%" [ref=e974]
+                    - cell "0/1" [ref=e975]
+                  - row "2025-08-07 Cincinnati Masters Hard R32 1 🇮🇹 Jannik Sinner (1) 36 🇨🇦 Gabriel Diallo (30) 6-2 7-6(6) 3 112 6 5 50.0% 80.6% 64.5% 2/3" [ref=e976]:
+                    - cell "2025-08-07" [ref=e977]
+                    - cell "Cincinnati Masters" [ref=e978]:
+                      - link "Cincinnati Masters" [ref=e979] [cursor=pointer]:
+                        - /url: /tournaments/422/2025
+                    - cell "Hard" [ref=e980]
+                    - cell "R32" [ref=e981]
+                    - cell "1" [ref=e982]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e983]:
+                      - img "🇮🇹" [ref=e984]
+                      - link "Jannik Sinner (1)" [ref=e985] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e986]: (1)
+                    - cell "36" [ref=e987]
+                    - cell "🇨🇦 Gabriel Diallo (30)" [ref=e988]:
+                      - img "🇨🇦" [ref=e989]
+                      - link "Gabriel Diallo (30)" [ref=e990] [cursor=pointer]:
+                        - /url: /players/gabriel-diallo
+                        - text: Gabriel Diallo
+                        - generic [ref=e991]: (30)
+                    - cell "6-2 7-6(6)" [ref=e992]
+                    - cell "3" [ref=e993]
+                    - cell "112" [ref=e994]
+                    - cell "6" [ref=e995]
+                    - cell "5" [ref=e996]
+                    - cell "50.0%" [ref=e997]
+                    - cell "80.6%" [ref=e998]
+                    - cell "64.5%" [ref=e999]
+                    - cell "2/3" [ref=e1000]
+                  - row "2025-08-07 Cincinnati Masters Hard R64 1 🇮🇹 Jannik Sinner (1) 134 🇨🇴 Daniel Elahi Galan 6-1 6-1 3 59 6 3 63.9% 95.7% 61.5% 1/1" [ref=e1001]:
+                    - cell "2025-08-07" [ref=e1002]
+                    - cell "Cincinnati Masters" [ref=e1003]:
+                      - link "Cincinnati Masters" [ref=e1004] [cursor=pointer]:
+                        - /url: /tournaments/422/2025
+                    - cell "Hard" [ref=e1005]
+                    - cell "R64" [ref=e1006]
+                    - cell "1" [ref=e1007]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1008]:
+                      - img "🇮🇹" [ref=e1009]
+                      - link "Jannik Sinner (1)" [ref=e1010] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1011]: (1)
+                    - cell "134" [ref=e1012]
+                    - cell "🇨🇴 Daniel Elahi Galan" [ref=e1013]:
+                      - img "🇨🇴" [ref=e1014]
+                      - link "Daniel Elahi Galan" [ref=e1015] [cursor=pointer]:
+                        - /url: /players/daniel-elahi-galan
+                    - cell "6-1 6-1" [ref=e1016]
+                    - cell "3" [ref=e1017]
+                    - cell "59" [ref=e1018]
+                    - cell "6" [ref=e1019]
+                    - cell "3" [ref=e1020]
+                    - cell "63.9%" [ref=e1021]
+                    - cell "95.7%" [ref=e1022]
+                    - cell "61.5%" [ref=e1023]
+                    - cell "1/1" [ref=e1024]
+                  - row "2025-06-30 Wimbledon Grass F 1 🇮🇹 Jannik Sinner (1) 2 🇪🇸 Carlos Alcaraz (2) 4-6 6-4 6-4 6-4 5 184 8 2 61.5% 75.0% 60.0% 4/6" [ref=e1025]:
+                    - cell "2025-06-30" [ref=e1026]
+                    - cell "Wimbledon" [ref=e1027]:
+                      - link "Wimbledon" [ref=e1028] [cursor=pointer]:
+                        - /url: /tournaments/540/2025
+                    - cell "Grass" [ref=e1029]
+                    - cell "F" [ref=e1030]
+                    - cell "1" [ref=e1031]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1032]:
+                      - img "🇮🇹" [ref=e1033]
+                      - link "Jannik Sinner (1)" [ref=e1034] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1035]: (1)
+                    - cell "2" [ref=e1036]
+                    - cell "🇪🇸 Carlos Alcaraz (2)" [ref=e1037]:
+                      - img "🇪🇸" [ref=e1038]
+                      - link "Carlos Alcaraz (2)" [ref=e1039] [cursor=pointer]:
+                        - /url: /players/carlos-alcaraz
+                        - text: Carlos Alcaraz
+                        - generic [ref=e1040]: (2)
+                    - cell "4-6 6-4 6-4 6-4" [ref=e1041]
+                    - cell "5" [ref=e1042]
+                    - cell "184" [ref=e1043]
+                    - cell "8" [ref=e1044]
+                    - cell "2" [ref=e1045]
+                    - cell "61.5%" [ref=e1046]
+                    - cell "75.0%" [ref=e1047]
+                    - cell "60.0%" [ref=e1048]
+                    - cell "4/6" [ref=e1049]
+                  - row "2025-06-30 Wimbledon Grass SF 1 🇮🇹 Jannik Sinner (1) 6 🇷🇸 Novak Djokovic (6) 6-3 6-3 6-4 5 115 12 2 74.0% 81.5% 63.2% 1/2" [ref=e1050]:
+                    - cell "2025-06-30" [ref=e1051]
+                    - cell "Wimbledon" [ref=e1052]:
+                      - link "Wimbledon" [ref=e1053] [cursor=pointer]:
+                        - /url: /tournaments/540/2025
+                    - cell "Grass" [ref=e1054]
+                    - cell "SF" [ref=e1055]
+                    - cell "1" [ref=e1056]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1057]:
+                      - img "🇮🇹" [ref=e1058]
+                      - link "Jannik Sinner (1)" [ref=e1059] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1060]: (1)
+                    - cell "6" [ref=e1061]
+                    - cell "🇷🇸 Novak Djokovic (6)" [ref=e1062]:
+                      - img "🇷🇸" [ref=e1063]
+                      - link "Novak Djokovic (6)" [ref=e1064] [cursor=pointer]:
+                        - /url: /players/novak-djokovic
+                        - text: Novak Djokovic
+                        - generic [ref=e1065]: (6)
+                    - cell "6-3 6-3 6-4" [ref=e1066]
+                    - cell "5" [ref=e1067]
+                    - cell "115" [ref=e1068]
+                    - cell "12" [ref=e1069]
+                    - cell "2" [ref=e1070]
+                    - cell "74.0%" [ref=e1071]
+                    - cell "81.5%" [ref=e1072]
+                    - cell "63.2%" [ref=e1073]
+                    - cell "1/2" [ref=e1074]
+                  - row "2025-06-30 Wimbledon Grass QF 1 🇮🇹 Jannik Sinner (1) 10 🇺🇸 Ben Shelton (10) 7-6(2) 6-4 6-4 5 139 7 1 65.1% 89.3% 66.7% 2/2" [ref=e1075]:
+                    - cell "2025-06-30" [ref=e1076]
+                    - cell "Wimbledon" [ref=e1077]:
+                      - link "Wimbledon" [ref=e1078] [cursor=pointer]:
+                        - /url: /tournaments/540/2025
+                    - cell "Grass" [ref=e1079]
+                    - cell "QF" [ref=e1080]
+                    - cell "1" [ref=e1081]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1082]:
+                      - img "🇮🇹" [ref=e1083]
+                      - link "Jannik Sinner (1)" [ref=e1084] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1085]: (1)
+                    - cell "10" [ref=e1086]
+                    - cell "🇺🇸 Ben Shelton (10)" [ref=e1087]:
+                      - img "🇺🇸" [ref=e1088]
+                      - link "Ben Shelton (10)" [ref=e1089] [cursor=pointer]:
+                        - /url: /players/ben-shelton
+                        - text: Ben Shelton
+                        - generic [ref=e1090]: (10)
+                    - cell "7-6(2) 6-4 6-4" [ref=e1091]
+                    - cell "5" [ref=e1092]
+                    - cell "139" [ref=e1093]
+                    - cell "7" [ref=e1094]
+                    - cell "1" [ref=e1095]
+                    - cell "65.1%" [ref=e1096]
+                    - cell "89.3%" [ref=e1097]
+                    - cell "66.7%" [ref=e1098]
+                    - cell "2/2" [ref=e1099]
+                  - row "2025-06-30 Wimbledon Grass R16 1 🇮🇹 Jannik Sinner (1) 21 🇧🇬 Grigor Dimitrov (19) 3-6 5-7 2-2 RET 5 128 3 3 57.6% 82.4% 44.0% 2/5" [ref=e1100]:
+                    - cell "2025-06-30" [ref=e1101]
+                    - cell "Wimbledon" [ref=e1102]:
+                      - link "Wimbledon" [ref=e1103] [cursor=pointer]:
+                        - /url: /tournaments/540/2025
+                    - cell "Grass" [ref=e1104]
+                    - cell "R16" [ref=e1105]
+                    - cell "1" [ref=e1106]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1107]:
+                      - img "🇮🇹" [ref=e1108]
+                      - link "Jannik Sinner (1)" [ref=e1109] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1110]: (1)
+                    - cell "21" [ref=e1111]
+                    - cell "🇧🇬 Grigor Dimitrov (19)" [ref=e1112]:
+                      - img "🇧🇬" [ref=e1113]
+                      - link "Grigor Dimitrov (19)" [ref=e1114] [cursor=pointer]:
+                        - /url: /players/grigor-dimitrov
+                        - text: Grigor Dimitrov
+                        - generic [ref=e1115]: (19)
+                    - cell "3-6 5-7 2-2 RET" [ref=e1116]
+                    - cell "5" [ref=e1117]
+                    - cell "128" [ref=e1118]
+                    - cell "3" [ref=e1119]
+                    - cell "3" [ref=e1120]
+                    - cell "57.6%" [ref=e1121]
+                    - cell "82.4%" [ref=e1122]
+                    - cell "44.0%" [ref=e1123]
+                    - cell "2/5" [ref=e1124]
+                  - row "2025-06-30 Wimbledon Grass R32 1 🇮🇹 Jannik Sinner (1) 52 🇪🇸 Pedro Martinez 6-1 6-3 6-1 5 115 11 3 58.1% 79.1% 61.3% 4/4" [ref=e1125]:
+                    - cell "2025-06-30" [ref=e1126]
+                    - cell "Wimbledon" [ref=e1127]:
+                      - link "Wimbledon" [ref=e1128] [cursor=pointer]:
+                        - /url: /tournaments/540/2025
+                    - cell "Grass" [ref=e1129]
+                    - cell "R32" [ref=e1130]
+                    - cell "1" [ref=e1131]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1132]:
+                      - img "🇮🇹" [ref=e1133]
+                      - link "Jannik Sinner (1)" [ref=e1134] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1135]: (1)
+                    - cell "52" [ref=e1136]
+                    - cell "🇪🇸 Pedro Martinez" [ref=e1137]:
+                      - img "🇪🇸" [ref=e1138]
+                      - link "Pedro Martinez" [ref=e1139] [cursor=pointer]:
+                        - /url: /players/pedro-martinez
+                    - cell "6-1 6-3 6-1" [ref=e1140]
+                    - cell "5" [ref=e1141]
+                    - cell "115" [ref=e1142]
+                    - cell "11" [ref=e1143]
+                    - cell "3" [ref=e1144]
+                    - cell "58.1%" [ref=e1145]
+                    - cell "79.1%" [ref=e1146]
+                    - cell "61.3%" [ref=e1147]
+                    - cell "4/4" [ref=e1148]
+                  - row "2025-06-30 Wimbledon Grass R64 1 🇮🇹 Jannik Sinner (1) 93 🇦🇺 Aleksandar Vukic 6-1 6-1 6-3 5 100 12 0 63.7% 68.6% 75.9% 4/4" [ref=e1149]:
+                    - cell "2025-06-30" [ref=e1150]
+                    - cell "Wimbledon" [ref=e1151]:
+                      - link "Wimbledon" [ref=e1152] [cursor=pointer]:
+                        - /url: /tournaments/540/2025
+                    - cell "Grass" [ref=e1153]
+                    - cell "R64" [ref=e1154]
+                    - cell "1" [ref=e1155]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1156]:
+                      - img "🇮🇹" [ref=e1157]
+                      - link "Jannik Sinner (1)" [ref=e1158] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1159]: (1)
+                    - cell "93" [ref=e1160]
+                    - cell "🇦🇺 Aleksandar Vukic" [ref=e1161]:
+                      - img "🇦🇺" [ref=e1162]
+                      - link "Aleksandar Vukic" [ref=e1163] [cursor=pointer]:
+                        - /url: /players/aleksandar-vukic
+                    - cell "6-1 6-1 6-3" [ref=e1164]
+                    - cell "5" [ref=e1165]
+                    - cell "100" [ref=e1166]
+                    - cell "12" [ref=e1167]
+                    - cell "0" [ref=e1168]
+                    - cell "63.7%" [ref=e1169]
+                    - cell "68.6%" [ref=e1170]
+                    - cell "75.9%" [ref=e1171]
+                    - cell "4/4" [ref=e1172]
+                  - row "2025-06-30 Wimbledon Grass R128 1 🇮🇹 Jannik Sinner (1) 95 🇮🇹 Luca Nardi 6-4 6-3 6-0 5 108 9 2 58.5% 89.5% 70.4% 0/0" [ref=e1173]:
+                    - cell "2025-06-30" [ref=e1174]
+                    - cell "Wimbledon" [ref=e1175]:
+                      - link "Wimbledon" [ref=e1176] [cursor=pointer]:
+                        - /url: /tournaments/540/2025
+                    - cell "Grass" [ref=e1177]
+                    - cell "R128" [ref=e1178]
+                    - cell "1" [ref=e1179]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1180]:
+                      - img "🇮🇹" [ref=e1181]
+                      - link "Jannik Sinner (1)" [ref=e1182] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1183]: (1)
+                    - cell "95" [ref=e1184]
+                    - cell "🇮🇹 Luca Nardi" [ref=e1185]:
+                      - img "🇮🇹" [ref=e1186]
+                      - link "Luca Nardi" [ref=e1187] [cursor=pointer]:
+                        - /url: /players/luca-nardi
+                    - cell "6-4 6-3 6-0" [ref=e1188]
+                    - cell "5" [ref=e1189]
+                    - cell "108" [ref=e1190]
+                    - cell "9" [ref=e1191]
+                    - cell "2" [ref=e1192]
+                    - cell "58.5%" [ref=e1193]
+                    - cell "89.5%" [ref=e1194]
+                    - cell "70.4%" [ref=e1195]
+                    - cell "0/0" [ref=e1196]
+                  - row "2025-06-16 Halle Grass R16 45 🇰🇿 Alexander Bublik 1 🇮🇹 Jannik Sinner (1) 3-6 6-3 6-4 3 122 15 6 64.1% 78.0% 51.5% 8/9" [ref=e1197]:
+                    - cell "2025-06-16" [ref=e1198]
+                    - cell "Halle" [ref=e1199]:
+                      - link "Halle" [ref=e1200] [cursor=pointer]:
+                        - /url: /tournaments/500/2025
+                    - cell "Grass" [ref=e1201]
+                    - cell "R16" [ref=e1202]
+                    - cell "45" [ref=e1203]
+                    - cell "🇰🇿 Alexander Bublik" [ref=e1204]:
+                      - img "🇰🇿" [ref=e1205]
+                      - link "Alexander Bublik" [ref=e1206] [cursor=pointer]:
+                        - /url: /players/alexander-bublik
+                    - cell "1" [ref=e1207]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1208]:
+                      - img "🇮🇹" [ref=e1209]
+                      - link "Jannik Sinner (1)" [ref=e1210] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1211]: (1)
+                    - cell "3-6 6-3 6-4" [ref=e1212]
+                    - cell "3" [ref=e1213]
+                    - cell "122" [ref=e1214]
+                    - cell "15" [ref=e1215]
+                    - cell "6" [ref=e1216]
+                    - cell "64.1%" [ref=e1217]
+                    - cell "78.0%" [ref=e1218]
+                    - cell "51.5%" [ref=e1219]
+                    - cell "8/9" [ref=e1220]
+                  - row "2025-06-16 Halle Grass R32 1 🇮🇹 Jannik Sinner (1) 138 🇩🇪 Yannick Hanfmann (Q) 7-5 6-3 3 90 10 0 71.0% 84.1% 50.0% 2/2" [ref=e1221]:
+                    - cell "2025-06-16" [ref=e1222]
+                    - cell "Halle" [ref=e1223]:
+                      - link "Halle" [ref=e1224] [cursor=pointer]:
+                        - /url: /tournaments/500/2025
+                    - cell "Grass" [ref=e1225]
+                    - cell "R32" [ref=e1226]
+                    - cell "1" [ref=e1227]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1228]:
+                      - img "🇮🇹" [ref=e1229]
+                      - link "Jannik Sinner (1)" [ref=e1230] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1231]: (1)
+                    - cell "138" [ref=e1232]
+                    - cell "🇩🇪 Yannick Hanfmann (Q)" [ref=e1233]:
+                      - img "🇩🇪" [ref=e1234]
+                      - link "Yannick Hanfmann (Q)" [ref=e1235] [cursor=pointer]:
+                        - /url: /players/yannick-hanfmann
+                        - text: Yannick Hanfmann
+                        - generic [ref=e1236]: (Q)
+                    - cell "7-5 6-3" [ref=e1237]
+                    - cell "3" [ref=e1238]
+                    - cell "90" [ref=e1239]
+                    - cell "10" [ref=e1240]
+                    - cell "0" [ref=e1241]
+                    - cell "71.0%" [ref=e1242]
+                    - cell "84.1%" [ref=e1243]
+                    - cell "50.0%" [ref=e1244]
+                    - cell "2/2" [ref=e1245]
+                  - row "2025-05-26 Roland Garros Clay F 2 🇪🇸 Carlos Alcaraz (2) 1 🇮🇹 Jannik Sinner (1) 4-6 6-7(4) 6-4 7-6(3) 7-6(2) 5 329 7 7 58.2% 62.8% 56.8% 8/15" [ref=e1246]:
+                    - cell "2025-05-26" [ref=e1247]
+                    - cell "Roland Garros" [ref=e1248]:
+                      - link "Roland Garros" [ref=e1249] [cursor=pointer]:
+                        - /url: /tournaments/520/2025
+                    - cell "Clay" [ref=e1250]
+                    - cell "F" [ref=e1251]
+                    - cell "2" [ref=e1252]
+                    - cell "🇪🇸 Carlos Alcaraz (2)" [ref=e1253]:
+                      - img "🇪🇸" [ref=e1254]
+                      - link "Carlos Alcaraz (2)" [ref=e1255] [cursor=pointer]:
+                        - /url: /players/carlos-alcaraz
+                        - text: Carlos Alcaraz
+                        - generic [ref=e1256]: (2)
+                    - cell "1" [ref=e1257]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1258]:
+                      - img "🇮🇹" [ref=e1259]
+                      - link "Jannik Sinner (1)" [ref=e1260] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1261]: (1)
+                    - cell "4-6 6-7(4) 6-4 7-6(3) 7-6(2)" [ref=e1262]
+                    - cell "5" [ref=e1263]
+                    - cell "329" [ref=e1264]
+                    - cell "7" [ref=e1265]
+                    - cell "7" [ref=e1266]
+                    - cell "58.2%" [ref=e1267]
+                    - cell "62.8%" [ref=e1268]
+                    - cell "56.8%" [ref=e1269]
+                    - cell "8/15" [ref=e1270]
+                  - row "2025-05-26 Roland Garros Clay SF 1 🇮🇹 Jannik Sinner (1) 6 🇷🇸 Novak Djokovic (6) 6-4 7-5 7-6(3) 5 - 10 1 51.4% 78.9% 63.0% 5/6" [ref=e1271]:
+                    - cell "2025-05-26" [ref=e1272]
+                    - cell "Roland Garros" [ref=e1273]:
+                      - link "Roland Garros" [ref=e1274] [cursor=pointer]:
+                        - /url: /tournaments/520/2025
+                    - cell "Clay" [ref=e1275]
+                    - cell "SF" [ref=e1276]
+                    - cell "1" [ref=e1277]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1278]:
+                      - img "🇮🇹" [ref=e1279]
+                      - link "Jannik Sinner (1)" [ref=e1280] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1281]: (1)
+                    - cell "6" [ref=e1282]
+                    - cell "🇷🇸 Novak Djokovic (6)" [ref=e1283]:
+                      - img "🇷🇸" [ref=e1284]
+                      - link "Novak Djokovic (6)" [ref=e1285] [cursor=pointer]:
+                        - /url: /players/novak-djokovic
+                        - text: Novak Djokovic
+                        - generic [ref=e1286]: (6)
+                    - cell "6-4 7-5 7-6(3)" [ref=e1287]
+                    - cell "5" [ref=e1288]
+                    - cell "-" [ref=e1289]
+                    - cell "10" [ref=e1290]
+                    - cell "1" [ref=e1291]
+                    - cell "51.4%" [ref=e1292]
+                    - cell "78.9%" [ref=e1293]
+                    - cell "63.0%" [ref=e1294]
+                    - cell "5/6" [ref=e1295]
+                  - row "2025-05-26 Roland Garros Clay QF 1 🇮🇹 Jannik Sinner (1) 62 🇰🇿 Alexander Bublik 6-1 7-5 6-0 5 - 5 1 62.3% 77.1% 69.0% 2/2" [ref=e1296]:
+                    - cell "2025-05-26" [ref=e1297]
+                    - cell "Roland Garros" [ref=e1298]:
+                      - link "Roland Garros" [ref=e1299] [cursor=pointer]:
+                        - /url: /tournaments/520/2025
+                    - cell "Clay" [ref=e1300]
+                    - cell "QF" [ref=e1301]
+                    - cell "1" [ref=e1302]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1303]:
+                      - img "🇮🇹" [ref=e1304]
+                      - link "Jannik Sinner (1)" [ref=e1305] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1306]: (1)
+                    - cell "62" [ref=e1307]
+                    - cell "🇰🇿 Alexander Bublik" [ref=e1308]:
+                      - img "🇰🇿" [ref=e1309]
+                      - link "Alexander Bublik" [ref=e1310] [cursor=pointer]:
+                        - /url: /players/alexander-bublik
+                    - cell "6-1 7-5 6-0" [ref=e1311]
+                    - cell "5" [ref=e1312]
+                    - cell "-" [ref=e1313]
+                    - cell "5" [ref=e1314]
+                    - cell "1" [ref=e1315]
+                    - cell "62.3%" [ref=e1316]
+                    - cell "77.1%" [ref=e1317]
+                    - cell "69.0%" [ref=e1318]
+                    - cell "2/2" [ref=e1319]
+                  - row "2025-05-26 Roland Garros Clay R16 1 🇮🇹 Jannik Sinner (1) 15 🇷🇺 Andrey Rublev (17) 6-1 6-3 6-4 5 - 5 0 61.8% 81.0% 76.9% 3/3" [ref=e1320]:
+                    - cell "2025-05-26" [ref=e1321]
+                    - cell "Roland Garros" [ref=e1322]:
+                      - link "Roland Garros" [ref=e1323] [cursor=pointer]:
+                        - /url: /tournaments/520/2025
+                    - cell "Clay" [ref=e1324]
+                    - cell "R16" [ref=e1325]
+                    - cell "1" [ref=e1326]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1327]:
+                      - img "🇮🇹" [ref=e1328]
+                      - link "Jannik Sinner (1)" [ref=e1329] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1330]: (1)
+                    - cell "15" [ref=e1331]
+                    - cell "🇷🇺 Andrey Rublev (17)" [ref=e1332]:
+                      - img "🇷🇺" [ref=e1333]
+                      - link "Andrey Rublev (17)" [ref=e1334] [cursor=pointer]:
+                        - /url: /players/andrey-rublev
+                        - text: Andrey Rublev
+                        - generic [ref=e1335]: (17)
+                    - cell "6-1 6-3 6-4" [ref=e1336]
+                    - cell "5" [ref=e1337]
+                    - cell "-" [ref=e1338]
+                    - cell "5" [ref=e1339]
+                    - cell "0" [ref=e1340]
+                    - cell "61.8%" [ref=e1341]
+                    - cell "81.0%" [ref=e1342]
+                    - cell "76.9%" [ref=e1343]
+                    - cell "3/3" [ref=e1344]
+                  - row "2025-05-26 Roland Garros Clay R32 1 🇮🇹 Jannik Sinner (1) 34 🇨🇿 Jiri Lehecka 6-0 6-1 6-2 5 - 3 0 63.6% 82.9% 85.0% 1/1" [ref=e1345]:
+                    - cell "2025-05-26" [ref=e1346]
+                    - cell "Roland Garros" [ref=e1347]:
+                      - link "Roland Garros" [ref=e1348] [cursor=pointer]:
+                        - /url: /tournaments/520/2025
+                    - cell "Clay" [ref=e1349]
+                    - cell "R32" [ref=e1350]
+                    - cell "1" [ref=e1351]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1352]:
+                      - img "🇮🇹" [ref=e1353]
+                      - link "Jannik Sinner (1)" [ref=e1354] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1355]: (1)
+                    - cell "34" [ref=e1356]
+                    - cell "🇨🇿 Jiri Lehecka" [ref=e1357]:
+                      - img "🇨🇿" [ref=e1358]
+                      - link "Jiri Lehecka" [ref=e1359] [cursor=pointer]:
+                        - /url: /players/jiri-lehecka
+                    - cell "6-0 6-1 6-2" [ref=e1360]
+                    - cell "5" [ref=e1361]
+                    - cell "-" [ref=e1362]
+                    - cell "3" [ref=e1363]
+                    - cell "0" [ref=e1364]
+                    - cell "63.6%" [ref=e1365]
+                    - cell "82.9%" [ref=e1366]
+                    - cell "85.0%" [ref=e1367]
+                    - cell "1/1" [ref=e1368]
+                  - row "2025-05-26 Roland Garros Clay R64 1 🇮🇹 Jannik Sinner (1) 166 🇫🇷 Richard Gasquet (WC) 6-3 6-0 6-4 5 - 3 0 75.0% 85.2% 44.4% 3/3" [ref=e1369]:
+                    - cell "2025-05-26" [ref=e1370]
+                    - cell "Roland Garros" [ref=e1371]:
+                      - link "Roland Garros" [ref=e1372] [cursor=pointer]:
+                        - /url: /tournaments/520/2025
+                    - cell "Clay" [ref=e1373]
+                    - cell "R64" [ref=e1374]
+                    - cell "1" [ref=e1375]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1376]:
+                      - img "🇮🇹" [ref=e1377]
+                      - link "Jannik Sinner (1)" [ref=e1378] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1379]: (1)
+                    - cell "166" [ref=e1380]
+                    - cell "🇫🇷 Richard Gasquet (WC)" [ref=e1381]:
+                      - img "🇫🇷" [ref=e1382]
+                      - link "Richard Gasquet (WC)" [ref=e1383] [cursor=pointer]:
+                        - /url: /players/richard-gasquet
+                        - text: Richard Gasquet
+                        - generic [ref=e1384]: (WC)
+                    - cell "6-3 6-0 6-4" [ref=e1385]
+                    - cell "5" [ref=e1386]
+                    - cell "-" [ref=e1387]
+                    - cell "3" [ref=e1388]
+                    - cell "0" [ref=e1389]
+                    - cell "75.0%" [ref=e1390]
+                    - cell "85.2%" [ref=e1391]
+                    - cell "44.4%" [ref=e1392]
+                    - cell "3/3" [ref=e1393]
+                  - row "2025-05-26 Roland Garros Clay R128 1 🇮🇹 Jannik Sinner (1) 75 🇫🇷 Arthur Rinderknech 6-4 6-3 7-5 5 - 4 0 67.4% 75.0% 69.0% 5/7" [ref=e1394]:
+                    - cell "2025-05-26" [ref=e1395]
+                    - cell "Roland Garros" [ref=e1396]:
+                      - link "Roland Garros" [ref=e1397] [cursor=pointer]:
+                        - /url: /tournaments/520/2025
+                    - cell "Clay" [ref=e1398]
+                    - cell "R128" [ref=e1399]
+                    - cell "1" [ref=e1400]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1401]:
+                      - img "🇮🇹" [ref=e1402]
+                      - link "Jannik Sinner (1)" [ref=e1403] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1404]: (1)
+                    - cell "75" [ref=e1405]
+                    - cell "🇫🇷 Arthur Rinderknech" [ref=e1406]:
+                      - img "🇫🇷" [ref=e1407]
+                      - link "Arthur Rinderknech" [ref=e1408] [cursor=pointer]:
+                        - /url: /players/arthur-rinderknech
+                    - cell "6-4 6-3 7-5" [ref=e1409]
+                    - cell "5" [ref=e1410]
+                    - cell "-" [ref=e1411]
+                    - cell "4" [ref=e1412]
+                    - cell "0" [ref=e1413]
+                    - cell "67.4%" [ref=e1414]
+                    - cell "75.0%" [ref=e1415]
+                    - cell "69.0%" [ref=e1416]
+                    - cell "5/7" [ref=e1417]
+                  - row "2025-05-05 Rome Masters Clay F 3 🇪🇸 Carlos Alcaraz (3) 1 🇮🇹 Jannik Sinner (1) 7-6(5) 6-1 3 103 4 2 64.0% 72.9% 59.3% 2/2" [ref=e1418]:
+                    - cell "2025-05-05" [ref=e1419]
+                    - cell "Rome Masters" [ref=e1420]:
+                      - link "Rome Masters" [ref=e1421] [cursor=pointer]:
+                        - /url: /tournaments/416/2025
+                    - cell "Clay" [ref=e1422]
+                    - cell "F" [ref=e1423]
+                    - cell "3" [ref=e1424]
+                    - cell "🇪🇸 Carlos Alcaraz (3)" [ref=e1425]:
+                      - img "🇪🇸" [ref=e1426]
+                      - link "Carlos Alcaraz (3)" [ref=e1427] [cursor=pointer]:
+                        - /url: /players/carlos-alcaraz
+                        - text: Carlos Alcaraz
+                        - generic [ref=e1428]: (3)
+                    - cell "1" [ref=e1429]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1430]:
+                      - img "🇮🇹" [ref=e1431]
+                      - link "Jannik Sinner (1)" [ref=e1432] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1433]: (1)
+                    - cell "7-6(5) 6-1" [ref=e1434]
+                    - cell "3" [ref=e1435]
+                    - cell "103" [ref=e1436]
+                    - cell "4" [ref=e1437]
+                    - cell "2" [ref=e1438]
+                    - cell "64.0%" [ref=e1439]
+                    - cell "72.9%" [ref=e1440]
+                    - cell "59.3%" [ref=e1441]
+                    - cell "2/2" [ref=e1442]
+                  - row "2025-05-05 Rome Masters Clay SF 1 🇮🇹 Jannik Sinner (1) 12 🇺🇸 Tommy Paul (11) 1-6 6-0 6-3 3 103 4 1 72.1% 72.7% 41.2% 3/6" [ref=e1443]:
+                    - cell "2025-05-05" [ref=e1444]
+                    - cell "Rome Masters" [ref=e1445]:
+                      - link "Rome Masters" [ref=e1446] [cursor=pointer]:
+                        - /url: /tournaments/416/2025
+                    - cell "Clay" [ref=e1447]
+                    - cell "SF" [ref=e1448]
+                    - cell "1" [ref=e1449]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1450]:
+                      - img "🇮🇹" [ref=e1451]
+                      - link "Jannik Sinner (1)" [ref=e1452] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1453]: (1)
+                    - cell "12" [ref=e1454]
+                    - cell "🇺🇸 Tommy Paul (11)" [ref=e1455]:
+                      - img "🇺🇸" [ref=e1456]
+                      - link "Tommy Paul (11)" [ref=e1457] [cursor=pointer]:
+                        - /url: /players/tommy-paul
+                        - text: Tommy Paul
+                        - generic [ref=e1458]: (11)
+                    - cell "1-6 6-0 6-3" [ref=e1459]
+                    - cell "3" [ref=e1460]
+                    - cell "103" [ref=e1461]
+                    - cell "4" [ref=e1462]
+                    - cell "1" [ref=e1463]
+                    - cell "72.1%" [ref=e1464]
+                    - cell "72.7%" [ref=e1465]
+                    - cell "41.2%" [ref=e1466]
+                    - cell "3/6" [ref=e1467]
+                  - row "2025-05-05 Rome Masters Clay QF 1 🇮🇹 Jannik Sinner (1) 7 🇳🇴 Casper Ruud (6) 6-0 6-1 3 64 1 0 69.7% 78.3% 70.0% 0/0" [ref=e1468]:
+                    - cell "2025-05-05" [ref=e1469]
+                    - cell "Rome Masters" [ref=e1470]:
+                      - link "Rome Masters" [ref=e1471] [cursor=pointer]:
+                        - /url: /tournaments/416/2025
+                    - cell "Clay" [ref=e1472]
+                    - cell "QF" [ref=e1473]
+                    - cell "1" [ref=e1474]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1475]:
+                      - img "🇮🇹" [ref=e1476]
+                      - link "Jannik Sinner (1)" [ref=e1477] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1478]: (1)
+                    - cell "7" [ref=e1479]
+                    - cell "🇳🇴 Casper Ruud (6)" [ref=e1480]:
+                      - img "🇳🇴" [ref=e1481]
+                      - link "Casper Ruud (6)" [ref=e1482] [cursor=pointer]:
+                        - /url: /players/casper-ruud
+                        - text: Casper Ruud
+                        - generic [ref=e1483]: (6)
+                    - cell "6-0 6-1" [ref=e1484]
+                    - cell "3" [ref=e1485]
+                    - cell "64" [ref=e1486]
+                    - cell "1" [ref=e1487]
+                    - cell "0" [ref=e1488]
+                    - cell "69.7%" [ref=e1489]
+                    - cell "78.3%" [ref=e1490]
+                    - cell "70.0%" [ref=e1491]
+                    - cell "0/0" [ref=e1492]
+                  - row "2025-05-05 Rome Masters Clay R16 1 🇮🇹 Jannik Sinner (1) 18 🇦🇷 Francisco Cerundolo (17) 7-6(2) 6-3 3 137 2 0 65.9% 66.7% 48.4% 6/8" [ref=e1493]:
+                    - cell "2025-05-05" [ref=e1494]
+                    - cell "Rome Masters" [ref=e1495]:
+                      - link "Rome Masters" [ref=e1496] [cursor=pointer]:
+                        - /url: /tournaments/416/2025
+                    - cell "Clay" [ref=e1497]
+                    - cell "R16" [ref=e1498]
+                    - cell "1" [ref=e1499]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1500]:
+                      - img "🇮🇹" [ref=e1501]
+                      - link "Jannik Sinner (1)" [ref=e1502] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1503]: (1)
+                    - cell "18" [ref=e1504]
+                    - cell "🇦🇷 Francisco Cerundolo (17)" [ref=e1505]:
+                      - img "🇦🇷" [ref=e1506]
+                      - link "Francisco Cerundolo (17)" [ref=e1507] [cursor=pointer]:
+                        - /url: /players/francisco-cerundolo
+                        - text: Francisco Cerundolo
+                        - generic [ref=e1508]: (17)
+                    - cell "7-6(2) 6-3" [ref=e1509]
+                    - cell "3" [ref=e1510]
+                    - cell "137" [ref=e1511]
+                    - cell "2" [ref=e1512]
+                    - cell "0" [ref=e1513]
+                    - cell "65.9%" [ref=e1514]
+                    - cell "66.7%" [ref=e1515]
+                    - cell "48.4%" [ref=e1516]
+                    - cell "6/8" [ref=e1517]
+                  - row "2025-05-05 Rome Masters Clay R32 1 🇮🇹 Jannik Sinner (1) 93 🇳🇱 Jesper de Jong (LL) 6-4 6-2 3 93 4 1 63.5% 63.6% 68.4% 2/4" [ref=e1518]:
+                    - cell "2025-05-05" [ref=e1519]
+                    - cell "Rome Masters" [ref=e1520]:
+                      - link "Rome Masters" [ref=e1521] [cursor=pointer]:
+                        - /url: /tournaments/416/2025
+                    - cell "Clay" [ref=e1522]
+                    - cell "R32" [ref=e1523]
+                    - cell "1" [ref=e1524]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1525]:
+                      - img "🇮🇹" [ref=e1526]
+                      - link "Jannik Sinner (1)" [ref=e1527] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1528]: (1)
+                    - cell "93" [ref=e1529]
+                    - cell "🇳🇱 Jesper de Jong (LL)" [ref=e1530]:
+                      - img "🇳🇱" [ref=e1531]
+                      - link "Jesper de Jong (LL)" [ref=e1532] [cursor=pointer]:
+                        - /url: /players/jesper-de-jong
+                        - text: Jesper de Jong
+                        - generic [ref=e1533]: (LL)
+                    - cell "6-4 6-2" [ref=e1534]
+                    - cell "3" [ref=e1535]
+                    - cell "93" [ref=e1536]
+                    - cell "4" [ref=e1537]
+                    - cell "1" [ref=e1538]
+                    - cell "63.5%" [ref=e1539]
+                    - cell "63.6%" [ref=e1540]
+                    - cell "68.4%" [ref=e1541]
+                    - cell "2/4" [ref=e1542]
+                  - row "2025-05-05 Rome Masters Clay R64 1 🇮🇹 Jannik Sinner (1) 99 🇦🇷 Mariano Navone 6-3 6-4 3 98 1 1 60.3% 63.2% 68.0% 2/3" [ref=e1543]:
+                    - cell "2025-05-05" [ref=e1544]
+                    - cell "Rome Masters" [ref=e1545]:
+                      - link "Rome Masters" [ref=e1546] [cursor=pointer]:
+                        - /url: /tournaments/416/2025
+                    - cell "Clay" [ref=e1547]
+                    - cell "R64" [ref=e1548]
+                    - cell "1" [ref=e1549]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1550]:
+                      - img "🇮🇹" [ref=e1551]
+                      - link "Jannik Sinner (1)" [ref=e1552] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1553]: (1)
+                    - cell "99" [ref=e1554]
+                    - cell "🇦🇷 Mariano Navone" [ref=e1555]:
+                      - img "🇦🇷" [ref=e1556]
+                      - link "Mariano Navone" [ref=e1557] [cursor=pointer]:
+                        - /url: /players/mariano-navone
+                    - cell "6-3 6-4" [ref=e1558]
+                    - cell "3" [ref=e1559]
+                    - cell "98" [ref=e1560]
+                    - cell "1" [ref=e1561]
+                    - cell "1" [ref=e1562]
+                    - cell "60.3%" [ref=e1563]
+                    - cell "63.2%" [ref=e1564]
+                    - cell "68.0%" [ref=e1565]
+                    - cell "2/3" [ref=e1566]
+                  - row "2025-01-13 Australian Open Hard F 1 🇮🇹 Jannik Sinner (1) 2 🇩🇪 Alexander Zverev (2) 6-3 7-6(4) 6-3 5 162 6 2 60.0% 84.2% 63.2% 0/0" [ref=e1567]:
+                    - cell "2025-01-13" [ref=e1568]
+                    - cell "Australian Open" [ref=e1569]:
+                      - link "Australian Open" [ref=e1570] [cursor=pointer]:
+                        - /url: /tournaments/580/2025
+                    - cell "Hard" [ref=e1571]
+                    - cell "F" [ref=e1572]
+                    - cell "1" [ref=e1573]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1574]:
+                      - img "🇮🇹" [ref=e1575]
+                      - link "Jannik Sinner (1)" [ref=e1576] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1577]: (1)
+                    - cell "2" [ref=e1578]
+                    - cell "🇩🇪 Alexander Zverev (2)" [ref=e1579]:
+                      - img "🇩🇪" [ref=e1580]
+                      - link "Alexander Zverev (2)" [ref=e1581] [cursor=pointer]:
+                        - /url: /players/alexander-zverev
+                        - text: Alexander Zverev
+                        - generic [ref=e1582]: (2)
+                    - cell "6-3 7-6(4) 6-3" [ref=e1583]
+                    - cell "5" [ref=e1584]
+                    - cell "162" [ref=e1585]
+                    - cell "6" [ref=e1586]
+                    - cell "2" [ref=e1587]
+                    - cell "60.0%" [ref=e1588]
+                    - cell "84.2%" [ref=e1589]
+                    - cell "63.2%" [ref=e1590]
+                    - cell "0/0" [ref=e1591]
+                  - row "2025-01-13 Australian Open Hard SF 1 🇮🇹 Jannik Sinner (1) 20 🇺🇸 Ben Shelton (21) 7-6(2) 6-2 6-2 5 156 8 0 57.3% 74.5% 63.2% 5/7" [ref=e1592]:
+                    - cell "2025-01-13" [ref=e1593]
+                    - cell "Australian Open" [ref=e1594]:
+                      - link "Australian Open" [ref=e1595] [cursor=pointer]:
+                        - /url: /tournaments/580/2025
+                    - cell "Hard" [ref=e1596]
+                    - cell "SF" [ref=e1597]
+                    - cell "1" [ref=e1598]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1599]:
+                      - img "🇮🇹" [ref=e1600]
+                      - link "Jannik Sinner (1)" [ref=e1601] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1602]: (1)
+                    - cell "20" [ref=e1603]
+                    - cell "🇺🇸 Ben Shelton (21)" [ref=e1604]:
+                      - img "🇺🇸" [ref=e1605]
+                      - link "Ben Shelton (21)" [ref=e1606] [cursor=pointer]:
+                        - /url: /players/ben-shelton
+                        - text: Ben Shelton
+                        - generic [ref=e1607]: (21)
+                    - cell "7-6(2) 6-2 6-2" [ref=e1608]
+                    - cell "5" [ref=e1609]
+                    - cell "156" [ref=e1610]
+                    - cell "8" [ref=e1611]
+                    - cell "0" [ref=e1612]
+                    - cell "57.3%" [ref=e1613]
+                    - cell "74.5%" [ref=e1614]
+                    - cell "63.2%" [ref=e1615]
+                    - cell "5/7" [ref=e1616]
+                  - row "2025-01-13 Australian Open Hard QF 1 🇮🇹 Jannik Sinner (1) 8 🇦🇺 Alex de Minaur (8) 6-3 6-2 6-1 5 108 2 0 64.4% 84.2% 81.0% 1/1" [ref=e1617]:
+                    - cell "2025-01-13" [ref=e1618]
+                    - cell "Australian Open" [ref=e1619]:
+                      - link "Australian Open" [ref=e1620] [cursor=pointer]:
+                        - /url: /tournaments/580/2025
+                    - cell "Hard" [ref=e1621]
+                    - cell "QF" [ref=e1622]
+                    - cell "1" [ref=e1623]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1624]:
+                      - img "🇮🇹" [ref=e1625]
+                      - link "Jannik Sinner (1)" [ref=e1626] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1627]: (1)
+                    - cell "8" [ref=e1628]
+                    - cell "🇦🇺 Alex de Minaur (8)" [ref=e1629]:
+                      - img "🇦🇺" [ref=e1630]
+                      - link "Alex de Minaur (8)" [ref=e1631] [cursor=pointer]:
+                        - /url: /players/alex-de-minaur
+                        - text: Alex de Minaur
+                        - generic [ref=e1632]: (8)
+                    - cell "6-3 6-2 6-1" [ref=e1633]
+                    - cell "5" [ref=e1634]
+                    - cell "108" [ref=e1635]
+                    - cell "2" [ref=e1636]
+                    - cell "0" [ref=e1637]
+                    - cell "64.4%" [ref=e1638]
+                    - cell "84.2%" [ref=e1639]
+                    - cell "81.0%" [ref=e1640]
+                    - cell "1/1" [ref=e1641]
+                  - row "2025-01-13 Australian Open Hard R16 1 🇮🇹 Jannik Sinner (1) 13 🇩🇰 Holger Rune (13) 6-3 3-6 6-3 6-2 5 193 14 6 56.2% 83.1% 58.7% 4/5" [ref=e1642]:
+                    - cell "2025-01-13" [ref=e1643]
+                    - cell "Australian Open" [ref=e1644]:
+                      - link "Australian Open" [ref=e1645] [cursor=pointer]:
+                        - /url: /tournaments/580/2025
+                    - cell "Hard" [ref=e1646]
+                    - cell "R16" [ref=e1647]
+                    - cell "1" [ref=e1648]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1649]:
+                      - img "🇮🇹" [ref=e1650]
+                      - link "Jannik Sinner (1)" [ref=e1651] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1652]: (1)
+                    - cell "13" [ref=e1653]
+                    - cell "🇩🇰 Holger Rune (13)" [ref=e1654]:
+                      - img "🇩🇰" [ref=e1655]
+                      - link "Holger Rune (13)" [ref=e1656] [cursor=pointer]:
+                        - /url: /players/holger-rune
+                        - text: Holger Rune
+                        - generic [ref=e1657]: (13)
+                    - cell "6-3 3-6 6-3 6-2" [ref=e1658]
+                    - cell "5" [ref=e1659]
+                    - cell "193" [ref=e1660]
+                    - cell "14" [ref=e1661]
+                    - cell "6" [ref=e1662]
+                    - cell "56.2%" [ref=e1663]
+                    - cell "83.1%" [ref=e1664]
+                    - cell "58.7%" [ref=e1665]
+                    - cell "4/5" [ref=e1666]
+                  - row "2025-01-13 Australian Open Hard R32 1 🇮🇹 Jannik Sinner (1) 46 🇺🇸 Marcos Giron 6-3 6-4 6-2 5 121 8 2 60.2% 82.0% 51.5% 6/7" [ref=e1667]:
+                    - cell "2025-01-13" [ref=e1668]
+                    - cell "Australian Open" [ref=e1669]:
+                      - link "Australian Open" [ref=e1670] [cursor=pointer]:
+                        - /url: /tournaments/580/2025
+                    - cell "Hard" [ref=e1671]
+                    - cell "R32" [ref=e1672]
+                    - cell "1" [ref=e1673]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1674]:
+                      - img "🇮🇹" [ref=e1675]
+                      - link "Jannik Sinner (1)" [ref=e1676] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1677]: (1)
+                    - cell "46" [ref=e1678]
+                    - cell "🇺🇸 Marcos Giron" [ref=e1679]:
+                      - img "🇺🇸" [ref=e1680]
+                      - link "Marcos Giron" [ref=e1681] [cursor=pointer]:
+                        - /url: /players/marcos-giron
+                    - cell "6-3 6-4 6-2" [ref=e1682]
+                    - cell "5" [ref=e1683]
+                    - cell "121" [ref=e1684]
+                    - cell "8" [ref=e1685]
+                    - cell "2" [ref=e1686]
+                    - cell "60.2%" [ref=e1687]
+                    - cell "82.0%" [ref=e1688]
+                    - cell "51.5%" [ref=e1689]
+                    - cell "6/7" [ref=e1690]
+                  - row "2025-01-13 Australian Open Hard R64 1 🇮🇹 Jannik Sinner (1) 173 🇦🇺 Tristan Schoolkate (WC) 4-6 6-4 6-1 6-3 5 166 14 5 62.0% 77.4% 55.3% 0/1" [ref=e1691]:
+                    - cell "2025-01-13" [ref=e1692]
+                    - cell "Australian Open" [ref=e1693]:
+                      - link "Australian Open" [ref=e1694] [cursor=pointer]:
+                        - /url: /tournaments/580/2025
+                    - cell "Hard" [ref=e1695]
+                    - cell "R64" [ref=e1696]
+                    - cell "1" [ref=e1697]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1698]:
+                      - img "🇮🇹" [ref=e1699]
+                      - link "Jannik Sinner (1)" [ref=e1700] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1701]: (1)
+                    - cell "173" [ref=e1702]
+                    - cell "🇦🇺 Tristan Schoolkate (WC)" [ref=e1703]:
+                      - img "🇦🇺" [ref=e1704]
+                      - link "Tristan Schoolkate (WC)" [ref=e1705] [cursor=pointer]:
+                        - /url: /players/tristan-schoolkate
+                        - text: Tristan Schoolkate
+                        - generic [ref=e1706]: (WC)
+                    - cell "4-6 6-4 6-1 6-3" [ref=e1707]
+                    - cell "5" [ref=e1708]
+                    - cell "166" [ref=e1709]
+                    - cell "14" [ref=e1710]
+                    - cell "5" [ref=e1711]
+                    - cell "62.0%" [ref=e1712]
+                    - cell "77.4%" [ref=e1713]
+                    - cell "55.3%" [ref=e1714]
+                    - cell "0/1" [ref=e1715]
+                  - row "2025-01-13 Australian Open Hard R128 1 🇮🇹 Jannik Sinner (1) 36 🇨🇱 Nicolas Jarry 7-6(2) 7-6(5) 6-1 5 160 7 1 57.4% 82.8% 69.8% 2/2" [ref=e1716]:
+                    - cell "2025-01-13" [ref=e1717]
+                    - cell "Australian Open" [ref=e1718]:
+                      - link "Australian Open" [ref=e1719] [cursor=pointer]:
+                        - /url: /tournaments/580/2025
+                    - cell "Hard" [ref=e1720]
+                    - cell "R128" [ref=e1721]
+                    - cell "1" [ref=e1722]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1723]:
+                      - img "🇮🇹" [ref=e1724]
+                      - link "Jannik Sinner (1)" [ref=e1725] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1726]: (1)
+                    - cell "36" [ref=e1727]
+                    - cell "🇨🇱 Nicolas Jarry" [ref=e1728]:
+                      - img "🇨🇱" [ref=e1729]
+                      - link "Nicolas Jarry" [ref=e1730] [cursor=pointer]:
+                        - /url: /players/nicolas-jarry
+                    - cell "7-6(2) 7-6(5) 6-1" [ref=e1731]
+                    - cell "5" [ref=e1732]
+                    - cell "160" [ref=e1733]
+                    - cell "7" [ref=e1734]
+                    - cell "1" [ref=e1735]
+                    - cell "57.4%" [ref=e1736]
+                    - cell "82.8%" [ref=e1737]
+                    - cell "69.8%" [ref=e1738]
+                    - cell "2/2" [ref=e1739]
+                  - 'row "2024-11-24 Davis Cup Finals F: ITA vs NED Hard RR 1 🇮🇹 Jannik Sinner 40 🇳🇱 Tallon Griekspoor 7-6(2) 6-2 3 91 15 1 73.3% 79.5% 56.3% 2/3" [ref=e1740]':
+                    - cell "2024-11-24" [ref=e1741]
+                    - 'cell "Davis Cup Finals F: ITA vs NED" [ref=e1742]':
+                      - 'link "Davis Cup Finals F: ITA vs NED" [ref=e1743] [cursor=pointer]':
+                        - /url: "#"
+                    - cell "Hard" [ref=e1744]
+                    - cell "RR" [ref=e1745]
+                    - cell "1" [ref=e1746]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e1747]:
+                      - img "🇮🇹" [ref=e1748]
+                      - link "Jannik Sinner" [ref=e1749] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "40" [ref=e1750]
+                    - cell "🇳🇱 Tallon Griekspoor" [ref=e1751]:
+                      - img "🇳🇱" [ref=e1752]
+                      - link "Tallon Griekspoor" [ref=e1753] [cursor=pointer]:
+                        - /url: /players/tallon-griekspoor
+                    - cell "7-6(2) 6-2" [ref=e1754]
+                    - cell "3" [ref=e1755]
+                    - cell "91" [ref=e1756]
+                    - cell "15" [ref=e1757]
+                    - cell "1" [ref=e1758]
+                    - cell "73.3%" [ref=e1759]
+                    - cell "79.5%" [ref=e1760]
+                    - cell "56.3%" [ref=e1761]
+                    - cell "2/3" [ref=e1762]
+                  - 'row "2024-11-23 Davis Cup Finals SF: ITA vs AUS Hard RR 1 🇮🇹 Jannik Sinner 9 🇦🇺 Alex de Minaur 6-3 6-4 3 88 4 0 64.9% 81.1% 45.0% 0/1" [ref=e1763]':
+                    - cell "2024-11-23" [ref=e1764]
+                    - 'cell "Davis Cup Finals SF: ITA vs AUS" [ref=e1765]':
+                      - 'link "Davis Cup Finals SF: ITA vs AUS" [ref=e1766] [cursor=pointer]':
+                        - /url: "#"
+                    - cell "Hard" [ref=e1767]
+                    - cell "RR" [ref=e1768]
+                    - cell "1" [ref=e1769]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e1770]:
+                      - img "🇮🇹" [ref=e1771]
+                      - link "Jannik Sinner" [ref=e1772] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "9" [ref=e1773]
+                    - cell "🇦🇺 Alex de Minaur" [ref=e1774]:
+                      - img "🇦🇺" [ref=e1775]
+                      - link "Alex de Minaur" [ref=e1776] [cursor=pointer]:
+                        - /url: /players/alex-de-minaur
+                    - cell "6-3 6-4" [ref=e1777]
+                    - cell "3" [ref=e1778]
+                    - cell "88" [ref=e1779]
+                    - cell "4" [ref=e1780]
+                    - cell "0" [ref=e1781]
+                    - cell "64.9%" [ref=e1782]
+                    - cell "81.1%" [ref=e1783]
+                    - cell "45.0%" [ref=e1784]
+                    - cell "0/1" [ref=e1785]
+                  - 'row "2024-11-21 Davis Cup Finals QF: ITA vs ARG Hard RR 1 🇮🇹 Jannik Sinner 27 🇦🇷 Sebastian Baez 6-2 6-1 3 72 7 2 53.4% 71.0% 63.0% 4/4" [ref=e1786]':
+                    - cell "2024-11-21" [ref=e1787]
+                    - 'cell "Davis Cup Finals QF: ITA vs ARG" [ref=e1788]':
+                      - 'link "Davis Cup Finals QF: ITA vs ARG" [ref=e1789] [cursor=pointer]':
+                        - /url: "#"
+                    - cell "Hard" [ref=e1790]
+                    - cell "RR" [ref=e1791]
+                    - cell "1" [ref=e1792]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e1793]:
+                      - img "🇮🇹" [ref=e1794]
+                      - link "Jannik Sinner" [ref=e1795] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "27" [ref=e1796]
+                    - cell "🇦🇷 Sebastian Baez" [ref=e1797]:
+                      - img "🇦🇷" [ref=e1798]
+                      - link "Sebastian Baez" [ref=e1799] [cursor=pointer]:
+                        - /url: /players/sebastian-baez
+                    - cell "6-2 6-1" [ref=e1800]
+                    - cell "3" [ref=e1801]
+                    - cell "72" [ref=e1802]
+                    - cell "7" [ref=e1803]
+                    - cell "2" [ref=e1804]
+                    - cell "53.4%" [ref=e1805]
+                    - cell "71.0%" [ref=e1806]
+                    - cell "63.0%" [ref=e1807]
+                    - cell "4/4" [ref=e1808]
+                  - row "2024-11-11 ATP Tour Finals Hard RR 1 🇮🇹 Jannik Sinner (1) 5 🇺🇸 Taylor Fritz (5) 6-4 6-4 3 100 6 0 59.1% 76.9% 59.3% 1/1" [ref=e1809]:
+                    - cell "2024-11-11" [ref=e1810]
+                    - cell "ATP Tour Finals" [ref=e1811]:
+                      - link "ATP Tour Finals" [ref=e1812] [cursor=pointer]:
+                        - /url: /tournaments/605/2024
+                    - cell "Hard" [ref=e1813]
+                    - cell "RR" [ref=e1814]
+                    - cell "1" [ref=e1815]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1816]:
+                      - img "🇮🇹" [ref=e1817]
+                      - link "Jannik Sinner (1)" [ref=e1818] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1819]: (1)
+                    - cell "5" [ref=e1820]
+                    - cell "🇺🇸 Taylor Fritz (5)" [ref=e1821]:
+                      - img "🇺🇸" [ref=e1822]
+                      - link "Taylor Fritz (5)" [ref=e1823] [cursor=pointer]:
+                        - /url: /players/taylor-fritz
+                        - text: Taylor Fritz
+                        - generic [ref=e1824]: (5)
+                    - cell "6-4 6-4" [ref=e1825]
+                    - cell "3" [ref=e1826]
+                    - cell "100" [ref=e1827]
+                    - cell "6" [ref=e1828]
+                    - cell "0" [ref=e1829]
+                    - cell "59.1%" [ref=e1830]
+                    - cell "76.9%" [ref=e1831]
+                    - cell "59.3%" [ref=e1832]
+                    - cell "1/1" [ref=e1833]
+                  - row "2024-11-11 ATP Tour Finals Hard RR 1 🇮🇹 Jannik Sinner (1) 9 🇦🇺 Alex de Minaur (7) 6-3 6-4 3 85 8 1 65.3% 81.3% 76.5% 0/1" [ref=e1834]:
+                    - cell "2024-11-11" [ref=e1835]
+                    - cell "ATP Tour Finals" [ref=e1836]:
+                      - link "ATP Tour Finals" [ref=e1837] [cursor=pointer]:
+                        - /url: /tournaments/605/2024
+                    - cell "Hard" [ref=e1838]
+                    - cell "RR" [ref=e1839]
+                    - cell "1" [ref=e1840]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1841]:
+                      - img "🇮🇹" [ref=e1842]
+                      - link "Jannik Sinner (1)" [ref=e1843] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1844]: (1)
+                    - cell "9" [ref=e1845]
+                    - cell "🇦🇺 Alex de Minaur (7)" [ref=e1846]:
+                      - img "🇦🇺" [ref=e1847]
+                      - link "Alex de Minaur (7)" [ref=e1848] [cursor=pointer]:
+                        - /url: /players/alex-de-minaur
+                        - text: Alex de Minaur
+                        - generic [ref=e1849]: (7)
+                    - cell "6-3 6-4" [ref=e1850]
+                    - cell "3" [ref=e1851]
+                    - cell "85" [ref=e1852]
+                    - cell "8" [ref=e1853]
+                    - cell "1" [ref=e1854]
+                    - cell "65.3%" [ref=e1855]
+                    - cell "81.3%" [ref=e1856]
+                    - cell "76.5%" [ref=e1857]
+                    - cell "0/1" [ref=e1858]
+                  - row "2024-11-11 ATP Tour Finals Hard RR 1 🇮🇹 Jannik Sinner (1) 4 🇷🇺 Daniil Medvedev (4) 6-3 6-4 3 73 4 0 57.1% 82.1% 71.4% 1/2" [ref=e1859]:
+                    - cell "2024-11-11" [ref=e1860]
+                    - cell "ATP Tour Finals" [ref=e1861]:
+                      - link "ATP Tour Finals" [ref=e1862] [cursor=pointer]:
+                        - /url: /tournaments/605/2024
+                    - cell "Hard" [ref=e1863]
+                    - cell "RR" [ref=e1864]
+                    - cell "1" [ref=e1865]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1866]:
+                      - img "🇮🇹" [ref=e1867]
+                      - link "Jannik Sinner (1)" [ref=e1868] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1869]: (1)
+                    - cell "4" [ref=e1870]
+                    - cell "🇷🇺 Daniil Medvedev (4)" [ref=e1871]:
+                      - img "🇷🇺" [ref=e1872]
+                      - link "Daniil Medvedev (4)" [ref=e1873] [cursor=pointer]:
+                        - /url: /players/daniil-medvedev
+                        - text: Daniil Medvedev
+                        - generic [ref=e1874]: (4)
+                    - cell "6-3 6-4" [ref=e1875]
+                    - cell "3" [ref=e1876]
+                    - cell "73" [ref=e1877]
+                    - cell "4" [ref=e1878]
+                    - cell "0" [ref=e1879]
+                    - cell "57.1%" [ref=e1880]
+                    - cell "82.1%" [ref=e1881]
+                    - cell "71.4%" [ref=e1882]
+                    - cell "1/2" [ref=e1883]
+                  - row "2024-11-11 ATP Tour Finals Hard F 1 🇮🇹 Jannik Sinner (1) 5 🇺🇸 Taylor Fritz (5) 6-4 6-4 3 84 14 0 71.4% 82.5% 62.5% 1/1" [ref=e1884]:
+                    - cell "2024-11-11" [ref=e1885]
+                    - cell "ATP Tour Finals" [ref=e1886]:
+                      - link "ATP Tour Finals" [ref=e1887] [cursor=pointer]:
+                        - /url: /tournaments/605/2024
+                    - cell "Hard" [ref=e1888]
+                    - cell "F" [ref=e1889]
+                    - cell "1" [ref=e1890]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1891]:
+                      - img "🇮🇹" [ref=e1892]
+                      - link "Jannik Sinner (1)" [ref=e1893] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1894]: (1)
+                    - cell "5" [ref=e1895]
+                    - cell "🇺🇸 Taylor Fritz (5)" [ref=e1896]:
+                      - img "🇺🇸" [ref=e1897]
+                      - link "Taylor Fritz (5)" [ref=e1898] [cursor=pointer]:
+                        - /url: /players/taylor-fritz
+                        - text: Taylor Fritz
+                        - generic [ref=e1899]: (5)
+                    - cell "6-4 6-4" [ref=e1900]
+                    - cell "3" [ref=e1901]
+                    - cell "84" [ref=e1902]
+                    - cell "14" [ref=e1903]
+                    - cell "0" [ref=e1904]
+                    - cell "71.4%" [ref=e1905]
+                    - cell "82.5%" [ref=e1906]
+                    - cell "62.5%" [ref=e1907]
+                    - cell "1/1" [ref=e1908]
+                  - row "2024-11-11 ATP Tour Finals Hard SF 1 🇮🇹 Jannik Sinner (1) 7 🇳🇴 Casper Ruud (6) 6-1 6-2 3 69 9 0 58.7% 81.5% 63.2% 2/2" [ref=e1909]:
+                    - cell "2024-11-11" [ref=e1910]
+                    - cell "ATP Tour Finals" [ref=e1911]:
+                      - link "ATP Tour Finals" [ref=e1912] [cursor=pointer]:
+                        - /url: /tournaments/605/2024
+                    - cell "Hard" [ref=e1913]
+                    - cell "SF" [ref=e1914]
+                    - cell "1" [ref=e1915]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1916]:
+                      - img "🇮🇹" [ref=e1917]
+                      - link "Jannik Sinner (1)" [ref=e1918] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1919]: (1)
+                    - cell "7" [ref=e1920]
+                    - cell "🇳🇴 Casper Ruud (6)" [ref=e1921]:
+                      - img "🇳🇴" [ref=e1922]
+                      - link "Casper Ruud (6)" [ref=e1923] [cursor=pointer]:
+                        - /url: /players/casper-ruud
+                        - text: Casper Ruud
+                        - generic [ref=e1924]: (6)
+                    - cell "6-1 6-2" [ref=e1925]
+                    - cell "3" [ref=e1926]
+                    - cell "69" [ref=e1927]
+                    - cell "9" [ref=e1928]
+                    - cell "0" [ref=e1929]
+                    - cell "58.7%" [ref=e1930]
+                    - cell "81.5%" [ref=e1931]
+                    - cell "63.2%" [ref=e1932]
+                    - cell "2/2" [ref=e1933]
+                  - row "2024-10-02 Shanghai Masters Hard F 1 🇮🇹 Jannik Sinner (1) 4 🇷🇸 Novak Djokovic (4) 7-6(4) 6-3 3 97 8 0 61.2% 75.6% 65.4% 0/0" [ref=e1934]:
+                    - cell "2024-10-02" [ref=e1935]
+                    - cell "Shanghai Masters" [ref=e1936]:
+                      - link "Shanghai Masters" [ref=e1937] [cursor=pointer]:
+                        - /url: /tournaments/5014/2024
+                    - cell "Hard" [ref=e1938]
+                    - cell "F" [ref=e1939]
+                    - cell "1" [ref=e1940]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1941]:
+                      - img "🇮🇹" [ref=e1942]
+                      - link "Jannik Sinner (1)" [ref=e1943] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1944]: (1)
+                    - cell "4" [ref=e1945]
+                    - cell "🇷🇸 Novak Djokovic (4)" [ref=e1946]:
+                      - img "🇷🇸" [ref=e1947]
+                      - link "Novak Djokovic (4)" [ref=e1948] [cursor=pointer]:
+                        - /url: /players/novak-djokovic
+                        - text: Novak Djokovic
+                        - generic [ref=e1949]: (4)
+                    - cell "7-6(4) 6-3" [ref=e1950]
+                    - cell "3" [ref=e1951]
+                    - cell "97" [ref=e1952]
+                    - cell "8" [ref=e1953]
+                    - cell "0" [ref=e1954]
+                    - cell "61.2%" [ref=e1955]
+                    - cell "75.6%" [ref=e1956]
+                    - cell "65.4%" [ref=e1957]
+                    - cell "0/0" [ref=e1958]
+                  - row "2024-10-02 Shanghai Masters Hard SF 1 🇮🇹 Jannik Sinner (1) 33 🇨🇿 Tomas Machac (30) 6-4 7-5 3 103 10 1 66.7% 73.9% 60.9% 2/3" [ref=e1959]:
+                    - cell "2024-10-02" [ref=e1960]
+                    - cell "Shanghai Masters" [ref=e1961]:
+                      - link "Shanghai Masters" [ref=e1962] [cursor=pointer]:
+                        - /url: /tournaments/5014/2024
+                    - cell "Hard" [ref=e1963]
+                    - cell "SF" [ref=e1964]
+                    - cell "1" [ref=e1965]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1966]:
+                      - img "🇮🇹" [ref=e1967]
+                      - link "Jannik Sinner (1)" [ref=e1968] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1969]: (1)
+                    - cell "33" [ref=e1970]
+                    - cell "🇨🇿 Tomas Machac (30)" [ref=e1971]:
+                      - img "🇨🇿" [ref=e1972]
+                      - link "Tomas Machac (30)" [ref=e1973] [cursor=pointer]:
+                        - /url: /players/tomas-machac
+                        - text: Tomas Machac
+                        - generic [ref=e1974]: (30)
+                    - cell "6-4 7-5" [ref=e1975]
+                    - cell "3" [ref=e1976]
+                    - cell "103" [ref=e1977]
+                    - cell "10" [ref=e1978]
+                    - cell "1" [ref=e1979]
+                    - cell "66.7%" [ref=e1980]
+                    - cell "73.9%" [ref=e1981]
+                    - cell "60.9%" [ref=e1982]
+                    - cell "2/3" [ref=e1983]
+                  - row "2024-10-02 Shanghai Masters Hard QF 1 🇮🇹 Jannik Sinner (1) 5 🇷🇺 Daniil Medvedev (5) 6-1 6-4 3 84 9 0 66.0% 84.8% 58.8% 1/1" [ref=e1984]:
+                    - cell "2024-10-02" [ref=e1985]
+                    - cell "Shanghai Masters" [ref=e1986]:
+                      - link "Shanghai Masters" [ref=e1987] [cursor=pointer]:
+                        - /url: /tournaments/5014/2024
+                    - cell "Hard" [ref=e1988]
+                    - cell "QF" [ref=e1989]
+                    - cell "1" [ref=e1990]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e1991]:
+                      - img "🇮🇹" [ref=e1992]
+                      - link "Jannik Sinner (1)" [ref=e1993] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e1994]: (1)
+                    - cell "5" [ref=e1995]
+                    - cell "🇷🇺 Daniil Medvedev (5)" [ref=e1996]:
+                      - img "🇷🇺" [ref=e1997]
+                      - link "Daniil Medvedev (5)" [ref=e1998] [cursor=pointer]:
+                        - /url: /players/daniil-medvedev
+                        - text: Daniil Medvedev
+                        - generic [ref=e1999]: (5)
+                    - cell "6-1 6-4" [ref=e2000]
+                    - cell "3" [ref=e2001]
+                    - cell "84" [ref=e2002]
+                    - cell "9" [ref=e2003]
+                    - cell "0" [ref=e2004]
+                    - cell "66.0%" [ref=e2005]
+                    - cell "84.8%" [ref=e2006]
+                    - cell "58.8%" [ref=e2007]
+                    - cell "1/1" [ref=e2008]
+                  - row "2024-10-02 Shanghai Masters Hard R16 1 🇮🇹 Jannik Sinner (1) 16 🇺🇸 Ben Shelton (14) 6-4 7-6(1) 3 88 7 0 69.7% 87.0% 65.0% 7/7" [ref=e2009]:
+                    - cell "2024-10-02" [ref=e2010]
+                    - cell "Shanghai Masters" [ref=e2011]:
+                      - link "Shanghai Masters" [ref=e2012] [cursor=pointer]:
+                        - /url: /tournaments/5014/2024
+                    - cell "Hard" [ref=e2013]
+                    - cell "R16" [ref=e2014]
+                    - cell "1" [ref=e2015]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2016]:
+                      - img "🇮🇹" [ref=e2017]
+                      - link "Jannik Sinner (1)" [ref=e2018] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2019]: (1)
+                    - cell "16" [ref=e2020]
+                    - cell "🇺🇸 Ben Shelton (14)" [ref=e2021]:
+                      - img "🇺🇸" [ref=e2022]
+                      - link "Ben Shelton (14)" [ref=e2023] [cursor=pointer]:
+                        - /url: /players/ben-shelton
+                        - text: Ben Shelton
+                        - generic [ref=e2024]: (14)
+                    - cell "6-4 7-6(1)" [ref=e2025]
+                    - cell "3" [ref=e2026]
+                    - cell "88" [ref=e2027]
+                    - cell "7" [ref=e2028]
+                    - cell "0" [ref=e2029]
+                    - cell "69.7%" [ref=e2030]
+                    - cell "87.0%" [ref=e2031]
+                    - cell "65.0%" [ref=e2032]
+                    - cell "7/7" [ref=e2033]
+                  - row "2024-10-02 Shanghai Masters Hard R32 1 🇮🇹 Jannik Sinner (1) 37 🇦🇷 Tomas Martin Etcheverry (31) 6-7(3) 6-4 6-2 3 159 12 1 69.6% 78.1% 53.6% 4/5" [ref=e2034]:
+                    - cell "2024-10-02" [ref=e2035]
+                    - cell "Shanghai Masters" [ref=e2036]:
+                      - link "Shanghai Masters" [ref=e2037] [cursor=pointer]:
+                        - /url: /tournaments/5014/2024
+                    - cell "Hard" [ref=e2038]
+                    - cell "R32" [ref=e2039]
+                    - cell "1" [ref=e2040]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2041]:
+                      - img "🇮🇹" [ref=e2042]
+                      - link "Jannik Sinner (1)" [ref=e2043] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2044]: (1)
+                    - cell "37" [ref=e2045]
+                    - cell "🇦🇷 Tomas Martin Etcheverry (31)" [ref=e2046]:
+                      - img "🇦🇷" [ref=e2047]
+                      - link "Tomas Martin Etcheverry (31)" [ref=e2048] [cursor=pointer]:
+                        - /url: /players/tomas-martin-etcheverry
+                        - text: Tomas Martin Etcheverry
+                        - generic [ref=e2049]: (31)
+                    - cell "6-7(3) 6-4 6-2" [ref=e2050]
+                    - cell "3" [ref=e2051]
+                    - cell "159" [ref=e2052]
+                    - cell "12" [ref=e2053]
+                    - cell "1" [ref=e2054]
+                    - cell "69.6%" [ref=e2055]
+                    - cell "78.1%" [ref=e2056]
+                    - cell "53.6%" [ref=e2057]
+                    - cell "4/5" [ref=e2058]
+                  - row "2024-10-02 Shanghai Masters Hard R64 1 🇮🇹 Jannik Sinner (1) 93 🇯🇵 Taro Daniel 6-1 6-4 3 77 12 1 77.6% 84.2% 45.5% 0/0" [ref=e2059]:
+                    - cell "2024-10-02" [ref=e2060]
+                    - cell "Shanghai Masters" [ref=e2061]:
+                      - link "Shanghai Masters" [ref=e2062] [cursor=pointer]:
+                        - /url: /tournaments/5014/2024
+                    - cell "Hard" [ref=e2063]
+                    - cell "R64" [ref=e2064]
+                    - cell "1" [ref=e2065]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2066]:
+                      - img "🇮🇹" [ref=e2067]
+                      - link "Jannik Sinner (1)" [ref=e2068] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2069]: (1)
+                    - cell "93" [ref=e2070]
+                    - cell "🇯🇵 Taro Daniel" [ref=e2071]:
+                      - img "🇯🇵" [ref=e2072]
+                      - link "Taro Daniel" [ref=e2073] [cursor=pointer]:
+                        - /url: /players/taro-daniel
+                    - cell "6-1 6-4" [ref=e2074]
+                    - cell "3" [ref=e2075]
+                    - cell "77" [ref=e2076]
+                    - cell "12" [ref=e2077]
+                    - cell "1" [ref=e2078]
+                    - cell "77.6%" [ref=e2079]
+                    - cell "84.2%" [ref=e2080]
+                    - cell "45.5%" [ref=e2081]
+                    - cell "0/0" [ref=e2082]
+                  - row "2024-09-26 Beijing Hard F 3 🇪🇸 Carlos Alcaraz (2) 1 🇮🇹 Jannik Sinner (1) 6-7(6) 6-4 7-6(3) 3 201 6 2 60.2% 73.0% 55.1% 4/6" [ref=e2083]:
+                    - cell "2024-09-26" [ref=e2084]
+                    - cell "Beijing" [ref=e2085]:
+                      - link "Beijing" [ref=e2086] [cursor=pointer]:
+                        - /url: /tournaments/747/2024
+                    - cell "Hard" [ref=e2087]
+                    - cell "F" [ref=e2088]
+                    - cell "3" [ref=e2089]
+                    - cell "🇪🇸 Carlos Alcaraz (2)" [ref=e2090]:
+                      - img "🇪🇸" [ref=e2091]
+                      - link "Carlos Alcaraz (2)" [ref=e2092] [cursor=pointer]:
+                        - /url: /players/carlos-alcaraz
+                        - text: Carlos Alcaraz
+                        - generic [ref=e2093]: (2)
+                    - cell "1" [ref=e2094]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2095]:
+                      - img "🇮🇹" [ref=e2096]
+                      - link "Jannik Sinner (1)" [ref=e2097] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2098]: (1)
+                    - cell "6-7(6) 6-4 7-6(3)" [ref=e2099]
+                    - cell "3" [ref=e2100]
+                    - cell "201" [ref=e2101]
+                    - cell "6" [ref=e2102]
+                    - cell "2" [ref=e2103]
+                    - cell "60.2%" [ref=e2104]
+                    - cell "73.0%" [ref=e2105]
+                    - cell "55.1%" [ref=e2106]
+                    - cell "4/6" [ref=e2107]
+                  - row "2024-09-26 Beijing Hard SF 1 🇮🇹 Jannik Sinner (1) 96 🇨🇳 Yunchaokete Bu (WC) 6-3 7-6(3) 3 125 11 0 67.5% 73.1% 68.0% 3/3" [ref=e2108]:
+                    - cell "2024-09-26" [ref=e2109]
+                    - cell "Beijing" [ref=e2110]:
+                      - link "Beijing" [ref=e2111] [cursor=pointer]:
+                        - /url: /tournaments/747/2024
+                    - cell "Hard" [ref=e2112]
+                    - cell "SF" [ref=e2113]
+                    - cell "1" [ref=e2114]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2115]:
+                      - img "🇮🇹" [ref=e2116]
+                      - link "Jannik Sinner (1)" [ref=e2117] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2118]: (1)
+                    - cell "96" [ref=e2119]
+                    - cell "🇨🇳 Yunchaokete Bu (WC)" [ref=e2120]:
+                      - img "🇨🇳" [ref=e2121]
+                      - link "Yunchaokete Bu (WC)" [ref=e2122] [cursor=pointer]:
+                        - /url: /players/yunchaokete-bu
+                        - text: Yunchaokete Bu
+                        - generic [ref=e2123]: (WC)
+                    - cell "6-3 7-6(3)" [ref=e2124]
+                    - cell "3" [ref=e2125]
+                    - cell "125" [ref=e2126]
+                    - cell "11" [ref=e2127]
+                    - cell "0" [ref=e2128]
+                    - cell "67.5%" [ref=e2129]
+                    - cell "73.1%" [ref=e2130]
+                    - cell "68.0%" [ref=e2131]
+                    - cell "3/3" [ref=e2132]
+                  - row "2024-09-26 Beijing Hard QF 1 🇮🇹 Jannik Sinner (1) 37 🇨🇿 Jiri Lehecka 6-2 7-6(6) 3 104 7 3 59.7% 87.5% 55.6% 2/2" [ref=e2133]:
+                    - cell "2024-09-26" [ref=e2134]
+                    - cell "Beijing" [ref=e2135]:
+                      - link "Beijing" [ref=e2136] [cursor=pointer]:
+                        - /url: /tournaments/747/2024
+                    - cell "Hard" [ref=e2137]
+                    - cell "QF" [ref=e2138]
+                    - cell "1" [ref=e2139]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2140]:
+                      - img "🇮🇹" [ref=e2141]
+                      - link "Jannik Sinner (1)" [ref=e2142] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2143]: (1)
+                    - cell "37" [ref=e2144]
+                    - cell "🇨🇿 Jiri Lehecka" [ref=e2145]:
+                      - img "🇨🇿" [ref=e2146]
+                      - link "Jiri Lehecka" [ref=e2147] [cursor=pointer]:
+                        - /url: /players/jiri-lehecka
+                    - cell "6-2 7-6(6)" [ref=e2148]
+                    - cell "3" [ref=e2149]
+                    - cell "104" [ref=e2150]
+                    - cell "7" [ref=e2151]
+                    - cell "3" [ref=e2152]
+                    - cell "59.7%" [ref=e2153]
+                    - cell "87.5%" [ref=e2154]
+                    - cell "55.6%" [ref=e2155]
+                    - cell "2/2" [ref=e2156]
+                  - row "2024-09-26 Beijing Hard R16 1 🇮🇹 Jannik Sinner (1) 69 🇷🇺 Roman Safiullin (LL) 3-6 6-2 6-3 3 141 4 3 58.4% 80.0% 46.9% 4/6" [ref=e2157]:
+                    - cell "2024-09-26" [ref=e2158]
+                    - cell "Beijing" [ref=e2159]:
+                      - link "Beijing" [ref=e2160] [cursor=pointer]:
+                        - /url: /tournaments/747/2024
+                    - cell "Hard" [ref=e2161]
+                    - cell "R16" [ref=e2162]
+                    - cell "1" [ref=e2163]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2164]:
+                      - img "🇮🇹" [ref=e2165]
+                      - link "Jannik Sinner (1)" [ref=e2166] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2167]: (1)
+                    - cell "69" [ref=e2168]
+                    - cell "🇷🇺 Roman Safiullin (LL)" [ref=e2169]:
+                      - img "🇷🇺" [ref=e2170]
+                      - link "Roman Safiullin (LL)" [ref=e2171] [cursor=pointer]:
+                        - /url: /players/roman-safiullin
+                        - text: Roman Safiullin
+                        - generic [ref=e2172]: (LL)
+                    - cell "3-6 6-2 6-3" [ref=e2173]
+                    - cell "3" [ref=e2174]
+                    - cell "141" [ref=e2175]
+                    - cell "4" [ref=e2176]
+                    - cell "3" [ref=e2177]
+                    - cell "58.4%" [ref=e2178]
+                    - cell "80.0%" [ref=e2179]
+                    - cell "46.9%" [ref=e2180]
+                    - cell "4/6" [ref=e2181]
+                  - row "2024-09-26 Beijing Hard R32 1 🇮🇹 Jannik Sinner (1) 28 🇨🇱 Nicolas Jarry 4-6 6-3 6-1 3 115 1 1 68.2% 82.2% 66.7% 4/5" [ref=e2182]:
+                    - cell "2024-09-26" [ref=e2183]
+                    - cell "Beijing" [ref=e2184]:
+                      - link "Beijing" [ref=e2185] [cursor=pointer]:
+                        - /url: /tournaments/747/2024
+                    - cell "Hard" [ref=e2186]
+                    - cell "R32" [ref=e2187]
+                    - cell "1" [ref=e2188]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2189]:
+                      - img "🇮🇹" [ref=e2190]
+                      - link "Jannik Sinner (1)" [ref=e2191] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2192]: (1)
+                    - cell "28" [ref=e2193]
+                    - cell "🇨🇱 Nicolas Jarry" [ref=e2194]:
+                      - img "🇨🇱" [ref=e2195]
+                      - link "Nicolas Jarry" [ref=e2196] [cursor=pointer]:
+                        - /url: /players/nicolas-jarry
+                    - cell "4-6 6-3 6-1" [ref=e2197]
+                    - cell "3" [ref=e2198]
+                    - cell "115" [ref=e2199]
+                    - cell "1" [ref=e2200]
+                    - cell "1" [ref=e2201]
+                    - cell "68.2%" [ref=e2202]
+                    - cell "82.2%" [ref=e2203]
+                    - cell "66.7%" [ref=e2204]
+                    - cell "4/5" [ref=e2205]
+                  - row "2024-08-26 US Open Hard F 1 🇮🇹 Jannik Sinner (1) 12 🇺🇸 Taylor Fritz (12) 6-3 6-4 7-5 5 136 6 5 50.6% 88.4% 47.6% 5/7" [ref=e2206]:
+                    - cell "2024-08-26" [ref=e2207]
+                    - cell "US Open" [ref=e2208]:
+                      - link "US Open" [ref=e2209] [cursor=pointer]:
+                        - /url: /tournaments/560/2024
+                    - cell "Hard" [ref=e2210]
+                    - cell "F" [ref=e2211]
+                    - cell "1" [ref=e2212]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2213]:
+                      - img "🇮🇹" [ref=e2214]
+                      - link "Jannik Sinner (1)" [ref=e2215] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2216]: (1)
+                    - cell "12" [ref=e2217]
+                    - cell "🇺🇸 Taylor Fritz (12)" [ref=e2218]:
+                      - img "🇺🇸" [ref=e2219]
+                      - link "Taylor Fritz (12)" [ref=e2220] [cursor=pointer]:
+                        - /url: /players/taylor-fritz
+                        - text: Taylor Fritz
+                        - generic [ref=e2221]: (12)
+                    - cell "6-3 6-4 7-5" [ref=e2222]
+                    - cell "5" [ref=e2223]
+                    - cell "136" [ref=e2224]
+                    - cell "6" [ref=e2225]
+                    - cell "5" [ref=e2226]
+                    - cell "50.6%" [ref=e2227]
+                    - cell "88.4%" [ref=e2228]
+                    - cell "47.6%" [ref=e2229]
+                    - cell "5/7" [ref=e2230]
+                  - row "2024-08-26 US Open Hard SF 1 🇮🇹 Jannik Sinner (1) 25 🇬🇧 Jack Draper (25) 7-5 7-6(3) 6-2 5 183 11 2 64.6% 77.4% 73.5% 3/4" [ref=e2231]:
+                    - cell "2024-08-26" [ref=e2232]
+                    - cell "US Open" [ref=e2233]:
+                      - link "US Open" [ref=e2234] [cursor=pointer]:
+                        - /url: /tournaments/560/2024
+                    - cell "Hard" [ref=e2235]
+                    - cell "SF" [ref=e2236]
+                    - cell "1" [ref=e2237]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2238]:
+                      - img "🇮🇹" [ref=e2239]
+                      - link "Jannik Sinner (1)" [ref=e2240] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2241]: (1)
+                    - cell "25" [ref=e2242]
+                    - cell "🇬🇧 Jack Draper (25)" [ref=e2243]:
+                      - img "🇬🇧" [ref=e2244]
+                      - link "Jack Draper (25)" [ref=e2245] [cursor=pointer]:
+                        - /url: /players/jack-draper
+                        - text: Jack Draper
+                        - generic [ref=e2246]: (25)
+                    - cell "7-5 7-6(3) 6-2" [ref=e2247]
+                    - cell "5" [ref=e2248]
+                    - cell "183" [ref=e2249]
+                    - cell "11" [ref=e2250]
+                    - cell "2" [ref=e2251]
+                    - cell "64.6%" [ref=e2252]
+                    - cell "77.4%" [ref=e2253]
+                    - cell "73.5%" [ref=e2254]
+                    - cell "3/4" [ref=e2255]
+                  - row "2024-08-26 US Open Hard QF 1 🇮🇹 Jannik Sinner (1) 5 🇷🇺 Daniil Medvedev (5) 6-2 1-6 6-1 6-4 5 159 4 1 52.6% 76.5% 60.9% 6/8" [ref=e2256]:
+                    - cell "2024-08-26" [ref=e2257]
+                    - cell "US Open" [ref=e2258]:
+                      - link "US Open" [ref=e2259] [cursor=pointer]:
+                        - /url: /tournaments/560/2024
+                    - cell "Hard" [ref=e2260]
+                    - cell "QF" [ref=e2261]
+                    - cell "1" [ref=e2262]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2263]:
+                      - img "🇮🇹" [ref=e2264]
+                      - link "Jannik Sinner (1)" [ref=e2265] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2266]: (1)
+                    - cell "5" [ref=e2267]
+                    - cell "🇷🇺 Daniil Medvedev (5)" [ref=e2268]:
+                      - img "🇷🇺" [ref=e2269]
+                      - link "Daniil Medvedev (5)" [ref=e2270] [cursor=pointer]:
+                        - /url: /players/daniil-medvedev
+                        - text: Daniil Medvedev
+                        - generic [ref=e2271]: (5)
+                    - cell "6-2 1-6 6-1 6-4" [ref=e2272]
+                    - cell "5" [ref=e2273]
+                    - cell "159" [ref=e2274]
+                    - cell "4" [ref=e2275]
+                    - cell "1" [ref=e2276]
+                    - cell "52.6%" [ref=e2277]
+                    - cell "76.5%" [ref=e2278]
+                    - cell "60.9%" [ref=e2279]
+                    - cell "6/8" [ref=e2280]
+                  - row "2024-08-26 US Open Hard R16 1 🇮🇹 Jannik Sinner (1) 14 🇺🇸 Tommy Paul (14) 7-6(3) 7-6(5) 6-1 5 162 10 1 49.0% 81.3% 56.0% 2/4" [ref=e2281]:
+                    - cell "2024-08-26" [ref=e2282]
+                    - cell "US Open" [ref=e2283]:
+                      - link "US Open" [ref=e2284] [cursor=pointer]:
+                        - /url: /tournaments/560/2024
+                    - cell "Hard" [ref=e2285]
+                    - cell "R16" [ref=e2286]
+                    - cell "1" [ref=e2287]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2288]:
+                      - img "🇮🇹" [ref=e2289]
+                      - link "Jannik Sinner (1)" [ref=e2290] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2291]: (1)
+                    - cell "14" [ref=e2292]
+                    - cell "🇺🇸 Tommy Paul (14)" [ref=e2293]:
+                      - img "🇺🇸" [ref=e2294]
+                      - link "Tommy Paul (14)" [ref=e2295] [cursor=pointer]:
+                        - /url: /players/tommy-paul
+                        - text: Tommy Paul
+                        - generic [ref=e2296]: (14)
+                    - cell "7-6(3) 7-6(5) 6-1" [ref=e2297]
+                    - cell "5" [ref=e2298]
+                    - cell "162" [ref=e2299]
+                    - cell "10" [ref=e2300]
+                    - cell "1" [ref=e2301]
+                    - cell "49.0%" [ref=e2302]
+                    - cell "81.3%" [ref=e2303]
+                    - cell "56.0%" [ref=e2304]
+                    - cell "2/4" [ref=e2305]
+                  - row "2024-08-26 US Open Hard R32 1 🇮🇹 Jannik Sinner 87 🇦🇺 Christopher O'Connell 6-1 6-4 6-2 5 113 15 2 65.2% 82.2% 66.7% 0/0" [ref=e2306]:
+                    - cell "2024-08-26" [ref=e2307]
+                    - cell "US Open" [ref=e2308]:
+                      - link "US Open" [ref=e2309] [cursor=pointer]:
+                        - /url: /tournaments/560/2024
+                    - cell "Hard" [ref=e2310]
+                    - cell "R32" [ref=e2311]
+                    - cell "1" [ref=e2312]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e2313]:
+                      - img "🇮🇹" [ref=e2314]
+                      - link "Jannik Sinner" [ref=e2315] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "87" [ref=e2316]
+                    - cell "🇦🇺 Christopher O'Connell" [ref=e2317]:
+                      - img "🇦🇺" [ref=e2318]
+                      - link "Christopher O'Connell" [ref=e2319] [cursor=pointer]:
+                        - /url: /players/christopher-oconnell
+                    - cell "6-1 6-4 6-2" [ref=e2320]
+                    - cell "5" [ref=e2321]
+                    - cell "113" [ref=e2322]
+                    - cell "15" [ref=e2323]
+                    - cell "2" [ref=e2324]
+                    - cell "65.2%" [ref=e2325]
+                    - cell "82.2%" [ref=e2326]
+                    - cell "66.7%" [ref=e2327]
+                    - cell "0/0" [ref=e2328]
+                  - row "2024-08-26 US Open Hard R64 1 🇮🇹 Jannik Sinner (1) 49 🇺🇸 Alex Michelsen 6-4 6-0 6-2 5 99 3 2 56.9% 81.1% 53.6% 3/5" [ref=e2329]:
+                    - cell "2024-08-26" [ref=e2330]
+                    - cell "US Open" [ref=e2331]:
+                      - link "US Open" [ref=e2332] [cursor=pointer]:
+                        - /url: /tournaments/560/2024
+                    - cell "Hard" [ref=e2333]
+                    - cell "R64" [ref=e2334]
+                    - cell "1" [ref=e2335]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2336]:
+                      - img "🇮🇹" [ref=e2337]
+                      - link "Jannik Sinner (1)" [ref=e2338] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2339]: (1)
+                    - cell "49" [ref=e2340]
+                    - cell "🇺🇸 Alex Michelsen" [ref=e2341]:
+                      - img "🇺🇸" [ref=e2342]
+                      - link "Alex Michelsen" [ref=e2343] [cursor=pointer]:
+                        - /url: /players/alex-michelsen
+                    - cell "6-4 6-0 6-2" [ref=e2344]
+                    - cell "5" [ref=e2345]
+                    - cell "99" [ref=e2346]
+                    - cell "3" [ref=e2347]
+                    - cell "2" [ref=e2348]
+                    - cell "56.9%" [ref=e2349]
+                    - cell "81.1%" [ref=e2350]
+                    - cell "53.6%" [ref=e2351]
+                    - cell "3/5" [ref=e2352]
+                  - row "2024-08-26 US Open Hard R128 1 🇮🇹 Jannik Sinner 140 🇺🇸 Mackenzie McDonald 2-6 6-2 6-1 6-2 5 144 11 5 55.3% 75.0% 50.0% 7/11" [ref=e2353]:
+                    - cell "2024-08-26" [ref=e2354]
+                    - cell "US Open" [ref=e2355]:
+                      - link "US Open" [ref=e2356] [cursor=pointer]:
+                        - /url: /tournaments/560/2024
+                    - cell "Hard" [ref=e2357]
+                    - cell "R128" [ref=e2358]
+                    - cell "1" [ref=e2359]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e2360]:
+                      - img "🇮🇹" [ref=e2361]
+                      - link "Jannik Sinner" [ref=e2362] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "140" [ref=e2363]
+                    - cell "🇺🇸 Mackenzie McDonald" [ref=e2364]:
+                      - img "🇺🇸" [ref=e2365]
+                      - link "Mackenzie McDonald" [ref=e2366] [cursor=pointer]:
+                        - /url: /players/mackenzie-mcdonald
+                    - cell "2-6 6-2 6-1 6-2" [ref=e2367]
+                    - cell "5" [ref=e2368]
+                    - cell "144" [ref=e2369]
+                    - cell "11" [ref=e2370]
+                    - cell "5" [ref=e2371]
+                    - cell "55.3%" [ref=e2372]
+                    - cell "75.0%" [ref=e2373]
+                    - cell "50.0%" [ref=e2374]
+                    - cell "7/11" [ref=e2375]
+                  - row "2024-08-12 Cincinnati Masters Hard F 1 🇮🇹 Jannik Sinner (1) 27 🇺🇸 Frances Tiafoe 7-6(4) 6-2 3 96 13 2 56.9% 84.8% 76.0% 3/3" [ref=e2376]:
+                    - cell "2024-08-12" [ref=e2377]
+                    - cell "Cincinnati Masters" [ref=e2378]:
+                      - link "Cincinnati Masters" [ref=e2379] [cursor=pointer]:
+                        - /url: /tournaments/422/2024
+                    - cell "Hard" [ref=e2380]
+                    - cell "F" [ref=e2381]
+                    - cell "1" [ref=e2382]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2383]:
+                      - img "🇮🇹" [ref=e2384]
+                      - link "Jannik Sinner (1)" [ref=e2385] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2386]: (1)
+                    - cell "27" [ref=e2387]
+                    - cell "🇺🇸 Frances Tiafoe" [ref=e2388]:
+                      - img "🇺🇸" [ref=e2389]
+                      - link "Frances Tiafoe" [ref=e2390] [cursor=pointer]:
+                        - /url: /players/frances-tiafoe
+                    - cell "7-6(4) 6-2" [ref=e2391]
+                    - cell "3" [ref=e2392]
+                    - cell "96" [ref=e2393]
+                    - cell "13" [ref=e2394]
+                    - cell "2" [ref=e2395]
+                    - cell "56.9%" [ref=e2396]
+                    - cell "84.8%" [ref=e2397]
+                    - cell "76.0%" [ref=e2398]
+                    - cell "3/3" [ref=e2399]
+                  - row "2024-08-12 Cincinnati Masters Hard SF 1 🇮🇹 Jannik Sinner (1) 4 🇩🇪 Alexander Zverev (3) 7-6(9) 5-7 7-6(4) 3 187 12 1 61.9% 69.9% 64.4% 2/5" [ref=e2400]:
+                    - cell "2024-08-12" [ref=e2401]
+                    - cell "Cincinnati Masters" [ref=e2402]:
+                      - link "Cincinnati Masters" [ref=e2403] [cursor=pointer]:
+                        - /url: /tournaments/422/2024
+                    - cell "Hard" [ref=e2404]
+                    - cell "SF" [ref=e2405]
+                    - cell "1" [ref=e2406]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2407]:
+                      - img "🇮🇹" [ref=e2408]
+                      - link "Jannik Sinner (1)" [ref=e2409] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2410]: (1)
+                    - cell "4" [ref=e2411]
+                    - cell "🇩🇪 Alexander Zverev (3)" [ref=e2412]:
+                      - img "🇩🇪" [ref=e2413]
+                      - link "Alexander Zverev (3)" [ref=e2414] [cursor=pointer]:
+                        - /url: /players/alexander-zverev
+                        - text: Alexander Zverev
+                        - generic [ref=e2415]: (3)
+                    - cell "7-6(9) 5-7 7-6(4)" [ref=e2416]
+                    - cell "3" [ref=e2417]
+                    - cell "187" [ref=e2418]
+                    - cell "12" [ref=e2419]
+                    - cell "1" [ref=e2420]
+                    - cell "61.9%" [ref=e2421]
+                    - cell "69.9%" [ref=e2422]
+                    - cell "64.4%" [ref=e2423]
+                    - cell "2/5" [ref=e2424]
+                  - row "2024-08-12 Cincinnati Masters Hard QF 1 🇮🇹 Jannik Sinner (1) 6 🇷🇺 Andrey Rublev (6) 4-6 7-5 6-4 3 146 10 5 47.8% 83.7% 42.6% 4/9" [ref=e2425]:
+                    - cell "2024-08-12" [ref=e2426]
+                    - cell "Cincinnati Masters" [ref=e2427]:
+                      - link "Cincinnati Masters" [ref=e2428] [cursor=pointer]:
+                        - /url: /tournaments/422/2024
+                    - cell "Hard" [ref=e2429]
+                    - cell "QF" [ref=e2430]
+                    - cell "1" [ref=e2431]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2432]:
+                      - img "🇮🇹" [ref=e2433]
+                      - link "Jannik Sinner (1)" [ref=e2434] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2435]: (1)
+                    - cell "6" [ref=e2436]
+                    - cell "🇷🇺 Andrey Rublev (6)" [ref=e2437]:
+                      - img "🇷🇺" [ref=e2438]
+                      - link "Andrey Rublev (6)" [ref=e2439] [cursor=pointer]:
+                        - /url: /players/andrey-rublev
+                        - text: Andrey Rublev
+                        - generic [ref=e2440]: (6)
+                    - cell "4-6 7-5 6-4" [ref=e2441]
+                    - cell "3" [ref=e2442]
+                    - cell "146" [ref=e2443]
+                    - cell "10" [ref=e2444]
+                    - cell "5" [ref=e2445]
+                    - cell "47.8%" [ref=e2446]
+                    - cell "83.7%" [ref=e2447]
+                    - cell "42.6%" [ref=e2448]
+                    - cell "4/9" [ref=e2449]
+                  - row "2024-08-12 Cincinnati Masters Hard R16 1 🇮🇹 Jannik Sinner (1) 32 🇦🇺 Jordan Thompson W/O 3 0 - - - - - -" [ref=e2450]:
+                    - cell "2024-08-12" [ref=e2451]
+                    - cell "Cincinnati Masters" [ref=e2452]:
+                      - link "Cincinnati Masters" [ref=e2453] [cursor=pointer]:
+                        - /url: /tournaments/422/2024
+                    - cell "Hard" [ref=e2454]
+                    - cell "R16" [ref=e2455]
+                    - cell "1" [ref=e2456]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2457]:
+                      - img "🇮🇹" [ref=e2458]
+                      - link "Jannik Sinner (1)" [ref=e2459] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2460]: (1)
+                    - cell "32" [ref=e2461]
+                    - cell "🇦🇺 Jordan Thompson" [ref=e2462]:
+                      - img "🇦🇺" [ref=e2463]
+                      - link "Jordan Thompson" [ref=e2464] [cursor=pointer]:
+                        - /url: /players/jordan-thompson
+                    - cell "W/O" [ref=e2465]
+                    - cell "3" [ref=e2466]
+                    - cell "0" [ref=e2467]
+                    - cell "-" [ref=e2468]
+                    - cell "-" [ref=e2469]
+                    - cell "-" [ref=e2470]
+                    - cell "-" [ref=e2471]
+                    - cell "-" [ref=e2472]
+                    - cell "-" [ref=e2473]
+                  - row "2024-08-12 Cincinnati Masters Hard R32 1 🇮🇹 Jannik Sinner (1) 57 🇺🇸 Alex Michelsen (Q) 6-4 7-5 3 111 9 4 50.6% 73.8% 61.0% 8/8" [ref=e2474]:
+                    - cell "2024-08-12" [ref=e2475]
+                    - cell "Cincinnati Masters" [ref=e2476]:
+                      - link "Cincinnati Masters" [ref=e2477] [cursor=pointer]:
+                        - /url: /tournaments/422/2024
+                    - cell "Hard" [ref=e2478]
+                    - cell "R32" [ref=e2479]
+                    - cell "1" [ref=e2480]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2481]:
+                      - img "🇮🇹" [ref=e2482]
+                      - link "Jannik Sinner (1)" [ref=e2483] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2484]: (1)
+                    - cell "57" [ref=e2485]
+                    - cell "🇺🇸 Alex Michelsen (Q)" [ref=e2486]:
+                      - img "🇺🇸" [ref=e2487]
+                      - link "Alex Michelsen (Q)" [ref=e2488] [cursor=pointer]:
+                        - /url: /players/alex-michelsen
+                        - text: Alex Michelsen
+                        - generic [ref=e2489]: (Q)
+                    - cell "6-4 7-5" [ref=e2490]
+                    - cell "3" [ref=e2491]
+                    - cell "111" [ref=e2492]
+                    - cell "9" [ref=e2493]
+                    - cell "4" [ref=e2494]
+                    - cell "50.6%" [ref=e2495]
+                    - cell "73.8%" [ref=e2496]
+                    - cell "61.0%" [ref=e2497]
+                    - cell "8/8" [ref=e2498]
+                  - row "2024-08-06 Canada Masters Hard QF 8 🇷🇺 Andrey Rublev (5) 1 🇮🇹 Jannik Sinner (1) 6-3 1-6 6-2 3 107 4 1 62.0% 73.5% 46.7% 10/12" [ref=e2499]:
+                    - cell "2024-08-06" [ref=e2500]
+                    - cell "Canada Masters" [ref=e2501]:
+                      - link "Canada Masters" [ref=e2502] [cursor=pointer]:
+                        - /url: /tournaments/421/2024
+                    - cell "Hard" [ref=e2503]
+                    - cell "QF" [ref=e2504]
+                    - cell "8" [ref=e2505]
+                    - cell "🇷🇺 Andrey Rublev (5)" [ref=e2506]:
+                      - img "🇷🇺" [ref=e2507]
+                      - link "Andrey Rublev (5)" [ref=e2508] [cursor=pointer]:
+                        - /url: /players/andrey-rublev
+                        - text: Andrey Rublev
+                        - generic [ref=e2509]: (5)
+                    - cell "1" [ref=e2510]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2511]:
+                      - img "🇮🇹" [ref=e2512]
+                      - link "Jannik Sinner (1)" [ref=e2513] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2514]: (1)
+                    - cell "6-3 1-6 6-2" [ref=e2515]
+                    - cell "3" [ref=e2516]
+                    - cell "107" [ref=e2517]
+                    - cell "4" [ref=e2518]
+                    - cell "1" [ref=e2519]
+                    - cell "62.0%" [ref=e2520]
+                    - cell "73.5%" [ref=e2521]
+                    - cell "46.7%" [ref=e2522]
+                    - cell "10/12" [ref=e2523]
+                  - row "2024-08-06 Canada Masters Hard R16 1 🇮🇹 Jannik Sinner (1) 21 🇨🇱 Alejandro Tabilo (15) 6-4 6-3 3 80 5 3 52.1% 92.0% 60.9% 0/0" [ref=e2524]:
+                    - cell "2024-08-06" [ref=e2525]
+                    - cell "Canada Masters" [ref=e2526]:
+                      - link "Canada Masters" [ref=e2527] [cursor=pointer]:
+                        - /url: /tournaments/421/2024
+                    - cell "Hard" [ref=e2528]
+                    - cell "R16" [ref=e2529]
+                    - cell "1" [ref=e2530]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2531]:
+                      - img "🇮🇹" [ref=e2532]
+                      - link "Jannik Sinner (1)" [ref=e2533] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2534]: (1)
+                    - cell "21" [ref=e2535]
+                    - cell "🇨🇱 Alejandro Tabilo (15)" [ref=e2536]:
+                      - img "🇨🇱" [ref=e2537]
+                      - link "Alejandro Tabilo (15)" [ref=e2538] [cursor=pointer]:
+                        - /url: /players/alejandro-tabilo
+                        - text: Alejandro Tabilo
+                        - generic [ref=e2539]: (15)
+                    - cell "6-4 6-3" [ref=e2540]
+                    - cell "3" [ref=e2541]
+                    - cell "80" [ref=e2542]
+                    - cell "5" [ref=e2543]
+                    - cell "3" [ref=e2544]
+                    - cell "52.1%" [ref=e2545]
+                    - cell "92.0%" [ref=e2546]
+                    - cell "60.9%" [ref=e2547]
+                    - cell "0/0" [ref=e2548]
+                  - row "2024-08-06 Canada Masters Hard R32 1 🇮🇹 Jannik Sinner (1) 94 🇭🇷 Borna Coric (Q) 6-2 6-4 3 96 9 2 49.1% 84.6% 66.7% 1/1" [ref=e2549]:
+                    - cell "2024-08-06" [ref=e2550]
+                    - cell "Canada Masters" [ref=e2551]:
+                      - link "Canada Masters" [ref=e2552] [cursor=pointer]:
+                        - /url: /tournaments/421/2024
+                    - cell "Hard" [ref=e2553]
+                    - cell "R32" [ref=e2554]
+                    - cell "1" [ref=e2555]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2556]:
+                      - img "🇮🇹" [ref=e2557]
+                      - link "Jannik Sinner (1)" [ref=e2558] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2559]: (1)
+                    - cell "94" [ref=e2560]
+                    - cell "🇭🇷 Borna Coric (Q)" [ref=e2561]:
+                      - img "🇭🇷" [ref=e2562]
+                      - link "Borna Coric (Q)" [ref=e2563] [cursor=pointer]:
+                        - /url: /players/borna-coric
+                        - text: Borna Coric
+                        - generic [ref=e2564]: (Q)
+                    - cell "6-2 6-4" [ref=e2565]
+                    - cell "3" [ref=e2566]
+                    - cell "96" [ref=e2567]
+                    - cell "9" [ref=e2568]
+                    - cell "2" [ref=e2569]
+                    - cell "49.1%" [ref=e2570]
+                    - cell "84.6%" [ref=e2571]
+                    - cell "66.7%" [ref=e2572]
+                    - cell "1/1" [ref=e2573]
+                  - row "2024-07-01 Wimbledon Grass QF 5 🇷🇺 Daniil Medvedev (5) 1 🇮🇹 Jannik Sinner (1) 6-7(7) 6-4 7-6(4) 2-6 6-3 5 240 15 11 68.4% 76.5% 45.5% 3/6" [ref=e2574]:
+                    - cell "2024-07-01" [ref=e2575]
+                    - cell "Wimbledon" [ref=e2576]:
+                      - link "Wimbledon" [ref=e2577] [cursor=pointer]:
+                        - /url: /tournaments/540/2024
+                    - cell "Grass" [ref=e2578]
+                    - cell "QF" [ref=e2579]
+                    - cell "5" [ref=e2580]
+                    - cell "🇷🇺 Daniil Medvedev (5)" [ref=e2581]:
+                      - img "🇷🇺" [ref=e2582]
+                      - link "Daniil Medvedev (5)" [ref=e2583] [cursor=pointer]:
+                        - /url: /players/daniil-medvedev
+                        - text: Daniil Medvedev
+                        - generic [ref=e2584]: (5)
+                    - cell "1" [ref=e2585]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2586]:
+                      - img "🇮🇹" [ref=e2587]
+                      - link "Jannik Sinner (1)" [ref=e2588] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2589]: (1)
+                    - cell "6-7(7) 6-4 7-6(4) 2-6 6-3" [ref=e2590]
+                    - cell "5" [ref=e2591]
+                    - cell "240" [ref=e2592]
+                    - cell "15" [ref=e2593]
+                    - cell "11" [ref=e2594]
+                    - cell "68.4%" [ref=e2595]
+                    - cell "76.5%" [ref=e2596]
+                    - cell "45.5%" [ref=e2597]
+                    - cell "3/6" [ref=e2598]
+                  - row "2024-07-01 Wimbledon Grass R16 1 🇮🇹 Jannik Sinner (1) 14 🇺🇸 Ben Shelton (14) 6-2 6-4 7-6(9) 5 129 7 0 70.0% 76.2% 70.4% 1/2" [ref=e2599]:
+                    - cell "2024-07-01" [ref=e2600]
+                    - cell "Wimbledon" [ref=e2601]:
+                      - link "Wimbledon" [ref=e2602] [cursor=pointer]:
+                        - /url: /tournaments/540/2024
+                    - cell "Grass" [ref=e2603]
+                    - cell "R16" [ref=e2604]
+                    - cell "1" [ref=e2605]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2606]:
+                      - img "🇮🇹" [ref=e2607]
+                      - link "Jannik Sinner (1)" [ref=e2608] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2609]: (1)
+                    - cell "14" [ref=e2610]
+                    - cell "🇺🇸 Ben Shelton (14)" [ref=e2611]:
+                      - img "🇺🇸" [ref=e2612]
+                      - link "Ben Shelton (14)" [ref=e2613] [cursor=pointer]:
+                        - /url: /players/ben-shelton
+                        - text: Ben Shelton
+                        - generic [ref=e2614]: (14)
+                    - cell "6-2 6-4 7-6(9)" [ref=e2615]
+                    - cell "5" [ref=e2616]
+                    - cell "129" [ref=e2617]
+                    - cell "7" [ref=e2618]
+                    - cell "0" [ref=e2619]
+                    - cell "70.0%" [ref=e2620]
+                    - cell "76.2%" [ref=e2621]
+                    - cell "70.4%" [ref=e2622]
+                    - cell "1/2" [ref=e2623]
+                  - row "2024-07-01 Wimbledon Grass R32 1 🇮🇹 Jannik Sinner (1) 52 🇷🇸 Miomir Kecmanovic 6-1 6-4 6-2 5 96 11 2 60.9% 85.7% 66.7% 1/1" [ref=e2624]:
+                    - cell "2024-07-01" [ref=e2625]
+                    - cell "Wimbledon" [ref=e2626]:
+                      - link "Wimbledon" [ref=e2627] [cursor=pointer]:
+                        - /url: /tournaments/540/2024
+                    - cell "Grass" [ref=e2628]
+                    - cell "R32" [ref=e2629]
+                    - cell "1" [ref=e2630]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2631]:
+                      - img "🇮🇹" [ref=e2632]
+                      - link "Jannik Sinner (1)" [ref=e2633] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2634]: (1)
+                    - cell "52" [ref=e2635]
+                    - cell "🇷🇸 Miomir Kecmanovic" [ref=e2636]:
+                      - img "🇷🇸" [ref=e2637]
+                      - link "Miomir Kecmanovic" [ref=e2638] [cursor=pointer]:
+                        - /url: /players/miomir-kecmanovic
+                    - cell "6-1 6-4 6-2" [ref=e2639]
+                    - cell "5" [ref=e2640]
+                    - cell "96" [ref=e2641]
+                    - cell "11" [ref=e2642]
+                    - cell "2" [ref=e2643]
+                    - cell "60.9%" [ref=e2644]
+                    - cell "85.7%" [ref=e2645]
+                    - cell "66.7%" [ref=e2646]
+                    - cell "1/1" [ref=e2647]
+                  - row "2024-07-01 Wimbledon Grass R64 1 🇮🇹 Jannik Sinner (1) 59 🇮🇹 Matteo Berrettini 7-6(3) 7-6(4) 2-6 7-6(4) 5 222 10 2 65.2% 81.8% 53.2% 3/7" [ref=e2648]:
+                    - cell "2024-07-01" [ref=e2649]
+                    - cell "Wimbledon" [ref=e2650]:
+                      - link "Wimbledon" [ref=e2651] [cursor=pointer]:
+                        - /url: /tournaments/540/2024
+                    - cell "Grass" [ref=e2652]
+                    - cell "R64" [ref=e2653]
+                    - cell "1" [ref=e2654]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2655]:
+                      - img "🇮🇹" [ref=e2656]
+                      - link "Jannik Sinner (1)" [ref=e2657] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2658]: (1)
+                    - cell "59" [ref=e2659]
+                    - cell "🇮🇹 Matteo Berrettini" [ref=e2660]:
+                      - img "🇮🇹" [ref=e2661]
+                      - link "Matteo Berrettini" [ref=e2662] [cursor=pointer]:
+                        - /url: /players/matteo-berrettini
+                    - cell "7-6(3) 7-6(4) 2-6 7-6(4)" [ref=e2663]
+                    - cell "5" [ref=e2664]
+                    - cell "222" [ref=e2665]
+                    - cell "10" [ref=e2666]
+                    - cell "2" [ref=e2667]
+                    - cell "65.2%" [ref=e2668]
+                    - cell "81.8%" [ref=e2669]
+                    - cell "53.2%" [ref=e2670]
+                    - cell "3/7" [ref=e2671]
+                  - row "2024-07-01 Wimbledon Grass R128 1 🇮🇹 Jannik Sinner (1) 110 🇩🇪 Yannick Hanfmann 6-3 6-4 3-6 6-3 5 178 16 3 57.9% 79.5% 49.1% 9/11" [ref=e2672]:
+                    - cell "2024-07-01" [ref=e2673]
+                    - cell "Wimbledon" [ref=e2674]:
+                      - link "Wimbledon" [ref=e2675] [cursor=pointer]:
+                        - /url: /tournaments/540/2024
+                    - cell "Grass" [ref=e2676]
+                    - cell "R128" [ref=e2677]
+                    - cell "1" [ref=e2678]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2679]:
+                      - img "🇮🇹" [ref=e2680]
+                      - link "Jannik Sinner (1)" [ref=e2681] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2682]: (1)
+                    - cell "110" [ref=e2683]
+                    - cell "🇩🇪 Yannick Hanfmann" [ref=e2684]:
+                      - img "🇩🇪" [ref=e2685]
+                      - link "Yannick Hanfmann" [ref=e2686] [cursor=pointer]:
+                        - /url: /players/yannick-hanfmann
+                    - cell "6-3 6-4 3-6 6-3" [ref=e2687]
+                    - cell "5" [ref=e2688]
+                    - cell "178" [ref=e2689]
+                    - cell "16" [ref=e2690]
+                    - cell "3" [ref=e2691]
+                    - cell "57.9%" [ref=e2692]
+                    - cell "79.5%" [ref=e2693]
+                    - cell "49.1%" [ref=e2694]
+                    - cell "9/11" [ref=e2695]
+                  - row "2024-06-17 Halle Grass F 1 🇮🇹 Jannik Sinner (1) 9 🇵🇱 Hubert Hurkacz (5) 7-6(8) 7-6(2) 3 109 10 1 65.3% 93.6% 68.0% 1/1" [ref=e2696]:
+                    - cell "2024-06-17" [ref=e2697]
+                    - cell "Halle" [ref=e2698]:
+                      - link "Halle" [ref=e2699] [cursor=pointer]:
+                        - /url: /tournaments/500/2024
+                    - cell "Grass" [ref=e2700]
+                    - cell "F" [ref=e2701]
+                    - cell "1" [ref=e2702]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2703]:
+                      - img "🇮🇹" [ref=e2704]
+                      - link "Jannik Sinner (1)" [ref=e2705] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2706]: (1)
+                    - cell "9" [ref=e2707]
+                    - cell "🇵🇱 Hubert Hurkacz (5)" [ref=e2708]:
+                      - img "🇵🇱" [ref=e2709]
+                      - link "Hubert Hurkacz (5)" [ref=e2710] [cursor=pointer]:
+                        - /url: /players/hubert-hurkacz
+                        - text: Hubert Hurkacz
+                        - generic [ref=e2711]: (5)
+                    - cell "7-6(8) 7-6(2)" [ref=e2712]
+                    - cell "3" [ref=e2713]
+                    - cell "109" [ref=e2714]
+                    - cell "10" [ref=e2715]
+                    - cell "1" [ref=e2716]
+                    - cell "65.3%" [ref=e2717]
+                    - cell "93.6%" [ref=e2718]
+                    - cell "68.0%" [ref=e2719]
+                    - cell "1/1" [ref=e2720]
+                  - row "2024-06-17 Halle Grass SF 1 🇮🇹 Jannik Sinner (1) 42 🇨🇳 Zhizhen Zhang 6-4 7-6(3) 3 99 8 1 65.2% 81.4% 60.9% 1/1" [ref=e2721]:
+                    - cell "2024-06-17" [ref=e2722]
+                    - cell "Halle" [ref=e2723]:
+                      - link "Halle" [ref=e2724] [cursor=pointer]:
+                        - /url: /tournaments/500/2024
+                    - cell "Grass" [ref=e2725]
+                    - cell "SF" [ref=e2726]
+                    - cell "1" [ref=e2727]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2728]:
+                      - img "🇮🇹" [ref=e2729]
+                      - link "Jannik Sinner (1)" [ref=e2730] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2731]: (1)
+                    - cell "42" [ref=e2732]
+                    - cell "🇨🇳 Zhizhen Zhang" [ref=e2733]:
+                      - img "🇨🇳" [ref=e2734]
+                      - link "Zhizhen Zhang" [ref=e2735] [cursor=pointer]:
+                        - /url: /players/zhizhen-zhang
+                    - cell "6-4 7-6(3)" [ref=e2736]
+                    - cell "3" [ref=e2737]
+                    - cell "99" [ref=e2738]
+                    - cell "8" [ref=e2739]
+                    - cell "1" [ref=e2740]
+                    - cell "65.2%" [ref=e2741]
+                    - cell "81.4%" [ref=e2742]
+                    - cell "60.9%" [ref=e2743]
+                    - cell "1/1" [ref=e2744]
+                  - row "2024-06-17 Halle Grass QF 1 🇮🇹 Jannik Sinner 41 🇩🇪 Jan-Lennard Struff 6-2 6-7(1) 7-6(3) 3 150 14 3 66.0% 85.9% 51.5% 1/1" [ref=e2745]:
+                    - cell "2024-06-17" [ref=e2746]
+                    - cell "Halle" [ref=e2747]:
+                      - link "Halle" [ref=e2748] [cursor=pointer]:
+                        - /url: /tournaments/500/2024
+                    - cell "Grass" [ref=e2749]
+                    - cell "QF" [ref=e2750]
+                    - cell "1" [ref=e2751]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e2752]:
+                      - img "🇮🇹" [ref=e2753]
+                      - link "Jannik Sinner" [ref=e2754] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "41" [ref=e2755]
+                    - cell "🇩🇪 Jan-Lennard Struff" [ref=e2756]:
+                      - img "🇩🇪" [ref=e2757]
+                      - link "Jan-Lennard Struff" [ref=e2758] [cursor=pointer]:
+                        - /url: /players/jan-lennard-struff
+                    - cell "6-2 6-7(1) 7-6(3)" [ref=e2759]
+                    - cell "3" [ref=e2760]
+                    - cell "150" [ref=e2761]
+                    - cell "14" [ref=e2762]
+                    - cell "3" [ref=e2763]
+                    - cell "66.0%" [ref=e2764]
+                    - cell "85.9%" [ref=e2765]
+                    - cell "51.5%" [ref=e2766]
+                    - cell "1/1" [ref=e2767]
+                  - row "2024-06-17 Halle Grass R16 1 🇮🇹 Jannik Sinner (1) 45 🇭🇺 Fabian Marozsan 6-4 6-7(4) 6-3 3 135 12 2 64.5% 75.0% 51.5% 0/2" [ref=e2768]:
+                    - cell "2024-06-17" [ref=e2769]
+                    - cell "Halle" [ref=e2770]:
+                      - link "Halle" [ref=e2771] [cursor=pointer]:
+                        - /url: /tournaments/500/2024
+                    - cell "Grass" [ref=e2772]
+                    - cell "R16" [ref=e2773]
+                    - cell "1" [ref=e2774]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2775]:
+                      - img "🇮🇹" [ref=e2776]
+                      - link "Jannik Sinner (1)" [ref=e2777] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2778]: (1)
+                    - cell "45" [ref=e2779]
+                    - cell "🇭🇺 Fabian Marozsan" [ref=e2780]:
+                      - img "🇭🇺" [ref=e2781]
+                      - link "Fabian Marozsan" [ref=e2782] [cursor=pointer]:
+                        - /url: /players/fabian-marozsan
+                    - cell "6-4 6-7(4) 6-3" [ref=e2783]
+                    - cell "3" [ref=e2784]
+                    - cell "135" [ref=e2785]
+                    - cell "12" [ref=e2786]
+                    - cell "2" [ref=e2787]
+                    - cell "64.5%" [ref=e2788]
+                    - cell "75.0%" [ref=e2789]
+                    - cell "51.5%" [ref=e2790]
+                    - cell "0/2" [ref=e2791]
+                  - row "2024-06-17 Halle Grass R32 1 🇮🇹 Jannik Sinner (1) 27 🇳🇱 Tallon Griekspoor 6-7(8) 6-3 6-2 3 142 15 2 66.7% 79.0% 64.5% 4/4" [ref=e2792]:
+                    - cell "2024-06-17" [ref=e2793]
+                    - cell "Halle" [ref=e2794]:
+                      - link "Halle" [ref=e2795] [cursor=pointer]:
+                        - /url: /tournaments/500/2024
+                    - cell "Grass" [ref=e2796]
+                    - cell "R32" [ref=e2797]
+                    - cell "1" [ref=e2798]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2799]:
+                      - img "🇮🇹" [ref=e2800]
+                      - link "Jannik Sinner (1)" [ref=e2801] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2802]: (1)
+                    - cell "27" [ref=e2803]
+                    - cell "🇳🇱 Tallon Griekspoor" [ref=e2804]:
+                      - img "🇳🇱" [ref=e2805]
+                      - link "Tallon Griekspoor" [ref=e2806] [cursor=pointer]:
+                        - /url: /players/tallon-griekspoor
+                    - cell "6-7(8) 6-3 6-2" [ref=e2807]
+                    - cell "3" [ref=e2808]
+                    - cell "142" [ref=e2809]
+                    - cell "15" [ref=e2810]
+                    - cell "2" [ref=e2811]
+                    - cell "66.7%" [ref=e2812]
+                    - cell "79.0%" [ref=e2813]
+                    - cell "64.5%" [ref=e2814]
+                    - cell "4/4" [ref=e2815]
+                  - row "2024-05-26 Roland Garros Clay SF 3 🇪🇸 Carlos Alcaraz (3) 2 🇮🇹 Jannik Sinner (2) 2-6 6-3 3-6 6-4 6-3 5 - 8 7 65.6% 66.0% 46.3% 4/10" [ref=e2816]:
+                    - cell "2024-05-26" [ref=e2817]
+                    - cell "Roland Garros" [ref=e2818]:
+                      - link "Roland Garros" [ref=e2819] [cursor=pointer]:
+                        - /url: /tournaments/520/2024
+                    - cell "Clay" [ref=e2820]
+                    - cell "SF" [ref=e2821]
+                    - cell "3" [ref=e2822]
+                    - cell "🇪🇸 Carlos Alcaraz (3)" [ref=e2823]:
+                      - img "🇪🇸" [ref=e2824]
+                      - link "Carlos Alcaraz (3)" [ref=e2825] [cursor=pointer]:
+                        - /url: /players/carlos-alcaraz
+                        - text: Carlos Alcaraz
+                        - generic [ref=e2826]: (3)
+                    - cell "2" [ref=e2827]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e2828]:
+                      - img "🇮🇹" [ref=e2829]
+                      - link "Jannik Sinner (2)" [ref=e2830] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2831]: (2)
+                    - cell "2-6 6-3 3-6 6-4 6-3" [ref=e2832]
+                    - cell "5" [ref=e2833]
+                    - cell "-" [ref=e2834]
+                    - cell "8" [ref=e2835]
+                    - cell "7" [ref=e2836]
+                    - cell "65.6%" [ref=e2837]
+                    - cell "66.0%" [ref=e2838]
+                    - cell "46.3%" [ref=e2839]
+                    - cell "4/10" [ref=e2840]
+                  - row "2024-05-26 Roland Garros Clay QF 2 🇮🇹 Jannik Sinner (2) 10 🇧🇬 Grigor Dimitrov (10) 6-2 6-4 7-6(3) 5 - 8 0 59.6% 81.1% 63.9% 1/2" [ref=e2841]:
+                    - cell "2024-05-26" [ref=e2842]
+                    - cell "Roland Garros" [ref=e2843]:
+                      - link "Roland Garros" [ref=e2844] [cursor=pointer]:
+                        - /url: /tournaments/520/2024
+                    - cell "Clay" [ref=e2845]
+                    - cell "QF" [ref=e2846]
+                    - cell "2" [ref=e2847]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e2848]:
+                      - img "🇮🇹" [ref=e2849]
+                      - link "Jannik Sinner (2)" [ref=e2850] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2851]: (2)
+                    - cell "10" [ref=e2852]
+                    - cell "🇧🇬 Grigor Dimitrov (10)" [ref=e2853]:
+                      - img "🇧🇬" [ref=e2854]
+                      - link "Grigor Dimitrov (10)" [ref=e2855] [cursor=pointer]:
+                        - /url: /players/grigor-dimitrov
+                        - text: Grigor Dimitrov
+                        - generic [ref=e2856]: (10)
+                    - cell "6-2 6-4 7-6(3)" [ref=e2857]
+                    - cell "5" [ref=e2858]
+                    - cell "-" [ref=e2859]
+                    - cell "8" [ref=e2860]
+                    - cell "0" [ref=e2861]
+                    - cell "59.6%" [ref=e2862]
+                    - cell "81.1%" [ref=e2863]
+                    - cell "63.9%" [ref=e2864]
+                    - cell "1/2" [ref=e2865]
+                  - row "2024-05-26 Roland Garros Clay R16 2 🇮🇹 Jannik Sinner (2) 79 🇫🇷 Corentin Moutet 2-6 6-3 6-2 6-1 5 - 5 5 65.3% 72.6% 42.4% 2/6" [ref=e2866]:
+                    - cell "2024-05-26" [ref=e2867]
+                    - cell "Roland Garros" [ref=e2868]:
+                      - link "Roland Garros" [ref=e2869] [cursor=pointer]:
+                        - /url: /tournaments/520/2024
+                    - cell "Clay" [ref=e2870]
+                    - cell "R16" [ref=e2871]
+                    - cell "2" [ref=e2872]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e2873]:
+                      - img "🇮🇹" [ref=e2874]
+                      - link "Jannik Sinner (2)" [ref=e2875] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2876]: (2)
+                    - cell "79" [ref=e2877]
+                    - cell "🇫🇷 Corentin Moutet" [ref=e2878]:
+                      - img "🇫🇷" [ref=e2879]
+                      - link "Corentin Moutet" [ref=e2880] [cursor=pointer]:
+                        - /url: /players/corentin-moutet
+                    - cell "2-6 6-3 6-2 6-1" [ref=e2881]
+                    - cell "5" [ref=e2882]
+                    - cell "-" [ref=e2883]
+                    - cell "5" [ref=e2884]
+                    - cell "5" [ref=e2885]
+                    - cell "65.3%" [ref=e2886]
+                    - cell "72.6%" [ref=e2887]
+                    - cell "42.4%" [ref=e2888]
+                    - cell "2/6" [ref=e2889]
+                  - row "2024-05-26 Roland Garros Clay R32 2 🇮🇹 Jannik Sinner (2) 56 🇷🇺 Pavel Kotov 6-4 6-4 6-4 5 - 4 1 62.7% 78.8% 67.7% 1/1" [ref=e2890]:
+                    - cell "2024-05-26" [ref=e2891]
+                    - cell "Roland Garros" [ref=e2892]:
+                      - link "Roland Garros" [ref=e2893] [cursor=pointer]:
+                        - /url: /tournaments/520/2024
+                    - cell "Clay" [ref=e2894]
+                    - cell "R32" [ref=e2895]
+                    - cell "2" [ref=e2896]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e2897]:
+                      - img "🇮🇹" [ref=e2898]
+                      - link "Jannik Sinner (2)" [ref=e2899] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2900]: (2)
+                    - cell "56" [ref=e2901]
+                    - cell "🇷🇺 Pavel Kotov" [ref=e2902]:
+                      - img "🇷🇺" [ref=e2903]
+                      - link "Pavel Kotov" [ref=e2904] [cursor=pointer]:
+                        - /url: /players/pavel-kotov
+                    - cell "6-4 6-4 6-4" [ref=e2905]
+                    - cell "5" [ref=e2906]
+                    - cell "-" [ref=e2907]
+                    - cell "4" [ref=e2908]
+                    - cell "1" [ref=e2909]
+                    - cell "62.7%" [ref=e2910]
+                    - cell "78.8%" [ref=e2911]
+                    - cell "67.7%" [ref=e2912]
+                    - cell "1/1" [ref=e2913]
+                  - row "2024-05-26 Roland Garros Clay R64 2 🇮🇹 Jannik Sinner (2) 124 🇫🇷 Richard Gasquet (WC) 6-4 6-2 6-4 5 - 8 3 76.3% 79.3% 50.0% 1/2" [ref=e2914]:
+                    - cell "2024-05-26" [ref=e2915]
+                    - cell "Roland Garros" [ref=e2916]:
+                      - link "Roland Garros" [ref=e2917] [cursor=pointer]:
+                        - /url: /tournaments/520/2024
+                    - cell "Clay" [ref=e2918]
+                    - cell "R64" [ref=e2919]
+                    - cell "2" [ref=e2920]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e2921]:
+                      - img "🇮🇹" [ref=e2922]
+                      - link "Jannik Sinner (2)" [ref=e2923] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2924]: (2)
+                    - cell "124" [ref=e2925]
+                    - cell "🇫🇷 Richard Gasquet (WC)" [ref=e2926]:
+                      - img "🇫🇷" [ref=e2927]
+                      - link "Richard Gasquet (WC)" [ref=e2928] [cursor=pointer]:
+                        - /url: /players/richard-gasquet
+                        - text: Richard Gasquet
+                        - generic [ref=e2929]: (WC)
+                    - cell "6-4 6-2 6-4" [ref=e2930]
+                    - cell "5" [ref=e2931]
+                    - cell "-" [ref=e2932]
+                    - cell "8" [ref=e2933]
+                    - cell "3" [ref=e2934]
+                    - cell "76.3%" [ref=e2935]
+                    - cell "79.3%" [ref=e2936]
+                    - cell "50.0%" [ref=e2937]
+                    - cell "1/2" [ref=e2938]
+                  - row "2024-05-26 Roland Garros Clay R128 2 🇮🇹 Jannik Sinner (2) 46 🇺🇸 Christopher Eubanks 6-3 6-3 6-4 5 - 6 4 60.7% 77.8% 51.4% 9/10" [ref=e2939]:
+                    - cell "2024-05-26" [ref=e2940]
+                    - cell "Roland Garros" [ref=e2941]:
+                      - link "Roland Garros" [ref=e2942] [cursor=pointer]:
+                        - /url: /tournaments/520/2024
+                    - cell "Clay" [ref=e2943]
+                    - cell "R128" [ref=e2944]
+                    - cell "2" [ref=e2945]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e2946]:
+                      - img "🇮🇹" [ref=e2947]
+                      - link "Jannik Sinner (2)" [ref=e2948] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2949]: (2)
+                    - cell "46" [ref=e2950]
+                    - cell "🇺🇸 Christopher Eubanks" [ref=e2951]:
+                      - img "🇺🇸" [ref=e2952]
+                      - link "Christopher Eubanks" [ref=e2953] [cursor=pointer]:
+                        - /url: /players/christopher-eubanks
+                    - cell "6-3 6-3 6-4" [ref=e2954]
+                    - cell "5" [ref=e2955]
+                    - cell "-" [ref=e2956]
+                    - cell "6" [ref=e2957]
+                    - cell "4" [ref=e2958]
+                    - cell "60.7%" [ref=e2959]
+                    - cell "77.8%" [ref=e2960]
+                    - cell "51.4%" [ref=e2961]
+                    - cell "9/10" [ref=e2962]
+                  - row "2024-04-22 Madrid Masters Clay QF 35 🇨🇦 Felix Auger-Aliassime 2 🇮🇹 Jannik Sinner (1) W/O 3 - - - - - - -" [ref=e2963]:
+                    - cell "2024-04-22" [ref=e2964]
+                    - cell "Madrid Masters" [ref=e2965]:
+                      - link "Madrid Masters" [ref=e2966] [cursor=pointer]:
+                        - /url: /tournaments/1536/2024
+                    - cell "Clay" [ref=e2967]
+                    - cell "QF" [ref=e2968]
+                    - cell "35" [ref=e2969]
+                    - cell "🇨🇦 Felix Auger-Aliassime" [ref=e2970]:
+                      - img "🇨🇦" [ref=e2971]
+                      - link "Felix Auger-Aliassime" [ref=e2972] [cursor=pointer]:
+                        - /url: /players/felix-auger-aliassime
+                    - cell "2" [ref=e2973]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2974]:
+                      - img "🇮🇹" [ref=e2975]
+                      - link "Jannik Sinner (1)" [ref=e2976] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2977]: (1)
+                    - cell "W/O" [ref=e2978]
+                    - cell "3" [ref=e2979]
+                    - cell "-" [ref=e2980]
+                    - cell "-" [ref=e2981]
+                    - cell "-" [ref=e2982]
+                    - cell "-" [ref=e2983]
+                    - cell "-" [ref=e2984]
+                    - cell "-" [ref=e2985]
+                    - cell "-" [ref=e2986]
+                  - row "2024-04-22 Madrid Masters Clay R16 2 🇮🇹 Jannik Sinner (1) 17 🇷🇺 Karen Khachanov (16) 5-7 6-3 6-3 3 130 5 3 69.4% 79.7% 53.8% 5/6" [ref=e2987]:
+                    - cell "2024-04-22" [ref=e2988]
+                    - cell "Madrid Masters" [ref=e2989]:
+                      - link "Madrid Masters" [ref=e2990] [cursor=pointer]:
+                        - /url: /tournaments/1536/2024
+                    - cell "Clay" [ref=e2991]
+                    - cell "R16" [ref=e2992]
+                    - cell "2" [ref=e2993]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e2994]:
+                      - img "🇮🇹" [ref=e2995]
+                      - link "Jannik Sinner (1)" [ref=e2996] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e2997]: (1)
+                    - cell "17" [ref=e2998]
+                    - cell "🇷🇺 Karen Khachanov (16)" [ref=e2999]:
+                      - img "🇷🇺" [ref=e3000]
+                      - link "Karen Khachanov (16)" [ref=e3001] [cursor=pointer]:
+                        - /url: /players/karen-khachanov
+                        - text: Karen Khachanov
+                        - generic [ref=e3002]: (16)
+                    - cell "5-7 6-3 6-3" [ref=e3003]
+                    - cell "3" [ref=e3004]
+                    - cell "130" [ref=e3005]
+                    - cell "5" [ref=e3006]
+                    - cell "3" [ref=e3007]
+                    - cell "69.4%" [ref=e3008]
+                    - cell "79.7%" [ref=e3009]
+                    - cell "53.8%" [ref=e3010]
+                    - cell "5/6" [ref=e3011]
+                  - row "2024-04-22 Madrid Masters Clay R32 2 🇮🇹 Jannik Sinner (1) 72 🇷🇺 Pavel Kotov 6-2 7-5 3 98 3 0 66.7% 71.1% 47.4% 3/6" [ref=e3012]:
+                    - cell "2024-04-22" [ref=e3013]
+                    - cell "Madrid Masters" [ref=e3014]:
+                      - link "Madrid Masters" [ref=e3015] [cursor=pointer]:
+                        - /url: /tournaments/1536/2024
+                    - cell "Clay" [ref=e3016]
+                    - cell "R32" [ref=e3017]
+                    - cell "2" [ref=e3018]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e3019]:
+                      - img "🇮🇹" [ref=e3020]
+                      - link "Jannik Sinner (1)" [ref=e3021] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3022]: (1)
+                    - cell "72" [ref=e3023]
+                    - cell "🇷🇺 Pavel Kotov" [ref=e3024]:
+                      - img "🇷🇺" [ref=e3025]
+                      - link "Pavel Kotov" [ref=e3026] [cursor=pointer]:
+                        - /url: /players/pavel-kotov
+                    - cell "6-2 7-5" [ref=e3027]
+                    - cell "3" [ref=e3028]
+                    - cell "98" [ref=e3029]
+                    - cell "3" [ref=e3030]
+                    - cell "0" [ref=e3031]
+                    - cell "66.7%" [ref=e3032]
+                    - cell "71.1%" [ref=e3033]
+                    - cell "47.4%" [ref=e3034]
+                    - cell "3/6" [ref=e3035]
+                  - row "2024-04-22 Madrid Masters Clay R64 2 🇮🇹 Jannik Sinner (1) 52 🇮🇹 Lorenzo Sonego 6-0 6-3 3 69 2 0 69.0% 86.2% 61.5% 0/0" [ref=e3036]:
+                    - cell "2024-04-22" [ref=e3037]
+                    - cell "Madrid Masters" [ref=e3038]:
+                      - link "Madrid Masters" [ref=e3039] [cursor=pointer]:
+                        - /url: /tournaments/1536/2024
+                    - cell "Clay" [ref=e3040]
+                    - cell "R64" [ref=e3041]
+                    - cell "2" [ref=e3042]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e3043]:
+                      - img "🇮🇹" [ref=e3044]
+                      - link "Jannik Sinner (1)" [ref=e3045] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3046]: (1)
+                    - cell "52" [ref=e3047]
+                    - cell "🇮🇹 Lorenzo Sonego" [ref=e3048]:
+                      - img "🇮🇹" [ref=e3049]
+                      - link "Lorenzo Sonego" [ref=e3050] [cursor=pointer]:
+                        - /url: /players/lorenzo-sonego
+                    - cell "6-0 6-3" [ref=e3051]
+                    - cell "3" [ref=e3052]
+                    - cell "69" [ref=e3053]
+                    - cell "2" [ref=e3054]
+                    - cell "0" [ref=e3055]
+                    - cell "69.0%" [ref=e3056]
+                    - cell "86.2%" [ref=e3057]
+                    - cell "61.5%" [ref=e3058]
+                    - cell "0/0" [ref=e3059]
+                  - row "2024-04-08 Monte Carlo Masters Clay SF 12 🇬🇷 Stefanos Tsitsipas (12) 2 🇮🇹 Jannik Sinner (2) 6-4 3-6 6-4 3 160 7 3 59.5% 70.0% 61.8% 3/5" [ref=e3060]:
+                    - cell "2024-04-08" [ref=e3061]
+                    - cell "Monte Carlo Masters" [ref=e3062]:
+                      - link "Monte Carlo Masters" [ref=e3063] [cursor=pointer]:
+                        - /url: /tournaments/410/2024
+                    - cell "Clay" [ref=e3064]
+                    - cell "SF" [ref=e3065]
+                    - cell "12" [ref=e3066]
+                    - cell "🇬🇷 Stefanos Tsitsipas (12)" [ref=e3067]:
+                      - img "🇬🇷" [ref=e3068]
+                      - link "Stefanos Tsitsipas (12)" [ref=e3069] [cursor=pointer]:
+                        - /url: /players/stefanos-tsitsipas
+                        - text: Stefanos Tsitsipas
+                        - generic [ref=e3070]: (12)
+                    - cell "2" [ref=e3071]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e3072]:
+                      - img "🇮🇹" [ref=e3073]
+                      - link "Jannik Sinner (2)" [ref=e3074] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3075]: (2)
+                    - cell "6-4 3-6 6-4" [ref=e3076]
+                    - cell "3" [ref=e3077]
+                    - cell "160" [ref=e3078]
+                    - cell "7" [ref=e3079]
+                    - cell "3" [ref=e3080]
+                    - cell "59.5%" [ref=e3081]
+                    - cell "70.0%" [ref=e3082]
+                    - cell "61.8%" [ref=e3083]
+                    - cell "3/5" [ref=e3084]
+                  - row "2024-04-08 Monte Carlo Masters Clay QF 2 🇮🇹 Jannik Sinner (2) 7 🇩🇰 Holger Rune (7) 6-4 6-7(6) 6-3 3 160 5 2 58.9% 86.8% 67.6% 2/2" [ref=e3085]:
+                    - cell "2024-04-08" [ref=e3086]
+                    - cell "Monte Carlo Masters" [ref=e3087]:
+                      - link "Monte Carlo Masters" [ref=e3088] [cursor=pointer]:
+                        - /url: /tournaments/410/2024
+                    - cell "Clay" [ref=e3089]
+                    - cell "QF" [ref=e3090]
+                    - cell "2" [ref=e3091]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e3092]:
+                      - img "🇮🇹" [ref=e3093]
+                      - link "Jannik Sinner (2)" [ref=e3094] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3095]: (2)
+                    - cell "7" [ref=e3096]
+                    - cell "🇩🇰 Holger Rune (7)" [ref=e3097]:
+                      - img "🇩🇰" [ref=e3098]
+                      - link "Holger Rune (7)" [ref=e3099] [cursor=pointer]:
+                        - /url: /players/holger-rune
+                        - text: Holger Rune
+                        - generic [ref=e3100]: (7)
+                    - cell "6-4 6-7(6) 6-3" [ref=e3101]
+                    - cell "3" [ref=e3102]
+                    - cell "160" [ref=e3103]
+                    - cell "5" [ref=e3104]
+                    - cell "2" [ref=e3105]
+                    - cell "58.9%" [ref=e3106]
+                    - cell "86.8%" [ref=e3107]
+                    - cell "67.6%" [ref=e3108]
+                    - cell "2/2" [ref=e3109]
+                  - row "2024-04-08 Monte Carlo Masters Clay R16 2 🇮🇹 Jannik Sinner (2) 25 🇩🇪 Jan-Lennard Struff 6-4 6-2 3 76 3 0 56.5% 84.6% 65.0% 0/1" [ref=e3110]:
+                    - cell "2024-04-08" [ref=e3111]
+                    - cell "Monte Carlo Masters" [ref=e3112]:
+                      - link "Monte Carlo Masters" [ref=e3113] [cursor=pointer]:
+                        - /url: /tournaments/410/2024
+                    - cell "Clay" [ref=e3114]
+                    - cell "R16" [ref=e3115]
+                    - cell "2" [ref=e3116]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e3117]:
+                      - img "🇮🇹" [ref=e3118]
+                      - link "Jannik Sinner (2)" [ref=e3119] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3120]: (2)
+                    - cell "25" [ref=e3121]
+                    - cell "🇩🇪 Jan-Lennard Struff" [ref=e3122]:
+                      - img "🇩🇪" [ref=e3123]
+                      - link "Jan-Lennard Struff" [ref=e3124] [cursor=pointer]:
+                        - /url: /players/jan-lennard-struff
+                    - cell "6-4 6-2" [ref=e3125]
+                    - cell "3" [ref=e3126]
+                    - cell "76" [ref=e3127]
+                    - cell "3" [ref=e3128]
+                    - cell "0" [ref=e3129]
+                    - cell "56.5%" [ref=e3130]
+                    - cell "84.6%" [ref=e3131]
+                    - cell "65.0%" [ref=e3132]
+                    - cell "0/1" [ref=e3133]
+                  - row "2024-04-08 Monte Carlo Masters Clay R32 2 🇮🇹 Jannik Sinner (2) 27 🇺🇸 Sebastian Korda 6-1 6-2 3 75 2 1 48.8% 95.2% 54.5% 3/3" [ref=e3134]:
+                    - cell "2024-04-08" [ref=e3135]
+                    - cell "Monte Carlo Masters" [ref=e3136]:
+                      - link "Monte Carlo Masters" [ref=e3137] [cursor=pointer]:
+                        - /url: /tournaments/410/2024
+                    - cell "Clay" [ref=e3138]
+                    - cell "R32" [ref=e3139]
+                    - cell "2" [ref=e3140]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e3141]:
+                      - img "🇮🇹" [ref=e3142]
+                      - link "Jannik Sinner (2)" [ref=e3143] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3144]: (2)
+                    - cell "27" [ref=e3145]
+                    - cell "🇺🇸 Sebastian Korda" [ref=e3146]:
+                      - img "🇺🇸" [ref=e3147]
+                      - link "Sebastian Korda" [ref=e3148] [cursor=pointer]:
+                        - /url: /players/sebastian-korda
+                    - cell "6-1 6-2" [ref=e3149]
+                    - cell "3" [ref=e3150]
+                    - cell "75" [ref=e3151]
+                    - cell "2" [ref=e3152]
+                    - cell "1" [ref=e3153]
+                    - cell "48.8%" [ref=e3154]
+                    - cell "95.2%" [ref=e3155]
+                    - cell "54.5%" [ref=e3156]
+                    - cell "3/3" [ref=e3157]
+                  - row "2024-03-18 Miami Masters Hard F 3 🇮🇹 Jannik Sinner (2) 12 🇧🇬 Grigor Dimitrov (11) 6-3 6-1 3 73 4 1 55.8% 87.5% 63.2% 1/1" [ref=e3158]:
+                    - cell "2024-03-18" [ref=e3159]
+                    - cell "Miami Masters" [ref=e3160]:
+                      - link "Miami Masters" [ref=e3161] [cursor=pointer]:
+                        - /url: /tournaments/403/2024
+                    - cell "Hard" [ref=e3162]
+                    - cell "F" [ref=e3163]
+                    - cell "3" [ref=e3164]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e3165]:
+                      - img "🇮🇹" [ref=e3166]
+                      - link "Jannik Sinner (2)" [ref=e3167] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3168]: (2)
+                    - cell "12" [ref=e3169]
+                    - cell "🇧🇬 Grigor Dimitrov (11)" [ref=e3170]:
+                      - img "🇧🇬" [ref=e3171]
+                      - link "Grigor Dimitrov (11)" [ref=e3172] [cursor=pointer]:
+                        - /url: /players/grigor-dimitrov
+                        - text: Grigor Dimitrov
+                        - generic [ref=e3173]: (11)
+                    - cell "6-3 6-1" [ref=e3174]
+                    - cell "3" [ref=e3175]
+                    - cell "73" [ref=e3176]
+                    - cell "4" [ref=e3177]
+                    - cell "1" [ref=e3178]
+                    - cell "55.8%" [ref=e3179]
+                    - cell "87.5%" [ref=e3180]
+                    - cell "63.2%" [ref=e3181]
+                    - cell "1/1" [ref=e3182]
+                  - row "2024-03-18 Miami Masters Hard SF 3 🇮🇹 Jannik Sinner (2) 4 🇷🇺 Daniil Medvedev (3) 6-1 6-2 3 69 7 1 63.8% 80.0% 58.8% 3/3" [ref=e3183]:
+                    - cell "2024-03-18" [ref=e3184]
+                    - cell "Miami Masters" [ref=e3185]:
+                      - link "Miami Masters" [ref=e3186] [cursor=pointer]:
+                        - /url: /tournaments/403/2024
+                    - cell "Hard" [ref=e3187]
+                    - cell "SF" [ref=e3188]
+                    - cell "3" [ref=e3189]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e3190]:
+                      - img "🇮🇹" [ref=e3191]
+                      - link "Jannik Sinner (2)" [ref=e3192] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3193]: (2)
+                    - cell "4" [ref=e3194]
+                    - cell "🇷🇺 Daniil Medvedev (3)" [ref=e3195]:
+                      - img "🇷🇺" [ref=e3196]
+                      - link "Daniil Medvedev (3)" [ref=e3197] [cursor=pointer]:
+                        - /url: /players/daniil-medvedev
+                        - text: Daniil Medvedev
+                        - generic [ref=e3198]: (3)
+                    - cell "6-1 6-2" [ref=e3199]
+                    - cell "3" [ref=e3200]
+                    - cell "69" [ref=e3201]
+                    - cell "7" [ref=e3202]
+                    - cell "1" [ref=e3203]
+                    - cell "63.8%" [ref=e3204]
+                    - cell "80.0%" [ref=e3205]
+                    - cell "58.8%" [ref=e3206]
+                    - cell "3/3" [ref=e3207]
+                  - row "2024-03-18 Miami Masters Hard QF 3 🇮🇹 Jannik Sinner (2) 60 🇨🇿 Tomas Machac 6-4 6-2 3 91 3 2 60.0% 76.7% 65.0% 0/1" [ref=e3208]:
+                    - cell "2024-03-18" [ref=e3209]
+                    - cell "Miami Masters" [ref=e3210]:
+                      - link "Miami Masters" [ref=e3211] [cursor=pointer]:
+                        - /url: /tournaments/403/2024
+                    - cell "Hard" [ref=e3212]
+                    - cell "QF" [ref=e3213]
+                    - cell "3" [ref=e3214]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e3215]:
+                      - img "🇮🇹" [ref=e3216]
+                      - link "Jannik Sinner (2)" [ref=e3217] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3218]: (2)
+                    - cell "60" [ref=e3219]
+                    - cell "🇨🇿 Tomas Machac" [ref=e3220]:
+                      - img "🇨🇿" [ref=e3221]
+                      - link "Tomas Machac" [ref=e3222] [cursor=pointer]:
+                        - /url: /players/tomas-machac
+                    - cell "6-4 6-2" [ref=e3223]
+                    - cell "3" [ref=e3224]
+                    - cell "91" [ref=e3225]
+                    - cell "3" [ref=e3226]
+                    - cell "2" [ref=e3227]
+                    - cell "60.0%" [ref=e3228]
+                    - cell "76.7%" [ref=e3229]
+                    - cell "65.0%" [ref=e3230]
+                    - cell "0/1" [ref=e3231]
+                  - row "2024-03-18 Miami Masters Hard R16 3 🇮🇹 Jannik Sinner (2) 66 🇦🇺 Christopher O'Connell 6-4 6-3 3 111 2 2 61.1% 75.8% 71.4% 3/4" [ref=e3232]:
+                    - cell "2024-03-18" [ref=e3233]
+                    - cell "Miami Masters" [ref=e3234]:
+                      - link "Miami Masters" [ref=e3235] [cursor=pointer]:
+                        - /url: /tournaments/403/2024
+                    - cell "Hard" [ref=e3236]
+                    - cell "R16" [ref=e3237]
+                    - cell "3" [ref=e3238]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e3239]:
+                      - img "🇮🇹" [ref=e3240]
+                      - link "Jannik Sinner (2)" [ref=e3241] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3242]: (2)
+                    - cell "66" [ref=e3243]
+                    - cell "🇦🇺 Christopher O'Connell" [ref=e3244]:
+                      - img "🇦🇺" [ref=e3245]
+                      - link "Christopher O'Connell" [ref=e3246] [cursor=pointer]:
+                        - /url: /players/christopher-oconnell
+                    - cell "6-4 6-3" [ref=e3247]
+                    - cell "3" [ref=e3248]
+                    - cell "111" [ref=e3249]
+                    - cell "2" [ref=e3250]
+                    - cell "2" [ref=e3251]
+                    - cell "61.1%" [ref=e3252]
+                    - cell "75.8%" [ref=e3253]
+                    - cell "71.4%" [ref=e3254]
+                    - cell "3/4" [ref=e3255]
+                  - row "2024-03-18 Miami Masters Hard R32 3 🇮🇹 Jannik Sinner (2) 26 🇳🇱 Tallon Griekspoor (25) 5-7 7-5 6-1 3 143 15 1 68.0% 90.2% 66.7% 1/2" [ref=e3256]:
+                    - cell "2024-03-18" [ref=e3257]
+                    - cell "Miami Masters" [ref=e3258]:
+                      - link "Miami Masters" [ref=e3259] [cursor=pointer]:
+                        - /url: /tournaments/403/2024
+                    - cell "Hard" [ref=e3260]
+                    - cell "R32" [ref=e3261]
+                    - cell "3" [ref=e3262]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e3263]:
+                      - img "🇮🇹" [ref=e3264]
+                      - link "Jannik Sinner (2)" [ref=e3265] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3266]: (2)
+                    - cell "26" [ref=e3267]
+                    - cell "🇳🇱 Tallon Griekspoor (25)" [ref=e3268]:
+                      - img "🇳🇱" [ref=e3269]
+                      - link "Tallon Griekspoor (25)" [ref=e3270] [cursor=pointer]:
+                        - /url: /players/tallon-griekspoor
+                        - text: Tallon Griekspoor
+                        - generic [ref=e3271]: (25)
+                    - cell "5-7 7-5 6-1" [ref=e3272]
+                    - cell "3" [ref=e3273]
+                    - cell "143" [ref=e3274]
+                    - cell "15" [ref=e3275]
+                    - cell "1" [ref=e3276]
+                    - cell "68.0%" [ref=e3277]
+                    - cell "90.2%" [ref=e3278]
+                    - cell "66.7%" [ref=e3279]
+                    - cell "1/2" [ref=e3280]
+                  - row "2024-03-18 Miami Masters Hard R64 3 🇮🇹 Jannik Sinner (2) 148 🇮🇹 Andrea Vavassori (Q) 6-3 6-4 3 80 3 3 69.2% 91.7% 43.8% 0/0" [ref=e3281]:
+                    - cell "2024-03-18" [ref=e3282]
+                    - cell "Miami Masters" [ref=e3283]:
+                      - link "Miami Masters" [ref=e3284] [cursor=pointer]:
+                        - /url: /tournaments/403/2024
+                    - cell "Hard" [ref=e3285]
+                    - cell "R64" [ref=e3286]
+                    - cell "3" [ref=e3287]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e3288]:
+                      - img "🇮🇹" [ref=e3289]
+                      - link "Jannik Sinner (2)" [ref=e3290] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3291]: (2)
+                    - cell "148" [ref=e3292]
+                    - cell "🇮🇹 Andrea Vavassori (Q)" [ref=e3293]:
+                      - img "🇮🇹" [ref=e3294]
+                      - link "Andrea Vavassori (Q)" [ref=e3295] [cursor=pointer]:
+                        - /url: /players/andrea-vavassori
+                        - text: Andrea Vavassori
+                        - generic [ref=e3296]: (Q)
+                    - cell "6-3 6-4" [ref=e3297]
+                    - cell "3" [ref=e3298]
+                    - cell "80" [ref=e3299]
+                    - cell "3" [ref=e3300]
+                    - cell "3" [ref=e3301]
+                    - cell "69.2%" [ref=e3302]
+                    - cell "91.7%" [ref=e3303]
+                    - cell "43.8%" [ref=e3304]
+                    - cell "0/0" [ref=e3305]
+                  - row "2024-03-04 Indian Wells Masters Hard SF 2 🇪🇸 Carlos Alcaraz (2) 3 🇮🇹 Jannik Sinner (3) 1-6 6-3 6-2 3 125 0 2 65.3% 70.2% 52.0% 2/4" [ref=e3306]:
+                    - cell "2024-03-04" [ref=e3307]
+                    - cell "Indian Wells Masters" [ref=e3308]:
+                      - link "Indian Wells Masters" [ref=e3309] [cursor=pointer]:
+                        - /url: /tournaments/404/2024
+                    - cell "Hard" [ref=e3310]
+                    - cell "SF" [ref=e3311]
+                    - cell "2" [ref=e3312]
+                    - cell "🇪🇸 Carlos Alcaraz (2)" [ref=e3313]:
+                      - img "🇪🇸" [ref=e3314]
+                      - link "Carlos Alcaraz (2)" [ref=e3315] [cursor=pointer]:
+                        - /url: /players/carlos-alcaraz
+                        - text: Carlos Alcaraz
+                        - generic [ref=e3316]: (2)
+                    - cell "3" [ref=e3317]
+                    - cell "🇮🇹 Jannik Sinner (3)" [ref=e3318]:
+                      - img "🇮🇹" [ref=e3319]
+                      - link "Jannik Sinner (3)" [ref=e3320] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3321]: (3)
+                    - cell "1-6 6-3 6-2" [ref=e3322]
+                    - cell "3" [ref=e3323]
+                    - cell "125" [ref=e3324]
+                    - cell "0" [ref=e3325]
+                    - cell "2" [ref=e3326]
+                    - cell "65.3%" [ref=e3327]
+                    - cell "70.2%" [ref=e3328]
+                    - cell "52.0%" [ref=e3329]
+                    - cell "2/4" [ref=e3330]
+                  - row "2024-03-04 Indian Wells Masters Hard QF 3 🇮🇹 Jannik Sinner (3) 32 🇨🇿 Jiri Lehecka (32) 6-3 6-3 3 84 3 2 52.9% 85.2% 62.5% 1/1" [ref=e3331]:
+                    - cell "2024-03-04" [ref=e3332]
+                    - cell "Indian Wells Masters" [ref=e3333]:
+                      - link "Indian Wells Masters" [ref=e3334] [cursor=pointer]:
+                        - /url: /tournaments/404/2024
+                    - cell "Hard" [ref=e3335]
+                    - cell "QF" [ref=e3336]
+                    - cell "3" [ref=e3337]
+                    - cell "🇮🇹 Jannik Sinner (3)" [ref=e3338]:
+                      - img "🇮🇹" [ref=e3339]
+                      - link "Jannik Sinner (3)" [ref=e3340] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3341]: (3)
+                    - cell "32" [ref=e3342]
+                    - cell "🇨🇿 Jiri Lehecka (32)" [ref=e3343]:
+                      - img "🇨🇿" [ref=e3344]
+                      - link "Jiri Lehecka (32)" [ref=e3345] [cursor=pointer]:
+                        - /url: /players/jiri-lehecka
+                        - text: Jiri Lehecka
+                        - generic [ref=e3346]: (32)
+                    - cell "6-3 6-3" [ref=e3347]
+                    - cell "3" [ref=e3348]
+                    - cell "84" [ref=e3349]
+                    - cell "3" [ref=e3350]
+                    - cell "2" [ref=e3351]
+                    - cell "52.9%" [ref=e3352]
+                    - cell "85.2%" [ref=e3353]
+                    - cell "62.5%" [ref=e3354]
+                    - cell "1/1" [ref=e3355]
+                  - row "2024-03-04 Indian Wells Masters Hard R16 3 🇮🇹 Jannik Sinner (3) 16 🇺🇸 Ben Shelton (16) 7-6(4) 6-1 3 98 3 1 67.7% 77.3% 61.9% 4/5" [ref=e3356]:
+                    - cell "2024-03-04" [ref=e3357]
+                    - cell "Indian Wells Masters" [ref=e3358]:
+                      - link "Indian Wells Masters" [ref=e3359] [cursor=pointer]:
+                        - /url: /tournaments/404/2024
+                    - cell "Hard" [ref=e3360]
+                    - cell "R16" [ref=e3361]
+                    - cell "3" [ref=e3362]
+                    - cell "🇮🇹 Jannik Sinner (3)" [ref=e3363]:
+                      - img "🇮🇹" [ref=e3364]
+                      - link "Jannik Sinner (3)" [ref=e3365] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3366]: (3)
+                    - cell "16" [ref=e3367]
+                    - cell "🇺🇸 Ben Shelton (16)" [ref=e3368]:
+                      - img "🇺🇸" [ref=e3369]
+                      - link "Ben Shelton (16)" [ref=e3370] [cursor=pointer]:
+                        - /url: /players/ben-shelton
+                        - text: Ben Shelton
+                        - generic [ref=e3371]: (16)
+                    - cell "7-6(4) 6-1" [ref=e3372]
+                    - cell "3" [ref=e3373]
+                    - cell "98" [ref=e3374]
+                    - cell "3" [ref=e3375]
+                    - cell "1" [ref=e3376]
+                    - cell "67.7%" [ref=e3377]
+                    - cell "77.3%" [ref=e3378]
+                    - cell "61.9%" [ref=e3379]
+                    - cell "4/5" [ref=e3380]
+                  - row "2024-03-04 Indian Wells Masters Hard R32 3 🇮🇹 Jannik Sinner (3) 25 🇩🇪 Jan-Lennard Struff (25) 6-3 6-4 3 74 7 2 67.3% 82.9% 76.5% 3/3" [ref=e3381]:
+                    - cell "2024-03-04" [ref=e3382]
+                    - cell "Indian Wells Masters" [ref=e3383]:
+                      - link "Indian Wells Masters" [ref=e3384] [cursor=pointer]:
+                        - /url: /tournaments/404/2024
+                    - cell "Hard" [ref=e3385]
+                    - cell "R32" [ref=e3386]
+                    - cell "3" [ref=e3387]
+                    - cell "🇮🇹 Jannik Sinner (3)" [ref=e3388]:
+                      - img "🇮🇹" [ref=e3389]
+                      - link "Jannik Sinner (3)" [ref=e3390] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3391]: (3)
+                    - cell "25" [ref=e3392]
+                    - cell "🇩🇪 Jan-Lennard Struff (25)" [ref=e3393]:
+                      - img "🇩🇪" [ref=e3394]
+                      - link "Jan-Lennard Struff (25)" [ref=e3395] [cursor=pointer]:
+                        - /url: /players/jan-lennard-struff
+                        - text: Jan-Lennard Struff
+                        - generic [ref=e3396]: (25)
+                    - cell "6-3 6-4" [ref=e3397]
+                    - cell "3" [ref=e3398]
+                    - cell "74" [ref=e3399]
+                    - cell "7" [ref=e3400]
+                    - cell "2" [ref=e3401]
+                    - cell "67.3%" [ref=e3402]
+                    - cell "82.9%" [ref=e3403]
+                    - cell "76.5%" [ref=e3404]
+                    - cell "3/3" [ref=e3405]
+                  - row "2024-03-04 Indian Wells Masters Hard R64 3 🇮🇹 Jannik Sinner (3) 99 🇦🇺 Thanasi Kokkinakis 6-3 6-0 3 81 3 0 61.7% 75.9% 72.2% 1/1" [ref=e3406]:
+                    - cell "2024-03-04" [ref=e3407]
+                    - cell "Indian Wells Masters" [ref=e3408]:
+                      - link "Indian Wells Masters" [ref=e3409] [cursor=pointer]:
+                        - /url: /tournaments/404/2024
+                    - cell "Hard" [ref=e3410]
+                    - cell "R64" [ref=e3411]
+                    - cell "3" [ref=e3412]
+                    - cell "🇮🇹 Jannik Sinner (3)" [ref=e3413]:
+                      - img "🇮🇹" [ref=e3414]
+                      - link "Jannik Sinner (3)" [ref=e3415] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3416]: (3)
+                    - cell "99" [ref=e3417]
+                    - cell "🇦🇺 Thanasi Kokkinakis" [ref=e3418]:
+                      - img "🇦🇺" [ref=e3419]
+                      - link "Thanasi Kokkinakis" [ref=e3420] [cursor=pointer]:
+                        - /url: /players/thanasi-kokkinakis
+                    - cell "6-3 6-0" [ref=e3421]
+                    - cell "3" [ref=e3422]
+                    - cell "81" [ref=e3423]
+                    - cell "3" [ref=e3424]
+                    - cell "0" [ref=e3425]
+                    - cell "61.7%" [ref=e3426]
+                    - cell "75.9%" [ref=e3427]
+                    - cell "72.2%" [ref=e3428]
+                    - cell "1/1" [ref=e3429]
+                  - row "2024-02-12 Rotterdam Hard F 4 🇮🇹 Jannik Sinner (1) 11 🇦🇺 Alex de Minaur (5) 7-5 6-4 3 125 4 1 55.6% 77.8% 38.9% 4/6" [ref=e3430]:
+                    - cell "2024-02-12" [ref=e3431]
+                    - cell "Rotterdam" [ref=e3432]:
+                      - link "Rotterdam" [ref=e3433] [cursor=pointer]:
+                        - /url: /tournaments/407/2024
+                    - cell "Hard" [ref=e3434]
+                    - cell "F" [ref=e3435]
+                    - cell "4" [ref=e3436]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e3437]:
+                      - img "🇮🇹" [ref=e3438]
+                      - link "Jannik Sinner (1)" [ref=e3439] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3440]: (1)
+                    - cell "11" [ref=e3441]
+                    - cell "🇦🇺 Alex de Minaur (5)" [ref=e3442]:
+                      - img "🇦🇺" [ref=e3443]
+                      - link "Alex de Minaur (5)" [ref=e3444] [cursor=pointer]:
+                        - /url: /players/alex-de-minaur
+                        - text: Alex de Minaur
+                        - generic [ref=e3445]: (5)
+                    - cell "7-5 6-4" [ref=e3446]
+                    - cell "3" [ref=e3447]
+                    - cell "125" [ref=e3448]
+                    - cell "4" [ref=e3449]
+                    - cell "1" [ref=e3450]
+                    - cell "55.6%" [ref=e3451]
+                    - cell "77.8%" [ref=e3452]
+                    - cell "38.9%" [ref=e3453]
+                    - cell "4/6" [ref=e3454]
+                  - row "2024-02-12 Rotterdam Hard SF 4 🇮🇹 Jannik Sinner (1) 29 🇳🇱 Tallon Griekspoor 6-2 6-4 3 81 7 1 64.9% 81.1% 55.0% 6/6" [ref=e3455]:
+                    - cell "2024-02-12" [ref=e3456]
+                    - cell "Rotterdam" [ref=e3457]:
+                      - link "Rotterdam" [ref=e3458] [cursor=pointer]:
+                        - /url: /tournaments/407/2024
+                    - cell "Hard" [ref=e3459]
+                    - cell "SF" [ref=e3460]
+                    - cell "4" [ref=e3461]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e3462]:
+                      - img "🇮🇹" [ref=e3463]
+                      - link "Jannik Sinner (1)" [ref=e3464] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3465]: (1)
+                    - cell "29" [ref=e3466]
+                    - cell "🇳🇱 Tallon Griekspoor" [ref=e3467]:
+                      - img "🇳🇱" [ref=e3468]
+                      - link "Tallon Griekspoor" [ref=e3469] [cursor=pointer]:
+                        - /url: /players/tallon-griekspoor
+                    - cell "6-2 6-4" [ref=e3470]
+                    - cell "3" [ref=e3471]
+                    - cell "81" [ref=e3472]
+                    - cell "7" [ref=e3473]
+                    - cell "1" [ref=e3474]
+                    - cell "64.9%" [ref=e3475]
+                    - cell "81.1%" [ref=e3476]
+                    - cell "55.0%" [ref=e3477]
+                    - cell "6/6" [ref=e3478]
+                  - row "2024-02-12 Rotterdam Hard QF 4 🇮🇹 Jannik Sinner (1) 309 🇨🇦 Milos Raonic (PR) 7-6(4) 1-1 RET 3 65 3 0 71.1% 81.3% 53.8% 3/4" [ref=e3479]:
+                    - cell "2024-02-12" [ref=e3480]
+                    - cell "Rotterdam" [ref=e3481]:
+                      - link "Rotterdam" [ref=e3482] [cursor=pointer]:
+                        - /url: /tournaments/407/2024
+                    - cell "Hard" [ref=e3483]
+                    - cell "QF" [ref=e3484]
+                    - cell "4" [ref=e3485]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e3486]:
+                      - img "🇮🇹" [ref=e3487]
+                      - link "Jannik Sinner (1)" [ref=e3488] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3489]: (1)
+                    - cell "309" [ref=e3490]
+                    - cell "🇨🇦 Milos Raonic (PR)" [ref=e3491]:
+                      - img "🇨🇦" [ref=e3492]
+                      - link "Milos Raonic (PR)" [ref=e3493] [cursor=pointer]:
+                        - /url: /players/milos-raonic
+                        - text: Milos Raonic
+                        - generic [ref=e3494]: (PR)
+                    - cell "7-6(4) 1-1 RET" [ref=e3495]
+                    - cell "3" [ref=e3496]
+                    - cell "65" [ref=e3497]
+                    - cell "3" [ref=e3498]
+                    - cell "0" [ref=e3499]
+                    - cell "71.1%" [ref=e3500]
+                    - cell "81.3%" [ref=e3501]
+                    - cell "53.8%" [ref=e3502]
+                    - cell "3/4" [ref=e3503]
+                  - row "2024-02-12 Rotterdam Hard R16 4 🇮🇹 Jannik Sinner (1) 70 🇫🇷 Gael Monfils (WC) 6-3 3-6 6-3 3 112 3 2 68.1% 75.5% 73.9% 0/1" [ref=e3504]:
+                    - cell "2024-02-12" [ref=e3505]
+                    - cell "Rotterdam" [ref=e3506]:
+                      - link "Rotterdam" [ref=e3507] [cursor=pointer]:
+                        - /url: /tournaments/407/2024
+                    - cell "Hard" [ref=e3508]
+                    - cell "R16" [ref=e3509]
+                    - cell "4" [ref=e3510]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e3511]:
+                      - img "🇮🇹" [ref=e3512]
+                      - link "Jannik Sinner (1)" [ref=e3513] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3514]: (1)
+                    - cell "70" [ref=e3515]
+                    - cell "🇫🇷 Gael Monfils (WC)" [ref=e3516]:
+                      - img "🇫🇷" [ref=e3517]
+                      - link "Gael Monfils (WC)" [ref=e3518] [cursor=pointer]:
+                        - /url: /players/gael-monfils
+                        - text: Gael Monfils
+                        - generic [ref=e3519]: (WC)
+                    - cell "6-3 3-6 6-3" [ref=e3520]
+                    - cell "3" [ref=e3521]
+                    - cell "112" [ref=e3522]
+                    - cell "3" [ref=e3523]
+                    - cell "2" [ref=e3524]
+                    - cell "68.1%" [ref=e3525]
+                    - cell "75.5%" [ref=e3526]
+                    - cell "73.9%" [ref=e3527]
+                    - cell "0/1" [ref=e3528]
+                  - row "2024-02-12 Rotterdam Hard R32 4 🇮🇹 Jannik Sinner (1) 66 🇳🇱 Botic van de Zandschulp 6-3 6-3 3 86 4 2 68.1% 87.5% 60.0% 3/3" [ref=e3529]:
+                    - cell "2024-02-12" [ref=e3530]
+                    - cell "Rotterdam" [ref=e3531]:
+                      - link "Rotterdam" [ref=e3532] [cursor=pointer]:
+                        - /url: /tournaments/407/2024
+                    - cell "Hard" [ref=e3533]
+                    - cell "R32" [ref=e3534]
+                    - cell "4" [ref=e3535]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e3536]:
+                      - img "🇮🇹" [ref=e3537]
+                      - link "Jannik Sinner (1)" [ref=e3538] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3539]: (1)
+                    - cell "66" [ref=e3540]
+                    - cell "🇳🇱 Botic van de Zandschulp" [ref=e3541]:
+                      - img "🇳🇱" [ref=e3542]
+                      - link "Botic van de Zandschulp" [ref=e3543] [cursor=pointer]:
+                        - /url: /players/botic-van-de-zandschulp
+                    - cell "6-3 6-3" [ref=e3544]
+                    - cell "3" [ref=e3545]
+                    - cell "86" [ref=e3546]
+                    - cell "4" [ref=e3547]
+                    - cell "2" [ref=e3548]
+                    - cell "68.1%" [ref=e3549]
+                    - cell "87.5%" [ref=e3550]
+                    - cell "60.0%" [ref=e3551]
+                    - cell "3/3" [ref=e3552]
+                  - row "2024-01-15 Australian Open Hard F 4 🇮🇹 Jannik Sinner (4) 3 🇷🇺 Daniil Medvedev (3) 3-6 3-6 6-4 6-4 6-3 5 224 14 5 61.1% 73.9% 53.6% 8/12" [ref=e3553]:
+                    - cell "2024-01-15" [ref=e3554]
+                    - cell "Australian Open" [ref=e3555]:
+                      - link "Australian Open" [ref=e3556] [cursor=pointer]:
+                        - /url: /tournaments/580/2024
+                    - cell "Hard" [ref=e3557]
+                    - cell "F" [ref=e3558]
+                    - cell "4" [ref=e3559]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e3560]:
+                      - img "🇮🇹" [ref=e3561]
+                      - link "Jannik Sinner (4)" [ref=e3562] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3563]: (4)
+                    - cell "3" [ref=e3564]
+                    - cell "🇷🇺 Daniil Medvedev (3)" [ref=e3565]:
+                      - img "🇷🇺" [ref=e3566]
+                      - link "Daniil Medvedev (3)" [ref=e3567] [cursor=pointer]:
+                        - /url: /players/daniil-medvedev
+                        - text: Daniil Medvedev
+                        - generic [ref=e3568]: (3)
+                    - cell "3-6 3-6 6-4 6-4 6-3" [ref=e3569]
+                    - cell "5" [ref=e3570]
+                    - cell "224" [ref=e3571]
+                    - cell "14" [ref=e3572]
+                    - cell "5" [ref=e3573]
+                    - cell "61.1%" [ref=e3574]
+                    - cell "73.9%" [ref=e3575]
+                    - cell "53.6%" [ref=e3576]
+                    - cell "8/12" [ref=e3577]
+                  - row "2024-01-15 Australian Open Hard SF 4 🇮🇹 Jannik Sinner (4) 1 🇷🇸 Novak Djokovic (1) 6-1 6-2 6-7(6) 6-3 5 202 9 1 58.2% 82.8% 63.0% 0/0" [ref=e3578]:
+                    - cell "2024-01-15" [ref=e3579]
+                    - cell "Australian Open" [ref=e3580]:
+                      - link "Australian Open" [ref=e3581] [cursor=pointer]:
+                        - /url: /tournaments/580/2024
+                    - cell "Hard" [ref=e3582]
+                    - cell "SF" [ref=e3583]
+                    - cell "4" [ref=e3584]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e3585]:
+                      - img "🇮🇹" [ref=e3586]
+                      - link "Jannik Sinner (4)" [ref=e3587] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3588]: (4)
+                    - cell "1" [ref=e3589]
+                    - cell "🇷🇸 Novak Djokovic (1)" [ref=e3590]:
+                      - img "🇷🇸" [ref=e3591]
+                      - link "Novak Djokovic (1)" [ref=e3592] [cursor=pointer]:
+                        - /url: /players/novak-djokovic
+                        - text: Novak Djokovic
+                        - generic [ref=e3593]: (1)
+                    - cell "6-1 6-2 6-7(6) 6-3" [ref=e3594]
+                    - cell "5" [ref=e3595]
+                    - cell "202" [ref=e3596]
+                    - cell "9" [ref=e3597]
+                    - cell "1" [ref=e3598]
+                    - cell "58.2%" [ref=e3599]
+                    - cell "82.8%" [ref=e3600]
+                    - cell "63.0%" [ref=e3601]
+                    - cell "0/0" [ref=e3602]
+                  - row "2024-01-15 Australian Open Hard QF 4 🇮🇹 Jannik Sinner (4) 5 🇷🇺 Andrey Rublev (5) 6-4 7-6(5) 6-3 5 159 10 3 64.1% 76.0% 52.4% 8/8" [ref=e3603]:
+                    - cell "2024-01-15" [ref=e3604]
+                    - cell "Australian Open" [ref=e3605]:
+                      - link "Australian Open" [ref=e3606] [cursor=pointer]:
+                        - /url: /tournaments/580/2024
+                    - cell "Hard" [ref=e3607]
+                    - cell "QF" [ref=e3608]
+                    - cell "4" [ref=e3609]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e3610]:
+                      - img "🇮🇹" [ref=e3611]
+                      - link "Jannik Sinner (4)" [ref=e3612] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3613]: (4)
+                    - cell "5" [ref=e3614]
+                    - cell "🇷🇺 Andrey Rublev (5)" [ref=e3615]:
+                      - img "🇷🇺" [ref=e3616]
+                      - link "Andrey Rublev (5)" [ref=e3617] [cursor=pointer]:
+                        - /url: /players/andrey-rublev
+                        - text: Andrey Rublev
+                        - generic [ref=e3618]: (5)
+                    - cell "6-4 7-6(5) 6-3" [ref=e3619]
+                    - cell "5" [ref=e3620]
+                    - cell "159" [ref=e3621]
+                    - cell "10" [ref=e3622]
+                    - cell "3" [ref=e3623]
+                    - cell "64.1%" [ref=e3624]
+                    - cell "76.0%" [ref=e3625]
+                    - cell "52.4%" [ref=e3626]
+                    - cell "8/8" [ref=e3627]
+                  - row "2024-01-15 Australian Open Hard R16 4 🇮🇹 Jannik Sinner (4) 15 🇷🇺 Karen Khachanov (15) 6-4 7-5 6-3 5 154 8 3 53.6% 78.8% 57.8% 9/10" [ref=e3628]:
+                    - cell "2024-01-15" [ref=e3629]
+                    - cell "Australian Open" [ref=e3630]:
+                      - link "Australian Open" [ref=e3631] [cursor=pointer]:
+                        - /url: /tournaments/580/2024
+                    - cell "Hard" [ref=e3632]
+                    - cell "R16" [ref=e3633]
+                    - cell "4" [ref=e3634]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e3635]:
+                      - img "🇮🇹" [ref=e3636]
+                      - link "Jannik Sinner (4)" [ref=e3637] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3638]: (4)
+                    - cell "15" [ref=e3639]
+                    - cell "🇷🇺 Karen Khachanov (15)" [ref=e3640]:
+                      - img "🇷🇺" [ref=e3641]
+                      - link "Karen Khachanov (15)" [ref=e3642] [cursor=pointer]:
+                        - /url: /players/karen-khachanov
+                        - text: Karen Khachanov
+                        - generic [ref=e3643]: (15)
+                    - cell "6-4 7-5 6-3" [ref=e3644]
+                    - cell "5" [ref=e3645]
+                    - cell "154" [ref=e3646]
+                    - cell "8" [ref=e3647]
+                    - cell "3" [ref=e3648]
+                    - cell "53.6%" [ref=e3649]
+                    - cell "78.8%" [ref=e3650]
+                    - cell "57.8%" [ref=e3651]
+                    - cell "9/10" [ref=e3652]
+                  - row "2024-01-15 Australian Open Hard R32 4 🇮🇹 Jannik Sinner (4) 29 🇦🇷 Sebastian Baez (26) 6-0 6-1 6-3 5 112 6 0 64.3% 77.8% 52.0% 4/4" [ref=e3653]:
+                    - cell "2024-01-15" [ref=e3654]
+                    - cell "Australian Open" [ref=e3655]:
+                      - link "Australian Open" [ref=e3656] [cursor=pointer]:
+                        - /url: /tournaments/580/2024
+                    - cell "Hard" [ref=e3657]
+                    - cell "R32" [ref=e3658]
+                    - cell "4" [ref=e3659]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e3660]:
+                      - img "🇮🇹" [ref=e3661]
+                      - link "Jannik Sinner (4)" [ref=e3662] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3663]: (4)
+                    - cell "29" [ref=e3664]
+                    - cell "🇦🇷 Sebastian Baez (26)" [ref=e3665]:
+                      - img "🇦🇷" [ref=e3666]
+                      - link "Sebastian Baez (26)" [ref=e3667] [cursor=pointer]:
+                        - /url: /players/sebastian-baez
+                        - text: Sebastian Baez
+                        - generic [ref=e3668]: (26)
+                    - cell "6-0 6-1 6-3" [ref=e3669]
+                    - cell "5" [ref=e3670]
+                    - cell "112" [ref=e3671]
+                    - cell "6" [ref=e3672]
+                    - cell "0" [ref=e3673]
+                    - cell "64.3%" [ref=e3674]
+                    - cell "77.8%" [ref=e3675]
+                    - cell "52.0%" [ref=e3676]
+                    - cell "4/4" [ref=e3677]
+                  - row "2024-01-15 Australian Open Hard R64 4 🇮🇹 Jannik Sinner (4) 161 🇳🇱 Jesper de Jong (Q) 6-2 6-2 6-2 5 103 7 1 63.8% 86.5% 76.2% 0/0" [ref=e3678]:
+                    - cell "2024-01-15" [ref=e3679]
+                    - cell "Australian Open" [ref=e3680]:
+                      - link "Australian Open" [ref=e3681] [cursor=pointer]:
+                        - /url: /tournaments/580/2024
+                    - cell "Hard" [ref=e3682]
+                    - cell "R64" [ref=e3683]
+                    - cell "4" [ref=e3684]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e3685]:
+                      - img "🇮🇹" [ref=e3686]
+                      - link "Jannik Sinner (4)" [ref=e3687] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3688]: (4)
+                    - cell "161" [ref=e3689]
+                    - cell "🇳🇱 Jesper de Jong (Q)" [ref=e3690]:
+                      - img "🇳🇱" [ref=e3691]
+                      - link "Jesper de Jong (Q)" [ref=e3692] [cursor=pointer]:
+                        - /url: /players/jesper-de-jong
+                        - text: Jesper de Jong
+                        - generic [ref=e3693]: (Q)
+                    - cell "6-2 6-2 6-2" [ref=e3694]
+                    - cell "5" [ref=e3695]
+                    - cell "103" [ref=e3696]
+                    - cell "7" [ref=e3697]
+                    - cell "1" [ref=e3698]
+                    - cell "63.8%" [ref=e3699]
+                    - cell "86.5%" [ref=e3700]
+                    - cell "76.2%" [ref=e3701]
+                    - cell "0/0" [ref=e3702]
+                  - row "2024-01-15 Australian Open Hard R128 4 🇮🇹 Jannik Sinner (4) 59 🇳🇱 Botic van de Zandschulp 6-4 7-5 6-3 5 154 7 2 58.0% 68.6% 64.9% 5/6" [ref=e3703]:
+                    - cell "2024-01-15" [ref=e3704]
+                    - cell "Australian Open" [ref=e3705]:
+                      - link "Australian Open" [ref=e3706] [cursor=pointer]:
+                        - /url: /tournaments/580/2024
+                    - cell "Hard" [ref=e3707]
+                    - cell "R128" [ref=e3708]
+                    - cell "4" [ref=e3709]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e3710]:
+                      - img "🇮🇹" [ref=e3711]
+                      - link "Jannik Sinner (4)" [ref=e3712] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3713]: (4)
+                    - cell "59" [ref=e3714]
+                    - cell "🇳🇱 Botic van de Zandschulp" [ref=e3715]:
+                      - img "🇳🇱" [ref=e3716]
+                      - link "Botic van de Zandschulp" [ref=e3717] [cursor=pointer]:
+                        - /url: /players/botic-van-de-zandschulp
+                    - cell "6-4 7-5 6-3" [ref=e3718]
+                    - cell "5" [ref=e3719]
+                    - cell "154" [ref=e3720]
+                    - cell "7" [ref=e3721]
+                    - cell "2" [ref=e3722]
+                    - cell "58.0%" [ref=e3723]
+                    - cell "68.6%" [ref=e3724]
+                    - cell "64.9%" [ref=e3725]
+                    - cell "5/6" [ref=e3726]
+                  - 'row "2023-11-26 Davis Cup Finals F: AUS vs ITA Hard RR 4 🇮🇹 Jannik Sinner 12 🇦🇺 Alex de Minaur 6-3 6-0 3 - 5 1 70.8% 73.5% 50.0% 1/1" [ref=e3727]':
+                    - cell "2023-11-26" [ref=e3728]
+                    - 'cell "Davis Cup Finals F: AUS vs ITA" [ref=e3729]':
+                      - 'link "Davis Cup Finals F: AUS vs ITA" [ref=e3730] [cursor=pointer]':
+                        - /url: "#"
+                    - cell "Hard" [ref=e3731]
+                    - cell "RR" [ref=e3732]
+                    - cell "4" [ref=e3733]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e3734]:
+                      - img "🇮🇹" [ref=e3735]
+                      - link "Jannik Sinner" [ref=e3736] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "12" [ref=e3737]
+                    - cell "🇦🇺 Alex de Minaur" [ref=e3738]:
+                      - img "🇦🇺" [ref=e3739]
+                      - link "Alex de Minaur" [ref=e3740] [cursor=pointer]:
+                        - /url: /players/alex-de-minaur
+                    - cell "6-3 6-0" [ref=e3741]
+                    - cell "3" [ref=e3742]
+                    - cell "-" [ref=e3743]
+                    - cell "5" [ref=e3744]
+                    - cell "1" [ref=e3745]
+                    - cell "70.8%" [ref=e3746]
+                    - cell "73.5%" [ref=e3747]
+                    - cell "50.0%" [ref=e3748]
+                    - cell "1/1" [ref=e3749]
+                  - 'row "2023-11-25 Davis Cup Finals SF: ITA vs SRB Hard RR 4 🇮🇹 Jannik Sinner 1 🇷🇸 Novak Djokovic 6-2 2-6 7-5 3 - 12 5 63.8% 71.6% 44.7% 7/9" [ref=e3750]':
+                    - cell "2023-11-25" [ref=e3751]
+                    - 'cell "Davis Cup Finals SF: ITA vs SRB" [ref=e3752]':
+                      - 'link "Davis Cup Finals SF: ITA vs SRB" [ref=e3753] [cursor=pointer]':
+                        - /url: "#"
+                    - cell "Hard" [ref=e3754]
+                    - cell "RR" [ref=e3755]
+                    - cell "4" [ref=e3756]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e3757]:
+                      - img "🇮🇹" [ref=e3758]
+                      - link "Jannik Sinner" [ref=e3759] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "1" [ref=e3760]
+                    - cell "🇷🇸 Novak Djokovic" [ref=e3761]:
+                      - img "🇷🇸" [ref=e3762]
+                      - link "Novak Djokovic" [ref=e3763] [cursor=pointer]:
+                        - /url: /players/novak-djokovic
+                    - cell "6-2 2-6 7-5" [ref=e3764]
+                    - cell "3" [ref=e3765]
+                    - cell "-" [ref=e3766]
+                    - cell "12" [ref=e3767]
+                    - cell "5" [ref=e3768]
+                    - cell "63.8%" [ref=e3769]
+                    - cell "71.6%" [ref=e3770]
+                    - cell "44.7%" [ref=e3771]
+                    - cell "7/9" [ref=e3772]
+                  - 'row "2023-11-23 Davis Cup Finals QF: ITA vs NED Hard RR 4 🇮🇹 Jannik Sinner 23 🇳🇱 Tallon Griekspoor 7-6(3) 6-1 3 - 9 1 64.0% 90.6% 83.3% 0/0" [ref=e3773]':
+                    - cell "2023-11-23" [ref=e3774]
+                    - 'cell "Davis Cup Finals QF: ITA vs NED" [ref=e3775]':
+                      - 'link "Davis Cup Finals QF: ITA vs NED" [ref=e3776] [cursor=pointer]':
+                        - /url: "#"
+                    - cell "Hard" [ref=e3777]
+                    - cell "RR" [ref=e3778]
+                    - cell "4" [ref=e3779]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e3780]:
+                      - img "🇮🇹" [ref=e3781]
+                      - link "Jannik Sinner" [ref=e3782] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "23" [ref=e3783]
+                    - cell "🇳🇱 Tallon Griekspoor" [ref=e3784]:
+                      - img "🇳🇱" [ref=e3785]
+                      - link "Tallon Griekspoor" [ref=e3786] [cursor=pointer]:
+                        - /url: /players/tallon-griekspoor
+                    - cell "7-6(3) 6-1" [ref=e3787]
+                    - cell "3" [ref=e3788]
+                    - cell "-" [ref=e3789]
+                    - cell "9" [ref=e3790]
+                    - cell "1" [ref=e3791]
+                    - cell "64.0%" [ref=e3792]
+                    - cell "90.6%" [ref=e3793]
+                    - cell "83.3%" [ref=e3794]
+                    - cell "0/0" [ref=e3795]
+                  - row "2023-11-13 Tour Finals Hard RR 4 🇮🇹 Jannik Sinner (4) 8 🇩🇰 Holger Rune (8) 6-2 5-7 6-4 3 152 11 0 58.3% 83.7% 60.0% 4/5" [ref=e3796]:
+                    - cell "2023-11-13" [ref=e3797]
+                    - cell "Tour Finals" [ref=e3798]:
+                      - link "Tour Finals" [ref=e3799] [cursor=pointer]:
+                        - /url: /tournaments/605/2023
+                    - cell "Hard" [ref=e3800]
+                    - cell "RR" [ref=e3801]
+                    - cell "4" [ref=e3802]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e3803]:
+                      - img "🇮🇹" [ref=e3804]
+                      - link "Jannik Sinner (4)" [ref=e3805] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3806]: (4)
+                    - cell "8" [ref=e3807]
+                    - cell "🇩🇰 Holger Rune (8)" [ref=e3808]:
+                      - img "🇩🇰" [ref=e3809]
+                      - link "Holger Rune (8)" [ref=e3810] [cursor=pointer]:
+                        - /url: /players/holger-rune
+                        - text: Holger Rune
+                        - generic [ref=e3811]: (8)
+                    - cell "6-2 5-7 6-4" [ref=e3812]
+                    - cell "3" [ref=e3813]
+                    - cell "152" [ref=e3814]
+                    - cell "11" [ref=e3815]
+                    - cell "0" [ref=e3816]
+                    - cell "58.3%" [ref=e3817]
+                    - cell "83.7%" [ref=e3818]
+                    - cell "60.0%" [ref=e3819]
+                    - cell "4/5" [ref=e3820]
+                  - row "2023-11-13 Tour Finals Hard RR 4 🇮🇹 Jannik Sinner (4) 1 🇷🇸 Novak Djokovic (1) 7-5 6-7(5) 7-6(2) 3 189 15 2 60.2% 78.9% 55.3% 2/3" [ref=e3821]:
+                    - cell "2023-11-13" [ref=e3822]
+                    - cell "Tour Finals" [ref=e3823]:
+                      - link "Tour Finals" [ref=e3824] [cursor=pointer]:
+                        - /url: /tournaments/605/2023
+                    - cell "Hard" [ref=e3825]
+                    - cell "RR" [ref=e3826]
+                    - cell "4" [ref=e3827]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e3828]:
+                      - img "🇮🇹" [ref=e3829]
+                      - link "Jannik Sinner (4)" [ref=e3830] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3831]: (4)
+                    - cell "1" [ref=e3832]
+                    - cell "🇷🇸 Novak Djokovic (1)" [ref=e3833]:
+                      - img "🇷🇸" [ref=e3834]
+                      - link "Novak Djokovic (1)" [ref=e3835] [cursor=pointer]:
+                        - /url: /players/novak-djokovic
+                        - text: Novak Djokovic
+                        - generic [ref=e3836]: (1)
+                    - cell "7-5 6-7(5) 7-6(2)" [ref=e3837]
+                    - cell "3" [ref=e3838]
+                    - cell "189" [ref=e3839]
+                    - cell "15" [ref=e3840]
+                    - cell "2" [ref=e3841]
+                    - cell "60.2%" [ref=e3842]
+                    - cell "78.9%" [ref=e3843]
+                    - cell "55.3%" [ref=e3844]
+                    - cell "2/3" [ref=e3845]
+                  - row "2023-11-13 Tour Finals Hard RR 4 🇮🇹 Jannik Sinner (4) 6 🇬🇷 Stefanos Tsitsipas 6-4 6-4 3 85 9 2 70.6% 88.9% 60.0% 0/0" [ref=e3846]:
+                    - cell "2023-11-13" [ref=e3847]
+                    - cell "Tour Finals" [ref=e3848]:
+                      - link "Tour Finals" [ref=e3849] [cursor=pointer]:
+                        - /url: /tournaments/605/2023
+                    - cell "Hard" [ref=e3850]
+                    - cell "RR" [ref=e3851]
+                    - cell "4" [ref=e3852]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e3853]:
+                      - img "🇮🇹" [ref=e3854]
+                      - link "Jannik Sinner (4)" [ref=e3855] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3856]: (4)
+                    - cell "6" [ref=e3857]
+                    - cell "🇬🇷 Stefanos Tsitsipas" [ref=e3858]:
+                      - img "🇬🇷" [ref=e3859]
+                      - link "Stefanos Tsitsipas" [ref=e3860] [cursor=pointer]:
+                        - /url: /players/stefanos-tsitsipas
+                    - cell "6-4 6-4" [ref=e3861]
+                    - cell "3" [ref=e3862]
+                    - cell "85" [ref=e3863]
+                    - cell "9" [ref=e3864]
+                    - cell "2" [ref=e3865]
+                    - cell "70.6%" [ref=e3866]
+                    - cell "88.9%" [ref=e3867]
+                    - cell "60.0%" [ref=e3868]
+                    - cell "0/0" [ref=e3869]
+                  - row "2023-11-13 Tour Finals Hard F 1 🇷🇸 Novak Djokovic (1) 4 🇮🇹 Jannik Sinner (4) 6-3 6-3 3 103 13 0 69.6% 90.6% 64.3% 2/2" [ref=e3870]:
+                    - cell "2023-11-13" [ref=e3871]
+                    - cell "Tour Finals" [ref=e3872]:
+                      - link "Tour Finals" [ref=e3873] [cursor=pointer]:
+                        - /url: /tournaments/605/2023
+                    - cell "Hard" [ref=e3874]
+                    - cell "F" [ref=e3875]
+                    - cell "1" [ref=e3876]
+                    - cell "🇷🇸 Novak Djokovic (1)" [ref=e3877]:
+                      - img "🇷🇸" [ref=e3878]
+                      - link "Novak Djokovic (1)" [ref=e3879] [cursor=pointer]:
+                        - /url: /players/novak-djokovic
+                        - text: Novak Djokovic
+                        - generic [ref=e3880]: (1)
+                    - cell "4" [ref=e3881]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e3882]:
+                      - img "🇮🇹" [ref=e3883]
+                      - link "Jannik Sinner (4)" [ref=e3884] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3885]: (4)
+                    - cell "6-3 6-3" [ref=e3886]
+                    - cell "3" [ref=e3887]
+                    - cell "103" [ref=e3888]
+                    - cell "13" [ref=e3889]
+                    - cell "0" [ref=e3890]
+                    - cell "69.6%" [ref=e3891]
+                    - cell "90.6%" [ref=e3892]
+                    - cell "64.3%" [ref=e3893]
+                    - cell "2/2" [ref=e3894]
+                  - row "2023-11-13 Tour Finals Hard SF 4 🇮🇹 Jannik Sinner (4) 3 🇷🇺 Daniil Medvedev (3) 6-3 6-7(4) 6-1 3 149 10 2 57.7% 83.3% 47.7% 2/2" [ref=e3895]:
+                    - cell "2023-11-13" [ref=e3896]
+                    - cell "Tour Finals" [ref=e3897]:
+                      - link "Tour Finals" [ref=e3898] [cursor=pointer]:
+                        - /url: /tournaments/605/2023
+                    - cell "Hard" [ref=e3899]
+                    - cell "SF" [ref=e3900]
+                    - cell "4" [ref=e3901]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e3902]:
+                      - img "🇮🇹" [ref=e3903]
+                      - link "Jannik Sinner (4)" [ref=e3904] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3905]: (4)
+                    - cell "3" [ref=e3906]
+                    - cell "🇷🇺 Daniil Medvedev (3)" [ref=e3907]:
+                      - img "🇷🇺" [ref=e3908]
+                      - link "Daniil Medvedev (3)" [ref=e3909] [cursor=pointer]:
+                        - /url: /players/daniil-medvedev
+                        - text: Daniil Medvedev
+                        - generic [ref=e3910]: (3)
+                    - cell "6-3 6-7(4) 6-1" [ref=e3911]
+                    - cell "3" [ref=e3912]
+                    - cell "149" [ref=e3913]
+                    - cell "10" [ref=e3914]
+                    - cell "2" [ref=e3915]
+                    - cell "57.7%" [ref=e3916]
+                    - cell "83.3%" [ref=e3917]
+                    - cell "47.7%" [ref=e3918]
+                    - cell "2/2" [ref=e3919]
+                  - row "2023-10-30 Paris Masters Hard R16 13 🇦🇺 Alex de Minaur (13) 4 🇮🇹 Jannik Sinner (4) W/O 3 0 - - - - - -" [ref=e3920]:
+                    - cell "2023-10-30" [ref=e3921]
+                    - cell "Paris Masters" [ref=e3922]:
+                      - link "Paris Masters" [ref=e3923] [cursor=pointer]:
+                        - /url: /tournaments/352/2023
+                    - cell "Hard" [ref=e3924]
+                    - cell "R16" [ref=e3925]
+                    - cell "13" [ref=e3926]
+                    - cell "🇦🇺 Alex de Minaur (13)" [ref=e3927]:
+                      - img "🇦🇺" [ref=e3928]
+                      - link "Alex de Minaur (13)" [ref=e3929] [cursor=pointer]:
+                        - /url: /players/alex-de-minaur
+                        - text: Alex de Minaur
+                        - generic [ref=e3930]: (13)
+                    - cell "4" [ref=e3931]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e3932]:
+                      - img "🇮🇹" [ref=e3933]
+                      - link "Jannik Sinner (4)" [ref=e3934] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3935]: (4)
+                    - cell "W/O" [ref=e3936]
+                    - cell "3" [ref=e3937]
+                    - cell "0" [ref=e3938]
+                    - cell "-" [ref=e3939]
+                    - cell "-" [ref=e3940]
+                    - cell "-" [ref=e3941]
+                    - cell "-" [ref=e3942]
+                    - cell "-" [ref=e3943]
+                    - cell "-" [ref=e3944]
+                  - row "2023-10-30 Paris Masters Hard R32 4 🇮🇹 Jannik Sinner (4) 42 🇺🇸 Mackenzie McDonald 6-7(6) 7-5 6-1 3 136 4 2 57.8% 85.4% 65.7% 0/1" [ref=e3945]:
+                    - cell "2023-10-30" [ref=e3946]
+                    - cell "Paris Masters" [ref=e3947]:
+                      - link "Paris Masters" [ref=e3948] [cursor=pointer]:
+                        - /url: /tournaments/352/2023
+                    - cell "Hard" [ref=e3949]
+                    - cell "R32" [ref=e3950]
+                    - cell "4" [ref=e3951]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e3952]:
+                      - img "🇮🇹" [ref=e3953]
+                      - link "Jannik Sinner (4)" [ref=e3954] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3955]: (4)
+                    - cell "42" [ref=e3956]
+                    - cell "🇺🇸 Mackenzie McDonald" [ref=e3957]:
+                      - img "🇺🇸" [ref=e3958]
+                      - link "Mackenzie McDonald" [ref=e3959] [cursor=pointer]:
+                        - /url: /players/mackenzie-mcdonald
+                    - cell "6-7(6) 7-5 6-1" [ref=e3960]
+                    - cell "3" [ref=e3961]
+                    - cell "136" [ref=e3962]
+                    - cell "4" [ref=e3963]
+                    - cell "2" [ref=e3964]
+                    - cell "57.8%" [ref=e3965]
+                    - cell "85.4%" [ref=e3966]
+                    - cell "65.7%" [ref=e3967]
+                    - cell "0/1" [ref=e3968]
+                  - row "2023-10-23 Vienna Hard F 4 🇮🇹 Jannik Sinner (2) 3 🇷🇺 Daniil Medvedev (1) 7-6(7) 4-6 6-3 3 186 5 0 72.9% 64.0% 50.0% 9/13" [ref=e3969]:
+                    - cell "2023-10-23" [ref=e3970]
+                    - cell "Vienna" [ref=e3971]:
+                      - link "Vienna" [ref=e3972] [cursor=pointer]:
+                        - /url: /tournaments/337/2023
+                    - cell "Hard" [ref=e3973]
+                    - cell "F" [ref=e3974]
+                    - cell "4" [ref=e3975]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e3976]:
+                      - img "🇮🇹" [ref=e3977]
+                      - link "Jannik Sinner (2)" [ref=e3978] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e3979]: (2)
+                    - cell "3" [ref=e3980]
+                    - cell "🇷🇺 Daniil Medvedev (1)" [ref=e3981]:
+                      - img "🇷🇺" [ref=e3982]
+                      - link "Daniil Medvedev (1)" [ref=e3983] [cursor=pointer]:
+                        - /url: /players/daniil-medvedev
+                        - text: Daniil Medvedev
+                        - generic [ref=e3984]: (1)
+                    - cell "7-6(7) 4-6 6-3" [ref=e3985]
+                    - cell "3" [ref=e3986]
+                    - cell "186" [ref=e3987]
+                    - cell "5" [ref=e3988]
+                    - cell "0" [ref=e3989]
+                    - cell "72.9%" [ref=e3990]
+                    - cell "64.0%" [ref=e3991]
+                    - cell "50.0%" [ref=e3992]
+                    - cell "9/13" [ref=e3993]
+                  - row "2023-10-23 Vienna Hard SF 4 🇮🇹 Jannik Sinner (2) 5 🇷🇺 Andrey Rublev (3) 7-5 7-6(5) 3 109 10 4 61.6% 82.2% 53.6% 4/6" [ref=e3994]:
+                    - cell "2023-10-23" [ref=e3995]
+                    - cell "Vienna" [ref=e3996]:
+                      - link "Vienna" [ref=e3997] [cursor=pointer]:
+                        - /url: /tournaments/337/2023
+                    - cell "Hard" [ref=e3998]
+                    - cell "SF" [ref=e3999]
+                    - cell "4" [ref=e4000]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e4001]:
+                      - img "🇮🇹" [ref=e4002]
+                      - link "Jannik Sinner (2)" [ref=e4003] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4004]: (2)
+                    - cell "5" [ref=e4005]
+                    - cell "🇷🇺 Andrey Rublev (3)" [ref=e4006]:
+                      - img "🇷🇺" [ref=e4007]
+                      - link "Andrey Rublev (3)" [ref=e4008] [cursor=pointer]:
+                        - /url: /players/andrey-rublev
+                        - text: Andrey Rublev
+                        - generic [ref=e4009]: (3)
+                    - cell "7-5 7-6(5)" [ref=e4010]
+                    - cell "3" [ref=e4011]
+                    - cell "109" [ref=e4012]
+                    - cell "10" [ref=e4013]
+                    - cell "4" [ref=e4014]
+                    - cell "61.6%" [ref=e4015]
+                    - cell "82.2%" [ref=e4016]
+                    - cell "53.6%" [ref=e4017]
+                    - cell "4/6" [ref=e4018]
+                  - row "2023-10-23 Vienna Hard QF 4 🇮🇹 Jannik Sinner (2) 14 🇺🇸 Frances Tiafoe (7) 6-3 6-4 3 79 5 1 69.1% 84.2% 70.6% 3/3" [ref=e4019]:
+                    - cell "2023-10-23" [ref=e4020]
+                    - cell "Vienna" [ref=e4021]:
+                      - link "Vienna" [ref=e4022] [cursor=pointer]:
+                        - /url: /tournaments/337/2023
+                    - cell "Hard" [ref=e4023]
+                    - cell "QF" [ref=e4024]
+                    - cell "4" [ref=e4025]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e4026]:
+                      - img "🇮🇹" [ref=e4027]
+                      - link "Jannik Sinner (2)" [ref=e4028] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4029]: (2)
+                    - cell "14" [ref=e4030]
+                    - cell "🇺🇸 Frances Tiafoe (7)" [ref=e4031]:
+                      - img "🇺🇸" [ref=e4032]
+                      - link "Frances Tiafoe (7)" [ref=e4033] [cursor=pointer]:
+                        - /url: /players/frances-tiafoe
+                        - text: Frances Tiafoe
+                        - generic [ref=e4034]: (7)
+                    - cell "6-3 6-4" [ref=e4035]
+                    - cell "3" [ref=e4036]
+                    - cell "79" [ref=e4037]
+                    - cell "5" [ref=e4038]
+                    - cell "1" [ref=e4039]
+                    - cell "69.1%" [ref=e4040]
+                    - cell "84.2%" [ref=e4041]
+                    - cell "70.6%" [ref=e4042]
+                    - cell "3/3" [ref=e4043]
+                  - row "2023-10-23 Vienna Hard R16 4 🇮🇹 Jannik Sinner (2) 52 🇮🇹 Lorenzo Sonego (LL) 6-2 6-4 3 93 1 0 82.8% 72.9% 60.0% 2/2" [ref=e4044]:
+                    - cell "2023-10-23" [ref=e4045]
+                    - cell "Vienna" [ref=e4046]:
+                      - link "Vienna" [ref=e4047] [cursor=pointer]:
+                        - /url: /tournaments/337/2023
+                    - cell "Hard" [ref=e4048]
+                    - cell "R16" [ref=e4049]
+                    - cell "4" [ref=e4050]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e4051]:
+                      - img "🇮🇹" [ref=e4052]
+                      - link "Jannik Sinner (2)" [ref=e4053] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4054]: (2)
+                    - cell "52" [ref=e4055]
+                    - cell "🇮🇹 Lorenzo Sonego (LL)" [ref=e4056]:
+                      - img "🇮🇹" [ref=e4057]
+                      - link "Lorenzo Sonego (LL)" [ref=e4058] [cursor=pointer]:
+                        - /url: /players/lorenzo-sonego
+                        - text: Lorenzo Sonego
+                        - generic [ref=e4059]: (LL)
+                    - cell "6-2 6-4" [ref=e4060]
+                    - cell "3" [ref=e4061]
+                    - cell "93" [ref=e4062]
+                    - cell "1" [ref=e4063]
+                    - cell "0" [ref=e4064]
+                    - cell "82.8%" [ref=e4065]
+                    - cell "72.9%" [ref=e4066]
+                    - cell "60.0%" [ref=e4067]
+                    - cell "2/2" [ref=e4068]
+                  - row "2023-10-23 Vienna Hard R32 4 🇮🇹 Jannik Sinner (2) 15 🇺🇸 Ben Shelton 7-6(2) 7-5 3 104 8 1 80.3% 84.2% 57.1% 4/4" [ref=e4069]:
+                    - cell "2023-10-23" [ref=e4070]
+                    - cell "Vienna" [ref=e4071]:
+                      - link "Vienna" [ref=e4072] [cursor=pointer]:
+                        - /url: /tournaments/337/2023
+                    - cell "Hard" [ref=e4073]
+                    - cell "R32" [ref=e4074]
+                    - cell "4" [ref=e4075]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e4076]:
+                      - img "🇮🇹" [ref=e4077]
+                      - link "Jannik Sinner (2)" [ref=e4078] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4079]: (2)
+                    - cell "15" [ref=e4080]
+                    - cell "🇺🇸 Ben Shelton" [ref=e4081]:
+                      - img "🇺🇸" [ref=e4082]
+                      - link "Ben Shelton" [ref=e4083] [cursor=pointer]:
+                        - /url: /players/ben-shelton
+                    - cell "7-6(2) 7-5" [ref=e4084]
+                    - cell "3" [ref=e4085]
+                    - cell "104" [ref=e4086]
+                    - cell "8" [ref=e4087]
+                    - cell "1" [ref=e4088]
+                    - cell "80.3%" [ref=e4089]
+                    - cell "84.2%" [ref=e4090]
+                    - cell "57.1%" [ref=e4091]
+                    - cell "4/4" [ref=e4092]
+                  - row "2023-10-02 Shanghai Masters Hard R16 20 🇺🇸 Ben Shelton (19) 4 🇮🇹 Jannik Sinner (6) 2-6 6-3 7-6(5) 3 150 15 4 73.3% 73.0% 48.1% 3/5" [ref=e4093]:
+                    - cell "2023-10-02" [ref=e4094]
+                    - cell "Shanghai Masters" [ref=e4095]:
+                      - link "Shanghai Masters" [ref=e4096] [cursor=pointer]:
+                        - /url: /tournaments/5014/2023
+                    - cell "Hard" [ref=e4097]
+                    - cell "R16" [ref=e4098]
+                    - cell "20" [ref=e4099]
+                    - cell "🇺🇸 Ben Shelton (19)" [ref=e4100]:
+                      - img "🇺🇸" [ref=e4101]
+                      - link "Ben Shelton (19)" [ref=e4102] [cursor=pointer]:
+                        - /url: /players/ben-shelton
+                        - text: Ben Shelton
+                        - generic [ref=e4103]: (19)
+                    - cell "4" [ref=e4104]
+                    - cell "🇮🇹 Jannik Sinner (6)" [ref=e4105]:
+                      - img "🇮🇹" [ref=e4106]
+                      - link "Jannik Sinner (6)" [ref=e4107] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4108]: (6)
+                    - cell "2-6 6-3 7-6(5)" [ref=e4109]
+                    - cell "3" [ref=e4110]
+                    - cell "150" [ref=e4111]
+                    - cell "15" [ref=e4112]
+                    - cell "4" [ref=e4113]
+                    - cell "73.3%" [ref=e4114]
+                    - cell "73.0%" [ref=e4115]
+                    - cell "48.1%" [ref=e4116]
+                    - cell "3/5" [ref=e4117]
+                  - row "2023-10-02 Shanghai Masters Hard R32 4 🇮🇹 Jannik Sinner (6) 29 🇦🇷 Sebastian Baez (25) 3-6 6-3 6-2 3 119 8 0 57.6% 81.6% 50.0% 3/4" [ref=e4118]:
+                    - cell "2023-10-02" [ref=e4119]
+                    - cell "Shanghai Masters" [ref=e4120]:
+                      - link "Shanghai Masters" [ref=e4121] [cursor=pointer]:
+                        - /url: /tournaments/5014/2023
+                    - cell "Hard" [ref=e4122]
+                    - cell "R32" [ref=e4123]
+                    - cell "4" [ref=e4124]
+                    - cell "🇮🇹 Jannik Sinner (6)" [ref=e4125]:
+                      - img "🇮🇹" [ref=e4126]
+                      - link "Jannik Sinner (6)" [ref=e4127] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4128]: (6)
+                    - cell "29" [ref=e4129]
+                    - cell "🇦🇷 Sebastian Baez (25)" [ref=e4130]:
+                      - img "🇦🇷" [ref=e4131]
+                      - link "Sebastian Baez (25)" [ref=e4132] [cursor=pointer]:
+                        - /url: /players/sebastian-baez
+                        - text: Sebastian Baez
+                        - generic [ref=e4133]: (25)
+                    - cell "3-6 6-3 6-2" [ref=e4134]
+                    - cell "3" [ref=e4135]
+                    - cell "119" [ref=e4136]
+                    - cell "8" [ref=e4137]
+                    - cell "0" [ref=e4138]
+                    - cell "57.6%" [ref=e4139]
+                    - cell "81.6%" [ref=e4140]
+                    - cell "50.0%" [ref=e4141]
+                    - cell "3/4" [ref=e4142]
+                  - row "2023-10-02 Shanghai Masters Hard R64 4 🇮🇹 Jannik Sinner (6) 80 🇺🇸 Marcos Giron 7-6(7) 6-2 3 105 4 2 70.5% 79.1% 55.6% 1/3" [ref=e4143]:
+                    - cell "2023-10-02" [ref=e4144]
+                    - cell "Shanghai Masters" [ref=e4145]:
+                      - link "Shanghai Masters" [ref=e4146] [cursor=pointer]:
+                        - /url: /tournaments/5014/2023
+                    - cell "Hard" [ref=e4147]
+                    - cell "R64" [ref=e4148]
+                    - cell "4" [ref=e4149]
+                    - cell "🇮🇹 Jannik Sinner (6)" [ref=e4150]:
+                      - img "🇮🇹" [ref=e4151]
+                      - link "Jannik Sinner (6)" [ref=e4152] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4153]: (6)
+                    - cell "80" [ref=e4154]
+                    - cell "🇺🇸 Marcos Giron" [ref=e4155]:
+                      - img "🇺🇸" [ref=e4156]
+                      - link "Marcos Giron" [ref=e4157] [cursor=pointer]:
+                        - /url: /players/marcos-giron
+                    - cell "7-6(7) 6-2" [ref=e4158]
+                    - cell "3" [ref=e4159]
+                    - cell "105" [ref=e4160]
+                    - cell "4" [ref=e4161]
+                    - cell "2" [ref=e4162]
+                    - cell "70.5%" [ref=e4163]
+                    - cell "79.1%" [ref=e4164]
+                    - cell "55.6%" [ref=e4165]
+                    - cell "1/3" [ref=e4166]
+                  - row "2023-09-27 Beijing Hard F 7 🇮🇹 Jannik Sinner (6) 3 🇷🇺 Daniil Medvedev (2) 7-6(2) 7-6(2) 3 121 3 0 68.0% 82.4% 70.8% 1/1" [ref=e4167]:
+                    - cell "2023-09-27" [ref=e4168]
+                    - cell "Beijing" [ref=e4169]:
+                      - link "Beijing" [ref=e4170] [cursor=pointer]:
+                        - /url: /tournaments/747/2023
+                    - cell "Hard" [ref=e4171]
+                    - cell "F" [ref=e4172]
+                    - cell "7" [ref=e4173]
+                    - cell "🇮🇹 Jannik Sinner (6)" [ref=e4174]:
+                      - img "🇮🇹" [ref=e4175]
+                      - link "Jannik Sinner (6)" [ref=e4176] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4177]: (6)
+                    - cell "3" [ref=e4178]
+                    - cell "🇷🇺 Daniil Medvedev (2)" [ref=e4179]:
+                      - img "🇷🇺" [ref=e4180]
+                      - link "Daniil Medvedev (2)" [ref=e4181] [cursor=pointer]:
+                        - /url: /players/daniil-medvedev
+                        - text: Daniil Medvedev
+                        - generic [ref=e4182]: (2)
+                    - cell "7-6(2) 7-6(2)" [ref=e4183]
+                    - cell "3" [ref=e4184]
+                    - cell "121" [ref=e4185]
+                    - cell "3" [ref=e4186]
+                    - cell "0" [ref=e4187]
+                    - cell "68.0%" [ref=e4188]
+                    - cell "82.4%" [ref=e4189]
+                    - cell "70.8%" [ref=e4190]
+                    - cell "1/1" [ref=e4191]
+                  - row "2023-09-27 Beijing Hard SF 7 🇮🇹 Jannik Sinner (6) 2 🇪🇸 Carlos Alcaraz (1) 7-6(4) 6-1 3 115 1 0 58.7% 65.9% 48.4% 7/9" [ref=e4192]:
+                    - cell "2023-09-27" [ref=e4193]
+                    - cell "Beijing" [ref=e4194]:
+                      - link "Beijing" [ref=e4195] [cursor=pointer]:
+                        - /url: /tournaments/747/2023
+                    - cell "Hard" [ref=e4196]
+                    - cell "SF" [ref=e4197]
+                    - cell "7" [ref=e4198]
+                    - cell "🇮🇹 Jannik Sinner (6)" [ref=e4199]:
+                      - img "🇮🇹" [ref=e4200]
+                      - link "Jannik Sinner (6)" [ref=e4201] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4202]: (6)
+                    - cell "2" [ref=e4203]
+                    - cell "🇪🇸 Carlos Alcaraz (1)" [ref=e4204]:
+                      - img "🇪🇸" [ref=e4205]
+                      - link "Carlos Alcaraz (1)" [ref=e4206] [cursor=pointer]:
+                        - /url: /players/carlos-alcaraz
+                        - text: Carlos Alcaraz
+                        - generic [ref=e4207]: (1)
+                    - cell "7-6(4) 6-1" [ref=e4208]
+                    - cell "3" [ref=e4209]
+                    - cell "115" [ref=e4210]
+                    - cell "1" [ref=e4211]
+                    - cell "0" [ref=e4212]
+                    - cell "58.7%" [ref=e4213]
+                    - cell "65.9%" [ref=e4214]
+                    - cell "48.4%" [ref=e4215]
+                    - cell "7/9" [ref=e4216]
+                  - row "2023-09-27 Beijing Hard QF 7 🇮🇹 Jannik Sinner (6) 19 🇧🇬 Grigor Dimitrov 6-4 3-6 6-2 3 151 3 1 58.8% 68.0% 65.7% 7/8" [ref=e4217]:
+                    - cell "2023-09-27" [ref=e4218]
+                    - cell "Beijing" [ref=e4219]:
+                      - link "Beijing" [ref=e4220] [cursor=pointer]:
+                        - /url: /tournaments/747/2023
+                    - cell "Hard" [ref=e4221]
+                    - cell "QF" [ref=e4222]
+                    - cell "7" [ref=e4223]
+                    - cell "🇮🇹 Jannik Sinner (6)" [ref=e4224]:
+                      - img "🇮🇹" [ref=e4225]
+                      - link "Jannik Sinner (6)" [ref=e4226] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4227]: (6)
+                    - cell "19" [ref=e4228]
+                    - cell "🇧🇬 Grigor Dimitrov" [ref=e4229]:
+                      - img "🇧🇬" [ref=e4230]
+                      - link "Grigor Dimitrov" [ref=e4231] [cursor=pointer]:
+                        - /url: /players/grigor-dimitrov
+                    - cell "6-4 3-6 6-2" [ref=e4232]
+                    - cell "3" [ref=e4233]
+                    - cell "151" [ref=e4234]
+                    - cell "3" [ref=e4235]
+                    - cell "1" [ref=e4236]
+                    - cell "58.8%" [ref=e4237]
+                    - cell "68.0%" [ref=e4238]
+                    - cell "65.7%" [ref=e4239]
+                    - cell "7/8" [ref=e4240]
+                  - row "2023-09-27 Beijing Hard R16 7 🇮🇹 Jannik Sinner (6) 38 🇯🇵 Yoshihito Nishioka (SE) 6-2 6-0 3 67 8 1 48.8% 90.5% 50.0% 1/2" [ref=e4241]:
+                    - cell "2023-09-27" [ref=e4242]
+                    - cell "Beijing" [ref=e4243]:
+                      - link "Beijing" [ref=e4244] [cursor=pointer]:
+                        - /url: /tournaments/747/2023
+                    - cell "Hard" [ref=e4245]
+                    - cell "R16" [ref=e4246]
+                    - cell "7" [ref=e4247]
+                    - cell "🇮🇹 Jannik Sinner (6)" [ref=e4248]:
+                      - img "🇮🇹" [ref=e4249]
+                      - link "Jannik Sinner (6)" [ref=e4250] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4251]: (6)
+                    - cell "38" [ref=e4252]
+                    - cell "🇯🇵 Yoshihito Nishioka (SE)" [ref=e4253]:
+                      - img "🇯🇵" [ref=e4254]
+                      - link "Yoshihito Nishioka (SE)" [ref=e4255] [cursor=pointer]:
+                        - /url: /players/yoshihito-nishioka
+                        - text: Yoshihito Nishioka
+                        - generic [ref=e4256]: (SE)
+                    - cell "6-2 6-0" [ref=e4257]
+                    - cell "3" [ref=e4258]
+                    - cell "67" [ref=e4259]
+                    - cell "8" [ref=e4260]
+                    - cell "1" [ref=e4261]
+                    - cell "48.8%" [ref=e4262]
+                    - cell "90.5%" [ref=e4263]
+                    - cell "50.0%" [ref=e4264]
+                    - cell "1/2" [ref=e4265]
+                  - row "2023-09-27 Beijing Hard R32 7 🇮🇹 Jannik Sinner (6) 33 🇬🇧 Daniel Evans 6-4 6-7(2) 6-3 3 170 11 2 55.0% 67.3% 62.2% 2/4" [ref=e4266]:
+                    - cell "2023-09-27" [ref=e4267]
+                    - cell "Beijing" [ref=e4268]:
+                      - link "Beijing" [ref=e4269] [cursor=pointer]:
+                        - /url: /tournaments/747/2023
+                    - cell "Hard" [ref=e4270]
+                    - cell "R32" [ref=e4271]
+                    - cell "7" [ref=e4272]
+                    - cell "🇮🇹 Jannik Sinner (6)" [ref=e4273]:
+                      - img "🇮🇹" [ref=e4274]
+                      - link "Jannik Sinner (6)" [ref=e4275] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4276]: (6)
+                    - cell "33" [ref=e4277]
+                    - cell "🇬🇧 Daniel Evans" [ref=e4278]:
+                      - img "🇬🇧" [ref=e4279]
+                      - link "Daniel Evans" [ref=e4280] [cursor=pointer]:
+                        - /url: /players/daniel-evans
+                    - cell "6-4 6-7(2) 6-3" [ref=e4281]
+                    - cell "3" [ref=e4282]
+                    - cell "170" [ref=e4283]
+                    - cell "11" [ref=e4284]
+                    - cell "2" [ref=e4285]
+                    - cell "55.0%" [ref=e4286]
+                    - cell "67.3%" [ref=e4287]
+                    - cell "62.2%" [ref=e4288]
+                    - cell "2/4" [ref=e4289]
+                  - row "2023-08-28 US Open Hard R16 12 🇩🇪 Alexander Zverev (12) 6 🇮🇹 Jannik Sinner (6) 6-4 3-6 6-2 4-6 6-3 5 281 16 6 69.8% 69.9% 49.0% 8/12" [ref=e4290]:
+                    - cell "2023-08-28" [ref=e4291]
+                    - cell "US Open" [ref=e4292]:
+                      - link "US Open" [ref=e4293] [cursor=pointer]:
+                        - /url: /tournaments/560/2023
+                    - cell "Hard" [ref=e4294]
+                    - cell "R16" [ref=e4295]
+                    - cell "12" [ref=e4296]
+                    - cell "🇩🇪 Alexander Zverev (12)" [ref=e4297]:
+                      - img "🇩🇪" [ref=e4298]
+                      - link "Alexander Zverev (12)" [ref=e4299] [cursor=pointer]:
+                        - /url: /players/alexander-zverev
+                        - text: Alexander Zverev
+                        - generic [ref=e4300]: (12)
+                    - cell "6" [ref=e4301]
+                    - cell "🇮🇹 Jannik Sinner (6)" [ref=e4302]:
+                      - img "🇮🇹" [ref=e4303]
+                      - link "Jannik Sinner (6)" [ref=e4304] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4305]: (6)
+                    - cell "6-4 3-6 6-2 4-6 6-3" [ref=e4306]
+                    - cell "5" [ref=e4307]
+                    - cell "281" [ref=e4308]
+                    - cell "16" [ref=e4309]
+                    - cell "6" [ref=e4310]
+                    - cell "69.8%" [ref=e4311]
+                    - cell "69.9%" [ref=e4312]
+                    - cell "49.0%" [ref=e4313]
+                    - cell "8/12" [ref=e4314]
+                  - row "2023-08-28 US Open Hard R32 6 🇮🇹 Jannik Sinner (6) 49 🇨🇭 Stan Wawrinka 6-3 2-6 6-4 6-2 5 178 12 5 58.9% 72.6% 45.1% 9/12" [ref=e4315]:
+                    - cell "2023-08-28" [ref=e4316]
+                    - cell "US Open" [ref=e4317]:
+                      - link "US Open" [ref=e4318] [cursor=pointer]:
+                        - /url: /tournaments/560/2023
+                    - cell "Hard" [ref=e4319]
+                    - cell "R32" [ref=e4320]
+                    - cell "6" [ref=e4321]
+                    - cell "🇮🇹 Jannik Sinner (6)" [ref=e4322]:
+                      - img "🇮🇹" [ref=e4323]
+                      - link "Jannik Sinner (6)" [ref=e4324] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4325]: (6)
+                    - cell "49" [ref=e4326]
+                    - cell "🇨🇭 Stan Wawrinka" [ref=e4327]:
+                      - img "🇨🇭" [ref=e4328]
+                      - link "Stan Wawrinka" [ref=e4329] [cursor=pointer]:
+                        - /url: /players/stan-wawrinka
+                    - cell "6-3 2-6 6-4 6-2" [ref=e4330]
+                    - cell "5" [ref=e4331]
+                    - cell "178" [ref=e4332]
+                    - cell "12" [ref=e4333]
+                    - cell "5" [ref=e4334]
+                    - cell "58.9%" [ref=e4335]
+                    - cell "72.6%" [ref=e4336]
+                    - cell "45.1%" [ref=e4337]
+                    - cell "9/12" [ref=e4338]
+                  - row "2023-08-28 US Open Hard R64 6 🇮🇹 Jannik Sinner (6) 39 🇮🇹 Lorenzo Sonego 6-4 6-2 6-4 5 125 4 1 54.5% 88.9% 80.0% 0/0" [ref=e4339]:
+                    - cell "2023-08-28" [ref=e4340]
+                    - cell "US Open" [ref=e4341]:
+                      - link "US Open" [ref=e4342] [cursor=pointer]:
+                        - /url: /tournaments/560/2023
+                    - cell "Hard" [ref=e4343]
+                    - cell "R64" [ref=e4344]
+                    - cell "6" [ref=e4345]
+                    - cell "🇮🇹 Jannik Sinner (6)" [ref=e4346]:
+                      - img "🇮🇹" [ref=e4347]
+                      - link "Jannik Sinner (6)" [ref=e4348] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4349]: (6)
+                    - cell "39" [ref=e4350]
+                    - cell "🇮🇹 Lorenzo Sonego" [ref=e4351]:
+                      - img "🇮🇹" [ref=e4352]
+                      - link "Lorenzo Sonego" [ref=e4353] [cursor=pointer]:
+                        - /url: /players/lorenzo-sonego
+                    - cell "6-4 6-2 6-4" [ref=e4354]
+                    - cell "5" [ref=e4355]
+                    - cell "125" [ref=e4356]
+                    - cell "4" [ref=e4357]
+                    - cell "1" [ref=e4358]
+                    - cell "54.5%" [ref=e4359]
+                    - cell "88.9%" [ref=e4360]
+                    - cell "80.0%" [ref=e4361]
+                    - cell "0/0" [ref=e4362]
+                  - row "2023-08-28 US Open Hard R128 6 🇮🇹 Jannik Sinner (6) 54 🇩🇪 Yannick Hanfmann 6-3 6-1 6-1 5 138 5 3 55.4% 78.0% 60.6% 4/4" [ref=e4363]:
+                    - cell "2023-08-28" [ref=e4364]
+                    - cell "US Open" [ref=e4365]:
+                      - link "US Open" [ref=e4366] [cursor=pointer]:
+                        - /url: /tournaments/560/2023
+                    - cell "Hard" [ref=e4367]
+                    - cell "R128" [ref=e4368]
+                    - cell "6" [ref=e4369]
+                    - cell "🇮🇹 Jannik Sinner (6)" [ref=e4370]:
+                      - img "🇮🇹" [ref=e4371]
+                      - link "Jannik Sinner (6)" [ref=e4372] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4373]: (6)
+                    - cell "54" [ref=e4374]
+                    - cell "🇩🇪 Yannick Hanfmann" [ref=e4375]:
+                      - img "🇩🇪" [ref=e4376]
+                      - link "Yannick Hanfmann" [ref=e4377] [cursor=pointer]:
+                        - /url: /players/yannick-hanfmann
+                    - cell "6-3 6-1 6-1" [ref=e4378]
+                    - cell "5" [ref=e4379]
+                    - cell "138" [ref=e4380]
+                    - cell "5" [ref=e4381]
+                    - cell "3" [ref=e4382]
+                    - cell "55.4%" [ref=e4383]
+                    - cell "78.0%" [ref=e4384]
+                    - cell "60.6%" [ref=e4385]
+                    - cell "4/4" [ref=e4386]
+                  - row "2023-08-14 Cincinnati Masters Hard R32 66 🇷🇸 Dusan Lajovic (Q) 6 🇮🇹 Jannik Sinner (8) 6-4 7-6(4) 3 124 4 0 71.6% 75.9% 52.2% 5/5" [ref=e4387]:
+                    - cell "2023-08-14" [ref=e4388]
+                    - cell "Cincinnati Masters" [ref=e4389]:
+                      - link "Cincinnati Masters" [ref=e4390] [cursor=pointer]:
+                        - /url: /tournaments/422/2023
+                    - cell "Hard" [ref=e4391]
+                    - cell "R32" [ref=e4392]
+                    - cell "66" [ref=e4393]
+                    - cell "🇷🇸 Dusan Lajovic (Q)" [ref=e4394]:
+                      - img "🇷🇸" [ref=e4395]
+                      - link "Dusan Lajovic (Q)" [ref=e4396] [cursor=pointer]:
+                        - /url: /players/dusan-lajovic
+                        - text: Dusan Lajovic
+                        - generic [ref=e4397]: (Q)
+                    - cell "6" [ref=e4398]
+                    - cell "🇮🇹 Jannik Sinner (8)" [ref=e4399]:
+                      - img "🇮🇹" [ref=e4400]
+                      - link "Jannik Sinner (8)" [ref=e4401] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4402]: (8)
+                    - cell "6-4 7-6(4)" [ref=e4403]
+                    - cell "3" [ref=e4404]
+                    - cell "124" [ref=e4405]
+                    - cell "4" [ref=e4406]
+                    - cell "0" [ref=e4407]
+                    - cell "71.6%" [ref=e4408]
+                    - cell "75.9%" [ref=e4409]
+                    - cell "52.2%" [ref=e4410]
+                    - cell "5/5" [ref=e4411]
+                  - row "2023-08-07 Canada Masters Hard F 8 🇮🇹 Jannik Sinner (7) 18 🇦🇺 Alex de Minaur 6-4 6-1 3 89 5 3 50.0% 73.1% 57.7% 2/4" [ref=e4412]:
+                    - cell "2023-08-07" [ref=e4413]
+                    - cell "Canada Masters" [ref=e4414]:
+                      - link "Canada Masters" [ref=e4415] [cursor=pointer]:
+                        - /url: /tournaments/421/2023
+                    - cell "Hard" [ref=e4416]
+                    - cell "F" [ref=e4417]
+                    - cell "8" [ref=e4418]
+                    - cell "🇮🇹 Jannik Sinner (7)" [ref=e4419]:
+                      - img "🇮🇹" [ref=e4420]
+                      - link "Jannik Sinner (7)" [ref=e4421] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4422]: (7)
+                    - cell "18" [ref=e4423]
+                    - cell "🇦🇺 Alex de Minaur" [ref=e4424]:
+                      - img "🇦🇺" [ref=e4425]
+                      - link "Alex de Minaur" [ref=e4426] [cursor=pointer]:
+                        - /url: /players/alex-de-minaur
+                    - cell "6-4 6-1" [ref=e4427]
+                    - cell "3" [ref=e4428]
+                    - cell "89" [ref=e4429]
+                    - cell "5" [ref=e4430]
+                    - cell "3" [ref=e4431]
+                    - cell "50.0%" [ref=e4432]
+                    - cell "73.1%" [ref=e4433]
+                    - cell "57.7%" [ref=e4434]
+                    - cell "2/4" [ref=e4435]
+                  - row "2023-08-07 Canada Masters Hard SF 8 🇮🇹 Jannik Sinner (7) 14 🇺🇸 Tommy Paul (12) 6-4 6-4 3 116 4 3 45.7% 78.1% 42.1% 8/11" [ref=e4436]:
+                    - cell "2023-08-07" [ref=e4437]
+                    - cell "Canada Masters" [ref=e4438]:
+                      - link "Canada Masters" [ref=e4439] [cursor=pointer]:
+                        - /url: /tournaments/421/2023
+                    - cell "Hard" [ref=e4440]
+                    - cell "SF" [ref=e4441]
+                    - cell "8" [ref=e4442]
+                    - cell "🇮🇹 Jannik Sinner (7)" [ref=e4443]:
+                      - img "🇮🇹" [ref=e4444]
+                      - link "Jannik Sinner (7)" [ref=e4445] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4446]: (7)
+                    - cell "14" [ref=e4447]
+                    - cell "🇺🇸 Tommy Paul (12)" [ref=e4448]:
+                      - img "🇺🇸" [ref=e4449]
+                      - link "Tommy Paul (12)" [ref=e4450] [cursor=pointer]:
+                        - /url: /players/tommy-paul
+                        - text: Tommy Paul
+                        - generic [ref=e4451]: (12)
+                    - cell "6-4 6-4" [ref=e4452]
+                    - cell "3" [ref=e4453]
+                    - cell "116" [ref=e4454]
+                    - cell "4" [ref=e4455]
+                    - cell "3" [ref=e4456]
+                    - cell "45.7%" [ref=e4457]
+                    - cell "78.1%" [ref=e4458]
+                    - cell "42.1%" [ref=e4459]
+                    - cell "8/11" [ref=e4460]
+                  - row "2023-08-07 Canada Masters Hard QF 8 🇮🇹 Jannik Sinner (7) 276 🇫🇷 Gael Monfils (PR) 6-4 4-6 6-3 3 142 5 3 49.4% 81.8% 46.7% 0/2" [ref=e4461]:
+                    - cell "2023-08-07" [ref=e4462]
+                    - cell "Canada Masters" [ref=e4463]:
+                      - link "Canada Masters" [ref=e4464] [cursor=pointer]:
+                        - /url: /tournaments/421/2023
+                    - cell "Hard" [ref=e4465]
+                    - cell "QF" [ref=e4466]
+                    - cell "8" [ref=e4467]
+                    - cell "🇮🇹 Jannik Sinner (7)" [ref=e4468]:
+                      - img "🇮🇹" [ref=e4469]
+                      - link "Jannik Sinner (7)" [ref=e4470] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4471]: (7)
+                    - cell "276" [ref=e4472]
+                    - cell "🇫🇷 Gael Monfils (PR)" [ref=e4473]:
+                      - img "🇫🇷" [ref=e4474]
+                      - link "Gael Monfils (PR)" [ref=e4475] [cursor=pointer]:
+                        - /url: /players/gael-monfils
+                        - text: Gael Monfils
+                        - generic [ref=e4476]: (PR)
+                    - cell "6-4 4-6 6-3" [ref=e4477]
+                    - cell "3" [ref=e4478]
+                    - cell "142" [ref=e4479]
+                    - cell "5" [ref=e4480]
+                    - cell "3" [ref=e4481]
+                    - cell "49.4%" [ref=e4482]
+                    - cell "81.8%" [ref=e4483]
+                    - cell "46.7%" [ref=e4484]
+                    - cell "0/2" [ref=e4485]
+                  - row "2023-08-07 Canada Masters Hard R16 8 🇮🇹 Jannik Sinner (7) 40 🇬🇧 Andy Murray W/O 3 0 - - - - - -" [ref=e4486]:
+                    - cell "2023-08-07" [ref=e4487]
+                    - cell "Canada Masters" [ref=e4488]:
+                      - link "Canada Masters" [ref=e4489] [cursor=pointer]:
+                        - /url: /tournaments/421/2023
+                    - cell "Hard" [ref=e4490]
+                    - cell "R16" [ref=e4491]
+                    - cell "8" [ref=e4492]
+                    - cell "🇮🇹 Jannik Sinner (7)" [ref=e4493]:
+                      - img "🇮🇹" [ref=e4494]
+                      - link "Jannik Sinner (7)" [ref=e4495] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4496]: (7)
+                    - cell "40" [ref=e4497]
+                    - cell "🇬🇧 Andy Murray" [ref=e4498]:
+                      - img "🇬🇧" [ref=e4499]
+                      - link "Andy Murray" [ref=e4500] [cursor=pointer]:
+                        - /url: /players/andy-murray
+                    - cell "W/O" [ref=e4501]
+                    - cell "3" [ref=e4502]
+                    - cell "0" [ref=e4503]
+                    - cell "-" [ref=e4504]
+                    - cell "-" [ref=e4505]
+                    - cell "-" [ref=e4506]
+                    - cell "-" [ref=e4507]
+                    - cell "-" [ref=e4508]
+                    - cell "-" [ref=e4509]
+                  - row "2023-08-07 Canada Masters Hard R32 8 🇮🇹 Jannik Sinner (7) 38 🇮🇹 Matteo Berrettini 6-4 6-3 3 90 10 2 65.1% 82.9% 54.5% 7/7" [ref=e4510]:
+                    - cell "2023-08-07" [ref=e4511]
+                    - cell "Canada Masters" [ref=e4512]:
+                      - link "Canada Masters" [ref=e4513] [cursor=pointer]:
+                        - /url: /tournaments/421/2023
+                    - cell "Hard" [ref=e4514]
+                    - cell "R32" [ref=e4515]
+                    - cell "8" [ref=e4516]
+                    - cell "🇮🇹 Jannik Sinner (7)" [ref=e4517]:
+                      - img "🇮🇹" [ref=e4518]
+                      - link "Jannik Sinner (7)" [ref=e4519] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4520]: (7)
+                    - cell "38" [ref=e4521]
+                    - cell "🇮🇹 Matteo Berrettini" [ref=e4522]:
+                      - img "🇮🇹" [ref=e4523]
+                      - link "Matteo Berrettini" [ref=e4524] [cursor=pointer]:
+                        - /url: /players/matteo-berrettini
+                    - cell "6-4 6-3" [ref=e4525]
+                    - cell "3" [ref=e4526]
+                    - cell "90" [ref=e4527]
+                    - cell "10" [ref=e4528]
+                    - cell "2" [ref=e4529]
+                    - cell "65.1%" [ref=e4530]
+                    - cell "82.9%" [ref=e4531]
+                    - cell "54.5%" [ref=e4532]
+                    - cell "7/7" [ref=e4533]
+                  - row "2023-07-03 Wimbledon Grass SF 2 🇷🇸 Novak Djokovic (2) 8 🇮🇹 Jannik Sinner (8) 6-3 6-4 7-6(4) 5 167 11 0 58.0% 75.4% 59.6% 6/6" [ref=e4534]:
+                    - cell "2023-07-03" [ref=e4535]
+                    - cell "Wimbledon" [ref=e4536]:
+                      - link "Wimbledon" [ref=e4537] [cursor=pointer]:
+                        - /url: /tournaments/540/2023
+                    - cell "Grass" [ref=e4538]
+                    - cell "SF" [ref=e4539]
+                    - cell "2" [ref=e4540]
+                    - cell "🇷🇸 Novak Djokovic (2)" [ref=e4541]:
+                      - img "🇷🇸" [ref=e4542]
+                      - link "Novak Djokovic (2)" [ref=e4543] [cursor=pointer]:
+                        - /url: /players/novak-djokovic
+                        - text: Novak Djokovic
+                        - generic [ref=e4544]: (2)
+                    - cell "8" [ref=e4545]
+                    - cell "🇮🇹 Jannik Sinner (8)" [ref=e4546]:
+                      - img "🇮🇹" [ref=e4547]
+                      - link "Jannik Sinner (8)" [ref=e4548] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4549]: (8)
+                    - cell "6-3 6-4 7-6(4)" [ref=e4550]
+                    - cell "5" [ref=e4551]
+                    - cell "167" [ref=e4552]
+                    - cell "11" [ref=e4553]
+                    - cell "0" [ref=e4554]
+                    - cell "58.0%" [ref=e4555]
+                    - cell "75.4%" [ref=e4556]
+                    - cell "59.6%" [ref=e4557]
+                    - cell "6/6" [ref=e4558]
+                  - row "2023-07-03 Wimbledon Grass QF 8 🇮🇹 Jannik Sinner (8) 92 🇷🇺 Roman Safiullin 6-4 3-6 6-2 6-2 5 134 14 2 54.5% 89.6% 55.0% 3/5" [ref=e4559]:
+                    - cell "2023-07-03" [ref=e4560]
+                    - cell "Wimbledon" [ref=e4561]:
+                      - link "Wimbledon" [ref=e4562] [cursor=pointer]:
+                        - /url: /tournaments/540/2023
+                    - cell "Grass" [ref=e4563]
+                    - cell "QF" [ref=e4564]
+                    - cell "8" [ref=e4565]
+                    - cell "🇮🇹 Jannik Sinner (8)" [ref=e4566]:
+                      - img "🇮🇹" [ref=e4567]
+                      - link "Jannik Sinner (8)" [ref=e4568] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4569]: (8)
+                    - cell "92" [ref=e4570]
+                    - cell "🇷🇺 Roman Safiullin" [ref=e4571]:
+                      - img "🇷🇺" [ref=e4572]
+                      - link "Roman Safiullin" [ref=e4573] [cursor=pointer]:
+                        - /url: /players/roman-safiullin
+                    - cell "6-4 3-6 6-2 6-2" [ref=e4574]
+                    - cell "5" [ref=e4575]
+                    - cell "134" [ref=e4576]
+                    - cell "14" [ref=e4577]
+                    - cell "2" [ref=e4578]
+                    - cell "54.5%" [ref=e4579]
+                    - cell "89.6%" [ref=e4580]
+                    - cell "55.0%" [ref=e4581]
+                    - cell "3/5" [ref=e4582]
+                  - row "2023-07-03 Wimbledon Grass R16 8 🇮🇹 Jannik Sinner (8) 85 🇨🇴 Daniel Elahi Galan 7-6(4) 6-4 6-3 5 157 12 1 54.5% 85.4% 70.0% 4/5" [ref=e4583]:
+                    - cell "2023-07-03" [ref=e4584]
+                    - cell "Wimbledon" [ref=e4585]:
+                      - link "Wimbledon" [ref=e4586] [cursor=pointer]:
+                        - /url: /tournaments/540/2023
+                    - cell "Grass" [ref=e4587]
+                    - cell "R16" [ref=e4588]
+                    - cell "8" [ref=e4589]
+                    - cell "🇮🇹 Jannik Sinner (8)" [ref=e4590]:
+                      - img "🇮🇹" [ref=e4591]
+                      - link "Jannik Sinner (8)" [ref=e4592] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4593]: (8)
+                    - cell "85" [ref=e4594]
+                    - cell "🇨🇴 Daniel Elahi Galan" [ref=e4595]:
+                      - img "🇨🇴" [ref=e4596]
+                      - link "Daniel Elahi Galan" [ref=e4597] [cursor=pointer]:
+                        - /url: /players/daniel-elahi-galan
+                    - cell "7-6(4) 6-4 6-3" [ref=e4598]
+                    - cell "5" [ref=e4599]
+                    - cell "157" [ref=e4600]
+                    - cell "12" [ref=e4601]
+                    - cell "1" [ref=e4602]
+                    - cell "54.5%" [ref=e4603]
+                    - cell "85.4%" [ref=e4604]
+                    - cell "70.0%" [ref=e4605]
+                    - cell "4/5" [ref=e4606]
+                  - row "2023-07-03 Wimbledon Grass R32 8 🇮🇹 Jannik Sinner (8) 79 🇫🇷 Quentin Halys 3-6 6-2 6-3 6-4 5 145 9 8 49.0% 83.3% 62.0% 2/4" [ref=e4607]:
+                    - cell "2023-07-03" [ref=e4608]
+                    - cell "Wimbledon" [ref=e4609]:
+                      - link "Wimbledon" [ref=e4610] [cursor=pointer]:
+                        - /url: /tournaments/540/2023
+                    - cell "Grass" [ref=e4611]
+                    - cell "R32" [ref=e4612]
+                    - cell "8" [ref=e4613]
+                    - cell "🇮🇹 Jannik Sinner (8)" [ref=e4614]:
+                      - img "🇮🇹" [ref=e4615]
+                      - link "Jannik Sinner (8)" [ref=e4616] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4617]: (8)
+                    - cell "79" [ref=e4618]
+                    - cell "🇫🇷 Quentin Halys" [ref=e4619]:
+                      - img "🇫🇷" [ref=e4620]
+                      - link "Quentin Halys" [ref=e4621] [cursor=pointer]:
+                        - /url: /players/quentin-halys
+                    - cell "3-6 6-2 6-3 6-4" [ref=e4622]
+                    - cell "5" [ref=e4623]
+                    - cell "145" [ref=e4624]
+                    - cell "9" [ref=e4625]
+                    - cell "8" [ref=e4626]
+                    - cell "49.0%" [ref=e4627]
+                    - cell "83.3%" [ref=e4628]
+                    - cell "62.0%" [ref=e4629]
+                    - cell "2/4" [ref=e4630]
+                  - row "2023-07-03 Wimbledon Grass R64 8 🇮🇹 Jannik Sinner (8) 98 🇦🇷 Diego Schwartzman 7-5 6-1 6-2 5 122 15 1 56.6% 80.9% 58.3% 4/5" [ref=e4631]:
+                    - cell "2023-07-03" [ref=e4632]
+                    - cell "Wimbledon" [ref=e4633]:
+                      - link "Wimbledon" [ref=e4634] [cursor=pointer]:
+                        - /url: /tournaments/540/2023
+                    - cell "Grass" [ref=e4635]
+                    - cell "R64" [ref=e4636]
+                    - cell "8" [ref=e4637]
+                    - cell "🇮🇹 Jannik Sinner (8)" [ref=e4638]:
+                      - img "🇮🇹" [ref=e4639]
+                      - link "Jannik Sinner (8)" [ref=e4640] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4641]: (8)
+                    - cell "98" [ref=e4642]
+                    - cell "🇦🇷 Diego Schwartzman" [ref=e4643]:
+                      - img "🇦🇷" [ref=e4644]
+                      - link "Diego Schwartzman" [ref=e4645] [cursor=pointer]:
+                        - /url: /players/diego-schwartzman
+                    - cell "7-5 6-1 6-2" [ref=e4646]
+                    - cell "5" [ref=e4647]
+                    - cell "122" [ref=e4648]
+                    - cell "15" [ref=e4649]
+                    - cell "1" [ref=e4650]
+                    - cell "56.6%" [ref=e4651]
+                    - cell "80.9%" [ref=e4652]
+                    - cell "58.3%" [ref=e4653]
+                    - cell "4/5" [ref=e4654]
+                  - row "2023-07-03 Wimbledon Grass R128 8 🇮🇹 Jannik Sinner (8) 111 🇦🇷 Juan Manuel Cerundolo 6-2 6-2 6-2 5 90 7 0 69.0% 82.5% 88.9% 2/2" [ref=e4655]:
+                    - cell "2023-07-03" [ref=e4656]
+                    - cell "Wimbledon" [ref=e4657]:
+                      - link "Wimbledon" [ref=e4658] [cursor=pointer]:
+                        - /url: /tournaments/540/2023
+                    - cell "Grass" [ref=e4659]
+                    - cell "R128" [ref=e4660]
+                    - cell "8" [ref=e4661]
+                    - cell "🇮🇹 Jannik Sinner (8)" [ref=e4662]:
+                      - img "🇮🇹" [ref=e4663]
+                      - link "Jannik Sinner (8)" [ref=e4664] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4665]: (8)
+                    - cell "111" [ref=e4666]
+                    - cell "🇦🇷 Juan Manuel Cerundolo" [ref=e4667]:
+                      - img "🇦🇷" [ref=e4668]
+                      - link "Juan Manuel Cerundolo" [ref=e4669] [cursor=pointer]:
+                        - /url: /players/juan-manuel-cerundolo
+                    - cell "6-2 6-2 6-2" [ref=e4670]
+                    - cell "5" [ref=e4671]
+                    - cell "90" [ref=e4672]
+                    - cell "7" [ref=e4673]
+                    - cell "0" [ref=e4674]
+                    - cell "69.0%" [ref=e4675]
+                    - cell "82.5%" [ref=e4676]
+                    - cell "88.9%" [ref=e4677]
+                    - cell "2/2" [ref=e4678]
+                  - row "2023-06-19 Halle Grass QF 48 🇰🇿 Alexander Bublik 9 🇮🇹 Jannik Sinner (4) 7-5 2-0 RET 3 57 6 1 68.4% 80.8% 50.0% 0/1" [ref=e4679]:
+                    - cell "2023-06-19" [ref=e4680]
+                    - cell "Halle" [ref=e4681]:
+                      - link "Halle" [ref=e4682] [cursor=pointer]:
+                        - /url: /tournaments/500/2023
+                    - cell "Grass" [ref=e4683]
+                    - cell "QF" [ref=e4684]
+                    - cell "48" [ref=e4685]
+                    - cell "🇰🇿 Alexander Bublik" [ref=e4686]:
+                      - img "🇰🇿" [ref=e4687]
+                      - link "Alexander Bublik" [ref=e4688] [cursor=pointer]:
+                        - /url: /players/alexander-bublik
+                    - cell "9" [ref=e4689]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e4690]:
+                      - img "🇮🇹" [ref=e4691]
+                      - link "Jannik Sinner (4)" [ref=e4692] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4693]: (4)
+                    - cell "7-5 2-0 RET" [ref=e4694]
+                    - cell "3" [ref=e4695]
+                    - cell "57" [ref=e4696]
+                    - cell "6" [ref=e4697]
+                    - cell "1" [ref=e4698]
+                    - cell "68.4%" [ref=e4699]
+                    - cell "80.8%" [ref=e4700]
+                    - cell "50.0%" [ref=e4701]
+                    - cell "0/1" [ref=e4702]
+                  - row "2023-06-19 Halle Grass R16 9 🇮🇹 Jannik Sinner (4) 39 🇮🇹 Lorenzo Sonego 6-7(4) 6-4 6-4 3 172 10 3 61.3% 81.5% 53.7% 8/8" [ref=e4703]:
+                    - cell "2023-06-19" [ref=e4704]
+                    - cell "Halle" [ref=e4705]:
+                      - link "Halle" [ref=e4706] [cursor=pointer]:
+                        - /url: /tournaments/500/2023
+                    - cell "Grass" [ref=e4707]
+                    - cell "R16" [ref=e4708]
+                    - cell "9" [ref=e4709]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e4710]:
+                      - img "🇮🇹" [ref=e4711]
+                      - link "Jannik Sinner (4)" [ref=e4712] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4713]: (4)
+                    - cell "39" [ref=e4714]
+                    - cell "🇮🇹 Lorenzo Sonego" [ref=e4715]:
+                      - img "🇮🇹" [ref=e4716]
+                      - link "Lorenzo Sonego" [ref=e4717] [cursor=pointer]:
+                        - /url: /players/lorenzo-sonego
+                    - cell "6-7(4) 6-4 6-4" [ref=e4718]
+                    - cell "3" [ref=e4719]
+                    - cell "172" [ref=e4720]
+                    - cell "10" [ref=e4721]
+                    - cell "3" [ref=e4722]
+                    - cell "61.3%" [ref=e4723]
+                    - cell "81.5%" [ref=e4724]
+                    - cell "53.7%" [ref=e4725]
+                    - cell "8/8" [ref=e4726]
+                  - row "2023-06-19 Halle Grass R32 9 🇮🇹 Jannik Sinner (4) 49 🇫🇷 Richard Gasquet 6-3 5-7 6-2 3 148 11 2 51.6% 79.2% 53.3% 4/5" [ref=e4727]:
+                    - cell "2023-06-19" [ref=e4728]
+                    - cell "Halle" [ref=e4729]:
+                      - link "Halle" [ref=e4730] [cursor=pointer]:
+                        - /url: /tournaments/500/2023
+                    - cell "Grass" [ref=e4731]
+                    - cell "R32" [ref=e4732]
+                    - cell "9" [ref=e4733]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e4734]:
+                      - img "🇮🇹" [ref=e4735]
+                      - link "Jannik Sinner (4)" [ref=e4736] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4737]: (4)
+                    - cell "49" [ref=e4738]
+                    - cell "🇫🇷 Richard Gasquet" [ref=e4739]:
+                      - img "🇫🇷" [ref=e4740]
+                      - link "Richard Gasquet" [ref=e4741] [cursor=pointer]:
+                        - /url: /players/richard-gasquet
+                    - cell "6-3 5-7 6-2" [ref=e4742]
+                    - cell "3" [ref=e4743]
+                    - cell "148" [ref=e4744]
+                    - cell "11" [ref=e4745]
+                    - cell "2" [ref=e4746]
+                    - cell "51.6%" [ref=e4747]
+                    - cell "79.2%" [ref=e4748]
+                    - cell "53.3%" [ref=e4749]
+                    - cell "4/5" [ref=e4750]
+                  - row "2023-06-12 's-Hertogenbosch Grass QF 42 🇫🇮 Emil Ruusuvuori 9 🇮🇹 Jannik Sinner (2) 6-3 6-4 3 80 2 3 55.8% 100.0% 47.8% 0/0" [ref=e4751]:
+                    - cell "2023-06-12" [ref=e4752]
+                    - cell "'s-Hertogenbosch" [ref=e4753]:
+                      - link "'s-Hertogenbosch" [ref=e4754] [cursor=pointer]:
+                        - /url: /tournaments/440/2023
+                    - cell "Grass" [ref=e4755]
+                    - cell "QF" [ref=e4756]
+                    - cell "42" [ref=e4757]
+                    - cell "🇫🇮 Emil Ruusuvuori" [ref=e4758]:
+                      - img "🇫🇮" [ref=e4759]
+                      - link "Emil Ruusuvuori" [ref=e4760] [cursor=pointer]:
+                        - /url: /players/emil-ruusuvuori
+                    - cell "9" [ref=e4761]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e4762]:
+                      - img "🇮🇹" [ref=e4763]
+                      - link "Jannik Sinner (2)" [ref=e4764] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4765]: (2)
+                    - cell "6-3 6-4" [ref=e4766]
+                    - cell "3" [ref=e4767]
+                    - cell "80" [ref=e4768]
+                    - cell "2" [ref=e4769]
+                    - cell "3" [ref=e4770]
+                    - cell "55.8%" [ref=e4771]
+                    - cell "100.0%" [ref=e4772]
+                    - cell "47.8%" [ref=e4773]
+                    - cell "0/0" [ref=e4774]
+                  - row "2023-06-12 's-Hertogenbosch Grass R16 9 🇮🇹 Jannik Sinner (2) 47 🇰🇿 Alexander Bublik 6-4 6-2 3 83 8 0 65.3% 84.4% 58.8% 1/1" [ref=e4775]:
+                    - cell "2023-06-12" [ref=e4776]
+                    - cell "'s-Hertogenbosch" [ref=e4777]:
+                      - link "'s-Hertogenbosch" [ref=e4778] [cursor=pointer]:
+                        - /url: /tournaments/440/2023
+                    - cell "Grass" [ref=e4779]
+                    - cell "R16" [ref=e4780]
+                    - cell "9" [ref=e4781]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e4782]:
+                      - img "🇮🇹" [ref=e4783]
+                      - link "Jannik Sinner (2)" [ref=e4784] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4785]: (2)
+                    - cell "47" [ref=e4786]
+                    - cell "🇰🇿 Alexander Bublik" [ref=e4787]:
+                      - img "🇰🇿" [ref=e4788]
+                      - link "Alexander Bublik" [ref=e4789] [cursor=pointer]:
+                        - /url: /players/alexander-bublik
+                    - cell "6-4 6-2" [ref=e4790]
+                    - cell "3" [ref=e4791]
+                    - cell "83" [ref=e4792]
+                    - cell "8" [ref=e4793]
+                    - cell "0" [ref=e4794]
+                    - cell "65.3%" [ref=e4795]
+                    - cell "84.4%" [ref=e4796]
+                    - cell "58.8%" [ref=e4797]
+                    - cell "1/1" [ref=e4798]
+                  - row "2023-05-29 Roland Garros Clay R64 79 🇩🇪 Daniel Altmaier 9 🇮🇹 Jannik Sinner (8) 6-7(0) 7-6(7) 1-6 7-6(4) 7-5 5 326 10 6 69.6% 69.0% 43.5% 15/21" [ref=e4799]:
+                    - cell "2023-05-29" [ref=e4800]
+                    - cell "Roland Garros" [ref=e4801]:
+                      - link "Roland Garros" [ref=e4802] [cursor=pointer]:
+                        - /url: /tournaments/520/2023
+                    - cell "Clay" [ref=e4803]
+                    - cell "R64" [ref=e4804]
+                    - cell "79" [ref=e4805]
+                    - cell "🇩🇪 Daniel Altmaier" [ref=e4806]:
+                      - img "🇩🇪" [ref=e4807]
+                      - link "Daniel Altmaier" [ref=e4808] [cursor=pointer]:
+                        - /url: /players/daniel-altmaier
+                    - cell "9" [ref=e4809]
+                    - cell "🇮🇹 Jannik Sinner (8)" [ref=e4810]:
+                      - img "🇮🇹" [ref=e4811]
+                      - link "Jannik Sinner (8)" [ref=e4812] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4813]: (8)
+                    - cell "6-7(0) 7-6(7) 1-6 7-6(4) 7-5" [ref=e4814]
+                    - cell "5" [ref=e4815]
+                    - cell "326" [ref=e4816]
+                    - cell "10" [ref=e4817]
+                    - cell "6" [ref=e4818]
+                    - cell "69.6%" [ref=e4819]
+                    - cell "69.0%" [ref=e4820]
+                    - cell "43.5%" [ref=e4821]
+                    - cell "15/21" [ref=e4822]
+                  - row "2023-05-29 Roland Garros Clay R128 9 🇮🇹 Jannik Sinner (8) 101 🇫🇷 Alexandre Muller 6-1 6-4 6-1 5 106 5 2 57.1% 82.5% 60.0% 2/2" [ref=e4823]:
+                    - cell "2023-05-29" [ref=e4824]
+                    - cell "Roland Garros" [ref=e4825]:
+                      - link "Roland Garros" [ref=e4826] [cursor=pointer]:
+                        - /url: /tournaments/520/2023
+                    - cell "Clay" [ref=e4827]
+                    - cell "R128" [ref=e4828]
+                    - cell "9" [ref=e4829]
+                    - cell "🇮🇹 Jannik Sinner (8)" [ref=e4830]:
+                      - img "🇮🇹" [ref=e4831]
+                      - link "Jannik Sinner (8)" [ref=e4832] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4833]: (8)
+                    - cell "101" [ref=e4834]
+                    - cell "🇫🇷 Alexandre Muller" [ref=e4835]:
+                      - img "🇫🇷" [ref=e4836]
+                      - link "Alexandre Muller" [ref=e4837] [cursor=pointer]:
+                        - /url: /players/alexandre-muller
+                    - cell "6-1 6-4 6-1" [ref=e4838]
+                    - cell "5" [ref=e4839]
+                    - cell "106" [ref=e4840]
+                    - cell "5" [ref=e4841]
+                    - cell "2" [ref=e4842]
+                    - cell "57.1%" [ref=e4843]
+                    - cell "82.5%" [ref=e4844]
+                    - cell "60.0%" [ref=e4845]
+                    - cell "2/2" [ref=e4846]
+                  - row "2023-05-08 Rome Masters Clay R16 31 🇦🇷 Francisco Cerundolo (24) 8 🇮🇹 Jannik Sinner (8) 6-7(3) 6-2 6-2 3 145 2 2 58.7% 70.4% 55.3% 5/8" [ref=e4847]:
+                    - cell "2023-05-08" [ref=e4848]
+                    - cell "Rome Masters" [ref=e4849]:
+                      - link "Rome Masters" [ref=e4850] [cursor=pointer]:
+                        - /url: /tournaments/416/2023
+                    - cell "Clay" [ref=e4851]
+                    - cell "R16" [ref=e4852]
+                    - cell "31" [ref=e4853]
+                    - cell "🇦🇷 Francisco Cerundolo (24)" [ref=e4854]:
+                      - img "🇦🇷" [ref=e4855]
+                      - link "Francisco Cerundolo (24)" [ref=e4856] [cursor=pointer]:
+                        - /url: /players/francisco-cerundolo
+                        - text: Francisco Cerundolo
+                        - generic [ref=e4857]: (24)
+                    - cell "8" [ref=e4858]
+                    - cell "🇮🇹 Jannik Sinner (8)" [ref=e4859]:
+                      - img "🇮🇹" [ref=e4860]
+                      - link "Jannik Sinner (8)" [ref=e4861] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4862]: (8)
+                    - cell "6-7(3) 6-2 6-2" [ref=e4863]
+                    - cell "3" [ref=e4864]
+                    - cell "145" [ref=e4865]
+                    - cell "2" [ref=e4866]
+                    - cell "2" [ref=e4867]
+                    - cell "58.7%" [ref=e4868]
+                    - cell "70.4%" [ref=e4869]
+                    - cell "55.3%" [ref=e4870]
+                    - cell "5/8" [ref=e4871]
+                  - row "2023-05-08 Rome Masters Clay R32 8 🇮🇹 Jannik Sinner (8) 93 🇰🇿 Alexander Shevchenko (LL) 6-3 6-7(4) 6-2 3 132 1 1 59.3% 70.8% 60.6% 6/8" [ref=e4872]:
+                    - cell "2023-05-08" [ref=e4873]
+                    - cell "Rome Masters" [ref=e4874]:
+                      - link "Rome Masters" [ref=e4875] [cursor=pointer]:
+                        - /url: /tournaments/416/2023
+                    - cell "Clay" [ref=e4876]
+                    - cell "R32" [ref=e4877]
+                    - cell "8" [ref=e4878]
+                    - cell "🇮🇹 Jannik Sinner (8)" [ref=e4879]:
+                      - img "🇮🇹" [ref=e4880]
+                      - link "Jannik Sinner (8)" [ref=e4881] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4882]: (8)
+                    - cell "93" [ref=e4883]
+                    - cell "🇰🇿 Alexander Shevchenko (LL)" [ref=e4884]:
+                      - img "🇰🇿" [ref=e4885]
+                      - link "Alexander Shevchenko (LL)" [ref=e4886] [cursor=pointer]:
+                        - /url: /players/alexander-shevchenko
+                        - text: Alexander Shevchenko
+                        - generic [ref=e4887]: (LL)
+                    - cell "6-3 6-7(4) 6-2" [ref=e4888]
+                    - cell "3" [ref=e4889]
+                    - cell "132" [ref=e4890]
+                    - cell "1" [ref=e4891]
+                    - cell "1" [ref=e4892]
+                    - cell "59.3%" [ref=e4893]
+                    - cell "70.8%" [ref=e4894]
+                    - cell "60.6%" [ref=e4895]
+                    - cell "6/8" [ref=e4896]
+                  - row "2023-05-08 Rome Masters Clay R64 8 🇮🇹 Jannik Sinner (8) 104 🇦🇺 Thanasi Kokkinakis (Q) 6-1 6-4 3 78 2 0 66.7% 96.2% 84.6% 0/0" [ref=e4897]:
+                    - cell "2023-05-08" [ref=e4898]
+                    - cell "Rome Masters" [ref=e4899]:
+                      - link "Rome Masters" [ref=e4900] [cursor=pointer]:
+                        - /url: /tournaments/416/2023
+                    - cell "Clay" [ref=e4901]
+                    - cell "R64" [ref=e4902]
+                    - cell "8" [ref=e4903]
+                    - cell "🇮🇹 Jannik Sinner (8)" [ref=e4904]:
+                      - img "🇮🇹" [ref=e4905]
+                      - link "Jannik Sinner (8)" [ref=e4906] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4907]: (8)
+                    - cell "104" [ref=e4908]
+                    - cell "🇦🇺 Thanasi Kokkinakis (Q)" [ref=e4909]:
+                      - img "🇦🇺" [ref=e4910]
+                      - link "Thanasi Kokkinakis (Q)" [ref=e4911] [cursor=pointer]:
+                        - /url: /players/thanasi-kokkinakis
+                        - text: Thanasi Kokkinakis
+                        - generic [ref=e4912]: (Q)
+                    - cell "6-1 6-4" [ref=e4913]
+                    - cell "3" [ref=e4914]
+                    - cell "78" [ref=e4915]
+                    - cell "2" [ref=e4916]
+                    - cell "0" [ref=e4917]
+                    - cell "66.7%" [ref=e4918]
+                    - cell "96.2%" [ref=e4919]
+                    - cell "84.6%" [ref=e4920]
+                    - cell "0/0" [ref=e4921]
+                  - row "2023-04-17 Barcelona Clay QF 20 🇮🇹 Lorenzo Musetti (9) 8 🇮🇹 Jannik Sinner (4) W/O 3 0 - - - - - -" [ref=e4922]:
+                    - cell "2023-04-17" [ref=e4923]
+                    - cell "Barcelona" [ref=e4924]:
+                      - link "Barcelona" [ref=e4925] [cursor=pointer]:
+                        - /url: /tournaments/425/2023
+                    - cell "Clay" [ref=e4926]
+                    - cell "QF" [ref=e4927]
+                    - cell "20" [ref=e4928]
+                    - cell "🇮🇹 Lorenzo Musetti (9)" [ref=e4929]:
+                      - img "🇮🇹" [ref=e4930]
+                      - link "Lorenzo Musetti (9)" [ref=e4931] [cursor=pointer]:
+                        - /url: /players/lorenzo-musetti
+                        - text: Lorenzo Musetti
+                        - generic [ref=e4932]: (9)
+                    - cell "8" [ref=e4933]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e4934]:
+                      - img "🇮🇹" [ref=e4935]
+                      - link "Jannik Sinner (4)" [ref=e4936] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4937]: (4)
+                    - cell "W/O" [ref=e4938]
+                    - cell "3" [ref=e4939]
+                    - cell "0" [ref=e4940]
+                    - cell "-" [ref=e4941]
+                    - cell "-" [ref=e4942]
+                    - cell "-" [ref=e4943]
+                    - cell "-" [ref=e4944]
+                    - cell "-" [ref=e4945]
+                    - cell "-" [ref=e4946]
+                  - row "2023-04-17 Barcelona Clay R16 8 🇮🇹 Jannik Sinner (4) 35 🇯🇵 Yoshihito Nishioka (16) 6-1 4-6 6-3 3 128 4 2 43.8% 75.0% 46.3% 4/9" [ref=e4947]:
+                    - cell "2023-04-17" [ref=e4948]
+                    - cell "Barcelona" [ref=e4949]:
+                      - link "Barcelona" [ref=e4950] [cursor=pointer]:
+                        - /url: /tournaments/425/2023
+                    - cell "Clay" [ref=e4951]
+                    - cell "R16" [ref=e4952]
+                    - cell "8" [ref=e4953]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e4954]:
+                      - img "🇮🇹" [ref=e4955]
+                      - link "Jannik Sinner (4)" [ref=e4956] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4957]: (4)
+                    - cell "35" [ref=e4958]
+                    - cell "🇯🇵 Yoshihito Nishioka (16)" [ref=e4959]:
+                      - img "🇯🇵" [ref=e4960]
+                      - link "Yoshihito Nishioka (16)" [ref=e4961] [cursor=pointer]:
+                        - /url: /players/yoshihito-nishioka
+                        - text: Yoshihito Nishioka
+                        - generic [ref=e4962]: (16)
+                    - cell "6-1 4-6 6-3" [ref=e4963]
+                    - cell "3" [ref=e4964]
+                    - cell "128" [ref=e4965]
+                    - cell "4" [ref=e4966]
+                    - cell "2" [ref=e4967]
+                    - cell "43.8%" [ref=e4968]
+                    - cell "75.0%" [ref=e4969]
+                    - cell "46.3%" [ref=e4970]
+                    - cell "4/9" [ref=e4971]
+                  - row "2023-04-17 Barcelona Clay R32 8 🇮🇹 Jannik Sinner (4) 48 🇦🇷 Diego Schwartzman 6-2 6-4 3 100 1 2 60.0% 55.6% 66.7% 5/8" [ref=e4972]:
+                    - cell "2023-04-17" [ref=e4973]
+                    - cell "Barcelona" [ref=e4974]:
+                      - link "Barcelona" [ref=e4975] [cursor=pointer]:
+                        - /url: /tournaments/425/2023
+                    - cell "Clay" [ref=e4976]
+                    - cell "R32" [ref=e4977]
+                    - cell "8" [ref=e4978]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e4979]:
+                      - img "🇮🇹" [ref=e4980]
+                      - link "Jannik Sinner (4)" [ref=e4981] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e4982]: (4)
+                    - cell "48" [ref=e4983]
+                    - cell "🇦🇷 Diego Schwartzman" [ref=e4984]:
+                      - img "🇦🇷" [ref=e4985]
+                      - link "Diego Schwartzman" [ref=e4986] [cursor=pointer]:
+                        - /url: /players/diego-schwartzman
+                    - cell "6-2 6-4" [ref=e4987]
+                    - cell "3" [ref=e4988]
+                    - cell "100" [ref=e4989]
+                    - cell "1" [ref=e4990]
+                    - cell "2" [ref=e4991]
+                    - cell "60.0%" [ref=e4992]
+                    - cell "55.6%" [ref=e4993]
+                    - cell "66.7%" [ref=e4994]
+                    - cell "5/8" [ref=e4995]
+                  - row "2023-04-10 Monte Carlo Masters Clay SF 9 🇩🇰 Holger Rune (6) 8 🇮🇹 Jannik Sinner (7) 1-6 7-5 7-5 3 166 4 5 65.1% 67.9% 53.3% 4/7" [ref=e4996]:
+                    - cell "2023-04-10" [ref=e4997]
+                    - cell "Monte Carlo Masters" [ref=e4998]:
+                      - link "Monte Carlo Masters" [ref=e4999] [cursor=pointer]:
+                        - /url: /tournaments/410/2023
+                    - cell "Clay" [ref=e5000]
+                    - cell "SF" [ref=e5001]
+                    - cell "9" [ref=e5002]
+                    - cell "🇩🇰 Holger Rune (6)" [ref=e5003]:
+                      - img "🇩🇰" [ref=e5004]
+                      - link "Holger Rune (6)" [ref=e5005] [cursor=pointer]:
+                        - /url: /players/holger-rune
+                        - text: Holger Rune
+                        - generic [ref=e5006]: (6)
+                    - cell "8" [ref=e5007]
+                    - cell "🇮🇹 Jannik Sinner (7)" [ref=e5008]:
+                      - img "🇮🇹" [ref=e5009]
+                      - link "Jannik Sinner (7)" [ref=e5010] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5011]: (7)
+                    - cell "1-6 7-5 7-5" [ref=e5012]
+                    - cell "3" [ref=e5013]
+                    - cell "166" [ref=e5014]
+                    - cell "4" [ref=e5015]
+                    - cell "5" [ref=e5016]
+                    - cell "65.1%" [ref=e5017]
+                    - cell "67.9%" [ref=e5018]
+                    - cell "53.3%" [ref=e5019]
+                    - cell "4/7" [ref=e5020]
+                  - row "2023-04-10 Monte Carlo Masters Clay QF 8 🇮🇹 Jannik Sinner (7) 21 🇮🇹 Lorenzo Musetti (16) 6-2 6-2 3 75 1 0 56.4% 77.4% 58.3% 5/5" [ref=e5021]:
+                    - cell "2023-04-10" [ref=e5022]
+                    - cell "Monte Carlo Masters" [ref=e5023]:
+                      - link "Monte Carlo Masters" [ref=e5024] [cursor=pointer]:
+                        - /url: /tournaments/410/2023
+                    - cell "Clay" [ref=e5025]
+                    - cell "QF" [ref=e5026]
+                    - cell "8" [ref=e5027]
+                    - cell "🇮🇹 Jannik Sinner (7)" [ref=e5028]:
+                      - img "🇮🇹" [ref=e5029]
+                      - link "Jannik Sinner (7)" [ref=e5030] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5031]: (7)
+                    - cell "21" [ref=e5032]
+                    - cell "🇮🇹 Lorenzo Musetti (16)" [ref=e5033]:
+                      - img "🇮🇹" [ref=e5034]
+                      - link "Lorenzo Musetti (16)" [ref=e5035] [cursor=pointer]:
+                        - /url: /players/lorenzo-musetti
+                        - text: Lorenzo Musetti
+                        - generic [ref=e5036]: (16)
+                    - cell "6-2 6-2" [ref=e5037]
+                    - cell "3" [ref=e5038]
+                    - cell "75" [ref=e5039]
+                    - cell "1" [ref=e5040]
+                    - cell "0" [ref=e5041]
+                    - cell "56.4%" [ref=e5042]
+                    - cell "77.4%" [ref=e5043]
+                    - cell "58.3%" [ref=e5044]
+                    - cell "5/5" [ref=e5045]
+                  - row "2023-04-10 Monte Carlo Masters Clay R16 8 🇮🇹 Jannik Sinner (7) 13 🇵🇱 Hubert Hurkacz (10) 3-6 7-6(6) 6-1 3 147 3 3 58.4% 75.0% 56.8% 6/8" [ref=e5046]:
+                    - cell "2023-04-10" [ref=e5047]
+                    - cell "Monte Carlo Masters" [ref=e5048]:
+                      - link "Monte Carlo Masters" [ref=e5049] [cursor=pointer]:
+                        - /url: /tournaments/410/2023
+                    - cell "Clay" [ref=e5050]
+                    - cell "R16" [ref=e5051]
+                    - cell "8" [ref=e5052]
+                    - cell "🇮🇹 Jannik Sinner (7)" [ref=e5053]:
+                      - img "🇮🇹" [ref=e5054]
+                      - link "Jannik Sinner (7)" [ref=e5055] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5056]: (7)
+                    - cell "13" [ref=e5057]
+                    - cell "🇵🇱 Hubert Hurkacz (10)" [ref=e5058]:
+                      - img "🇵🇱" [ref=e5059]
+                      - link "Hubert Hurkacz (10)" [ref=e5060] [cursor=pointer]:
+                        - /url: /players/hubert-hurkacz
+                        - text: Hubert Hurkacz
+                        - generic [ref=e5061]: (10)
+                    - cell "3-6 7-6(6) 6-1" [ref=e5062]
+                    - cell "3" [ref=e5063]
+                    - cell "147" [ref=e5064]
+                    - cell "3" [ref=e5065]
+                    - cell "3" [ref=e5066]
+                    - cell "58.4%" [ref=e5067]
+                    - cell "75.0%" [ref=e5068]
+                    - cell "56.8%" [ref=e5069]
+                    - cell "6/8" [ref=e5070]
+                  - row "2023-04-10 Monte Carlo Masters Clay R32 8 🇮🇹 Jannik Sinner (7) 37 🇦🇷 Diego Schwartzman 6-0 3-1 RET 3 42 2 2 48.0% 83.3% 76.9% 0/0" [ref=e5071]:
+                    - cell "2023-04-10" [ref=e5072]
+                    - cell "Monte Carlo Masters" [ref=e5073]:
+                      - link "Monte Carlo Masters" [ref=e5074] [cursor=pointer]:
+                        - /url: /tournaments/410/2023
+                    - cell "Clay" [ref=e5075]
+                    - cell "R32" [ref=e5076]
+                    - cell "8" [ref=e5077]
+                    - cell "🇮🇹 Jannik Sinner (7)" [ref=e5078]:
+                      - img "🇮🇹" [ref=e5079]
+                      - link "Jannik Sinner (7)" [ref=e5080] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5081]: (7)
+                    - cell "37" [ref=e5082]
+                    - cell "🇦🇷 Diego Schwartzman" [ref=e5083]:
+                      - img "🇦🇷" [ref=e5084]
+                      - link "Diego Schwartzman" [ref=e5085] [cursor=pointer]:
+                        - /url: /players/diego-schwartzman
+                    - cell "6-0 3-1 RET" [ref=e5086]
+                    - cell "3" [ref=e5087]
+                    - cell "42" [ref=e5088]
+                    - cell "2" [ref=e5089]
+                    - cell "2" [ref=e5090]
+                    - cell "48.0%" [ref=e5091]
+                    - cell "83.3%" [ref=e5092]
+                    - cell "76.9%" [ref=e5093]
+                    - cell "0/0" [ref=e5094]
+                  - row "2023-03-20 Miami Masters Hard F 5 🇷🇺 Daniil Medvedev (4) 11 🇮🇹 Jannik Sinner (10) 7-5 6-3 3 94 9 6 58.7% 86.5% 46.2% 4/6" [ref=e5095]:
+                    - cell "2023-03-20" [ref=e5096]
+                    - cell "Miami Masters" [ref=e5097]:
+                      - link "Miami Masters" [ref=e5098] [cursor=pointer]:
+                        - /url: /tournaments/403/2023
+                    - cell "Hard" [ref=e5099]
+                    - cell "F" [ref=e5100]
+                    - cell "5" [ref=e5101]
+                    - cell "🇷🇺 Daniil Medvedev (4)" [ref=e5102]:
+                      - img "🇷🇺" [ref=e5103]
+                      - link "Daniil Medvedev (4)" [ref=e5104] [cursor=pointer]:
+                        - /url: /players/daniil-medvedev
+                        - text: Daniil Medvedev
+                        - generic [ref=e5105]: (4)
+                    - cell "11" [ref=e5106]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e5107]:
+                      - img "🇮🇹" [ref=e5108]
+                      - link "Jannik Sinner (10)" [ref=e5109] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5110]: (10)
+                    - cell "7-5 6-3" [ref=e5111]
+                    - cell "3" [ref=e5112]
+                    - cell "94" [ref=e5113]
+                    - cell "9" [ref=e5114]
+                    - cell "6" [ref=e5115]
+                    - cell "58.7%" [ref=e5116]
+                    - cell "86.5%" [ref=e5117]
+                    - cell "46.2%" [ref=e5118]
+                    - cell "4/6" [ref=e5119]
+                  - row "2023-03-20 Miami Masters Hard SF 11 🇮🇹 Jannik Sinner (10) 1 🇪🇸 Carlos Alcaraz (1) 6-7(4) 6-4 6-2 3 181 8 4 63.5% 68.2% 55.3% 9/12" [ref=e5120]:
+                    - cell "2023-03-20" [ref=e5121]
+                    - cell "Miami Masters" [ref=e5122]:
+                      - link "Miami Masters" [ref=e5123] [cursor=pointer]:
+                        - /url: /tournaments/403/2023
+                    - cell "Hard" [ref=e5124]
+                    - cell "SF" [ref=e5125]
+                    - cell "11" [ref=e5126]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e5127]:
+                      - img "🇮🇹" [ref=e5128]
+                      - link "Jannik Sinner (10)" [ref=e5129] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5130]: (10)
+                    - cell "1" [ref=e5131]
+                    - cell "🇪🇸 Carlos Alcaraz (1)" [ref=e5132]:
+                      - img "🇪🇸" [ref=e5133]
+                      - link "Carlos Alcaraz (1)" [ref=e5134] [cursor=pointer]:
+                        - /url: /players/carlos-alcaraz
+                        - text: Carlos Alcaraz
+                        - generic [ref=e5135]: (1)
+                    - cell "6-7(4) 6-4 6-2" [ref=e5136]
+                    - cell "3" [ref=e5137]
+                    - cell "181" [ref=e5138]
+                    - cell "8" [ref=e5139]
+                    - cell "4" [ref=e5140]
+                    - cell "63.5%" [ref=e5141]
+                    - cell "68.2%" [ref=e5142]
+                    - cell "55.3%" [ref=e5143]
+                    - cell "9/12" [ref=e5144]
+                  - row "2023-03-20 Miami Masters Hard QF 11 🇮🇹 Jannik Sinner (10) 54 🇫🇮 Emil Ruusuvuori 6-3 6-1 3 74 4 2 52.4% 95.5% 60.0% 1/1" [ref=e5145]:
+                    - cell "2023-03-20" [ref=e5146]
+                    - cell "Miami Masters" [ref=e5147]:
+                      - link "Miami Masters" [ref=e5148] [cursor=pointer]:
+                        - /url: /tournaments/403/2023
+                    - cell "Hard" [ref=e5149]
+                    - cell "QF" [ref=e5150]
+                    - cell "11" [ref=e5151]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e5152]:
+                      - img "🇮🇹" [ref=e5153]
+                      - link "Jannik Sinner (10)" [ref=e5154] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5155]: (10)
+                    - cell "54" [ref=e5156]
+                    - cell "🇫🇮 Emil Ruusuvuori" [ref=e5157]:
+                      - img "🇫🇮" [ref=e5158]
+                      - link "Emil Ruusuvuori" [ref=e5159] [cursor=pointer]:
+                        - /url: /players/emil-ruusuvuori
+                    - cell "6-3 6-1" [ref=e5160]
+                    - cell "3" [ref=e5161]
+                    - cell "74" [ref=e5162]
+                    - cell "4" [ref=e5163]
+                    - cell "2" [ref=e5164]
+                    - cell "52.4%" [ref=e5165]
+                    - cell "95.5%" [ref=e5166]
+                    - cell "60.0%" [ref=e5167]
+                    - cell "1/1" [ref=e5168]
+                  - row "2023-03-20 Miami Masters Hard R16 11 🇮🇹 Jannik Sinner (10) 7 🇷🇺 Andrey Rublev (6) 6-2 6-4 3 72 8 0 60.9% 85.7% 66.7% 0/0" [ref=e5169]:
+                    - cell "2023-03-20" [ref=e5170]
+                    - cell "Miami Masters" [ref=e5171]:
+                      - link "Miami Masters" [ref=e5172] [cursor=pointer]:
+                        - /url: /tournaments/403/2023
+                    - cell "Hard" [ref=e5173]
+                    - cell "R16" [ref=e5174]
+                    - cell "11" [ref=e5175]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e5176]:
+                      - img "🇮🇹" [ref=e5177]
+                      - link "Jannik Sinner (10)" [ref=e5178] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5179]: (10)
+                    - cell "7" [ref=e5180]
+                    - cell "🇷🇺 Andrey Rublev (6)" [ref=e5181]:
+                      - img "🇷🇺" [ref=e5182]
+                      - link "Andrey Rublev (6)" [ref=e5183] [cursor=pointer]:
+                        - /url: /players/andrey-rublev
+                        - text: Andrey Rublev
+                        - generic [ref=e5184]: (6)
+                    - cell "6-2 6-4" [ref=e5185]
+                    - cell "3" [ref=e5186]
+                    - cell "72" [ref=e5187]
+                    - cell "8" [ref=e5188]
+                    - cell "0" [ref=e5189]
+                    - cell "60.9%" [ref=e5190]
+                    - cell "85.7%" [ref=e5191]
+                    - cell "66.7%" [ref=e5192]
+                    - cell "0/0" [ref=e5193]
+                  - row "2023-03-20 Miami Masters Hard R32 11 🇮🇹 Jannik Sinner (10) 27 🇧🇬 Grigor Dimitrov (21) 6-3 6-4 3 87 2 1 60.4% 68.8% 47.6% 1/3" [ref=e5194]:
+                    - cell "2023-03-20" [ref=e5195]
+                    - cell "Miami Masters" [ref=e5196]:
+                      - link "Miami Masters" [ref=e5197] [cursor=pointer]:
+                        - /url: /tournaments/403/2023
+                    - cell "Hard" [ref=e5198]
+                    - cell "R32" [ref=e5199]
+                    - cell "11" [ref=e5200]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e5201]:
+                      - img "🇮🇹" [ref=e5202]
+                      - link "Jannik Sinner (10)" [ref=e5203] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5204]: (10)
+                    - cell "27" [ref=e5205]
+                    - cell "🇧🇬 Grigor Dimitrov (21)" [ref=e5206]:
+                      - img "🇧🇬" [ref=e5207]
+                      - link "Grigor Dimitrov (21)" [ref=e5208] [cursor=pointer]:
+                        - /url: /players/grigor-dimitrov
+                        - text: Grigor Dimitrov
+                        - generic [ref=e5209]: (21)
+                    - cell "6-3 6-4" [ref=e5210]
+                    - cell "3" [ref=e5211]
+                    - cell "87" [ref=e5212]
+                    - cell "2" [ref=e5213]
+                    - cell "1" [ref=e5214]
+                    - cell "60.4%" [ref=e5215]
+                    - cell "68.8%" [ref=e5216]
+                    - cell "47.6%" [ref=e5217]
+                    - cell "1/3" [ref=e5218]
+                  - row "2023-03-20 Miami Masters Hard R64 11 🇮🇹 Jannik Sinner (10) 58 🇷🇸 Laslo Djere 6-4 6-2 3 83 3 4 58.0% 79.3% 42.9% 1/3" [ref=e5219]:
+                    - cell "2023-03-20" [ref=e5220]
+                    - cell "Miami Masters" [ref=e5221]:
+                      - link "Miami Masters" [ref=e5222] [cursor=pointer]:
+                        - /url: /tournaments/403/2023
+                    - cell "Hard" [ref=e5223]
+                    - cell "R64" [ref=e5224]
+                    - cell "11" [ref=e5225]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e5226]:
+                      - img "🇮🇹" [ref=e5227]
+                      - link "Jannik Sinner (10)" [ref=e5228] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5229]: (10)
+                    - cell "58" [ref=e5230]
+                    - cell "🇷🇸 Laslo Djere" [ref=e5231]:
+                      - img "🇷🇸" [ref=e5232]
+                      - link "Laslo Djere" [ref=e5233] [cursor=pointer]:
+                        - /url: /players/laslo-djere
+                    - cell "6-4 6-2" [ref=e5234]
+                    - cell "3" [ref=e5235]
+                    - cell "83" [ref=e5236]
+                    - cell "3" [ref=e5237]
+                    - cell "4" [ref=e5238]
+                    - cell "58.0%" [ref=e5239]
+                    - cell "79.3%" [ref=e5240]
+                    - cell "42.9%" [ref=e5241]
+                    - cell "1/3" [ref=e5242]
+                  - row "2023-03-06 Indian Wells Masters Hard SF 2 🇪🇸 Carlos Alcaraz (1) 13 🇮🇹 Jannik Sinner (11) 7-6(4) 6-3 3 112 5 1 72.2% 73.1% 45.0% 1/2" [ref=e5243]:
+                    - cell "2023-03-06" [ref=e5244]
+                    - cell "Indian Wells Masters" [ref=e5245]:
+                      - link "Indian Wells Masters" [ref=e5246] [cursor=pointer]:
+                        - /url: /tournaments/404/2023
+                    - cell "Hard" [ref=e5247]
+                    - cell "SF" [ref=e5248]
+                    - cell "2" [ref=e5249]
+                    - cell "🇪🇸 Carlos Alcaraz (1)" [ref=e5250]:
+                      - img "🇪🇸" [ref=e5251]
+                      - link "Carlos Alcaraz (1)" [ref=e5252] [cursor=pointer]:
+                        - /url: /players/carlos-alcaraz
+                        - text: Carlos Alcaraz
+                        - generic [ref=e5253]: (1)
+                    - cell "13" [ref=e5254]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e5255]:
+                      - img "🇮🇹" [ref=e5256]
+                      - link "Jannik Sinner (11)" [ref=e5257] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5258]: (11)
+                    - cell "7-6(4) 6-3" [ref=e5259]
+                    - cell "3" [ref=e5260]
+                    - cell "112" [ref=e5261]
+                    - cell "5" [ref=e5262]
+                    - cell "1" [ref=e5263]
+                    - cell "72.2%" [ref=e5264]
+                    - cell "73.1%" [ref=e5265]
+                    - cell "45.0%" [ref=e5266]
+                    - cell "1/2" [ref=e5267]
+                  - row "2023-03-06 Indian Wells Masters Hard QF 13 🇮🇹 Jannik Sinner (11) 5 🇺🇸 Taylor Fritz (4) 6-4 4-6 6-4 3 137 5 1 63.6% 80.4% 46.9% 1/3" [ref=e5268]:
+                    - cell "2023-03-06" [ref=e5269]
+                    - cell "Indian Wells Masters" [ref=e5270]:
+                      - link "Indian Wells Masters" [ref=e5271] [cursor=pointer]:
+                        - /url: /tournaments/404/2023
+                    - cell "Hard" [ref=e5272]
+                    - cell "QF" [ref=e5273]
+                    - cell "13" [ref=e5274]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e5275]:
+                      - img "🇮🇹" [ref=e5276]
+                      - link "Jannik Sinner (11)" [ref=e5277] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5278]: (11)
+                    - cell "5" [ref=e5279]
+                    - cell "🇺🇸 Taylor Fritz (4)" [ref=e5280]:
+                      - img "🇺🇸" [ref=e5281]
+                      - link "Taylor Fritz (4)" [ref=e5282] [cursor=pointer]:
+                        - /url: /players/taylor-fritz
+                        - text: Taylor Fritz
+                        - generic [ref=e5283]: (4)
+                    - cell "6-4 4-6 6-4" [ref=e5284]
+                    - cell "3" [ref=e5285]
+                    - cell "137" [ref=e5286]
+                    - cell "5" [ref=e5287]
+                    - cell "1" [ref=e5288]
+                    - cell "63.6%" [ref=e5289]
+                    - cell "80.4%" [ref=e5290]
+                    - cell "46.9%" [ref=e5291]
+                    - cell "1/3" [ref=e5292]
+                  - row "2023-03-06 Indian Wells Masters Hard R16 13 🇮🇹 Jannik Sinner (11) 100 🇨🇭 Stan Wawrinka (PR) 6-1 6-4 3 98 5 0 48.4% 67.7% 60.6% 8/9" [ref=e5293]:
+                    - cell "2023-03-06" [ref=e5294]
+                    - cell "Indian Wells Masters" [ref=e5295]:
+                      - link "Indian Wells Masters" [ref=e5296] [cursor=pointer]:
+                        - /url: /tournaments/404/2023
+                    - cell "Hard" [ref=e5297]
+                    - cell "R16" [ref=e5298]
+                    - cell "13" [ref=e5299]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e5300]:
+                      - img "🇮🇹" [ref=e5301]
+                      - link "Jannik Sinner (11)" [ref=e5302] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5303]: (11)
+                    - cell "100" [ref=e5304]
+                    - cell "🇨🇭 Stan Wawrinka (PR)" [ref=e5305]:
+                      - img "🇨🇭" [ref=e5306]
+                      - link "Stan Wawrinka (PR)" [ref=e5307] [cursor=pointer]:
+                        - /url: /players/stan-wawrinka
+                        - text: Stan Wawrinka
+                        - generic [ref=e5308]: (PR)
+                    - cell "6-1 6-4" [ref=e5309]
+                    - cell "3" [ref=e5310]
+                    - cell "98" [ref=e5311]
+                    - cell "5" [ref=e5312]
+                    - cell "0" [ref=e5313]
+                    - cell "48.4%" [ref=e5314]
+                    - cell "67.7%" [ref=e5315]
+                    - cell "60.6%" [ref=e5316]
+                    - cell "8/9" [ref=e5317]
+                  - row "2023-03-06 Indian Wells Masters Hard R32 13 🇮🇹 Jannik Sinner (11) 68 🇫🇷 Adrian Mannarino 7-6(7) 6-4 3 107 6 4 54.1% 81.8% 78.6% 0/0" [ref=e5318]:
+                    - cell "2023-03-06" [ref=e5319]
+                    - cell "Indian Wells Masters" [ref=e5320]:
+                      - link "Indian Wells Masters" [ref=e5321] [cursor=pointer]:
+                        - /url: /tournaments/404/2023
+                    - cell "Hard" [ref=e5322]
+                    - cell "R32" [ref=e5323]
+                    - cell "13" [ref=e5324]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e5325]:
+                      - img "🇮🇹" [ref=e5326]
+                      - link "Jannik Sinner (11)" [ref=e5327] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5328]: (11)
+                    - cell "68" [ref=e5329]
+                    - cell "🇫🇷 Adrian Mannarino" [ref=e5330]:
+                      - img "🇫🇷" [ref=e5331]
+                      - link "Adrian Mannarino" [ref=e5332] [cursor=pointer]:
+                        - /url: /players/adrian-mannarino
+                    - cell "7-6(7) 6-4" [ref=e5333]
+                    - cell "3" [ref=e5334]
+                    - cell "107" [ref=e5335]
+                    - cell "6" [ref=e5336]
+                    - cell "4" [ref=e5337]
+                    - cell "54.1%" [ref=e5338]
+                    - cell "81.8%" [ref=e5339]
+                    - cell "78.6%" [ref=e5340]
+                    - cell "0/0" [ref=e5341]
+                  - row "2023-03-06 Indian Wells Masters Hard R64 13 🇮🇹 Jannik Sinner (11) 43 🇫🇷 Richard Gasquet 6-3 7-6(2) 3 94 9 1 53.0% 88.6% 54.8% 1/2" [ref=e5342]:
+                    - cell "2023-03-06" [ref=e5343]
+                    - cell "Indian Wells Masters" [ref=e5344]:
+                      - link "Indian Wells Masters" [ref=e5345] [cursor=pointer]:
+                        - /url: /tournaments/404/2023
+                    - cell "Hard" [ref=e5346]
+                    - cell "R64" [ref=e5347]
+                    - cell "13" [ref=e5348]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e5349]:
+                      - img "🇮🇹" [ref=e5350]
+                      - link "Jannik Sinner (11)" [ref=e5351] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5352]: (11)
+                    - cell "43" [ref=e5353]
+                    - cell "🇫🇷 Richard Gasquet" [ref=e5354]:
+                      - img "🇫🇷" [ref=e5355]
+                      - link "Richard Gasquet" [ref=e5356] [cursor=pointer]:
+                        - /url: /players/richard-gasquet
+                    - cell "6-3 7-6(2)" [ref=e5357]
+                    - cell "3" [ref=e5358]
+                    - cell "94" [ref=e5359]
+                    - cell "9" [ref=e5360]
+                    - cell "1" [ref=e5361]
+                    - cell "53.0%" [ref=e5362]
+                    - cell "88.6%" [ref=e5363]
+                    - cell "54.8%" [ref=e5364]
+                    - cell "1/2" [ref=e5365]
+                  - row "2023-02-20 Marseille Hard R16 118 🇫🇷 Arthur Fils (WC) 12 🇮🇹 Jannik Sinner (2) W/O 3 0 - - - - - -" [ref=e5366]:
+                    - cell "2023-02-20" [ref=e5367]
+                    - cell "Marseille" [ref=e5368]:
+                      - link "Marseille" [ref=e5369] [cursor=pointer]:
+                        - /url: /tournaments/496/2023
+                    - cell "Hard" [ref=e5370]
+                    - cell "R16" [ref=e5371]
+                    - cell "118" [ref=e5372]
+                    - cell "🇫🇷 Arthur Fils (WC)" [ref=e5373]:
+                      - img "🇫🇷" [ref=e5374]
+                      - link "Arthur Fils (WC)" [ref=e5375] [cursor=pointer]:
+                        - /url: /players/arthur-fils
+                        - text: Arthur Fils
+                        - generic [ref=e5376]: (WC)
+                    - cell "12" [ref=e5377]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e5378]:
+                      - img "🇮🇹" [ref=e5379]
+                      - link "Jannik Sinner (2)" [ref=e5380] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5381]: (2)
+                    - cell "W/O" [ref=e5382]
+                    - cell "3" [ref=e5383]
+                    - cell "0" [ref=e5384]
+                    - cell "-" [ref=e5385]
+                    - cell "-" [ref=e5386]
+                    - cell "-" [ref=e5387]
+                    - cell "-" [ref=e5388]
+                    - cell "-" [ref=e5389]
+                    - cell "-" [ref=e5390]
+                  - row "2023-02-13 Rotterdam Hard F 11 🇷🇺 Daniil Medvedev (6) 14 🇮🇹 Jannik Sinner 5-7 6-2 6-2 3 149 4 1 68.6% 74.6% 44.4% 4/6" [ref=e5391]:
+                    - cell "2023-02-13" [ref=e5392]
+                    - cell "Rotterdam" [ref=e5393]:
+                      - link "Rotterdam" [ref=e5394] [cursor=pointer]:
+                        - /url: /tournaments/407/2023
+                    - cell "Hard" [ref=e5395]
+                    - cell "F" [ref=e5396]
+                    - cell "11" [ref=e5397]
+                    - cell "🇷🇺 Daniil Medvedev (6)" [ref=e5398]:
+                      - img "🇷🇺" [ref=e5399]
+                      - link "Daniil Medvedev (6)" [ref=e5400] [cursor=pointer]:
+                        - /url: /players/daniil-medvedev
+                        - text: Daniil Medvedev
+                        - generic [ref=e5401]: (6)
+                    - cell "14" [ref=e5402]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e5403]:
+                      - img "🇮🇹" [ref=e5404]
+                      - link "Jannik Sinner" [ref=e5405] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "5-7 6-2 6-2" [ref=e5406]
+                    - cell "3" [ref=e5407]
+                    - cell "149" [ref=e5408]
+                    - cell "4" [ref=e5409]
+                    - cell "1" [ref=e5410]
+                    - cell "68.6%" [ref=e5411]
+                    - cell "74.6%" [ref=e5412]
+                    - cell "44.4%" [ref=e5413]
+                    - cell "4/6" [ref=e5414]
+                  - row "2023-02-13 Rotterdam Hard SF 14 🇮🇹 Jannik Sinner 61 🇳🇱 Tallon Griekspoor (WC) 7-5 7-6(5) 3 116 7 1 52.0% 82.1% 63.9% 0/0" [ref=e5415]:
+                    - cell "2023-02-13" [ref=e5416]
+                    - cell "Rotterdam" [ref=e5417]:
+                      - link "Rotterdam" [ref=e5418] [cursor=pointer]:
+                        - /url: /tournaments/407/2023
+                    - cell "Hard" [ref=e5419]
+                    - cell "SF" [ref=e5420]
+                    - cell "14" [ref=e5421]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e5422]:
+                      - img "🇮🇹" [ref=e5423]
+                      - link "Jannik Sinner" [ref=e5424] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "61" [ref=e5425]
+                    - cell "🇳🇱 Tallon Griekspoor (WC)" [ref=e5426]:
+                      - img "🇳🇱" [ref=e5427]
+                      - link "Tallon Griekspoor (WC)" [ref=e5428] [cursor=pointer]:
+                        - /url: /players/tallon-griekspoor
+                        - text: Tallon Griekspoor
+                        - generic [ref=e5429]: (WC)
+                    - cell "7-5 7-6(5)" [ref=e5430]
+                    - cell "3" [ref=e5431]
+                    - cell "116" [ref=e5432]
+                    - cell "7" [ref=e5433]
+                    - cell "1" [ref=e5434]
+                    - cell "52.0%" [ref=e5435]
+                    - cell "82.1%" [ref=e5436]
+                    - cell "63.9%" [ref=e5437]
+                    - cell "0/0" [ref=e5438]
+                  - row "2023-02-13 Rotterdam Hard QF 14 🇮🇹 Jannik Sinner 130 🇨🇭 Stan Wawrinka (PR) 6-1 6-3 3 72 4 0 57.7% 73.3% 59.1% 4/5" [ref=e5439]:
+                    - cell "2023-02-13" [ref=e5440]
+                    - cell "Rotterdam" [ref=e5441]:
+                      - link "Rotterdam" [ref=e5442] [cursor=pointer]:
+                        - /url: /tournaments/407/2023
+                    - cell "Hard" [ref=e5443]
+                    - cell "QF" [ref=e5444]
+                    - cell "14" [ref=e5445]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e5446]:
+                      - img "🇮🇹" [ref=e5447]
+                      - link "Jannik Sinner" [ref=e5448] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "130" [ref=e5449]
+                    - cell "🇨🇭 Stan Wawrinka (PR)" [ref=e5450]:
+                      - img "🇨🇭" [ref=e5451]
+                      - link "Stan Wawrinka (PR)" [ref=e5452] [cursor=pointer]:
+                        - /url: /players/stan-wawrinka
+                        - text: Stan Wawrinka
+                        - generic [ref=e5453]: (PR)
+                    - cell "6-1 6-3" [ref=e5454]
+                    - cell "3" [ref=e5455]
+                    - cell "72" [ref=e5456]
+                    - cell "4" [ref=e5457]
+                    - cell "0" [ref=e5458]
+                    - cell "57.7%" [ref=e5459]
+                    - cell "73.3%" [ref=e5460]
+                    - cell "59.1%" [ref=e5461]
+                    - cell "4/5" [ref=e5462]
+                  - row "2023-02-13 Rotterdam Hard R16 14 🇮🇹 Jannik Sinner 3 🇬🇷 Stefanos Tsitsipas (1) 6-4 6-3 3 81 3 1 61.4% 88.9% 76.5% 0/0" [ref=e5463]:
+                    - cell "2023-02-13" [ref=e5464]
+                    - cell "Rotterdam" [ref=e5465]:
+                      - link "Rotterdam" [ref=e5466] [cursor=pointer]:
+                        - /url: /tournaments/407/2023
+                    - cell "Hard" [ref=e5467]
+                    - cell "R16" [ref=e5468]
+                    - cell "14" [ref=e5469]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e5470]:
+                      - img "🇮🇹" [ref=e5471]
+                      - link "Jannik Sinner" [ref=e5472] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "3" [ref=e5473]
+                    - cell "🇬🇷 Stefanos Tsitsipas (1)" [ref=e5474]:
+                      - img "🇬🇷" [ref=e5475]
+                      - link "Stefanos Tsitsipas (1)" [ref=e5476] [cursor=pointer]:
+                        - /url: /players/stefanos-tsitsipas
+                        - text: Stefanos Tsitsipas
+                        - generic [ref=e5477]: (1)
+                    - cell "6-4 6-3" [ref=e5478]
+                    - cell "3" [ref=e5479]
+                    - cell "81" [ref=e5480]
+                    - cell "3" [ref=e5481]
+                    - cell "1" [ref=e5482]
+                    - cell "61.4%" [ref=e5483]
+                    - cell "88.9%" [ref=e5484]
+                    - cell "76.5%" [ref=e5485]
+                    - cell "0/0" [ref=e5486]
+                  - row "2023-02-13 Rotterdam Hard R32 14 🇮🇹 Jannik Sinner 48 🇫🇷 Benjamin Bonzi 6-2 3-6 6-1 3 124 7 0 57.7% 77.8% 54.5% 2/3" [ref=e5487]:
+                    - cell "2023-02-13" [ref=e5488]
+                    - cell "Rotterdam" [ref=e5489]:
+                      - link "Rotterdam" [ref=e5490] [cursor=pointer]:
+                        - /url: /tournaments/407/2023
+                    - cell "Hard" [ref=e5491]
+                    - cell "R32" [ref=e5492]
+                    - cell "14" [ref=e5493]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e5494]:
+                      - img "🇮🇹" [ref=e5495]
+                      - link "Jannik Sinner" [ref=e5496] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "48" [ref=e5497]
+                    - cell "🇫🇷 Benjamin Bonzi" [ref=e5498]:
+                      - img "🇫🇷" [ref=e5499]
+                      - link "Benjamin Bonzi" [ref=e5500] [cursor=pointer]:
+                        - /url: /players/benjamin-bonzi
+                    - cell "6-2 3-6 6-1" [ref=e5501]
+                    - cell "3" [ref=e5502]
+                    - cell "124" [ref=e5503]
+                    - cell "7" [ref=e5504]
+                    - cell "0" [ref=e5505]
+                    - cell "57.7%" [ref=e5506]
+                    - cell "77.8%" [ref=e5507]
+                    - cell "54.5%" [ref=e5508]
+                    - cell "2/3" [ref=e5509]
+                  - row "2023-02-06 Montpellier Hard F 17 🇮🇹 Jannik Sinner (2) 51 🇺🇸 Maxime Cressy 7-6(3) 6-3 3 96 4 1 62.3% 86.8% 69.6% 3/3" [ref=e5510]:
+                    - cell "2023-02-06" [ref=e5511]
+                    - cell "Montpellier" [ref=e5512]:
+                      - link "Montpellier" [ref=e5513] [cursor=pointer]:
+                        - /url: /tournaments/375/2023
+                    - cell "Hard" [ref=e5514]
+                    - cell "F" [ref=e5515]
+                    - cell "17" [ref=e5516]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e5517]:
+                      - img "🇮🇹" [ref=e5518]
+                      - link "Jannik Sinner (2)" [ref=e5519] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5520]: (2)
+                    - cell "51" [ref=e5521]
+                    - cell "🇺🇸 Maxime Cressy" [ref=e5522]:
+                      - img "🇺🇸" [ref=e5523]
+                      - link "Maxime Cressy" [ref=e5524] [cursor=pointer]:
+                        - /url: /players/maxime-cressy
+                    - cell "7-6(3) 6-3" [ref=e5525]
+                    - cell "3" [ref=e5526]
+                    - cell "96" [ref=e5527]
+                    - cell "4" [ref=e5528]
+                    - cell "1" [ref=e5529]
+                    - cell "62.3%" [ref=e5530]
+                    - cell "86.8%" [ref=e5531]
+                    - cell "69.6%" [ref=e5532]
+                    - cell "3/3" [ref=e5533]
+                  - row "2023-02-06 Montpellier Hard SF 17 🇮🇹 Jannik Sinner (2) 163 🇫🇷 Arthur Fils (WC) 7-5 6-2 3 94 5 1 61.8% 82.4% 66.7% 2/2" [ref=e5534]:
+                    - cell "2023-02-06" [ref=e5535]
+                    - cell "Montpellier" [ref=e5536]:
+                      - link "Montpellier" [ref=e5537] [cursor=pointer]:
+                        - /url: /tournaments/375/2023
+                    - cell "Hard" [ref=e5538]
+                    - cell "SF" [ref=e5539]
+                    - cell "17" [ref=e5540]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e5541]:
+                      - img "🇮🇹" [ref=e5542]
+                      - link "Jannik Sinner (2)" [ref=e5543] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5544]: (2)
+                    - cell "163" [ref=e5545]
+                    - cell "🇫🇷 Arthur Fils (WC)" [ref=e5546]:
+                      - img "🇫🇷" [ref=e5547]
+                      - link "Arthur Fils (WC)" [ref=e5548] [cursor=pointer]:
+                        - /url: /players/arthur-fils
+                        - text: Arthur Fils
+                        - generic [ref=e5549]: (WC)
+                    - cell "7-5 6-2" [ref=e5550]
+                    - cell "3" [ref=e5551]
+                    - cell "94" [ref=e5552]
+                    - cell "5" [ref=e5553]
+                    - cell "1" [ref=e5554]
+                    - cell "61.8%" [ref=e5555]
+                    - cell "82.4%" [ref=e5556]
+                    - cell "66.7%" [ref=e5557]
+                    - cell "2/2" [ref=e5558]
+                  - row "2023-02-06 Montpellier Hard QF 17 🇮🇹 Jannik Sinner (2) 56 🇮🇹 Lorenzo Sonego 6-4 6-2 3 95 1 2 54.9% 64.3% 73.9% 2/3" [ref=e5559]:
+                    - cell "2023-02-06" [ref=e5560]
+                    - cell "Montpellier" [ref=e5561]:
+                      - link "Montpellier" [ref=e5562] [cursor=pointer]:
+                        - /url: /tournaments/375/2023
+                    - cell "Hard" [ref=e5563]
+                    - cell "QF" [ref=e5564]
+                    - cell "17" [ref=e5565]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e5566]:
+                      - img "🇮🇹" [ref=e5567]
+                      - link "Jannik Sinner (2)" [ref=e5568] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5569]: (2)
+                    - cell "56" [ref=e5570]
+                    - cell "🇮🇹 Lorenzo Sonego" [ref=e5571]:
+                      - img "🇮🇹" [ref=e5572]
+                      - link "Lorenzo Sonego" [ref=e5573] [cursor=pointer]:
+                        - /url: /players/lorenzo-sonego
+                    - cell "6-4 6-2" [ref=e5574]
+                    - cell "3" [ref=e5575]
+                    - cell "95" [ref=e5576]
+                    - cell "1" [ref=e5577]
+                    - cell "2" [ref=e5578]
+                    - cell "54.9%" [ref=e5579]
+                    - cell "64.3%" [ref=e5580]
+                    - cell "73.9%" [ref=e5581]
+                    - cell "2/3" [ref=e5582]
+                  - row "2023-02-06 Montpellier Hard R16 17 🇮🇹 Jannik Sinner (2) 69 🇭🇺 Marton Fucsovics W/O 3 0 - - - - - -" [ref=e5583]:
+                    - cell "2023-02-06" [ref=e5584]
+                    - cell "Montpellier" [ref=e5585]:
+                      - link "Montpellier" [ref=e5586] [cursor=pointer]:
+                        - /url: /tournaments/375/2023
+                    - cell "Hard" [ref=e5587]
+                    - cell "R16" [ref=e5588]
+                    - cell "17" [ref=e5589]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e5590]:
+                      - img "🇮🇹" [ref=e5591]
+                      - link "Jannik Sinner (2)" [ref=e5592] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5593]: (2)
+                    - cell "69" [ref=e5594]
+                    - cell "🇭🇺 Marton Fucsovics" [ref=e5595]:
+                      - img "🇭🇺" [ref=e5596]
+                      - link "Marton Fucsovics" [ref=e5597] [cursor=pointer]:
+                        - /url: /players/marton-fucsovics
+                    - cell "W/O" [ref=e5598]
+                    - cell "3" [ref=e5599]
+                    - cell "0" [ref=e5600]
+                    - cell "-" [ref=e5601]
+                    - cell "-" [ref=e5602]
+                    - cell "-" [ref=e5603]
+                    - cell "-" [ref=e5604]
+                    - cell "-" [ref=e5605]
+                    - cell "-" [ref=e5606]
+                  - row "2023-01-16 Australian Open Hard R16 4 🇬🇷 Stefanos Tsitsipas (3) 16 🇮🇹 Jannik Sinner (15) 6-4 6-4 3-6 4-6 6-3 5 240 12 3 71.6% 66.9% 54.2% 22/26" [ref=e5607]:
+                    - cell "2023-01-16" [ref=e5608]
+                    - cell "Australian Open" [ref=e5609]:
+                      - link "Australian Open" [ref=e5610] [cursor=pointer]:
+                        - /url: /tournaments/580/2023
+                    - cell "Hard" [ref=e5611]
+                    - cell "R16" [ref=e5612]
+                    - cell "4" [ref=e5613]
+                    - cell "🇬🇷 Stefanos Tsitsipas (3)" [ref=e5614]:
+                      - img "🇬🇷" [ref=e5615]
+                      - link "Stefanos Tsitsipas (3)" [ref=e5616] [cursor=pointer]:
+                        - /url: /players/stefanos-tsitsipas
+                        - text: Stefanos Tsitsipas
+                        - generic [ref=e5617]: (3)
+                    - cell "16" [ref=e5618]
+                    - cell "🇮🇹 Jannik Sinner (15)" [ref=e5619]:
+                      - img "🇮🇹" [ref=e5620]
+                      - link "Jannik Sinner (15)" [ref=e5621] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5622]: (15)
+                    - cell "6-4 6-4 3-6 4-6 6-3" [ref=e5623]
+                    - cell "5" [ref=e5624]
+                    - cell "240" [ref=e5625]
+                    - cell "12" [ref=e5626]
+                    - cell "3" [ref=e5627]
+                    - cell "71.6%" [ref=e5628]
+                    - cell "66.9%" [ref=e5629]
+                    - cell "54.2%" [ref=e5630]
+                    - cell "22/26" [ref=e5631]
+                  - row "2023-01-16 Australian Open Hard R32 16 🇮🇹 Jannik Sinner (15) 78 🇭🇺 Marton Fucsovics 4-6 4-6 6-1 6-2 6-0 5 213 6 5 59.3% 71.3% 45.5% 7/12" [ref=e5632]:
+                    - cell "2023-01-16" [ref=e5633]
+                    - cell "Australian Open" [ref=e5634]:
+                      - link "Australian Open" [ref=e5635] [cursor=pointer]:
+                        - /url: /tournaments/580/2023
+                    - cell "Hard" [ref=e5636]
+                    - cell "R32" [ref=e5637]
+                    - cell "16" [ref=e5638]
+                    - cell "🇮🇹 Jannik Sinner (15)" [ref=e5639]:
+                      - img "🇮🇹" [ref=e5640]
+                      - link "Jannik Sinner (15)" [ref=e5641] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5642]: (15)
+                    - cell "78" [ref=e5643]
+                    - cell "🇭🇺 Marton Fucsovics" [ref=e5644]:
+                      - img "🇭🇺" [ref=e5645]
+                      - link "Marton Fucsovics" [ref=e5646] [cursor=pointer]:
+                        - /url: /players/marton-fucsovics
+                    - cell "4-6 4-6 6-1 6-2 6-0" [ref=e5647]
+                    - cell "5" [ref=e5648]
+                    - cell "213" [ref=e5649]
+                    - cell "6" [ref=e5650]
+                    - cell "5" [ref=e5651]
+                    - cell "59.3%" [ref=e5652]
+                    - cell "71.3%" [ref=e5653]
+                    - cell "45.5%" [ref=e5654]
+                    - cell "7/12" [ref=e5655]
+                  - row "2023-01-16 Australian Open Hard R64 16 🇮🇹 Jannik Sinner (15) 79 🇦🇷 Tomas Martin Etcheverry 6-3 6-2 6-2 5 104 6 3 61.8% 88.1% 61.5% 0/0" [ref=e5656]:
+                    - cell "2023-01-16" [ref=e5657]
+                    - cell "Australian Open" [ref=e5658]:
+                      - link "Australian Open" [ref=e5659] [cursor=pointer]:
+                        - /url: /tournaments/580/2023
+                    - cell "Hard" [ref=e5660]
+                    - cell "R64" [ref=e5661]
+                    - cell "16" [ref=e5662]
+                    - cell "🇮🇹 Jannik Sinner (15)" [ref=e5663]:
+                      - img "🇮🇹" [ref=e5664]
+                      - link "Jannik Sinner (15)" [ref=e5665] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5666]: (15)
+                    - cell "79" [ref=e5667]
+                    - cell "🇦🇷 Tomas Martin Etcheverry" [ref=e5668]:
+                      - img "🇦🇷" [ref=e5669]
+                      - link "Tomas Martin Etcheverry" [ref=e5670] [cursor=pointer]:
+                        - /url: /players/tomas-martin-etcheverry
+                    - cell "6-3 6-2 6-2" [ref=e5671]
+                    - cell "5" [ref=e5672]
+                    - cell "104" [ref=e5673]
+                    - cell "6" [ref=e5674]
+                    - cell "3" [ref=e5675]
+                    - cell "61.8%" [ref=e5676]
+                    - cell "88.1%" [ref=e5677]
+                    - cell "61.5%" [ref=e5678]
+                    - cell "0/0" [ref=e5679]
+                  - row "2023-01-16 Australian Open Hard R128 16 🇮🇹 Jannik Sinner (15) 581 🇬🇧 Kyle Edmund 6-4 6-0 6-2 5 116 6 2 65.9% 81.5% 42.9% 5/6" [ref=e5680]:
+                    - cell "2023-01-16" [ref=e5681]
+                    - cell "Australian Open" [ref=e5682]:
+                      - link "Australian Open" [ref=e5683] [cursor=pointer]:
+                        - /url: /tournaments/580/2023
+                    - cell "Hard" [ref=e5684]
+                    - cell "R128" [ref=e5685]
+                    - cell "16" [ref=e5686]
+                    - cell "🇮🇹 Jannik Sinner (15)" [ref=e5687]:
+                      - img "🇮🇹" [ref=e5688]
+                      - link "Jannik Sinner (15)" [ref=e5689] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5690]: (15)
+                    - cell "581" [ref=e5691]
+                    - cell "🇬🇧 Kyle Edmund" [ref=e5692]:
+                      - img "🇬🇧" [ref=e5693]
+                      - link "Kyle Edmund" [ref=e5694] [cursor=pointer]:
+                        - /url: /players/kyle-edmund
+                    - cell "6-4 6-0 6-2" [ref=e5695]
+                    - cell "5" [ref=e5696]
+                    - cell "116" [ref=e5697]
+                    - cell "6" [ref=e5698]
+                    - cell "2" [ref=e5699]
+                    - cell "65.9%" [ref=e5700]
+                    - cell "81.5%" [ref=e5701]
+                    - cell "42.9%" [ref=e5702]
+                    - cell "5/6" [ref=e5703]
+                  - row "2023-01-02 Adelaide-1 Hard QF 33 🇺🇸 Sebastian Korda 15 🇮🇹 Jannik Sinner (6) 7-5 6-1 3 86 5 1 57.7% 83.3% 54.5% 3/4" [ref=e5704]:
+                    - cell "2023-01-02" [ref=e5705]
+                    - cell "Adelaide-1" [ref=e5706]:
+                      - link "Adelaide-1" [ref=e5707] [cursor=pointer]:
+                        - /url: /tournaments/2843/2023
+                    - cell "Hard" [ref=e5708]
+                    - cell "QF" [ref=e5709]
+                    - cell "33" [ref=e5710]
+                    - cell "🇺🇸 Sebastian Korda" [ref=e5711]:
+                      - img "🇺🇸" [ref=e5712]
+                      - link "Sebastian Korda" [ref=e5713] [cursor=pointer]:
+                        - /url: /players/sebastian-korda
+                    - cell "15" [ref=e5714]
+                    - cell "🇮🇹 Jannik Sinner (6)" [ref=e5715]:
+                      - img "🇮🇹" [ref=e5716]
+                      - link "Jannik Sinner (6)" [ref=e5717] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5718]: (6)
+                    - cell "7-5 6-1" [ref=e5719]
+                    - cell "3" [ref=e5720]
+                    - cell "86" [ref=e5721]
+                    - cell "5" [ref=e5722]
+                    - cell "1" [ref=e5723]
+                    - cell "57.7%" [ref=e5724]
+                    - cell "83.3%" [ref=e5725]
+                    - cell "54.5%" [ref=e5726]
+                    - cell "3/4" [ref=e5727]
+                  - row "2023-01-02 Adelaide-1 Hard R16 15 🇮🇹 Jannik Sinner (6) 93 🇦🇺 Thanasi Kokkinakis (WC) 7-6(2) 6-4 3 122 5 2 74.4% 69.0% 60.0% 6/7" [ref=e5728]:
+                    - cell "2023-01-02" [ref=e5729]
+                    - cell "Adelaide-1" [ref=e5730]:
+                      - link "Adelaide-1" [ref=e5731] [cursor=pointer]:
+                        - /url: /tournaments/2843/2023
+                    - cell "Hard" [ref=e5732]
+                    - cell "R16" [ref=e5733]
+                    - cell "15" [ref=e5734]
+                    - cell "🇮🇹 Jannik Sinner (6)" [ref=e5735]:
+                      - img "🇮🇹" [ref=e5736]
+                      - link "Jannik Sinner (6)" [ref=e5737] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5738]: (6)
+                    - cell "93" [ref=e5739]
+                    - cell "🇦🇺 Thanasi Kokkinakis (WC)" [ref=e5740]:
+                      - img "🇦🇺" [ref=e5741]
+                      - link "Thanasi Kokkinakis (WC)" [ref=e5742] [cursor=pointer]:
+                        - /url: /players/thanasi-kokkinakis
+                        - text: Thanasi Kokkinakis
+                        - generic [ref=e5743]: (WC)
+                    - cell "7-6(2) 6-4" [ref=e5744]
+                    - cell "3" [ref=e5745]
+                    - cell "122" [ref=e5746]
+                    - cell "5" [ref=e5747]
+                    - cell "2" [ref=e5748]
+                    - cell "74.4%" [ref=e5749]
+                    - cell "69.0%" [ref=e5750]
+                    - cell "60.0%" [ref=e5751]
+                    - cell "6/7" [ref=e5752]
+                  - row "2023-01-02 Adelaide-1 Hard R32 15 🇮🇹 Jannik Sinner (6) 582 🇬🇧 Kyle Edmund (PR) 6-3 6-2 3 65 5 1 61.0% 92.0% 81.3% 0/0" [ref=e5753]:
+                    - cell "2023-01-02" [ref=e5754]
+                    - cell "Adelaide-1" [ref=e5755]:
+                      - link "Adelaide-1" [ref=e5756] [cursor=pointer]:
+                        - /url: /tournaments/2843/2023
+                    - cell "Hard" [ref=e5757]
+                    - cell "R32" [ref=e5758]
+                    - cell "15" [ref=e5759]
+                    - cell "🇮🇹 Jannik Sinner (6)" [ref=e5760]:
+                      - img "🇮🇹" [ref=e5761]
+                      - link "Jannik Sinner (6)" [ref=e5762] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5763]: (6)
+                    - cell "582" [ref=e5764]
+                    - cell "🇬🇧 Kyle Edmund (PR)" [ref=e5765]:
+                      - img "🇬🇧" [ref=e5766]
+                      - link "Kyle Edmund (PR)" [ref=e5767] [cursor=pointer]:
+                        - /url: /players/kyle-edmund
+                        - text: Kyle Edmund
+                        - generic [ref=e5768]: (PR)
+                    - cell "6-3 6-2" [ref=e5769]
+                    - cell "3" [ref=e5770]
+                    - cell "65" [ref=e5771]
+                    - cell "5" [ref=e5772]
+                    - cell "1" [ref=e5773]
+                    - cell "61.0%" [ref=e5774]
+                    - cell "92.0%" [ref=e5775]
+                    - cell "81.3%" [ref=e5776]
+                    - cell "0/0" [ref=e5777]
+                  - row "2022-10-31 Paris Masters Hard R64 61 🇨🇭 Marc-Andrea Huesler (Q) 12 🇮🇹 Jannik Sinner (11) 6-2 6-3 3 68 6 0 63.0% 75.9% 70.6% 3/3" [ref=e5778]:
+                    - cell "2022-10-31" [ref=e5779]
+                    - cell "Paris Masters" [ref=e5780]:
+                      - link "Paris Masters" [ref=e5781] [cursor=pointer]:
+                        - /url: /tournaments/352/2022
+                    - cell "Hard" [ref=e5782]
+                    - cell "R64" [ref=e5783]
+                    - cell "61" [ref=e5784]
+                    - cell "🇨🇭 Marc-Andrea Huesler (Q)" [ref=e5785]:
+                      - img "🇨🇭" [ref=e5786]
+                      - link "Marc-Andrea Huesler (Q)" [ref=e5787] [cursor=pointer]:
+                        - /url: /players/marc-andrea-huesler
+                        - text: Marc-Andrea Huesler
+                        - generic [ref=e5788]: (Q)
+                    - cell "12" [ref=e5789]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e5790]:
+                      - img "🇮🇹" [ref=e5791]
+                      - link "Jannik Sinner (11)" [ref=e5792] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5793]: (11)
+                    - cell "6-2 6-3" [ref=e5794]
+                    - cell "3" [ref=e5795]
+                    - cell "68" [ref=e5796]
+                    - cell "6" [ref=e5797]
+                    - cell "0" [ref=e5798]
+                    - cell "63.0%" [ref=e5799]
+                    - cell "75.9%" [ref=e5800]
+                    - cell "70.6%" [ref=e5801]
+                    - cell "3/3" [ref=e5802]
+                  - row "2022-10-24 Vienna Hard QF 4 🇷🇺 Daniil Medvedev (1) 12 🇮🇹 Jannik Sinner (6) 6-4 6-2 3 90 7 0 75.5% 81.1% 50.0% 0/0" [ref=e5803]:
+                    - cell "2022-10-24" [ref=e5804]
+                    - cell "Vienna" [ref=e5805]:
+                      - link "Vienna" [ref=e5806] [cursor=pointer]:
+                        - /url: /tournaments/337/2022
+                    - cell "Hard" [ref=e5807]
+                    - cell "QF" [ref=e5808]
+                    - cell "4" [ref=e5809]
+                    - cell "🇷🇺 Daniil Medvedev (1)" [ref=e5810]:
+                      - img "🇷🇺" [ref=e5811]
+                      - link "Daniil Medvedev (1)" [ref=e5812] [cursor=pointer]:
+                        - /url: /players/daniil-medvedev
+                        - text: Daniil Medvedev
+                        - generic [ref=e5813]: (1)
+                    - cell "12" [ref=e5814]
+                    - cell "🇮🇹 Jannik Sinner (6)" [ref=e5815]:
+                      - img "🇮🇹" [ref=e5816]
+                      - link "Jannik Sinner (6)" [ref=e5817] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5818]: (6)
+                    - cell "6-4 6-2" [ref=e5819]
+                    - cell "3" [ref=e5820]
+                    - cell "90" [ref=e5821]
+                    - cell "7" [ref=e5822]
+                    - cell "0" [ref=e5823]
+                    - cell "75.5%" [ref=e5824]
+                    - cell "81.1%" [ref=e5825]
+                    - cell "50.0%" [ref=e5826]
+                    - cell "0/0" [ref=e5827]
+                  - row "2022-10-24 Vienna Hard R16 12 🇮🇹 Jannik Sinner (6) 29 🇦🇷 Francisco Cerundolo 7-5 6-3 3 89 2 0 64.6% 64.3% 60.9% 2/4" [ref=e5828]:
+                    - cell "2022-10-24" [ref=e5829]
+                    - cell "Vienna" [ref=e5830]:
+                      - link "Vienna" [ref=e5831] [cursor=pointer]:
+                        - /url: /tournaments/337/2022
+                    - cell "Hard" [ref=e5832]
+                    - cell "R16" [ref=e5833]
+                    - cell "12" [ref=e5834]
+                    - cell "🇮🇹 Jannik Sinner (6)" [ref=e5835]:
+                      - img "🇮🇹" [ref=e5836]
+                      - link "Jannik Sinner (6)" [ref=e5837] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5838]: (6)
+                    - cell "29" [ref=e5839]
+                    - cell "🇦🇷 Francisco Cerundolo" [ref=e5840]:
+                      - img "🇦🇷" [ref=e5841]
+                      - link "Francisco Cerundolo" [ref=e5842] [cursor=pointer]:
+                        - /url: /players/francisco-cerundolo
+                    - cell "7-5 6-3" [ref=e5843]
+                    - cell "3" [ref=e5844]
+                    - cell "89" [ref=e5845]
+                    - cell "2" [ref=e5846]
+                    - cell "0" [ref=e5847]
+                    - cell "64.6%" [ref=e5848]
+                    - cell "64.3%" [ref=e5849]
+                    - cell "60.9%" [ref=e5850]
+                    - cell "2/4" [ref=e5851]
+                  - row "2022-10-24 Vienna Hard R32 12 🇮🇹 Jannik Sinner (6) 86 🇨🇱 Cristian Garin 6-3 6-2 3 73 9 1 60.5% 92.3% 70.6% 0/0" [ref=e5852]:
+                    - cell "2022-10-24" [ref=e5853]
+                    - cell "Vienna" [ref=e5854]:
+                      - link "Vienna" [ref=e5855] [cursor=pointer]:
+                        - /url: /tournaments/337/2022
+                    - cell "Hard" [ref=e5856]
+                    - cell "R32" [ref=e5857]
+                    - cell "12" [ref=e5858]
+                    - cell "🇮🇹 Jannik Sinner (6)" [ref=e5859]:
+                      - img "🇮🇹" [ref=e5860]
+                      - link "Jannik Sinner (6)" [ref=e5861] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5862]: (6)
+                    - cell "86" [ref=e5863]
+                    - cell "🇨🇱 Cristian Garin" [ref=e5864]:
+                      - img "🇨🇱" [ref=e5865]
+                      - link "Cristian Garin" [ref=e5866] [cursor=pointer]:
+                        - /url: /players/cristian-garin
+                    - cell "6-3 6-2" [ref=e5867]
+                    - cell "3" [ref=e5868]
+                    - cell "73" [ref=e5869]
+                    - cell "9" [ref=e5870]
+                    - cell "1" [ref=e5871]
+                    - cell "60.5%" [ref=e5872]
+                    - cell "92.3%" [ref=e5873]
+                    - cell "70.6%" [ref=e5874]
+                    - cell "0/0" [ref=e5875]
+                  - row "2022-09-26 Sofia Hard SF 31 🇩🇰 Holger Rune (5) 10 🇮🇹 Jannik Sinner (1) 5-7 6-4 5-2 RET 3 149 7 5 64.7% 75.8% 41.7% 5/6" [ref=e5876]:
+                    - cell "2022-09-26" [ref=e5877]
+                    - cell "Sofia" [ref=e5878]:
+                      - link "Sofia" [ref=e5879] [cursor=pointer]:
+                        - /url: /tournaments/7434/2022
+                    - cell "Hard" [ref=e5880]
+                    - cell "SF" [ref=e5881]
+                    - cell "31" [ref=e5882]
+                    - cell "🇩🇰 Holger Rune (5)" [ref=e5883]:
+                      - img "🇩🇰" [ref=e5884]
+                      - link "Holger Rune (5)" [ref=e5885] [cursor=pointer]:
+                        - /url: /players/holger-rune
+                        - text: Holger Rune
+                        - generic [ref=e5886]: (5)
+                    - cell "10" [ref=e5887]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e5888]:
+                      - img "🇮🇹" [ref=e5889]
+                      - link "Jannik Sinner (1)" [ref=e5890] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5891]: (1)
+                    - cell "5-7 6-4 5-2 RET" [ref=e5892]
+                    - cell "3" [ref=e5893]
+                    - cell "149" [ref=e5894]
+                    - cell "7" [ref=e5895]
+                    - cell "5" [ref=e5896]
+                    - cell "64.7%" [ref=e5897]
+                    - cell "75.8%" [ref=e5898]
+                    - cell "41.7%" [ref=e5899]
+                    - cell "5/6" [ref=e5900]
+                  - row "2022-09-26 Sofia Hard QF 10 🇮🇹 Jannik Sinner (1) 144 🇦🇺 Aleksandar Vukic 6-2 6-3 3 80 9 5 50.0% 83.3% 56.7% 6/7" [ref=e5901]:
+                    - cell "2022-09-26" [ref=e5902]
+                    - cell "Sofia" [ref=e5903]:
+                      - link "Sofia" [ref=e5904] [cursor=pointer]:
+                        - /url: /tournaments/7434/2022
+                    - cell "Hard" [ref=e5905]
+                    - cell "QF" [ref=e5906]
+                    - cell "10" [ref=e5907]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e5908]:
+                      - img "🇮🇹" [ref=e5909]
+                      - link "Jannik Sinner (1)" [ref=e5910] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5911]: (1)
+                    - cell "144" [ref=e5912]
+                    - cell "🇦🇺 Aleksandar Vukic" [ref=e5913]:
+                      - img "🇦🇺" [ref=e5914]
+                      - link "Aleksandar Vukic" [ref=e5915] [cursor=pointer]:
+                        - /url: /players/aleksandar-vukic
+                    - cell "6-2 6-3" [ref=e5916]
+                    - cell "3" [ref=e5917]
+                    - cell "80" [ref=e5918]
+                    - cell "9" [ref=e5919]
+                    - cell "5" [ref=e5920]
+                    - cell "50.0%" [ref=e5921]
+                    - cell "83.3%" [ref=e5922]
+                    - cell "56.7%" [ref=e5923]
+                    - cell "6/7" [ref=e5924]
+                  - row "2022-09-26 Sofia Hard R16 10 🇮🇹 Jannik Sinner (1) 93 🇵🇹 Nuno Borges 6-3 6-4 3 85 10 5 59.0% 88.9% 44.0% 0/0" [ref=e5925]:
+                    - cell "2022-09-26" [ref=e5926]
+                    - cell "Sofia" [ref=e5927]:
+                      - link "Sofia" [ref=e5928] [cursor=pointer]:
+                        - /url: /tournaments/7434/2022
+                    - cell "Hard" [ref=e5929]
+                    - cell "R16" [ref=e5930]
+                    - cell "10" [ref=e5931]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e5932]:
+                      - img "🇮🇹" [ref=e5933]
+                      - link "Jannik Sinner (1)" [ref=e5934] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e5935]: (1)
+                    - cell "93" [ref=e5936]
+                    - cell "🇵🇹 Nuno Borges" [ref=e5937]:
+                      - img "🇵🇹" [ref=e5938]
+                      - link "Nuno Borges" [ref=e5939] [cursor=pointer]:
+                        - /url: /players/nuno-borges
+                    - cell "6-3 6-4" [ref=e5940]
+                    - cell "3" [ref=e5941]
+                    - cell "85" [ref=e5942]
+                    - cell "10" [ref=e5943]
+                    - cell "5" [ref=e5944]
+                    - cell "59.0%" [ref=e5945]
+                    - cell "88.9%" [ref=e5946]
+                    - cell "44.0%" [ref=e5947]
+                    - cell "0/0" [ref=e5948]
+                  - 'row "2022-09-18 Davis Cup Finals RR: ITA vs SWE Hard RR 100 🇸🇪 Mikael Ymer 11 🇮🇹 Jannik Sinner 6-4 3-6 6-3 3 - - - - - - -" [ref=e5949]':
+                    - cell "2022-09-18" [ref=e5950]
+                    - 'cell "Davis Cup Finals RR: ITA vs SWE" [ref=e5951]':
+                      - 'link "Davis Cup Finals RR: ITA vs SWE" [ref=e5952] [cursor=pointer]':
+                        - /url: "#"
+                    - cell "Hard" [ref=e5953]
+                    - cell "RR" [ref=e5954]
+                    - cell "100" [ref=e5955]
+                    - cell "🇸🇪 Mikael Ymer" [ref=e5956]:
+                      - img "🇸🇪" [ref=e5957]
+                      - link "Mikael Ymer" [ref=e5958] [cursor=pointer]:
+                        - /url: /players/mikael-ymer
+                    - cell "11" [ref=e5959]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e5960]:
+                      - img "🇮🇹" [ref=e5961]
+                      - link "Jannik Sinner" [ref=e5962] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "6-4 3-6 6-3" [ref=e5963]
+                    - cell "3" [ref=e5964]
+                    - cell "-" [ref=e5965]
+                    - cell "-" [ref=e5966]
+                    - cell "-" [ref=e5967]
+                    - cell "-" [ref=e5968]
+                    - cell "-" [ref=e5969]
+                    - cell "-" [ref=e5970]
+                    - cell "-" [ref=e5971]
+                  - 'row "2022-09-16 Davis Cup Finals RR: ITA vs ARG Hard RR 11 🇮🇹 Jannik Sinner 27 🇦🇷 Francisco Cerundolo 7-5 1-6 6-3 3 - - - - - - -" [ref=e5972]':
+                    - cell "2022-09-16" [ref=e5973]
+                    - 'cell "Davis Cup Finals RR: ITA vs ARG" [ref=e5974]':
+                      - 'link "Davis Cup Finals RR: ITA vs ARG" [ref=e5975] [cursor=pointer]':
+                        - /url: "#"
+                    - cell "Hard" [ref=e5976]
+                    - cell "RR" [ref=e5977]
+                    - cell "11" [ref=e5978]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e5979]:
+                      - img "🇮🇹" [ref=e5980]
+                      - link "Jannik Sinner" [ref=e5981] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "27" [ref=e5982]
+                    - cell "🇦🇷 Francisco Cerundolo" [ref=e5983]:
+                      - img "🇦🇷" [ref=e5984]
+                      - link "Francisco Cerundolo" [ref=e5985] [cursor=pointer]:
+                        - /url: /players/francisco-cerundolo
+                    - cell "7-5 1-6 6-3" [ref=e5986]
+                    - cell "3" [ref=e5987]
+                    - cell "-" [ref=e5988]
+                    - cell "-" [ref=e5989]
+                    - cell "-" [ref=e5990]
+                    - cell "-" [ref=e5991]
+                    - cell "-" [ref=e5992]
+                    - cell "-" [ref=e5993]
+                    - cell "-" [ref=e5994]
+                  - row "2022-08-29 US Open Hard QF 4 🇪🇸 Carlos Alcaraz (3) 13 🇮🇹 Jannik Sinner (11) 6-3 6-7(7) 6-7(0) 7-5 6-3 5 315 5 5 65.1% 62.7% 59.3% 9/16" [ref=e5995]:
+                    - cell "2022-08-29" [ref=e5996]
+                    - cell "US Open" [ref=e5997]:
+                      - link "US Open" [ref=e5998] [cursor=pointer]:
+                        - /url: /tournaments/560/2022
+                    - cell "Hard" [ref=e5999]
+                    - cell "QF" [ref=e6000]
+                    - cell "4" [ref=e6001]
+                    - cell "🇪🇸 Carlos Alcaraz (3)" [ref=e6002]:
+                      - img "🇪🇸" [ref=e6003]
+                      - link "Carlos Alcaraz (3)" [ref=e6004] [cursor=pointer]:
+                        - /url: /players/carlos-alcaraz
+                        - text: Carlos Alcaraz
+                        - generic [ref=e6005]: (3)
+                    - cell "13" [ref=e6006]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e6007]:
+                      - img "🇮🇹" [ref=e6008]
+                      - link "Jannik Sinner (11)" [ref=e6009] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6010]: (11)
+                    - cell "6-3 6-7(7) 6-7(0) 7-5 6-3" [ref=e6011]
+                    - cell "5" [ref=e6012]
+                    - cell "315" [ref=e6013]
+                    - cell "5" [ref=e6014]
+                    - cell "5" [ref=e6015]
+                    - cell "65.1%" [ref=e6016]
+                    - cell "62.7%" [ref=e6017]
+                    - cell "59.3%" [ref=e6018]
+                    - cell "9/16" [ref=e6019]
+                  - row "2022-08-29 US Open Hard R16 13 🇮🇹 Jannik Sinner (11) 73 🇧🇾 Ilya Ivashka 6-1 5-7 6-2 4-6 6-3 5 228 5 14 46.3% 72.6% 48.6% 6/14" [ref=e6020]:
+                    - cell "2022-08-29" [ref=e6021]
+                    - cell "US Open" [ref=e6022]:
+                      - link "US Open" [ref=e6023] [cursor=pointer]:
+                        - /url: /tournaments/560/2022
+                    - cell "Hard" [ref=e6024]
+                    - cell "R16" [ref=e6025]
+                    - cell "13" [ref=e6026]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e6027]:
+                      - img "🇮🇹" [ref=e6028]
+                      - link "Jannik Sinner (11)" [ref=e6029] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6030]: (11)
+                    - cell "73" [ref=e6031]
+                    - cell "🇧🇾 Ilya Ivashka" [ref=e6032]:
+                      - img "🇧🇾" [ref=e6033]
+                      - link "Ilya Ivashka" [ref=e6034] [cursor=pointer]:
+                        - /url: /players/ilya-ivashka
+                    - cell "6-1 5-7 6-2 4-6 6-3" [ref=e6035]
+                    - cell "5" [ref=e6036]
+                    - cell "228" [ref=e6037]
+                    - cell "5" [ref=e6038]
+                    - cell "14" [ref=e6039]
+                    - cell "46.3%" [ref=e6040]
+                    - cell "72.6%" [ref=e6041]
+                    - cell "48.6%" [ref=e6042]
+                    - cell "6/14" [ref=e6043]
+                  - row "2022-08-29 US Open Hard R32 13 🇮🇹 Jannik Sinner (11) 69 🇺🇸 Brandon Nakashima 3-6 6-4 6-1 6-2 5 179 16 4 60.3% 74.3% 50.0% 6/8" [ref=e6044]:
+                    - cell "2022-08-29" [ref=e6045]
+                    - cell "US Open" [ref=e6046]:
+                      - link "US Open" [ref=e6047] [cursor=pointer]:
+                        - /url: /tournaments/560/2022
+                    - cell "Hard" [ref=e6048]
+                    - cell "R32" [ref=e6049]
+                    - cell "13" [ref=e6050]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e6051]:
+                      - img "🇮🇹" [ref=e6052]
+                      - link "Jannik Sinner (11)" [ref=e6053] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6054]: (11)
+                    - cell "69" [ref=e6055]
+                    - cell "🇺🇸 Brandon Nakashima" [ref=e6056]:
+                      - img "🇺🇸" [ref=e6057]
+                      - link "Brandon Nakashima" [ref=e6058] [cursor=pointer]:
+                        - /url: /players/brandon-nakashima
+                    - cell "3-6 6-4 6-1 6-2" [ref=e6059]
+                    - cell "5" [ref=e6060]
+                    - cell "179" [ref=e6061]
+                    - cell "16" [ref=e6062]
+                    - cell "4" [ref=e6063]
+                    - cell "60.3%" [ref=e6064]
+                    - cell "74.3%" [ref=e6065]
+                    - cell "50.0%" [ref=e6066]
+                    - cell "6/8" [ref=e6067]
+                  - row "2022-08-29 US Open Hard R64 13 🇮🇹 Jannik Sinner (11) 145 🇺🇸 Christopher Eubanks 6-4 7-6(8) 6-2 5 144 12 4 54.5% 85.4% 62.5% 3/4" [ref=e6068]:
+                    - cell "2022-08-29" [ref=e6069]
+                    - cell "US Open" [ref=e6070]:
+                      - link "US Open" [ref=e6071] [cursor=pointer]:
+                        - /url: /tournaments/560/2022
+                    - cell "Hard" [ref=e6072]
+                    - cell "R64" [ref=e6073]
+                    - cell "13" [ref=e6074]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e6075]:
+                      - img "🇮🇹" [ref=e6076]
+                      - link "Jannik Sinner (11)" [ref=e6077] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6078]: (11)
+                    - cell "145" [ref=e6079]
+                    - cell "🇺🇸 Christopher Eubanks" [ref=e6080]:
+                      - img "🇺🇸" [ref=e6081]
+                      - link "Christopher Eubanks" [ref=e6082] [cursor=pointer]:
+                        - /url: /players/christopher-eubanks
+                    - cell "6-4 7-6(8) 6-2" [ref=e6083]
+                    - cell "5" [ref=e6084]
+                    - cell "144" [ref=e6085]
+                    - cell "12" [ref=e6086]
+                    - cell "4" [ref=e6087]
+                    - cell "54.5%" [ref=e6088]
+                    - cell "85.4%" [ref=e6089]
+                    - cell "62.5%" [ref=e6090]
+                    - cell "3/4" [ref=e6091]
+                  - row "2022-08-29 US Open Hard R128 13 🇮🇹 Jannik Sinner (11) 93 🇩🇪 Daniel Altmaier 5-7 6-2 6-1 3-6 6-1 5 215 16 5 57.0% 75.4% 67.3% 6/9" [ref=e6092]:
+                    - cell "2022-08-29" [ref=e6093]
+                    - cell "US Open" [ref=e6094]:
+                      - link "US Open" [ref=e6095] [cursor=pointer]:
+                        - /url: /tournaments/560/2022
+                    - cell "Hard" [ref=e6096]
+                    - cell "R128" [ref=e6097]
+                    - cell "13" [ref=e6098]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e6099]:
+                      - img "🇮🇹" [ref=e6100]
+                      - link "Jannik Sinner (11)" [ref=e6101] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6102]: (11)
+                    - cell "93" [ref=e6103]
+                    - cell "🇩🇪 Daniel Altmaier" [ref=e6104]:
+                      - img "🇩🇪" [ref=e6105]
+                      - link "Daniel Altmaier" [ref=e6106] [cursor=pointer]:
+                        - /url: /players/daniel-altmaier
+                    - cell "5-7 6-2 6-1 3-6 6-1" [ref=e6107]
+                    - cell "5" [ref=e6108]
+                    - cell "215" [ref=e6109]
+                    - cell "16" [ref=e6110]
+                    - cell "5" [ref=e6111]
+                    - cell "57.0%" [ref=e6112]
+                    - cell "75.4%" [ref=e6113]
+                    - cell "67.3%" [ref=e6114]
+                    - cell "6/9" [ref=e6115]
+                  - row "2022-08-15 Cincinnati Masters Hard R16 9 🇨🇦 Felix Auger-Aliassime (7) 12 🇮🇹 Jannik Sinner (10) 2-6 7-6(1) 6-1 3 146 14 4 63.0% 79.3% 41.2% 5/8" [ref=e6116]:
+                    - cell "2022-08-15" [ref=e6117]
+                    - cell "Cincinnati Masters" [ref=e6118]:
+                      - link "Cincinnati Masters" [ref=e6119] [cursor=pointer]:
+                        - /url: /tournaments/422/2022
+                    - cell "Hard" [ref=e6120]
+                    - cell "R16" [ref=e6121]
+                    - cell "9" [ref=e6122]
+                    - cell "🇨🇦 Felix Auger-Aliassime (7)" [ref=e6123]:
+                      - img "🇨🇦" [ref=e6124]
+                      - link "Felix Auger-Aliassime (7)" [ref=e6125] [cursor=pointer]:
+                        - /url: /players/felix-auger-aliassime
+                        - text: Felix Auger-Aliassime
+                        - generic [ref=e6126]: (7)
+                    - cell "12" [ref=e6127]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e6128]:
+                      - img "🇮🇹" [ref=e6129]
+                      - link "Jannik Sinner (10)" [ref=e6130] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6131]: (10)
+                    - cell "2-6 7-6(1) 6-1" [ref=e6132]
+                    - cell "3" [ref=e6133]
+                    - cell "146" [ref=e6134]
+                    - cell "14" [ref=e6135]
+                    - cell "4" [ref=e6136]
+                    - cell "63.0%" [ref=e6137]
+                    - cell "79.3%" [ref=e6138]
+                    - cell "41.2%" [ref=e6139]
+                    - cell "5/8" [ref=e6140]
+                  - row "2022-08-15 Cincinnati Masters Hard R32 12 🇮🇹 Jannik Sinner (10) 36 🇷🇸 Miomir Kecmanovic 7-5 3-1 RET 3 75 5 2 55.0% 95.5% 44.4% 0/1" [ref=e6141]:
+                    - cell "2022-08-15" [ref=e6142]
+                    - cell "Cincinnati Masters" [ref=e6143]:
+                      - link "Cincinnati Masters" [ref=e6144] [cursor=pointer]:
+                        - /url: /tournaments/422/2022
+                    - cell "Hard" [ref=e6145]
+                    - cell "R32" [ref=e6146]
+                    - cell "12" [ref=e6147]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e6148]:
+                      - img "🇮🇹" [ref=e6149]
+                      - link "Jannik Sinner (10)" [ref=e6150] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6151]: (10)
+                    - cell "36" [ref=e6152]
+                    - cell "🇷🇸 Miomir Kecmanovic" [ref=e6153]:
+                      - img "🇷🇸" [ref=e6154]
+                      - link "Miomir Kecmanovic" [ref=e6155] [cursor=pointer]:
+                        - /url: /players/miomir-kecmanovic
+                    - cell "7-5 3-1 RET" [ref=e6156]
+                    - cell "3" [ref=e6157]
+                    - cell "75" [ref=e6158]
+                    - cell "5" [ref=e6159]
+                    - cell "2" [ref=e6160]
+                    - cell "55.0%" [ref=e6161]
+                    - cell "95.5%" [ref=e6162]
+                    - cell "44.4%" [ref=e6163]
+                    - cell "0/1" [ref=e6164]
+                  - row "2022-08-15 Cincinnati Masters Hard R64 12 🇮🇹 Jannik Sinner (10) 75 🇦🇺 Thanasi Kokkinakis (Q) 6-7(9) 6-4 7-6(6) 3 194 6 3 53.6% 76.7% 63.5% 5/6" [ref=e6165]:
+                    - cell "2022-08-15" [ref=e6166]
+                    - cell "Cincinnati Masters" [ref=e6167]:
+                      - link "Cincinnati Masters" [ref=e6168] [cursor=pointer]:
+                        - /url: /tournaments/422/2022
+                    - cell "Hard" [ref=e6169]
+                    - cell "R64" [ref=e6170]
+                    - cell "12" [ref=e6171]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e6172]:
+                      - img "🇮🇹" [ref=e6173]
+                      - link "Jannik Sinner (10)" [ref=e6174] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6175]: (10)
+                    - cell "75" [ref=e6176]
+                    - cell "🇦🇺 Thanasi Kokkinakis (Q)" [ref=e6177]:
+                      - img "🇦🇺" [ref=e6178]
+                      - link "Thanasi Kokkinakis (Q)" [ref=e6179] [cursor=pointer]:
+                        - /url: /players/thanasi-kokkinakis
+                        - text: Thanasi Kokkinakis
+                        - generic [ref=e6180]: (Q)
+                    - cell "6-7(9) 6-4 7-6(6)" [ref=e6181]
+                    - cell "3" [ref=e6182]
+                    - cell "194" [ref=e6183]
+                    - cell "6" [ref=e6184]
+                    - cell "3" [ref=e6185]
+                    - cell "53.6%" [ref=e6186]
+                    - cell "76.7%" [ref=e6187]
+                    - cell "63.5%" [ref=e6188]
+                    - cell "5/6" [ref=e6189]
+                  - row "2022-08-08 Canada Masters Hard R16 23 🇪🇸 Pablo Carreno Busta 12 🇮🇹 Jannik Sinner (7) 6-2 6-4 3 84 1 1 65.3% 78.1% 70.6% 0/0" [ref=e6190]:
+                    - cell "2022-08-08" [ref=e6191]
+                    - cell "Canada Masters" [ref=e6192]:
+                      - link "Canada Masters" [ref=e6193] [cursor=pointer]:
+                        - /url: /tournaments/421/2022
+                    - cell "Hard" [ref=e6194]
+                    - cell "R16" [ref=e6195]
+                    - cell "23" [ref=e6196]
+                    - cell "🇪🇸 Pablo Carreno Busta" [ref=e6197]:
+                      - img "🇪🇸" [ref=e6198]
+                      - link "Pablo Carreno Busta" [ref=e6199] [cursor=pointer]:
+                        - /url: /players/pablo-carreno-busta
+                    - cell "12" [ref=e6200]
+                    - cell "🇮🇹 Jannik Sinner (7)" [ref=e6201]:
+                      - img "🇮🇹" [ref=e6202]
+                      - link "Jannik Sinner (7)" [ref=e6203] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6204]: (7)
+                    - cell "6-2 6-4" [ref=e6205]
+                    - cell "3" [ref=e6206]
+                    - cell "84" [ref=e6207]
+                    - cell "1" [ref=e6208]
+                    - cell "1" [ref=e6209]
+                    - cell "65.3%" [ref=e6210]
+                    - cell "78.1%" [ref=e6211]
+                    - cell "70.6%" [ref=e6212]
+                    - cell "0/0" [ref=e6213]
+                  - row "2022-08-08 Canada Masters Hard R32 12 🇮🇹 Jannik Sinner (7) 70 🇫🇷 Adrian Mannarino (Q) 2-6 6-4 6-2 3 125 13 4 53.2% 78.6% 48.6% 2/4" [ref=e6214]:
+                    - cell "2022-08-08" [ref=e6215]
+                    - cell "Canada Masters" [ref=e6216]:
+                      - link "Canada Masters" [ref=e6217] [cursor=pointer]:
+                        - /url: /tournaments/421/2022
+                    - cell "Hard" [ref=e6218]
+                    - cell "R32" [ref=e6219]
+                    - cell "12" [ref=e6220]
+                    - cell "🇮🇹 Jannik Sinner (7)" [ref=e6221]:
+                      - img "🇮🇹" [ref=e6222]
+                      - link "Jannik Sinner (7)" [ref=e6223] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6224]: (7)
+                    - cell "70" [ref=e6225]
+                    - cell "🇫🇷 Adrian Mannarino (Q)" [ref=e6226]:
+                      - img "🇫🇷" [ref=e6227]
+                      - link "Adrian Mannarino (Q)" [ref=e6228] [cursor=pointer]:
+                        - /url: /players/adrian-mannarino
+                        - text: Adrian Mannarino
+                        - generic [ref=e6229]: (Q)
+                    - cell "2-6 6-4 6-2" [ref=e6230]
+                    - cell "3" [ref=e6231]
+                    - cell "125" [ref=e6232]
+                    - cell "13" [ref=e6233]
+                    - cell "4" [ref=e6234]
+                    - cell "53.2%" [ref=e6235]
+                    - cell "78.6%" [ref=e6236]
+                    - cell "48.6%" [ref=e6237]
+                    - cell "2/4" [ref=e6238]
+                  - row "2022-07-25 Umag Clay F 10 🇮🇹 Jannik Sinner (2) 5 🇪🇸 Carlos Alcaraz (1) 6-7(5) 6-1 6-1 3 145 6 4 57.6% 77.4% 61.5% 9/9" [ref=e6239]:
+                    - cell "2022-07-25" [ref=e6240]
+                    - cell "Umag" [ref=e6241]:
+                      - link "Umag" [ref=e6242] [cursor=pointer]:
+                        - /url: /tournaments/439/2022
+                    - cell "Clay" [ref=e6243]
+                    - cell "F" [ref=e6244]
+                    - cell "10" [ref=e6245]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e6246]:
+                      - img "🇮🇹" [ref=e6247]
+                      - link "Jannik Sinner (2)" [ref=e6248] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6249]: (2)
+                    - cell "5" [ref=e6250]
+                    - cell "🇪🇸 Carlos Alcaraz (1)" [ref=e6251]:
+                      - img "🇪🇸" [ref=e6252]
+                      - link "Carlos Alcaraz (1)" [ref=e6253] [cursor=pointer]:
+                        - /url: /players/carlos-alcaraz
+                        - text: Carlos Alcaraz
+                        - generic [ref=e6254]: (1)
+                    - cell "6-7(5) 6-1 6-1" [ref=e6255]
+                    - cell "3" [ref=e6256]
+                    - cell "145" [ref=e6257]
+                    - cell "6" [ref=e6258]
+                    - cell "4" [ref=e6259]
+                    - cell "57.6%" [ref=e6260]
+                    - cell "77.4%" [ref=e6261]
+                    - cell "61.5%" [ref=e6262]
+                    - cell "9/9" [ref=e6263]
+                  - row "2022-07-25 Umag Clay SF 10 🇮🇹 Jannik Sinner (2) 136 🇮🇹 Franco Agamenone (Q) 6-1 6-3 3 86 0 1 62.8% 77.8% 56.3% 2/3" [ref=e6264]:
+                    - cell "2022-07-25" [ref=e6265]
+                    - cell "Umag" [ref=e6266]:
+                      - link "Umag" [ref=e6267] [cursor=pointer]:
+                        - /url: /tournaments/439/2022
+                    - cell "Clay" [ref=e6268]
+                    - cell "SF" [ref=e6269]
+                    - cell "10" [ref=e6270]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e6271]:
+                      - img "🇮🇹" [ref=e6272]
+                      - link "Jannik Sinner (2)" [ref=e6273] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6274]: (2)
+                    - cell "136" [ref=e6275]
+                    - cell "🇮🇹 Franco Agamenone (Q)" [ref=e6276]:
+                      - img "🇮🇹" [ref=e6277]
+                      - link "Franco Agamenone (Q)" [ref=e6278] [cursor=pointer]:
+                        - /url: /players/franco-agamenone
+                        - text: Franco Agamenone
+                        - generic [ref=e6279]: (Q)
+                    - cell "6-1 6-3" [ref=e6280]
+                    - cell "3" [ref=e6281]
+                    - cell "86" [ref=e6282]
+                    - cell "0" [ref=e6283]
+                    - cell "1" [ref=e6284]
+                    - cell "62.8%" [ref=e6285]
+                    - cell "77.8%" [ref=e6286]
+                    - cell "56.3%" [ref=e6287]
+                    - cell "2/3" [ref=e6288]
+                  - row "2022-07-25 Umag Clay QF 10 🇮🇹 Jannik Sinner (2) 86 🇪🇸 Roberto Carballes Baena 6-4 7-6(5) 3 138 6 2 51.5% 82.9% 60.6% 0/1" [ref=e6289]:
+                    - cell "2022-07-25" [ref=e6290]
+                    - cell "Umag" [ref=e6291]:
+                      - link "Umag" [ref=e6292] [cursor=pointer]:
+                        - /url: /tournaments/439/2022
+                    - cell "Clay" [ref=e6293]
+                    - cell "QF" [ref=e6294]
+                    - cell "10" [ref=e6295]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e6296]:
+                      - img "🇮🇹" [ref=e6297]
+                      - link "Jannik Sinner (2)" [ref=e6298] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6299]: (2)
+                    - cell "86" [ref=e6300]
+                    - cell "🇪🇸 Roberto Carballes Baena" [ref=e6301]:
+                      - img "🇪🇸" [ref=e6302]
+                      - link "Roberto Carballes Baena" [ref=e6303] [cursor=pointer]:
+                        - /url: /players/roberto-carballes-baena
+                    - cell "6-4 7-6(5)" [ref=e6304]
+                    - cell "3" [ref=e6305]
+                    - cell "138" [ref=e6306]
+                    - cell "6" [ref=e6307]
+                    - cell "2" [ref=e6308]
+                    - cell "51.5%" [ref=e6309]
+                    - cell "82.9%" [ref=e6310]
+                    - cell "60.6%" [ref=e6311]
+                    - cell "0/1" [ref=e6312]
+                  - row "2022-07-25 Umag Clay R16 10 🇮🇹 Jannik Sinner (2) 59 🇪🇸 Jaume Munar 6-4 6-4 3 116 1 4 52.9% 72.2% 50.0% 6/8" [ref=e6313]:
+                    - cell "2022-07-25" [ref=e6314]
+                    - cell "Umag" [ref=e6315]:
+                      - link "Umag" [ref=e6316] [cursor=pointer]:
+                        - /url: /tournaments/439/2022
+                    - cell "Clay" [ref=e6317]
+                    - cell "R16" [ref=e6318]
+                    - cell "10" [ref=e6319]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e6320]:
+                      - img "🇮🇹" [ref=e6321]
+                      - link "Jannik Sinner (2)" [ref=e6322] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6323]: (2)
+                    - cell "59" [ref=e6324]
+                    - cell "🇪🇸 Jaume Munar" [ref=e6325]:
+                      - img "🇪🇸" [ref=e6326]
+                      - link "Jaume Munar" [ref=e6327] [cursor=pointer]:
+                        - /url: /players/jaume-munar
+                    - cell "6-4 6-4" [ref=e6328]
+                    - cell "3" [ref=e6329]
+                    - cell "116" [ref=e6330]
+                    - cell "1" [ref=e6331]
+                    - cell "4" [ref=e6332]
+                    - cell "52.9%" [ref=e6333]
+                    - cell "72.2%" [ref=e6334]
+                    - cell "50.0%" [ref=e6335]
+                    - cell "6/8" [ref=e6336]
+                  - row "2022-06-27 Wimbledon Grass QF 3 🇷🇸 Novak Djokovic (1) 13 🇮🇹 Jannik Sinner (10) 5-7 2-6 6-3 6-2 6-2 5 215 8 5 66.4% 82.4% 41.9% 5/9" [ref=e6337]:
+                    - cell "2022-06-27" [ref=e6338]
+                    - cell "Wimbledon" [ref=e6339]:
+                      - link "Wimbledon" [ref=e6340] [cursor=pointer]:
+                        - /url: /tournaments/540/2022
+                    - cell "Grass" [ref=e6341]
+                    - cell "QF" [ref=e6342]
+                    - cell "3" [ref=e6343]
+                    - cell "🇷🇸 Novak Djokovic (1)" [ref=e6344]:
+                      - img "🇷🇸" [ref=e6345]
+                      - link "Novak Djokovic (1)" [ref=e6346] [cursor=pointer]:
+                        - /url: /players/novak-djokovic
+                        - text: Novak Djokovic
+                        - generic [ref=e6347]: (1)
+                    - cell "13" [ref=e6348]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e6349]:
+                      - img "🇮🇹" [ref=e6350]
+                      - link "Jannik Sinner (10)" [ref=e6351] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6352]: (10)
+                    - cell "5-7 2-6 6-3 6-2 6-2" [ref=e6353]
+                    - cell "5" [ref=e6354]
+                    - cell "215" [ref=e6355]
+                    - cell "8" [ref=e6356]
+                    - cell "5" [ref=e6357]
+                    - cell "66.4%" [ref=e6358]
+                    - cell "82.4%" [ref=e6359]
+                    - cell "41.9%" [ref=e6360]
+                    - cell "5/9" [ref=e6361]
+                  - row "2022-06-27 Wimbledon Grass R16 13 🇮🇹 Jannik Sinner (10) 7 🇪🇸 Carlos Alcaraz (5) 6-1 6-4 6-7(8) 6-3 5 215 4 5 57.3% 74.4% 65.6% 7/7" [ref=e6362]:
+                    - cell "2022-06-27" [ref=e6363]
+                    - cell "Wimbledon" [ref=e6364]:
+                      - link "Wimbledon" [ref=e6365] [cursor=pointer]:
+                        - /url: /tournaments/540/2022
+                    - cell "Grass" [ref=e6366]
+                    - cell "R16" [ref=e6367]
+                    - cell "13" [ref=e6368]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e6369]:
+                      - img "🇮🇹" [ref=e6370]
+                      - link "Jannik Sinner (10)" [ref=e6371] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6372]: (10)
+                    - cell "7" [ref=e6373]
+                    - cell "🇪🇸 Carlos Alcaraz (5)" [ref=e6374]:
+                      - img "🇪🇸" [ref=e6375]
+                      - link "Carlos Alcaraz (5)" [ref=e6376] [cursor=pointer]:
+                        - /url: /players/carlos-alcaraz
+                        - text: Carlos Alcaraz
+                        - generic [ref=e6377]: (5)
+                    - cell "6-1 6-4 6-7(8) 6-3" [ref=e6378]
+                    - cell "5" [ref=e6379]
+                    - cell "215" [ref=e6380]
+                    - cell "4" [ref=e6381]
+                    - cell "5" [ref=e6382]
+                    - cell "57.3%" [ref=e6383]
+                    - cell "74.4%" [ref=e6384]
+                    - cell "65.6%" [ref=e6385]
+                    - cell "7/7" [ref=e6386]
+                  - row "2022-06-27 Wimbledon Grass R32 13 🇮🇹 Jannik Sinner (10) 24 🇺🇸 John Isner (20) 6-4 7-6(4) 6-3 5 140 2 3 55.8% 81.1% 69.0% 0/0" [ref=e6387]:
+                    - cell "2022-06-27" [ref=e6388]
+                    - cell "Wimbledon" [ref=e6389]:
+                      - link "Wimbledon" [ref=e6390] [cursor=pointer]:
+                        - /url: /tournaments/540/2022
+                    - cell "Grass" [ref=e6391]
+                    - cell "R32" [ref=e6392]
+                    - cell "13" [ref=e6393]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e6394]:
+                      - img "🇮🇹" [ref=e6395]
+                      - link "Jannik Sinner (10)" [ref=e6396] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6397]: (10)
+                    - cell "24" [ref=e6398]
+                    - cell "🇺🇸 John Isner (20)" [ref=e6399]:
+                      - img "🇺🇸" [ref=e6400]
+                      - link "John Isner (20)" [ref=e6401] [cursor=pointer]:
+                        - /url: /players/john-isner
+                        - text: John Isner
+                        - generic [ref=e6402]: (20)
+                    - cell "6-4 7-6(4) 6-3" [ref=e6403]
+                    - cell "5" [ref=e6404]
+                    - cell "140" [ref=e6405]
+                    - cell "2" [ref=e6406]
+                    - cell "3" [ref=e6407]
+                    - cell "55.8%" [ref=e6408]
+                    - cell "81.1%" [ref=e6409]
+                    - cell "69.0%" [ref=e6410]
+                    - cell "0/0" [ref=e6411]
+                  - row "2022-06-27 Wimbledon Grass R64 13 🇮🇹 Jannik Sinner (10) 88 🇸🇪 Mikael Ymer 6-4 6-3 5-7 6-2 5 183 4 5 59.4% 79.4% 55.8% 3/6" [ref=e6412]:
+                    - cell "2022-06-27" [ref=e6413]
+                    - cell "Wimbledon" [ref=e6414]:
+                      - link "Wimbledon" [ref=e6415] [cursor=pointer]:
+                        - /url: /tournaments/540/2022
+                    - cell "Grass" [ref=e6416]
+                    - cell "R64" [ref=e6417]
+                    - cell "13" [ref=e6418]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e6419]:
+                      - img "🇮🇹" [ref=e6420]
+                      - link "Jannik Sinner (10)" [ref=e6421] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6422]: (10)
+                    - cell "88" [ref=e6423]
+                    - cell "🇸🇪 Mikael Ymer" [ref=e6424]:
+                      - img "🇸🇪" [ref=e6425]
+                      - link "Mikael Ymer" [ref=e6426] [cursor=pointer]:
+                        - /url: /players/mikael-ymer
+                    - cell "6-4 6-3 5-7 6-2" [ref=e6427]
+                    - cell "5" [ref=e6428]
+                    - cell "183" [ref=e6429]
+                    - cell "4" [ref=e6430]
+                    - cell "5" [ref=e6431]
+                    - cell "59.4%" [ref=e6432]
+                    - cell "79.4%" [ref=e6433]
+                    - cell "55.8%" [ref=e6434]
+                    - cell "3/6" [ref=e6435]
+                  - row "2022-06-27 Wimbledon Grass R128 13 🇮🇹 Jannik Sinner (10) 267 🇨🇭 Stan Wawrinka 7-5 4-6 6-3 6-2 5 161 9 3 63.8% 77.0% 59.5% 3/5" [ref=e6436]:
+                    - cell "2022-06-27" [ref=e6437]
+                    - cell "Wimbledon" [ref=e6438]:
+                      - link "Wimbledon" [ref=e6439] [cursor=pointer]:
+                        - /url: /tournaments/540/2022
+                    - cell "Grass" [ref=e6440]
+                    - cell "R128" [ref=e6441]
+                    - cell "13" [ref=e6442]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e6443]:
+                      - img "🇮🇹" [ref=e6444]
+                      - link "Jannik Sinner (10)" [ref=e6445] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6446]: (10)
+                    - cell "267" [ref=e6447]
+                    - cell "🇨🇭 Stan Wawrinka" [ref=e6448]:
+                      - img "🇨🇭" [ref=e6449]
+                      - link "Stan Wawrinka" [ref=e6450] [cursor=pointer]:
+                        - /url: /players/stan-wawrinka
+                    - cell "7-5 4-6 6-3 6-2" [ref=e6451]
+                    - cell "5" [ref=e6452]
+                    - cell "161" [ref=e6453]
+                    - cell "9" [ref=e6454]
+                    - cell "3" [ref=e6455]
+                    - cell "63.8%" [ref=e6456]
+                    - cell "77.0%" [ref=e6457]
+                    - cell "59.5%" [ref=e6458]
+                    - cell "3/5" [ref=e6459]
+                  - row "2022-06-20 Eastbourne Grass R16 35 🇺🇸 Tommy Paul 13 🇮🇹 Jannik Sinner (2) 6-3 3-6 6-3 3 124 0 2 58.2% 81.1% 52.6% 5/6" [ref=e6460]:
+                    - cell "2022-06-20" [ref=e6461]
+                    - cell "Eastbourne" [ref=e6462]:
+                      - link "Eastbourne" [ref=e6463] [cursor=pointer]:
+                        - /url: /tournaments/741/2022
+                    - cell "Grass" [ref=e6464]
+                    - cell "R16" [ref=e6465]
+                    - cell "35" [ref=e6466]
+                    - cell "🇺🇸 Tommy Paul" [ref=e6467]:
+                      - img "🇺🇸" [ref=e6468]
+                      - link "Tommy Paul" [ref=e6469] [cursor=pointer]:
+                        - /url: /players/tommy-paul
+                    - cell "13" [ref=e6470]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e6471]:
+                      - img "🇮🇹" [ref=e6472]
+                      - link "Jannik Sinner (2)" [ref=e6473] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6474]: (2)
+                    - cell "6-3 3-6 6-3" [ref=e6475]
+                    - cell "3" [ref=e6476]
+                    - cell "124" [ref=e6477]
+                    - cell "0" [ref=e6478]
+                    - cell "2" [ref=e6479]
+                    - cell "58.2%" [ref=e6480]
+                    - cell "81.1%" [ref=e6481]
+                    - cell "52.6%" [ref=e6482]
+                    - cell "5/6" [ref=e6483]
+                  - row "2022-05-23 Roland Garros Clay R16 7 🇷🇺 Andrey Rublev (7) 12 🇮🇹 Jannik Sinner (11) 1-6 6-4 2-0 RET 5 - 4 0 62.5% 83.3% 44.4% 0/2" [ref=e6484]:
+                    - cell "2022-05-23" [ref=e6485]
+                    - cell "Roland Garros" [ref=e6486]:
+                      - link "Roland Garros" [ref=e6487] [cursor=pointer]:
+                        - /url: /tournaments/520/2022
+                    - cell "Clay" [ref=e6488]
+                    - cell "R16" [ref=e6489]
+                    - cell "7" [ref=e6490]
+                    - cell "🇷🇺 Andrey Rublev (7)" [ref=e6491]:
+                      - img "🇷🇺" [ref=e6492]
+                      - link "Andrey Rublev (7)" [ref=e6493] [cursor=pointer]:
+                        - /url: /players/andrey-rublev
+                        - text: Andrey Rublev
+                        - generic [ref=e6494]: (7)
+                    - cell "12" [ref=e6495]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e6496]:
+                      - img "🇮🇹" [ref=e6497]
+                      - link "Jannik Sinner (11)" [ref=e6498] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6499]: (11)
+                    - cell "1-6 6-4 2-0 RET" [ref=e6500]
+                    - cell "5" [ref=e6501]
+                    - cell "-" [ref=e6502]
+                    - cell "4" [ref=e6503]
+                    - cell "0" [ref=e6504]
+                    - cell "62.5%" [ref=e6505]
+                    - cell "83.3%" [ref=e6506]
+                    - cell "44.4%" [ref=e6507]
+                    - cell "0/2" [ref=e6508]
+                  - row "2022-05-23 Roland Garros Clay R32 12 🇮🇹 Jannik Sinner (11) 60 🇺🇸 Mackenzie McDonald 6-3 7-6(6) 6-3 5 - 4 2 56.6% 75.0% 56.5% 7/8" [ref=e6509]:
+                    - cell "2022-05-23" [ref=e6510]
+                    - cell "Roland Garros" [ref=e6511]:
+                      - link "Roland Garros" [ref=e6512] [cursor=pointer]:
+                        - /url: /tournaments/520/2022
+                    - cell "Clay" [ref=e6513]
+                    - cell "R32" [ref=e6514]
+                    - cell "12" [ref=e6515]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e6516]:
+                      - img "🇮🇹" [ref=e6517]
+                      - link "Jannik Sinner (11)" [ref=e6518] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6519]: (11)
+                    - cell "60" [ref=e6520]
+                    - cell "🇺🇸 Mackenzie McDonald" [ref=e6521]:
+                      - img "🇺🇸" [ref=e6522]
+                      - link "Mackenzie McDonald" [ref=e6523] [cursor=pointer]:
+                        - /url: /players/mackenzie-mcdonald
+                    - cell "6-3 7-6(6) 6-3" [ref=e6524]
+                    - cell "5" [ref=e6525]
+                    - cell "-" [ref=e6526]
+                    - cell "4" [ref=e6527]
+                    - cell "2" [ref=e6528]
+                    - cell "56.6%" [ref=e6529]
+                    - cell "75.0%" [ref=e6530]
+                    - cell "56.5%" [ref=e6531]
+                    - cell "7/8" [ref=e6532]
+                  - row "2022-05-23 Roland Garros Clay R64 12 🇮🇹 Jannik Sinner (11) 89 🇪🇸 Roberto Carballes Baena 3-6 6-4 6-4 6-3 5 - 11 3 58.9% 67.1% 52.8% 9/13" [ref=e6533]:
+                    - cell "2022-05-23" [ref=e6534]
+                    - cell "Roland Garros" [ref=e6535]:
+                      - link "Roland Garros" [ref=e6536] [cursor=pointer]:
+                        - /url: /tournaments/520/2022
+                    - cell "Clay" [ref=e6537]
+                    - cell "R64" [ref=e6538]
+                    - cell "12" [ref=e6539]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e6540]:
+                      - img "🇮🇹" [ref=e6541]
+                      - link "Jannik Sinner (11)" [ref=e6542] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6543]: (11)
+                    - cell "89" [ref=e6544]
+                    - cell "🇪🇸 Roberto Carballes Baena" [ref=e6545]:
+                      - img "🇪🇸" [ref=e6546]
+                      - link "Roberto Carballes Baena" [ref=e6547] [cursor=pointer]:
+                        - /url: /players/roberto-carballes-baena
+                    - cell "3-6 6-4 6-4 6-3" [ref=e6548]
+                    - cell "5" [ref=e6549]
+                    - cell "-" [ref=e6550]
+                    - cell "11" [ref=e6551]
+                    - cell "3" [ref=e6552]
+                    - cell "58.9%" [ref=e6553]
+                    - cell "67.1%" [ref=e6554]
+                    - cell "52.8%" [ref=e6555]
+                    - cell "9/13" [ref=e6556]
+                  - row "2022-05-23 Roland Garros Clay R128 12 🇮🇹 Jannik Sinner (11) 185 🇺🇸 Bjorn Fratangelo (Q) 6-3 6-2 6-3 5 - 6 2 61.0% 78.7% 63.3% 2/2" [ref=e6557]:
+                    - cell "2022-05-23" [ref=e6558]
+                    - cell "Roland Garros" [ref=e6559]:
+                      - link "Roland Garros" [ref=e6560] [cursor=pointer]:
+                        - /url: /tournaments/520/2022
+                    - cell "Clay" [ref=e6561]
+                    - cell "R128" [ref=e6562]
+                    - cell "12" [ref=e6563]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e6564]:
+                      - img "🇮🇹" [ref=e6565]
+                      - link "Jannik Sinner (11)" [ref=e6566] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6567]: (11)
+                    - cell "185" [ref=e6568]
+                    - cell "🇺🇸 Bjorn Fratangelo (Q)" [ref=e6569]:
+                      - img "🇺🇸" [ref=e6570]
+                      - link "Bjorn Fratangelo (Q)" [ref=e6571] [cursor=pointer]:
+                        - /url: /players/bjorn-fratangelo
+                        - text: Bjorn Fratangelo
+                        - generic [ref=e6572]: (Q)
+                    - cell "6-3 6-2 6-3" [ref=e6573]
+                    - cell "5" [ref=e6574]
+                    - cell "-" [ref=e6575]
+                    - cell "6" [ref=e6576]
+                    - cell "2" [ref=e6577]
+                    - cell "61.0%" [ref=e6578]
+                    - cell "78.7%" [ref=e6579]
+                    - cell "63.3%" [ref=e6580]
+                    - cell "2/2" [ref=e6581]
+                  - row "2022-05-09 Rome Masters Clay QF 5 🇬🇷 Stefanos Tsitsipas (4) 13 🇮🇹 Jannik Sinner (10) 7-6(5) 6-2 3 147 10 5 65.3% 71.0% 42.4% 5/6" [ref=e6582]:
+                    - cell "2022-05-09" [ref=e6583]
+                    - cell "Rome Masters" [ref=e6584]:
+                      - link "Rome Masters" [ref=e6585] [cursor=pointer]:
+                        - /url: /tournaments/416/2022
+                    - cell "Clay" [ref=e6586]
+                    - cell "QF" [ref=e6587]
+                    - cell "5" [ref=e6588]
+                    - cell "🇬🇷 Stefanos Tsitsipas (4)" [ref=e6589]:
+                      - img "🇬🇷" [ref=e6590]
+                      - link "Stefanos Tsitsipas (4)" [ref=e6591] [cursor=pointer]:
+                        - /url: /players/stefanos-tsitsipas
+                        - text: Stefanos Tsitsipas
+                        - generic [ref=e6592]: (4)
+                    - cell "13" [ref=e6593]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e6594]:
+                      - img "🇮🇹" [ref=e6595]
+                      - link "Jannik Sinner (10)" [ref=e6596] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6597]: (10)
+                    - cell "7-6(5) 6-2" [ref=e6598]
+                    - cell "3" [ref=e6599]
+                    - cell "147" [ref=e6600]
+                    - cell "10" [ref=e6601]
+                    - cell "5" [ref=e6602]
+                    - cell "65.3%" [ref=e6603]
+                    - cell "71.0%" [ref=e6604]
+                    - cell "42.4%" [ref=e6605]
+                    - cell "5/6" [ref=e6606]
+                  - row "2022-05-09 Rome Masters Clay R16 13 🇮🇹 Jannik Sinner (10) 54 🇷🇸 Filip Krajinovic 6-2 7-6(6) 3 101 13 2 54.3% 81.6% 43.8% 1/2" [ref=e6607]:
+                    - cell "2022-05-09" [ref=e6608]
+                    - cell "Rome Masters" [ref=e6609]:
+                      - link "Rome Masters" [ref=e6610] [cursor=pointer]:
+                        - /url: /tournaments/416/2022
+                    - cell "Clay" [ref=e6611]
+                    - cell "R16" [ref=e6612]
+                    - cell "13" [ref=e6613]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e6614]:
+                      - img "🇮🇹" [ref=e6615]
+                      - link "Jannik Sinner (10)" [ref=e6616] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6617]: (10)
+                    - cell "54" [ref=e6618]
+                    - cell "🇷🇸 Filip Krajinovic" [ref=e6619]:
+                      - img "🇷🇸" [ref=e6620]
+                      - link "Filip Krajinovic" [ref=e6621] [cursor=pointer]:
+                        - /url: /players/filip-krajinovic
+                    - cell "6-2 7-6(6)" [ref=e6622]
+                    - cell "3" [ref=e6623]
+                    - cell "101" [ref=e6624]
+                    - cell "13" [ref=e6625]
+                    - cell "2" [ref=e6626]
+                    - cell "54.3%" [ref=e6627]
+                    - cell "81.6%" [ref=e6628]
+                    - cell "43.8%" [ref=e6629]
+                    - cell "1/2" [ref=e6630]
+                  - row "2022-05-09 Rome Masters Clay R32 13 🇮🇹 Jannik Sinner (10) 57 🇮🇹 Fabio Fognini 6-2 3-6 6-3 3 123 2 1 46.5% 72.7% 55.3% 2/5" [ref=e6631]:
+                    - cell "2022-05-09" [ref=e6632]
+                    - cell "Rome Masters" [ref=e6633]:
+                      - link "Rome Masters" [ref=e6634] [cursor=pointer]:
+                        - /url: /tournaments/416/2022
+                    - cell "Clay" [ref=e6635]
+                    - cell "R32" [ref=e6636]
+                    - cell "13" [ref=e6637]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e6638]:
+                      - img "🇮🇹" [ref=e6639]
+                      - link "Jannik Sinner (10)" [ref=e6640] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6641]: (10)
+                    - cell "57" [ref=e6642]
+                    - cell "🇮🇹 Fabio Fognini" [ref=e6643]:
+                      - img "🇮🇹" [ref=e6644]
+                      - link "Fabio Fognini" [ref=e6645] [cursor=pointer]:
+                        - /url: /players/fabio-fognini
+                    - cell "6-2 3-6 6-3" [ref=e6646]
+                    - cell "3" [ref=e6647]
+                    - cell "123" [ref=e6648]
+                    - cell "2" [ref=e6649]
+                    - cell "1" [ref=e6650]
+                    - cell "46.5%" [ref=e6651]
+                    - cell "72.7%" [ref=e6652]
+                    - cell "55.3%" [ref=e6653]
+                    - cell "2/5" [ref=e6654]
+                  - row "2022-05-09 Rome Masters Clay R64 13 🇮🇹 Jannik Sinner (10) 40 🇪🇸 Pedro Martinez 6-4 6-3 3 84 4 1 61.4% 77.1% 54.5% 1/2" [ref=e6655]:
+                    - cell "2022-05-09" [ref=e6656]
+                    - cell "Rome Masters" [ref=e6657]:
+                      - link "Rome Masters" [ref=e6658] [cursor=pointer]:
+                        - /url: /tournaments/416/2022
+                    - cell "Clay" [ref=e6659]
+                    - cell "R64" [ref=e6660]
+                    - cell "13" [ref=e6661]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e6662]:
+                      - img "🇮🇹" [ref=e6663]
+                      - link "Jannik Sinner (10)" [ref=e6664] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6665]: (10)
+                    - cell "40" [ref=e6666]
+                    - cell "🇪🇸 Pedro Martinez" [ref=e6667]:
+                      - img "🇪🇸" [ref=e6668]
+                      - link "Pedro Martinez" [ref=e6669] [cursor=pointer]:
+                        - /url: /players/pedro-martinez
+                    - cell "6-4 6-3" [ref=e6670]
+                    - cell "3" [ref=e6671]
+                    - cell "84" [ref=e6672]
+                    - cell "4" [ref=e6673]
+                    - cell "1" [ref=e6674]
+                    - cell "61.4%" [ref=e6675]
+                    - cell "77.1%" [ref=e6676]
+                    - cell "54.5%" [ref=e6677]
+                    - cell "1/2" [ref=e6678]
+                  - row "2022-05-02 Madrid Masters Clay R16 10 🇨🇦 Felix Auger-Aliassime (8) 12 🇮🇹 Jannik Sinner (10) 6-1 6-2 3 79 5 0 70.7% 89.7% 58.3% 0/0" [ref=e6679]:
+                    - cell "2022-05-02" [ref=e6680]
+                    - cell "Madrid Masters" [ref=e6681]:
+                      - link "Madrid Masters" [ref=e6682] [cursor=pointer]:
+                        - /url: /tournaments/1536/2022
+                    - cell "Clay" [ref=e6683]
+                    - cell "R16" [ref=e6684]
+                    - cell "10" [ref=e6685]
+                    - cell "🇨🇦 Felix Auger-Aliassime (8)" [ref=e6686]:
+                      - img "🇨🇦" [ref=e6687]
+                      - link "Felix Auger-Aliassime (8)" [ref=e6688] [cursor=pointer]:
+                        - /url: /players/felix-auger-aliassime
+                        - text: Felix Auger-Aliassime
+                        - generic [ref=e6689]: (8)
+                    - cell "12" [ref=e6690]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e6691]:
+                      - img "🇮🇹" [ref=e6692]
+                      - link "Jannik Sinner (10)" [ref=e6693] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6694]: (10)
+                    - cell "6-1 6-2" [ref=e6695]
+                    - cell "3" [ref=e6696]
+                    - cell "79" [ref=e6697]
+                    - cell "5" [ref=e6698]
+                    - cell "0" [ref=e6699]
+                    - cell "70.7%" [ref=e6700]
+                    - cell "89.7%" [ref=e6701]
+                    - cell "58.3%" [ref=e6702]
+                    - cell "0/0" [ref=e6703]
+                  - row "2022-05-02 Madrid Masters Clay R32 12 🇮🇹 Jannik Sinner (10) 22 🇦🇺 Alex de Minaur 6-4 6-1 3 74 1 3 60.0% 70.0% 55.0% 2/4" [ref=e6704]:
+                    - cell "2022-05-02" [ref=e6705]
+                    - cell "Madrid Masters" [ref=e6706]:
+                      - link "Madrid Masters" [ref=e6707] [cursor=pointer]:
+                        - /url: /tournaments/1536/2022
+                    - cell "Clay" [ref=e6708]
+                    - cell "R32" [ref=e6709]
+                    - cell "12" [ref=e6710]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e6711]:
+                      - img "🇮🇹" [ref=e6712]
+                      - link "Jannik Sinner (10)" [ref=e6713] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6714]: (10)
+                    - cell "22" [ref=e6715]
+                    - cell "🇦🇺 Alex de Minaur" [ref=e6716]:
+                      - img "🇦🇺" [ref=e6717]
+                      - link "Alex de Minaur" [ref=e6718] [cursor=pointer]:
+                        - /url: /players/alex-de-minaur
+                    - cell "6-4 6-1" [ref=e6719]
+                    - cell "3" [ref=e6720]
+                    - cell "74" [ref=e6721]
+                    - cell "1" [ref=e6722]
+                    - cell "3" [ref=e6723]
+                    - cell "60.0%" [ref=e6724]
+                    - cell "70.0%" [ref=e6725]
+                    - cell "55.0%" [ref=e6726]
+                    - cell "2/4" [ref=e6727]
+                  - row "2022-05-02 Madrid Masters Clay R64 12 🇮🇹 Jannik Sinner (10) 35 🇺🇸 Tommy Paul 6-7(4) 7-6(4) 6-3 3 180 8 3 59.3% 71.9% 65.9% 2/4" [ref=e6728]:
+                    - cell "2022-05-02" [ref=e6729]
+                    - cell "Madrid Masters" [ref=e6730]:
+                      - link "Madrid Masters" [ref=e6731] [cursor=pointer]:
+                        - /url: /tournaments/1536/2022
+                    - cell "Clay" [ref=e6732]
+                    - cell "R64" [ref=e6733]
+                    - cell "12" [ref=e6734]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e6735]:
+                      - img "🇮🇹" [ref=e6736]
+                      - link "Jannik Sinner (10)" [ref=e6737] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6738]: (10)
+                    - cell "35" [ref=e6739]
+                    - cell "🇺🇸 Tommy Paul" [ref=e6740]:
+                      - img "🇺🇸" [ref=e6741]
+                      - link "Tommy Paul" [ref=e6742] [cursor=pointer]:
+                        - /url: /players/tommy-paul
+                    - cell "6-7(4) 7-6(4) 6-3" [ref=e6743]
+                    - cell "3" [ref=e6744]
+                    - cell "180" [ref=e6745]
+                    - cell "8" [ref=e6746]
+                    - cell "3" [ref=e6747]
+                    - cell "59.3%" [ref=e6748]
+                    - cell "71.9%" [ref=e6749]
+                    - cell "65.9%" [ref=e6750]
+                    - cell "2/4" [ref=e6751]
+                  - row "2022-04-11 Monte Carlo Masters Clay QF 3 🇩🇪 Alexander Zverev (2) 12 🇮🇹 Jannik Sinner (9) 5-7 6-3 7-6(5) 3 187 5 6 70.8% 68.8% 42.4% 7/12" [ref=e6752]:
+                    - cell "2022-04-11" [ref=e6753]
+                    - cell "Monte Carlo Masters" [ref=e6754]:
+                      - link "Monte Carlo Masters" [ref=e6755] [cursor=pointer]:
+                        - /url: /tournaments/410/2022
+                    - cell "Clay" [ref=e6756]
+                    - cell "QF" [ref=e6757]
+                    - cell "3" [ref=e6758]
+                    - cell "🇩🇪 Alexander Zverev (2)" [ref=e6759]:
+                      - img "🇩🇪" [ref=e6760]
+                      - link "Alexander Zverev (2)" [ref=e6761] [cursor=pointer]:
+                        - /url: /players/alexander-zverev
+                        - text: Alexander Zverev
+                        - generic [ref=e6762]: (2)
+                    - cell "12" [ref=e6763]
+                    - cell "🇮🇹 Jannik Sinner (9)" [ref=e6764]:
+                      - img "🇮🇹" [ref=e6765]
+                      - link "Jannik Sinner (9)" [ref=e6766] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6767]: (9)
+                    - cell "5-7 6-3 7-6(5)" [ref=e6768]
+                    - cell "3" [ref=e6769]
+                    - cell "187" [ref=e6770]
+                    - cell "5" [ref=e6771]
+                    - cell "6" [ref=e6772]
+                    - cell "70.8%" [ref=e6773]
+                    - cell "68.8%" [ref=e6774]
+                    - cell "42.4%" [ref=e6775]
+                    - cell "7/12" [ref=e6776]
+                  - row "2022-04-11 Monte Carlo Masters Clay R16 12 🇮🇹 Jannik Sinner (9) 8 🇷🇺 Andrey Rublev (5) 5-7 6-1 6-3 3 140 6 2 56.5% 70.8% 51.4% 6/10" [ref=e6777]:
+                    - cell "2022-04-11" [ref=e6778]
+                    - cell "Monte Carlo Masters" [ref=e6779]:
+                      - link "Monte Carlo Masters" [ref=e6780] [cursor=pointer]:
+                        - /url: /tournaments/410/2022
+                    - cell "Clay" [ref=e6781]
+                    - cell "R16" [ref=e6782]
+                    - cell "12" [ref=e6783]
+                    - cell "🇮🇹 Jannik Sinner (9)" [ref=e6784]:
+                      - img "🇮🇹" [ref=e6785]
+                      - link "Jannik Sinner (9)" [ref=e6786] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6787]: (9)
+                    - cell "8" [ref=e6788]
+                    - cell "🇷🇺 Andrey Rublev (5)" [ref=e6789]:
+                      - img "🇷🇺" [ref=e6790]
+                      - link "Andrey Rublev (5)" [ref=e6791] [cursor=pointer]:
+                        - /url: /players/andrey-rublev
+                        - text: Andrey Rublev
+                        - generic [ref=e6792]: (5)
+                    - cell "5-7 6-1 6-3" [ref=e6793]
+                    - cell "3" [ref=e6794]
+                    - cell "140" [ref=e6795]
+                    - cell "6" [ref=e6796]
+                    - cell "2" [ref=e6797]
+                    - cell "56.5%" [ref=e6798]
+                    - cell "70.8%" [ref=e6799]
+                    - cell "51.4%" [ref=e6800]
+                    - cell "6/10" [ref=e6801]
+                  - row "2022-04-11 Monte Carlo Masters Clay R32 12 🇮🇹 Jannik Sinner (9) 81 🇫🇮 Emil Ruusuvuori (Q) 7-5 6-3 3 103 3 3 53.9% 65.9% 48.6% 6/8" [ref=e6802]:
+                    - cell "2022-04-11" [ref=e6803]
+                    - cell "Monte Carlo Masters" [ref=e6804]:
+                      - link "Monte Carlo Masters" [ref=e6805] [cursor=pointer]:
+                        - /url: /tournaments/410/2022
+                    - cell "Clay" [ref=e6806]
+                    - cell "R32" [ref=e6807]
+                    - cell "12" [ref=e6808]
+                    - cell "🇮🇹 Jannik Sinner (9)" [ref=e6809]:
+                      - img "🇮🇹" [ref=e6810]
+                      - link "Jannik Sinner (9)" [ref=e6811] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6812]: (9)
+                    - cell "81" [ref=e6813]
+                    - cell "🇫🇮 Emil Ruusuvuori (Q)" [ref=e6814]:
+                      - img "🇫🇮" [ref=e6815]
+                      - link "Emil Ruusuvuori (Q)" [ref=e6816] [cursor=pointer]:
+                        - /url: /players/emil-ruusuvuori
+                        - text: Emil Ruusuvuori
+                        - generic [ref=e6817]: (Q)
+                    - cell "7-5 6-3" [ref=e6818]
+                    - cell "3" [ref=e6819]
+                    - cell "103" [ref=e6820]
+                    - cell "3" [ref=e6821]
+                    - cell "3" [ref=e6822]
+                    - cell "53.9%" [ref=e6823]
+                    - cell "65.9%" [ref=e6824]
+                    - cell "48.6%" [ref=e6825]
+                    - cell "6/8" [ref=e6826]
+                  - row "2022-04-11 Monte Carlo Masters Clay R64 12 🇮🇹 Jannik Sinner (9) 198 🇭🇷 Borna Coric (PR) 6-3 2-6 6-3 3 147 5 6 55.6% 78.0% 50.0% 7/9" [ref=e6827]:
+                    - cell "2022-04-11" [ref=e6828]
+                    - cell "Monte Carlo Masters" [ref=e6829]:
+                      - link "Monte Carlo Masters" [ref=e6830] [cursor=pointer]:
+                        - /url: /tournaments/410/2022
+                    - cell "Clay" [ref=e6831]
+                    - cell "R64" [ref=e6832]
+                    - cell "12" [ref=e6833]
+                    - cell "🇮🇹 Jannik Sinner (9)" [ref=e6834]:
+                      - img "🇮🇹" [ref=e6835]
+                      - link "Jannik Sinner (9)" [ref=e6836] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6837]: (9)
+                    - cell "198" [ref=e6838]
+                    - cell "🇭🇷 Borna Coric (PR)" [ref=e6839]:
+                      - img "🇭🇷" [ref=e6840]
+                      - link "Borna Coric (PR)" [ref=e6841] [cursor=pointer]:
+                        - /url: /players/borna-coric
+                        - text: Borna Coric
+                        - generic [ref=e6842]: (PR)
+                    - cell "6-3 2-6 6-3" [ref=e6843]
+                    - cell "3" [ref=e6844]
+                    - cell "147" [ref=e6845]
+                    - cell "5" [ref=e6846]
+                    - cell "6" [ref=e6847]
+                    - cell "55.6%" [ref=e6848]
+                    - cell "78.0%" [ref=e6849]
+                    - cell "50.0%" [ref=e6850]
+                    - cell "7/9" [ref=e6851]
+                  - row "2022-03-21 Miami Masters Hard QF 103 🇦🇷 Francisco Cerundolo 11 🇮🇹 Jannik Sinner (9) 4-1 RET 3 22 3 2 75.0% 73.3% 60.0% 1/1" [ref=e6852]:
+                    - cell "2022-03-21" [ref=e6853]
+                    - cell "Miami Masters" [ref=e6854]:
+                      - link "Miami Masters" [ref=e6855] [cursor=pointer]:
+                        - /url: /tournaments/403/2022
+                    - cell "Hard" [ref=e6856]
+                    - cell "QF" [ref=e6857]
+                    - cell "103" [ref=e6858]
+                    - cell "🇦🇷 Francisco Cerundolo" [ref=e6859]:
+                      - img "🇦🇷" [ref=e6860]
+                      - link "Francisco Cerundolo" [ref=e6861] [cursor=pointer]:
+                        - /url: /players/francisco-cerundolo
+                    - cell "11" [ref=e6862]
+                    - cell "🇮🇹 Jannik Sinner (9)" [ref=e6863]:
+                      - img "🇮🇹" [ref=e6864]
+                      - link "Jannik Sinner (9)" [ref=e6865] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6866]: (9)
+                    - cell "4-1 RET" [ref=e6867]
+                    - cell "3" [ref=e6868]
+                    - cell "22" [ref=e6869]
+                    - cell "3" [ref=e6870]
+                    - cell "2" [ref=e6871]
+                    - cell "75.0%" [ref=e6872]
+                    - cell "73.3%" [ref=e6873]
+                    - cell "60.0%" [ref=e6874]
+                    - cell "1/1" [ref=e6875]
+                  - row "2022-03-21 Miami Masters Hard R16 11 🇮🇹 Jannik Sinner (9) 102 🇦🇺 Nick Kyrgios (WC) 7-6(3) 6-3 3 99 8 4 65.7% 82.6% 45.8% 2/2" [ref=e6876]:
+                    - cell "2022-03-21" [ref=e6877]
+                    - cell "Miami Masters" [ref=e6878]:
+                      - link "Miami Masters" [ref=e6879] [cursor=pointer]:
+                        - /url: /tournaments/403/2022
+                    - cell "Hard" [ref=e6880]
+                    - cell "R16" [ref=e6881]
+                    - cell "11" [ref=e6882]
+                    - cell "🇮🇹 Jannik Sinner (9)" [ref=e6883]:
+                      - img "🇮🇹" [ref=e6884]
+                      - link "Jannik Sinner (9)" [ref=e6885] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6886]: (9)
+                    - cell "102" [ref=e6887]
+                    - cell "🇦🇺 Nick Kyrgios (WC)" [ref=e6888]:
+                      - img "🇦🇺" [ref=e6889]
+                      - link "Nick Kyrgios (WC)" [ref=e6890] [cursor=pointer]:
+                        - /url: /players/nick-kyrgios
+                        - text: Nick Kyrgios
+                        - generic [ref=e6891]: (WC)
+                    - cell "7-6(3) 6-3" [ref=e6892]
+                    - cell "3" [ref=e6893]
+                    - cell "99" [ref=e6894]
+                    - cell "8" [ref=e6895]
+                    - cell "4" [ref=e6896]
+                    - cell "65.7%" [ref=e6897]
+                    - cell "82.6%" [ref=e6898]
+                    - cell "45.8%" [ref=e6899]
+                    - cell "2/2" [ref=e6900]
+                  - row "2022-03-21 Miami Masters Hard R32 11 🇮🇹 Jannik Sinner (9) 19 🇪🇸 Pablo Carreno Busta (17) 5-7 7-5 7-5 3 191 15 1 60.7% 67.1% 49.1% 13/17" [ref=e6901]:
+                    - cell "2022-03-21" [ref=e6902]
+                    - cell "Miami Masters" [ref=e6903]:
+                      - link "Miami Masters" [ref=e6904] [cursor=pointer]:
+                        - /url: /tournaments/403/2022
+                    - cell "Hard" [ref=e6905]
+                    - cell "R32" [ref=e6906]
+                    - cell "11" [ref=e6907]
+                    - cell "🇮🇹 Jannik Sinner (9)" [ref=e6908]:
+                      - img "🇮🇹" [ref=e6909]
+                      - link "Jannik Sinner (9)" [ref=e6910] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6911]: (9)
+                    - cell "19" [ref=e6912]
+                    - cell "🇪🇸 Pablo Carreno Busta (17)" [ref=e6913]:
+                      - img "🇪🇸" [ref=e6914]
+                      - link "Pablo Carreno Busta (17)" [ref=e6915] [cursor=pointer]:
+                        - /url: /players/pablo-carreno-busta
+                        - text: Pablo Carreno Busta
+                        - generic [ref=e6916]: (17)
+                    - cell "5-7 7-5 7-5" [ref=e6917]
+                    - cell "3" [ref=e6918]
+                    - cell "191" [ref=e6919]
+                    - cell "15" [ref=e6920]
+                    - cell "1" [ref=e6921]
+                    - cell "60.7%" [ref=e6922]
+                    - cell "67.1%" [ref=e6923]
+                    - cell "49.1%" [ref=e6924]
+                    - cell "13/17" [ref=e6925]
+                  - row "2022-03-21 Miami Masters Hard R64 11 🇮🇹 Jannik Sinner (9) 71 🇫🇮 Emil Ruusuvuori 6-4 3-6 7-6(8) 3 160 3 2 62.4% 77.8% 39.5% 6/8" [ref=e6926]:
+                    - cell "2022-03-21" [ref=e6927]
+                    - cell "Miami Masters" [ref=e6928]:
+                      - link "Miami Masters" [ref=e6929] [cursor=pointer]:
+                        - /url: /tournaments/403/2022
+                    - cell "Hard" [ref=e6930]
+                    - cell "R64" [ref=e6931]
+                    - cell "11" [ref=e6932]
+                    - cell "🇮🇹 Jannik Sinner (9)" [ref=e6933]:
+                      - img "🇮🇹" [ref=e6934]
+                      - link "Jannik Sinner (9)" [ref=e6935] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6936]: (9)
+                    - cell "71" [ref=e6937]
+                    - cell "🇫🇮 Emil Ruusuvuori" [ref=e6938]:
+                      - img "🇫🇮" [ref=e6939]
+                      - link "Emil Ruusuvuori" [ref=e6940] [cursor=pointer]:
+                        - /url: /players/emil-ruusuvuori
+                    - cell "6-4 3-6 7-6(8)" [ref=e6941]
+                    - cell "3" [ref=e6942]
+                    - cell "160" [ref=e6943]
+                    - cell "3" [ref=e6944]
+                    - cell "2" [ref=e6945]
+                    - cell "62.4%" [ref=e6946]
+                    - cell "77.8%" [ref=e6947]
+                    - cell "39.5%" [ref=e6948]
+                    - cell "6/8" [ref=e6949]
+                  - row "2022-03-07 Indian Wells Masters Hard R16 132 🇦🇺 Nick Kyrgios (WC) 10 🇮🇹 Jannik Sinner (10) W/O 3 0 - - - - - -" [ref=e6950]:
+                    - cell "2022-03-07" [ref=e6951]
+                    - cell "Indian Wells Masters" [ref=e6952]:
+                      - link "Indian Wells Masters" [ref=e6953] [cursor=pointer]:
+                        - /url: /tournaments/404/2022
+                    - cell "Hard" [ref=e6954]
+                    - cell "R16" [ref=e6955]
+                    - cell "132" [ref=e6956]
+                    - cell "🇦🇺 Nick Kyrgios (WC)" [ref=e6957]:
+                      - img "🇦🇺" [ref=e6958]
+                      - link "Nick Kyrgios (WC)" [ref=e6959] [cursor=pointer]:
+                        - /url: /players/nick-kyrgios
+                        - text: Nick Kyrgios
+                        - generic [ref=e6960]: (WC)
+                    - cell "10" [ref=e6961]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e6962]:
+                      - img "🇮🇹" [ref=e6963]
+                      - link "Jannik Sinner (10)" [ref=e6964] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6965]: (10)
+                    - cell "W/O" [ref=e6966]
+                    - cell "3" [ref=e6967]
+                    - cell "0" [ref=e6968]
+                    - cell "-" [ref=e6969]
+                    - cell "-" [ref=e6970]
+                    - cell "-" [ref=e6971]
+                    - cell "-" [ref=e6972]
+                    - cell "-" [ref=e6973]
+                    - cell "-" [ref=e6974]
+                  - row "2022-03-07 Indian Wells Masters Hard R32 10 🇮🇹 Jannik Sinner (10) 62 🇫🇷 Benjamin Bonzi 7-6(5) 3-6 6-4 3 157 12 1 61.9% 71.4% 41.9% 6/10" [ref=e6975]:
+                    - cell "2022-03-07" [ref=e6976]
+                    - cell "Indian Wells Masters" [ref=e6977]:
+                      - link "Indian Wells Masters" [ref=e6978] [cursor=pointer]:
+                        - /url: /tournaments/404/2022
+                    - cell "Hard" [ref=e6979]
+                    - cell "R32" [ref=e6980]
+                    - cell "10" [ref=e6981]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e6982]:
+                      - img "🇮🇹" [ref=e6983]
+                      - link "Jannik Sinner (10)" [ref=e6984] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e6985]: (10)
+                    - cell "62" [ref=e6986]
+                    - cell "🇫🇷 Benjamin Bonzi" [ref=e6987]:
+                      - img "🇫🇷" [ref=e6988]
+                      - link "Benjamin Bonzi" [ref=e6989] [cursor=pointer]:
+                        - /url: /players/benjamin-bonzi
+                    - cell "7-6(5) 3-6 6-4" [ref=e6990]
+                    - cell "3" [ref=e6991]
+                    - cell "157" [ref=e6992]
+                    - cell "12" [ref=e6993]
+                    - cell "1" [ref=e6994]
+                    - cell "61.9%" [ref=e6995]
+                    - cell "71.4%" [ref=e6996]
+                    - cell "41.9%" [ref=e6997]
+                    - cell "6/10" [ref=e6998]
+                  - row "2022-03-07 Indian Wells Masters Hard R64 10 🇮🇹 Jannik Sinner (10) 52 🇷🇸 Laslo Djere 6-3 6-3 3 88 2 3 45.5% 76.0% 63.3% 5/6" [ref=e6999]:
+                    - cell "2022-03-07" [ref=e7000]
+                    - cell "Indian Wells Masters" [ref=e7001]:
+                      - link "Indian Wells Masters" [ref=e7002] [cursor=pointer]:
+                        - /url: /tournaments/404/2022
+                    - cell "Hard" [ref=e7003]
+                    - cell "R64" [ref=e7004]
+                    - cell "10" [ref=e7005]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e7006]:
+                      - img "🇮🇹" [ref=e7007]
+                      - link "Jannik Sinner (10)" [ref=e7008] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7009]: (10)
+                    - cell "52" [ref=e7010]
+                    - cell "🇷🇸 Laslo Djere" [ref=e7011]:
+                      - img "🇷🇸" [ref=e7012]
+                      - link "Laslo Djere" [ref=e7013] [cursor=pointer]:
+                        - /url: /players/laslo-djere
+                    - cell "6-3 6-3" [ref=e7014]
+                    - cell "3" [ref=e7015]
+                    - cell "88" [ref=e7016]
+                    - cell "2" [ref=e7017]
+                    - cell "3" [ref=e7018]
+                    - cell "45.5%" [ref=e7019]
+                    - cell "76.0%" [ref=e7020]
+                    - cell "63.3%" [ref=e7021]
+                    - cell "5/6" [ref=e7022]
+                  - 'row "2022-03-04 Davis Cup QLS R1: ITA vs SVK Hard RR 11 🇮🇹 Jannik Sinner 203 🇸🇰 Filip Horansky 7-5 6-4 3 91 6 0 63.5% 81.8% 73.7% 0/1" [ref=e7023]':
+                    - cell "2022-03-04" [ref=e7024]
+                    - 'cell "Davis Cup QLS R1: ITA vs SVK" [ref=e7025]':
+                      - 'link "Davis Cup QLS R1: ITA vs SVK" [ref=e7026] [cursor=pointer]':
+                        - /url: "#"
+                    - cell "Hard" [ref=e7027]
+                    - cell "RR" [ref=e7028]
+                    - cell "11" [ref=e7029]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e7030]:
+                      - img "🇮🇹" [ref=e7031]
+                      - link "Jannik Sinner" [ref=e7032] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "203" [ref=e7033]
+                    - cell "🇸🇰 Filip Horansky" [ref=e7034]:
+                      - img "🇸🇰" [ref=e7035]
+                      - link "Filip Horansky" [ref=e7036] [cursor=pointer]:
+                        - /url: /players/filip-horansky
+                    - cell "7-5 6-4" [ref=e7037]
+                    - cell "3" [ref=e7038]
+                    - cell "91" [ref=e7039]
+                    - cell "6" [ref=e7040]
+                    - cell "0" [ref=e7041]
+                    - cell "63.5%" [ref=e7042]
+                    - cell "81.8%" [ref=e7043]
+                    - cell "73.7%" [ref=e7044]
+                    - cell "0/1" [ref=e7045]
+                  - 'row "2022-03-04 Davis Cup QLS R1: ITA vs SVK Hard RR 11 🇮🇹 Jannik Sinner 110 🇸🇰 Norbert Gombos 6-4 4-6 6-4 3 120 9 1 72.0% 76.3% 47.8% 0/2" [ref=e7046]':
+                    - cell "2022-03-04" [ref=e7047]
+                    - 'cell "Davis Cup QLS R1: ITA vs SVK" [ref=e7048]':
+                      - 'link "Davis Cup QLS R1: ITA vs SVK" [ref=e7049] [cursor=pointer]':
+                        - /url: "#"
+                    - cell "Hard" [ref=e7050]
+                    - cell "RR" [ref=e7051]
+                    - cell "11" [ref=e7052]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e7053]:
+                      - img "🇮🇹" [ref=e7054]
+                      - link "Jannik Sinner" [ref=e7055] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "110" [ref=e7056]
+                    - cell "🇸🇰 Norbert Gombos" [ref=e7057]:
+                      - img "🇸🇰" [ref=e7058]
+                      - link "Norbert Gombos" [ref=e7059] [cursor=pointer]:
+                        - /url: /players/norbert-gombos
+                    - cell "6-4 4-6 6-4" [ref=e7060]
+                    - cell "3" [ref=e7061]
+                    - cell "120" [ref=e7062]
+                    - cell "9" [ref=e7063]
+                    - cell "1" [ref=e7064]
+                    - cell "72.0%" [ref=e7065]
+                    - cell "76.3%" [ref=e7066]
+                    - cell "47.8%" [ref=e7067]
+                    - cell "0/2" [ref=e7068]
+                  - row "2022-02-21 Dubai Hard QF 11 🇵🇱 Hubert Hurkacz (5) 10 🇮🇹 Jannik Sinner (4) 6-3 6-3 3 84 6 2 57.1% 82.1% 61.9% 0/0" [ref=e7069]:
+                    - cell "2022-02-21" [ref=e7070]
+                    - cell "Dubai" [ref=e7071]:
+                      - link "Dubai" [ref=e7072] [cursor=pointer]:
+                        - /url: /tournaments/495/2022
+                    - cell "Hard" [ref=e7073]
+                    - cell "QF" [ref=e7074]
+                    - cell "11" [ref=e7075]
+                    - cell "🇵🇱 Hubert Hurkacz (5)" [ref=e7076]:
+                      - img "🇵🇱" [ref=e7077]
+                      - link "Hubert Hurkacz (5)" [ref=e7078] [cursor=pointer]:
+                        - /url: /players/hubert-hurkacz
+                        - text: Hubert Hurkacz
+                        - generic [ref=e7079]: (5)
+                    - cell "10" [ref=e7080]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e7081]:
+                      - img "🇮🇹" [ref=e7082]
+                      - link "Jannik Sinner (4)" [ref=e7083] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7084]: (4)
+                    - cell "6-3 6-3" [ref=e7085]
+                    - cell "3" [ref=e7086]
+                    - cell "84" [ref=e7087]
+                    - cell "6" [ref=e7088]
+                    - cell "2" [ref=e7089]
+                    - cell "57.1%" [ref=e7090]
+                    - cell "82.1%" [ref=e7091]
+                    - cell "61.9%" [ref=e7092]
+                    - cell "0/0" [ref=e7093]
+                  - row "2022-02-21 Dubai Hard R16 10 🇮🇹 Jannik Sinner (4) 89 🇬🇧 Andy Murray (WC) 7-5 6-2 3 103 4 1 70.2% 82.5% 41.2% 0/0" [ref=e7094]:
+                    - cell "2022-02-21" [ref=e7095]
+                    - cell "Dubai" [ref=e7096]:
+                      - link "Dubai" [ref=e7097] [cursor=pointer]:
+                        - /url: /tournaments/495/2022
+                    - cell "Hard" [ref=e7098]
+                    - cell "R16" [ref=e7099]
+                    - cell "10" [ref=e7100]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e7101]:
+                      - img "🇮🇹" [ref=e7102]
+                      - link "Jannik Sinner (4)" [ref=e7103] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7104]: (4)
+                    - cell "89" [ref=e7105]
+                    - cell "🇬🇧 Andy Murray (WC)" [ref=e7106]:
+                      - img "🇬🇧" [ref=e7107]
+                      - link "Andy Murray (WC)" [ref=e7108] [cursor=pointer]:
+                        - /url: /players/andy-murray
+                        - text: Andy Murray
+                        - generic [ref=e7109]: (WC)
+                    - cell "7-5 6-2" [ref=e7110]
+                    - cell "3" [ref=e7111]
+                    - cell "103" [ref=e7112]
+                    - cell "4" [ref=e7113]
+                    - cell "1" [ref=e7114]
+                    - cell "70.2%" [ref=e7115]
+                    - cell "82.5%" [ref=e7116]
+                    - cell "41.2%" [ref=e7117]
+                    - cell "0/0" [ref=e7118]
+                  - row "2022-02-21 Dubai Hard R32 10 🇮🇹 Jannik Sinner (4) 43 🇪🇸 Alejandro Davidovich Fokina 4-6 7-6(6) 6-3 3 151 5 2 63.4% 78.0% 58.8% 0/2" [ref=e7119]:
+                    - cell "2022-02-21" [ref=e7120]
+                    - cell "Dubai" [ref=e7121]:
+                      - link "Dubai" [ref=e7122] [cursor=pointer]:
+                        - /url: /tournaments/495/2022
+                    - cell "Hard" [ref=e7123]
+                    - cell "R32" [ref=e7124]
+                    - cell "10" [ref=e7125]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e7126]:
+                      - img "🇮🇹" [ref=e7127]
+                      - link "Jannik Sinner (4)" [ref=e7128] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7129]: (4)
+                    - cell "43" [ref=e7130]
+                    - cell "🇪🇸 Alejandro Davidovich Fokina" [ref=e7131]:
+                      - img "🇪🇸" [ref=e7132]
+                      - link "Alejandro Davidovich Fokina" [ref=e7133] [cursor=pointer]:
+                        - /url: /players/alejandro-davidovich-fokina
+                    - cell "4-6 7-6(6) 6-3" [ref=e7134]
+                    - cell "3" [ref=e7135]
+                    - cell "151" [ref=e7136]
+                    - cell "5" [ref=e7137]
+                    - cell "2" [ref=e7138]
+                    - cell "63.4%" [ref=e7139]
+                    - cell "78.0%" [ref=e7140]
+                    - cell "58.8%" [ref=e7141]
+                    - cell "0/2" [ref=e7142]
+                  - row "2022-01-17 Australian Open Hard QF 4 🇬🇷 Stefanos Tsitsipas (4) 10 🇮🇹 Jannik Sinner (11) 6-3 6-4 6-2 5 126 4 2 67.9% 79.2% 60.0% 0/0" [ref=e7143]:
+                    - cell "2022-01-17" [ref=e7144]
+                    - cell "Australian Open" [ref=e7145]:
+                      - link "Australian Open" [ref=e7146] [cursor=pointer]:
+                        - /url: /tournaments/580/2022
+                    - cell "Hard" [ref=e7147]
+                    - cell "QF" [ref=e7148]
+                    - cell "4" [ref=e7149]
+                    - cell "🇬🇷 Stefanos Tsitsipas (4)" [ref=e7150]:
+                      - img "🇬🇷" [ref=e7151]
+                      - link "Stefanos Tsitsipas (4)" [ref=e7152] [cursor=pointer]:
+                        - /url: /players/stefanos-tsitsipas
+                        - text: Stefanos Tsitsipas
+                        - generic [ref=e7153]: (4)
+                    - cell "10" [ref=e7154]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e7155]:
+                      - img "🇮🇹" [ref=e7156]
+                      - link "Jannik Sinner (11)" [ref=e7157] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7158]: (11)
+                    - cell "6-3 6-4 6-2" [ref=e7159]
+                    - cell "5" [ref=e7160]
+                    - cell "126" [ref=e7161]
+                    - cell "4" [ref=e7162]
+                    - cell "2" [ref=e7163]
+                    - cell "67.9%" [ref=e7164]
+                    - cell "79.2%" [ref=e7165]
+                    - cell "60.0%" [ref=e7166]
+                    - cell "0/0" [ref=e7167]
+                  - row "2022-01-17 Australian Open Hard R16 10 🇮🇹 Jannik Sinner (11) 42 🇦🇺 Alex de Minaur (32) 7-6(3) 6-3 6-4 5 155 9 0 62.2% 75.4% 61.9% 7/8" [ref=e7168]:
+                    - cell "2022-01-17" [ref=e7169]
+                    - cell "Australian Open" [ref=e7170]:
+                      - link "Australian Open" [ref=e7171] [cursor=pointer]:
+                        - /url: /tournaments/580/2022
+                    - cell "Hard" [ref=e7172]
+                    - cell "R16" [ref=e7173]
+                    - cell "10" [ref=e7174]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e7175]:
+                      - img "🇮🇹" [ref=e7176]
+                      - link "Jannik Sinner (11)" [ref=e7177] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7178]: (11)
+                    - cell "42" [ref=e7179]
+                    - cell "🇦🇺 Alex de Minaur (32)" [ref=e7180]:
+                      - img "🇦🇺" [ref=e7181]
+                      - link "Alex de Minaur (32)" [ref=e7182] [cursor=pointer]:
+                        - /url: /players/alex-de-minaur
+                        - text: Alex de Minaur
+                        - generic [ref=e7183]: (32)
+                    - cell "7-6(3) 6-3 6-4" [ref=e7184]
+                    - cell "5" [ref=e7185]
+                    - cell "155" [ref=e7186]
+                    - cell "9" [ref=e7187]
+                    - cell "0" [ref=e7188]
+                    - cell "62.2%" [ref=e7189]
+                    - cell "75.4%" [ref=e7190]
+                    - cell "61.9%" [ref=e7191]
+                    - cell "7/8" [ref=e7192]
+                  - row "2022-01-17 Australian Open Hard R32 10 🇮🇹 Jannik Sinner (11) 120 🇯🇵 Taro Daniel (Q) 6-4 1-6 6-3 6-1 5 161 10 2 73.7% 74.3% 32.0% 2/6" [ref=e7193]:
+                    - cell "2022-01-17" [ref=e7194]
+                    - cell "Australian Open" [ref=e7195]:
+                      - link "Australian Open" [ref=e7196] [cursor=pointer]:
+                        - /url: /tournaments/580/2022
+                    - cell "Hard" [ref=e7197]
+                    - cell "R32" [ref=e7198]
+                    - cell "10" [ref=e7199]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e7200]:
+                      - img "🇮🇹" [ref=e7201]
+                      - link "Jannik Sinner (11)" [ref=e7202] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7203]: (11)
+                    - cell "120" [ref=e7204]
+                    - cell "🇯🇵 Taro Daniel (Q)" [ref=e7205]:
+                      - img "🇯🇵" [ref=e7206]
+                      - link "Taro Daniel (Q)" [ref=e7207] [cursor=pointer]:
+                        - /url: /players/taro-daniel
+                        - text: Taro Daniel
+                        - generic [ref=e7208]: (Q)
+                    - cell "6-4 1-6 6-3 6-1" [ref=e7209]
+                    - cell "5" [ref=e7210]
+                    - cell "161" [ref=e7211]
+                    - cell "10" [ref=e7212]
+                    - cell "2" [ref=e7213]
+                    - cell "73.7%" [ref=e7214]
+                    - cell "74.3%" [ref=e7215]
+                    - cell "32.0%" [ref=e7216]
+                    - cell "2/6" [ref=e7217]
+                  - row "2022-01-17 Australian Open Hard R64 10 🇮🇹 Jannik Sinner (11) 104 🇺🇸 Steve Johnson 6-2 6-4 6-3 5 101 11 2 63.4% 82.2% 69.2% 1/1" [ref=e7218]:
+                    - cell "2022-01-17" [ref=e7219]
+                    - cell "Australian Open" [ref=e7220]:
+                      - link "Australian Open" [ref=e7221] [cursor=pointer]:
+                        - /url: /tournaments/580/2022
+                    - cell "Hard" [ref=e7222]
+                    - cell "R64" [ref=e7223]
+                    - cell "10" [ref=e7224]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e7225]:
+                      - img "🇮🇹" [ref=e7226]
+                      - link "Jannik Sinner (11)" [ref=e7227] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7228]: (11)
+                    - cell "104" [ref=e7229]
+                    - cell "🇺🇸 Steve Johnson" [ref=e7230]:
+                      - img "🇺🇸" [ref=e7231]
+                      - link "Steve Johnson" [ref=e7232] [cursor=pointer]:
+                        - /url: /players/steve-johnson
+                    - cell "6-2 6-4 6-3" [ref=e7233]
+                    - cell "5" [ref=e7234]
+                    - cell "101" [ref=e7235]
+                    - cell "11" [ref=e7236]
+                    - cell "2" [ref=e7237]
+                    - cell "63.4%" [ref=e7238]
+                    - cell "82.2%" [ref=e7239]
+                    - cell "69.2%" [ref=e7240]
+                    - cell "1/1" [ref=e7241]
+                  - row "2022-01-17 Australian Open Hard R128 10 🇮🇹 Jannik Sinner (11) 140 🇵🇹 Joao Sousa (LL) 6-4 7-5 6-1 5 127 3 2 64.8% 73.7% 58.1% 0/2" [ref=e7242]:
+                    - cell "2022-01-17" [ref=e7243]
+                    - cell "Australian Open" [ref=e7244]:
+                      - link "Australian Open" [ref=e7245] [cursor=pointer]:
+                        - /url: /tournaments/580/2022
+                    - cell "Hard" [ref=e7246]
+                    - cell "R128" [ref=e7247]
+                    - cell "10" [ref=e7248]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e7249]:
+                      - img "🇮🇹" [ref=e7250]
+                      - link "Jannik Sinner (11)" [ref=e7251] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7252]: (11)
+                    - cell "140" [ref=e7253]
+                    - cell "🇵🇹 Joao Sousa (LL)" [ref=e7254]:
+                      - img "🇵🇹" [ref=e7255]
+                      - link "Joao Sousa (LL)" [ref=e7256] [cursor=pointer]:
+                        - /url: /players/joao-sousa
+                        - text: Joao Sousa
+                        - generic [ref=e7257]: (LL)
+                    - cell "6-4 7-5 6-1" [ref=e7258]
+                    - cell "5" [ref=e7259]
+                    - cell "127" [ref=e7260]
+                    - cell "3" [ref=e7261]
+                    - cell "2" [ref=e7262]
+                    - cell "64.8%" [ref=e7263]
+                    - cell "73.7%" [ref=e7264]
+                    - cell "58.1%" [ref=e7265]
+                    - cell "0/2" [ref=e7266]
+                  - row "2022-01-03 ATP Cup Hard R128 10 🇮🇹 Jannik Sinner 167 🇷🇺 Roman Safiullin 7-6(6) 6-3 3 116 11 2 61.1% 70.9% 48.6% 11/12" [ref=e7267]:
+                    - cell "2022-01-03" [ref=e7268]
+                    - cell "ATP Cup" [ref=e7269]:
+                      - link "ATP Cup" [ref=e7270] [cursor=pointer]:
+                        - /url: /tournaments/8888/2022
+                    - cell "Hard" [ref=e7271]
+                    - cell "R128" [ref=e7272]
+                    - cell "10" [ref=e7273]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e7274]:
+                      - img "🇮🇹" [ref=e7275]
+                      - link "Jannik Sinner" [ref=e7276] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "167" [ref=e7277]
+                    - cell "🇷🇺 Roman Safiullin" [ref=e7278]:
+                      - img "🇷🇺" [ref=e7279]
+                      - link "Roman Safiullin" [ref=e7280] [cursor=pointer]:
+                        - /url: /players/roman-safiullin
+                    - cell "7-6(6) 6-3" [ref=e7281]
+                    - cell "3" [ref=e7282]
+                    - cell "116" [ref=e7283]
+                    - cell "11" [ref=e7284]
+                    - cell "2" [ref=e7285]
+                    - cell "61.1%" [ref=e7286]
+                    - cell "70.9%" [ref=e7287]
+                    - cell "48.6%" [ref=e7288]
+                    - cell "11/12" [ref=e7289]
+                  - row "2022-01-03 ATP Cup Hard R128 10 🇮🇹 Jannik Sinner 58 🇫🇷 Arthur Rinderknech 6-3 7-6(3) 3 96 3 3 57.4% 85.7% 61.5% 1/2" [ref=e7290]:
+                    - cell "2022-01-03" [ref=e7291]
+                    - cell "ATP Cup" [ref=e7292]:
+                      - link "ATP Cup" [ref=e7293] [cursor=pointer]:
+                        - /url: /tournaments/8888/2022
+                    - cell "Hard" [ref=e7294]
+                    - cell "R128" [ref=e7295]
+                    - cell "10" [ref=e7296]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e7297]:
+                      - img "🇮🇹" [ref=e7298]
+                      - link "Jannik Sinner" [ref=e7299] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "58" [ref=e7300]
+                    - cell "🇫🇷 Arthur Rinderknech" [ref=e7301]:
+                      - img "🇫🇷" [ref=e7302]
+                      - link "Arthur Rinderknech" [ref=e7303] [cursor=pointer]:
+                        - /url: /players/arthur-rinderknech
+                    - cell "6-3 7-6(3)" [ref=e7304]
+                    - cell "3" [ref=e7305]
+                    - cell "96" [ref=e7306]
+                    - cell "3" [ref=e7307]
+                    - cell "3" [ref=e7308]
+                    - cell "57.4%" [ref=e7309]
+                    - cell "85.7%" [ref=e7310]
+                    - cell "61.5%" [ref=e7311]
+                    - cell "1/2" [ref=e7312]
+                  - row "2022-01-03 ATP Cup Hard R128 10 🇮🇹 Jannik Sinner 176 🇦🇺 Max Purcell 6-1 6-3 3 63 6 0 73.2% 83.3% 54.5% 0/1" [ref=e7313]:
+                    - cell "2022-01-03" [ref=e7314]
+                    - cell "ATP Cup" [ref=e7315]:
+                      - link "ATP Cup" [ref=e7316] [cursor=pointer]:
+                        - /url: /tournaments/8888/2022
+                    - cell "Hard" [ref=e7317]
+                    - cell "R128" [ref=e7318]
+                    - cell "10" [ref=e7319]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e7320]:
+                      - img "🇮🇹" [ref=e7321]
+                      - link "Jannik Sinner" [ref=e7322] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "176" [ref=e7323]
+                    - cell "🇦🇺 Max Purcell" [ref=e7324]:
+                      - img "🇦🇺" [ref=e7325]
+                      - link "Max Purcell" [ref=e7326] [cursor=pointer]:
+                        - /url: /players/max-purcell
+                    - cell "6-1 6-3" [ref=e7327]
+                    - cell "3" [ref=e7328]
+                    - cell "63" [ref=e7329]
+                    - cell "6" [ref=e7330]
+                    - cell "0" [ref=e7331]
+                    - cell "73.2%" [ref=e7332]
+                    - cell "83.3%" [ref=e7333]
+                    - cell "54.5%" [ref=e7334]
+                    - cell "0/1" [ref=e7335]
+                  - 'row "2021-11-29 Davis Cup Finals QF: ITA vs CRO Hard RR 10 🇮🇹 Jannik Sinner 30 🇭🇷 Marin Cilic 3-6 7-6(4) 6-3 3 161 3 2 62.6% 68.4% 52.9% 4/8" [ref=e7336]':
+                    - cell "2021-11-29" [ref=e7337]
+                    - 'cell "Davis Cup Finals QF: ITA vs CRO" [ref=e7338]':
+                      - 'link "Davis Cup Finals QF: ITA vs CRO" [ref=e7339] [cursor=pointer]':
+                        - /url: "#"
+                    - cell "Hard" [ref=e7340]
+                    - cell "RR" [ref=e7341]
+                    - cell "10" [ref=e7342]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e7343]:
+                      - img "🇮🇹" [ref=e7344]
+                      - link "Jannik Sinner" [ref=e7345] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "30" [ref=e7346]
+                    - cell "🇭🇷 Marin Cilic" [ref=e7347]:
+                      - img "🇭🇷" [ref=e7348]
+                      - link "Marin Cilic" [ref=e7349] [cursor=pointer]:
+                        - /url: /players/marin-cilic
+                    - cell "3-6 7-6(4) 6-3" [ref=e7350]
+                    - cell "3" [ref=e7351]
+                    - cell "161" [ref=e7352]
+                    - cell "3" [ref=e7353]
+                    - cell "2" [ref=e7354]
+                    - cell "62.6%" [ref=e7355]
+                    - cell "68.4%" [ref=e7356]
+                    - cell "52.9%" [ref=e7357]
+                    - cell "4/8" [ref=e7358]
+                  - 'row "2021-11-27 Davis Cup Finals RR: ITA vs COL Hard RR 10 🇮🇹 Jannik Sinner 111 🇨🇴 Daniel Elahi Galan 7-5 6-0 3 78 1 0 49.0% 72.0% 57.7% 0/2" [ref=e7359]':
+                    - cell "2021-11-27" [ref=e7360]
+                    - 'cell "Davis Cup Finals RR: ITA vs COL" [ref=e7361]':
+                      - 'link "Davis Cup Finals RR: ITA vs COL" [ref=e7362] [cursor=pointer]':
+                        - /url: "#"
+                    - cell "Hard" [ref=e7363]
+                    - cell "RR" [ref=e7364]
+                    - cell "10" [ref=e7365]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e7366]:
+                      - img "🇮🇹" [ref=e7367]
+                      - link "Jannik Sinner" [ref=e7368] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "111" [ref=e7369]
+                    - cell "🇨🇴 Daniel Elahi Galan" [ref=e7370]:
+                      - img "🇨🇴" [ref=e7371]
+                      - link "Daniel Elahi Galan" [ref=e7372] [cursor=pointer]:
+                        - /url: /players/daniel-elahi-galan
+                    - cell "7-5 6-0" [ref=e7373]
+                    - cell "3" [ref=e7374]
+                    - cell "78" [ref=e7375]
+                    - cell "1" [ref=e7376]
+                    - cell "0" [ref=e7377]
+                    - cell "49.0%" [ref=e7378]
+                    - cell "72.0%" [ref=e7379]
+                    - cell "57.7%" [ref=e7380]
+                    - cell "0/2" [ref=e7381]
+                  - 'row "2021-11-26 Davis Cup Finals RR: USA vs ITA Hard RR 10 🇮🇹 Jannik Sinner 24 🇺🇸 John Isner 6-2 6-0 3 62 1 2 70.6% 87.5% 80.0% 3/3" [ref=e7382]':
+                    - cell "2021-11-26" [ref=e7383]
+                    - 'cell "Davis Cup Finals RR: USA vs ITA" [ref=e7384]':
+                      - 'link "Davis Cup Finals RR: USA vs ITA" [ref=e7385] [cursor=pointer]':
+                        - /url: "#"
+                    - cell "Hard" [ref=e7386]
+                    - cell "RR" [ref=e7387]
+                    - cell "10" [ref=e7388]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e7389]:
+                      - img "🇮🇹" [ref=e7390]
+                      - link "Jannik Sinner" [ref=e7391] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "24" [ref=e7392]
+                    - cell "🇺🇸 John Isner" [ref=e7393]:
+                      - img "🇺🇸" [ref=e7394]
+                      - link "John Isner" [ref=e7395] [cursor=pointer]:
+                        - /url: /players/john-isner
+                    - cell "6-2 6-0" [ref=e7396]
+                    - cell "3" [ref=e7397]
+                    - cell "62" [ref=e7398]
+                    - cell "1" [ref=e7399]
+                    - cell "2" [ref=e7400]
+                    - cell "70.6%" [ref=e7401]
+                    - cell "87.5%" [ref=e7402]
+                    - cell "80.0%" [ref=e7403]
+                    - cell "3/3" [ref=e7404]
+                  - row "2021-11-15 Tour Finals Hard RR 2 🇷🇺 Daniil Medvedev (2) 11 🇮🇹 Jannik Sinner (9) 6-0 6-7(5) 7-6(8) 3 149 18 5 70.6% 76.4% 60.0% 3/5" [ref=e7405]:
+                    - cell "2021-11-15" [ref=e7406]
+                    - cell "Tour Finals" [ref=e7407]:
+                      - link "Tour Finals" [ref=e7408] [cursor=pointer]:
+                        - /url: /tournaments/605/2021
+                    - cell "Hard" [ref=e7409]
+                    - cell "RR" [ref=e7410]
+                    - cell "2" [ref=e7411]
+                    - cell "🇷🇺 Daniil Medvedev (2)" [ref=e7412]:
+                      - img "🇷🇺" [ref=e7413]
+                      - link "Daniil Medvedev (2)" [ref=e7414] [cursor=pointer]:
+                        - /url: /players/daniil-medvedev
+                        - text: Daniil Medvedev
+                        - generic [ref=e7415]: (2)
+                    - cell "11" [ref=e7416]
+                    - cell "🇮🇹 Jannik Sinner (9)" [ref=e7417]:
+                      - img "🇮🇹" [ref=e7418]
+                      - link "Jannik Sinner (9)" [ref=e7419] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7420]: (9)
+                    - cell "6-0 6-7(5) 7-6(8)" [ref=e7421]
+                    - cell "3" [ref=e7422]
+                    - cell "149" [ref=e7423]
+                    - cell "18" [ref=e7424]
+                    - cell "5" [ref=e7425]
+                    - cell "70.6%" [ref=e7426]
+                    - cell "76.4%" [ref=e7427]
+                    - cell "60.0%" [ref=e7428]
+                    - cell "3/5" [ref=e7429]
+                  - row "2021-11-15 Tour Finals Hard RR 11 🇮🇹 Jannik Sinner (9) 9 🇵🇱 Hubert Hurkacz (7) 6-2 6-2 3 85 5 0 56.5% 74.4% 50.0% 5/5" [ref=e7430]:
+                    - cell "2021-11-15" [ref=e7431]
+                    - cell "Tour Finals" [ref=e7432]:
+                      - link "Tour Finals" [ref=e7433] [cursor=pointer]:
+                        - /url: /tournaments/605/2021
+                    - cell "Hard" [ref=e7434]
+                    - cell "RR" [ref=e7435]
+                    - cell "11" [ref=e7436]
+                    - cell "🇮🇹 Jannik Sinner (9)" [ref=e7437]:
+                      - img "🇮🇹" [ref=e7438]
+                      - link "Jannik Sinner (9)" [ref=e7439] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7440]: (9)
+                    - cell "9" [ref=e7441]
+                    - cell "🇵🇱 Hubert Hurkacz (7)" [ref=e7442]:
+                      - img "🇵🇱" [ref=e7443]
+                      - link "Hubert Hurkacz (7)" [ref=e7444] [cursor=pointer]:
+                        - /url: /players/hubert-hurkacz
+                        - text: Hubert Hurkacz
+                        - generic [ref=e7445]: (7)
+                    - cell "6-2 6-2" [ref=e7446]
+                    - cell "3" [ref=e7447]
+                    - cell "85" [ref=e7448]
+                    - cell "5" [ref=e7449]
+                    - cell "0" [ref=e7450]
+                    - cell "56.5%" [ref=e7451]
+                    - cell "74.4%" [ref=e7452]
+                    - cell "50.0%" [ref=e7453]
+                    - cell "5/5" [ref=e7454]
+                  - row "2021-11-08 Stockholm Hard R16 143 🇬🇧 Andy Murray (WC) 10 🇮🇹 Jannik Sinner (1) 7-6(4) 6-3 3 135 8 2 49.2% 71.9% 69.7% 1/1" [ref=e7455]:
+                    - cell "2021-11-08" [ref=e7456]
+                    - cell "Stockholm" [ref=e7457]:
+                      - link "Stockholm" [ref=e7458] [cursor=pointer]:
+                        - /url: /tournaments/429/2021
+                    - cell "Hard" [ref=e7459]
+                    - cell "R16" [ref=e7460]
+                    - cell "143" [ref=e7461]
+                    - cell "🇬🇧 Andy Murray (WC)" [ref=e7462]:
+                      - img "🇬🇧" [ref=e7463]
+                      - link "Andy Murray (WC)" [ref=e7464] [cursor=pointer]:
+                        - /url: /players/andy-murray
+                        - text: Andy Murray
+                        - generic [ref=e7465]: (WC)
+                    - cell "10" [ref=e7466]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e7467]:
+                      - img "🇮🇹" [ref=e7468]
+                      - link "Jannik Sinner (1)" [ref=e7469] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7470]: (1)
+                    - cell "7-6(4) 6-3" [ref=e7471]
+                    - cell "3" [ref=e7472]
+                    - cell "135" [ref=e7473]
+                    - cell "8" [ref=e7474]
+                    - cell "2" [ref=e7475]
+                    - cell "49.2%" [ref=e7476]
+                    - cell "71.9%" [ref=e7477]
+                    - cell "69.7%" [ref=e7478]
+                    - cell "1/1" [ref=e7479]
+                  - row "2021-11-01 Paris Masters Hard R32 35 🇪🇸 Carlos Alcaraz 9 🇮🇹 Jannik Sinner (8) 7-6(1) 7-5 3 127 3 4 57.0% 80.0% 55.9% 1/2" [ref=e7480]:
+                    - cell "2021-11-01" [ref=e7481]
+                    - cell "Paris Masters" [ref=e7482]:
+                      - link "Paris Masters" [ref=e7483] [cursor=pointer]:
+                        - /url: /tournaments/352/2021
+                    - cell "Hard" [ref=e7484]
+                    - cell "R32" [ref=e7485]
+                    - cell "35" [ref=e7486]
+                    - cell "🇪🇸 Carlos Alcaraz" [ref=e7487]:
+                      - img "🇪🇸" [ref=e7488]
+                      - link "Carlos Alcaraz" [ref=e7489] [cursor=pointer]:
+                        - /url: /players/carlos-alcaraz
+                    - cell "9" [ref=e7490]
+                    - cell "🇮🇹 Jannik Sinner (8)" [ref=e7491]:
+                      - img "🇮🇹" [ref=e7492]
+                      - link "Jannik Sinner (8)" [ref=e7493] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7494]: (8)
+                    - cell "7-6(1) 7-5" [ref=e7495]
+                    - cell "3" [ref=e7496]
+                    - cell "127" [ref=e7497]
+                    - cell "3" [ref=e7498]
+                    - cell "4" [ref=e7499]
+                    - cell "57.0%" [ref=e7500]
+                    - cell "80.0%" [ref=e7501]
+                    - cell "55.9%" [ref=e7502]
+                    - cell "1/2" [ref=e7503]
+                  - row "2021-10-25 Vienna Hard SF 49 🇺🇸 Frances Tiafoe (Q) 11 🇮🇹 Jannik Sinner (7) 3-6 7-5 6-2 3 138 7 0 64.4% 60.0% 63.9% 5/8" [ref=e7504]:
+                    - cell "2021-10-25" [ref=e7505]
+                    - cell "Vienna" [ref=e7506]:
+                      - link "Vienna" [ref=e7507] [cursor=pointer]:
+                        - /url: /tournaments/337/2021
+                    - cell "Hard" [ref=e7508]
+                    - cell "SF" [ref=e7509]
+                    - cell "49" [ref=e7510]
+                    - cell "🇺🇸 Frances Tiafoe (Q)" [ref=e7511]:
+                      - img "🇺🇸" [ref=e7512]
+                      - link "Frances Tiafoe (Q)" [ref=e7513] [cursor=pointer]:
+                        - /url: /players/frances-tiafoe
+                        - text: Frances Tiafoe
+                        - generic [ref=e7514]: (Q)
+                    - cell "11" [ref=e7515]
+                    - cell "🇮🇹 Jannik Sinner (7)" [ref=e7516]:
+                      - img "🇮🇹" [ref=e7517]
+                      - link "Jannik Sinner (7)" [ref=e7518] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7519]: (7)
+                    - cell "3-6 7-5 6-2" [ref=e7520]
+                    - cell "3" [ref=e7521]
+                    - cell "138" [ref=e7522]
+                    - cell "7" [ref=e7523]
+                    - cell "0" [ref=e7524]
+                    - cell "64.4%" [ref=e7525]
+                    - cell "60.0%" [ref=e7526]
+                    - cell "63.9%" [ref=e7527]
+                    - cell "5/8" [ref=e7528]
+                  - row "2021-10-25 Vienna Hard QF 11 🇮🇹 Jannik Sinner (7) 8 🇳🇴 Casper Ruud (4) 7-5 6-1 3 97 10 0 67.7% 76.2% 40.0% 4/5" [ref=e7529]:
+                    - cell "2021-10-25" [ref=e7530]
+                    - cell "Vienna" [ref=e7531]:
+                      - link "Vienna" [ref=e7532] [cursor=pointer]:
+                        - /url: /tournaments/337/2021
+                    - cell "Hard" [ref=e7533]
+                    - cell "QF" [ref=e7534]
+                    - cell "11" [ref=e7535]
+                    - cell "🇮🇹 Jannik Sinner (7)" [ref=e7536]:
+                      - img "🇮🇹" [ref=e7537]
+                      - link "Jannik Sinner (7)" [ref=e7538] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7539]: (7)
+                    - cell "8" [ref=e7540]
+                    - cell "🇳🇴 Casper Ruud (4)" [ref=e7541]:
+                      - img "🇳🇴" [ref=e7542]
+                      - link "Casper Ruud (4)" [ref=e7543] [cursor=pointer]:
+                        - /url: /players/casper-ruud
+                        - text: Casper Ruud
+                        - generic [ref=e7544]: (4)
+                    - cell "7-5 6-1" [ref=e7545]
+                    - cell "3" [ref=e7546]
+                    - cell "97" [ref=e7547]
+                    - cell "10" [ref=e7548]
+                    - cell "0" [ref=e7549]
+                    - cell "67.7%" [ref=e7550]
+                    - cell "76.2%" [ref=e7551]
+                    - cell "40.0%" [ref=e7552]
+                    - cell "4/5" [ref=e7553]
+                  - row "2021-10-25 Vienna Hard R16 11 🇮🇹 Jannik Sinner (7) 116 🇦🇹 Dennis Novak (WC) 6-4 6-2 3 76 2 3 62.7% 75.7% 54.5% 6/6" [ref=e7554]:
+                    - cell "2021-10-25" [ref=e7555]
+                    - cell "Vienna" [ref=e7556]:
+                      - link "Vienna" [ref=e7557] [cursor=pointer]:
+                        - /url: /tournaments/337/2021
+                    - cell "Hard" [ref=e7558]
+                    - cell "R16" [ref=e7559]
+                    - cell "11" [ref=e7560]
+                    - cell "🇮🇹 Jannik Sinner (7)" [ref=e7561]:
+                      - img "🇮🇹" [ref=e7562]
+                      - link "Jannik Sinner (7)" [ref=e7563] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7564]: (7)
+                    - cell "116" [ref=e7565]
+                    - cell "🇦🇹 Dennis Novak (WC)" [ref=e7566]:
+                      - img "🇦🇹" [ref=e7567]
+                      - link "Dennis Novak (WC)" [ref=e7568] [cursor=pointer]:
+                        - /url: /players/dennis-novak
+                        - text: Dennis Novak
+                        - generic [ref=e7569]: (WC)
+                    - cell "6-4 6-2" [ref=e7570]
+                    - cell "3" [ref=e7571]
+                    - cell "76" [ref=e7572]
+                    - cell "2" [ref=e7573]
+                    - cell "3" [ref=e7574]
+                    - cell "62.7%" [ref=e7575]
+                    - cell "75.7%" [ref=e7576]
+                    - cell "54.5%" [ref=e7577]
+                    - cell "6/6" [ref=e7578]
+                  - row "2021-10-25 Vienna Hard R32 11 🇮🇹 Jannik Sinner (7) 27 🇺🇸 Reilly Opelka 6-4 6-2 3 63 1 1 69.0% 93.1% 69.2% 0/0" [ref=e7579]:
+                    - cell "2021-10-25" [ref=e7580]
+                    - cell "Vienna" [ref=e7581]:
+                      - link "Vienna" [ref=e7582] [cursor=pointer]:
+                        - /url: /tournaments/337/2021
+                    - cell "Hard" [ref=e7583]
+                    - cell "R32" [ref=e7584]
+                    - cell "11" [ref=e7585]
+                    - cell "🇮🇹 Jannik Sinner (7)" [ref=e7586]:
+                      - img "🇮🇹" [ref=e7587]
+                      - link "Jannik Sinner (7)" [ref=e7588] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7589]: (7)
+                    - cell "27" [ref=e7590]
+                    - cell "🇺🇸 Reilly Opelka" [ref=e7591]:
+                      - img "🇺🇸" [ref=e7592]
+                      - link "Reilly Opelka" [ref=e7593] [cursor=pointer]:
+                        - /url: /players/reilly-opelka
+                    - cell "6-4 6-2" [ref=e7594]
+                    - cell "3" [ref=e7595]
+                    - cell "63" [ref=e7596]
+                    - cell "1" [ref=e7597]
+                    - cell "1" [ref=e7598]
+                    - cell "69.0%" [ref=e7599]
+                    - cell "93.1%" [ref=e7600]
+                    - cell "69.2%" [ref=e7601]
+                    - cell "0/0" [ref=e7602]
+                  - row "2021-10-18 Antwerp Hard F 13 🇮🇹 Jannik Sinner (1) 14 🇦🇷 Diego Schwartzman (2) 6-2 6-2 3 76 8 2 52.3% 91.3% 61.9% 2/2" [ref=e7603]:
+                    - cell "2021-10-18" [ref=e7604]
+                    - cell "Antwerp" [ref=e7605]:
+                      - link "Antwerp" [ref=e7606] [cursor=pointer]:
+                        - /url: /tournaments/7485/2021
+                    - cell "Hard" [ref=e7607]
+                    - cell "F" [ref=e7608]
+                    - cell "13" [ref=e7609]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e7610]:
+                      - img "🇮🇹" [ref=e7611]
+                      - link "Jannik Sinner (1)" [ref=e7612] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7613]: (1)
+                    - cell "14" [ref=e7614]
+                    - cell "🇦🇷 Diego Schwartzman (2)" [ref=e7615]:
+                      - img "🇦🇷" [ref=e7616]
+                      - link "Diego Schwartzman (2)" [ref=e7617] [cursor=pointer]:
+                        - /url: /players/diego-schwartzman
+                        - text: Diego Schwartzman
+                        - generic [ref=e7618]: (2)
+                    - cell "6-2 6-2" [ref=e7619]
+                    - cell "3" [ref=e7620]
+                    - cell "76" [ref=e7621]
+                    - cell "8" [ref=e7622]
+                    - cell "2" [ref=e7623]
+                    - cell "52.3%" [ref=e7624]
+                    - cell "91.3%" [ref=e7625]
+                    - cell "61.9%" [ref=e7626]
+                    - cell "2/2" [ref=e7627]
+                  - row "2021-10-18 Antwerp Hard SF 13 🇮🇹 Jannik Sinner (1) 32 🇿🇦 Lloyd Harris (7) 6-2 6-2 3 86 2 0 61.4% 77.1% 59.1% 3/3" [ref=e7628]:
+                    - cell "2021-10-18" [ref=e7629]
+                    - cell "Antwerp" [ref=e7630]:
+                      - link "Antwerp" [ref=e7631] [cursor=pointer]:
+                        - /url: /tournaments/7485/2021
+                    - cell "Hard" [ref=e7632]
+                    - cell "SF" [ref=e7633]
+                    - cell "13" [ref=e7634]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e7635]:
+                      - img "🇮🇹" [ref=e7636]
+                      - link "Jannik Sinner (1)" [ref=e7637] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7638]: (1)
+                    - cell "32" [ref=e7639]
+                    - cell "🇿🇦 Lloyd Harris (7)" [ref=e7640]:
+                      - img "🇿🇦" [ref=e7641]
+                      - link "Lloyd Harris (7)" [ref=e7642] [cursor=pointer]:
+                        - /url: /players/lloyd-harris
+                        - text: Lloyd Harris
+                        - generic [ref=e7643]: (7)
+                    - cell "6-2 6-2" [ref=e7644]
+                    - cell "3" [ref=e7645]
+                    - cell "86" [ref=e7646]
+                    - cell "2" [ref=e7647]
+                    - cell "0" [ref=e7648]
+                    - cell "61.4%" [ref=e7649]
+                    - cell "77.1%" [ref=e7650]
+                    - cell "59.1%" [ref=e7651]
+                    - cell "3/3" [ref=e7652]
+                  - row "2021-10-18 Antwerp Hard QF 13 🇮🇹 Jannik Sinner (1) 65 🇫🇷 Arthur Rinderknech 6-4 6-2 3 78 4 1 64.4% 82.8% 68.8% 2/3" [ref=e7653]:
+                    - cell "2021-10-18" [ref=e7654]
+                    - cell "Antwerp" [ref=e7655]:
+                      - link "Antwerp" [ref=e7656] [cursor=pointer]:
+                        - /url: /tournaments/7485/2021
+                    - cell "Hard" [ref=e7657]
+                    - cell "QF" [ref=e7658]
+                    - cell "13" [ref=e7659]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e7660]:
+                      - img "🇮🇹" [ref=e7661]
+                      - link "Jannik Sinner (1)" [ref=e7662] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7663]: (1)
+                    - cell "65" [ref=e7664]
+                    - cell "🇫🇷 Arthur Rinderknech" [ref=e7665]:
+                      - img "🇫🇷" [ref=e7666]
+                      - link "Arthur Rinderknech" [ref=e7667] [cursor=pointer]:
+                        - /url: /players/arthur-rinderknech
+                    - cell "6-4 6-2" [ref=e7668]
+                    - cell "3" [ref=e7669]
+                    - cell "78" [ref=e7670]
+                    - cell "4" [ref=e7671]
+                    - cell "1" [ref=e7672]
+                    - cell "64.4%" [ref=e7673]
+                    - cell "82.8%" [ref=e7674]
+                    - cell "68.8%" [ref=e7675]
+                    - cell "2/3" [ref=e7676]
+                  - row "2021-10-18 Antwerp Hard R16 13 🇮🇹 Jannik Sinner (1) 69 🇮🇹 Lorenzo Musetti 7-5 6-2 3 94 2 1 47.2% 80.0% 75.0% 1/1" [ref=e7677]:
+                    - cell "2021-10-18" [ref=e7678]
+                    - cell "Antwerp" [ref=e7679]:
+                      - link "Antwerp" [ref=e7680] [cursor=pointer]:
+                        - /url: /tournaments/7485/2021
+                    - cell "Hard" [ref=e7681]
+                    - cell "R16" [ref=e7682]
+                    - cell "13" [ref=e7683]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e7684]:
+                      - img "🇮🇹" [ref=e7685]
+                      - link "Jannik Sinner (1)" [ref=e7686] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7687]: (1)
+                    - cell "69" [ref=e7688]
+                    - cell "🇮🇹 Lorenzo Musetti" [ref=e7689]:
+                      - img "🇮🇹" [ref=e7690]
+                      - link "Lorenzo Musetti" [ref=e7691] [cursor=pointer]:
+                        - /url: /players/lorenzo-musetti
+                    - cell "7-5 6-2" [ref=e7692]
+                    - cell "3" [ref=e7693]
+                    - cell "94" [ref=e7694]
+                    - cell "2" [ref=e7695]
+                    - cell "1" [ref=e7696]
+                    - cell "47.2%" [ref=e7697]
+                    - cell "80.0%" [ref=e7698]
+                    - cell "75.0%" [ref=e7699]
+                    - cell "1/1" [ref=e7700]
+                  - row "2021-10-04 Indian Wells Masters Hard R16 39 🇺🇸 Taylor Fritz (31) 14 🇮🇹 Jannik Sinner (10) 6-4 6-3 3 100 6 3 58.1% 58.1% 54.8% 5/8" [ref=e7701]:
+                    - cell "2021-10-04" [ref=e7702]
+                    - cell "Indian Wells Masters" [ref=e7703]:
+                      - link "Indian Wells Masters" [ref=e7704] [cursor=pointer]:
+                        - /url: /tournaments/404/2021
+                    - cell "Hard" [ref=e7705]
+                    - cell "R16" [ref=e7706]
+                    - cell "39" [ref=e7707]
+                    - cell "🇺🇸 Taylor Fritz (31)" [ref=e7708]:
+                      - img "🇺🇸" [ref=e7709]
+                      - link "Taylor Fritz (31)" [ref=e7710] [cursor=pointer]:
+                        - /url: /players/taylor-fritz
+                        - text: Taylor Fritz
+                        - generic [ref=e7711]: (31)
+                    - cell "14" [ref=e7712]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e7713]:
+                      - img "🇮🇹" [ref=e7714]
+                      - link "Jannik Sinner (10)" [ref=e7715] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7716]: (10)
+                    - cell "6-4 6-3" [ref=e7717]
+                    - cell "3" [ref=e7718]
+                    - cell "100" [ref=e7719]
+                    - cell "6" [ref=e7720]
+                    - cell "3" [ref=e7721]
+                    - cell "58.1%" [ref=e7722]
+                    - cell "58.1%" [ref=e7723]
+                    - cell "54.8%" [ref=e7724]
+                    - cell "5/8" [ref=e7725]
+                  - row "2021-10-04 Indian Wells Masters Hard R32 14 🇮🇹 Jannik Sinner (10) 24 🇺🇸 John Isner (20) W/O 3 - - - - - - -" [ref=e7726]:
+                    - cell "2021-10-04" [ref=e7727]
+                    - cell "Indian Wells Masters" [ref=e7728]:
+                      - link "Indian Wells Masters" [ref=e7729] [cursor=pointer]:
+                        - /url: /tournaments/404/2021
+                    - cell "Hard" [ref=e7730]
+                    - cell "R32" [ref=e7731]
+                    - cell "14" [ref=e7732]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e7733]:
+                      - img "🇮🇹" [ref=e7734]
+                      - link "Jannik Sinner (10)" [ref=e7735] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7736]: (10)
+                    - cell "24" [ref=e7737]
+                    - cell "🇺🇸 John Isner (20)" [ref=e7738]:
+                      - img "🇺🇸" [ref=e7739]
+                      - link "John Isner (20)" [ref=e7740] [cursor=pointer]:
+                        - /url: /players/john-isner
+                        - text: John Isner
+                        - generic [ref=e7741]: (20)
+                    - cell "W/O" [ref=e7742]
+                    - cell "3" [ref=e7743]
+                    - cell "-" [ref=e7744]
+                    - cell "-" [ref=e7745]
+                    - cell "-" [ref=e7746]
+                    - cell "-" [ref=e7747]
+                    - cell "-" [ref=e7748]
+                    - cell "-" [ref=e7749]
+                    - cell "-" [ref=e7750]
+                  - row "2021-10-04 Indian Wells Masters Hard R64 14 🇮🇹 Jannik Sinner (10) 58 🇦🇺 John Millman 6-2 6-2 3 74 3 1 52.5% 85.7% 73.7% 0/0" [ref=e7751]:
+                    - cell "2021-10-04" [ref=e7752]
+                    - cell "Indian Wells Masters" [ref=e7753]:
+                      - link "Indian Wells Masters" [ref=e7754] [cursor=pointer]:
+                        - /url: /tournaments/404/2021
+                    - cell "Hard" [ref=e7755]
+                    - cell "R64" [ref=e7756]
+                    - cell "14" [ref=e7757]
+                    - cell "🇮🇹 Jannik Sinner (10)" [ref=e7758]:
+                      - img "🇮🇹" [ref=e7759]
+                      - link "Jannik Sinner (10)" [ref=e7760] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7761]: (10)
+                    - cell "58" [ref=e7762]
+                    - cell "🇦🇺 John Millman" [ref=e7763]:
+                      - img "🇦🇺" [ref=e7764]
+                      - link "John Millman" [ref=e7765] [cursor=pointer]:
+                        - /url: /players/john-millman
+                    - cell "6-2 6-2" [ref=e7766]
+                    - cell "3" [ref=e7767]
+                    - cell "74" [ref=e7768]
+                    - cell "3" [ref=e7769]
+                    - cell "1" [ref=e7770]
+                    - cell "52.5%" [ref=e7771]
+                    - cell "85.7%" [ref=e7772]
+                    - cell "73.7%" [ref=e7773]
+                    - cell "0/0" [ref=e7774]
+                  - row "2021-09-27 Sofia Hard F 14 🇮🇹 Jannik Sinner (1) 20 🇫🇷 Gael Monfils (2) 6-3 6-4 3 77 2 1 50.0% 92.6% 63.0% 2/2" [ref=e7775]:
+                    - cell "2021-09-27" [ref=e7776]
+                    - cell "Sofia" [ref=e7777]:
+                      - link "Sofia" [ref=e7778] [cursor=pointer]:
+                        - /url: /tournaments/7434/2021
+                    - cell "Hard" [ref=e7779]
+                    - cell "F" [ref=e7780]
+                    - cell "14" [ref=e7781]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e7782]:
+                      - img "🇮🇹" [ref=e7783]
+                      - link "Jannik Sinner (1)" [ref=e7784] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7785]: (1)
+                    - cell "20" [ref=e7786]
+                    - cell "🇫🇷 Gael Monfils (2)" [ref=e7787]:
+                      - img "🇫🇷" [ref=e7788]
+                      - link "Gael Monfils (2)" [ref=e7789] [cursor=pointer]:
+                        - /url: /players/gael-monfils
+                        - text: Gael Monfils
+                        - generic [ref=e7790]: (2)
+                    - cell "6-3 6-4" [ref=e7791]
+                    - cell "3" [ref=e7792]
+                    - cell "77" [ref=e7793]
+                    - cell "2" [ref=e7794]
+                    - cell "1" [ref=e7795]
+                    - cell "50.0%" [ref=e7796]
+                    - cell "92.6%" [ref=e7797]
+                    - cell "63.0%" [ref=e7798]
+                    - cell "2/2" [ref=e7799]
+                  - row "2021-09-27 Sofia Hard SF 14 🇮🇹 Jannik Sinner (1) 37 🇷🇸 Filip Krajinovic (5) 6-3 7-5 3 106 7 1 53.6% 76.7% 61.5% 1/3" [ref=e7800]:
+                    - cell "2021-09-27" [ref=e7801]
+                    - cell "Sofia" [ref=e7802]:
+                      - link "Sofia" [ref=e7803] [cursor=pointer]:
+                        - /url: /tournaments/7434/2021
+                    - cell "Hard" [ref=e7804]
+                    - cell "SF" [ref=e7805]
+                    - cell "14" [ref=e7806]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e7807]:
+                      - img "🇮🇹" [ref=e7808]
+                      - link "Jannik Sinner (1)" [ref=e7809] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7810]: (1)
+                    - cell "37" [ref=e7811]
+                    - cell "🇷🇸 Filip Krajinovic (5)" [ref=e7812]:
+                      - img "🇷🇸" [ref=e7813]
+                      - link "Filip Krajinovic (5)" [ref=e7814] [cursor=pointer]:
+                        - /url: /players/filip-krajinovic
+                        - text: Filip Krajinovic
+                        - generic [ref=e7815]: (5)
+                    - cell "6-3 7-5" [ref=e7816]
+                    - cell "3" [ref=e7817]
+                    - cell "106" [ref=e7818]
+                    - cell "7" [ref=e7819]
+                    - cell "1" [ref=e7820]
+                    - cell "53.6%" [ref=e7821]
+                    - cell "76.7%" [ref=e7822]
+                    - cell "61.5%" [ref=e7823]
+                    - cell "1/3" [ref=e7824]
+                  - row "2021-09-27 Sofia Hard QF 14 🇮🇹 Jannik Sinner (1) 56 🇦🇺 James Duckworth 7-6(4) 6-4 3 114 6 4 56.3% 75.5% 36.8% 2/5" [ref=e7825]:
+                    - cell "2021-09-27" [ref=e7826]
+                    - cell "Sofia" [ref=e7827]:
+                      - link "Sofia" [ref=e7828] [cursor=pointer]:
+                        - /url: /tournaments/7434/2021
+                    - cell "Hard" [ref=e7829]
+                    - cell "QF" [ref=e7830]
+                    - cell "14" [ref=e7831]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e7832]:
+                      - img "🇮🇹" [ref=e7833]
+                      - link "Jannik Sinner (1)" [ref=e7834] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7835]: (1)
+                    - cell "56" [ref=e7836]
+                    - cell "🇦🇺 James Duckworth" [ref=e7837]:
+                      - img "🇦🇺" [ref=e7838]
+                      - link "James Duckworth" [ref=e7839] [cursor=pointer]:
+                        - /url: /players/james-duckworth
+                    - cell "7-6(4) 6-4" [ref=e7840]
+                    - cell "3" [ref=e7841]
+                    - cell "114" [ref=e7842]
+                    - cell "6" [ref=e7843]
+                    - cell "4" [ref=e7844]
+                    - cell "56.3%" [ref=e7845]
+                    - cell "75.5%" [ref=e7846]
+                    - cell "36.8%" [ref=e7847]
+                    - cell "2/5" [ref=e7848]
+                  - row "2021-09-27 Sofia Hard R16 14 🇮🇹 Jannik Sinner (1) 104 🇧🇾 Egor Gerasimov (Q) 6-2 7-6(3) 3 101 4 2 53.7% 80.6% 58.1% 7/8" [ref=e7849]:
+                    - cell "2021-09-27" [ref=e7850]
+                    - cell "Sofia" [ref=e7851]:
+                      - link "Sofia" [ref=e7852] [cursor=pointer]:
+                        - /url: /tournaments/7434/2021
+                    - cell "Hard" [ref=e7853]
+                    - cell "R16" [ref=e7854]
+                    - cell "14" [ref=e7855]
+                    - cell "🇮🇹 Jannik Sinner (1)" [ref=e7856]:
+                      - img "🇮🇹" [ref=e7857]
+                      - link "Jannik Sinner (1)" [ref=e7858] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7859]: (1)
+                    - cell "104" [ref=e7860]
+                    - cell "🇧🇾 Egor Gerasimov (Q)" [ref=e7861]:
+                      - img "🇧🇾" [ref=e7862]
+                      - link "Egor Gerasimov (Q)" [ref=e7863] [cursor=pointer]:
+                        - /url: /players/egor-gerasimov
+                        - text: Egor Gerasimov
+                        - generic [ref=e7864]: (Q)
+                    - cell "6-2 7-6(3)" [ref=e7865]
+                    - cell "3" [ref=e7866]
+                    - cell "101" [ref=e7867]
+                    - cell "4" [ref=e7868]
+                    - cell "2" [ref=e7869]
+                    - cell "53.7%" [ref=e7870]
+                    - cell "80.6%" [ref=e7871]
+                    - cell "58.1%" [ref=e7872]
+                    - cell "7/8" [ref=e7873]
+                  - row "2021-08-30 US Open Hard R16 4 🇩🇪 Alexander Zverev (4) 16 🇮🇹 Jannik Sinner (13) 6-4 6-4 7-6(7) 5 145 17 3 68.2% 72.6% 58.8% 6/7" [ref=e7874]:
+                    - cell "2021-08-30" [ref=e7875]
+                    - cell "US Open" [ref=e7876]:
+                      - link "US Open" [ref=e7877] [cursor=pointer]:
+                        - /url: /tournaments/560/2021
+                    - cell "Hard" [ref=e7878]
+                    - cell "R16" [ref=e7879]
+                    - cell "4" [ref=e7880]
+                    - cell "🇩🇪 Alexander Zverev (4)" [ref=e7881]:
+                      - img "🇩🇪" [ref=e7882]
+                      - link "Alexander Zverev (4)" [ref=e7883] [cursor=pointer]:
+                        - /url: /players/alexander-zverev
+                        - text: Alexander Zverev
+                        - generic [ref=e7884]: (4)
+                    - cell "16" [ref=e7885]
+                    - cell "🇮🇹 Jannik Sinner (13)" [ref=e7886]:
+                      - img "🇮🇹" [ref=e7887]
+                      - link "Jannik Sinner (13)" [ref=e7888] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7889]: (13)
+                    - cell "6-4 6-4 7-6(7)" [ref=e7890]
+                    - cell "5" [ref=e7891]
+                    - cell "145" [ref=e7892]
+                    - cell "17" [ref=e7893]
+                    - cell "3" [ref=e7894]
+                    - cell "68.2%" [ref=e7895]
+                    - cell "72.6%" [ref=e7896]
+                    - cell "58.8%" [ref=e7897]
+                    - cell "6/7" [ref=e7898]
+                  - row "2021-08-30 US Open Hard R32 16 🇮🇹 Jannik Sinner (13) 20 🇫🇷 Gael Monfils (17) 7-6(1) 6-2 4-6 4-6 6-4 5 222 5 5 56.0% 68.8% 54.8% 12/18" [ref=e7899]:
+                    - cell "2021-08-30" [ref=e7900]
+                    - cell "US Open" [ref=e7901]:
+                      - link "US Open" [ref=e7902] [cursor=pointer]:
+                        - /url: /tournaments/560/2021
+                    - cell "Hard" [ref=e7903]
+                    - cell "R32" [ref=e7904]
+                    - cell "16" [ref=e7905]
+                    - cell "🇮🇹 Jannik Sinner (13)" [ref=e7906]:
+                      - img "🇮🇹" [ref=e7907]
+                      - link "Jannik Sinner (13)" [ref=e7908] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7909]: (13)
+                    - cell "20" [ref=e7910]
+                    - cell "🇫🇷 Gael Monfils (17)" [ref=e7911]:
+                      - img "🇫🇷" [ref=e7912]
+                      - link "Gael Monfils (17)" [ref=e7913] [cursor=pointer]:
+                        - /url: /players/gael-monfils
+                        - text: Gael Monfils
+                        - generic [ref=e7914]: (17)
+                    - cell "7-6(1) 6-2 4-6 4-6 6-4" [ref=e7915]
+                    - cell "5" [ref=e7916]
+                    - cell "222" [ref=e7917]
+                    - cell "5" [ref=e7918]
+                    - cell "5" [ref=e7919]
+                    - cell "56.0%" [ref=e7920]
+                    - cell "68.8%" [ref=e7921]
+                    - cell "54.8%" [ref=e7922]
+                    - cell "12/18" [ref=e7923]
+                  - row "2021-08-30 US Open Hard R64 16 🇮🇹 Jannik Sinner (13) 716 🇺🇸 Zachary Svajda (WC) 6-3 7-6(2) 6-7(6) 6-4 5 214 8 3 56.1% 78.4% 46.4% 7/10" [ref=e7924]:
+                    - cell "2021-08-30" [ref=e7925]
+                    - cell "US Open" [ref=e7926]:
+                      - link "US Open" [ref=e7927] [cursor=pointer]:
+                        - /url: /tournaments/560/2021
+                    - cell "Hard" [ref=e7928]
+                    - cell "R64" [ref=e7929]
+                    - cell "16" [ref=e7930]
+                    - cell "🇮🇹 Jannik Sinner (13)" [ref=e7931]:
+                      - img "🇮🇹" [ref=e7932]
+                      - link "Jannik Sinner (13)" [ref=e7933] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7934]: (13)
+                    - cell "716" [ref=e7935]
+                    - cell "🇺🇸 Zachary Svajda (WC)" [ref=e7936]:
+                      - img "🇺🇸" [ref=e7937]
+                      - link "Zachary Svajda (WC)" [ref=e7938] [cursor=pointer]:
+                        - /url: /players/zachary-svajda
+                        - text: Zachary Svajda
+                        - generic [ref=e7939]: (WC)
+                    - cell "6-3 7-6(2) 6-7(6) 6-4" [ref=e7940]
+                    - cell "5" [ref=e7941]
+                    - cell "214" [ref=e7942]
+                    - cell "8" [ref=e7943]
+                    - cell "3" [ref=e7944]
+                    - cell "56.1%" [ref=e7945]
+                    - cell "78.4%" [ref=e7946]
+                    - cell "46.4%" [ref=e7947]
+                    - cell "7/10" [ref=e7948]
+                  - row "2021-08-30 US Open Hard R128 16 🇮🇹 Jannik Sinner (13) 191 🇦🇺 Max Purcell (WC) 6-4 6-2 4-6 6-2 5 153 12 4 53.7% 75.9% 60.0% 5/7" [ref=e7949]:
+                    - cell "2021-08-30" [ref=e7950]
+                    - cell "US Open" [ref=e7951]:
+                      - link "US Open" [ref=e7952] [cursor=pointer]:
+                        - /url: /tournaments/560/2021
+                    - cell "Hard" [ref=e7953]
+                    - cell "R128" [ref=e7954]
+                    - cell "16" [ref=e7955]
+                    - cell "🇮🇹 Jannik Sinner (13)" [ref=e7956]:
+                      - img "🇮🇹" [ref=e7957]
+                      - link "Jannik Sinner (13)" [ref=e7958] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7959]: (13)
+                    - cell "191" [ref=e7960]
+                    - cell "🇦🇺 Max Purcell (WC)" [ref=e7961]:
+                      - img "🇦🇺" [ref=e7962]
+                      - link "Max Purcell (WC)" [ref=e7963] [cursor=pointer]:
+                        - /url: /players/max-purcell
+                        - text: Max Purcell
+                        - generic [ref=e7964]: (WC)
+                    - cell "6-4 6-2 4-6 6-2" [ref=e7965]
+                    - cell "5" [ref=e7966]
+                    - cell "153" [ref=e7967]
+                    - cell "12" [ref=e7968]
+                    - cell "4" [ref=e7969]
+                    - cell "53.7%" [ref=e7970]
+                    - cell "75.9%" [ref=e7971]
+                    - cell "60.0%" [ref=e7972]
+                    - cell "5/7" [ref=e7973]
+                  - row "2021-08-16 Cincinnati Masters Hard R32 26 🇺🇸 John Isner 15 🇮🇹 Jannik Sinner (11) 5-7 7-6(4) 6-4 3 155 12 2 72.7% 78.8% 43.3% 1/2" [ref=e7974]:
+                    - cell "2021-08-16" [ref=e7975]
+                    - cell "Cincinnati Masters" [ref=e7976]:
+                      - link "Cincinnati Masters" [ref=e7977] [cursor=pointer]:
+                        - /url: /tournaments/422/2021
+                    - cell "Hard" [ref=e7978]
+                    - cell "R32" [ref=e7979]
+                    - cell "26" [ref=e7980]
+                    - cell "🇺🇸 John Isner" [ref=e7981]:
+                      - img "🇺🇸" [ref=e7982]
+                      - link "John Isner" [ref=e7983] [cursor=pointer]:
+                        - /url: /players/john-isner
+                    - cell "15" [ref=e7984]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e7985]:
+                      - img "🇮🇹" [ref=e7986]
+                      - link "Jannik Sinner (11)" [ref=e7987] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e7988]: (11)
+                    - cell "5-7 7-6(4) 6-4" [ref=e7989]
+                    - cell "3" [ref=e7990]
+                    - cell "155" [ref=e7991]
+                    - cell "12" [ref=e7992]
+                    - cell "2" [ref=e7993]
+                    - cell "72.7%" [ref=e7994]
+                    - cell "78.8%" [ref=e7995]
+                    - cell "43.3%" [ref=e7996]
+                    - cell "1/2" [ref=e7997]
+                  - row "2021-08-16 Cincinnati Masters Hard R64 15 🇮🇹 Jannik Sinner (11) 48 🇦🇷 Federico Delbonis 6-2 7-5 3 98 6 0 64.2% 74.4% 45.8% 4/6" [ref=e7998]:
+                    - cell "2021-08-16" [ref=e7999]
+                    - cell "Cincinnati Masters" [ref=e8000]:
+                      - link "Cincinnati Masters" [ref=e8001] [cursor=pointer]:
+                        - /url: /tournaments/422/2021
+                    - cell "Hard" [ref=e8002]
+                    - cell "R64" [ref=e8003]
+                    - cell "15" [ref=e8004]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e8005]:
+                      - img "🇮🇹" [ref=e8006]
+                      - link "Jannik Sinner (11)" [ref=e8007] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8008]: (11)
+                    - cell "48" [ref=e8009]
+                    - cell "🇦🇷 Federico Delbonis" [ref=e8010]:
+                      - img "🇦🇷" [ref=e8011]
+                      - link "Federico Delbonis" [ref=e8012] [cursor=pointer]:
+                        - /url: /players/federico-delbonis
+                    - cell "6-2 7-5" [ref=e8013]
+                    - cell "3" [ref=e8014]
+                    - cell "98" [ref=e8015]
+                    - cell "6" [ref=e8016]
+                    - cell "0" [ref=e8017]
+                    - cell "64.2%" [ref=e8018]
+                    - cell "74.4%" [ref=e8019]
+                    - cell "45.8%" [ref=e8020]
+                    - cell "4/6" [ref=e8021]
+                  - row "2021-08-09 Canada Masters Hard R32 85 🇦🇺 James Duckworth (Q) 15 🇮🇹 Jannik Sinner (16) 6-3 6-4 3 76 1 0 76.3% 77.8% 64.3% 2/2" [ref=e8022]:
+                    - cell "2021-08-09" [ref=e8023]
+                    - cell "Canada Masters" [ref=e8024]:
+                      - link "Canada Masters" [ref=e8025] [cursor=pointer]:
+                        - /url: /tournaments/421/2021
+                    - cell "Hard" [ref=e8026]
+                    - cell "R32" [ref=e8027]
+                    - cell "85" [ref=e8028]
+                    - cell "🇦🇺 James Duckworth (Q)" [ref=e8029]:
+                      - img "🇦🇺" [ref=e8030]
+                      - link "James Duckworth (Q)" [ref=e8031] [cursor=pointer]:
+                        - /url: /players/james-duckworth
+                        - text: James Duckworth
+                        - generic [ref=e8032]: (Q)
+                    - cell "15" [ref=e8033]
+                    - cell "🇮🇹 Jannik Sinner (16)" [ref=e8034]:
+                      - img "🇮🇹" [ref=e8035]
+                      - link "Jannik Sinner (16)" [ref=e8036] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8037]: (16)
+                    - cell "6-3 6-4" [ref=e8038]
+                    - cell "3" [ref=e8039]
+                    - cell "76" [ref=e8040]
+                    - cell "1" [ref=e8041]
+                    - cell "0" [ref=e8042]
+                    - cell "76.3%" [ref=e8043]
+                    - cell "77.8%" [ref=e8044]
+                    - cell "64.3%" [ref=e8045]
+                    - cell "2/2" [ref=e8046]
+                  - row "2021-08-02 Washington Hard F 24 🇮🇹 Jannik Sinner (5) 107 🇺🇸 Mackenzie McDonald 7-5 4-6 7-5 3 172 - - - - - -" [ref=e8047]:
+                    - cell "2021-08-02" [ref=e8048]
+                    - cell "Washington" [ref=e8049]:
+                      - link "Washington" [ref=e8050] [cursor=pointer]:
+                        - /url: /tournaments/418/2021
+                    - cell "Hard" [ref=e8051]
+                    - cell "F" [ref=e8052]
+                    - cell "24" [ref=e8053]
+                    - cell "🇮🇹 Jannik Sinner (5)" [ref=e8054]:
+                      - img "🇮🇹" [ref=e8055]
+                      - link "Jannik Sinner (5)" [ref=e8056] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8057]: (5)
+                    - cell "107" [ref=e8058]
+                    - cell "🇺🇸 Mackenzie McDonald" [ref=e8059]:
+                      - img "🇺🇸" [ref=e8060]
+                      - link "Mackenzie McDonald" [ref=e8061] [cursor=pointer]:
+                        - /url: /players/mackenzie-mcdonald
+                    - cell "7-5 4-6 7-5" [ref=e8062]
+                    - cell "3" [ref=e8063]
+                    - cell "172" [ref=e8064]
+                    - cell "-" [ref=e8065]
+                    - cell "-" [ref=e8066]
+                    - cell "-" [ref=e8067]
+                    - cell "-" [ref=e8068]
+                    - cell "-" [ref=e8069]
+                    - cell "-" [ref=e8070]
+                  - row "2021-08-02 Washington Hard SF 24 🇮🇹 Jannik Sinner (5) 130 🇺🇸 Jenson Brooksby (WC) 7-6(2) 6-1 3 89 6 1 52.6% 83.3% 70.4% 3/3" [ref=e8071]:
+                    - cell "2021-08-02" [ref=e8072]
+                    - cell "Washington" [ref=e8073]:
+                      - link "Washington" [ref=e8074] [cursor=pointer]:
+                        - /url: /tournaments/418/2021
+                    - cell "Hard" [ref=e8075]
+                    - cell "SF" [ref=e8076]
+                    - cell "24" [ref=e8077]
+                    - cell "🇮🇹 Jannik Sinner (5)" [ref=e8078]:
+                      - img "🇮🇹" [ref=e8079]
+                      - link "Jannik Sinner (5)" [ref=e8080] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8081]: (5)
+                    - cell "130" [ref=e8082]
+                    - cell "🇺🇸 Jenson Brooksby (WC)" [ref=e8083]:
+                      - img "🇺🇸" [ref=e8084]
+                      - link "Jenson Brooksby (WC)" [ref=e8085] [cursor=pointer]:
+                        - /url: /players/jenson-brooksby
+                        - text: Jenson Brooksby
+                        - generic [ref=e8086]: (WC)
+                    - cell "7-6(2) 6-1" [ref=e8087]
+                    - cell "3" [ref=e8088]
+                    - cell "89" [ref=e8089]
+                    - cell "6" [ref=e8090]
+                    - cell "1" [ref=e8091]
+                    - cell "52.6%" [ref=e8092]
+                    - cell "83.3%" [ref=e8093]
+                    - cell "70.4%" [ref=e8094]
+                    - cell "3/3" [ref=e8095]
+                  - row "2021-08-02 Washington Hard QF 24 🇮🇹 Jannik Sinner (5) 81 🇺🇸 Steve Johnson 6-4 6-2 3 71 7 1 56.9% 93.1% 54.5% 3/3" [ref=e8096]:
+                    - cell "2021-08-02" [ref=e8097]
+                    - cell "Washington" [ref=e8098]:
+                      - link "Washington" [ref=e8099] [cursor=pointer]:
+                        - /url: /tournaments/418/2021
+                    - cell "Hard" [ref=e8100]
+                    - cell "QF" [ref=e8101]
+                    - cell "24" [ref=e8102]
+                    - cell "🇮🇹 Jannik Sinner (5)" [ref=e8103]:
+                      - img "🇮🇹" [ref=e8104]
+                      - link "Jannik Sinner (5)" [ref=e8105] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8106]: (5)
+                    - cell "81" [ref=e8107]
+                    - cell "🇺🇸 Steve Johnson" [ref=e8108]:
+                      - img "🇺🇸" [ref=e8109]
+                      - link "Steve Johnson" [ref=e8110] [cursor=pointer]:
+                        - /url: /players/steve-johnson
+                    - cell "6-4 6-2" [ref=e8111]
+                    - cell "3" [ref=e8112]
+                    - cell "71" [ref=e8113]
+                    - cell "7" [ref=e8114]
+                    - cell "1" [ref=e8115]
+                    - cell "56.9%" [ref=e8116]
+                    - cell "93.1%" [ref=e8117]
+                    - cell "54.5%" [ref=e8118]
+                    - cell "3/3" [ref=e8119]
+                  - row "2021-08-02 Washington Hard R16 24 🇮🇹 Jannik Sinner (5) 45 🇺🇸 Sebastian Korda (12) 7-6(3) 7-6(3) 3 116 3 5 51.8% 72.1% 55.0% 2/5" [ref=e8120]:
+                    - cell "2021-08-02" [ref=e8121]
+                    - cell "Washington" [ref=e8122]:
+                      - link "Washington" [ref=e8123] [cursor=pointer]:
+                        - /url: /tournaments/418/2021
+                    - cell "Hard" [ref=e8124]
+                    - cell "R16" [ref=e8125]
+                    - cell "24" [ref=e8126]
+                    - cell "🇮🇹 Jannik Sinner (5)" [ref=e8127]:
+                      - img "🇮🇹" [ref=e8128]
+                      - link "Jannik Sinner (5)" [ref=e8129] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8130]: (5)
+                    - cell "45" [ref=e8131]
+                    - cell "🇺🇸 Sebastian Korda (12)" [ref=e8132]:
+                      - img "🇺🇸" [ref=e8133]
+                      - link "Sebastian Korda (12)" [ref=e8134] [cursor=pointer]:
+                        - /url: /players/sebastian-korda
+                        - text: Sebastian Korda
+                        - generic [ref=e8135]: (12)
+                    - cell "7-6(3) 7-6(3)" [ref=e8136]
+                    - cell "3" [ref=e8137]
+                    - cell "116" [ref=e8138]
+                    - cell "3" [ref=e8139]
+                    - cell "5" [ref=e8140]
+                    - cell "51.8%" [ref=e8141]
+                    - cell "72.1%" [ref=e8142]
+                    - cell "55.0%" [ref=e8143]
+                    - cell "2/5" [ref=e8144]
+                  - row "2021-08-02 Washington Hard R32 24 🇮🇹 Jannik Sinner (5) 69 🇫🇮 Emil Ruusuvuori 6-2 6-4 3 78 3 0 40.8% 85.0% 69.0% 0/0" [ref=e8145]:
+                    - cell "2021-08-02" [ref=e8146]
+                    - cell "Washington" [ref=e8147]:
+                      - link "Washington" [ref=e8148] [cursor=pointer]:
+                        - /url: /tournaments/418/2021
+                    - cell "Hard" [ref=e8149]
+                    - cell "R32" [ref=e8150]
+                    - cell "24" [ref=e8151]
+                    - cell "🇮🇹 Jannik Sinner (5)" [ref=e8152]:
+                      - img "🇮🇹" [ref=e8153]
+                      - link "Jannik Sinner (5)" [ref=e8154] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8155]: (5)
+                    - cell "69" [ref=e8156]
+                    - cell "🇫🇮 Emil Ruusuvuori" [ref=e8157]:
+                      - img "🇫🇮" [ref=e8158]
+                      - link "Emil Ruusuvuori" [ref=e8159] [cursor=pointer]:
+                        - /url: /players/emil-ruusuvuori
+                    - cell "6-2 6-4" [ref=e8160]
+                    - cell "3" [ref=e8161]
+                    - cell "78" [ref=e8162]
+                    - cell "3" [ref=e8163]
+                    - cell "0" [ref=e8164]
+                    - cell "40.8%" [ref=e8165]
+                    - cell "85.0%" [ref=e8166]
+                    - cell "69.0%" [ref=e8167]
+                    - cell "0/0" [ref=e8168]
+                  - row "2021-07-26 Atlanta Hard R16 132 🇦🇺 Christopher O'Connell (Q) 23 🇮🇹 Jannik Sinner (2) 7-6(7) 6-4 3 97 9 0 68.5% 76.0% 60.9% 0/0" [ref=e8169]:
+                    - cell "2021-07-26" [ref=e8170]
+                    - cell "Atlanta" [ref=e8171]:
+                      - link "Atlanta" [ref=e8172] [cursor=pointer]:
+                        - /url: /tournaments/6116/2021
+                    - cell "Hard" [ref=e8173]
+                    - cell "R16" [ref=e8174]
+                    - cell "132" [ref=e8175]
+                    - cell "🇦🇺 Christopher O'Connell (Q)" [ref=e8176]:
+                      - img "🇦🇺" [ref=e8177]
+                      - link "Christopher O'Connell (Q)" [ref=e8178] [cursor=pointer]:
+                        - /url: /players/christopher-oconnell
+                        - text: Christopher O'Connell
+                        - generic [ref=e8179]: (Q)
+                    - cell "23" [ref=e8180]
+                    - cell "🇮🇹 Jannik Sinner (2)" [ref=e8181]:
+                      - img "🇮🇹" [ref=e8182]
+                      - link "Jannik Sinner (2)" [ref=e8183] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8184]: (2)
+                    - cell "7-6(7) 6-4" [ref=e8185]
+                    - cell "3" [ref=e8186]
+                    - cell "97" [ref=e8187]
+                    - cell "9" [ref=e8188]
+                    - cell "0" [ref=e8189]
+                    - cell "68.5%" [ref=e8190]
+                    - cell "76.0%" [ref=e8191]
+                    - cell "60.9%" [ref=e8192]
+                    - cell "0/0" [ref=e8193]
+                  - row "2021-06-28 Wimbledon Grass R128 48 🇭🇺 Marton Fucsovics 23 🇮🇹 Jannik Sinner (19) 5-7 6-3 7-5 6-3 5 184 6 8 53.2% 75.7% 43.1% 6/12" [ref=e8194]:
+                    - cell "2021-06-28" [ref=e8195]
+                    - cell "Wimbledon" [ref=e8196]:
+                      - link "Wimbledon" [ref=e8197] [cursor=pointer]:
+                        - /url: /tournaments/540/2021
+                    - cell "Grass" [ref=e8198]
+                    - cell "R128" [ref=e8199]
+                    - cell "48" [ref=e8200]
+                    - cell "🇭🇺 Marton Fucsovics" [ref=e8201]:
+                      - img "🇭🇺" [ref=e8202]
+                      - link "Marton Fucsovics" [ref=e8203] [cursor=pointer]:
+                        - /url: /players/marton-fucsovics
+                    - cell "23" [ref=e8204]
+                    - cell "🇮🇹 Jannik Sinner (19)" [ref=e8205]:
+                      - img "🇮🇹" [ref=e8206]
+                      - link "Jannik Sinner (19)" [ref=e8207] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8208]: (19)
+                    - cell "5-7 6-3 7-5 6-3" [ref=e8209]
+                    - cell "5" [ref=e8210]
+                    - cell "184" [ref=e8211]
+                    - cell "6" [ref=e8212]
+                    - cell "8" [ref=e8213]
+                    - cell "53.2%" [ref=e8214]
+                    - cell "75.7%" [ref=e8215]
+                    - cell "43.1%" [ref=e8216]
+                    - cell "6/12" [ref=e8217]
+                  - row "2021-06-12 Queen's Club Grass R32 309 🇬🇧 Jack Draper (WC) 19 🇮🇹 Jannik Sinner (3) 7-6(6) 7-6(2) 3 118 11 1 67.1% 73.6% 53.8% 1/4" [ref=e8218]:
+                    - cell "2021-06-12" [ref=e8219]
+                    - cell "Queen's Club" [ref=e8220]:
+                      - link "Queen's Club" [ref=e8221] [cursor=pointer]:
+                        - /url: /tournaments/311/2021
+                    - cell "Grass" [ref=e8222]
+                    - cell "R32" [ref=e8223]
+                    - cell "309" [ref=e8224]
+                    - cell "🇬🇧 Jack Draper (WC)" [ref=e8225]:
+                      - img "🇬🇧" [ref=e8226]
+                      - link "Jack Draper (WC)" [ref=e8227] [cursor=pointer]:
+                        - /url: /players/jack-draper
+                        - text: Jack Draper
+                        - generic [ref=e8228]: (WC)
+                    - cell "19" [ref=e8229]
+                    - cell "🇮🇹 Jannik Sinner (3)" [ref=e8230]:
+                      - img "🇮🇹" [ref=e8231]
+                      - link "Jannik Sinner (3)" [ref=e8232] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8233]: (3)
+                    - cell "7-6(6) 7-6(2)" [ref=e8234]
+                    - cell "3" [ref=e8235]
+                    - cell "118" [ref=e8236]
+                    - cell "11" [ref=e8237]
+                    - cell "1" [ref=e8238]
+                    - cell "67.1%" [ref=e8239]
+                    - cell "73.6%" [ref=e8240]
+                    - cell "53.8%" [ref=e8241]
+                    - cell "1/4" [ref=e8242]
+                  - row "2021-05-31 Roland Garros Clay R16 3 🇪🇸 Rafael Nadal (3) 19 🇮🇹 Jannik Sinner (18) 7-5 6-3 6-0 5 137 4 7 57.8% 81.3% 42.9% 3/7" [ref=e8243]:
+                    - cell "2021-05-31" [ref=e8244]
+                    - cell "Roland Garros" [ref=e8245]:
+                      - link "Roland Garros" [ref=e8246] [cursor=pointer]:
+                        - /url: /tournaments/520/2021
+                    - cell "Clay" [ref=e8247]
+                    - cell "R16" [ref=e8248]
+                    - cell "3" [ref=e8249]
+                    - cell "🇪🇸 Rafael Nadal (3)" [ref=e8250]:
+                      - img "🇪🇸" [ref=e8251]
+                      - link "Rafael Nadal (3)" [ref=e8252] [cursor=pointer]:
+                        - /url: /players/rafael-nadal
+                        - text: Rafael Nadal
+                        - generic [ref=e8253]: (3)
+                    - cell "19" [ref=e8254]
+                    - cell "🇮🇹 Jannik Sinner (18)" [ref=e8255]:
+                      - img "🇮🇹" [ref=e8256]
+                      - link "Jannik Sinner (18)" [ref=e8257] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8258]: (18)
+                    - cell "7-5 6-3 6-0" [ref=e8259]
+                    - cell "5" [ref=e8260]
+                    - cell "137" [ref=e8261]
+                    - cell "4" [ref=e8262]
+                    - cell "7" [ref=e8263]
+                    - cell "57.8%" [ref=e8264]
+                    - cell "81.3%" [ref=e8265]
+                    - cell "42.9%" [ref=e8266]
+                    - cell "3/7" [ref=e8267]
+                  - row "2021-05-31 Roland Garros Clay R32 19 🇮🇹 Jannik Sinner (18) 105 🇸🇪 Mikael Ymer 6-1 7-5 6-3 5 142 5 3 56.5% 80.8% 52.5% 10/11" [ref=e8268]:
+                    - cell "2021-05-31" [ref=e8269]
+                    - cell "Roland Garros" [ref=e8270]:
+                      - link "Roland Garros" [ref=e8271] [cursor=pointer]:
+                        - /url: /tournaments/520/2021
+                    - cell "Clay" [ref=e8272]
+                    - cell "R32" [ref=e8273]
+                    - cell "19" [ref=e8274]
+                    - cell "🇮🇹 Jannik Sinner (18)" [ref=e8275]:
+                      - img "🇮🇹" [ref=e8276]
+                      - link "Jannik Sinner (18)" [ref=e8277] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8278]: (18)
+                    - cell "105" [ref=e8279]
+                    - cell "🇸🇪 Mikael Ymer" [ref=e8280]:
+                      - img "🇸🇪" [ref=e8281]
+                      - link "Mikael Ymer" [ref=e8282] [cursor=pointer]:
+                        - /url: /players/mikael-ymer
+                    - cell "6-1 7-5 6-3" [ref=e8283]
+                    - cell "5" [ref=e8284]
+                    - cell "142" [ref=e8285]
+                    - cell "5" [ref=e8286]
+                    - cell "3" [ref=e8287]
+                    - cell "56.5%" [ref=e8288]
+                    - cell "80.8%" [ref=e8289]
+                    - cell "52.5%" [ref=e8290]
+                    - cell "10/11" [ref=e8291]
+                  - row "2021-05-31 Roland Garros Clay R64 19 🇮🇹 Jannik Sinner (18) 87 🇮🇹 Gianluca Mager 6-1 7-5 3-6 6-3 5 139 8 0 60.8% 76.3% 71.1% 2/4" [ref=e8292]:
+                    - cell "2021-05-31" [ref=e8293]
+                    - cell "Roland Garros" [ref=e8294]:
+                      - link "Roland Garros" [ref=e8295] [cursor=pointer]:
+                        - /url: /tournaments/520/2021
+                    - cell "Clay" [ref=e8296]
+                    - cell "R64" [ref=e8297]
+                    - cell "19" [ref=e8298]
+                    - cell "🇮🇹 Jannik Sinner (18)" [ref=e8299]:
+                      - img "🇮🇹" [ref=e8300]
+                      - link "Jannik Sinner (18)" [ref=e8301] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8302]: (18)
+                    - cell "87" [ref=e8303]
+                    - cell "🇮🇹 Gianluca Mager" [ref=e8304]:
+                      - img "🇮🇹" [ref=e8305]
+                      - link "Gianluca Mager" [ref=e8306] [cursor=pointer]:
+                        - /url: /players/gianluca-mager
+                    - cell "6-1 7-5 3-6 6-3" [ref=e8307]
+                    - cell "5" [ref=e8308]
+                    - cell "139" [ref=e8309]
+                    - cell "8" [ref=e8310]
+                    - cell "0" [ref=e8311]
+                    - cell "60.8%" [ref=e8312]
+                    - cell "76.3%" [ref=e8313]
+                    - cell "71.1%" [ref=e8314]
+                    - cell "2/4" [ref=e8315]
+                  - row "2021-05-31 Roland Garros Clay R128 19 🇮🇹 Jannik Sinner (18) 85 🇫🇷 Pierre-Hugues Herbert 6-1 4-6 6-7(4) 7-5 6-4 5 212 5 4 61.7% 68.4% 59.3% 8/12" [ref=e8316]:
+                    - cell "2021-05-31" [ref=e8317]
+                    - cell "Roland Garros" [ref=e8318]:
+                      - link "Roland Garros" [ref=e8319] [cursor=pointer]:
+                        - /url: /tournaments/520/2021
+                    - cell "Clay" [ref=e8320]
+                    - cell "R128" [ref=e8321]
+                    - cell "19" [ref=e8322]
+                    - cell "🇮🇹 Jannik Sinner (18)" [ref=e8323]:
+                      - img "🇮🇹" [ref=e8324]
+                      - link "Jannik Sinner (18)" [ref=e8325] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8326]: (18)
+                    - cell "85" [ref=e8327]
+                    - cell "🇫🇷 Pierre-Hugues Herbert" [ref=e8328]:
+                      - img "🇫🇷" [ref=e8329]
+                      - link "Pierre-Hugues Herbert" [ref=e8330] [cursor=pointer]:
+                        - /url: /players/pierre-hugues-herbert
+                    - cell "6-1 4-6 6-7(4) 7-5 6-4" [ref=e8331]
+                    - cell "5" [ref=e8332]
+                    - cell "212" [ref=e8333]
+                    - cell "5" [ref=e8334]
+                    - cell "4" [ref=e8335]
+                    - cell "61.7%" [ref=e8336]
+                    - cell "68.4%" [ref=e8337]
+                    - cell "59.3%" [ref=e8338]
+                    - cell "8/12" [ref=e8339]
+                  - row "2021-05-17 Lyon Clay R16 125 🇫🇷 Arthur Rinderknech (LL) 17 🇮🇹 Jannik Sinner (6) 6-7(7) 6-2 7-5 3 154 10 2 73.5% 72.0% 48.1% 6/9" [ref=e8340]:
+                    - cell "2021-05-17" [ref=e8341]
+                    - cell "Lyon" [ref=e8342]:
+                      - link "Lyon" [ref=e8343] [cursor=pointer]:
+                        - /url: /tournaments/7694/2021
+                    - cell "Clay" [ref=e8344]
+                    - cell "R16" [ref=e8345]
+                    - cell "125" [ref=e8346]
+                    - cell "🇫🇷 Arthur Rinderknech (LL)" [ref=e8347]:
+                      - img "🇫🇷" [ref=e8348]
+                      - link "Arthur Rinderknech (LL)" [ref=e8349] [cursor=pointer]:
+                        - /url: /players/arthur-rinderknech
+                        - text: Arthur Rinderknech
+                        - generic [ref=e8350]: (LL)
+                    - cell "17" [ref=e8351]
+                    - cell "🇮🇹 Jannik Sinner (6)" [ref=e8352]:
+                      - img "🇮🇹" [ref=e8353]
+                      - link "Jannik Sinner (6)" [ref=e8354] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8355]: (6)
+                    - cell "6-7(7) 6-2 7-5" [ref=e8356]
+                    - cell "3" [ref=e8357]
+                    - cell "154" [ref=e8358]
+                    - cell "10" [ref=e8359]
+                    - cell "2" [ref=e8360]
+                    - cell "73.5%" [ref=e8361]
+                    - cell "72.0%" [ref=e8362]
+                    - cell "48.1%" [ref=e8363]
+                    - cell "6/9" [ref=e8364]
+                  - row "2021-05-17 Lyon Clay R32 17 🇮🇹 Jannik Sinner (6) 25 🇷🇺 Aslan Karatsev 0-6 6-3 6-4 3 153 3 2 64.0% 57.9% 53.1% 9/13" [ref=e8365]:
+                    - cell "2021-05-17" [ref=e8366]
+                    - cell "Lyon" [ref=e8367]:
+                      - link "Lyon" [ref=e8368] [cursor=pointer]:
+                        - /url: /tournaments/7694/2021
+                    - cell "Clay" [ref=e8369]
+                    - cell "R32" [ref=e8370]
+                    - cell "17" [ref=e8371]
+                    - cell "🇮🇹 Jannik Sinner (6)" [ref=e8372]:
+                      - img "🇮🇹" [ref=e8373]
+                      - link "Jannik Sinner (6)" [ref=e8374] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8375]: (6)
+                    - cell "25" [ref=e8376]
+                    - cell "🇷🇺 Aslan Karatsev" [ref=e8377]:
+                      - img "🇷🇺" [ref=e8378]
+                      - link "Aslan Karatsev" [ref=e8379] [cursor=pointer]:
+                        - /url: /players/aslan-karatsev
+                    - cell "0-6 6-3 6-4" [ref=e8380]
+                    - cell "3" [ref=e8381]
+                    - cell "153" [ref=e8382]
+                    - cell "3" [ref=e8383]
+                    - cell "2" [ref=e8384]
+                    - cell "64.0%" [ref=e8385]
+                    - cell "57.9%" [ref=e8386]
+                    - cell "53.1%" [ref=e8387]
+                    - cell "9/13" [ref=e8388]
+                  - row "2021-05-08 Rome Masters Clay R32 2 🇪🇸 Rafael Nadal (2) 18 🇮🇹 Jannik Sinner 7-5 6-4 3 130 0 1 49.2% 70.0% 54.8% 1/4" [ref=e8389]:
+                    - cell "2021-05-08" [ref=e8390]
+                    - cell "Rome Masters" [ref=e8391]:
+                      - link "Rome Masters" [ref=e8392] [cursor=pointer]:
+                        - /url: /tournaments/416/2021
+                    - cell "Clay" [ref=e8393]
+                    - cell "R32" [ref=e8394]
+                    - cell "2" [ref=e8395]
+                    - cell "🇪🇸 Rafael Nadal (2)" [ref=e8396]:
+                      - img "🇪🇸" [ref=e8397]
+                      - link "Rafael Nadal (2)" [ref=e8398] [cursor=pointer]:
+                        - /url: /players/rafael-nadal
+                        - text: Rafael Nadal
+                        - generic [ref=e8399]: (2)
+                    - cell "18" [ref=e8400]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e8401]:
+                      - img "🇮🇹" [ref=e8402]
+                      - link "Jannik Sinner" [ref=e8403] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "7-5 6-4" [ref=e8404]
+                    - cell "3" [ref=e8405]
+                    - cell "130" [ref=e8406]
+                    - cell "0" [ref=e8407]
+                    - cell "1" [ref=e8408]
+                    - cell "49.2%" [ref=e8409]
+                    - cell "70.0%" [ref=e8410]
+                    - cell "54.8%" [ref=e8411]
+                    - cell "1/4" [ref=e8412]
+                  - row "2021-05-08 Rome Masters Clay R64 18 🇮🇹 Jannik Sinner 32 🇫🇷 Ugo Humbert 6-2 6-4 3 90 0 1 59.2% 72.4% 60.0% 0/1" [ref=e8413]:
+                    - cell "2021-05-08" [ref=e8414]
+                    - cell "Rome Masters" [ref=e8415]:
+                      - link "Rome Masters" [ref=e8416] [cursor=pointer]:
+                        - /url: /tournaments/416/2021
+                    - cell "Clay" [ref=e8417]
+                    - cell "R64" [ref=e8418]
+                    - cell "18" [ref=e8419]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e8420]:
+                      - img "🇮🇹" [ref=e8421]
+                      - link "Jannik Sinner" [ref=e8422] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "32" [ref=e8423]
+                    - cell "🇫🇷 Ugo Humbert" [ref=e8424]:
+                      - img "🇫🇷" [ref=e8425]
+                      - link "Ugo Humbert" [ref=e8426] [cursor=pointer]:
+                        - /url: /players/ugo-humbert
+                    - cell "6-2 6-4" [ref=e8427]
+                    - cell "3" [ref=e8428]
+                    - cell "90" [ref=e8429]
+                    - cell "0" [ref=e8430]
+                    - cell "1" [ref=e8431]
+                    - cell "59.2%" [ref=e8432]
+                    - cell "72.4%" [ref=e8433]
+                    - cell "60.0%" [ref=e8434]
+                    - cell "0/1" [ref=e8435]
+                  - row "2021-05-01 Madrid Masters Clay R32 77 🇦🇺 Alexei Popyrin (Q) 18 🇮🇹 Jannik Sinner (14) 7-6(5) 6-2 3 94 8 1 59.5% 75.0% 40.0% 3/5" [ref=e8436]:
+                    - cell "2021-05-01" [ref=e8437]
+                    - cell "Madrid Masters" [ref=e8438]:
+                      - link "Madrid Masters" [ref=e8439] [cursor=pointer]:
+                        - /url: /tournaments/1536/2021
+                    - cell "Clay" [ref=e8440]
+                    - cell "R32" [ref=e8441]
+                    - cell "77" [ref=e8442]
+                    - cell "🇦🇺 Alexei Popyrin (Q)" [ref=e8443]:
+                      - img "🇦🇺" [ref=e8444]
+                      - link "Alexei Popyrin (Q)" [ref=e8445] [cursor=pointer]:
+                        - /url: /players/alexei-popyrin
+                        - text: Alexei Popyrin
+                        - generic [ref=e8446]: (Q)
+                    - cell "18" [ref=e8447]
+                    - cell "🇮🇹 Jannik Sinner (14)" [ref=e8448]:
+                      - img "🇮🇹" [ref=e8449]
+                      - link "Jannik Sinner (14)" [ref=e8450] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8451]: (14)
+                    - cell "7-6(5) 6-2" [ref=e8452]
+                    - cell "3" [ref=e8453]
+                    - cell "94" [ref=e8454]
+                    - cell "8" [ref=e8455]
+                    - cell "1" [ref=e8456]
+                    - cell "59.5%" [ref=e8457]
+                    - cell "75.0%" [ref=e8458]
+                    - cell "40.0%" [ref=e8459]
+                    - cell "3/5" [ref=e8460]
+                  - row "2021-05-01 Madrid Masters Clay R64 18 🇮🇹 Jannik Sinner (14) 55 🇦🇷 Guido Pella 6-2 4-4 RET 3 64 6 1 63.4% 80.8% 66.7% 0/1" [ref=e8461]:
+                    - cell "2021-05-01" [ref=e8462]
+                    - cell "Madrid Masters" [ref=e8463]:
+                      - link "Madrid Masters" [ref=e8464] [cursor=pointer]:
+                        - /url: /tournaments/1536/2021
+                    - cell "Clay" [ref=e8465]
+                    - cell "R64" [ref=e8466]
+                    - cell "18" [ref=e8467]
+                    - cell "🇮🇹 Jannik Sinner (14)" [ref=e8468]:
+                      - img "🇮🇹" [ref=e8469]
+                      - link "Jannik Sinner (14)" [ref=e8470] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8471]: (14)
+                    - cell "55" [ref=e8472]
+                    - cell "🇦🇷 Guido Pella" [ref=e8473]:
+                      - img "🇦🇷" [ref=e8474]
+                      - link "Guido Pella" [ref=e8475] [cursor=pointer]:
+                        - /url: /players/guido-pella
+                    - cell "6-2 4-4 RET" [ref=e8476]
+                    - cell "3" [ref=e8477]
+                    - cell "64" [ref=e8478]
+                    - cell "6" [ref=e8479]
+                    - cell "1" [ref=e8480]
+                    - cell "63.4%" [ref=e8481]
+                    - cell "80.8%" [ref=e8482]
+                    - cell "66.7%" [ref=e8483]
+                    - cell "0/1" [ref=e8484]
+                  - row "2021-04-19 Barcelona Clay SF 5 🇬🇷 Stefanos Tsitsipas (2) 19 🇮🇹 Jannik Sinner (11) 6-3 6-3 3 83 2 1 75.4% 71.7% 60.0% 4/4" [ref=e8485]:
+                    - cell "2021-04-19" [ref=e8486]
+                    - cell "Barcelona" [ref=e8487]:
+                      - link "Barcelona" [ref=e8488] [cursor=pointer]:
+                        - /url: /tournaments/425/2021
+                    - cell "Clay" [ref=e8489]
+                    - cell "SF" [ref=e8490]
+                    - cell "5" [ref=e8491]
+                    - cell "🇬🇷 Stefanos Tsitsipas (2)" [ref=e8492]:
+                      - img "🇬🇷" [ref=e8493]
+                      - link "Stefanos Tsitsipas (2)" [ref=e8494] [cursor=pointer]:
+                        - /url: /players/stefanos-tsitsipas
+                        - text: Stefanos Tsitsipas
+                        - generic [ref=e8495]: (2)
+                    - cell "19" [ref=e8496]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e8497]:
+                      - img "🇮🇹" [ref=e8498]
+                      - link "Jannik Sinner (11)" [ref=e8499] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8500]: (11)
+                    - cell "6-3 6-3" [ref=e8501]
+                    - cell "3" [ref=e8502]
+                    - cell "83" [ref=e8503]
+                    - cell "2" [ref=e8504]
+                    - cell "1" [ref=e8505]
+                    - cell "75.4%" [ref=e8506]
+                    - cell "71.7%" [ref=e8507]
+                    - cell "60.0%" [ref=e8508]
+                    - cell "4/4" [ref=e8509]
+                  - row "2021-04-19 Barcelona Clay QF 19 🇮🇹 Jannik Sinner (11) 7 🇷🇺 Andrey Rublev (3) 6-2 7-6(6) 3 95 4 2 59.4% 63.4% 60.7% 2/3" [ref=e8510]:
+                    - cell "2021-04-19" [ref=e8511]
+                    - cell "Barcelona" [ref=e8512]:
+                      - link "Barcelona" [ref=e8513] [cursor=pointer]:
+                        - /url: /tournaments/425/2021
+                    - cell "Clay" [ref=e8514]
+                    - cell "QF" [ref=e8515]
+                    - cell "19" [ref=e8516]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e8517]:
+                      - img "🇮🇹" [ref=e8518]
+                      - link "Jannik Sinner (11)" [ref=e8519] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8520]: (11)
+                    - cell "7" [ref=e8521]
+                    - cell "🇷🇺 Andrey Rublev (3)" [ref=e8522]:
+                      - img "🇷🇺" [ref=e8523]
+                      - link "Andrey Rublev (3)" [ref=e8524] [cursor=pointer]:
+                        - /url: /players/andrey-rublev
+                        - text: Andrey Rublev
+                        - generic [ref=e8525]: (3)
+                    - cell "6-2 7-6(6)" [ref=e8526]
+                    - cell "3" [ref=e8527]
+                    - cell "95" [ref=e8528]
+                    - cell "4" [ref=e8529]
+                    - cell "2" [ref=e8530]
+                    - cell "59.4%" [ref=e8531]
+                    - cell "63.4%" [ref=e8532]
+                    - cell "60.7%" [ref=e8533]
+                    - cell "2/3" [ref=e8534]
+                  - row "2021-04-19 Barcelona Clay R16 19 🇮🇹 Jannik Sinner (11) 11 🇪🇸 Roberto Bautista Agut (5) 7-6(9) 6-2 3 116 6 0 67.8% 68.9% 48.3% 5/7" [ref=e8535]:
+                    - cell "2021-04-19" [ref=e8536]
+                    - cell "Barcelona" [ref=e8537]:
+                      - link "Barcelona" [ref=e8538] [cursor=pointer]:
+                        - /url: /tournaments/425/2021
+                    - cell "Clay" [ref=e8539]
+                    - cell "R16" [ref=e8540]
+                    - cell "19" [ref=e8541]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e8542]:
+                      - img "🇮🇹" [ref=e8543]
+                      - link "Jannik Sinner (11)" [ref=e8544] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8545]: (11)
+                    - cell "11" [ref=e8546]
+                    - cell "🇪🇸 Roberto Bautista Agut (5)" [ref=e8547]:
+                      - img "🇪🇸" [ref=e8548]
+                      - link "Roberto Bautista Agut (5)" [ref=e8549] [cursor=pointer]:
+                        - /url: /players/roberto-bautista-agut
+                        - text: Roberto Bautista Agut
+                        - generic [ref=e8550]: (5)
+                    - cell "7-6(9) 6-2" [ref=e8551]
+                    - cell "3" [ref=e8552]
+                    - cell "116" [ref=e8553]
+                    - cell "6" [ref=e8554]
+                    - cell "0" [ref=e8555]
+                    - cell "67.8%" [ref=e8556]
+                    - cell "68.9%" [ref=e8557]
+                    - cell "48.3%" [ref=e8558]
+                    - cell "5/7" [ref=e8559]
+                  - row "2021-04-19 Barcelona Clay R32 19 🇮🇹 Jannik Sinner (11) 77 🇧🇾 Egor Gerasimov 6-3 6-2 3 68 5 0 65.3% 81.3% 52.9% 3/3" [ref=e8560]:
+                    - cell "2021-04-19" [ref=e8561]
+                    - cell "Barcelona" [ref=e8562]:
+                      - link "Barcelona" [ref=e8563] [cursor=pointer]:
+                        - /url: /tournaments/425/2021
+                    - cell "Clay" [ref=e8564]
+                    - cell "R32" [ref=e8565]
+                    - cell "19" [ref=e8566]
+                    - cell "🇮🇹 Jannik Sinner (11)" [ref=e8567]:
+                      - img "🇮🇹" [ref=e8568]
+                      - link "Jannik Sinner (11)" [ref=e8569] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8570]: (11)
+                    - cell "77" [ref=e8571]
+                    - cell "🇧🇾 Egor Gerasimov" [ref=e8572]:
+                      - img "🇧🇾" [ref=e8573]
+                      - link "Egor Gerasimov" [ref=e8574] [cursor=pointer]:
+                        - /url: /players/egor-gerasimov
+                    - cell "6-3 6-2" [ref=e8575]
+                    - cell "3" [ref=e8576]
+                    - cell "68" [ref=e8577]
+                    - cell "5" [ref=e8578]
+                    - cell "0" [ref=e8579]
+                    - cell "65.3%" [ref=e8580]
+                    - cell "81.3%" [ref=e8581]
+                    - cell "52.9%" [ref=e8582]
+                    - cell "3/3" [ref=e8583]
+                  - row "2021-04-12 Monte Carlo Masters Clay R32 1 🇷🇸 Novak Djokovic (1) 22 🇮🇹 Jannik Sinner 6-4 6-2 3 94 0 2 64.9% 59.5% 65.0% 2/4" [ref=e8584]:
+                    - cell "2021-04-12" [ref=e8585]
+                    - cell "Monte Carlo Masters" [ref=e8586]:
+                      - link "Monte Carlo Masters" [ref=e8587] [cursor=pointer]:
+                        - /url: /tournaments/410/2021
+                    - cell "Clay" [ref=e8588]
+                    - cell "R32" [ref=e8589]
+                    - cell "1" [ref=e8590]
+                    - cell "🇷🇸 Novak Djokovic (1)" [ref=e8591]:
+                      - img "🇷🇸" [ref=e8592]
+                      - link "Novak Djokovic (1)" [ref=e8593] [cursor=pointer]:
+                        - /url: /players/novak-djokovic
+                        - text: Novak Djokovic
+                        - generic [ref=e8594]: (1)
+                    - cell "22" [ref=e8595]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e8596]:
+                      - img "🇮🇹" [ref=e8597]
+                      - link "Jannik Sinner" [ref=e8598] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "6-4 6-2" [ref=e8599]
+                    - cell "3" [ref=e8600]
+                    - cell "94" [ref=e8601]
+                    - cell "0" [ref=e8602]
+                    - cell "2" [ref=e8603]
+                    - cell "64.9%" [ref=e8604]
+                    - cell "59.5%" [ref=e8605]
+                    - cell "65.0%" [ref=e8606]
+                    - cell "2/4" [ref=e8607]
+                  - row "2021-04-12 Monte Carlo Masters Clay R64 22 🇮🇹 Jannik Sinner 46 🇪🇸 Albert Ramos-Vinolas 6-3 6-4 3 83 4 1 58.9% 78.8% 52.2% 2/3" [ref=e8608]:
+                    - cell "2021-04-12" [ref=e8609]
+                    - cell "Monte Carlo Masters" [ref=e8610]:
+                      - link "Monte Carlo Masters" [ref=e8611] [cursor=pointer]:
+                        - /url: /tournaments/410/2021
+                    - cell "Clay" [ref=e8612]
+                    - cell "R64" [ref=e8613]
+                    - cell "22" [ref=e8614]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e8615]:
+                      - img "🇮🇹" [ref=e8616]
+                      - link "Jannik Sinner" [ref=e8617] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "46" [ref=e8618]
+                    - cell "🇪🇸 Albert Ramos-Vinolas" [ref=e8619]:
+                      - img "🇪🇸" [ref=e8620]
+                      - link "Albert Ramos-Vinolas" [ref=e8621] [cursor=pointer]:
+                        - /url: /players/albert-ramos-vinolas
+                    - cell "6-3 6-4" [ref=e8622]
+                    - cell "3" [ref=e8623]
+                    - cell "83" [ref=e8624]
+                    - cell "4" [ref=e8625]
+                    - cell "1" [ref=e8626]
+                    - cell "58.9%" [ref=e8627]
+                    - cell "78.8%" [ref=e8628]
+                    - cell "52.2%" [ref=e8629]
+                    - cell "2/3" [ref=e8630]
+                  - row "2021-03-22 Miami Masters Hard F 37 🇵🇱 Hubert Hurkacz (26) 31 🇮🇹 Jannik Sinner (21) 7-6(4) 6-4 3 103 3 1 71.0% 69.4% 35.0% 0/3" [ref=e8631]:
+                    - cell "2021-03-22" [ref=e8632]
+                    - cell "Miami Masters" [ref=e8633]:
+                      - link "Miami Masters" [ref=e8634] [cursor=pointer]:
+                        - /url: /tournaments/403/2021
+                    - cell "Hard" [ref=e8635]
+                    - cell "F" [ref=e8636]
+                    - cell "37" [ref=e8637]
+                    - cell "🇵🇱 Hubert Hurkacz (26)" [ref=e8638]:
+                      - img "🇵🇱" [ref=e8639]
+                      - link "Hubert Hurkacz (26)" [ref=e8640] [cursor=pointer]:
+                        - /url: /players/hubert-hurkacz
+                        - text: Hubert Hurkacz
+                        - generic [ref=e8641]: (26)
+                    - cell "31" [ref=e8642]
+                    - cell "🇮🇹 Jannik Sinner (21)" [ref=e8643]:
+                      - img "🇮🇹" [ref=e8644]
+                      - link "Jannik Sinner (21)" [ref=e8645] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8646]: (21)
+                    - cell "7-6(4) 6-4" [ref=e8647]
+                    - cell "3" [ref=e8648]
+                    - cell "103" [ref=e8649]
+                    - cell "3" [ref=e8650]
+                    - cell "1" [ref=e8651]
+                    - cell "71.0%" [ref=e8652]
+                    - cell "69.4%" [ref=e8653]
+                    - cell "35.0%" [ref=e8654]
+                    - cell "0/3" [ref=e8655]
+                  - row "2021-03-22 Miami Masters Hard SF 31 🇮🇹 Jannik Sinner (21) 12 🇪🇸 Roberto Bautista Agut (7) 5-7 6-4 6-4 3 148 5 2 65.0% 64.6% 57.1% 7/10" [ref=e8656]:
+                    - cell "2021-03-22" [ref=e8657]
+                    - cell "Miami Masters" [ref=e8658]:
+                      - link "Miami Masters" [ref=e8659] [cursor=pointer]:
+                        - /url: /tournaments/403/2021
+                    - cell "Hard" [ref=e8660]
+                    - cell "SF" [ref=e8661]
+                    - cell "31" [ref=e8662]
+                    - cell "🇮🇹 Jannik Sinner (21)" [ref=e8663]:
+                      - img "🇮🇹" [ref=e8664]
+                      - link "Jannik Sinner (21)" [ref=e8665] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8666]: (21)
+                    - cell "12" [ref=e8667]
+                    - cell "🇪🇸 Roberto Bautista Agut (7)" [ref=e8668]:
+                      - img "🇪🇸" [ref=e8669]
+                      - link "Roberto Bautista Agut (7)" [ref=e8670] [cursor=pointer]:
+                        - /url: /players/roberto-bautista-agut
+                        - text: Roberto Bautista Agut
+                        - generic [ref=e8671]: (7)
+                    - cell "5-7 6-4 6-4" [ref=e8672]
+                    - cell "3" [ref=e8673]
+                    - cell "148" [ref=e8674]
+                    - cell "5" [ref=e8675]
+                    - cell "2" [ref=e8676]
+                    - cell "65.0%" [ref=e8677]
+                    - cell "64.6%" [ref=e8678]
+                    - cell "57.1%" [ref=e8679]
+                    - cell "7/10" [ref=e8680]
+                  - row "2021-03-22 Miami Masters Hard QF 31 🇮🇹 Jannik Sinner (21) 44 🇰🇿 Alexander Bublik (32) 7-6(5) 6-4 3 100 2 3 64.2% 63.5% 58.6% 7/9" [ref=e8681]:
+                    - cell "2021-03-22" [ref=e8682]
+                    - cell "Miami Masters" [ref=e8683]:
+                      - link "Miami Masters" [ref=e8684] [cursor=pointer]:
+                        - /url: /tournaments/403/2021
+                    - cell "Hard" [ref=e8685]
+                    - cell "QF" [ref=e8686]
+                    - cell "31" [ref=e8687]
+                    - cell "🇮🇹 Jannik Sinner (21)" [ref=e8688]:
+                      - img "🇮🇹" [ref=e8689]
+                      - link "Jannik Sinner (21)" [ref=e8690] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8691]: (21)
+                    - cell "44" [ref=e8692]
+                    - cell "🇰🇿 Alexander Bublik (32)" [ref=e8693]:
+                      - img "🇰🇿" [ref=e8694]
+                      - link "Alexander Bublik (32)" [ref=e8695] [cursor=pointer]:
+                        - /url: /players/alexander-bublik
+                        - text: Alexander Bublik
+                        - generic [ref=e8696]: (32)
+                    - cell "7-6(5) 6-4" [ref=e8697]
+                    - cell "3" [ref=e8698]
+                    - cell "100" [ref=e8699]
+                    - cell "2" [ref=e8700]
+                    - cell "3" [ref=e8701]
+                    - cell "64.2%" [ref=e8702]
+                    - cell "63.5%" [ref=e8703]
+                    - cell "58.6%" [ref=e8704]
+                    - cell "7/9" [ref=e8705]
+                  - row "2021-03-22 Miami Masters Hard R16 31 🇮🇹 Jannik Sinner (21) 83 🇫🇮 Emil Ruusuvuori 6-3 6-2 3 69 4 1 73.6% 71.8% 50.0% 1/2" [ref=e8706]:
+                    - cell "2021-03-22" [ref=e8707]
+                    - cell "Miami Masters" [ref=e8708]:
+                      - link "Miami Masters" [ref=e8709] [cursor=pointer]:
+                        - /url: /tournaments/403/2021
+                    - cell "Hard" [ref=e8710]
+                    - cell "R16" [ref=e8711]
+                    - cell "31" [ref=e8712]
+                    - cell "🇮🇹 Jannik Sinner (21)" [ref=e8713]:
+                      - img "🇮🇹" [ref=e8714]
+                      - link "Jannik Sinner (21)" [ref=e8715] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8716]: (21)
+                    - cell "83" [ref=e8717]
+                    - cell "🇫🇮 Emil Ruusuvuori" [ref=e8718]:
+                      - img "🇫🇮" [ref=e8719]
+                      - link "Emil Ruusuvuori" [ref=e8720] [cursor=pointer]:
+                        - /url: /players/emil-ruusuvuori
+                    - cell "6-3 6-2" [ref=e8721]
+                    - cell "3" [ref=e8722]
+                    - cell "69" [ref=e8723]
+                    - cell "4" [ref=e8724]
+                    - cell "1" [ref=e8725]
+                    - cell "73.6%" [ref=e8726]
+                    - cell "71.8%" [ref=e8727]
+                    - cell "50.0%" [ref=e8728]
+                    - cell "1/2" [ref=e8729]
+                  - row "2021-03-22 Miami Masters Hard R32 31 🇮🇹 Jannik Sinner (21) 22 🇷🇺 Karen Khachanov (14) 4-6 7-6(2) 6-4 3 170 0 4 64.0% 70.4% 57.5% 7/10" [ref=e8730]:
+                    - cell "2021-03-22" [ref=e8731]
+                    - cell "Miami Masters" [ref=e8732]:
+                      - link "Miami Masters" [ref=e8733] [cursor=pointer]:
+                        - /url: /tournaments/403/2021
+                    - cell "Hard" [ref=e8734]
+                    - cell "R32" [ref=e8735]
+                    - cell "31" [ref=e8736]
+                    - cell "🇮🇹 Jannik Sinner (21)" [ref=e8737]:
+                      - img "🇮🇹" [ref=e8738]
+                      - link "Jannik Sinner (21)" [ref=e8739] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8740]: (21)
+                    - cell "22" [ref=e8741]
+                    - cell "🇷🇺 Karen Khachanov (14)" [ref=e8742]:
+                      - img "🇷🇺" [ref=e8743]
+                      - link "Karen Khachanov (14)" [ref=e8744] [cursor=pointer]:
+                        - /url: /players/karen-khachanov
+                        - text: Karen Khachanov
+                        - generic [ref=e8745]: (14)
+                    - cell "4-6 7-6(2) 6-4" [ref=e8746]
+                    - cell "3" [ref=e8747]
+                    - cell "170" [ref=e8748]
+                    - cell "0" [ref=e8749]
+                    - cell "4" [ref=e8750]
+                    - cell "64.0%" [ref=e8751]
+                    - cell "70.4%" [ref=e8752]
+                    - cell "57.5%" [ref=e8753]
+                    - cell "7/10" [ref=e8754]
+                  - row "2021-03-22 Miami Masters Hard R64 31 🇮🇹 Jannik Sinner (21) 162 🇫🇷 Hugo Gaston (WC) 6-2 6-2 3 62 3 2 57.4% 81.5% 60.0% 3/3" [ref=e8755]:
+                    - cell "2021-03-22" [ref=e8756]
+                    - cell "Miami Masters" [ref=e8757]:
+                      - link "Miami Masters" [ref=e8758] [cursor=pointer]:
+                        - /url: /tournaments/403/2021
+                    - cell "Hard" [ref=e8759]
+                    - cell "R64" [ref=e8760]
+                    - cell "31" [ref=e8761]
+                    - cell "🇮🇹 Jannik Sinner (21)" [ref=e8762]:
+                      - img "🇮🇹" [ref=e8763]
+                      - link "Jannik Sinner (21)" [ref=e8764] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8765]: (21)
+                    - cell "162" [ref=e8766]
+                    - cell "🇫🇷 Hugo Gaston (WC)" [ref=e8767]:
+                      - img "🇫🇷" [ref=e8768]
+                      - link "Hugo Gaston (WC)" [ref=e8769] [cursor=pointer]:
+                        - /url: /players/hugo-gaston
+                        - text: Hugo Gaston
+                        - generic [ref=e8770]: (WC)
+                    - cell "6-2 6-2" [ref=e8771]
+                    - cell "3" [ref=e8772]
+                    - cell "62" [ref=e8773]
+                    - cell "3" [ref=e8774]
+                    - cell "2" [ref=e8775]
+                    - cell "57.4%" [ref=e8776]
+                    - cell "81.5%" [ref=e8777]
+                    - cell "60.0%" [ref=e8778]
+                    - cell "3/3" [ref=e8779]
+                  - row "2021-03-15 Dubai Hard QF 42 🇷🇺 Aslan Karatsev (WC) 32 🇮🇹 Jannik Sinner (16) 6-7(5) 6-3 6-2 3 149 6 4 67.4% 79.0% 50.0% 4/6" [ref=e8780]:
+                    - cell "2021-03-15" [ref=e8781]
+                    - cell "Dubai" [ref=e8782]:
+                      - link "Dubai" [ref=e8783] [cursor=pointer]:
+                        - /url: /tournaments/495/2021
+                    - cell "Hard" [ref=e8784]
+                    - cell "QF" [ref=e8785]
+                    - cell "42" [ref=e8786]
+                    - cell "🇷🇺 Aslan Karatsev (WC)" [ref=e8787]:
+                      - img "🇷🇺" [ref=e8788]
+                      - link "Aslan Karatsev (WC)" [ref=e8789] [cursor=pointer]:
+                        - /url: /players/aslan-karatsev
+                        - text: Aslan Karatsev
+                        - generic [ref=e8790]: (WC)
+                    - cell "32" [ref=e8791]
+                    - cell "🇮🇹 Jannik Sinner (16)" [ref=e8792]:
+                      - img "🇮🇹" [ref=e8793]
+                      - link "Jannik Sinner (16)" [ref=e8794] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8795]: (16)
+                    - cell "6-7(5) 6-3 6-2" [ref=e8796]
+                    - cell "3" [ref=e8797]
+                    - cell "149" [ref=e8798]
+                    - cell "6" [ref=e8799]
+                    - cell "4" [ref=e8800]
+                    - cell "67.4%" [ref=e8801]
+                    - cell "79.0%" [ref=e8802]
+                    - cell "50.0%" [ref=e8803]
+                    - cell "4/6" [ref=e8804]
+                  - row "2021-03-15 Dubai Hard R16 32 🇮🇹 Jannik Sinner (16) 11 🇪🇸 Roberto Bautista Agut (4) 6-4 3-6 7-5 3 144 16 3 63.4% 78.1% 37.8% 5/7" [ref=e8805]:
+                    - cell "2021-03-15" [ref=e8806]
+                    - cell "Dubai" [ref=e8807]:
+                      - link "Dubai" [ref=e8808] [cursor=pointer]:
+                        - /url: /tournaments/495/2021
+                    - cell "Hard" [ref=e8809]
+                    - cell "R16" [ref=e8810]
+                    - cell "32" [ref=e8811]
+                    - cell "🇮🇹 Jannik Sinner (16)" [ref=e8812]:
+                      - img "🇮🇹" [ref=e8813]
+                      - link "Jannik Sinner (16)" [ref=e8814] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8815]: (16)
+                    - cell "11" [ref=e8816]
+                    - cell "🇪🇸 Roberto Bautista Agut (4)" [ref=e8817]:
+                      - img "🇪🇸" [ref=e8818]
+                      - link "Roberto Bautista Agut (4)" [ref=e8819] [cursor=pointer]:
+                        - /url: /players/roberto-bautista-agut
+                        - text: Roberto Bautista Agut
+                        - generic [ref=e8820]: (4)
+                    - cell "6-4 3-6 7-5" [ref=e8821]
+                    - cell "3" [ref=e8822]
+                    - cell "144" [ref=e8823]
+                    - cell "16" [ref=e8824]
+                    - cell "3" [ref=e8825]
+                    - cell "63.4%" [ref=e8826]
+                    - cell "78.1%" [ref=e8827]
+                    - cell "37.8%" [ref=e8828]
+                    - cell "5/7" [ref=e8829]
+                  - row "2021-03-15 Dubai Hard R32 32 🇮🇹 Jannik Sinner (16) 43 🇰🇿 Alexander Bublik 2-6 7-6(2) 6-4 3 121 2 2 60.7% 70.6% 78.8% 2/5" [ref=e8830]:
+                    - cell "2021-03-15" [ref=e8831]
+                    - cell "Dubai" [ref=e8832]:
+                      - link "Dubai" [ref=e8833] [cursor=pointer]:
+                        - /url: /tournaments/495/2021
+                    - cell "Hard" [ref=e8834]
+                    - cell "R32" [ref=e8835]
+                    - cell "32" [ref=e8836]
+                    - cell "🇮🇹 Jannik Sinner (16)" [ref=e8837]:
+                      - img "🇮🇹" [ref=e8838]
+                      - link "Jannik Sinner (16)" [ref=e8839] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8840]: (16)
+                    - cell "43" [ref=e8841]
+                    - cell "🇰🇿 Alexander Bublik" [ref=e8842]:
+                      - img "🇰🇿" [ref=e8843]
+                      - link "Alexander Bublik" [ref=e8844] [cursor=pointer]:
+                        - /url: /players/alexander-bublik
+                    - cell "2-6 7-6(2) 6-4" [ref=e8845]
+                    - cell "3" [ref=e8846]
+                    - cell "121" [ref=e8847]
+                    - cell "2" [ref=e8848]
+                    - cell "2" [ref=e8849]
+                    - cell "60.7%" [ref=e8850]
+                    - cell "70.6%" [ref=e8851]
+                    - cell "78.8%" [ref=e8852]
+                    - cell "2/5" [ref=e8853]
+                  - row "2021-03-08 Marseille Hard QF 3 🇷🇺 Daniil Medvedev (1) 34 🇮🇹 Jannik Sinner (5) 6-2 6-4 3 75 7 3 70.0% 80.0% 60.0% 1/1" [ref=e8854]:
+                    - cell "2021-03-08" [ref=e8855]
+                    - cell "Marseille" [ref=e8856]:
+                      - link "Marseille" [ref=e8857] [cursor=pointer]:
+                        - /url: /tournaments/496/2021
+                    - cell "Hard" [ref=e8858]
+                    - cell "QF" [ref=e8859]
+                    - cell "3" [ref=e8860]
+                    - cell "🇷🇺 Daniil Medvedev (1)" [ref=e8861]:
+                      - img "🇷🇺" [ref=e8862]
+                      - link "Daniil Medvedev (1)" [ref=e8863] [cursor=pointer]:
+                        - /url: /players/daniil-medvedev
+                        - text: Daniil Medvedev
+                        - generic [ref=e8864]: (1)
+                    - cell "34" [ref=e8865]
+                    - cell "🇮🇹 Jannik Sinner (5)" [ref=e8866]:
+                      - img "🇮🇹" [ref=e8867]
+                      - link "Jannik Sinner (5)" [ref=e8868] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8869]: (5)
+                    - cell "6-2 6-4" [ref=e8870]
+                    - cell "3" [ref=e8871]
+                    - cell "75" [ref=e8872]
+                    - cell "7" [ref=e8873]
+                    - cell "3" [ref=e8874]
+                    - cell "70.0%" [ref=e8875]
+                    - cell "80.0%" [ref=e8876]
+                    - cell "60.0%" [ref=e8877]
+                    - cell "1/1" [ref=e8878]
+                  - row "2021-03-08 Marseille Hard R16 34 🇮🇹 Jannik Sinner (5) 166 🇫🇷 Hugo Gaston (WC) 6-4 6-1 3 68 5 1 52.9% 88.9% 50.0% 4/5" [ref=e8879]:
+                    - cell "2021-03-08" [ref=e8880]
+                    - cell "Marseille" [ref=e8881]:
+                      - link "Marseille" [ref=e8882] [cursor=pointer]:
+                        - /url: /tournaments/496/2021
+                    - cell "Hard" [ref=e8883]
+                    - cell "R16" [ref=e8884]
+                    - cell "34" [ref=e8885]
+                    - cell "🇮🇹 Jannik Sinner (5)" [ref=e8886]:
+                      - img "🇮🇹" [ref=e8887]
+                      - link "Jannik Sinner (5)" [ref=e8888] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8889]: (5)
+                    - cell "166" [ref=e8890]
+                    - cell "🇫🇷 Hugo Gaston (WC)" [ref=e8891]:
+                      - img "🇫🇷" [ref=e8892]
+                      - link "Hugo Gaston (WC)" [ref=e8893] [cursor=pointer]:
+                        - /url: /players/hugo-gaston
+                        - text: Hugo Gaston
+                        - generic [ref=e8894]: (WC)
+                    - cell "6-4 6-1" [ref=e8895]
+                    - cell "3" [ref=e8896]
+                    - cell "68" [ref=e8897]
+                    - cell "5" [ref=e8898]
+                    - cell "1" [ref=e8899]
+                    - cell "52.9%" [ref=e8900]
+                    - cell "88.9%" [ref=e8901]
+                    - cell "50.0%" [ref=e8902]
+                    - cell "4/5" [ref=e8903]
+                  - row "2021-03-08 Marseille Hard R32 34 🇮🇹 Jannik Sinner (5) 115 🇫🇷 Gregoire Barrere 7-6(3) 6-7(5) 7-5 3 171 6 1 67.7% 63.6% 59.5% 10/13" [ref=e8904]:
+                    - cell "2021-03-08" [ref=e8905]
+                    - cell "Marseille" [ref=e8906]:
+                      - link "Marseille" [ref=e8907] [cursor=pointer]:
+                        - /url: /tournaments/496/2021
+                    - cell "Hard" [ref=e8908]
+                    - cell "R32" [ref=e8909]
+                    - cell "34" [ref=e8910]
+                    - cell "🇮🇹 Jannik Sinner (5)" [ref=e8911]:
+                      - img "🇮🇹" [ref=e8912]
+                      - link "Jannik Sinner (5)" [ref=e8913] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8914]: (5)
+                    - cell "115" [ref=e8915]
+                    - cell "🇫🇷 Gregoire Barrere" [ref=e8916]:
+                      - img "🇫🇷" [ref=e8917]
+                      - link "Gregoire Barrere" [ref=e8918] [cursor=pointer]:
+                        - /url: /players/gregoire-barrere
+                    - cell "7-6(3) 6-7(5) 7-5" [ref=e8919]
+                    - cell "3" [ref=e8920]
+                    - cell "171" [ref=e8921]
+                    - cell "6" [ref=e8922]
+                    - cell "1" [ref=e8923]
+                    - cell "67.7%" [ref=e8924]
+                    - cell "63.6%" [ref=e8925]
+                    - cell "59.5%" [ref=e8926]
+                    - cell "10/13" [ref=e8927]
+                  - row "2021-02-22 Montpellier Hard R32 60 SLO Aljaz Bedene 34 🇮🇹 Jannik Sinner (5) 3-6 6-2 7-6(3) 3 158 14 2 51.9% 73.2% 50.0% 2/3" [ref=e8928]:
+                    - cell "2021-02-22" [ref=e8929]
+                    - cell "Montpellier" [ref=e8930]:
+                      - link "Montpellier" [ref=e8931] [cursor=pointer]:
+                        - /url: /tournaments/375/2021
+                    - cell "Hard" [ref=e8932]
+                    - cell "R32" [ref=e8933]
+                    - cell "60" [ref=e8934]
+                    - cell "SLO Aljaz Bedene" [ref=e8935]:
+                      - generic [ref=e8936]: SLO
+                      - link "Aljaz Bedene" [ref=e8937] [cursor=pointer]:
+                        - /url: /players/aljaz-bedene
+                    - cell "34" [ref=e8938]
+                    - cell "🇮🇹 Jannik Sinner (5)" [ref=e8939]:
+                      - img "🇮🇹" [ref=e8940]
+                      - link "Jannik Sinner (5)" [ref=e8941] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8942]: (5)
+                    - cell "3-6 6-2 7-6(3)" [ref=e8943]
+                    - cell "3" [ref=e8944]
+                    - cell "158" [ref=e8945]
+                    - cell "14" [ref=e8946]
+                    - cell "2" [ref=e8947]
+                    - cell "51.9%" [ref=e8948]
+                    - cell "73.2%" [ref=e8949]
+                    - cell "50.0%" [ref=e8950]
+                    - cell "2/3" [ref=e8951]
+                  - row "2021-02-08 Australian Open Hard R128 12 🇨🇦 Denis Shapovalov (11) 32 🇮🇹 Jannik Sinner 3-6 6-3 6-2 4-6 6-4 5 235 12 9 63.1% 74.7% 48.3% 17/20" [ref=e8952]:
+                    - cell "2021-02-08" [ref=e8953]
+                    - cell "Australian Open" [ref=e8954]:
+                      - link "Australian Open" [ref=e8955] [cursor=pointer]:
+                        - /url: /tournaments/580/2021
+                    - cell "Hard" [ref=e8956]
+                    - cell "R128" [ref=e8957]
+                    - cell "12" [ref=e8958]
+                    - cell "🇨🇦 Denis Shapovalov (11)" [ref=e8959]:
+                      - img "🇨🇦" [ref=e8960]
+                      - link "Denis Shapovalov (11)" [ref=e8961] [cursor=pointer]:
+                        - /url: /players/denis-shapovalov
+                        - text: Denis Shapovalov
+                        - generic [ref=e8962]: (11)
+                    - cell "32" [ref=e8963]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e8964]:
+                      - img "🇮🇹" [ref=e8965]
+                      - link "Jannik Sinner" [ref=e8966] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "3-6 6-3 6-2 4-6 6-4" [ref=e8967]
+                    - cell "5" [ref=e8968]
+                    - cell "235" [ref=e8969]
+                    - cell "12" [ref=e8970]
+                    - cell "9" [ref=e8971]
+                    - cell "63.1%" [ref=e8972]
+                    - cell "74.7%" [ref=e8973]
+                    - cell "48.3%" [ref=e8974]
+                    - cell "17/20" [ref=e8975]
+                  - row "2021-02-01 Great Ocean Road Open Hard F 36 🇮🇹 Jannik Sinner (4) 71 🇮🇹 Stefano Travaglia 7-6(4) 6-4 3 128 0 1 55.4% 56.5% 64.9% 7/10" [ref=e8976]:
+                    - cell "2021-02-01" [ref=e8977]
+                    - cell "Great Ocean Road Open" [ref=e8978]:
+                      - link "Great Ocean Road Open" [ref=e8979] [cursor=pointer]:
+                        - /url: /tournaments/8998/2021
+                    - cell "Hard" [ref=e8980]
+                    - cell "F" [ref=e8981]
+                    - cell "36" [ref=e8982]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e8983]:
+                      - img "🇮🇹" [ref=e8984]
+                      - link "Jannik Sinner (4)" [ref=e8985] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e8986]: (4)
+                    - cell "71" [ref=e8987]
+                    - cell "🇮🇹 Stefano Travaglia" [ref=e8988]:
+                      - img "🇮🇹" [ref=e8989]
+                      - link "Stefano Travaglia" [ref=e8990] [cursor=pointer]:
+                        - /url: /players/stefano-travaglia
+                    - cell "7-6(4) 6-4" [ref=e8991]
+                    - cell "3" [ref=e8992]
+                    - cell "128" [ref=e8993]
+                    - cell "0" [ref=e8994]
+                    - cell "1" [ref=e8995]
+                    - cell "55.4%" [ref=e8996]
+                    - cell "56.5%" [ref=e8997]
+                    - cell "64.9%" [ref=e8998]
+                    - cell "7/10" [ref=e8999]
+                  - row "2021-02-01 Great Ocean Road Open Hard SF 36 🇮🇹 Jannik Sinner (4) 20 🇷🇺 Karen Khachanov (2) 7-6(4) 4-6 7-6(4) 3 187 10 3 61.1% 67.5% 53.1% 12/17" [ref=e9000]:
+                    - cell "2021-02-01" [ref=e9001]
+                    - cell "Great Ocean Road Open" [ref=e9002]:
+                      - link "Great Ocean Road Open" [ref=e9003] [cursor=pointer]:
+                        - /url: /tournaments/8998/2021
+                    - cell "Hard" [ref=e9004]
+                    - cell "SF" [ref=e9005]
+                    - cell "36" [ref=e9006]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e9007]:
+                      - img "🇮🇹" [ref=e9008]
+                      - link "Jannik Sinner (4)" [ref=e9009] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9010]: (4)
+                    - cell "20" [ref=e9011]
+                    - cell "🇷🇺 Karen Khachanov (2)" [ref=e9012]:
+                      - img "🇷🇺" [ref=e9013]
+                      - link "Karen Khachanov (2)" [ref=e9014] [cursor=pointer]:
+                        - /url: /players/karen-khachanov
+                        - text: Karen Khachanov
+                        - generic [ref=e9015]: (2)
+                    - cell "7-6(4) 4-6 7-6(4)" [ref=e9016]
+                    - cell "3" [ref=e9017]
+                    - cell "187" [ref=e9018]
+                    - cell "10" [ref=e9019]
+                    - cell "3" [ref=e9020]
+                    - cell "61.1%" [ref=e9021]
+                    - cell "67.5%" [ref=e9022]
+                    - cell "53.1%" [ref=e9023]
+                    - cell "12/17" [ref=e9024]
+                  - row "2021-02-01 Great Ocean Road Open Hard QF 36 🇮🇹 Jannik Sinner (4) 42 🇷🇸 Miomir Kecmanovic (7) 7-6(10) 6-4 3 116 12 1 62.6% 70.2% 50.0% 6/8" [ref=e9025]:
+                    - cell "2021-02-01" [ref=e9026]
+                    - cell "Great Ocean Road Open" [ref=e9027]:
+                      - link "Great Ocean Road Open" [ref=e9028] [cursor=pointer]:
+                        - /url: /tournaments/8998/2021
+                    - cell "Hard" [ref=e9029]
+                    - cell "QF" [ref=e9030]
+                    - cell "36" [ref=e9031]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e9032]:
+                      - img "🇮🇹" [ref=e9033]
+                      - link "Jannik Sinner (4)" [ref=e9034] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9035]: (4)
+                    - cell "42" [ref=e9036]
+                    - cell "🇷🇸 Miomir Kecmanovic (7)" [ref=e9037]:
+                      - img "🇷🇸" [ref=e9038]
+                      - link "Miomir Kecmanovic (7)" [ref=e9039] [cursor=pointer]:
+                        - /url: /players/miomir-kecmanovic
+                        - text: Miomir Kecmanovic
+                        - generic [ref=e9040]: (7)
+                    - cell "7-6(10) 6-4" [ref=e9041]
+                    - cell "3" [ref=e9042]
+                    - cell "116" [ref=e9043]
+                    - cell "12" [ref=e9044]
+                    - cell "1" [ref=e9045]
+                    - cell "62.6%" [ref=e9046]
+                    - cell "70.2%" [ref=e9047]
+                    - cell "50.0%" [ref=e9048]
+                    - cell "6/8" [ref=e9049]
+                  - row "2021-02-01 Great Ocean Road Open Hard R16 36 🇮🇹 Jannik Sinner (4) 58 SLO Aljaz Bedene (13) 7-6(6) 6-2 3 92 9 2 64.7% 79.5% 58.3% 3/3" [ref=e9050]:
+                    - cell "2021-02-01" [ref=e9051]
+                    - cell "Great Ocean Road Open" [ref=e9052]:
+                      - link "Great Ocean Road Open" [ref=e9053] [cursor=pointer]:
+                        - /url: /tournaments/8998/2021
+                    - cell "Hard" [ref=e9054]
+                    - cell "R16" [ref=e9055]
+                    - cell "36" [ref=e9056]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e9057]:
+                      - img "🇮🇹" [ref=e9058]
+                      - link "Jannik Sinner (4)" [ref=e9059] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9060]: (4)
+                    - cell "58" [ref=e9061]
+                    - cell "SLO Aljaz Bedene (13)" [ref=e9062]:
+                      - generic [ref=e9063]: SLO
+                      - link "Aljaz Bedene (13)" [ref=e9064] [cursor=pointer]:
+                        - /url: /players/aljaz-bedene
+                        - text: Aljaz Bedene
+                        - generic [ref=e9065]: (13)
+                    - cell "7-6(6) 6-2" [ref=e9066]
+                    - cell "3" [ref=e9067]
+                    - cell "92" [ref=e9068]
+                    - cell "9" [ref=e9069]
+                    - cell "2" [ref=e9070]
+                    - cell "64.7%" [ref=e9071]
+                    - cell "79.5%" [ref=e9072]
+                    - cell "58.3%" [ref=e9073]
+                    - cell "3/3" [ref=e9074]
+                  - row "2021-02-01 Great Ocean Road Open Hard R32 36 🇮🇹 Jannik Sinner (4) 195 🇦🇺 Aleksandar Vukic 6-2 6-4 3 66 5 0 67.3% 75.8% 75.0% 0/0" [ref=e9075]:
+                    - cell "2021-02-01" [ref=e9076]
+                    - cell "Great Ocean Road Open" [ref=e9077]:
+                      - link "Great Ocean Road Open" [ref=e9078] [cursor=pointer]:
+                        - /url: /tournaments/8998/2021
+                    - cell "Hard" [ref=e9079]
+                    - cell "R32" [ref=e9080]
+                    - cell "36" [ref=e9081]
+                    - cell "🇮🇹 Jannik Sinner (4)" [ref=e9082]:
+                      - img "🇮🇹" [ref=e9083]
+                      - link "Jannik Sinner (4)" [ref=e9084] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9085]: (4)
+                    - cell "195" [ref=e9086]
+                    - cell "🇦🇺 Aleksandar Vukic" [ref=e9087]:
+                      - img "🇦🇺" [ref=e9088]
+                      - link "Aleksandar Vukic" [ref=e9089] [cursor=pointer]:
+                        - /url: /players/aleksandar-vukic
+                    - cell "6-2 6-4" [ref=e9090]
+                    - cell "3" [ref=e9091]
+                    - cell "66" [ref=e9092]
+                    - cell "5" [ref=e9093]
+                    - cell "0" [ref=e9094]
+                    - cell "67.3%" [ref=e9095]
+                    - cell "75.8%" [ref=e9096]
+                    - cell "75.0%" [ref=e9097]
+                    - cell "0/0" [ref=e9098]
+                  - row "2020-11-09 Sofia Hard F 44 🇮🇹 Jannik Sinner 74 🇨🇦 Vasek Pospisil 6-4 3-6 7-6(3) 3 134 4 5 65.2% 75.0% 56.3% 3/5" [ref=e9099]:
+                    - cell "2020-11-09" [ref=e9100]
+                    - cell "Sofia" [ref=e9101]:
+                      - link "Sofia" [ref=e9102] [cursor=pointer]:
+                        - /url: /tournaments/7434/2020
+                    - cell "Hard" [ref=e9103]
+                    - cell "F" [ref=e9104]
+                    - cell "44" [ref=e9105]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e9106]:
+                      - img "🇮🇹" [ref=e9107]
+                      - link "Jannik Sinner" [ref=e9108] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "74" [ref=e9109]
+                    - cell "🇨🇦 Vasek Pospisil" [ref=e9110]:
+                      - img "🇨🇦" [ref=e9111]
+                      - link "Vasek Pospisil" [ref=e9112] [cursor=pointer]:
+                        - /url: /players/vasek-pospisil
+                    - cell "6-4 3-6 7-6(3)" [ref=e9113]
+                    - cell "3" [ref=e9114]
+                    - cell "134" [ref=e9115]
+                    - cell "4" [ref=e9116]
+                    - cell "5" [ref=e9117]
+                    - cell "65.2%" [ref=e9118]
+                    - cell "75.0%" [ref=e9119]
+                    - cell "56.3%" [ref=e9120]
+                    - cell "3/5" [ref=e9121]
+                  - row "2020-11-09 Sofia Hard SF 44 🇮🇹 Jannik Sinner 35 🇫🇷 Adrian Mannarino (5) 6-3 7-5 3 87 9 3 50.7% 80.6% 54.3% 3/3" [ref=e9122]:
+                    - cell "2020-11-09" [ref=e9123]
+                    - cell "Sofia" [ref=e9124]:
+                      - link "Sofia" [ref=e9125] [cursor=pointer]:
+                        - /url: /tournaments/7434/2020
+                    - cell "Hard" [ref=e9126]
+                    - cell "SF" [ref=e9127]
+                    - cell "44" [ref=e9128]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e9129]:
+                      - img "🇮🇹" [ref=e9130]
+                      - link "Jannik Sinner" [ref=e9131] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "35" [ref=e9132]
+                    - cell "🇫🇷 Adrian Mannarino (5)" [ref=e9133]:
+                      - img "🇫🇷" [ref=e9134]
+                      - link "Adrian Mannarino (5)" [ref=e9135] [cursor=pointer]:
+                        - /url: /players/adrian-mannarino
+                        - text: Adrian Mannarino
+                        - generic [ref=e9136]: (5)
+                    - cell "6-3 7-5" [ref=e9137]
+                    - cell "3" [ref=e9138]
+                    - cell "87" [ref=e9139]
+                    - cell "9" [ref=e9140]
+                    - cell "3" [ref=e9141]
+                    - cell "50.7%" [ref=e9142]
+                    - cell "80.6%" [ref=e9143]
+                    - cell "54.3%" [ref=e9144]
+                    - cell "3/3" [ref=e9145]
+                  - row "2020-11-09 Sofia Hard QF 44 🇮🇹 Jannik Sinner 25 🇦🇺 Alex de Minaur (3) 6-7(3) 6-4 6-1 3 131 4 4 60.7% 79.6% 48.6% 6/7" [ref=e9146]:
+                    - cell "2020-11-09" [ref=e9147]
+                    - cell "Sofia" [ref=e9148]:
+                      - link "Sofia" [ref=e9149] [cursor=pointer]:
+                        - /url: /tournaments/7434/2020
+                    - cell "Hard" [ref=e9150]
+                    - cell "QF" [ref=e9151]
+                    - cell "44" [ref=e9152]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e9153]:
+                      - img "🇮🇹" [ref=e9154]
+                      - link "Jannik Sinner" [ref=e9155] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "25" [ref=e9156]
+                    - cell "🇦🇺 Alex de Minaur (3)" [ref=e9157]:
+                      - img "🇦🇺" [ref=e9158]
+                      - link "Alex de Minaur (3)" [ref=e9159] [cursor=pointer]:
+                        - /url: /players/alex-de-minaur
+                        - text: Alex de Minaur
+                        - generic [ref=e9160]: (3)
+                    - cell "6-7(3) 6-4 6-1" [ref=e9161]
+                    - cell "3" [ref=e9162]
+                    - cell "131" [ref=e9163]
+                    - cell "4" [ref=e9164]
+                    - cell "4" [ref=e9165]
+                    - cell "60.7%" [ref=e9166]
+                    - cell "79.6%" [ref=e9167]
+                    - cell "48.6%" [ref=e9168]
+                    - cell "6/7" [ref=e9169]
+                  - row "2020-11-09 Sofia Hard R16 44 🇮🇹 Jannik Sinner 149 🇨🇭 Marc-Andrea Huesler (LL) 6-3 6-4 3 78 6 1 61.7% 86.5% 56.5% 2/2" [ref=e9170]:
+                    - cell "2020-11-09" [ref=e9171]
+                    - cell "Sofia" [ref=e9172]:
+                      - link "Sofia" [ref=e9173] [cursor=pointer]:
+                        - /url: /tournaments/7434/2020
+                    - cell "Hard" [ref=e9174]
+                    - cell "R16" [ref=e9175]
+                    - cell "44" [ref=e9176]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e9177]:
+                      - img "🇮🇹" [ref=e9178]
+                      - link "Jannik Sinner" [ref=e9179] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "149" [ref=e9180]
+                    - cell "🇨🇭 Marc-Andrea Huesler (LL)" [ref=e9181]:
+                      - img "🇨🇭" [ref=e9182]
+                      - link "Marc-Andrea Huesler (LL)" [ref=e9183] [cursor=pointer]:
+                        - /url: /players/marc-andrea-huesler
+                        - text: Marc-Andrea Huesler
+                        - generic [ref=e9184]: (LL)
+                    - cell "6-3 6-4" [ref=e9185]
+                    - cell "3" [ref=e9186]
+                    - cell "78" [ref=e9187]
+                    - cell "6" [ref=e9188]
+                    - cell "1" [ref=e9189]
+                    - cell "61.7%" [ref=e9190]
+                    - cell "86.5%" [ref=e9191]
+                    - cell "56.5%" [ref=e9192]
+                    - cell "2/2" [ref=e9193]
+                  - row "2020-11-09 Sofia Hard R32 44 🇮🇹 Jannik Sinner 55 🇭🇺 Marton Fucsovics 6-2 6-4 3 96 2 2 55.2% 68.8% 50.0% 4/6" [ref=e9194]:
+                    - cell "2020-11-09" [ref=e9195]
+                    - cell "Sofia" [ref=e9196]:
+                      - link "Sofia" [ref=e9197] [cursor=pointer]:
+                        - /url: /tournaments/7434/2020
+                    - cell "Hard" [ref=e9198]
+                    - cell "R32" [ref=e9199]
+                    - cell "44" [ref=e9200]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e9201]:
+                      - img "🇮🇹" [ref=e9202]
+                      - link "Jannik Sinner" [ref=e9203] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "55" [ref=e9204]
+                    - cell "🇭🇺 Marton Fucsovics" [ref=e9205]:
+                      - img "🇭🇺" [ref=e9206]
+                      - link "Marton Fucsovics" [ref=e9207] [cursor=pointer]:
+                        - /url: /players/marton-fucsovics
+                    - cell "6-2 6-4" [ref=e9208]
+                    - cell "3" [ref=e9209]
+                    - cell "96" [ref=e9210]
+                    - cell "2" [ref=e9211]
+                    - cell "2" [ref=e9212]
+                    - cell "55.2%" [ref=e9213]
+                    - cell "68.8%" [ref=e9214]
+                    - cell "50.0%" [ref=e9215]
+                    - cell "4/6" [ref=e9216]
+                  - row "2020-10-26 Vienna Hard R16 8 🇷🇺 Andrey Rublev (5) 43 🇮🇹 Jannik Sinner (WC) 2-1 RET 3 7 2 0 75.0% 100.0% 100.0% 0/0" [ref=e9217]:
+                    - cell "2020-10-26" [ref=e9218]
+                    - cell "Vienna" [ref=e9219]:
+                      - link "Vienna" [ref=e9220] [cursor=pointer]:
+                        - /url: /tournaments/337/2020
+                    - cell "Hard" [ref=e9221]
+                    - cell "R16" [ref=e9222]
+                    - cell "8" [ref=e9223]
+                    - cell "🇷🇺 Andrey Rublev (5)" [ref=e9224]:
+                      - img "🇷🇺" [ref=e9225]
+                      - link "Andrey Rublev (5)" [ref=e9226] [cursor=pointer]:
+                        - /url: /players/andrey-rublev
+                        - text: Andrey Rublev
+                        - generic [ref=e9227]: (5)
+                    - cell "43" [ref=e9228]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e9229]:
+                      - img "🇮🇹" [ref=e9230]
+                      - link "Jannik Sinner (WC)" [ref=e9231] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9232]: (WC)
+                    - cell "2-1 RET" [ref=e9233]
+                    - cell "3" [ref=e9234]
+                    - cell "7" [ref=e9235]
+                    - cell "2" [ref=e9236]
+                    - cell "0" [ref=e9237]
+                    - cell "75.0%" [ref=e9238]
+                    - cell "100.0%" [ref=e9239]
+                    - cell "100.0%" [ref=e9240]
+                    - cell "0/0" [ref=e9241]
+                  - row "2020-10-26 Vienna Hard R32 43 🇮🇹 Jannik Sinner (WC) 27 🇳🇴 Casper Ruud 7-6(2) 6-3 3 104 6 5 56.2% 75.6% 62.5% 1/2" [ref=e9242]:
+                    - cell "2020-10-26" [ref=e9243]
+                    - cell "Vienna" [ref=e9244]:
+                      - link "Vienna" [ref=e9245] [cursor=pointer]:
+                        - /url: /tournaments/337/2020
+                    - cell "Hard" [ref=e9246]
+                    - cell "R32" [ref=e9247]
+                    - cell "43" [ref=e9248]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e9249]:
+                      - img "🇮🇹" [ref=e9250]
+                      - link "Jannik Sinner (WC)" [ref=e9251] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9252]: (WC)
+                    - cell "27" [ref=e9253]
+                    - cell "🇳🇴 Casper Ruud" [ref=e9254]:
+                      - img "🇳🇴" [ref=e9255]
+                      - link "Casper Ruud" [ref=e9256] [cursor=pointer]:
+                        - /url: /players/casper-ruud
+                    - cell "7-6(2) 6-3" [ref=e9257]
+                    - cell "3" [ref=e9258]
+                    - cell "104" [ref=e9259]
+                    - cell "6" [ref=e9260]
+                    - cell "5" [ref=e9261]
+                    - cell "56.2%" [ref=e9262]
+                    - cell "75.6%" [ref=e9263]
+                    - cell "62.5%" [ref=e9264]
+                    - cell "1/2" [ref=e9265]
+                  - row "2020-10-19 Cologne 2 Hard SF 7 🇩🇪 Alexander Zverev (1) 46 🇮🇹 Jannik Sinner (WC) 7-6(3) 6-3 3 108 7 6 59.5% 78.7% 34.4% 5/8" [ref=e9266]:
+                    - cell "2020-10-19" [ref=e9267]
+                    - cell "Cologne 2" [ref=e9268]:
+                      - link "Cologne 2" [ref=e9269] [cursor=pointer]:
+                        - /url: /tournaments/9406/2020
+                    - cell "Hard" [ref=e9270]
+                    - cell "SF" [ref=e9271]
+                    - cell "7" [ref=e9272]
+                    - cell "🇩🇪 Alexander Zverev (1)" [ref=e9273]:
+                      - img "🇩🇪" [ref=e9274]
+                      - link "Alexander Zverev (1)" [ref=e9275] [cursor=pointer]:
+                        - /url: /players/alexander-zverev
+                        - text: Alexander Zverev
+                        - generic [ref=e9276]: (1)
+                    - cell "46" [ref=e9277]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e9278]:
+                      - img "🇮🇹" [ref=e9279]
+                      - link "Jannik Sinner (WC)" [ref=e9280] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9281]: (WC)
+                    - cell "7-6(3) 6-3" [ref=e9282]
+                    - cell "3" [ref=e9283]
+                    - cell "108" [ref=e9284]
+                    - cell "7" [ref=e9285]
+                    - cell "6" [ref=e9286]
+                    - cell "59.5%" [ref=e9287]
+                    - cell "78.7%" [ref=e9288]
+                    - cell "34.4%" [ref=e9289]
+                    - cell "5/8" [ref=e9290]
+                  - row "2020-10-19 Cologne 2 Hard QF 46 🇮🇹 Jannik Sinner (WC) 58 🇫🇷 Gilles Simon 6-3 0-6 6-4 3 153 1 2 65.3% 59.1% 48.6% 16/21" [ref=e9291]:
+                    - cell "2020-10-19" [ref=e9292]
+                    - cell "Cologne 2" [ref=e9293]:
+                      - link "Cologne 2" [ref=e9294] [cursor=pointer]:
+                        - /url: /tournaments/9406/2020
+                    - cell "Hard" [ref=e9295]
+                    - cell "QF" [ref=e9296]
+                    - cell "46" [ref=e9297]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e9298]:
+                      - img "🇮🇹" [ref=e9299]
+                      - link "Jannik Sinner (WC)" [ref=e9300] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9301]: (WC)
+                    - cell "58" [ref=e9302]
+                    - cell "🇫🇷 Gilles Simon" [ref=e9303]:
+                      - img "🇫🇷" [ref=e9304]
+                      - link "Gilles Simon" [ref=e9305] [cursor=pointer]:
+                        - /url: /players/gilles-simon
+                    - cell "6-3 0-6 6-4" [ref=e9306]
+                    - cell "3" [ref=e9307]
+                    - cell "153" [ref=e9308]
+                    - cell "1" [ref=e9309]
+                    - cell "2" [ref=e9310]
+                    - cell "65.3%" [ref=e9311]
+                    - cell "59.1%" [ref=e9312]
+                    - cell "48.6%" [ref=e9313]
+                    - cell "16/21" [ref=e9314]
+                  - row "2020-10-19 Cologne 2 Hard R16 46 🇮🇹 Jannik Sinner (WC) 82 🇫🇷 Pierre-Hugues Herbert (Q) 6-3 6-1 3 76 2 2 69.2% 66.7% 43.8% 4/6" [ref=e9315]:
+                    - cell "2020-10-19" [ref=e9316]
+                    - cell "Cologne 2" [ref=e9317]:
+                      - link "Cologne 2" [ref=e9318] [cursor=pointer]:
+                        - /url: /tournaments/9406/2020
+                    - cell "Hard" [ref=e9319]
+                    - cell "R16" [ref=e9320]
+                    - cell "46" [ref=e9321]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e9322]:
+                      - img "🇮🇹" [ref=e9323]
+                      - link "Jannik Sinner (WC)" [ref=e9324] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9325]: (WC)
+                    - cell "82" [ref=e9326]
+                    - cell "🇫🇷 Pierre-Hugues Herbert (Q)" [ref=e9327]:
+                      - img "🇫🇷" [ref=e9328]
+                      - link "Pierre-Hugues Herbert (Q)" [ref=e9329] [cursor=pointer]:
+                        - /url: /players/pierre-hugues-herbert
+                        - text: Pierre-Hugues Herbert
+                        - generic [ref=e9330]: (Q)
+                    - cell "6-3 6-1" [ref=e9331]
+                    - cell "3" [ref=e9332]
+                    - cell "76" [ref=e9333]
+                    - cell "2" [ref=e9334]
+                    - cell "2" [ref=e9335]
+                    - cell "69.2%" [ref=e9336]
+                    - cell "66.7%" [ref=e9337]
+                    - cell "43.8%" [ref=e9338]
+                    - cell "4/6" [ref=e9339]
+                  - row "2020-10-19 Cologne 2 Hard R32 46 🇮🇹 Jannik Sinner (WC) 97 🇦🇺 James Duckworth (LL) 6-1 6-2 3 61 0 0 68.1% 78.1% 60.0% 2/2" [ref=e9340]:
+                    - cell "2020-10-19" [ref=e9341]
+                    - cell "Cologne 2" [ref=e9342]:
+                      - link "Cologne 2" [ref=e9343] [cursor=pointer]:
+                        - /url: /tournaments/9406/2020
+                    - cell "Hard" [ref=e9344]
+                    - cell "R32" [ref=e9345]
+                    - cell "46" [ref=e9346]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e9347]:
+                      - img "🇮🇹" [ref=e9348]
+                      - link "Jannik Sinner (WC)" [ref=e9349] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9350]: (WC)
+                    - cell "97" [ref=e9351]
+                    - cell "🇦🇺 James Duckworth (LL)" [ref=e9352]:
+                      - img "🇦🇺" [ref=e9353]
+                      - link "James Duckworth (LL)" [ref=e9354] [cursor=pointer]:
+                        - /url: /players/james-duckworth
+                        - text: James Duckworth
+                        - generic [ref=e9355]: (LL)
+                    - cell "6-1 6-2" [ref=e9356]
+                    - cell "3" [ref=e9357]
+                    - cell "61" [ref=e9358]
+                    - cell "0" [ref=e9359]
+                    - cell "0" [ref=e9360]
+                    - cell "68.1%" [ref=e9361]
+                    - cell "78.1%" [ref=e9362]
+                    - cell "60.0%" [ref=e9363]
+                    - cell "2/2" [ref=e9364]
+                  - row "2020-09-28 Roland Garros Clay QF 2 🇪🇸 Rafael Nadal (2) 75 🇮🇹 Jannik Sinner 7-6(4) 6-4 6-1 5 169 0 1 64.9% 66.7% 58.8% 5/7" [ref=e9365]:
+                    - cell "2020-09-28" [ref=e9366]
+                    - cell "Roland Garros" [ref=e9367]:
+                      - link "Roland Garros" [ref=e9368] [cursor=pointer]:
+                        - /url: /tournaments/520/2020
+                    - cell "Clay" [ref=e9369]
+                    - cell "QF" [ref=e9370]
+                    - cell "2" [ref=e9371]
+                    - cell "🇪🇸 Rafael Nadal (2)" [ref=e9372]:
+                      - img "🇪🇸" [ref=e9373]
+                      - link "Rafael Nadal (2)" [ref=e9374] [cursor=pointer]:
+                        - /url: /players/rafael-nadal
+                        - text: Rafael Nadal
+                        - generic [ref=e9375]: (2)
+                    - cell "75" [ref=e9376]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e9377]:
+                      - img "🇮🇹" [ref=e9378]
+                      - link "Jannik Sinner" [ref=e9379] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "7-6(4) 6-4 6-1" [ref=e9380]
+                    - cell "5" [ref=e9381]
+                    - cell "169" [ref=e9382]
+                    - cell "0" [ref=e9383]
+                    - cell "1" [ref=e9384]
+                    - cell "64.9%" [ref=e9385]
+                    - cell "66.7%" [ref=e9386]
+                    - cell "58.8%" [ref=e9387]
+                    - cell "5/7" [ref=e9388]
+                  - row "2020-09-28 Roland Garros Clay R16 75 🇮🇹 Jannik Sinner 7 🇩🇪 Alexander Zverev (6) 6-3 6-3 4-6 6-3 5 181 3 6 56.6% 71.6% 53.2% 6/8" [ref=e9389]:
+                    - cell "2020-09-28" [ref=e9390]
+                    - cell "Roland Garros" [ref=e9391]:
+                      - link "Roland Garros" [ref=e9392] [cursor=pointer]:
+                        - /url: /tournaments/520/2020
+                    - cell "Clay" [ref=e9393]
+                    - cell "R16" [ref=e9394]
+                    - cell "75" [ref=e9395]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e9396]:
+                      - img "🇮🇹" [ref=e9397]
+                      - link "Jannik Sinner" [ref=e9398] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "7" [ref=e9399]
+                    - cell "🇩🇪 Alexander Zverev (6)" [ref=e9400]:
+                      - img "🇩🇪" [ref=e9401]
+                      - link "Alexander Zverev (6)" [ref=e9402] [cursor=pointer]:
+                        - /url: /players/alexander-zverev
+                        - text: Alexander Zverev
+                        - generic [ref=e9403]: (6)
+                    - cell "6-3 6-3 4-6 6-3" [ref=e9404]
+                    - cell "5" [ref=e9405]
+                    - cell "181" [ref=e9406]
+                    - cell "3" [ref=e9407]
+                    - cell "6" [ref=e9408]
+                    - cell "56.6%" [ref=e9409]
+                    - cell "71.6%" [ref=e9410]
+                    - cell "53.2%" [ref=e9411]
+                    - cell "6/8" [ref=e9412]
+                  - row "2020-09-28 Roland Garros Clay R32 75 🇮🇹 Jannik Sinner 99 🇦🇷 Federico Coria 6-3 7-5 7-5 5 150 0 2 67.0% 64.2% 51.5% 5/9" [ref=e9413]:
+                    - cell "2020-09-28" [ref=e9414]
+                    - cell "Roland Garros" [ref=e9415]:
+                      - link "Roland Garros" [ref=e9416] [cursor=pointer]:
+                        - /url: /tournaments/520/2020
+                    - cell "Clay" [ref=e9417]
+                    - cell "R32" [ref=e9418]
+                    - cell "75" [ref=e9419]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e9420]:
+                      - img "🇮🇹" [ref=e9421]
+                      - link "Jannik Sinner" [ref=e9422] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "99" [ref=e9423]
+                    - cell "🇦🇷 Federico Coria" [ref=e9424]:
+                      - img "🇦🇷" [ref=e9425]
+                      - link "Federico Coria" [ref=e9426] [cursor=pointer]:
+                        - /url: /players/federico-coria
+                    - cell "6-3 7-5 7-5" [ref=e9427]
+                    - cell "5" [ref=e9428]
+                    - cell "150" [ref=e9429]
+                    - cell "0" [ref=e9430]
+                    - cell "2" [ref=e9431]
+                    - cell "67.0%" [ref=e9432]
+                    - cell "64.2%" [ref=e9433]
+                    - cell "51.5%" [ref=e9434]
+                    - cell "5/9" [ref=e9435]
+                  - row "2020-09-28 Roland Garros Clay R64 75 🇮🇹 Jannik Sinner 227 🇫🇷 Benjamin Bonzi (Q) 6-2 6-4 6-4 5 115 3 2 67.7% 65.1% 63.3% 3/5" [ref=e9436]:
+                    - cell "2020-09-28" [ref=e9437]
+                    - cell "Roland Garros" [ref=e9438]:
+                      - link "Roland Garros" [ref=e9439] [cursor=pointer]:
+                        - /url: /tournaments/520/2020
+                    - cell "Clay" [ref=e9440]
+                    - cell "R64" [ref=e9441]
+                    - cell "75" [ref=e9442]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e9443]:
+                      - img "🇮🇹" [ref=e9444]
+                      - link "Jannik Sinner" [ref=e9445] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "227" [ref=e9446]
+                    - cell "🇫🇷 Benjamin Bonzi (Q)" [ref=e9447]:
+                      - img "🇫🇷" [ref=e9448]
+                      - link "Benjamin Bonzi (Q)" [ref=e9449] [cursor=pointer]:
+                        - /url: /players/benjamin-bonzi
+                        - text: Benjamin Bonzi
+                        - generic [ref=e9450]: (Q)
+                    - cell "6-2 6-4 6-4" [ref=e9451]
+                    - cell "5" [ref=e9452]
+                    - cell "115" [ref=e9453]
+                    - cell "3" [ref=e9454]
+                    - cell "2" [ref=e9455]
+                    - cell "67.7%" [ref=e9456]
+                    - cell "65.1%" [ref=e9457]
+                    - cell "63.3%" [ref=e9458]
+                    - cell "3/5" [ref=e9459]
+                  - row "2020-09-28 Roland Garros Clay R128 75 🇮🇹 Jannik Sinner 13 🇧🇪 David Goffin (11) 7-5 6-0 6-3 5 119 2 2 67.5% 77.8% 46.2% 4/6" [ref=e9460]:
+                    - cell "2020-09-28" [ref=e9461]
+                    - cell "Roland Garros" [ref=e9462]:
+                      - link "Roland Garros" [ref=e9463] [cursor=pointer]:
+                        - /url: /tournaments/520/2020
+                    - cell "Clay" [ref=e9464]
+                    - cell "R128" [ref=e9465]
+                    - cell "75" [ref=e9466]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e9467]:
+                      - img "🇮🇹" [ref=e9468]
+                      - link "Jannik Sinner" [ref=e9469] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "13" [ref=e9470]
+                    - cell "🇧🇪 David Goffin (11)" [ref=e9471]:
+                      - img "🇧🇪" [ref=e9472]
+                      - link "David Goffin (11)" [ref=e9473] [cursor=pointer]:
+                        - /url: /players/david-goffin
+                        - text: David Goffin
+                        - generic [ref=e9474]: (11)
+                    - cell "7-5 6-0 6-3" [ref=e9475]
+                    - cell "5" [ref=e9476]
+                    - cell "119" [ref=e9477]
+                    - cell "2" [ref=e9478]
+                    - cell "2" [ref=e9479]
+                    - cell "67.5%" [ref=e9480]
+                    - cell "77.8%" [ref=e9481]
+                    - cell "46.2%" [ref=e9482]
+                    - cell "4/6" [ref=e9483]
+                  - row "2020-09-14 Rome Masters Clay R16 22 🇧🇬 Grigor Dimitrov (15) 81 🇮🇹 Jannik Sinner (WC) 4-6 6-4 6-4 3 144 0 0 58.1% 70.0% 52.8% 4/7" [ref=e9484]:
+                    - cell "2020-09-14" [ref=e9485]
+                    - cell "Rome Masters" [ref=e9486]:
+                      - link "Rome Masters" [ref=e9487] [cursor=pointer]:
+                        - /url: /tournaments/416/2020
+                    - cell "Clay" [ref=e9488]
+                    - cell "R16" [ref=e9489]
+                    - cell "22" [ref=e9490]
+                    - cell "🇧🇬 Grigor Dimitrov (15)" [ref=e9491]:
+                      - img "🇧🇬" [ref=e9492]
+                      - link "Grigor Dimitrov (15)" [ref=e9493] [cursor=pointer]:
+                        - /url: /players/grigor-dimitrov
+                        - text: Grigor Dimitrov
+                        - generic [ref=e9494]: (15)
+                    - cell "81" [ref=e9495]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e9496]:
+                      - img "🇮🇹" [ref=e9497]
+                      - link "Jannik Sinner (WC)" [ref=e9498] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9499]: (WC)
+                    - cell "4-6 6-4 6-4" [ref=e9500]
+                    - cell "3" [ref=e9501]
+                    - cell "144" [ref=e9502]
+                    - cell "0" [ref=e9503]
+                    - cell "0" [ref=e9504]
+                    - cell "58.1%" [ref=e9505]
+                    - cell "70.0%" [ref=e9506]
+                    - cell "52.8%" [ref=e9507]
+                    - cell "4/7" [ref=e9508]
+                  - row "2020-09-14 Rome Masters Clay R32 81 🇮🇹 Jannik Sinner (WC) 6 🇬🇷 Stefanos Tsitsipas (3) 6-1 6-7(9) 6-2 3 133 1 1 67.9% 69.1% 69.2% 1/3" [ref=e9509]:
+                    - cell "2020-09-14" [ref=e9510]
+                    - cell "Rome Masters" [ref=e9511]:
+                      - link "Rome Masters" [ref=e9512] [cursor=pointer]:
+                        - /url: /tournaments/416/2020
+                    - cell "Clay" [ref=e9513]
+                    - cell "R32" [ref=e9514]
+                    - cell "81" [ref=e9515]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e9516]:
+                      - img "🇮🇹" [ref=e9517]
+                      - link "Jannik Sinner (WC)" [ref=e9518] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9519]: (WC)
+                    - cell "6" [ref=e9520]
+                    - cell "🇬🇷 Stefanos Tsitsipas (3)" [ref=e9521]:
+                      - img "🇬🇷" [ref=e9522]
+                      - link "Stefanos Tsitsipas (3)" [ref=e9523] [cursor=pointer]:
+                        - /url: /players/stefanos-tsitsipas
+                        - text: Stefanos Tsitsipas
+                        - generic [ref=e9524]: (3)
+                    - cell "6-1 6-7(9) 6-2" [ref=e9525]
+                    - cell "3" [ref=e9526]
+                    - cell "133" [ref=e9527]
+                    - cell "1" [ref=e9528]
+                    - cell "1" [ref=e9529]
+                    - cell "67.9%" [ref=e9530]
+                    - cell "69.1%" [ref=e9531]
+                    - cell "69.2%" [ref=e9532]
+                    - cell "1/3" [ref=e9533]
+                  - row "2020-09-14 Rome Masters Clay R64 81 🇮🇹 Jannik Sinner (WC) 24 🇫🇷 Benoit Paire 6-2 6-1 3 64 4 0 70.6% 72.2% 73.3% 4/4" [ref=e9534]:
+                    - cell "2020-09-14" [ref=e9535]
+                    - cell "Rome Masters" [ref=e9536]:
+                      - link "Rome Masters" [ref=e9537] [cursor=pointer]:
+                        - /url: /tournaments/416/2020
+                    - cell "Clay" [ref=e9538]
+                    - cell "R64" [ref=e9539]
+                    - cell "81" [ref=e9540]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e9541]:
+                      - img "🇮🇹" [ref=e9542]
+                      - link "Jannik Sinner (WC)" [ref=e9543] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9544]: (WC)
+                    - cell "24" [ref=e9545]
+                    - cell "🇫🇷 Benoit Paire" [ref=e9546]:
+                      - img "🇫🇷" [ref=e9547]
+                      - link "Benoit Paire" [ref=e9548] [cursor=pointer]:
+                        - /url: /players/benoit-paire
+                    - cell "6-2 6-1" [ref=e9549]
+                    - cell "3" [ref=e9550]
+                    - cell "64" [ref=e9551]
+                    - cell "4" [ref=e9552]
+                    - cell "0" [ref=e9553]
+                    - cell "70.6%" [ref=e9554]
+                    - cell "72.2%" [ref=e9555]
+                    - cell "73.3%" [ref=e9556]
+                    - cell "4/4" [ref=e9557]
+                  - row "2020-09-07 Kitzbuhel Clay R16 81 🇷🇸 Laslo Djere (Q) 74 🇮🇹 Jannik Sinner (WC) 6-4 6-4 3 79 1 3 44.0% 90.9% 60.7% 0/1" [ref=e9558]:
+                    - cell "2020-09-07" [ref=e9559]
+                    - cell "Kitzbuhel" [ref=e9560]:
+                      - link "Kitzbuhel" [ref=e9561] [cursor=pointer]:
+                        - /url: /tournaments/319/2020
+                    - cell "Clay" [ref=e9562]
+                    - cell "R16" [ref=e9563]
+                    - cell "81" [ref=e9564]
+                    - cell "🇷🇸 Laslo Djere (Q)" [ref=e9565]:
+                      - img "🇷🇸" [ref=e9566]
+                      - link "Laslo Djere (Q)" [ref=e9567] [cursor=pointer]:
+                        - /url: /players/laslo-djere
+                        - text: Laslo Djere
+                        - generic [ref=e9568]: (Q)
+                    - cell "74" [ref=e9569]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e9570]:
+                      - img "🇮🇹" [ref=e9571]
+                      - link "Jannik Sinner (WC)" [ref=e9572] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9573]: (WC)
+                    - cell "6-4 6-4" [ref=e9574]
+                    - cell "3" [ref=e9575]
+                    - cell "79" [ref=e9576]
+                    - cell "1" [ref=e9577]
+                    - cell "3" [ref=e9578]
+                    - cell "44.0%" [ref=e9579]
+                    - cell "90.9%" [ref=e9580]
+                    - cell "60.7%" [ref=e9581]
+                    - cell "0/1" [ref=e9582]
+                  - row "2020-09-07 Kitzbuhel Clay R32 74 🇮🇹 Jannik Sinner (WC) 75 🇩🇪 Philipp Kohlschreiber (WC) 6-3 6-2 3 67 5 0 59.1% 84.6% 61.1% 1/2" [ref=e9583]:
+                    - cell "2020-09-07" [ref=e9584]
+                    - cell "Kitzbuhel" [ref=e9585]:
+                      - link "Kitzbuhel" [ref=e9586] [cursor=pointer]:
+                        - /url: /tournaments/319/2020
+                    - cell "Clay" [ref=e9587]
+                    - cell "R32" [ref=e9588]
+                    - cell "74" [ref=e9589]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e9590]:
+                      - img "🇮🇹" [ref=e9591]
+                      - link "Jannik Sinner (WC)" [ref=e9592] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9593]: (WC)
+                    - cell "75" [ref=e9594]
+                    - cell "🇩🇪 Philipp Kohlschreiber (WC)" [ref=e9595]:
+                      - img "🇩🇪" [ref=e9596]
+                      - link "Philipp Kohlschreiber (WC)" [ref=e9597] [cursor=pointer]:
+                        - /url: /players/philipp-kohlschreiber
+                        - text: Philipp Kohlschreiber
+                        - generic [ref=e9598]: (WC)
+                    - cell "6-3 6-2" [ref=e9599]
+                    - cell "3" [ref=e9600]
+                    - cell "67" [ref=e9601]
+                    - cell "5" [ref=e9602]
+                    - cell "0" [ref=e9603]
+                    - cell "59.1%" [ref=e9604]
+                    - cell "84.6%" [ref=e9605]
+                    - cell "61.1%" [ref=e9606]
+                    - cell "1/2" [ref=e9607]
+                  - row "2020-08-31 US Open Hard R128 16 🇷🇺 Karen Khachanov (11) 74 🇮🇹 Jannik Sinner 3-6 6-7(7) 6-2 6-0 7-6(4) 5 224 18 8 62.3% 77.8% 58.3% 6/7" [ref=e9608]:
+                    - cell "2020-08-31" [ref=e9609]
+                    - cell "US Open" [ref=e9610]:
+                      - link "US Open" [ref=e9611] [cursor=pointer]:
+                        - /url: /tournaments/560/2020
+                    - cell "Hard" [ref=e9612]
+                    - cell "R128" [ref=e9613]
+                    - cell "16" [ref=e9614]
+                    - cell "🇷🇺 Karen Khachanov (11)" [ref=e9615]:
+                      - img "🇷🇺" [ref=e9616]
+                      - link "Karen Khachanov (11)" [ref=e9617] [cursor=pointer]:
+                        - /url: /players/karen-khachanov
+                        - text: Karen Khachanov
+                        - generic [ref=e9618]: (11)
+                    - cell "74" [ref=e9619]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e9620]:
+                      - img "🇮🇹" [ref=e9621]
+                      - link "Jannik Sinner" [ref=e9622] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "3-6 6-7(7) 6-2 6-0 7-6(4)" [ref=e9623]
+                    - cell "5" [ref=e9624]
+                    - cell "224" [ref=e9625]
+                    - cell "18" [ref=e9626]
+                    - cell "8" [ref=e9627]
+                    - cell "62.3%" [ref=e9628]
+                    - cell "77.8%" [ref=e9629]
+                    - cell "58.3%" [ref=e9630]
+                    - cell "6/7" [ref=e9631]
+                  - row "2020-02-17 Marseille Hard R16 5 🇷🇺 Daniil Medvedev (1) 68 🇮🇹 Jannik Sinner 1-6 6-1 6-2 3 79 7 1 50.0% 79.3% 69.0% 0/2" [ref=e9632]:
+                    - cell "2020-02-17" [ref=e9633]
+                    - cell "Marseille" [ref=e9634]:
+                      - link "Marseille" [ref=e9635] [cursor=pointer]:
+                        - /url: /tournaments/496/2020
+                    - cell "Hard" [ref=e9636]
+                    - cell "R16" [ref=e9637]
+                    - cell "5" [ref=e9638]
+                    - cell "🇷🇺 Daniil Medvedev (1)" [ref=e9639]:
+                      - img "🇷🇺" [ref=e9640]
+                      - link "Daniil Medvedev (1)" [ref=e9641] [cursor=pointer]:
+                        - /url: /players/daniil-medvedev
+                        - text: Daniil Medvedev
+                        - generic [ref=e9642]: (1)
+                    - cell "68" [ref=e9643]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e9644]:
+                      - img "🇮🇹" [ref=e9645]
+                      - link "Jannik Sinner" [ref=e9646] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "1-6 6-1 6-2" [ref=e9647]
+                    - cell "3" [ref=e9648]
+                    - cell "79" [ref=e9649]
+                    - cell "7" [ref=e9650]
+                    - cell "1" [ref=e9651]
+                    - cell "50.0%" [ref=e9652]
+                    - cell "79.3%" [ref=e9653]
+                    - cell "69.0%" [ref=e9654]
+                    - cell "0/2" [ref=e9655]
+                  - row "2020-02-17 Marseille Hard R32 68 🇮🇹 Jannik Sinner 102 🇸🇰 Norbert Gombos (Q) 6-4 7-6(5) 3 123 9 2 54.8% 78.3% 52.6% 6/6" [ref=e9656]:
+                    - cell "2020-02-17" [ref=e9657]
+                    - cell "Marseille" [ref=e9658]:
+                      - link "Marseille" [ref=e9659] [cursor=pointer]:
+                        - /url: /tournaments/496/2020
+                    - cell "Hard" [ref=e9660]
+                    - cell "R32" [ref=e9661]
+                    - cell "68" [ref=e9662]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e9663]:
+                      - img "🇮🇹" [ref=e9664]
+                      - link "Jannik Sinner" [ref=e9665] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "102" [ref=e9666]
+                    - cell "🇸🇰 Norbert Gombos (Q)" [ref=e9667]:
+                      - img "🇸🇰" [ref=e9668]
+                      - link "Norbert Gombos (Q)" [ref=e9669] [cursor=pointer]:
+                        - /url: /players/norbert-gombos
+                        - text: Norbert Gombos
+                        - generic [ref=e9670]: (Q)
+                    - cell "6-4 7-6(5)" [ref=e9671]
+                    - cell "3" [ref=e9672]
+                    - cell "123" [ref=e9673]
+                    - cell "9" [ref=e9674]
+                    - cell "2" [ref=e9675]
+                    - cell "54.8%" [ref=e9676]
+                    - cell "78.3%" [ref=e9677]
+                    - cell "52.6%" [ref=e9678]
+                    - cell "6/6" [ref=e9679]
+                  - row "2020-02-10 Rotterdam Hard QF 30 🇪🇸 Pablo Carreno Busta 79 🇮🇹 Jannik Sinner (WC) 7-5 3-6 7-6(6) 3 164 6 2 67.5% 70.4% 53.8% 12/14" [ref=e9680]:
+                    - cell "2020-02-10" [ref=e9681]
+                    - cell "Rotterdam" [ref=e9682]:
+                      - link "Rotterdam" [ref=e9683] [cursor=pointer]:
+                        - /url: /tournaments/407/2020
+                    - cell "Hard" [ref=e9684]
+                    - cell "QF" [ref=e9685]
+                    - cell "30" [ref=e9686]
+                    - cell "🇪🇸 Pablo Carreno Busta" [ref=e9687]:
+                      - img "🇪🇸" [ref=e9688]
+                      - link "Pablo Carreno Busta" [ref=e9689] [cursor=pointer]:
+                        - /url: /players/pablo-carreno-busta
+                    - cell "79" [ref=e9690]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e9691]:
+                      - img "🇮🇹" [ref=e9692]
+                      - link "Jannik Sinner (WC)" [ref=e9693] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9694]: (WC)
+                    - cell "7-5 3-6 7-6(6)" [ref=e9695]
+                    - cell "3" [ref=e9696]
+                    - cell "164" [ref=e9697]
+                    - cell "6" [ref=e9698]
+                    - cell "2" [ref=e9699]
+                    - cell "67.5%" [ref=e9700]
+                    - cell "70.4%" [ref=e9701]
+                    - cell "53.8%" [ref=e9702]
+                    - cell "12/14" [ref=e9703]
+                  - row "2020-02-10 Rotterdam Hard R16 79 🇮🇹 Jannik Sinner (WC) 10 🇧🇪 David Goffin (4) 7-6(7) 7-5 3 119 5 0 64.6% 71.7% 55.2% 6/8" [ref=e9704]:
+                    - cell "2020-02-10" [ref=e9705]
+                    - cell "Rotterdam" [ref=e9706]:
+                      - link "Rotterdam" [ref=e9707] [cursor=pointer]:
+                        - /url: /tournaments/407/2020
+                    - cell "Hard" [ref=e9708]
+                    - cell "R16" [ref=e9709]
+                    - cell "79" [ref=e9710]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e9711]:
+                      - img "🇮🇹" [ref=e9712]
+                      - link "Jannik Sinner (WC)" [ref=e9713] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9714]: (WC)
+                    - cell "10" [ref=e9715]
+                    - cell "🇧🇪 David Goffin (4)" [ref=e9716]:
+                      - img "🇧🇪" [ref=e9717]
+                      - link "David Goffin (4)" [ref=e9718] [cursor=pointer]:
+                        - /url: /players/david-goffin
+                        - text: David Goffin
+                        - generic [ref=e9719]: (4)
+                    - cell "7-6(7) 7-5" [ref=e9720]
+                    - cell "3" [ref=e9721]
+                    - cell "119" [ref=e9722]
+                    - cell "5" [ref=e9723]
+                    - cell "0" [ref=e9724]
+                    - cell "64.6%" [ref=e9725]
+                    - cell "71.7%" [ref=e9726]
+                    - cell "55.2%" [ref=e9727]
+                    - cell "6/8" [ref=e9728]
+                  - row "2020-02-10 Rotterdam Hard R32 79 🇮🇹 Jannik Sinner (WC) 50 🇲🇩 Radu Albot W/O 3 - - - - - - -" [ref=e9729]:
+                    - cell "2020-02-10" [ref=e9730]
+                    - cell "Rotterdam" [ref=e9731]:
+                      - link "Rotterdam" [ref=e9732] [cursor=pointer]:
+                        - /url: /tournaments/407/2020
+                    - cell "Hard" [ref=e9733]
+                    - cell "R32" [ref=e9734]
+                    - cell "79" [ref=e9735]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e9736]:
+                      - img "🇮🇹" [ref=e9737]
+                      - link "Jannik Sinner (WC)" [ref=e9738] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9739]: (WC)
+                    - cell "50" [ref=e9740]
+                    - cell "🇲🇩 Radu Albot" [ref=e9741]:
+                      - img "🇲🇩" [ref=e9742]
+                      - link "Radu Albot" [ref=e9743] [cursor=pointer]:
+                        - /url: /players/radu-albot
+                    - cell "W/O" [ref=e9744]
+                    - cell "3" [ref=e9745]
+                    - cell "-" [ref=e9746]
+                    - cell "-" [ref=e9747]
+                    - cell "-" [ref=e9748]
+                    - cell "-" [ref=e9749]
+                    - cell "-" [ref=e9750]
+                    - cell "-" [ref=e9751]
+                    - cell "-" [ref=e9752]
+                  - row "2020-02-03 Montpellier Hard R32 76 🇸🇪 Mikael Ymer 78 🇮🇹 Jannik Sinner 6-3 6-4 3 85 3 3 65.5% 76.3% 50.0% 2/4" [ref=e9753]:
+                    - cell "2020-02-03" [ref=e9754]
+                    - cell "Montpellier" [ref=e9755]:
+                      - link "Montpellier" [ref=e9756] [cursor=pointer]:
+                        - /url: /tournaments/375/2020
+                    - cell "Hard" [ref=e9757]
+                    - cell "R32" [ref=e9758]
+                    - cell "76" [ref=e9759]
+                    - cell "🇸🇪 Mikael Ymer" [ref=e9760]:
+                      - img "🇸🇪" [ref=e9761]
+                      - link "Mikael Ymer" [ref=e9762] [cursor=pointer]:
+                        - /url: /players/mikael-ymer
+                    - cell "78" [ref=e9763]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e9764]:
+                      - img "🇮🇹" [ref=e9765]
+                      - link "Jannik Sinner" [ref=e9766] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "6-3 6-4" [ref=e9767]
+                    - cell "3" [ref=e9768]
+                    - cell "85" [ref=e9769]
+                    - cell "3" [ref=e9770]
+                    - cell "3" [ref=e9771]
+                    - cell "65.5%" [ref=e9772]
+                    - cell "76.3%" [ref=e9773]
+                    - cell "50.0%" [ref=e9774]
+                    - cell "2/4" [ref=e9775]
+                  - row "2020-01-20 Australian Open Hard R64 67 🇭🇺 Marton Fucsovics 82 🇮🇹 Jannik Sinner 6-4 6-4 6-3 5 136 6 3 62.5% 69.1% 48.5% 1/4" [ref=e9776]:
+                    - cell "2020-01-20" [ref=e9777]
+                    - cell "Australian Open" [ref=e9778]:
+                      - link "Australian Open" [ref=e9779] [cursor=pointer]:
+                        - /url: /tournaments/580/2020
+                    - cell "Hard" [ref=e9780]
+                    - cell "R64" [ref=e9781]
+                    - cell "67" [ref=e9782]
+                    - cell "🇭🇺 Marton Fucsovics" [ref=e9783]:
+                      - img "🇭🇺" [ref=e9784]
+                      - link "Marton Fucsovics" [ref=e9785] [cursor=pointer]:
+                        - /url: /players/marton-fucsovics
+                    - cell "82" [ref=e9786]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e9787]:
+                      - img "🇮🇹" [ref=e9788]
+                      - link "Jannik Sinner" [ref=e9789] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "6-4 6-4 6-3" [ref=e9790]
+                    - cell "5" [ref=e9791]
+                    - cell "136" [ref=e9792]
+                    - cell "6" [ref=e9793]
+                    - cell "3" [ref=e9794]
+                    - cell "62.5%" [ref=e9795]
+                    - cell "69.1%" [ref=e9796]
+                    - cell "48.5%" [ref=e9797]
+                    - cell "1/4" [ref=e9798]
+                  - row "2020-01-20 Australian Open Hard R128 82 🇮🇹 Jannik Sinner 215 🇦🇺 Max Purcell (Q) 7-6(2) 6-2 6-4 5 139 2 1 58.2% 79.2% 52.6% 4/6" [ref=e9799]:
+                    - cell "2020-01-20" [ref=e9800]
+                    - cell "Australian Open" [ref=e9801]:
+                      - link "Australian Open" [ref=e9802] [cursor=pointer]:
+                        - /url: /tournaments/580/2020
+                    - cell "Hard" [ref=e9803]
+                    - cell "R128" [ref=e9804]
+                    - cell "82" [ref=e9805]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e9806]:
+                      - img "🇮🇹" [ref=e9807]
+                      - link "Jannik Sinner" [ref=e9808] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "215" [ref=e9809]
+                    - cell "🇦🇺 Max Purcell (Q)" [ref=e9810]:
+                      - img "🇦🇺" [ref=e9811]
+                      - link "Max Purcell (Q)" [ref=e9812] [cursor=pointer]:
+                        - /url: /players/max-purcell
+                        - text: Max Purcell
+                        - generic [ref=e9813]: (Q)
+                    - cell "7-6(2) 6-2 6-4" [ref=e9814]
+                    - cell "5" [ref=e9815]
+                    - cell "139" [ref=e9816]
+                    - cell "2" [ref=e9817]
+                    - cell "1" [ref=e9818]
+                    - cell "58.2%" [ref=e9819]
+                    - cell "79.2%" [ref=e9820]
+                    - cell "52.6%" [ref=e9821]
+                    - cell "4/6" [ref=e9822]
+                  - row "2020-01-13 Auckland Hard R32 24 🇫🇷 Benoit Paire (5) 79 🇮🇹 Jannik Sinner (WC) 6-4 2-6 6-4 3 115 11 5 62.3% 69.7% 47.5% 10/13" [ref=e9823]:
+                    - cell "2020-01-13" [ref=e9824]
+                    - cell "Auckland" [ref=e9825]:
+                      - link "Auckland" [ref=e9826] [cursor=pointer]:
+                        - /url: /tournaments/301/2020
+                    - cell "Hard" [ref=e9827]
+                    - cell "R32" [ref=e9828]
+                    - cell "24" [ref=e9829]
+                    - cell "🇫🇷 Benoit Paire (5)" [ref=e9830]:
+                      - img "🇫🇷" [ref=e9831]
+                      - link "Benoit Paire (5)" [ref=e9832] [cursor=pointer]:
+                        - /url: /players/benoit-paire
+                        - text: Benoit Paire
+                        - generic [ref=e9833]: (5)
+                    - cell "79" [ref=e9834]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e9835]:
+                      - img "🇮🇹" [ref=e9836]
+                      - link "Jannik Sinner (WC)" [ref=e9837] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9838]: (WC)
+                    - cell "6-4 2-6 6-4" [ref=e9839]
+                    - cell "3" [ref=e9840]
+                    - cell "115" [ref=e9841]
+                    - cell "11" [ref=e9842]
+                    - cell "5" [ref=e9843]
+                    - cell "62.3%" [ref=e9844]
+                    - cell "69.7%" [ref=e9845]
+                    - cell "47.5%" [ref=e9846]
+                    - cell "10/13" [ref=e9847]
+                  - row "2019-11-04 Next Gen Finals Hard RR 55 🇫🇷 Ugo Humbert (3) 95 🇮🇹 Jannik Sinner (8) 4-3(5) 3-4(3) 4-2 4-2 5 - - - - - - -" [ref=e9848]:
+                    - cell "2019-11-04" [ref=e9849]
+                    - cell "Next Gen Finals" [ref=e9850]:
+                      - link "Next Gen Finals" [ref=e9851] [cursor=pointer]:
+                        - /url: /tournaments/7696/2019
+                    - cell "Hard" [ref=e9852]
+                    - cell "RR" [ref=e9853]
+                    - cell "55" [ref=e9854]
+                    - cell "🇫🇷 Ugo Humbert (3)" [ref=e9855]:
+                      - img "🇫🇷" [ref=e9856]
+                      - link "Ugo Humbert (3)" [ref=e9857] [cursor=pointer]:
+                        - /url: /players/ugo-humbert
+                        - text: Ugo Humbert
+                        - generic [ref=e9858]: (3)
+                    - cell "95" [ref=e9859]
+                    - cell "🇮🇹 Jannik Sinner (8)" [ref=e9860]:
+                      - img "🇮🇹" [ref=e9861]
+                      - link "Jannik Sinner (8)" [ref=e9862] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9863]: (8)
+                    - cell "4-3(5) 3-4(3) 4-2 4-2" [ref=e9864]
+                    - cell "5" [ref=e9865]
+                    - cell "-" [ref=e9866]
+                    - cell "-" [ref=e9867]
+                    - cell "-" [ref=e9868]
+                    - cell "-" [ref=e9869]
+                    - cell "-" [ref=e9870]
+                    - cell "-" [ref=e9871]
+                    - cell "-" [ref=e9872]
+                  - row "2019-11-04 Next Gen Finals Hard RR 95 🇮🇹 Jannik Sinner (8) 47 🇺🇸 Frances Tiafoe (2) 3-4(4) 4-2 4-2 4-2 5 - - - - - - -" [ref=e9873]:
+                    - cell "2019-11-04" [ref=e9874]
+                    - cell "Next Gen Finals" [ref=e9875]:
+                      - link "Next Gen Finals" [ref=e9876] [cursor=pointer]:
+                        - /url: /tournaments/7696/2019
+                    - cell "Hard" [ref=e9877]
+                    - cell "RR" [ref=e9878]
+                    - cell "95" [ref=e9879]
+                    - cell "🇮🇹 Jannik Sinner (8)" [ref=e9880]:
+                      - img "🇮🇹" [ref=e9881]
+                      - link "Jannik Sinner (8)" [ref=e9882] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9883]: (8)
+                    - cell "47" [ref=e9884]
+                    - cell "🇺🇸 Frances Tiafoe (2)" [ref=e9885]:
+                      - img "🇺🇸" [ref=e9886]
+                      - link "Frances Tiafoe (2)" [ref=e9887] [cursor=pointer]:
+                        - /url: /players/frances-tiafoe
+                        - text: Frances Tiafoe
+                        - generic [ref=e9888]: (2)
+                    - cell "3-4(4) 4-2 4-2 4-2" [ref=e9889]
+                    - cell "5" [ref=e9890]
+                    - cell "-" [ref=e9891]
+                    - cell "-" [ref=e9892]
+                    - cell "-" [ref=e9893]
+                    - cell "-" [ref=e9894]
+                    - cell "-" [ref=e9895]
+                    - cell "-" [ref=e9896]
+                    - cell "-" [ref=e9897]
+                  - row "2019-11-04 Next Gen Finals Hard RR 95 🇮🇹 Jannik Sinner (8) 74 🇸🇪 Mikael Ymer (6) 4-0 4-2 4-1 5 - - - - - - -" [ref=e9898]:
+                    - cell "2019-11-04" [ref=e9899]
+                    - cell "Next Gen Finals" [ref=e9900]:
+                      - link "Next Gen Finals" [ref=e9901] [cursor=pointer]:
+                        - /url: /tournaments/7696/2019
+                    - cell "Hard" [ref=e9902]
+                    - cell "RR" [ref=e9903]
+                    - cell "95" [ref=e9904]
+                    - cell "🇮🇹 Jannik Sinner (8)" [ref=e9905]:
+                      - img "🇮🇹" [ref=e9906]
+                      - link "Jannik Sinner (8)" [ref=e9907] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9908]: (8)
+                    - cell "74" [ref=e9909]
+                    - cell "🇸🇪 Mikael Ymer (6)" [ref=e9910]:
+                      - img "🇸🇪" [ref=e9911]
+                      - link "Mikael Ymer (6)" [ref=e9912] [cursor=pointer]:
+                        - /url: /players/mikael-ymer
+                        - text: Mikael Ymer
+                        - generic [ref=e9913]: (6)
+                    - cell "4-0 4-2 4-1" [ref=e9914]
+                    - cell "5" [ref=e9915]
+                    - cell "-" [ref=e9916]
+                    - cell "-" [ref=e9917]
+                    - cell "-" [ref=e9918]
+                    - cell "-" [ref=e9919]
+                    - cell "-" [ref=e9920]
+                    - cell "-" [ref=e9921]
+                    - cell "-" [ref=e9922]
+                  - row "2019-11-04 Next Gen Finals Hard F 95 🇮🇹 Jannik Sinner (8) 18 🇦🇺 Alex de Minaur (1) 4-2 4-1 4-2 5 - - - - - - -" [ref=e9923]:
+                    - cell "2019-11-04" [ref=e9924]
+                    - cell "Next Gen Finals" [ref=e9925]:
+                      - link "Next Gen Finals" [ref=e9926] [cursor=pointer]:
+                        - /url: /tournaments/7696/2019
+                    - cell "Hard" [ref=e9927]
+                    - cell "F" [ref=e9928]
+                    - cell "95" [ref=e9929]
+                    - cell "🇮🇹 Jannik Sinner (8)" [ref=e9930]:
+                      - img "🇮🇹" [ref=e9931]
+                      - link "Jannik Sinner (8)" [ref=e9932] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9933]: (8)
+                    - cell "18" [ref=e9934]
+                    - cell "🇦🇺 Alex de Minaur (1)" [ref=e9935]:
+                      - img "🇦🇺" [ref=e9936]
+                      - link "Alex de Minaur (1)" [ref=e9937] [cursor=pointer]:
+                        - /url: /players/alex-de-minaur
+                        - text: Alex de Minaur
+                        - generic [ref=e9938]: (1)
+                    - cell "4-2 4-1 4-2" [ref=e9939]
+                    - cell "5" [ref=e9940]
+                    - cell "-" [ref=e9941]
+                    - cell "-" [ref=e9942]
+                    - cell "-" [ref=e9943]
+                    - cell "-" [ref=e9944]
+                    - cell "-" [ref=e9945]
+                    - cell "-" [ref=e9946]
+                    - cell "-" [ref=e9947]
+                  - row "2019-11-04 Next Gen Finals Hard SF 95 🇮🇹 Jannik Sinner (8) 60 🇷🇸 Miomir Kecmanovic (5) 2-4 4-1 4-2 4-2 5 - - - - - - -" [ref=e9948]:
+                    - cell "2019-11-04" [ref=e9949]
+                    - cell "Next Gen Finals" [ref=e9950]:
+                      - link "Next Gen Finals" [ref=e9951] [cursor=pointer]:
+                        - /url: /tournaments/7696/2019
+                    - cell "Hard" [ref=e9952]
+                    - cell "SF" [ref=e9953]
+                    - cell "95" [ref=e9954]
+                    - cell "🇮🇹 Jannik Sinner (8)" [ref=e9955]:
+                      - img "🇮🇹" [ref=e9956]
+                      - link "Jannik Sinner (8)" [ref=e9957] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9958]: (8)
+                    - cell "60" [ref=e9959]
+                    - cell "🇷🇸 Miomir Kecmanovic (5)" [ref=e9960]:
+                      - img "🇷🇸" [ref=e9961]
+                      - link "Miomir Kecmanovic (5)" [ref=e9962] [cursor=pointer]:
+                        - /url: /players/miomir-kecmanovic
+                        - text: Miomir Kecmanovic
+                        - generic [ref=e9963]: (5)
+                    - cell "2-4 4-1 4-2 4-2" [ref=e9964]
+                    - cell "5" [ref=e9965]
+                    - cell "-" [ref=e9966]
+                    - cell "-" [ref=e9967]
+                    - cell "-" [ref=e9968]
+                    - cell "-" [ref=e9969]
+                    - cell "-" [ref=e9970]
+                    - cell "-" [ref=e9971]
+                    - cell "-" [ref=e9972]
+                  - row "2019-10-21 Vienna Hard R16 14 🇫🇷 Gael Monfils (4) 101 🇮🇹 Jannik Sinner (WC) 6-3 7-6(8) 3 85 17 6 60.8% 83.3% 48.4% 3/3" [ref=e9973]:
+                    - cell "2019-10-21" [ref=e9974]
+                    - cell "Vienna" [ref=e9975]:
+                      - link "Vienna" [ref=e9976] [cursor=pointer]:
+                        - /url: /tournaments/337/2019
+                    - cell "Hard" [ref=e9977]
+                    - cell "R16" [ref=e9978]
+                    - cell "14" [ref=e9979]
+                    - cell "🇫🇷 Gael Monfils (4)" [ref=e9980]:
+                      - img "🇫🇷" [ref=e9981]
+                      - link "Gael Monfils (4)" [ref=e9982] [cursor=pointer]:
+                        - /url: /players/gael-monfils
+                        - text: Gael Monfils
+                        - generic [ref=e9983]: (4)
+                    - cell "101" [ref=e9984]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e9985]:
+                      - img "🇮🇹" [ref=e9986]
+                      - link "Jannik Sinner (WC)" [ref=e9987] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e9988]: (WC)
+                    - cell "6-3 7-6(8)" [ref=e9989]
+                    - cell "3" [ref=e9990]
+                    - cell "85" [ref=e9991]
+                    - cell "17" [ref=e9992]
+                    - cell "6" [ref=e9993]
+                    - cell "60.8%" [ref=e9994]
+                    - cell "83.3%" [ref=e9995]
+                    - cell "48.4%" [ref=e9996]
+                    - cell "3/3" [ref=e9997]
+                  - row "2019-10-21 Vienna Hard R32 101 🇮🇹 Jannik Sinner (WC) 79 🇩🇪 Philipp Kohlschreiber (Q) 6-3 6-4 3 90 7 1 59.5% 77.3% 46.7% 7/8" [ref=e9998]:
+                    - cell "2019-10-21" [ref=e9999]
+                    - cell "Vienna" [ref=e10000]:
+                      - link "Vienna" [ref=e10001] [cursor=pointer]:
+                        - /url: /tournaments/337/2019
+                    - cell "Hard" [ref=e10002]
+                    - cell "R32" [ref=e10003]
+                    - cell "101" [ref=e10004]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e10005]:
+                      - img "🇮🇹" [ref=e10006]
+                      - link "Jannik Sinner (WC)" [ref=e10007] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e10008]: (WC)
+                    - cell "79" [ref=e10009]
+                    - cell "🇩🇪 Philipp Kohlschreiber (Q)" [ref=e10010]:
+                      - img "🇩🇪" [ref=e10011]
+                      - link "Philipp Kohlschreiber (Q)" [ref=e10012] [cursor=pointer]:
+                        - /url: /players/philipp-kohlschreiber
+                        - text: Philipp Kohlschreiber
+                        - generic [ref=e10013]: (Q)
+                    - cell "6-3 6-4" [ref=e10014]
+                    - cell "3" [ref=e10015]
+                    - cell "90" [ref=e10016]
+                    - cell "7" [ref=e10017]
+                    - cell "1" [ref=e10018]
+                    - cell "59.5%" [ref=e10019]
+                    - cell "77.3%" [ref=e10020]
+                    - cell "46.7%" [ref=e10021]
+                    - cell "7/8" [ref=e10022]
+                  - row "2019-10-14 Antwerp Hard SF 18 🇨🇭 Stan Wawrinka (4) 119 🇮🇹 Jannik Sinner (WC) 6-3 6-2 3 65 8 1 56.5% 80.8% 65.0% 1/2" [ref=e10023]:
+                    - cell "2019-10-14" [ref=e10024]
+                    - cell "Antwerp" [ref=e10025]:
+                      - link "Antwerp" [ref=e10026] [cursor=pointer]:
+                        - /url: /tournaments/7485/2019
+                    - cell "Hard" [ref=e10027]
+                    - cell "SF" [ref=e10028]
+                    - cell "18" [ref=e10029]
+                    - cell "🇨🇭 Stan Wawrinka (4)" [ref=e10030]:
+                      - img "🇨🇭" [ref=e10031]
+                      - link "Stan Wawrinka (4)" [ref=e10032] [cursor=pointer]:
+                        - /url: /players/stan-wawrinka
+                        - text: Stan Wawrinka
+                        - generic [ref=e10033]: (4)
+                    - cell "119" [ref=e10034]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e10035]:
+                      - img "🇮🇹" [ref=e10036]
+                      - link "Jannik Sinner (WC)" [ref=e10037] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e10038]: (WC)
+                    - cell "6-3 6-2" [ref=e10039]
+                    - cell "3" [ref=e10040]
+                    - cell "65" [ref=e10041]
+                    - cell "8" [ref=e10042]
+                    - cell "1" [ref=e10043]
+                    - cell "56.5%" [ref=e10044]
+                    - cell "80.8%" [ref=e10045]
+                    - cell "65.0%" [ref=e10046]
+                    - cell "1/2" [ref=e10047]
+                  - row "2019-10-14 Antwerp Hard QF 119 🇮🇹 Jannik Sinner (WC) 53 🇺🇸 Frances Tiafoe 6-4 3-6 6-3 3 101 10 2 63.7% 80.4% 51.7% 4/5" [ref=e10048]:
+                    - cell "2019-10-14" [ref=e10049]
+                    - cell "Antwerp" [ref=e10050]:
+                      - link "Antwerp" [ref=e10051] [cursor=pointer]:
+                        - /url: /tournaments/7485/2019
+                    - cell "Hard" [ref=e10052]
+                    - cell "QF" [ref=e10053]
+                    - cell "119" [ref=e10054]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e10055]:
+                      - img "🇮🇹" [ref=e10056]
+                      - link "Jannik Sinner (WC)" [ref=e10057] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e10058]: (WC)
+                    - cell "53" [ref=e10059]
+                    - cell "🇺🇸 Frances Tiafoe" [ref=e10060]:
+                      - img "🇺🇸" [ref=e10061]
+                      - link "Frances Tiafoe" [ref=e10062] [cursor=pointer]:
+                        - /url: /players/frances-tiafoe
+                    - cell "6-4 3-6 6-3" [ref=e10063]
+                    - cell "3" [ref=e10064]
+                    - cell "101" [ref=e10065]
+                    - cell "10" [ref=e10066]
+                    - cell "2" [ref=e10067]
+                    - cell "63.7%" [ref=e10068]
+                    - cell "80.4%" [ref=e10069]
+                    - cell "51.7%" [ref=e10070]
+                    - cell "4/5" [ref=e10071]
+                  - row "2019-10-14 Antwerp Hard R16 119 🇮🇹 Jannik Sinner (WC) 13 🇫🇷 Gael Monfils (1) 6-3 6-2 3 60 2 1 47.7% 81.0% 73.9% 1/1" [ref=e10072]:
+                    - cell "2019-10-14" [ref=e10073]
+                    - cell "Antwerp" [ref=e10074]:
+                      - link "Antwerp" [ref=e10075] [cursor=pointer]:
+                        - /url: /tournaments/7485/2019
+                    - cell "Hard" [ref=e10076]
+                    - cell "R16" [ref=e10077]
+                    - cell "119" [ref=e10078]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e10079]:
+                      - img "🇮🇹" [ref=e10080]
+                      - link "Jannik Sinner (WC)" [ref=e10081] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e10082]: (WC)
+                    - cell "13" [ref=e10083]
+                    - cell "🇫🇷 Gael Monfils (1)" [ref=e10084]:
+                      - img "🇫🇷" [ref=e10085]
+                      - link "Gael Monfils (1)" [ref=e10086] [cursor=pointer]:
+                        - /url: /players/gael-monfils
+                        - text: Gael Monfils
+                        - generic [ref=e10087]: (1)
+                    - cell "6-3 6-2" [ref=e10088]
+                    - cell "3" [ref=e10089]
+                    - cell "60" [ref=e10090]
+                    - cell "2" [ref=e10091]
+                    - cell "1" [ref=e10092]
+                    - cell "47.7%" [ref=e10093]
+                    - cell "81.0%" [ref=e10094]
+                    - cell "73.9%" [ref=e10095]
+                    - cell "1/1" [ref=e10096]
+                  - row "2019-10-14 Antwerp Hard R32 119 🇮🇹 Jannik Sinner (WC) 91 🇵🇱 Kamil Majchrzak (Q) 6-4 6-2 3 69 3 0 61.5% 68.8% 65.0% 0/1" [ref=e10097]:
+                    - cell "2019-10-14" [ref=e10098]
+                    - cell "Antwerp" [ref=e10099]:
+                      - link "Antwerp" [ref=e10100] [cursor=pointer]:
+                        - /url: /tournaments/7485/2019
+                    - cell "Hard" [ref=e10101]
+                    - cell "R32" [ref=e10102]
+                    - cell "119" [ref=e10103]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e10104]:
+                      - img "🇮🇹" [ref=e10105]
+                      - link "Jannik Sinner (WC)" [ref=e10106] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e10107]: (WC)
+                    - cell "91" [ref=e10108]
+                    - cell "🇵🇱 Kamil Majchrzak (Q)" [ref=e10109]:
+                      - img "🇵🇱" [ref=e10110]
+                      - link "Kamil Majchrzak (Q)" [ref=e10111] [cursor=pointer]:
+                        - /url: /players/kamil-majchrzak
+                        - text: Kamil Majchrzak
+                        - generic [ref=e10112]: (Q)
+                    - cell "6-4 6-2" [ref=e10113]
+                    - cell "3" [ref=e10114]
+                    - cell "69" [ref=e10115]
+                    - cell "3" [ref=e10116]
+                    - cell "0" [ref=e10117]
+                    - cell "61.5%" [ref=e10118]
+                    - cell "68.8%" [ref=e10119]
+                    - cell "65.0%" [ref=e10120]
+                    - cell "0/1" [ref=e10121]
+                  - row "2019-09-16 St. Petersburg Hard R32 57 🇰🇿 Mikhail Kukushkin (6) 127 🇮🇹 Jannik Sinner (WC) 6-3 7-6(4) 3 99 1 0 62.2% 64.7% 58.1% 9/11" [ref=e10122]:
+                    - cell "2019-09-16" [ref=e10123]
+                    - cell "St. Petersburg" [ref=e10124]:
+                      - link "St. Petersburg" [ref=e10125] [cursor=pointer]:
+                        - /url: /tournaments/568/2019
+                    - cell "Hard" [ref=e10126]
+                    - cell "R32" [ref=e10127]
+                    - cell "57" [ref=e10128]
+                    - cell "🇰🇿 Mikhail Kukushkin (6)" [ref=e10129]:
+                      - img "🇰🇿" [ref=e10130]
+                      - link "Mikhail Kukushkin (6)" [ref=e10131] [cursor=pointer]:
+                        - /url: /players/mikhail-kukushkin
+                        - text: Mikhail Kukushkin
+                        - generic [ref=e10132]: (6)
+                    - cell "127" [ref=e10133]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e10134]:
+                      - img "🇮🇹" [ref=e10135]
+                      - link "Jannik Sinner (WC)" [ref=e10136] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e10137]: (WC)
+                    - cell "6-3 7-6(4)" [ref=e10138]
+                    - cell "3" [ref=e10139]
+                    - cell "99" [ref=e10140]
+                    - cell "1" [ref=e10141]
+                    - cell "0" [ref=e10142]
+                    - cell "62.2%" [ref=e10143]
+                    - cell "64.7%" [ref=e10144]
+                    - cell "58.1%" [ref=e10145]
+                    - cell "9/11" [ref=e10146]
+                  - row "2019-08-26 US Open Hard R128 24 🇨🇭 Stan Wawrinka (23) 137 🇮🇹 Jannik Sinner 6-3 7-6(4) 4-6 6-3 5 169 15 6 62.2% 71.7% 51.8% 10/14" [ref=e10147]:
+                    - cell "2019-08-26" [ref=e10148]
+                    - cell "US Open" [ref=e10149]:
+                      - link "US Open" [ref=e10150] [cursor=pointer]:
+                        - /url: /tournaments/560/2019
+                    - cell "Hard" [ref=e10151]
+                    - cell "R128" [ref=e10152]
+                    - cell "24" [ref=e10153]
+                    - cell "🇨🇭 Stan Wawrinka (23)" [ref=e10154]:
+                      - img "🇨🇭" [ref=e10155]
+                      - link "Stan Wawrinka (23)" [ref=e10156] [cursor=pointer]:
+                        - /url: /players/stan-wawrinka
+                        - text: Stan Wawrinka
+                        - generic [ref=e10157]: (23)
+                    - cell "137" [ref=e10158]
+                    - cell "🇮🇹 Jannik Sinner" [ref=e10159]:
+                      - img "🇮🇹" [ref=e10160]
+                      - link "Jannik Sinner" [ref=e10161] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                    - cell "6-3 7-6(4) 4-6 6-3" [ref=e10162]
+                    - cell "5" [ref=e10163]
+                    - cell "169" [ref=e10164]
+                    - cell "15" [ref=e10165]
+                    - cell "6" [ref=e10166]
+                    - cell "62.2%" [ref=e10167]
+                    - cell "71.7%" [ref=e10168]
+                    - cell "51.8%" [ref=e10169]
+                    - cell "10/14" [ref=e10170]
+                  - row "2019-07-15 Umag Clay R16 87 SLO Aljaz Bedene 208 🇮🇹 Jannik Sinner (WC) 7-6(3) 6-3 3 107 7 0 58.7% 77.3% 54.8% 4/6" [ref=e10171]:
+                    - cell "2019-07-15" [ref=e10172]
+                    - cell "Umag" [ref=e10173]:
+                      - link "Umag" [ref=e10174] [cursor=pointer]:
+                        - /url: /tournaments/439/2019
+                    - cell "Clay" [ref=e10175]
+                    - cell "R16" [ref=e10176]
+                    - cell "87" [ref=e10177]
+                    - cell "SLO Aljaz Bedene" [ref=e10178]:
+                      - generic [ref=e10179]: SLO
+                      - link "Aljaz Bedene" [ref=e10180] [cursor=pointer]:
+                        - /url: /players/aljaz-bedene
+                    - cell "208" [ref=e10181]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e10182]:
+                      - img "🇮🇹" [ref=e10183]
+                      - link "Jannik Sinner (WC)" [ref=e10184] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e10185]: (WC)
+                    - cell "7-6(3) 6-3" [ref=e10186]
+                    - cell "3" [ref=e10187]
+                    - cell "107" [ref=e10188]
+                    - cell "7" [ref=e10189]
+                    - cell "0" [ref=e10190]
+                    - cell "58.7%" [ref=e10191]
+                    - cell "77.3%" [ref=e10192]
+                    - cell "54.8%" [ref=e10193]
+                    - cell "4/6" [ref=e10194]
+                  - row "2019-07-15 Umag Clay R32 208 🇮🇹 Jannik Sinner (WC) 109 🇵🇹 Pedro Sousa 1-6 6-3 6-4 3 103 1 4 52.9% 73.9% 43.9% 3/7" [ref=e10195]:
+                    - cell "2019-07-15" [ref=e10196]
+                    - cell "Umag" [ref=e10197]:
+                      - link "Umag" [ref=e10198] [cursor=pointer]:
+                        - /url: /tournaments/439/2019
+                    - cell "Clay" [ref=e10199]
+                    - cell "R32" [ref=e10200]
+                    - cell "208" [ref=e10201]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e10202]:
+                      - img "🇮🇹" [ref=e10203]
+                      - link "Jannik Sinner (WC)" [ref=e10204] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e10205]: (WC)
+                    - cell "109" [ref=e10206]
+                    - cell "🇵🇹 Pedro Sousa" [ref=e10207]:
+                      - img "🇵🇹" [ref=e10208]
+                      - link "Pedro Sousa" [ref=e10209] [cursor=pointer]:
+                        - /url: /players/pedro-sousa
+                    - cell "1-6 6-3 6-4" [ref=e10210]
+                    - cell "3" [ref=e10211]
+                    - cell "103" [ref=e10212]
+                    - cell "1" [ref=e10213]
+                    - cell "4" [ref=e10214]
+                    - cell "52.9%" [ref=e10215]
+                    - cell "73.9%" [ref=e10216]
+                    - cell "43.9%" [ref=e10217]
+                    - cell "3/7" [ref=e10218]
+                  - row "2019-06-10 's-Hertogenbosch Grass R32 60 🇨🇱 Nicolas Jarry 219 🇮🇹 Jannik Sinner (Q) 7-6(4) 6-3 3 81 10 0 65.2% 72.1% 56.5% 1/3" [ref=e10219]:
+                    - cell "2019-06-10" [ref=e10220]
+                    - cell "'s-Hertogenbosch" [ref=e10221]:
+                      - link "'s-Hertogenbosch" [ref=e10222] [cursor=pointer]:
+                        - /url: /tournaments/440/2019
+                    - cell "Grass" [ref=e10223]
+                    - cell "R32" [ref=e10224]
+                    - cell "60" [ref=e10225]
+                    - cell "🇨🇱 Nicolas Jarry" [ref=e10226]:
+                      - img "🇨🇱" [ref=e10227]
+                      - link "Nicolas Jarry" [ref=e10228] [cursor=pointer]:
+                        - /url: /players/nicolas-jarry
+                    - cell "219" [ref=e10229]
+                    - cell "🇮🇹 Jannik Sinner (Q)" [ref=e10230]:
+                      - img "🇮🇹" [ref=e10231]
+                      - link "Jannik Sinner (Q)" [ref=e10232] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e10233]: (Q)
+                    - cell "7-6(4) 6-3" [ref=e10234]
+                    - cell "3" [ref=e10235]
+                    - cell "81" [ref=e10236]
+                    - cell "10" [ref=e10237]
+                    - cell "0" [ref=e10238]
+                    - cell "65.2%" [ref=e10239]
+                    - cell "72.1%" [ref=e10240]
+                    - cell "56.5%" [ref=e10241]
+                    - cell "1/3" [ref=e10242]
+                  - row "2019-05-20 Lyon Clay R32 270 🇫🇷 Tristan Lamasine (LL) 229 🇮🇹 Jannik Sinner (Q) 6-0 7-6(5) 3 77 1 1 75.8% 76.0% 37.5% 4/5" [ref=e10243]:
+                    - cell "2019-05-20" [ref=e10244]
+                    - cell "Lyon" [ref=e10245]:
+                      - link "Lyon" [ref=e10246] [cursor=pointer]:
+                        - /url: /tournaments/7694/2019
+                    - cell "Clay" [ref=e10247]
+                    - cell "R32" [ref=e10248]
+                    - cell "270" [ref=e10249]
+                    - cell "🇫🇷 Tristan Lamasine (LL)" [ref=e10250]:
+                      - img "🇫🇷" [ref=e10251]
+                      - link "Tristan Lamasine (LL)" [ref=e10252] [cursor=pointer]:
+                        - /url: /players/tristan-lamasine
+                        - text: Tristan Lamasine
+                        - generic [ref=e10253]: (LL)
+                    - cell "229" [ref=e10254]
+                    - cell "🇮🇹 Jannik Sinner (Q)" [ref=e10255]:
+                      - img "🇮🇹" [ref=e10256]
+                      - link "Jannik Sinner (Q)" [ref=e10257] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e10258]: (Q)
+                    - cell "6-0 7-6(5)" [ref=e10259]
+                    - cell "3" [ref=e10260]
+                    - cell "77" [ref=e10261]
+                    - cell "1" [ref=e10262]
+                    - cell "1" [ref=e10263]
+                    - cell "75.8%" [ref=e10264]
+                    - cell "76.0%" [ref=e10265]
+                    - cell "37.5%" [ref=e10266]
+                    - cell "4/5" [ref=e10267]
+                  - row "2019-05-13 Rome Masters Clay R32 7 🇬🇷 Stefanos Tsitsipas (8) 263 🇮🇹 Jannik Sinner (WC) 6-3 6-2 3 77 1 1 61.8% 64.7% 66.7% 2/3" [ref=e10268]:
+                    - cell "2019-05-13" [ref=e10269]
+                    - cell "Rome Masters" [ref=e10270]:
+                      - link "Rome Masters" [ref=e10271] [cursor=pointer]:
+                        - /url: /tournaments/416/2019
+                    - cell "Clay" [ref=e10272]
+                    - cell "R32" [ref=e10273]
+                    - cell "7" [ref=e10274]
+                    - cell "🇬🇷 Stefanos Tsitsipas (8)" [ref=e10275]:
+                      - img "🇬🇷" [ref=e10276]
+                      - link "Stefanos Tsitsipas (8)" [ref=e10277] [cursor=pointer]:
+                        - /url: /players/stefanos-tsitsipas
+                        - text: Stefanos Tsitsipas
+                        - generic [ref=e10278]: (8)
+                    - cell "263" [ref=e10279]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e10280]:
+                      - img "🇮🇹" [ref=e10281]
+                      - link "Jannik Sinner (WC)" [ref=e10282] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e10283]: (WC)
+                    - cell "6-3 6-2" [ref=e10284]
+                    - cell "3" [ref=e10285]
+                    - cell "77" [ref=e10286]
+                    - cell "1" [ref=e10287]
+                    - cell "1" [ref=e10288]
+                    - cell "61.8%" [ref=e10289]
+                    - cell "64.7%" [ref=e10290]
+                    - cell "66.7%" [ref=e10291]
+                    - cell "2/3" [ref=e10292]
+                  - row "2019-05-13 Rome Masters Clay R64 263 🇮🇹 Jannik Sinner (WC) 59 🇺🇸 Steve Johnson 1-6 6-1 7-5 3 111 3 3 60.3% 70.2% 45.2% 1/4" [ref=e10293]:
+                    - cell "2019-05-13" [ref=e10294]
+                    - cell "Rome Masters" [ref=e10295]:
+                      - link "Rome Masters" [ref=e10296] [cursor=pointer]:
+                        - /url: /tournaments/416/2019
+                    - cell "Clay" [ref=e10297]
+                    - cell "R64" [ref=e10298]
+                    - cell "263" [ref=e10299]
+                    - cell "🇮🇹 Jannik Sinner (WC)" [ref=e10300]:
+                      - img "🇮🇹" [ref=e10301]
+                      - link "Jannik Sinner (WC)" [ref=e10302] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e10303]: (WC)
+                    - cell "59" [ref=e10304]
+                    - cell "🇺🇸 Steve Johnson" [ref=e10305]:
+                      - img "🇺🇸" [ref=e10306]
+                      - link "Steve Johnson" [ref=e10307] [cursor=pointer]:
+                        - /url: /players/steve-johnson
+                    - cell "1-6 6-1 7-5" [ref=e10308]
+                    - cell "3" [ref=e10309]
+                    - cell "111" [ref=e10310]
+                    - cell "3" [ref=e10311]
+                    - cell "3" [ref=e10312]
+                    - cell "60.3%" [ref=e10313]
+                    - cell "70.2%" [ref=e10314]
+                    - cell "45.2%" [ref=e10315]
+                    - cell "1/4" [ref=e10316]
+                  - row "2019-04-22 Budapest Clay R16 33 🇷🇸 Laslo Djere (5) 314 🇮🇹 Jannik Sinner (LL) 6-3 6-1 3 90 5 2 57.8% 70.3% 55.6% 4/4" [ref=e10317]:
+                    - cell "2019-04-22" [ref=e10318]
+                    - cell "Budapest" [ref=e10319]:
+                      - link "Budapest" [ref=e10320] [cursor=pointer]:
+                        - /url: /tournaments/7648/2019
+                    - cell "Clay" [ref=e10321]
+                    - cell "R16" [ref=e10322]
+                    - cell "33" [ref=e10323]
+                    - cell "🇷🇸 Laslo Djere (5)" [ref=e10324]:
+                      - img "🇷🇸" [ref=e10325]
+                      - link "Laslo Djere (5)" [ref=e10326] [cursor=pointer]:
+                        - /url: /players/laslo-djere
+                        - text: Laslo Djere
+                        - generic [ref=e10327]: (5)
+                    - cell "314" [ref=e10328]
+                    - cell "🇮🇹 Jannik Sinner (LL)" [ref=e10329]:
+                      - img "🇮🇹" [ref=e10330]
+                      - link "Jannik Sinner (LL)" [ref=e10331] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e10332]: (LL)
+                    - cell "6-3 6-1" [ref=e10333]
+                    - cell "3" [ref=e10334]
+                    - cell "90" [ref=e10335]
+                    - cell "5" [ref=e10336]
+                    - cell "2" [ref=e10337]
+                    - cell "57.8%" [ref=e10338]
+                    - cell "70.3%" [ref=e10339]
+                    - cell "55.6%" [ref=e10340]
+                    - cell "4/4" [ref=e10341]
+                  - row "2019-04-22 Budapest Clay R32 314 🇮🇹 Jannik Sinner (LL) 323 🇭🇺 Mate Valkusz (WC) 6-2 0-6 6-4 3 103 1 2 52.9% 66.7% 31.3% 2/8" [ref=e10342]:
+                    - cell "2019-04-22" [ref=e10343]
+                    - cell "Budapest" [ref=e10344]:
+                      - link "Budapest" [ref=e10345] [cursor=pointer]:
+                        - /url: /tournaments/7648/2019
+                    - cell "Clay" [ref=e10346]
+                    - cell "R32" [ref=e10347]
+                    - cell "314" [ref=e10348]
+                    - cell "🇮🇹 Jannik Sinner (LL)" [ref=e10349]:
+                      - img "🇮🇹" [ref=e10350]
+                      - link "Jannik Sinner (LL)" [ref=e10351] [cursor=pointer]:
+                        - /url: /players/jannik-sinner
+                        - text: Jannik Sinner
+                        - generic [ref=e10352]: (LL)
+                    - cell "323" [ref=e10353]
+                    - cell "🇭🇺 Mate Valkusz (WC)" [ref=e10354]:
+                      - img "🇭🇺" [ref=e10355]
+                      - link "Mate Valkusz (WC)" [ref=e10356] [cursor=pointer]:
+                        - /url: /players/mate-valkusz
+                        - text: Mate Valkusz
+                        - generic [ref=e10357]: (WC)
+                    - cell "6-2 0-6 6-4" [ref=e10358]
+                    - cell "3" [ref=e10359]
+                    - cell "103" [ref=e10360]
+                    - cell "1" [ref=e10361]
+                    - cell "2" [ref=e10362]
+                    - cell "52.9%" [ref=e10363]
+                    - cell "66.7%" [ref=e10364]
+                    - cell "31.3%" [ref=e10365]
+                    - cell "2/8" [ref=e10366]
+  - contentinfo [ref=e10368]: © 2026 TennisMyLife - Tennis Data Records History
+  - button "Open Next.js Dev Tools" [ref=e10374] [cursor=pointer]:
+    - img [ref=e10375]
+  - alert [ref=e10378]: Jannik Sinner – Stats, Matches, Results, Records & Rankings | TennisMyLife
+```
