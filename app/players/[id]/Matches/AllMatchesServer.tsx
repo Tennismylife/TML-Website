@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import Flag from "@/components/Flag";
-import { getPlayerHref, getTourneyHref } from "@/lib/utils";
+import { getPlayerHref, getTourneyHref, formatDateISO } from "@/lib/utils";
 
 interface AllMatchesServerProps {
   playerId: string;
@@ -34,7 +34,7 @@ export default function AllMatchesServer({ playerId, matches, heading }: AllMatc
   return (
     <div className="w-full">
       {/* Hidden server table (kept hidden to avoid DOM/hydration issues) */}
-      <div id="server-all-matches" className="w-full bg-gray-900/80 rounded-md p-4" style={{ display: 'none' }}>
+      <div id="server-all-matches" className="w-full bg-gray-900/80 rounded-md p-4" style={{ display: 'none' }} suppressHydrationWarning>
         <div className="w-full text-center mb-4">
           <div className="font-semibold text-xl sm:text-2xl leading-none text-gray-100">
             W-L: {wins}-{losses} ({winPercentage}%)
@@ -60,9 +60,9 @@ export default function AllMatchesServer({ playerId, matches, heading }: AllMatc
               {displayMatches.map((m, idx) => {
                 const isWinner = String(m.winner_id) === String(playerId);
                 return (
-                  <tr key={idx} className={`hover:bg-white/5 transition ${isWinner ? "bg-green-900/20" : "bg-red-900/20"}`}>
+                  <tr key={idx} className="hover:bg-gray-800/50">
                     <td className="border border-white/10 px-3 py-2 text-center text-gray-200">
-                      {m.tourney_date ? new Date(m.tourney_date).toLocaleDateString() : "-"}
+                      {formatDateISO(m.tourney_date)}
                     </td>
                     <td className="border border-white/10 px-3 py-2 text-gray-200">
                       {m.tourney_name ? (

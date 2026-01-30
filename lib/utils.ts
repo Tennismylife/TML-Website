@@ -374,6 +374,16 @@ export function toDate(d: string | Date) {
   return Number.isFinite(dt.getTime()) ? dt : null;
 }  
 
+/**
+ * Format a date in a deterministic (locale-independent) YYYY-MM-DD form for SSR/Client parity.
+ * Use this instead of toLocaleDateString() where mismatches may occur.
+ */
+export function formatDateISO(d?: string | Date | null) {
+  const dt = toDate(d as any);
+  if (!dt) return "-";
+  return dt.toISOString().slice(0, 10);
+}
+
 export const toOrdinal = (n: number) => {
   if (!Number.isFinite(n)) return String(n);
   const v = Math.abs(n) % 100;

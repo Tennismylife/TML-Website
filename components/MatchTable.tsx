@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Match, SortDirection, SortKey } from "@/types";
 import Flag from '@/components/Flag';
-import { getTourneyHref, extractUniqueSurfaces, getPlayerHref } from "@/lib/utils";
+import { getTourneyHref, extractUniqueSurfaces, getPlayerHref, formatDateISO } from "@/lib/utils";
 import { useEffect, useState, useMemo, useRef } from "react";
 
 interface MatchTableProps {
@@ -261,7 +261,7 @@ export default function MatchTable({
 
               return (
                 <tr key={index} className="hover:bg-gray-800/50">
-                  <td className={tdBase}>{new Date(m.tourney_date as unknown as string).toLocaleDateString()}</td>
+                  <td className={tdBase}>{formatDateISO(m.tourney_date)}</td>
                   <td className={tdBase}>
                     <Link href={getTourneyHref({ id: m.tourney_id, name: m.tourney_name, year: m.year })} className="text-white hover:underline">
                       {m.tourney_name}

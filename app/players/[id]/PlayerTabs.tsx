@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef } from "react";
+import type { ReactNode } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Profile from "./Profile";
 import AllMatches from "./Matches/AllMatches";
@@ -28,9 +29,11 @@ interface PlayerTabsProps {
   setH2HFilters?: (f: any) => void;
   initialMatches?: any[];
   initialHeading?: string;
+  initialTotals?: { totalWins?: number; totalLosses?: number };
+
 }
 
-export default function PlayerTabs({ player, tabs, initialTab, setTab, tournamentsFilters, setTournamentsFilters, h2hFilters, setH2HFilters, initialMatches, initialHeading }: PlayerTabsProps) {
+export default function PlayerTabs({ player, tabs, initialTab, setTab, tournamentsFilters, setTournamentsFilters, h2hFilters, setH2HFilters, initialMatches, initialHeading, initialTotals }: PlayerTabsProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -105,33 +108,39 @@ export default function PlayerTabs({ player, tabs, initialTab, setTab, tournamen
     router.push(newUrl, { scroll: false });
   };
 
-  const content = useMemo(() => {
-    switch (activeTab) {
-      case "profile":
-        return <Profile player={player} />;
-      case "matches":
-        return <AllMatches playerId={player.id} initialMatches={initialMatches} initialHeading={initialHeading} />;
-      case "season":
-        return <Seasons playerId={player.id} />;
-      case "tournaments":
-        return <Tournaments playerId={player.id} filters={tournamentsFilters} setFilters={setTournamentsFilters} />;
-      case "h2h":
-        return (
-          <H2H
-            playerId={player.id}
-            mainPlayerName={player.atpname ?? player.id}
-            filters={h2hFilters}
-            setFilters={setH2HFilters}
-          />
-        );
-      case "performance":
-        return <Performance playerId={player.id} />;
-      case "statistics":
-        return <Statistics playerId={player.id} />;
-      default:
-        return null;
-    }
-  }, [activeTab, player, tournamentsFilters, setTournamentsFilters, h2hFilters, setH2HFilters, initialMatches]);
+  let content: ReactNode = null;
+  switch (activeTab) {
+    case "profile":
+      content = <Profile player={player} />;
+      break;
+    case "matches":
+      content = <AllMatches playerId={player.id} initialMatches={initialMatches} initialHeading={initialHeading} initialTotals={initialTotals} />;
+      break;
+    case "season":
+      content = <Seasons playerId={player.id} />;
+      break;
+    case "tournaments":
+      content = <Tournaments playerId={player.id} filters={tournamentsFilters} setFilters={setTournamentsFilters} />;
+      break;
+    case "h2h":
+      content = (
+        <H2H
+          playerId={player.id}
+          mainPlayerName={player.atpname ?? player.id}
+          filters={h2hFilters}
+          setFilters={setH2HFilters}
+        />
+      );
+      break;
+    case "performance":
+      content = <Performance playerId={player.id} />;
+      break;
+    case "statistics":
+      content = <Statistics playerId={player.id} />;
+      break;
+    default:
+      content = null;
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     const index = tabs.findIndex(t => t.id === activeTab);

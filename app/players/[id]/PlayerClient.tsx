@@ -12,6 +12,7 @@ export default function PlayerClient(props: any) {
   const playerId = params?.id ?? props.params?.id;
   const initialMatches = props.initialMatches;
   const initialHeading = props.initialHeading;
+  const initialTotals = props.initialTotals;
 
   const [player, setPlayer] = useState<Player | null>(null);
   const [loading, setLoading] = useState(false);
@@ -296,6 +297,7 @@ export default function PlayerClient(props: any) {
         setH2HFilters={(partial: Partial<typeof h2hFilters>) => setH2HFilters(prev => ({ ...prev, ...partial }))}
         initialMatches={initialMatches}
         initialHeading={initialHeading}
+        initialTotals={initialTotals}
       />
 
       {/* Content */}

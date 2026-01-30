@@ -10,6 +10,7 @@ interface Props {
   playerId: string;
   matches: Match[];
   allMatches: Match[];
+  allMatchesFetched?: boolean;
   /** The subset of matches currently displayed (e.g. first 10) */
   displayedMatches?: Match[];
   updateUrl: (filters: Record<string, string>) => void;
@@ -29,11 +30,12 @@ const TOURNEY_LEVELS = [
   { code: "O", label: "Olympics" },
 ];
 
-export default function MatchesFilterPanel({ playerId, matches, allMatches, displayedMatches, updateUrl, onExplicitChange, onFiltersChange }: Props) {
+export default function MatchesFilterPanel({ playerId, matches, allMatches, displayedMatches, updateUrl, onExplicitChange, onFiltersChange, allMatchesFetched }: Props) {
   const searchParams = useSearchParams();
   const urlYear = searchParams?.get("year");
   const urlTourney = searchParams?.get("tourney");
   const urlLevel = searchParams?.get("level");
+  const urlSurface = searchParams?.get("surface");
 
   // --- Filtri selezionati ---
   const [selectedYear, setSelectedYear] = useState<string>("All");
@@ -63,73 +65,98 @@ export default function MatchesFilterPanel({ playerId, matches, allMatches, disp
   const rounds = ["R128","R64","R32","R16","QF","SF","F","RR","3rd/4th","BR"];
 
   const initializedRef = useRef(false);
+  const fullOptionsPopulatedRef = useRef(false);
 
   // --- Inizializzazione filtri disponibili dai match ---
   useEffect(() => {
-    if (!initializedRef.current && allMatches.length > 0) {
-      const years = Array.from(new Set(allMatches.map(m => m.year).filter((y): y is number => y != null)))
-                         .sort((a,b) => b-a)
-                         .map(String);
-      // if URL provided a year that's not in the available list, add it so the UI preserves the selection
-      if (urlYear && !years.includes(urlYear)) setAvailableYears(prev => [urlYear, ...years]);
-      else setAvailableYears(years);
-      
-      const availableLevels = TOURNEY_LEVELS.filter(l =>
-        allMatches.some(m => m.tourney_level === l.code)
-      );
-      // preserve external level param if present
-      if (urlLevel && !availableLevels.some(l => l.code === urlLevel)) setTourneyLevels(prev => [urlLevel, ...availableLevels.map(l => l.code)]);
-      else setTourneyLevels(availableLevels.map(l => l.code));
+    // If we've already populated full options from the complete dataset, and
+    // `allMatchesFetched` is true, do not overwrite available options anymore.
+    if (fullOptionsPopulatedRef.current && allMatchesFetched) {
+      console.debug('[MatchesFilterPanel] full options already populated; skipping recompute');
+      return;
+    }
 
-      const map = new Map<string, Set<string>>();
-      allMatches.forEach(m => {
-        // Exclude tournaments with tourney_level === 'D' (e.g., Davis Cup)
-        if (m.tourney_level === 'D') return;
-        if (!m.tourney_id || !m.tourney_name) return;
-        const name = m.tourney_name.trim();
-        if (!map.has(m.tourney_id)) map.set(m.tourney_id, new Set([name]));
-        else map.get(m.tourney_id)!.add(name);
-      });
+    if (!allMatches || allMatches.length === 0) return;
 
-      let tourneys = Array.from(map.entries()).map(([id, namesSet]) => ({
-        id,
-        name: Array.from(namesSet).join("/")
-      }));
+    // Compute the available options from the full (or partial) match set
+    const years = Array.from(new Set(allMatches.map(m => m.year).filter((y): y is number => y != null)))
+                       .sort((a,b) => b-a)
+                       .map(String);
+    // if URL provided a year that's not in the available list, ensure it is present
+    setAvailableYears(prev => {
+      if (urlYear && !years.includes(urlYear)) return [urlYear, ...years];
+      return years;
+    });
+    console.log('[MatchesFilterPanel] availableYears, urlSurface:', years, urlSurface);
 
-      // if URL provided a tourney that's not in the list, add it at the front so selection is preserved
-      if (urlTourney && !tourneys.some(t => t.id === urlTourney)) {
-        tourneys = [{ id: urlTourney, name: urlTourney }, ...tourneys];
-      }
+    const availableLevels = TOURNEY_LEVELS.filter(l => allMatches.some(m => m.tourney_level === l.code));
+    setTourneyLevels(prev => {
+      const codes = availableLevels.map(l => l.code);
+      if (urlLevel && !codes.includes(urlLevel)) return [urlLevel, ...codes];
+      return codes;
+    });
 
-      const priorityOrder: Record<string, number> = { "580": 0, "520": 1, "540": 2, "560": 3, "605": 4 };
-      tourneys.sort((a,b) => {
-        const pa = priorityOrder[a.id] ?? 1000;
-        const pb = priorityOrder[b.id] ?? 1000;
-        if (pa !== pb) return pa - pb;
-        return a.name.localeCompare(b.name);
-      });
+    const map = new Map<string, Set<string>>();
+    allMatches.forEach(m => {
+      if (m.tourney_level === 'D') return;
+      if (!m.tourney_id || !m.tourney_name) return;
+      const name = m.tourney_name.trim();
+      if (!map.has(m.tourney_id)) map.set(m.tourney_id, new Set([name]));
+      else map.get(m.tourney_id)!.add(name);
+    });
 
-      setTourneyIds(tourneys.map(t => t.id));
-      setTourneyNames(tourneys.map(t => t.name));
+    let tourneys = Array.from(map.entries()).map(([id, namesSet]) => ({ id, name: Array.from(namesSet).join('/') }));
+    if (urlTourney && !tourneys.some(t => t.id === urlTourney)) {
+      tourneys = [{ id: urlTourney, name: urlTourney }, ...tourneys];
+    }
 
-      // prefer the year from the URL when present (and preserve unknown year)
-      setSelectedYear(urlYear ?? "All");
-      setTourneyIdFilter(urlTourney ?? "All");
-      setTourneyLevelFilter(urlLevel ?? "All");
-      setVsRankFilter(searchParams?.get("vsRank") || "All");
-      setVsAgeFilter(searchParams?.get("vsAge") || "All");
-      setVsHandFilter(searchParams?.get("vsHand") || "All");
-      setVsBackhandFilter(searchParams?.get("vsBackhand") || "All");
-      setVsEntryFilter(searchParams?.get("vsEntry") || "All");
-      setAsRankFilter(searchParams?.get("asRank") || "All");
-      setAsEntryFilter(searchParams?.get("asEntry") || "All");
-      setMatchSetFilter(searchParams?.get("set") || "All");
-      setFirstSetFilter(searchParams?.get("firstSet") || "All");
-      setScoreFilter(searchParams?.get("score") || "All");
+    const priorityOrder: Record<string, number> = { "580": 0, "520": 1, "540": 2, "560": 3, "605": 4 };
+    tourneys.sort((a,b) => {
+      const pa = priorityOrder[a.id] ?? 1000;
+      const pb = priorityOrder[b.id] ?? 1000;
+      if (pa !== pb) return pa - pb;
+      return a.name.localeCompare(b.name);
+    });
+
+    setTourneyIds(tourneys.map(t => t.id));
+    setTourneyNames(tourneys.map(t => t.name));
+
+    // Preserve current selections if user already interacted. If not, seed from URL if present.
+    // If we already have full options populated, avoid overwriting current selections.
+    if (!fullOptionsPopulatedRef.current) {
+      setSelectedYear(prev => (prev && prev !== 'All' && years.includes(prev)) ? prev : (urlYear ?? prev ?? 'All'));
+      setTourneyIdFilter(prev => (prev && prev !== 'All' && tourneys.some(t => t.id === prev)) ? prev : (urlTourney ?? prev ?? 'All'));
+      setTourneyLevelFilter(prev => (prev && prev !== 'All' && availableLevels.some(l => l.code === prev)) ? prev : (urlLevel ?? prev ?? 'All'));
+
+      // seed surface from URL if present (respect existing user selection if any)
+      setSurfaceFilter(prev => (prev && prev !== 'All') ? prev : (urlSurface ?? prev ?? 'All'));
+      console.debug('[MatchesFilterPanel] seeded surface ->', urlSurface, 'currentSurface->', (urlSurface ?? 'All'));
+
+      // Use the same seed-or-keep logic for other filters so that explicit user choices are preserved
+      setVsRankFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('vsRank') ?? prev ?? 'All'));
+      setVsAgeFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('vsAge') ?? prev ?? 'All'));
+      setVsHandFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('vsHand') ?? prev ?? 'All'));
+      setVsBackhandFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('vsBackhand') ?? prev ?? 'All'));
+      setVsEntryFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('vsEntry') ?? prev ?? 'All'));
+      setAsRankFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('asRank') ?? prev ?? 'All'));
+      setAsEntryFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('asEntry') ?? prev ?? 'All'));
+      setMatchSetFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('set') ?? prev ?? 'All'));
+      setFirstSetFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('firstSet') ?? prev ?? 'All'));
+      setScoreFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('score') ?? prev ?? 'All'));
+      setRoundFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('round') ?? prev ?? 'All'));
+      setResultFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('result') ?? prev ?? 'All'));
 
       initializedRef.current = true;
     }
-  }, [allMatches, urlYear, urlTourney, urlLevel, searchParams]);
+
+    // If this update came from a full (server) fetch of all matches, mark full-options populated so
+    // subsequent partial/seeding updates won't override the lists.
+    if (allMatchesFetched) {
+      fullOptionsPopulatedRef.current = true;
+      console.debug('[MatchesFilterPanel] marked full options populated (allMatchesFetched=true)');
+    }
+
+  }, [allMatches, urlYear, urlTourney, urlLevel, searchParams, allMatchesFetched]);
 
   // --- Ref per evitare updateUrl al primo render ---
   const skipFirstUpdateRef = useRef(true);
@@ -246,13 +273,9 @@ export default function MatchesFilterPanel({ playerId, matches, allMatches, disp
 // --- Calcolo W-L solo per match con status true ---
 useEffect(() => {
   // Base matches: if filters applied, use filteredMatches, otherwise use full matches
-  const baseMatches = filteredMatches && filteredMatches.length > 0 ? filteredMatches : matches || [];
-
-  // If caller provided a displayed subset (e.g. first 10 visible matches) and it's smaller
-  // than the base set, count on the displayed subset so W-L matches what the UI shows.
-  const matchesToCount = (displayedMatches && displayedMatches.length > 0 && displayedMatches.length < baseMatches.length)
-    ? displayedMatches
-    : baseMatches;
+  // Always count against the full filtered set so W-L reflects all matches that satisfy
+  // the currently selected filters (not only the visible slice).
+  const matchesToCount = filteredMatches && filteredMatches.length > 0 ? filteredMatches : matches || [];
 
   const { wins, losses } = matchesToCount.reduce(
     (acc, m) => {
@@ -266,7 +289,7 @@ useEffect(() => {
 
   setWins(wins);
   setLosses(losses);
-}, [filteredMatches, matches, playerId, displayedMatches]);
+}, [filteredMatches, matches, playerId]);
 
 
 

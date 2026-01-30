@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Flag from '@/components/Flag';
-import { getTourneyHref, getPlayerHref } from "@/lib/utils";
+import { getTourneyHref, getPlayerHref, formatDateISO } from "@/lib/utils";
 
 interface Match {
   id: string | number;
@@ -147,9 +147,7 @@ export default function LatestMatches() {
                       className="hover:bg-gray-800 border-b border-white/10"
                     >
                       <td className="border border-white/10 px-3 py-1.5 text-center text-gray-200">
-                        {m.tourney_date
-                          ? new Date(m.tourney_date).toLocaleDateString()
-                          : "-"}
+                        {m.tourney_date ? formatDateISO(m.tourney_date) : "-"}
                       </td>
 
                       <td className="border border-white/10 px-3 py-1.5 text-gray-200">

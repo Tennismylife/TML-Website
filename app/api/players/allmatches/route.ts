@@ -44,10 +44,24 @@ export async function GET(request: NextRequest) {
     if (year) where.year = parseInt(year);
     if (level) where.tourney_level = level;
     if (tourneyId && tourneyId !== "All") where.tourney_id = tourneyId;
-    if (surface) where.surface = surface;
+    if (surface) {
+      // Support substring / case-insensitive matching (e.g. "Hard (Indoor)" should match "Hard")
+      where.surface = { contains: surface, mode: 'insensitive' } as any;
+    }
     if (round) where.round = round;
 
-    const matches = await prisma.match.findMany({ where });
+    // Honor a `limit` query param by applying `take` at the DB level and ordering by date desc
+    const limitParamDb = url.searchParams.get('limit');
+    let take: number | undefined = undefined;
+    if (limitParamDb) {
+      const n = parseInt(limitParamDb, 10);
+      if (!Number.isNaN(n) && n > 0) take = n;
+    }
+
+    const findOptions: any = { where, orderBy: { tourney_date: 'desc' } };
+    if (typeof take === 'number') findOptions.take = take;
+
+    const matches = await prisma.match.findMany(findOptions);
 
     let playerMap: Record<string, string | null> = {};
     if (vsBackhand) {
@@ -92,15 +106,29 @@ export async function GET(request: NextRequest) {
       const playerIds = Array.from(new Set(filteredMatches.flatMap(m => [m.winner_id, m.loser_id]).filter((id): id is string => !!id)));
       const { mapIdsToSlugs } = await import('@/lib/player-slugs');
       const slugMap = await mapIdsToSlugs(playerIds);
-      const enriched = filteredMatches.map((m) => ({
+      let enriched = filteredMatches.map((m) => ({
         ...m,
         winner_slug: m.winner_id ? (slugMap[String(m.winner_id)] ?? null) : null,
         loser_slug: m.loser_id ? (slugMap[String(m.loser_id)] ?? null) : null,
       }));
+
+      // Honor an optional `limit` query param so clients can request only the latest N matches
+      const limitParam = url.searchParams.get('limit');
+      if (limitParam) {
+        const n = parseInt(limitParam, 10);
+        if (!Number.isNaN(n) && n > 0) enriched = enriched.slice(0, n);
+      }
+
       return NextResponse.json(enriched);
     } catch (e) {
       // fallback: return unmodified matches if slug resolution fails
-      return NextResponse.json(filteredMatches);
+      let fallback = filteredMatches;
+      const limitParam = url.searchParams.get('limit');
+      if (limitParam) {
+        const n = parseInt(limitParam, 10);
+        if (!Number.isNaN(n) && n > 0) fallback = fallback.slice(0, n);
+      }
+      return NextResponse.json(fallback);
     }
   } catch (err) {
     console.error("Errore recupero match:", err);

@@ -232,15 +232,33 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
     select: { status: true, winner_id: true, loser_id: true, surface: true },
   });
 
+  // Compute career totals (server-side) to pass as initialTotals to the client without fetching all rows
+  const careerMatches = matches.filter(m => m.status !== false);
+  const careerWins = careerMatches.filter(m => String(m.winner_id) === String(player.id)).length;
+  const careerLosses = careerMatches.filter(m => String(m.loser_id) === String(player.id)).length;
+
   // Fetch only latest 10 matches for SSR (optimized first load)
   let allMatchesForSSR: any[] | null = null;
   if (tab === 'matches') {
     try {
+      // Build a WHERE clause that respects external URL filters (at least year for now)
+      const whereClause: any = {
+        OR: [{ winner_id: player.id }, { loser_id: player.id }],
+        status: true,
+      };
+      // Support simple year & surface filters provided via query params (e.g. ?year=2026&surface=Hard)
+      const sp: Record<string, any> = resolvedParamsObj || {};
+      if (sp.year && String(sp.year).toLowerCase() !== 'all') {
+        const y = Number(sp.year);
+        if (!Number.isNaN(y)) whereClause.year = y;
+      }
+      if (sp.surface && String(sp.surface).toLowerCase() !== 'all') {
+        // Use a case-insensitive "contains" filter so variations like "Hard Indoor" match "Hard"
+        whereClause.surface = { contains: String(sp.surface), mode: 'insensitive' } as any;
+      }
+
       allMatchesForSSR = await prisma.match.findMany({
-        where: {
-          OR: [{ winner_id: player.id }, { loser_id: player.id }],
-          status: true,
-        },
+        where: whereClause,
         orderBy: { tourney_date: 'desc' },
         take: 10, // Only fetch 10 matches for initial SSR
       });
@@ -294,7 +312,7 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
         <AllMatchesServer playerId={player.id} matches={allMatchesForSSR} heading={matchesHeading} />
       ) : null}
 
-      <PlayerClient params={{ id: player.id, tab: tabParam ?? 'matches' }} initialMatches={allMatchesForSSR ?? undefined} initialHeading={matchesHeading ?? 'Matches'} />
+      <PlayerClient params={{ id: player.id, tab: tabParam ?? 'matches' }} initialMatches={allMatchesForSSR ?? undefined} initialHeading={matchesHeading ?? 'Matches'} initialTotals={{ totalWins: careerWins, totalLosses: careerLosses }} />
     </>
   );
 }

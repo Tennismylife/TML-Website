@@ -1,5 +1,6 @@
 // app/players/[id]/Matches/FilteredMatches.tsx
 import { Match } from "@/types";
+import { extractUniqueSurfaces } from "@/lib/utils";
 
 export default function FilteredMatchesCalculation(
   matches: Match[],
@@ -65,7 +66,10 @@ export default function FilteredMatchesCalculation(
       // --- Base filters ---
       if (tourneyNameFilter !== "All" && m.tourney_name !== tourneyNameFilter) return false;
       if (tourneyFilter !== "All" && m.tourney_level !== tourneyFilter) return false;
-      if (surfaceFilter !== "All" && m.surface !== surfaceFilter) return false;
+      if (surfaceFilter !== "All") {
+        const s = extractUniqueSurfaces(m.surface);
+        if (!s.includes(surfaceFilter)) return false;
+      }
       if (roundFilter !== "All" && m.round !== roundFilter) return false;
 
       // --- Result filters ---

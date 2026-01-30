@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Match, SortKey, SortDirection } from "@/types";
 import Flag from '@/components/Flag';
-import { getTourneyHref, extractUniqueSurfaces, getPlayerHref } from "@/lib/utils";
+import { getTourneyHref, extractUniqueSurfaces, getPlayerHref, formatDateISO } from "@/lib/utils";
 import { useEffect, useRef, useState, useMemo } from "react";
 
 interface H2HMatchesProps {
@@ -296,13 +296,7 @@ export default function H2HMatches({
                       : "hover:bg-gray-800/50"
                   }`}
                 >
-                  <td className="px-3 py-2 text-center">
-                    {m.tourney_date ? new Date(m.tourney_date).toLocaleDateString(undefined, {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    }) : "-"}
-                  </td>
+                  <td className="px-3 py-2 text-center">{m.tourney_date ? formatDateISO(m.tourney_date) : "-"}</td>
                   <td className="px-3 py-2">
                     <Link
                       href={getTourneyHref({ id: m.tourney_id, name: m.tourney_name, year: m.year })}
