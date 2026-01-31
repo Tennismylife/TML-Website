@@ -164,7 +164,7 @@ export default function MatchTable({
   if (!matches || matches.length === 0) return <p className="text-gray-300">No matches found.</p>;
 
   return (
-    <div className="overflow-x-auto rounded bg-gray-900 shadow mt-4">
+    <div className="overflow-x-auto md:overflow-x-visible rounded bg-gray-900 shadow mt-4">
       <div className="flex justify-end mb-2 px-4 pt-4">
         <button
           className="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition"

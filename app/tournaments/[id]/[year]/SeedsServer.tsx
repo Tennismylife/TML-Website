@@ -1,14 +1,26 @@
 import Flag from '@/components/Flag';
+import EditionNavigatorServer from '@/components/EditionNavigatorServer';
 import type { Match } from '@/types';
+import { prisma } from '@/lib/prisma';
+import { resolveTourneyIds } from '@/lib/tournament';
+import { getRoundColor, getTextColorForRound } from '@/lib/colors';
 import React from 'react';
 
-interface SeedsServerProps {
-  id: string;
-  year: string;
-  matches: Match[];
+// Server-side RoundBadge using shared color logic
+function RoundBadge({ round }: { round?: string | null }) {
+  const r = (round || '').toString();
+  if (!r) return null;
+  const bg = getRoundColor(r);
+  const color = getTextColorForRound(bg);
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold`} style={{ backgroundColor: bg, color }}>
+      {r}
+    </span>
+  );
 }
 
-export default function SeedsServer({ id, year, matches }: SeedsServerProps) {
+export default async function SeedsServer(props: any) {
+  const { id, year, matches } = props;
   if (!matches || matches.length === 0) return null;
 
   const seedsMap = new Map<number, { name: string; ioc?: string | undefined; lastMatch: Match | null; outcome: React.ReactNode }>();
@@ -51,17 +63,24 @@ export default function SeedsServer({ id, year, matches }: SeedsServerProps) {
     const opponentIOC = isWinner ? lastMatch.loser_ioc : lastMatch.winner_ioc;
 
     if (lastMatch.round === "F" && isWinner) {
-      data.outcome = "Winner 🏆";
+      data.outcome = (
+        <>
+          <RoundBadge round={lastMatch.round} />
+          <span className="ml-2">Winner 🏆</span>
+        </>
+      );
     } else if (!isWinner) {
       data.outcome = (
         <>
-          {lastMatch.round}, lost to <Flag ioc={opponentIOC ?? undefined} className="w-4 h-3 inline-block mr-1" /> {opponentName ?? ""}
+          <RoundBadge round={lastMatch.round} />
+          <span className="ml-2">lost to <Flag ioc={opponentIOC ?? undefined} className="w-4 h-3 inline-block mr-1" /> {opponentName ?? ""}</span>
         </>
       );
     } else {
       data.outcome = (
         <>
-          Reached {lastMatch.round}, beat <Flag ioc={opponentIOC ?? undefined} className="w-4 h-3 inline-block mr-1" /> {opponentName ?? ""}
+          <RoundBadge round={lastMatch.round} />
+          <span className="ml-2">beat <Flag ioc={opponentIOC ?? undefined} className="w-4 h-3 inline-block mr-1" /> {opponentName ?? ""}</span>
         </>
       );
     }
@@ -77,9 +96,28 @@ export default function SeedsServer({ id, year, matches }: SeedsServerProps) {
   const leftColumn = seedOutcomes.slice(0, mid);
   const rightColumn = seedOutcomes.slice(mid);
 
+  // Compute full years range for server-side navigator (min..max)
+  let serverEditions: any[] = [];
+  try {
+    const resolved = await resolveTourneyIds(String(id));
+    if (resolved && Array.isArray(resolved) && resolved.length) {
+      const tourneyIdFilters = resolved.flatMap((tid: string) => [{ tourney_id: tid }, { tourney_id: { endsWith: `-${tid}` } }]);
+      const edRows = await prisma.match.findMany({ where: { OR: tourneyIdFilters }, distinct: ['year'], select: { year: true }, orderBy: { year: 'desc' } });
+      const rawYears = edRows.map((e: any) => Number(e.year)).filter(Boolean);
+      if (rawYears.length) {
+        const minYear = Math.min(...rawYears);
+        const maxYear = Math.max(...rawYears);
+        for (let y = maxYear; y >= minYear; y--) serverEditions.push({ year: y });
+      }
+    }
+  } catch (e) {
+    serverEditions = [];
+  }
+
   return (
     <div id="server-seeds" className="p-4 text-white">
       <h2 className="text-2xl font-bold mb-4">Seeds Performance</h2>
+
       <div className="flex gap-4">
         <div className="flex-1 space-y-2">
           {leftColumn.map(({ seed, name, ioc, outcome }) => (
@@ -95,6 +133,11 @@ export default function SeedsServer({ id, year, matches }: SeedsServerProps) {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Server-side sticky navigator under Seeds table */}
+      <div className="mt-4">
+        <EditionNavigatorServer id={id} slug={null} editions={serverEditions} currentYear={year} idSuffix="seeds-top" sticky />
       </div>
     </div>
   );

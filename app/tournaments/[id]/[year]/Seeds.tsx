@@ -4,6 +4,21 @@ import type { ReactNode } from 'react';
 import { useMemo, useState, useEffect } from "react";
 import { Match } from "@/types";
 import Flag from '@/components/Flag';
+import EditionNavigator from '@/components/EditionNavigator';
+import { getRoundColor, getTextColorForRound } from '@/lib/colors';
+
+// Small helper to render a colored badge for rounds using shared color logic
+function RoundBadge({ round }: { round?: string | null }) {
+  const r = (round || '').toString();
+  if (!r) return null;
+  const bg = getRoundColor(r);
+  const color = getTextColorForRound(bg);
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold`} style={{ backgroundColor: bg, color }}>
+      {r}
+    </span>
+  );
+} 
 
 interface SeedsProps {
   id: string;
@@ -70,17 +85,24 @@ export default function Seeds({ id, year, matches }: SeedsProps) {
         : lastMatch.winner_ioc;
 
       if (lastMatch.round === "F" && isWinner) {
-        data.outcome = "Winner 🏆";
+        data.outcome = (
+          <>
+            <RoundBadge round={lastMatch.round} />
+            <span className="ml-2">Winner 🏆</span>
+          </>
+        );
       } else if (!isWinner) {
         data.outcome = (
           <>
-            {lastMatch.round}, lost to <Flag ioc={opponentIOC ?? undefined} className="w-4 h-3 inline-block mr-1" /> {opponentName ?? ""}
+            <RoundBadge round={lastMatch.round} />
+            <span className="ml-2">lost to <Flag ioc={opponentIOC ?? undefined} className="w-4 h-3 inline-block mr-1" /> {opponentName ?? ""}</span>
           </>
         );
       } else {
         data.outcome = (
           <>
-            Reached {lastMatch.round}, beat <Flag ioc={opponentIOC ?? undefined} className="w-4 h-3 inline-block mr-1" /> {opponentName ?? ""}
+            <RoundBadge round={lastMatch.round} />
+            <span className="ml-2">beat <Flag ioc={opponentIOC ?? undefined} className="w-4 h-3 inline-block mr-1" /> {opponentName ?? ""}</span>
           </>
         );
       }
@@ -124,11 +146,33 @@ export default function Seeds({ id, year, matches }: SeedsProps) {
     requestAnimationFrame(() => setMounted(true));
   }, [matches]);
 
+  const [editionsList, setEditionsList] = useState<any[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadHeader() {
+      try {
+        const res = await fetch(`/api/tournaments/${id}/header`);
+        if (!res.ok) return;
+        const d = await res.json();
+        if (cancelled) return;
+        const raw = d.editions || [];
+        const normalized = Array.isArray(raw) ? raw.map((x: any) => (typeof x === 'number' ? { year: x } : (x && x.year ? x : { year: x }))) : [];
+        setEditionsList(normalized);
+      } catch (e) {
+        // ignore
+      }
+    }
+    loadHeader();
+    return () => { cancelled = true; };
+  }, [id]);
+
   if (!mounted) return null;
 
   return (
     <div className="p-4 text-white">
       <h2 className="text-2xl font-bold mb-4">Seeds Performance</h2>
+
       <div className="flex gap-4">
         <div className="flex-1 space-y-2">
           {leftColumn.map(({ seed, name, ioc, outcome }) => (
@@ -151,6 +195,11 @@ export default function Seeds({ id, year, matches }: SeedsProps) {
           ))}
         </div>
       </div>
+
+      {/* Sticky navigator under Seeds table (desktop) */}
+      <div className="mt-4">
+        <EditionNavigator id={id} slug={null} editions={editionsList} currentYear={year} sticky />
+      </div>
     </div>
   );
-}
+} 

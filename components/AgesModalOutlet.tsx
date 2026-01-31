@@ -6,7 +6,7 @@ import RouteModal from './RouteModal';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
-import { getPlayerHref } from '@/lib/utils';
+import { getPlayerHref, getTourneyHref } from '@/lib/utils';
 
 export default function AgesModalOutlet({ id }: { id: string }) {
   const [show, setShow] = useState(false);
@@ -15,6 +15,7 @@ export default function AgesModalOutlet({ id }: { id: string }) {
   const [loading, setLoading] = useState(false);
   const [openError, setOpenError] = useState<string | null>(null);
   const [tourneyName, setTourneyName] = useState<string>(String(id).replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()));
+  const [slug, setSlug] = useState<string | null>(null);
   const pathname = usePathname();
   const [section, setSection] = useState<'main'|'titles'|'youngestrounds'|'oldestrounds'>('main');
   const [activeTitle, setActiveTitle] = useState<string | null>(null);
@@ -26,7 +27,8 @@ export default function AgesModalOutlet({ id }: { id: string }) {
       if (!mounted || !t) return;
       const raw = (t && t.name) ? (Array.isArray(t.name) ? (t.name.map((x: any) => (typeof x === 'string' ? x : JSON.stringify(x))).filter(Boolean).pop()) : t.name) : `Tournament ${t?.id}`;
       setTourneyName(String(raw).replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()));
-    }) : (async () => { const t = await p; if (!mounted || !t) return; const raw = (t && t.name) ? (Array.isArray(t.name) ? (t.name.map((x: any) => (typeof x === 'string' ? x : JSON.stringify(x))).filter(Boolean).pop()) : t.name) : `Tournament ${t?.id}`; setTourneyName(String(raw).replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())); })());
+      setSlug((t && t.slug) ? t.slug : null);
+    }) : (async () => { const t = await p; if (!mounted || !t) return; const raw = (t && t.name) ? (Array.isArray(t.name) ? (t.name.map((x: any) => (typeof x === 'string' ? x : JSON.stringify(x))).filter(Boolean).pop()) : t.name) : `Tournament ${t?.id}`; setTourneyName(String(raw).replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())); setSlug((t && t.slug) ? t.slug : null); })());
     return () => { mounted = false; };
   }, [id]);
 
@@ -266,7 +268,7 @@ export default function AgesModalOutlet({ id }: { id: string }) {
                       </div>
                     </td>
                     <td className="py-2 text-center text-lg md:text-xl text-white">{formatAge(r.age)}</td>
-                    <td className="py-2 text-center text-lg md:text-xl text-white"><Link href={`/tournaments/${r.tourney_id ?? id}/${r.year}`} className="text-blue-400 hover:underline">{r.year}</Link></td>
+                    <td className="py-2 text-center text-lg md:text-xl text-white"><Link href={slug ? getTourneyHref({ slug, year: r.year }) : getTourneyHref({ id: r.tourney_id ?? id, year: r.year })} className="text-blue-400 hover:underline">{r.year}</Link></td>
                   </tr>
                 ))}
               </tbody>

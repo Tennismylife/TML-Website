@@ -6,7 +6,7 @@ export default function EditionMatchesServer({ matches }: { matches: any[] }) {
   if (!matches || matches.length === 0) return null;
 
   return (
-    <div id="server-matches" className="overflow-x-auto rounded bg-gray-900 shadow mt-4">
+    <div id="server-matches" className="overflow-x-auto md:overflow-x-visible rounded bg-gray-900 shadow mt-4">
       <table className="min-w-full border-collapse">
         <thead>
           <tr className="bg-black">

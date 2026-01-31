@@ -4,8 +4,9 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { Trophy, ArrowRight, RefreshCw } from "lucide-react";
 import Flag from '@/components/Flag';
+import EditionNavigator from '@/components/EditionNavigator';
 import { getSurfaceColor, getTextColorForRound } from "@/lib/colors";
-import { getPlayerHref } from '@/lib/utils';
+import { getPlayerHref, getTourneyHref } from '@/lib/utils';
 import { playerMatchesUrl } from '../../records/nav';
 
 interface Match {
@@ -29,6 +30,7 @@ export default function TournamentClient({ id }: { id: number | string }) {
   const tournamentId = id;
 
   const [editions, setEditions] = useState<Match[]>([]);
+  const [slug, setSlug] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showRetry, setShowRetry] = useState(false);
@@ -148,6 +150,24 @@ export default function TournamentClient({ id }: { id: number | string }) {
     return () => { if (retryTimeoutRef.current) clearTimeout(retryTimeoutRef.current); };
   }, [loading]);
 
+  // Fetch tournament header (canonical slug + metadata) so we can use slug-based canonical links on client
+  useEffect(() => {
+    if (!tournamentId) return;
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await fetch(`/api/tournaments/${tournamentId}/header`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!mounted) return;
+        if (data && data.slug) setSlug(data.slug);
+      } catch (e) {
+        // ignore
+      }
+    })();
+    return () => { mounted = false; };
+  }, [tournamentId]);
+
   // Debug: log when editions state updates (helps confirm state -> render)
   useEffect(() => {
     try { console.info(`[TournamentClient] editions state updated count=${editions.length}`); } catch (e) {}
@@ -193,7 +213,7 @@ export default function TournamentClient({ id }: { id: number | string }) {
   if (loading) {
     return (
       <main className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        <div className="max-w-7xl mx-auto px-6 pt-20 flex flex-col items-center space-y-8">
+        <div className="max-w-[84rem] mx-auto px-6 pt-20 flex flex-col items-center space-y-8">
           <div className="relative">
             <div className="w-32 h-32 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full animate-pulse blur-xl opacity-50" />
             <Trophy className="absolute inset-0 m-auto w-20 h-20 text-yellow-400 animate-bounce" />
@@ -243,7 +263,7 @@ export default function TournamentClient({ id }: { id: number | string }) {
       {/* CTA Records */}
       <div className="flex justify-center my-12">
         <Link
-          href={`/tournaments/${tournamentId}/records`}
+          href={slug ? `${getTourneyHref({ slug })}/records` : `/tournaments/${tournamentId}/records`}
           className="group relative inline-flex items-center gap-4 px-10 py-5 bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-black text-xl rounded-full shadow-2xl hover:shadow-yellow-500/50 transform hover:scale-110 transition-all duration-500 overflow-hidden"
         >
           <div className="absolute inset-0 bg-white/30 translate-x-[-100%] group-hover:translate-x-full transition-transform duration-1000" />
@@ -253,21 +273,36 @@ export default function TournamentClient({ id }: { id: number | string }) {
         </Link>
       </div>
 
+      {/* Editions navigator (sticky on desktop) */}
+      <div className="max-w-[84rem] mx-auto px-6 pb-6">
+        <EditionNavigator id={tournamentId} slug={slug} editions={editions} currentYear={editions.length > 0 ? String(editions[0].year) : ''} sticky />
+      </div>
+
       {/* Table of finals */}
-      <div className="max-w-7xl mx-auto px-6 pb-20 space-y-20">
+      <div className="max-w-[84rem] mx-auto px-6 pb-20 space-y-20">
         <section>
-          <div className="overflow-x-auto rounded bg-gray-900 shadow">
-            <table id={`finals-table-${tournamentId}`} className="min-w-full border-collapse">
+          <div className="overflow-x-auto md:overflow-x-visible rounded bg-gray-900 shadow">
+            <table id={`finals-table-${tournamentId}`} className="min-w-full table-auto border-collapse">
+              <colgroup>
+                <col />
+                <col style={{ width: '15%' }} />
+                <col />
+                <col />
+                <col />
+                <col />
+                <col />
+                <col />
+              </colgroup>
               <thead>
                 <tr className="bg-black">
-                  <th className="px-4 py-2 text-center text-lg text-gray-200">Edition</th>
-                  <th className="px-4 py-2 text-left text-lg text-gray-200">Name</th>
-                  <th className="px-4 py-2 text-center text-lg text-gray-200">Category</th>
-                  <th className="px-4 py-2 text-center text-lg text-gray-200">Surface</th>
-                  <th className="px-4 py-2 text-center text-lg text-gray-200">Draw</th>
-                  <th className="px-4 py-2 text-center text-lg text-gray-200">Champion</th>
-                  <th className="px-4 py-2 text-center text-lg text-gray-200">Finalist</th>
-                  <th className="px-4 py-2 text-center text-lg text-gray-200">Score</th>
+                  <th className="px-2 py-2 sm:px-4 sm:py-3 text-center text-sm sm:text-lg text-gray-200">Edition</th>
+                  <th className="px-2 py-2 sm:px-4 sm:py-3 text-center text-sm sm:text-lg text-gray-200">Name</th>
+                  <th className="px-2 py-2 sm:px-4 sm:py-3 text-center text-sm sm:text-lg text-gray-200">Category</th>
+                  <th className="px-2 py-2 sm:px-4 sm:py-3 text-center text-sm sm:text-lg text-gray-200">Surface</th>
+                  <th className="px-2 py-2 sm:px-4 sm:py-3 text-center text-sm sm:text-lg text-gray-200">Draw</th>
+                  <th className="px-2 py-2 sm:px-4 sm:py-3 text-center text-sm sm:text-lg text-gray-200">Champion</th>
+                  <th className="px-2 py-2 sm:px-4 sm:py-3 text-center text-sm sm:text-lg text-gray-200">Finalist</th>
+                  <th className="px-2 py-2 sm:px-4 sm:py-3 text-center text-sm sm:text-lg text-gray-200">Score</th>
                 </tr>
               </thead>
               <tbody>
@@ -275,63 +310,17 @@ export default function TournamentClient({ id }: { id: number | string }) {
                   const isRecent = idx === 0;
                   const editionKey = `${m.tourney_id}-${m.year}-${new Date(m.tourney_date).getTime()}-${m.winner_id}-${m.loser_id}-${idx}`;
                   return (
-                    <tr
-                      key={editionKey}
-                      className={`hover:bg-white/5 transition ${
-                        isRecent ? "bg-gradient-to-r from-yellow-500/10 to-amber-500/10" : ""
-                      }`}
-                    >
-                      <td className="px-4 py-3 text-center">
-                        <Link
-                          href={`/tournaments/${m.tourney_id}/${m.year}`}
-                          className="text-blue-400 hover:underline font-medium"
-                        >
-                          {isRecent && <Trophy className="inline w-5 h-5 mr-1 animate-pulse" />}
-                          {m.year}
-                        </Link>
+                    <tr key={editionKey} className={`hover:bg-white/5 transition ${isRecent ? "bg-gradient-to-r from-yellow-500/10 to-amber-500/10" : ""}`}>
+                      <td className="px-2 py-2 sm:px-4 sm:py-3 text-center text-sm sm:text-base">
+                        <Link href={slug ? getTourneyHref({ slug, year: m.year }) : getTourneyHref({ id: m.tourney_id, year: m.year })} className="text-blue-400 hover:underline font-medium">{isRecent && <Trophy className="inline w-5 h-5 mr-1 animate-pulse" />}{m.year}</Link>
                       </td>
-
-                      <td className="px-4 py-3 text-left text-gray-400 max-w-xs truncate" title={m.tourney_name || ''}>
-                        {m.tourney_name || "–"}
-                      </td>
-
-                      <td className="px-4 py-3 text-center text-gray-400">{m.atpCategory ?? "–"}</td>
-
-                      <td className="px-4 py-3 text-center">
-                        {m.surface ? (
-                          <span
-                            className="text-sm font-medium px-3 py-1 rounded-full shadow-md"
-                            style={{
-                              backgroundColor: getSurfaceColor(m.surface) || "#888",
-                              color: getTextColorForRound(getSurfaceColor(m.surface) || "#888"),
-                            }}
-                          >
-                            {m.surface}
-                          </span>
-                        ) : (
-                          "–"
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-center text-gray-400">{m.draw_size || "–"}</td>
-                      <td className="px-4 py-3">
-                        <Link
-                          href={playerMatchesUrl((m as any).winner_slug ?? (m as any).winnerSlug ?? (m as any).winner?.slug ?? String(m.winner_id))}
-                          className="flex items-center gap-3 text-gray-200 hover:text-yellow-400 transition"
-                        >
-                          {m.winner_ioc && <Flag ioc={m.winner_ioc} className="w-6 h-4" />}
-                          <span className="font-medium">{m.winner_name}</span>
-                        </Link>
-                      </td>
-                      <td className="px-4 py-3">
-                        <Link
-                          href={playerMatchesUrl((m as any).loser_slug ?? (m as any).loserSlug ?? (m as any).loser?.slug ?? String(m.loser_id))}
-                          className="flex items-center gap-3 text-gray-400 hover:text-gray-200 transition"
-                        >
-                          {m.loser_ioc && <Flag ioc={m.loser_ioc} className="w-6 h-4" />}
-                          <span>{m.loser_name}</span>
-                        </Link>
-                      </td>
-                      <td className="px-4 py-3 text-center font-mono tracking-wider">{m.score}</td>
+                      <td className="px-2 py-2 sm:px-4 sm:py-3 text-center text-sm sm:text-base" title={m.tourney_name || ''}><div className="mx-auto truncate text-center max-w-[7rem] sm:max-w-[10rem]">{m.tourney_name || "–"}</div></td>
+                      <td className="px-2 py-2 sm:px-4 sm:py-3 text-center text-sm sm:text-base">{m.atpCategory ?? "–"}</td>
+                      <td className="px-2 py-2 sm:px-4 sm:py-3 text-center text-sm sm:text-base">{m.surface ? (<span className="text-sm font-medium px-2 py-1 rounded-full shadow-md" style={{ backgroundColor: getSurfaceColor(m.surface) || '#888', color: getTextColorForRound(getSurfaceColor(m.surface) || '#888') }}>{m.surface}</span>) : ("–")}</td>
+                      <td className="px-2 py-2 sm:px-4 sm:py-3 text-center text-sm sm:text-base">{m.draw_size || "–"}</td>
+                      <td className="px-2 py-2 sm:px-4 sm:py-3 text-center text-sm sm:text-base"><Link href={playerMatchesUrl((m as any).winner_slug ?? (m as any).winnerSlug ?? (m as any).winner?.slug ?? String(m.winner_id))} className="inline-flex items-center gap-3 justify-center text-gray-200 hover:text-yellow-400 transition">{m.winner_ioc && <Flag ioc={m.winner_ioc} className="w-6 h-4" />}<span className="font-medium">{m.winner_name}</span></Link></td>
+                      <td className="px-2 py-2 sm:px-4 sm:py-3 text-center text-sm sm:text-base"><Link href={playerMatchesUrl((m as any).loser_slug ?? (m as any).loserSlug ?? (m as any).loser?.slug ?? String(m.loser_id))} className="inline-flex items-center gap-3 justify-center text-gray-400 hover:text-gray-200 transition">{m.loser_ioc && <Flag ioc={m.loser_ioc} className="w-6 h-4" />}<span>{m.loser_name}</span></Link></td>
+                      <td className="px-2 py-2 sm:px-4 sm:py-3 text-center font-mono tracking-wider text-sm sm:text-base">{m.score}</td>
                     </tr>
                   );
                 })}
@@ -341,9 +330,14 @@ export default function TournamentClient({ id }: { id: number | string }) {
         </section>
       </div>
 
+      {/* Bottom duplicate navigator for convenience */}
+      <div className="max-w-[84rem] mx-auto px-6 pt-6">
+        <EditionNavigator id={tournamentId} slug={slug} editions={editions} currentYear={editions.length > 0 ? String(editions[0].year) : ''} compact />
+      </div>
+
       {/* Debug JSON dump when ?debug=1 */}
       {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('debug') === '1' ? (
-        <div className="max-w-7xl mx-auto px-6 pb-20">
+        <div className="max-w-[84rem] mx-auto px-6 pb-20">
           <pre className="text-xs text-left whitespace-pre-wrap max-h-96 overflow-auto bg-white/5 p-4 rounded">{JSON.stringify(editions, null, 2)}</pre>
         </div>
       ) : null}

@@ -3,6 +3,7 @@ import { buildTournamentJsonLdFromDb, fetchEditionInfo, getEditionValue } from '
 import Breadcrumbs from './Breadcrumbs';
 import EditionMatchesServer from './EditionMatchesServer';
 import SeedsServer from './SeedsServer';
+import EditionNavigatorServer from '@/components/EditionNavigatorServer';
 import { prisma } from '@/lib/prisma';
 
 // Local helpers
@@ -194,6 +195,41 @@ export default async function Page(props: any) {
 
   const slug = editionInfo?.tourneyRow?.slug ?? id;
 
+  // Server-side editions list — used to render a server-side navigator if needed
+  let serverEditions: any[] = [];
+  try {
+    // Resolve canonical tourney ids (may return multiple ids for historical mappings)
+    const { resolveTourneyIds } = await import('@/lib/tournament');
+    const tourneyIds = await resolveTourneyIds(id);
+    if (tourneyIds && Array.isArray(tourneyIds) && tourneyIds.length) {
+      const tourneyIdFilters = tourneyIds.flatMap((tid: string) => [ { tourney_id: tid }, { tourney_id: { endsWith: `-${tid}` } } ]);
+      const edRows = await prisma.match.findMany({ where: { OR: tourneyIdFilters }, distinct: ["year"], select: { year: true }, orderBy: { year: 'desc' } });
+      const rawYears = edRows.map((e: any) => Number(e.year)).filter(Boolean);
+      if (rawYears.length) {
+        const minYear = Math.min(...rawYears);
+        const maxYear = Math.max(...rawYears);
+        serverEditions = [];
+        for (let y = maxYear; y >= minYear; y--) serverEditions.push({ year: y });
+      } else {
+        serverEditions = [];
+      }
+    } else if (editionInfo?.tourneyRow?.id) {
+      const edRows = await prisma.match.findMany({ where: { tourney_id: String(editionInfo.tourneyRow.id) }, distinct: ["year"], select: { year: true }, orderBy: { year: 'desc' } });
+      const rawYears = edRows.map((e: any) => Number(e.year)).filter(Boolean);
+      if (rawYears.length) {
+        const minYear = Math.min(...rawYears);
+        const maxYear = Math.max(...rawYears);
+        serverEditions = [];
+        for (let y = maxYear; y >= minYear; y--) serverEditions.push({ year: y });
+      } else {
+        serverEditions = [];
+      }
+    }
+  } catch (e) {
+    // ignore failures; silently degrade
+    serverEditions = [];
+  }
+
   // Tournament display name (per requirement `data.tournamentName` semantics)
   const tournamentName = editionInfo?.tourneyRow ? firstString(editionInfo.tourneyRow.name) : humanizeName(id);
 
@@ -234,6 +270,9 @@ export default async function Page(props: any) {
       {/* SEO-only link: visually hidden for users, present in the DOM for crawlers */}
       <a href={`/tournaments/${id}/${year}/records`} className="sr-only">View Records of the Tournament</a>
 
+      {/* Top server-side navigator (sticky on desktop) — provides identical nav above server-rendered matches when client isn't active */}
+      <EditionNavigatorServer id={id} slug={slug} editions={serverEditions} currentYear={year} idSuffix="top" sticky />
+
       {/* Server-rendered matches table for SSR (visible in HTML when data exists) */}
       {initialMatches && initialMatches.length ? (
         <EditionMatchesServer matches={initialMatches} />
@@ -246,6 +285,9 @@ export default async function Page(props: any) {
 
       {/* Client interactive edition (receives initialMatches so it can skip fetching) */}
       <TournamentEditionClient params={resolvedParams} initialMatches={initialMatches ?? undefined} />
+
+      {/* Bottom server-side navigator fallback — compact version after content */}
+      <EditionNavigatorServer id={id} slug={slug} editions={serverEditions} currentYear={year} idSuffix="bottom" compact />
     </>
   );
 }

@@ -142,7 +142,15 @@ export async function GET(request: NextRequest, context: any) {
       orderBy: { year: "desc" },
     });
 
-    const years = editions.map(e => e.year).filter((y): y is number => !!y);
+    // Build a full consecutive years range from earliest to latest (inclusive)
+    const rawYears = editions.map(e => Number(e.year)).filter((y): y is number => !!y);
+    const fullYears = rawYears.length ? (function() {
+      const minYear = Math.min(...rawYears);
+      const maxYear = Math.max(...rawYears);
+      const arr: number[] = [];
+      for (let y = maxYear; y >= minYear; y--) arr.push(y);
+      return arr;
+    })() : [];
 
     // 3️⃣ Combina dati torneo + edizioni, normalizza superfici (rimuove token 'indoor')
     //     e restituisce una sola istanza per ciascuna `category` (ordine preservato)
@@ -165,7 +173,7 @@ export async function GET(request: NextRequest, context: any) {
       category: uniqueCategories,
       surfaces: extractUniqueSurfaces(tournament.surfaces),
       slug: tournament.slug || null,
-      editions: years,
+      editions: fullYears,
     };
 
     return NextResponse.json(sanitized);

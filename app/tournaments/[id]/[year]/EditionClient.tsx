@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, Trophy } from "lucide-react";
 import { getTourneyHref } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import EditionNavigator from '@/components/EditionNavigator';
 import type { Match, SortKey, SortDirection } from "@/types";
 import MatchTable from "./EditionMatchesTable";
 import EditionHeader from "./EditionHeader";
@@ -64,6 +65,32 @@ export default function TournamentEditionClient(props: any) {
     maybeRedirect();
     return () => { cancelled = true; };
   }, [id, year, router]);
+
+  // Fetch header to obtain the list of editions and show the navigator
+  const [editionsList, setEditionsList] = useState<any[]>([]);
+  const [slug, setSlug] = useState<string | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    async function loadHeader() {
+      if (!id) return;
+      try {
+        const res = await fetch(`/api/tournaments/${id}/header`);
+        if (!res.ok) return;
+        const d = await res.json();
+        if (!cancelled) {
+          // Normalize editions coming from /api/tournaments/:id/header — it may be an array of numbers or objects
+          const raw = d.editions || [];
+          const normalized = Array.isArray(raw) ? raw.map((x: any) => (typeof x === 'number' ? { year: x } : (x && x.year ? x : { year: x }))) : [];
+          setEditionsList(normalized);
+          setSlug(d.slug || null);
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+    loadHeader();
+    return () => { cancelled = true; };
+  }, [id]);
 
   // Support `initialMatches` passed from the server for SSR.
   // If `initialMatches` are provided, use them and skip the client fetch.
@@ -142,7 +169,7 @@ export default function TournamentEditionClient(props: any) {
     <main className="flex flex-col w-full min-h-screen p-4 gap-4">
       <div className="w-full flex justify-start">
         <Link
-          href={getTourneyHref({ id: String(first.tourney_id ?? id) })}
+          href={slug ? getTourneyHref({ slug }) : getTourneyHref({ id: String(first.tourney_id ?? id) })}
           title="Back to tournament"
           aria-label="Back to tournament"
           className="inline-flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-bold rounded-full shadow-lg hover:scale-105 transition-transform"
@@ -151,6 +178,8 @@ export default function TournamentEditionClient(props: any) {
           <span>Back to tournament</span>
         </Link>
       </div>
+
+      {/* EditionNavigator moved below the 'View Records' CTA */}
 
       <EditionHeader
         tourney_name={first.tourney_name ?? ''}
@@ -164,7 +193,7 @@ export default function TournamentEditionClient(props: any) {
       {/* Centered CTA: View Records */}
       <div className="w-full flex justify-center my-6">
         <Link
-          href={`${getTourneyHref({ id: String(first.tourney_id ?? id) })}/records`}
+          href={slug ? `${getTourneyHref({ slug })}/records` : `${getTourneyHref({ id: String(first.tourney_id ?? id) })}/records`}
           className="group relative inline-flex items-center gap-4 px-10 py-5 bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-black text-xl rounded-full shadow-2xl hover:shadow-yellow-500/50 transform hover:scale-110 transition-all duration-500 overflow-hidden"
           title="View Records of the Tournament"
           aria-label="View Records of the Tournament"
@@ -174,6 +203,10 @@ export default function TournamentEditionClient(props: any) {
           <span>View Records of the Tournament</span>
           <ArrowRight className="w-7 h-7 group-hover:translate-x-2 transition-transform" />
         </Link>
+      </div>
+
+      <div className="w-full max-w-7xl mx-auto px-0 mt-4">
+        <EditionNavigator id={id} slug={slug} editions={editionsList} currentYear={year} sticky />
       </div>
 
       <div className="w-full">
