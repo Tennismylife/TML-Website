@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
       .flatMap(v => v.split(",").map(s => s.trim()).filter(Boolean));
     const selectedLevels = (searchParams.getAll("level") ?? [])
       .flatMap(v => v.split(",").map(s => s.trim()).filter(Boolean));
-    const topN = Math.max(1, Math.min(1000, Number(searchParams.get("limit") ?? 100)));
+    const topN = Math.max(1, Math.min(100, Number(searchParams.get("limit") ?? 100)));
 
     // Fetch only winners of final rounds
     const matches = await prisma.match.findMany({

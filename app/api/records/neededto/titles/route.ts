@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
 
     const limitParam = url.searchParams.get('limit');
     const orderParam = (url.searchParams.get('order') || 'asc').toLowerCase(); // 'asc' | 'desc'
-    const limit      = limitParam ? Math.max(1, Math.min(1000, parseInt(limitParam, 10) || 100)) : 100;
+    const limit      = limitParam ? Math.max(1, Math.min(100, parseInt(limitParam, 10) || 100)) : 100;
     const orderAsc   = orderParam !== 'desc';
 
     // =========================================================

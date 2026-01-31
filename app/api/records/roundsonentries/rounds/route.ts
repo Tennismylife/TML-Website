@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const selectedSurfaces = url.searchParams.getAll('surface');
     const selectedLevels = url.searchParams.getAll('level');
     const targetRound = url.searchParams.get('round');
-    const limitParam = Math.max(1, Math.min(1000, Number(url.searchParams.get('limit') ?? 100)));
+    const limitParam = Math.max(1, Math.min(100, Number(url.searchParams.get('limit') ?? 100)));
 
     if (!targetRound) {
       return NextResponse.json({ error: 'Missing round parameter' }, { status: 400 });

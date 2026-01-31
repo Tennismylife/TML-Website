@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     const selectedLevels = getMultiParam(url, 'tourney_level');
     const selectedRounds = getMultiParam(url, 'round');
     const selectedBestOf = getMultiParam(url, 'best_of');
-    const limit = Math.max(1, Math.min(1000, Number(url.searchParams.get('limit') ?? 100)));
+    const limit = Math.max(1, Math.min(100, Number(url.searchParams.get('limit') ?? 100)));
     const minPlayed = Number(url.searchParams.get('minPlayed') ?? 10); // configurable minimum for played matches (default 10)
 
     const totalFilters =

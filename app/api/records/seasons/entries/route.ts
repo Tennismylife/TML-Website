@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     const url = request.nextUrl;
     const selectedSurfaces = getMultiParam(url, 'surface');
     const selectedLevels = getMultiParam(url, 'level');
-    const limit = Math.max(1, Math.min(1000, Number(url.searchParams.get('limit') ?? 100)));
+    const limit = Math.max(1, Math.min(100, Number(url.searchParams.get('limit') ?? 100)));
 
     let finalEntries: EntryRecord[] = [];
 

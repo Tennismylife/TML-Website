@@ -155,7 +155,7 @@ export async function GET(request: NextRequest) {
     playersData.sort((a, b) => b.played_at_age - a.played_at_age);
 
     const limitParam = Number(url.searchParams.get('limit') ?? '100');
-    const limit = Number.isFinite(limitParam) ? Math.min(1000, Math.max(1, Math.floor(limitParam))) : 100;
+    const limit = Number.isFinite(limitParam) ? Math.min(100, Math.max(1, Math.floor(limitParam))) : 100;
 
     // Attach slugs when available
     const ids = playersData.map(p => String(p.id));

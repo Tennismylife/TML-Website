@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     const minRoundPerSeason = Math.max(1, Number(url.searchParams.get('min') || '1'));
     const bestOf = url.searchParams.get('best_of');
     const limitParam = Number(url.searchParams.get('limit') || '100');
-    const limit = Math.min(1000, Math.max(1, Number.isFinite(limitParam) ? limitParam : 100));
+    const limit = Math.min(100, Math.max(1, Number.isFinite(limitParam) ? limitParam : 100));
 
     // Build where clause
     const where: any = {team_event: false };

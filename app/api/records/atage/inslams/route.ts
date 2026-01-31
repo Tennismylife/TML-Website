@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
     result.sort((a, b) => b.total - a.total);
 
     const limitParam = Number(url.searchParams.get('limit') ?? '100');
-    const limit = Number.isFinite(limitParam) ? Math.min(1000, Math.max(1, Math.floor(limitParam))) : 100;
+    const limit = Number.isFinite(limitParam) ? Math.min(100, Math.max(1, Math.floor(limitParam))) : 100;
 
     // Attach slugs when available
     const ids = result.map(r => String(r.id));

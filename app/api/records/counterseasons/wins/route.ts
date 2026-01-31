@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     const minWinsPerSeason = parseInt(url.searchParams.get('minWinsPerSeason') || '1', 10);
     const bestOf = url.searchParams.get('best_of');
     const limitParam = Number(url.searchParams.get('limit') || '100');
-    const limit = Math.min(1000, Math.max(1, Number.isFinite(limitParam) ? limitParam : 100));
+    const limit = Math.min(100, Math.max(1, Number.isFinite(limitParam) ? limitParam : 100));
 
     // --- Fetch matches where there is a winner ---
     const matches = await prisma.match.findMany({

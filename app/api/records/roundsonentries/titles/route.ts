@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const url = new URL(request.url);
     const selectedSurfaces = url.searchParams.getAll('surface');
     const selectedLevels = url.searchParams.getAll('level');
-    const limitParam = Math.max(1, Math.min(1000, Number(url.searchParams.get('limit') ?? 100)));
+    const limitParam = Math.max(1, Math.min(100, Number(url.searchParams.get('limit') ?? 100)));
 
     // 1️⃣ Costruzione filtri dinamici
     const filters: any = {};

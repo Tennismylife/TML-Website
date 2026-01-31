@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
     const selectedLevels = getMultiParam(url, 'level');
     const selectedRounds = getMultiParam(url, 'round');
     const selectedBestOf = getMultiParam(url, 'best_of');
-    const limit = Math.max(1, Math.min(1000, Number(url.searchParams.get('limit') ?? 100)));
+    const limit = Math.max(1, Math.min(100, Number(url.searchParams.get('limit') ?? 100)));
 
     let finalMatches: PlayedRecord[] = [];
 

@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
     const roundParam = searchParams.get("round");
     const selectedSurfaces = searchParams.getAll("surface");
     const selectedLevels = searchParams.getAll("level");
-    const limitParam = Math.max(1, Math.min(1000, Number(searchParams.get('perPage') ?? searchParams.get('limit') ?? 100)));
+    const limitParam = Math.max(1, Math.min(100, Number(searchParams.get('perPage') ?? searchParams.get('limit') ?? 100)));
 
     if (!roundParam) {
       return NextResponse.json({ error: "Round parameter is required" }, { status: 400 });
