@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
     const where: any = {
       round: 'F', // solo finali
       team_event: false,
+      score: { not: 'To play' },
       ...(selectedSurfaces.length > 0 && { surface: { in: selectedSurfaces } }),
       ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),
     };

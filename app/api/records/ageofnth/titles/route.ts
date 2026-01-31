@@ -30,7 +30,8 @@ export async function GET(request: NextRequest) {
     // Costruisci i filtri
     const where: any = {
       round: "F",       // solo finali
-      team_event: false // non team event
+      team_event: false, // non team event
+      score: { not: "To play" },
     };
     if (selectedSurfaces.length > 0) where.surface = { in: selectedSurfaces };
     if (selectedLevels.length > 0) where.tourney_level = { in: selectedLevels };

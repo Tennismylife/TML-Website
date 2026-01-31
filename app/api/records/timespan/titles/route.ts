@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
       where: {
         round: 'F',
         team_event: false,
+        score: { not: 'To play' },
         ...(selectedSurfaces.length > 0 && { surface: { in: selectedSurfaces } }),
         ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),
       },

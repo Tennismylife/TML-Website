@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
             { score: { contains: "W/O", mode: 'insensitive' } },
             { score: { contains: "DEF", mode: 'insensitive' } },
             { score: { contains: "WEA", mode: 'insensitive' } },
+            { score: "To play" },
           ],
         },
       },

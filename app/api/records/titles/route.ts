@@ -15,8 +15,9 @@ export async function GET(request: NextRequest) {
         ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),
         round: "F",
         team_event: false,
-        NOT: { OR: [{ score: { contains: "WEA" } }] },
+        NOT: { OR: [{ score: { contains: "WEA" } }, { score: "To play" }] },
       },
+
       _count: { winner_id: true },
       orderBy: { _count: { winner_id: "desc" } },
     });

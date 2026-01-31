@@ -21,6 +21,8 @@ export async function GET(request: NextRequest) {
         round: "F",
         team_event: false,
         winner_age: { not: null },
+        // Exclude finals that are scheduled but not played (score "To play")
+        score: { not: 'To play' },
         ...(surfacesParam.length > 0 && { surface: { in: surfacesParam } }),
         ...(levelsParam.length > 0 && { tourney_level: { in: levelsParam } }),
         ...(roundsParam.length > 0 && { round: { in: roundsParam } }),

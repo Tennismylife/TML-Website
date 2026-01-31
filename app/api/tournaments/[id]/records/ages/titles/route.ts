@@ -21,6 +21,8 @@ export async function GET(request: NextRequest, context: any) {
         OR: tourneyIdFilters,
         round: 'F', // solo finali
         status: true,
+        // Exclude scheduled finals that haven't been played yet
+        score: { not: 'To play' },
       },
       select: {
         tourney_id: true,
