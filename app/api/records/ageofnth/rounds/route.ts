@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     if (isNaN(n) || n < 1) return NextResponse.json({ error: 'Invalid parameter n' }, { status: 400 });
 
     const limitParam = Number(url.searchParams.get('limit'));
-    const limit = Number.isInteger(limitParam) ? Math.min(Math.max(limitParam, 1), 1000) : 100;
+    const limit = Number.isInteger(limitParam) ? Math.min(Math.max(limitParam, 1), 100) : 100;
 
     const selectedSurfaces = url.searchParams.getAll('surface');
     const selectedRounds = url.searchParams.getAll('round');
