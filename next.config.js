@@ -20,6 +20,12 @@ const nextConfig = {
   // env: {
   //   PORT: '3000'
   // },
+
+  async rewrites() {
+    return [
+      { source: '/og/:slug.png', destination: '/og/:slug' },
+    ];
+  },
 };
 
 module.exports = nextConfig;

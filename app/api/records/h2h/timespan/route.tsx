@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     const selectedLevels = url.searchParams.getAll('level');
     const selectedRoundsRaw = url.searchParams.getAll('round');
     const limitParam = Number(url.searchParams.get('limit') || '50');
-    const limit = Math.min(200, Math.max(1, Number.isFinite(limitParam) ? limitParam : 50));
+    const limit = Math.min(100, Math.max(1, Number.isFinite(limitParam) ? limitParam : 50));
 
     // Gestione filtro "All"
     const selectedRounds = selectedRoundsRaw.filter(r => r !== 'All');

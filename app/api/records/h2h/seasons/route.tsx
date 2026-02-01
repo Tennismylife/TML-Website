@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url);
     const limitParam = Number(url.searchParams.get('limit') || '200');
-    const limit = Math.min(200, Math.max(1, Number.isFinite(limitParam) ? limitParam : 200));
+    const limit = Math.min(100, Math.max(1, Number.isFinite(limitParam) ? limitParam : 200));
 
     // Query principale sulla materialized view stagionale
     const rows = await prisma.mVH2HSeason.findMany({

@@ -9,7 +9,8 @@ export async function GET(request: NextRequest) {
     const levelsParam = searchParams.getAll("level");
     const roundsParam = searchParams.getAll("round");
     const typeParam = searchParams.get("type") || "oldest";
-    const limitParam = Number(searchParams.get("limit")) || 100;
+    const limitParam = Number(searchParams.get("limit"));
+    const limit = Number.isFinite(limitParam) ? Math.max(1, Math.min(100, Math.floor(limitParam))) : 100;
     const isYoungest = typeParam === "youngest";
 
     // Funzione per prendere top giocatori (winner + loser) direttamente dal DB
@@ -34,7 +35,7 @@ export async function GET(request: NextRequest) {
           year: true,
         },
         orderBy: { [`${type}_age`]: isYoungest ? "asc" : "desc" },
-        take: limitParam * 2, // prendiamo un buffer per eventuali duplicati
+        take: limit * 2, // prendiamo un buffer per eventuali duplicati
       });
     };
 
@@ -69,7 +70,7 @@ export async function GET(request: NextRequest) {
     // Ordina e limita il risultato finale
     const playersSorted = Array.from(playersMap.values())
       .sort((a, b) => (isYoungest ? a.age - b.age : b.age - a.age))
-      .slice(0, limitParam);
+      .slice(0, limit);
 
     const responseKey = isYoungest ? "youngestPlayers" : "oldestPlayers";
 

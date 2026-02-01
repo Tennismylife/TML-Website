@@ -20,6 +20,9 @@ export async function GET(request: NextRequest) {
     const event_ids = event_ids_param.split(',');
 
     // Recupera i tornei per quel player e quegli event_id, garantendo unicità
+    const limitParam = Number(url.searchParams.get('limit'));
+    const limit = Number.isInteger(limitParam) ? Math.min(Math.max(limitParam, 1), 100) : 100;
+
     const tournaments = await prisma.playerTournament.findMany({
       where: {
         player_id: player_id,
@@ -42,7 +45,7 @@ export async function GET(request: NextRequest) {
       tourney_date: t.tourney_date instanceof Date ? t.tourney_date.toISOString().slice(0, 10) : t.tourney_date,
     }));
 
-    return NextResponse.json(formatted);
+    return NextResponse.json(formatted.slice(0, limit));
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

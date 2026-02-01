@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
 
     const rawLimit = Number(url.searchParams.get('limit') ?? '100');
     const limit = Number.isFinite(rawLimit)
-      ? Math.min(200, Math.max(1, rawLimit))
+      ? Math.min(100, Math.max(1, rawLimit))
       : 100;
 
     const roundOrder: Record<string, number> = {

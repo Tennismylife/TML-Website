@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     const selectedRound = url.searchParams.get('round');
     const selectedBestOf = url.searchParams.get('bestOf') ?? url.searchParams.get('best_of');
     const limitParam = Number(url.searchParams.get('limit') || '100');
-    const limit = Math.min(200, Math.max(1, Number.isFinite(limitParam) ? limitParam : 100));
+    const limit = Math.min(100, Math.max(1, Number.isFinite(limitParam) ? limitParam : 100));
 
     const filters = [selectedSurface, selectedLevel, selectedRound, selectedBestOf].filter(Boolean);
 

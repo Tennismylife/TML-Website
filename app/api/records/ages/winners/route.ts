@@ -12,7 +12,8 @@ export async function GET(request: NextRequest) {
     const levelsParam = searchParams.getAll("level");
     const roundsParam = searchParams.getAll("round");
     const typeParam = searchParams.get("type") || "oldest";
-    const limitParam = Number(searchParams.get("limit")) || 100;
+    const limitParam = Number(searchParams.get("limit"));
+    const limit = Number.isFinite(limitParam) ? Math.max(1, Math.min(100, Math.floor(limitParam))) : 100;
     const isYoungest = typeParam === "youngest";
 
     // Fetch distinct winners with age info
@@ -64,7 +65,7 @@ export async function GET(request: NextRequest) {
     // Ordina e limita il risultato
     const playersSorted = Array.from(playersMap.values())
       .sort((a, b) => (isYoungest ? a.age - b.age : b.age - a.age))
-      .slice(0, limitParam);
+      .slice(0, limit);
 
     const responseKey = isYoungest ? "youngestWinners" : "oldestWinners";
 
