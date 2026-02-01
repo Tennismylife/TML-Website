@@ -13,7 +13,7 @@ WITH unique_events AS (
     SELECT
         pt.player_id,
         pt.event_id,
-        pt.tourney_date,          -- timestamp/date
+        MIN(pt.tourney_date) AS tourney_date,          -- timestamp/date (use MIN to get a single date per event)
         pt.surface,
         pt.tourney_level,
         MAX(CASE WHEN pt.round = 'W' THEN 1 ELSE 0 END)::int AS is_title
@@ -21,7 +21,6 @@ WITH unique_events AS (
     GROUP BY
         pt.player_id,
         pt.event_id,
-        pt.tourney_date,
         pt.surface,
         pt.tourney_level
 ),
@@ -35,17 +34,17 @@ progress AS (
         ue.tourney_level,
         ue.is_title,
 
-        -- Overall
-        COUNT(*)         OVER (PARTITION BY ue.player_id ORDER BY ue.tourney_date) AS played_overall,
-        SUM(ue.is_title) OVER (PARTITION BY ue.player_id ORDER BY ue.tourney_date) AS titles_overall,
+        -- Overall (deterministic order by date then event_id, row-based framing)
+        COUNT(*)         OVER (PARTITION BY ue.player_id ORDER BY ue.tourney_date, ue.event_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS played_overall,
+        SUM(ue.is_title) OVER (PARTITION BY ue.player_id ORDER BY ue.tourney_date, ue.event_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS titles_overall,
 
-        -- Per superficie
-        COUNT(*)         OVER (PARTITION BY ue.player_id, ue.surface ORDER BY ue.tourney_date) AS played_surface,
-        SUM(ue.is_title) OVER (PARTITION BY ue.player_id, ue.surface ORDER BY ue.tourney_date) AS titles_surface,
+        -- Per superficie (deterministic order)
+        COUNT(*)         OVER (PARTITION BY ue.player_id, ue.surface ORDER BY ue.tourney_date, ue.event_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS played_surface,
+        SUM(ue.is_title) OVER (PARTITION BY ue.player_id, ue.surface ORDER BY ue.tourney_date, ue.event_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS titles_surface,
 
-        -- Per livello
-        COUNT(*)         OVER (PARTITION BY ue.player_id, ue.tourney_level ORDER BY ue.tourney_date) AS played_level,
-        SUM(ue.is_title) OVER (PARTITION BY ue.player_id, ue.tourney_level ORDER BY ue.tourney_date) AS titles_level
+        -- Per livello (deterministic order)
+        COUNT(*)         OVER (PARTITION BY ue.player_id, ue.tourney_level ORDER BY ue.tourney_date, ue.event_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS played_level,
+        SUM(ue.is_title) OVER (PARTITION BY ue.player_id, ue.tourney_level ORDER BY ue.tourney_date, ue.event_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS titles_level
     FROM unique_events AS ue
 ),
 players_with_titles AS (
@@ -122,5 +121,5 @@ SELECT
        l.level_json
 FROM players_with_titles AS w
 JOIN overall_json AS o USING (player_id)
-JOIN surface_json AS s USING (player_id)
-JOIN level_json AS l USING (player_id)
+LEFT JOIN surface_json AS s USING (player_id)
+LEFT JOIN level_json AS l USING (player_id)
