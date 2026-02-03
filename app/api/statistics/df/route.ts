@@ -115,7 +115,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Risultato finale
-    const result: PlayerAggResponse[] = Array.from(map.values())
+    let result: PlayerAggResponse[] = Array.from(map.values())
       .sort((a, b) => {
         if (b.totalDf !== a.totalDf) return b.totalDf - a.totalDf;
         if (b.matches !== a.matches) return b.matches - a.matches;
@@ -130,6 +130,16 @@ export async function GET(request: NextRequest) {
         output: totalDf, // sempre usare output
         ratio: matches > 0 ? +(totalDf / matches).toFixed(2) : 0,
       }));
+
+    // Best-effort: enrich with player slugs
+    try {
+      const ids = result.map(r => String(r.id));
+      const { mapIdsToSlugs } = await import('@/lib/player-slugs');
+      const slugMap = await mapIdsToSlugs(ids);
+      result = result.map(r => ({ ...r, slug: slugMap[String(r.id)] ?? null }));
+    } catch (e) {
+      // non-cruciale, procediamo senza slug se fallisce
+    }
 
     return NextResponse.json(result, {
       headers: { "Cache-Control": "public, max-age=60, s-maxage=60" },

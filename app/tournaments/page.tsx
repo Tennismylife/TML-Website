@@ -243,7 +243,7 @@ function TournamentGroup({
                 transition={{ delay: i * 0.03 }}
               >
                 <Link
-                  href={getTourneyHref({ id: t.id })}
+                  href={getTourneyHref({ slug: (t as any).slug ?? undefined, id: t.id })}
                   className="block px-5 py-4 hover:bg-white/5 transition"
                 >
                   <div className="flex items-center justify-between">

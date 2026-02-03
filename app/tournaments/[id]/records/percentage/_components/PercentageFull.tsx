@@ -3,7 +3,8 @@ import Link from 'next/link';
 import Flag from '@/components/Flag';
 import { metadataBase } from '@/lib/site';
 import { getTournamentName } from '@/lib/recordMetadata';
-import { getPlayerHref, getRoundFullName } from '@/lib/utils';
+import { playerMatchesUrl } from '../../../../../records/nav';
+import { getRoundFullName } from '@/lib/utils';
 
 type Props = { id: string; section?: string; title?: string };
 
@@ -51,7 +52,7 @@ export default async function PercentageFull({ id, section = 'wins', title }: Pr
                 <tbody>
                   {list.map((r: any) => (
                     <tr key={String(r.id)} className="border-b border-gray-700">
-                      <td className="py-2 text-center"><div className="flex items-center justify-center gap-2"><Flag ioc={r.ioc} className="w-4 h-3" /><Link href={getPlayerHref(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link></div></td>
+                      <td className="py-2 text-center"><div className="flex items-center justify-center gap-2"><Flag ioc={r.ioc} className="w-4 h-3" /><Link href={playerMatchesUrl(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link></div></td>
                       <td className="py-2 text-center text-lg md:text-xl text-white">{r.wins}</td>
                       <td className="py-2 text-center text-lg md:text-xl text-white">{r.losses}</td>
                       <td className="py-2 text-center text-lg md:text-xl text-white">{(r.percentage ?? 0).toFixed(1)}%</td>
@@ -90,7 +91,7 @@ export default async function PercentageFull({ id, section = 'wins', title }: Pr
             <tbody>
               {rows.map((r: any) => (
                 <tr key={String(r.id)} className="border-b border-gray-700">
-                  <td className="py-2 text-center"><div className="flex items-center justify-center gap-2"><Flag ioc={r.ioc} className="w-4 h-3" /><Link href={getPlayerHref(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link></div></td>
+                  <td className="py-2 text-center"><div className="flex items-center justify-center gap-2"><Flag ioc={r.ioc} className="w-4 h-3" /><Link href={playerMatchesUrl(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link></div></td>
                   <td className="py-2 text-center text-lg md:text-xl text-white">{r.wins}</td>
                   <td className="py-2 text-center text-lg md:text-xl text-white">{r.losses}</td>
                   <td className="py-2 text-center text-lg md:text-xl text-white">{(r.percentage ?? 0).toFixed(1)}%</td>

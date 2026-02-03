@@ -13,6 +13,7 @@ import {
   filterBySetScore,
   checkRank
 } from "./matchHelpers";
+import { createSlug } from '@/lib/utils';
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
@@ -106,10 +107,35 @@ export async function GET(request: NextRequest) {
       const playerIds = Array.from(new Set(filteredMatches.flatMap(m => [m.winner_id, m.loser_id]).filter((id): id is string => !!id)));
       const { mapIdsToSlugs } = await import('@/lib/player-slugs');
       const slugMap = await mapIdsToSlugs(playerIds);
-      let enriched = filteredMatches.map((m) => ({
+      // Resolve tourney slugs for matches so clients can link to canonical slug URLs
+      const tourneyIdParts = Array.from(new Set(filteredMatches.map((m) => {
+        const s = String(m.tourney_id || '');
+        const parts = s.split('-').filter(Boolean);
+        return parts.length === 2 ? parts[1] : s;
+      }).filter(Boolean)));
+
+      let tourneyMap: Record<string, string | null> = {};
+      try {
+        if (tourneyIdParts.length > 0) {
+          // Include the tournament name so we can synthesize a slug when DB slug is missing
+          const tours = await prisma.tournament.findMany({ where: { id: { in: tourneyIdParts.map((v) => Number(v)) } }, select: { id: true, slug: true, name: true } });
+          tourneyMap = tours.reduce((acc: Record<string, string | null>, t: any) => { acc[String(t.id)] = t.slug ?? createSlug(t.name ?? String(t.id)); return acc; }, {});
+        }
+      } catch (err) {
+        // best-effort: continue without tourney_slug
+        tourneyMap = {};
+      }
+
+      let enriched = filteredMatches.map(m => ({
         ...m,
         winner_slug: m.winner_id ? (slugMap[String(m.winner_id)] ?? null) : null,
         loser_slug: m.loser_id ? (slugMap[String(m.loser_id)] ?? null) : null,
+        tourney_slug: (() => {
+          const s = String(m.tourney_id || '');
+          const parts = s.split('-').filter(Boolean);
+          const idPart = parts.length === 2 ? parts[1] : s;
+          return idPart ? (tourneyMap[String(idPart)] ?? null) : null;
+        })(),
       }));
 
       // Honor an optional `limit` query param so clients can request only the latest N matches

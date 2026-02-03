@@ -91,10 +91,13 @@ export default function PlayerClient(props: any) {
         const params = new URLSearchParams(window.location.search);
         const explicitTab = params.get('tab');
         if (explicitTab) params.delete('tab');
-        const tabFromPath = window.location.pathname.split('/')[3];
+        const pathParts = window.location.pathname.split('/');
+        const tabFromPath = pathParts[3];
         const finalTab = explicitTab || tabFromPath || 'matches';
         const search = params.toString();
-        const desired = `${getPlayerHref(slug)}/${encodeURIComponent(finalTab)}${search ? `?${search}` : ''}`;
+        // Preserve a path-based year segment when present (e.g. /players/slug/season/2026)
+        const pathYearSegment = (pathParts[4] && /^[0-9]{4}$/.test(pathParts[4])) ? `/${pathParts[4]}` : '';
+        const desired = `${getPlayerHref(slug)}/${encodeURIComponent(finalTab)}${pathYearSegment}${search ? `?${search}` : ''}`;
         window.history.replaceState(null, "", desired);
       } catch (err) {
         if (!(err instanceof DOMException && err.name === "AbortError")) {

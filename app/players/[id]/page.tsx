@@ -8,7 +8,9 @@ export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: any) {
   // params might be a Promise in this Next.js version, match page behavior
+  try { console.log('[PlayerPage.generateMetadata] raw params:', params); } catch (e) {}
   const { id: slugParam } = await params;
+  try { console.log('[PlayerPage.generateMetadata] resolved id:', slugParam); } catch (e) {}
   if (!slugParam) return { title: 'Player | Tennis Statistics, Match Results & Rankings' };
 
   const isSlug = !/^\d+$/.test(String(slugParam));

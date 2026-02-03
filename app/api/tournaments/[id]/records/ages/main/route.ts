@@ -64,6 +64,15 @@ export async function GET(request: NextRequest, context: any) {
     const oldestPlayers = Array.from(oldestPlayersMap.values()).sort((a, b) => b.age - a.age);
     const youngestPlayers = Array.from(youngestPlayersMap.values()).sort((a, b) => a.age - b.age);
 
+    // Enrich with slugs (best-effort)
+    const ids = Array.from(new Set([...(oldestPlayers.map(p => String(p.id))), ...(youngestPlayers.map(p => String(p.id)))]));
+    if (ids.length > 0) {
+      const { mapIdsToSlugs } = await import('@/lib/player-slugs');
+      const slugMap = await mapIdsToSlugs(ids);
+      for (const p of oldestPlayers) (p as any).slug = slugMap[String(p.id)] ?? null;
+      for (const p of youngestPlayers) (p as any).slug = slugMap[String(p.id)] ?? null;
+    }
+
     if (full) {
       return NextResponse.json({
         oldestPlayers,

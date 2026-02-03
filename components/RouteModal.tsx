@@ -12,19 +12,16 @@ export default function RouteModal({ children, onClose }: { children: React.Reac
     try {
       if (typeof window !== 'undefined') {
         const st = (window as any).history?.state;
-        try { console.debug('[RouteModal] internalClose, history state:', st); } catch (e) {}
         if (st && st.modal && st.background) {
           // prefer explicit stored background (global) if present
           const storedBg = (window as any).__modalBackgroundPath || st.background;
-          try { console.debug('[RouteModal] closing modal, computed background:', { fromState: st.background, storedBg }); } catch (e) {}
 
           // First ensure modal is hidden immediately by clearing state and dispatching close-modal
           try {
-            try { window.history.replaceState(null, '', storedBg); } catch (e) { console.debug('[RouteModal] replaceState failed', e); }
-            try { console.debug('[RouteModal] dispatching close-modal'); } catch (e) {}
+            try { window.history.replaceState(null, '', storedBg); } catch (e) { /* ignore replaceState failure */ }
             window.dispatchEvent(new CustomEvent('close-modal'));
             try { delete (window as any).__modalBackgroundPath; } catch (e) {}
-          } catch (e) { try { console.debug('[RouteModal] close dispatch failed', e); } catch (ex) {} }
+          } catch (e) { /* close dispatch failed */ }
 
           // NOTE: avoid calling router.replace() or history.back() here to prevent triggering
           // a navigation that would re-render server components and cause refetches on the
@@ -46,7 +43,7 @@ export default function RouteModal({ children, onClose }: { children: React.Reac
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
-    console.debug('[RouteModal] mounted');
+    // console.debug('[RouteModal] mounted');
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') internalClose();
     };
@@ -88,7 +85,7 @@ export default function RouteModal({ children, onClose }: { children: React.Reac
     return () => {
       document.removeEventListener('keydown', onKey);
       if (mo) mo.disconnect();
-      console.debug('[RouteModal] unmounted');
+      // console.debug('[RouteModal] unmounted');
     };
   }, []);
 

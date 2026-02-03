@@ -535,6 +535,16 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // Best-effort: enrich player entries with slugs using `mapIdsToSlugs`
+    try {
+      const ids = finalStats.map((p) => String(p.id));
+      const { mapIdsToSlugs } = await import('@/lib/player-slugs');
+      const slugMap = await mapIdsToSlugs(ids);
+      finalStats = finalStats.map((p) => ({ ...p, slug: slugMap[String(p.id)] ?? null }));
+    } catch (e) {
+      // ignore enrichment errors (non-critical)
+    }
+
     return NextResponse.json(finalStats);
   } catch (error) {
     console.error('Error:', error);

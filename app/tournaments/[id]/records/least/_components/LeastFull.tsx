@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
 import { getTournamentName, makeLeastLabel } from '@/lib/recordMetadata';
-import { getPlayerHref } from '@/lib/utils';
+import { playerMatchesUrl } from '../../../../../records/nav';
 
 import { metadataBase } from '@/lib/site';
 import HydrationDebugClient from '@/components/HydrationDebugClient';
@@ -59,7 +59,7 @@ export default async function LeastFull({ id, title }: { id: string; title?: str
                       <td className="py-2 text-center">
                         <div className="flex items-center justify-center gap-2">
                           <Flag ioc={r.player?.ioc || r.ioc} className="w-4 h-3" />
-                          <Link href={getPlayerHref(r.player?.slug ?? String(r.player?.id ?? r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.player?.name ?? r.name}</Link>
+                          <Link href={playerMatchesUrl(r.player?.slug ?? String(r.player?.id ?? r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.player?.name ?? r.name}</Link>
                         </div>
                       </td>
                       <td className="py-2 text-center text-lg md:text-xl text-white">{r.minGamesLost ?? r.games ?? r.value}</td>
@@ -103,7 +103,7 @@ export default async function LeastFull({ id, title }: { id: string; title?: str
                   <td className="py-2 text-center">
                     <div className="flex items-center justify-center gap-2">
                       <Flag ioc={r.player?.ioc || r.ioc} className="w-4 h-3" />
-                      <Link href={getPlayerHref(r.player?.slug ?? String(r.player?.id ?? r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.player?.name ?? r.name}</Link>
+                      <Link href={playerMatchesUrl(r.player?.slug ?? String(r.player?.id ?? r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.player?.name ?? r.name}</Link>
                     </div>
                   </td>
                   <td className="py-2 text-center text-lg md:text-xl text-white">{r.minGamesLost ?? r.games ?? r.value}</td>

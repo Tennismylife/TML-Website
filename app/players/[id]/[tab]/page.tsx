@@ -33,16 +33,30 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { params, searchParams } = props;
   const { id, tab } = (await params) as { id: string; tab?: string };
+  try { console.log('[PlayerTabPage.generateMetadata] params:', { id, tab }, 'raw params promise:', params); } catch(e) {}
   if (!id) return { title: 'Player | Tennis Statistics, Match Results & Rankings' } as Metadata; 
 
   const player = await getPlayerBySlug(id);
   const name = player?.name ?? String(id);
   const slug = player?.slug ?? String(id);
 
-  // Build canonical URL using path segments (no query params)
+  // Build canonical URL using path segments (no query params) and include year for season tab when present
   const base = 'https://stats.tennismylife.org';
   const isOverview = !tab || tab === 'overview';
-  const canonical = isOverview ? `${base}/players/${encodeURIComponent(slug)}` : `${base}/players/${encodeURIComponent(slug)}/${encodeURIComponent(tab as string)}`;
+  let canonical = isOverview ? `${base}/players/${encodeURIComponent(slug)}` : `${base}/players/${encodeURIComponent(slug)}/${encodeURIComponent(tab as string)}`;
+
+  // If on season tab, include year segment in canonical when available in search params
+  if (tab === 'season') {
+    const resolvedSearchParams = await searchParams;
+    const sp: Record<string, any> = resolvedSearchParams
+      ? (resolvedSearchParams instanceof URLSearchParams
+          ? Object.fromEntries(resolvedSearchParams.entries())
+          : resolvedSearchParams)
+      : {};
+    if (sp.year && String(sp.year) !== 'All') {
+      canonical = `${canonical}/${encodeURIComponent(String(sp.year))}`;
+    }
+  }
 
   const parts = tab === 'matches'
     ? ['Stats', 'Matches', 'Results', 'Records & Rankings']
@@ -50,6 +64,9 @@ export async function generateMetadata(
 
   // If on matches tab, build a title that mirrors the H1 (player name + heading)
   let title = `${name} – ${parts.join(', ')} | TennisMyLife`;
+  // Description is built later, declare it early so branches can assign it safely
+  let metaDescription: string = "";
+
   if (tab === 'matches') {
     const resolvedSearchParams = await searchParams;
     const sp: Record<string, any> = resolvedSearchParams
@@ -101,7 +118,28 @@ export async function generateMetadata(
     if (headingParts.length) heading = `Matches — ${headingParts.join(' · ')}`;
     if (hasFilters) title = `${name} — ${heading}`;
   }
-  const description = `Statistiche complete di ${name}: risultati ATP, ${tab === 'matches' ? 'match 2026, ' : ''}record carriera, ranking, titoli, head‑to‑head e performance per superficie. Aggiornato al 2026.`;
+
+  // If on season tab, prefer a season-specific title (use year if available)
+  if (tab === 'season') {
+    const resolvedSearchParams = await searchParams;
+    const sp: Record<string, any> = resolvedSearchParams
+      ? (resolvedSearchParams instanceof URLSearchParams
+          ? Object.fromEntries(resolvedSearchParams.entries())
+          : resolvedSearchParams)
+      : {};
+
+    if (sp.year && String(sp.year) !== 'All') {
+      // Format required: "Carlos Alcaraz 2025 Season Stats | Wins, Titles & Match Results | TennisMyLife"
+      const y = String(sp.year);
+      title = `${name} ${y} Season Stats | Wins, Titles & Match Results | TennisMyLife`;
+      metaDescription = `Complete ${name} ${y} season stats: match results, win-loss record, titles won, surface performance (hard, clay, grass) and detailed ATP breakdown on TennisMyLife.`; 
+    } else {
+      title = `${name} — Seasons | TennisMyLife`;
+      metaDescription = `Season-by-season statistics for ${name}: wins, titles, results, and seasonal performance.`;
+    }
+  }
+
+  metaDescription = `Statistiche complete di ${name}: risultati ATP, ${tab === 'matches' ? 'match 2026, ' : ''}record carriera, ranking, titoli, head‑to‑head e performance per superficie. Aggiornato al 2026.`;
   const imageUrl = `${base}/og/${encodeURIComponent(slug)}.png`;
 
   // Derive profile fields for Open Graph profile (if available)
@@ -115,21 +153,20 @@ export async function generateMetadata(
 
   return {
     title,
-    description,
-    alternates: { canonical },
+    description: metaDescription,
     openGraph: {
       type: 'profile',
       url: canonical,
       siteName: 'TennisMyLife',
       title,
-      description,
+      description: metaDescription,
       images: [{ url: imageUrl }],
       ...(Object.keys(profile).length ? { profile } : {}),
     },
     twitter: {
       card: 'summary_large_image',
       title,
-      description,
+      description: metaDescription,
       images: [imageUrl],
       site: '@TennisMyLife68',
       creator: '@TennisMyLife68',
@@ -139,7 +176,9 @@ export async function generateMetadata(
 }
 
 export default async function PlayerTabPage({ params, searchParams }: any) {
+  // Removed development debug logs
   const { id: slugParam, tab: tabParam } = await params;
+  // Removed development debug logs
   if (!slugParam) return <div>Player ID not provided</div>;
 
   const isSlug = !/^\d+$/.test(String(slugParam));

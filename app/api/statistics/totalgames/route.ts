@@ -133,7 +133,13 @@ export async function GET(request: NextRequest) {
         output: gamesWonTotal,
       }));
 
-    return NextResponse.json(result, {
+    // Enrich with slugs (best-effort)
+    const ids = result.map(r => String(r.id));
+    const { mapIdsToSlugs } = await import('@/lib/player-slugs');
+    const slugMap = await mapIdsToSlugs(ids);
+    const enriched = result.map(r => ({ ...r, slug: slugMap[String(r.id)] ?? null }));
+
+    return NextResponse.json(enriched, {
       headers: { "Cache-Control": "public, max-age=60, s-maxage=60" },
     });
   } catch (error: any) {

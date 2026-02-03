@@ -40,7 +40,6 @@ export default function RoundsModalOutlet({ id }: { id: string }) {
     window.addEventListener('open-modal', __earlyHandler);
 
     const openWithPayload = (detail: any) => {
-      try { console.debug('[RoundsModalOutlet] openWithPayload', detail); } catch (e) {}
       // Accept both older payloads ({ round, list }) and namespaced ({ section: 'rounds', title, list })
       const sec = detail?.section ? String(detail.section) : null;
       const titleParam = detail?.title ?? detail?.round ?? null;
@@ -53,8 +52,8 @@ export default function RoundsModalOutlet({ id }: { id: string }) {
       setOpenError(null);
 
       // hide server-injected modal
-      try { const { hideServerModals } = require('./hideServerModals'); hideServerModals(); try { console.debug('[RoundsModalOutlet] hideServerModals called'); } catch (e) {} } catch (e) { }
-      try { document.querySelectorAll('.server-modal-content').forEach((el: any) => { (el as HTMLElement).style.display = 'none'; }); try { console.debug('[RoundsModalOutlet] direct hide applied'); } catch (e) {} } catch (e) {}
+      try { const { hideServerModals } = require('./hideServerModals'); hideServerModals(); } catch (e) { }
+      try { document.querySelectorAll('.server-modal-content').forEach((el: any) => { (el as HTMLElement).style.display = 'none'; }); } catch (e) {}
 
       if (detail?.list && Array.isArray(detail.list)) {
         setList(detail.list);
@@ -76,7 +75,6 @@ export default function RoundsModalOutlet({ id }: { id: string }) {
     try {
       const last = (window as any).__lastOpenModalPayload;
       if (last && (last.round || last.title || (last.section && last.section === 'rounds'))) {
-        try { console.debug('[RoundsModalOutlet] consuming __lastOpenModalPayload', last); } catch (e) {}
         openWithPayload(last);
         try { delete (window as any).__lastOpenModalPayload; } catch (e) {}
       }
@@ -112,7 +110,6 @@ export default function RoundsModalOutlet({ id }: { id: string }) {
     };
 
     const handleCloseModal = () => {
-      try { console.debug('[RoundsModalOutlet] handleCloseModal'); } catch (e) {}
       setShow(false); setRound(null); setList(null); setOpenError(null);
         try { const { showServerModals } = require('./hideServerModals'); showServerModals(); } catch (e) {}
       try { delete (window as any).__lastOpenModalPayload; } catch (e) {}
@@ -125,7 +122,6 @@ export default function RoundsModalOutlet({ id }: { id: string }) {
     try {
       const last = (window as any).__lastOpenModalPayload;
       if (last && (last.round || last.title || (last.section && last.section === 'rounds'))) {
-        try { console.debug('[RoundsModalOutlet] consuming early payload', last); } catch (e) {}
         openWithPayload(last);
         try { document.querySelectorAll('.server-modal-content').forEach((el: any) => { (el as HTMLElement).style.display = 'none'; }); } catch (e) {}
         try { delete (window as any).__lastOpenModalPayload; } catch (e) {}

@@ -6,7 +6,7 @@ import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
-import { getPlayerHref } from '@/lib/utils';
+import { playerMatchesUrl } from '../../../records/nav';
 
 interface PlayerPercentage {
   id: string | number;
@@ -139,7 +139,7 @@ export default function PercentageSection({ id, activeSubTab }: { id: string; ac
             <td className="py-1 flex items-center gap-2 text-white min-w-0">
               <Flag ioc={item.ioc} className="w-4 h-3" />
               <div className="truncate">
-                <Link href={getPlayerHref((item as any).slug ?? String(item.id))} className="text-blue-400 hover:underline">{item.name}</Link>
+                <Link href={playerMatchesUrl((item as any).slug ?? String(item.id))} className="text-blue-400 hover:underline">{item.name}</Link>
               </div>
             </td>
             <td className="py-1 text-white text-right whitespace-nowrap">{item.wins}</td>
@@ -246,7 +246,7 @@ export default function PercentageSection({ id, activeSubTab }: { id: string; ac
 
                 <PlayerTable data={topOverall} />
                 <div className="text-center mt-2">
-                  <button type="button" data-view-all="overall" onClick={(e) => { try { e.preventDefault(); e.stopPropagation(); console.debug('[PercentageSection] View All overall clicked (preventDefault)'); } catch(ex) {} ; handleViewAll(filteredOverall, 'Overall Win Percentage'); }} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">View All</button>
+                  <button type="button" data-view-all="overall" onClick={(e) => { try { e.preventDefault(); e.stopPropagation(); } catch(ex) {} ; handleViewAll(filteredOverall, 'Overall Win Percentage'); }} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">View All</button>
                 </div>
               </div>
             ) : (<p className="text-gray-400">No data available.</p>)}

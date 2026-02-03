@@ -111,7 +111,7 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.total_wins}</td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
-                  <Link href={getTourneyHref({ id: p.tourney_id, name: p.tourney_name })} className="hover:underline">{p.tourney_name}</Link>
+                  <Link href={getTourneyHref({ slug: (p as any).tourney_slug ?? undefined, id: p.tourney_id, name: p.tourney_name })} className="hover:underline">{p.tourney_name}</Link>
                 </td>
               </tr>
             );

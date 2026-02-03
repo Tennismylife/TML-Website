@@ -52,7 +52,7 @@ export default function Titles({
         selectedLevels.forEach(l => query.append('level', l));
         query.set('limit', showModal ? '1000' : '100');
         const url = `/api/records/timespan/titles?${query.toString()}`;
-        console.debug('[Timespan Titles] fetching', url, { enabled, showModal });
+        // fetching titles list
         const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch titles');
         const fetchedData = await res.json();

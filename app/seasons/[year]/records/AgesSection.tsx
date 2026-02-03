@@ -132,7 +132,7 @@ export default function AgeSection({ year, selectedSurfaces, selectedLevels, act
                 </td>
                 <td className="py-1 text-white text-right whitespace-nowrap">{displayAge}</td>
                 <td className="py-1 text-white">
-                  <Link href={getTourneyHref({ id: p.tourney_id, name: p.tourney_name, year: p.year })} className="text-blue-400 hover:underline">{p.tourney_name}</Link>
+                  <Link href={getTourneyHref({ slug: (p as any).tourney_slug ?? undefined, id: p.tourney_id, name: p.tourney_name, year: p.year })} className="text-blue-400 hover:underline">{p.tourney_name}</Link>
                 </td>
               </tr>
             );

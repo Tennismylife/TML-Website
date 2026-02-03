@@ -108,12 +108,19 @@ export async function GET(request: NextRequest) {
     }
 
     // Ordinamento e output
-    const result: PlayerAggResponse[] = Array.from(map.values())
+    let result: PlayerAggResponse[] = Array.from(map.values())
       .sort((a, b) => b.setsPlayed - a.setsPlayed)
       .slice(0, top)
       .map(({ id, name, ioc, matches, setsPlayed }) => ({
         id, name, ioc, matches, output: setsPlayed,
       }));
+
+    try {
+      const ids = result.map(r => String(r.id));
+      const { mapIdsToSlugs } = await import('@/lib/player-slugs');
+      const slugMap = await mapIdsToSlugs(ids);
+      result = result.map(r => ({ ...r, slug: slugMap[String(r.id)] ?? null }));
+    } catch (e) {}
 
     return NextResponse.json(result, {
       headers: { "Cache-Control": "public, max-age=60, s-maxage=60" },

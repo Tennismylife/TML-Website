@@ -457,10 +457,15 @@ export function createSlug(text?: string | null): string {
     .replace(/^-|-$/g, '');
 }
 
-// Build a tournament href using available info. Prefer ID for links, then fallback to slug/name.
+// Build a tournament href using available info. Prefer slug links (canonical), then fallback to ID.
 export function getTourneyHref({ id, name, slug, year }: { id?: string | number | null; name?: any; slug?: string | null; year?: string | number | null }) {
   const y = year ? `/${year}` : '';
-  // Prefer ID links (always use ID when available)
+  // Prefer slug links when available (canonical URLs)
+  if (slug) {
+    return `/tournaments/${slug}${y}`;
+  }
+
+  // Fallback to ID links if slug not available
   if (id != null) {
     const sid = String(id);
     const parts = sid.split('-');
@@ -472,9 +477,6 @@ export function getTourneyHref({ id, name, slug, year }: { id?: string | number 
     }
     return `/tournaments/${sid}${y}`;
   }
-
-  // Fallback to explicit slug if no id
-  if (slug) return `/tournaments/${slug}${y}`;
 
   // Do NOT create slug from name; require slug or id to build canonical links
   return '#';

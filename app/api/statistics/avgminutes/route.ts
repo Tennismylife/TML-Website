@@ -109,6 +109,12 @@ export async function GET(request: NextRequest) {
       .sort((a, b) => b.output - a.output)
       .slice(0, top);
 
+    // Enrich with slugs (best-effort)
+    const ids = result.map(r => String(r.id));
+    const { mapIdsToSlugs } = await import('@/lib/player-slugs');
+    const slugMap = await mapIdsToSlugs(ids);
+    result = result.map(r => ({ ...r, slug: slugMap[String(r.id)] ?? null }));
+
     return NextResponse.json(result);
   } catch (error: any) {
     console.error(error);

@@ -46,7 +46,7 @@ export default function TourneyCard({ tourney }: { tourney: TourneyTile }) {
 
   return (
     <Link
-      href={getTourneyHref({ id: tourney.extractedId, name: tourney.name, year: Number(tourney.year) })}
+      href={getTourneyHref({ slug: (tourney as any).slug ?? undefined, id: tourney.extractedId, name: tourney.name, year: Number(tourney.year) })}
       aria-label={`View details for ${tourney.name} tournament`}
       className="group"
     >

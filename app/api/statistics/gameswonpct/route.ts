@@ -123,16 +123,24 @@ export async function GET(request: NextRequest) {
     }
 
     // Calcolo output (% games won) e ordinamento
-    const result: PlayerAggResponse[] = Array.from(map.values())
-      .map(({ id, name, ioc, matches, gamesWonTotal, gamesPlayedTotal }) => ({
+    let result: PlayerAggResponse[] = Array.from(map.values())
+      .map(({ id, name, ioc, matches, gamesPlayedTotal, gamesWonTotal }) => ({
         id,
         name,
         ioc,
-        matches,
-        output: gamesPlayedTotal > 0 ? Number(((gamesWonTotal / gamesPlayedTotal) * 100).toFixed(decimals)) : 0,
+        matches: matches,
+        output: gamesPlayedTotal ? Number(((gamesWonTotal / gamesPlayedTotal) * 100).toFixed(decimals)) : 0,
       }))
       .sort((a, b) => b.output - a.output)
       .slice(0, top);
+
+    // Best-effort: enrich with slugs
+    try {
+      const ids = result.map(r => String(r.id));
+      const { mapIdsToSlugs } = await import('@/lib/player-slugs');
+      const slugMap = await mapIdsToSlugs(ids);
+      result = result.map(r => ({ ...r, slug: slugMap[String(r.id)] ?? null }));
+    } catch (e) {}
 
     return NextResponse.json(result, {
       headers: { "Cache-Control": "public, max-age=60, s-maxage=60" },

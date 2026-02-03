@@ -21,8 +21,7 @@ const legacyCodeRegex = /^[A-Za-z]+\d+$/i;
 
 export async function middleware(req: NextRequest) {
   try {
-    // Debugging: log incoming requests for players/tournaments/records to diagnose unexpected 405s
-    try { if (process.env.VERBOSE_LOGS === '1') console.debug('[middleware] %s %s', req.method || 'UNKNOWN', req.nextUrl?.pathname + (req.nextUrl?.search || '')); } catch (e) {}
+    // Debugging disabled: verbose middleware request logging removed
 
     // Server-side visit tracking: derive a readable pageTitle, filter bots, and call API route fire-and-forget
     try {
@@ -69,6 +68,28 @@ export async function middleware(req: NextRequest) {
     const { pathname, search } = req.nextUrl;
     const segments = pathname.split('/').filter(Boolean);
     const origin = req.nextUrl.origin;
+
+    // Dev debug block removed: avoid noisy POSTs and console.error messages for season routes
+
+
+
+    // If incoming path is /players/:slug/season with ?year=YYYY, redirect to canonical /players/:slug/season/YYYY
+    // This ensures a consistent canonical URL for SEO and that the per-year dynamic page handles metadata
+    if (segments[0] === 'players' && segments[2] === 'season' && (!segments[3] || segments[3] === '') ) {
+      const year = req.nextUrl.searchParams.get('year');
+      if (year && /^[0-9]{4}$/.test(year)) {
+        const slug = segments[1];
+        const dest = new URL(req.url);
+        dest.pathname = `/players/${slug}/season/${year}`;
+        // Remove 'year' from search when redirecting to the canonical path
+        const newSearch = new URLSearchParams(req.nextUrl.searchParams as any);
+        newSearch.delete('year');
+        dest.search = newSearch.toString();
+        return new Response(null, { status: 301, headers: { Location: dest.toString() } });
+      }
+    }
+
+
 
     // Normalize any /recordsranking path segments to lowercase canonical form
     if (segments[0] === 'recordsranking' && segments[1]) {

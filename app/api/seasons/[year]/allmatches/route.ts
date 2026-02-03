@@ -12,7 +12,9 @@ export async function GET(request: Request, context: any) {
     );
   }
 
-  const yearParam = context?.params?.year;
+  // In Next.js dynamic route handlers, `context.params` may be a Promise and must be awaited.
+  const params = context?.params ? await context.params : undefined;
+  const yearParam = params?.year;
   const yearNumber = parseInt(String(yearParam), 10);
 
   if (isNaN(yearNumber)) {
@@ -29,29 +31,6 @@ export async function GET(request: Request, context: any) {
         year: yearNumber,
       },
       orderBy: { tourney_date: "asc" },
-      select: {
-        id: true,
-        tourney_name: true,
-        tourney_date: true,
-        round: true,
-        score: true,
-        tourney_level: true,
-        surface: true,
-        best_of: true,
-        minutes: true,
-        draw_size: true,
-        winner_id: true,
-        loser_id: true,
-        winner_name: true,
-        loser_name: true,
-        winner_ioc: true,
-        loser_ioc: true,
-        winner_rank: true,
-        loser_rank: true,
-        winner_age: true,
-        loser_age: true,
-        team_event: true,
-      },
     });
 
     return NextResponse.json(matches);

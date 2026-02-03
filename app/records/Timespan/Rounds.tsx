@@ -52,7 +52,7 @@ const Rounds = ({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled
         query.append('round', selectedRounds);
         query.set('perPage', showModal ? '1000' : '100');
         const url = `/api/records/timespan/rounds?${query.toString()}`;
-        console.debug('[Timespan Rounds] fetching', url, { enabled, selectedRounds, fetchRequestId });
+        // fetching rounds list
         const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch rounds timespan');
         const fetchedData = await res.json();

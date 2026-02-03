@@ -263,7 +263,7 @@ export default function MatchTable({
                 <tr key={index} className="hover:bg-gray-800/50">
                   <td className={tdBase}>{formatDateISO(m.tourney_date)}</td>
                   <td className={tdBase}>
-                    <Link href={getTourneyHref({ id: m.tourney_id, name: m.tourney_name, year: m.year })} className="text-white hover:underline">
+                    <Link href={getTourneyHref({ slug: (m as any).tourney_slug ?? undefined, id: m.tourney_id, name: m.tourney_name, year: m.year })} className="text-white hover:underline">
                       {m.tourney_name}
                     </Link>
                   </td>

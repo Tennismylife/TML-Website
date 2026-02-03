@@ -253,7 +253,32 @@ export async function GET(request: NextRequest, context: any) {
     // Se richiesto, ritorno solo un round
     if (specificRound) {
       const found = roundItems.find(r => r.round === specificRound);
+
+      // Enrich with slugs (best-effort) for the specific round
+      if (found) {
+        const ids = Array.from(new Set(found.data.map((d: any) => String(d.player?.id))));
+        if (ids.length > 0) {
+          const { mapIdsToSlugs } = await import('@/lib/player-slugs');
+          const slugMap = await mapIdsToSlugs(ids);
+          for (const d of found.data) {
+            if (d.player) (d.player as any).slug = slugMap[String((d.player as any).id)] ?? null;
+          }
+        }
+      }
+
       return NextResponse.json({ roundItems: found ? [found] : [] });
+    }
+
+    // Enrich with slugs (best-effort)
+    const allIds = Array.from(new Set(roundItems.flatMap(r => r.data.map((d: any) => String(d.player?.id)))));
+    if (allIds.length > 0) {
+      const { mapIdsToSlugs } = await import('@/lib/player-slugs');
+      const slugMap = await mapIdsToSlugs(allIds);
+      for (const r of roundItems) {
+        for (const d of r.data) {
+          if (d.player) (d.player as any).slug = slugMap[String((d.player as any).id)] ?? null;
+        }
+      }
     }
 
     return NextResponse.json({ roundItems });

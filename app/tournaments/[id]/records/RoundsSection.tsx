@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
-import { getPlayerHref } from '@/lib/utils';
+import { playerMatchesUrl } from '../../../records/nav';
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 import { getRoundFullName } from '@/lib/utils';
 import dynamic from 'next/dynamic';
@@ -56,7 +56,7 @@ const RoundCard = React.memo(function RoundCard({
               <td className="py-1 flex items-center gap-2 text-white min-w-0">
                 <Flag ioc={it.ioc} className="w-4 h-3" />
                 <div className="truncate">
-                  <Link href={getPlayerHref((it as any).slug ?? String(it.id))} prefetch={false} className="text-blue-400 hover:underline">
+                  <Link href={playerMatchesUrl((it as any).slug ?? String(it.id))} prefetch={false} className="text-blue-400 hover:underline">
                     {it.name}
                   </Link>
                 </div>
@@ -273,7 +273,7 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
           <tr key={item.id} className="border-b border-gray-700">
             <td className="py-1 flex items-center gap-2 text-white">
               <Flag ioc={item.ioc} className="w-4 h-3" />
-              <Link href={getPlayerHref((item as any).slug ?? String(item.id))} prefetch={false} className="text-blue-400">
+              <Link href={playerMatchesUrl((item as any).slug ?? String(item.id))} prefetch={false} className="text-blue-400">
                 {item.name}
               </Link>
             </td>
@@ -326,7 +326,7 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
                       <td className="py-2 text-center">
                         <div className="flex items-center justify-center gap-2">
                           <Flag ioc={item.ioc} className="w-4 h-3" />
-                          <Link href={getPlayerHref((item as any).slug ?? String(item.id))} className="text-blue-400 hover:underline text-lg md:text-xl">
+                          <Link href={playerMatchesUrl((item as any).slug ?? String(item.id))} className="text-blue-400 hover:underline text-lg md:text-xl">
                             {item.name}
                           </Link>
                         </div>

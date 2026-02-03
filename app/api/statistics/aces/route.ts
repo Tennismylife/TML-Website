@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
     }
 
     // --- Risultato finale ordinato ---
-    const result: PlayerAggResponse[] = Array.from(map.values())
+    let result: PlayerAggResponse[] = Array.from(map.values())
       .sort((a, b) => b.totalAces - a.totalAces)
       .slice(0, top)
       .map(({ id, name, ioc, matches, totalAces }) => ({
@@ -116,6 +116,16 @@ export async function GET(request: NextRequest) {
         matches,
         output: totalAces,
       }));
+
+    // Enrich with slugs (best-effort)
+    try {
+      const ids = result.map(r => String(r.id));
+      const { mapIdsToSlugs } = await import('@/lib/player-slugs');
+      const slugMap = await mapIdsToSlugs(ids);
+      result = result.map(r => ({ ...r, slug: slugMap[String(r.id)] ?? null }));
+    } catch (e) {
+      // ignore if slug enrichment fails
+    }
 
     return NextResponse.json(result);
   } catch (error: any) {

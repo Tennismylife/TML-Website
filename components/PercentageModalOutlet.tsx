@@ -33,7 +33,6 @@ export default function PercentageModalOutlet({ id }: { id: string }) {
     let mounted = true;
 
     const openWithPayload = (detail: any) => {
-      try { console.debug('[PercentageModalOutlet] openWithPayload detail:', detail); } catch (e) {}
       // normalize incoming section to namespaced form
       let secRaw = detail?.section as string | undefined ?? 'percentage-wins';
       let sec = String(secRaw);
@@ -83,7 +82,6 @@ export default function PercentageModalOutlet({ id }: { id: string }) {
 
       if (last && last.section && allowedSections.includes(String(last.section).startsWith('percentage-') ? String(last.section) : `percentage-${String(last.section)}`)) {
         consumedEarlyPayload = true;
-        try { console.debug('[PercentageModalOutlet] consuming __lastOpenModalPayload', last); } catch (e) {}
         openWithPayload({ section: last.section, title: last.title });
         try { delete (window as any).__lastOpenModalPayload; } catch (e) {}
       }
@@ -115,11 +113,9 @@ export default function PercentageModalOutlet({ id }: { id: string }) {
     }
 
     const handleOpenModal = (e: any) => {
-      try { console.debug('[PercentageModalOutlet] handleOpenModal event detail:', e?.detail); } catch (ex) {}
       let detail = e?.detail;
       // fallback to global payload in case the event had no detail or outlet mounted late
       if ((!detail || !detail.section) && (window as any).__lastOpenModalPayload) {
-        try { console.debug('[PercentageModalOutlet] using __lastOpenModalPayload fallback', (window as any).__lastOpenModalPayload); } catch (e) {}
         detail = (window as any).__lastOpenModalPayload;
       }
       // only accept explicitly namespaced "percentage-" sections to avoid collisions
@@ -132,7 +128,6 @@ export default function PercentageModalOutlet({ id }: { id: string }) {
     };
 
     const handleCloseModal = () => {
-      try { console.debug('[PercentageModalOutlet] handleCloseModal'); } catch (e) {}
       setShow(false);
       setList(null);
       setSection(null);

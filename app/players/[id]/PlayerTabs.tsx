@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Profile from "./Profile";
 import AllMatches from "./Matches/AllMatches";
-import Seasons from "./Seasons/Seasons";
+import Seasons from "./season/components/Seasons";
 import Tournaments from "./Tournaments/Tournaments";
 import H2H from "./H2H/H2H";
 import Performance from "./Performance/Performance";
@@ -64,10 +64,12 @@ export default function PlayerTabs({ player, tabs, initialTab, setTab, tournamen
     const newQs = params.toString();
     const currentQs = typeof window !== "undefined" ? window.location.search.replace(/^\?/, "") : "";
 
-    // Build new pathname with tab as segment
+    // Build new pathname with tab as segment (remove extra trailing segments like an encoded year)
     const parts = typeof window !== 'undefined' ? window.location.pathname.split('/') : ['','players','','matches'];
-    parts[3] = tabId;
-    const newPathname = parts.join('/');
+    // Keep only the first 4 segments: ['', 'players', ':slug', ':tab'] to avoid preserving trailing year or other segments
+    const baseParts = parts.slice(0, 4);
+    baseParts[3] = tabId;
+    const newPathname = baseParts.join('/');
 
     // Avoid triggering navigation if nothing actually changed (both pathname and qs)
     if (newQs === currentQs && newPathname === window.location.pathname) {

@@ -67,7 +67,7 @@ export default function AllMatchesServer({ playerId, matches, heading }: AllMatc
                     <td className="border border-white/10 px-3 py-2 text-gray-200">
                       {m.tourney_name ? (
                         m.tourney_id ? (
-                          <Link href={getTourneyHref({ id: m.tourney_id, year: m.year })} className="text-indigo-300 hover:underline">
+                          <Link href={getTourneyHref({ slug: (m as any).tourney_slug ?? undefined, id: m.tourney_id, year: m.year })} className="text-indigo-300 hover:underline">
                             {m.tourney_name}
                           </Link>
                         ) : (

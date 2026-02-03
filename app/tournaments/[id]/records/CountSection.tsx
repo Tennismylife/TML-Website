@@ -7,7 +7,7 @@ import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 import RouteModal from '@/components/RouteModal';
 import Flag from '@/components/Flag';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
-import { getPlayerHref } from '@/lib/utils';
+import { playerMatchesUrl } from '../../../records/nav';
 
 interface PlayerItem {
   id: string | number;
@@ -66,7 +66,7 @@ const SectionCard = React.memo(function SectionCard({
                 <td className="py-1 min-w-0">
                   <div className="flex items-center gap-2 truncate">
                     <Flag ioc={item.ioc} className="w-4 h-3" />
-                    <Link href={getPlayerHref((item as any).slug ?? String(item.id))} prefetch={false} className="text-blue-400 hover:underline truncate">
+                    <Link href={playerMatchesUrl((item as any).slug ?? String(item.id))} prefetch={false} className="text-blue-400 hover:underline truncate">
                       {item.name}
                     </Link>
                   </div>
@@ -304,14 +304,12 @@ export default function CountSection({ tournamentId }: { tournamentId: string })
     const background = typeof window !== 'undefined' ? window.location.pathname + window.location.search : undefined;
 
     try {
-      console.debug('[CountSection] pushing modal state (fallback open)', { target, background, prevState: window.history.state });
       window.history.pushState({ ...(window.history.state || {}), modal: true, background }, '', target);
       window.dispatchEvent(new PopStateEvent('popstate'));
       window.dispatchEvent(new CustomEvent('modalchange'));
       // notify outlet that we opened (with payload)
       const payload = { section: sectionKey, list: existing ?? null };
       window.dispatchEvent(new CustomEvent('open-modal', { detail: payload }));
-      console.debug('[CountSection] state pushed (fallback)', window.history.state, 'payload:', payload);
     } catch (e) {
       // fallback navigation
       router.push(target);
@@ -338,7 +336,7 @@ export default function CountSection({ tournamentId }: { tournamentId: string })
                 <div className="flex items-center justify-center gap-2">
                   <Flag ioc={item.ioc} className="w-4 h-3" />
                   <Link
-                    href={getPlayerHref((item as any).slug ?? String(item.id))}
+                    href={playerMatchesUrl((item as any).slug ?? String(item.id))}
                     className="text-blue-700 hover:underline text-lg md:text-xl"
                   >
                     {item.name}

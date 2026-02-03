@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
-import { getPlayerHref } from '@/lib/utils';
+import { playerMatchesUrl } from '../../../../../records/nav';
 import dynamic from 'next/dynamic';
 
 const TableVirtuoso = dynamic(() => import('react-virtuoso').then(mod => mod.TableVirtuoso), { ssr: false });
@@ -42,7 +42,7 @@ export default function CountFull({ id, section, list, tourneyName }: { id: stri
                 <td className="py-2 text-center">
                   <div className="flex items-center justify-center gap-2">
                     <Flag ioc={item.ioc} className="w-4 h-3" />
-                    <Link href={getPlayerHref(item.slug ?? String(item.id))} className="text-blue-400 hover:underline text-lg md:text-xl">
+                    <Link href={playerMatchesUrl(item.slug ?? String(item.id))} className="text-blue-400 hover:underline text-lg md:text-xl">
                       {item.name}
                     </Link>
                   </div>

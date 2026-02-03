@@ -111,7 +111,7 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{formatAge(p.age)}</td>
                 <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
-                  <Link href={getTourneyHref({ id: p.tourney_id, name: p.tourney_name, year })} className="text-indigo-300 hover:underline">
+                  <Link href={getTourneyHref({ slug: (p as any).tourney_slug ?? undefined, id: p.tourney_id, name: p.tourney_name, year })} className="text-indigo-300 hover:underline">
                     {p.tourney_name} {year}
                   </Link>
                 </td>

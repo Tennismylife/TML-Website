@@ -75,6 +75,17 @@ export async function GET(request: NextRequest, context: any) {
       return { title: round, list: sortedPlayers.slice(0, 10) };
     });
 
+    // Enrich with slugs (best-effort)
+    const ids = Array.from(new Set(allYoungestItems.flatMap(r => (r.list || []).map((it: any) => String(it.id)))));
+    if (ids.length > 0) {
+      const { mapIdsToSlugs } = await import('@/lib/player-slugs');
+      const slugMap = await mapIdsToSlugs(ids);
+      for (const r of allYoungestItems) {
+        if (Array.isArray(r.list)) for (const it of r.list) (it as any).slug = slugMap[String(it.id)] ?? null;
+        if (Array.isArray(r.fullList)) for (const it of r.fullList) (it as any).slug = slugMap[String(it.id)] ?? null;
+      }
+    }
+
     return NextResponse.json({ allYoungestItems });
   } catch (error) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

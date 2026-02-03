@@ -2,20 +2,24 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import type { Match } from "@/types";
-import { getLevelColors, getLevelFullName } from "@/lib/utils";
+import { getLevelColors, getLevelFullName, getTourneyHref, getPlayerHref } from "@/lib/utils";
 import { getSurfaceColor, palette } from "@/lib/colors";
 import SummarySeasons from "./SummarySeasons";
-import TournamentGrid from "../TournamentGrid";
+import TournamentGrid from "../../TournamentGrid";
 import { useYearStats } from "./useYearStats";
 import { useRouter, usePathname, useSearchParams } from "next/navigation"; // <--- added
 
 interface SeasonsProps {
   playerId: string;
+  initialYears?: number[];
+  initialAllMatches?: Match[];
+  initialSelectedYear?: number | null;
 }
 
-const getTourneyLink = (tourneyId?: string, year?: number) => {
-  if (!tourneyId || !year) return "#";
-  return `/tournaments/${tourneyId}/${year}`;
+const getTourneyLink = (tourneySlug?: string | null, tourneyId?: string | null, year?: number | null) => {
+  // Prefer slug when available; fall back to id to keep cards clickable
+  if (!tourneySlug && !tourneyId) return "#";
+  return getTourneyHref({ slug: tourneySlug ?? undefined, id: tourneyId ?? undefined, year: year ?? undefined });
 };
 
 // ===================== WLStatTable =====================
@@ -94,43 +98,120 @@ const WLStatTable: React.FC<WLStatTableProps> = ({ title, rows }) => {
 };
 
 // ===================== Seasons Component =====================
-export default function Seasons({ playerId }: SeasonsProps) {
+export default function Seasons({ playerId, initialYears, initialAllMatches, initialSelectedYear }: SeasonsProps) {
   const router = useRouter(); // <--- added
   const pathname = usePathname(); // <--- added
   const searchParams = useSearchParams(); // <--- added
 
-  const [years, setYears] = useState<number[]>([]);
-  const [selectedYear, setSelectedYear] = useState<number | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [years, setYears] = useState<number[]>(initialYears ?? []);
+  const [selectedYear, setSelectedYear] = useState<number | null>(initialSelectedYear ?? null);
+  const [loading, setLoading] = useState<boolean>(initialAllMatches ? false : true);
   const [error, setError] = useState<string | null>(null);
-  const [allMatches, setAllMatches] = useState<Match[]>([]);
+  const [allMatches, setAllMatches] = useState<Match[]>(initialAllMatches ?? []);
   const [openDropdown, setOpenDropdown] = useState(false);
 
   useEffect(() => {
+    // If server provided initial data, skip fetching on mount
+    if (initialAllMatches && initialYears) return;
+
     let abort = false;
     async function load() {
+      let fetchUrl = '';
       try {
         setLoading(true);
         setError(null);
-        const res = await fetch(`/api/players/allmatches?id=${encodeURIComponent(playerId)}`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        // Prefer fetching only for the selected year when the URL encodes it
+        const targetPathYear = (() => {
+          if (!pathname) return null;
+          const parts = pathname.split("/").filter(Boolean);
+          const last = parts[parts.length - 1];
+          const maybeYear = /^[0-9]{4}$/.test(last) ? Number(last) : null;
+          if (maybeYear) {
+            const seasonIdx = parts.lastIndexOf("season");
+            if (seasonIdx !== -1 && seasonIdx === parts.length - 2) return maybeYear;
+          }
+          return null;
+        })();
+
+        const fetchParamYear = searchParams?.get("year");
+        const fetchNumericParamYear = fetchParamYear ? Number(fetchParamYear) : null;
+
+        const targetYear = targetPathYear ?? fetchNumericParamYear ?? null;
+        if (targetYear) {
+          fetchUrl = `/api/seasons/${targetYear}/allmatches?id=${encodeURIComponent(playerId)}`;
+        } else {
+          fetchUrl = `/api/players/allmatches?id=${encodeURIComponent(playerId)}`;
+        }
+
+        // Dev-only diagnostic: log the resolved fetch URL and context so we can see which endpoint the client calls
+        if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
+          try { console.debug('[Seasons] resolved fetchUrl', { fetchUrl, targetYear, fetchParamYear, pathname, playerId }); } catch (e) {}
+        }
+
+        const res = await fetch(fetchUrl);
+        if (!res.ok) {
+          // Keep thrown error for existing error UI, but avoid noisy console logs in production.
+          throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
         const data: Match[] = await res.json();
         if (abort) return;
 
         setAllMatches(data);
-        const uniqYears = Array.from(new Set(data.map((m) => m.year).filter((y): y is number => y != null))).sort((a, b) => b - a);
-        setYears(uniqYears);
+        const uniqYearsFromMatches = Array.from(new Set(data.map((m) => m.year).filter((y): y is number => y != null))).sort((a, b) => b - a);
 
-        // If a year is present in URL params and valid -> select it, otherwise default to first year
+        // Try to fetch authoritative list of seasons for this player (lighter and more accurate than deriving from a single-season fetch)
+        let fetchedPlayerYears: number[] | null = null;
+        try {
+          const sres = await fetch(`/api/players/seasons?id=${encodeURIComponent(playerId)}`);
+          if (sres.ok) {
+            const sy = await sres.json();
+            if (Array.isArray(sy) && sy.length > 0) {
+              fetchedPlayerYears = (sy as number[]).filter(y => typeof y === 'number').sort((a,b) => b - a);
+            }
+          }
+        } catch (e) {
+          // swallow: fall back to uniqYearsFromMatches
+        }
+
+        const finalYears = fetchedPlayerYears ?? uniqYearsFromMatches;
+
+        // Dev-only diagnostic: log count of returned matches and unique years
+        if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
+          try {
+            console.debug('[Seasons] fetched data', { fetchUrl, count: (data || []).length, uniqYears: uniqYearsFromMatches.slice(0, 10), playerYears: fetchedPlayerYears?.slice(0,10) });
+            if (!data || data.length === 0) console.debug('[Seasons] no matches returned from', fetchUrl);
+          } catch (e) {}
+        }
+
+        setYears(finalYears);
+
+        // If a year is present in the pathname (e.g. /players/:slug/season/2026) prefer it,
+        // otherwise fallback to URL query param 'year'; finally default to the most recent year in the player's seasons list.
+        const pathYear = (() => {
+          if (!pathname) return null;
+          const parts = pathname.split("/").filter(Boolean);
+          const last = parts[parts.length - 1];
+          const maybeYear = /^[0-9]{4}$/.test(last) ? Number(last) : null;
+          if (maybeYear) {
+            const seasonIdx = parts.lastIndexOf("season");
+            if (seasonIdx !== -1 && seasonIdx === parts.length - 2) return maybeYear;
+          }
+          return null;
+        })();
+
         const paramYear = searchParams?.get("year");
         const numericParamYear = paramYear ? Number(paramYear) : null;
-        if (numericParamYear && uniqYears.includes(numericParamYear)) {
+
+        if (pathYear && finalYears.includes(pathYear)) {
+          setSelectedYear(pathYear);
+        } else if (numericParamYear && finalYears.includes(numericParamYear)) {
           setSelectedYear(numericParamYear);
-        } else if (uniqYears.length > 0) {
-          setSelectedYear(uniqYears[0]);
+        } else if (finalYears.length > 0) {
+          setSelectedYear(finalYears[0]);
         }
       } catch (e: any) {
-        if (!abort) setError(e instanceof Error ? e.message : "Error loading seasons");
+        if (!abort) setError(e instanceof Error ? e.message : 'Error loading seasons');
       } finally {
         if (!abort) setLoading(false);
       }
@@ -139,15 +220,33 @@ export default function Seasons({ playerId }: SeasonsProps) {
     return () => {
       abort = true;
     };
-  }, [playerId, searchParams]);
+  }, [playerId, searchParams, pathname, initialAllMatches, initialYears]);
 
   // Keep component state in sync with URL query param changes
   useEffect(() => {
+    // If pathname encodes the year (e.g. /season/2026), prefer it, otherwise fall back to ?year=
+    const pathYear = (() => {
+      if (!pathname) return null;
+      const parts = pathname.split("/").filter(Boolean);
+      const last = parts[parts.length - 1];
+      const maybeYear = /^[0-9]{4}$/.test(last) ? Number(last) : null;
+      if (maybeYear) {
+        const seasonIdx = parts.lastIndexOf("season");
+        if (seasonIdx !== -1 && seasonIdx === parts.length - 2) return maybeYear;
+      }
+      return null;
+    })();
+
+    if (pathYear !== null) {
+      setSelectedYear(pathYear);
+      return;
+    }
+
     const paramYear = searchParams?.get("year");
     if (!paramYear) return;
     const y = Number(paramYear);
     if (!Number.isNaN(y)) setSelectedYear(y);
-  }, [searchParams]);
+  }, [searchParams, pathname]);
 
   // Remember last-seen 'sub' for season so that navigating back to season can restore it
   useEffect(() => {
@@ -161,13 +260,29 @@ export default function Seasons({ playerId }: SeasonsProps) {
   }, [searchParams]);
 
   const updateUrlYear = (year: number | null) => {
-    // guard: ensure we have a pathname
     if (!pathname) return;
     const params = new URLSearchParams(searchParams?.toString() ?? "");
-    if (year === null) params.delete("year");
-    else params.set("year", String(year));
-    // Use router.push to update url (client side) - replace with .replace if you prefer not to add history entries
-    router.push(`${pathname}?${params.toString()}`);
+
+    // Detect if current path is the season tab (e.g. /players/slug/season or /players/slug/season/2026)
+    const parts = pathname.split("/").filter(Boolean);
+    const seasonIdx = parts.lastIndexOf("season");
+    const isSeasonPath = seasonIdx !== -1;
+
+    if (isSeasonPath) {
+      // Build base path up to /season
+      const base = "/" + parts.slice(0, seasonIdx + 1).join("/");
+      // When using path-based year keep the path clean: remove year query param
+      params.delete("year");
+      if (year === null) {
+        router.push(`${base}${params.toString() ? `?${params.toString()}` : ""}`);
+      } else {
+        router.push(`${base}/${year}${params.toString() ? `?${params.toString()}` : ""}`);
+      }
+    } else {
+      if (year === null) params.delete("year");
+      else params.set("year", String(year));
+      router.push(`${pathname}?${params.toString()}`);
+    }
   };
 
   const matchesForStats = allMatches;
@@ -195,46 +310,76 @@ export default function Seasons({ playerId }: SeasonsProps) {
     [tourneysForYear, matchesIndividual]
   );
 
+  // Dev-only: log computed tourneys arrays so we can diagnose empty UI
+  if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
+    try {
+      console.debug('[Seasons] tourneysForYear count', tourneysForYear.length, 'sample', tourneysForYear.slice(0,5));
+      console.debug('[Seasons] matchesIndividual count', matchesIndividual.length, 'sampleTourneys', Array.from(new Set(matchesIndividual.map(m => m.tourney_id))).slice(0,10));
+      console.debug('[Seasons] tourneysForDisplay count', tourneysForDisplay.length, 'sample', tourneysForDisplay.slice(0,5));
+    } catch (e) {}
+  }
+
   return (
     <div
       className="h-full w-full p-4 overflow-auto section"
       style={{ backgroundColor: "rgba(31,41,55,0.95)", backdropFilter: "blur(4px)" }}
     >
-      {/* --- Super Cool Season Selector --- */}
-      <div className="mb-6 relative inline-block">
-        <label className="block mb-2 font-extrabold text-2xl text-yellow-400">Season:</label>
-        <button
-          onClick={() => setOpenDropdown((o) => !o)}
-          className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold text-2xl py-3 px-8 rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 flex items-center justify-between w-60"
-        >
-          {selectedYear || "Select Year"}
-          <svg
-            className={`w-6 h-6 transition-transform duration-300 ${openDropdown ? "rotate-180" : ""}`}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-        {openDropdown && (
-          <ul className="absolute mt-2 w-60 bg-gray-800 text-white rounded-xl shadow-2xl z-50 max-h-72 overflow-auto">
-            {years.map((y) => (
-              <li
-                key={y}
-                className="px-8 py-3 hover:bg-yellow-400 hover:text-black cursor-pointer transition-all duration-200"
-                onClick={() => {
-                  setSelectedYear(y);
-                  setOpenDropdown(false);
-                  updateUrlYear(y); // <--- update the URL when year is selected
-                }}
+      {/* --- Super Cool Season Selector + View All Matches Button (inline label) --- */}
+      <div className="mb-6 flex items-center gap-6">
+        <div className="inline-flex items-center gap-4">
+          <span className="font-extrabold text-2xl text-yellow-400">Season:</span>
+          <div className="relative inline-block">
+            <button
+              onClick={() => setOpenDropdown((o) => !o)}
+              className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold text-2xl py-3 px-8 rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 flex items-center justify-between w-60"
+            >
+              {selectedYear || "Select Year"}
+              <svg
+                className={`w-6 h-6 transition-transform duration-300 ${openDropdown ? "rotate-180" : ""}`}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
               >
-                {y}
-              </li>
-            ))}
-          </ul>
-        )}
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            {openDropdown && (
+              <ul className="absolute mt-2 w-60 bg-gray-800 text-white rounded-xl shadow-2xl z-50 max-h-72 overflow-auto">
+                {years.map((y) => (
+                  <li
+                    key={y}
+                    className="px-8 py-3 hover:bg-yellow-400 hover:text-black cursor-pointer transition-all duration-200"
+                    onClick={() => {
+                      setSelectedYear(y);
+                      setOpenDropdown(false);
+                      updateUrlYear(y); // <--- update the URL when year is selected
+                    }}
+                  >
+                    {y}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+
+        {/* Big button that links to player's matches filtered by the selected year */}
+        <div>
+          <button
+            onClick={() => {
+              if (!selectedYear) return;
+              const href = `${getPlayerHref(playerId)}/matches?year=${selectedYear}`;
+              router.push(href);
+            }}
+            disabled={!selectedYear}
+            className={`${
+              selectedYear ? "bg-blue-600 hover:bg-blue-700 shadow-lg" : "bg-blue-600/50 cursor-not-allowed opacity-60"
+            } text-white font-bold text-2xl py-3 px-8 rounded-full transition-all duration-200`}
+          >
+            View All Matches
+          </button>
+        </div>
       </div>
 
       {loading && <div className="text-gray-400 mb-4">Loading...</div>}
@@ -356,7 +501,7 @@ export default function Seasons({ playerId }: SeasonsProps) {
             </div>
           </div>
 
-          <SummarySeasons years={years} allMatches={allMatches} playerId={playerId} />
+          <SummarySeasons years={years} allMatches={allMatches} playerId={playerId} selectedYear={selectedYear} />
         </>
       )}
     </div>

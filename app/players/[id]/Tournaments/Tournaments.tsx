@@ -177,13 +177,15 @@ export default function Tournaments({ playerId, filters = { tourney: "", level: 
         level: lvl,
         surface: surf,
         tourney_id: m.tourney_id || null,
+        tourney_date: m.tourney_date ?? undefined,
+        // Prefer available slug when present on match records
+        tourney_slug: (m as any).tourney_slug ?? null,
         matches: 0,
         W: 0,
         L: 0,
         bestRound: "Unknown",
         champion: false,
         order: order++,
-        tourney_date: m.tourney_date ?? undefined,
       };
 
       // Use helpers to support both formats
@@ -217,9 +219,9 @@ export default function Tournaments({ playerId, filters = { tourney: "", level: 
 
   const roundOptions = ROUND_ORDER;
 
-  const getTourneyLink = (tourneyId?: string, year?: number) => {
-    if (!tourneyId) return "#";
-    return getTourneyHref({ id: tourneyId, year });
+  const getTourneyLink = (tourneySlug?: string, tourneyId?: string, year?: number) => {
+    if (!tourneySlug && !tourneyId) return "#";
+    return getTourneyHref({ slug: tourneySlug ?? undefined, id: tourneyId ?? undefined, year });
   };
 
   const filteredMatches = useMemo(() => {
@@ -280,8 +282,7 @@ export default function Tournaments({ playerId, filters = { tourney: "", level: 
                 date: r.tourney_date ?? new Date(0),
                 surface: r.surface,
                 level: CODE_TO_LABEL[r.level] || r.level,
-                tourney_id: r.tourney_id,
-                matches: r.matches,
+                tourney_id: r.tourney_id,                tourney_slug: (r as any).tourney_slug ?? null,                matches: r.matches,
                 wins: r.W,
                 losses: r.L,
                 bestRound: r.bestRound,

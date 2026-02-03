@@ -154,7 +154,11 @@ export default function LatestMatches() {
                         {m.tourney_name ? (
                           tourneyId ? (
                             <Link
-                              href={getTourneyHref({ id: tourneyId, year: m.year })}
+                              href={
+                                (m as any).tourney_slug
+                                  ? getTourneyHref({ slug: (m as any).tourney_slug, year: m.year })
+                                  : getTourneyHref({ id: tourneyId, year: m.year })
+                              }
                               className="text-indigo-300 hover:underline"
                             >
                               {m.tourney_name}

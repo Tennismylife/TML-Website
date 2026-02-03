@@ -112,12 +112,30 @@ export async function getCountOverview(idOrSlug: string) {
     },
   };
 
-  return {
+  // Enrich overview with slugs (best-effort)
+  const overview = {
     titles: top10(compute.titles()),
     wins: top10(compute.wins()),
     played: top10(compute.played()),
     entries: top10(compute.entries()),
   };
+
+  try {
+    const ids = Array.from(new Set(Object.values(overview).flatMap((arr: any[]) => arr.map(a => String(a.id)))));
+    if (ids.length > 0) {
+      const { mapIdsToSlugs } = await import('@/lib/player-slugs');
+      const slugMap = await mapIdsToSlugs(ids);
+      for (const sectionArr of Object.values(overview)) {
+        for (const it of sectionArr as any[]) {
+          (it as any).slug = slugMap[String(it.id)] ?? null;
+        }
+      }
+    }
+  } catch (e) {
+    // non-fatal
+  }
+
+  return overview;
 }
 
 export async function getCountSection(idOrSlug: string, section: 'titles' | 'wins' | 'played' | 'entries') {
@@ -214,5 +232,21 @@ export async function getCountSection(idOrSlug: string, section: 'titles' | 'win
     },
   };
 
-  return compute[section]();
+  const result = compute[section]();
+
+  // Enrich with slugs (best-effort)
+  try {
+    const ids = Array.from(new Set((result || []).map((it: any) => String(it.id))));
+    if (ids.length > 0) {
+      const { mapIdsToSlugs } = await import('@/lib/player-slugs');
+      const slugMap = await mapIdsToSlugs(ids);
+      for (const it of result) {
+        (it as any).slug = slugMap[String(it.id)] ?? null;
+      }
+    }
+  } catch (e) {
+    // ignore failures
+  }
+
+  return result;
 }

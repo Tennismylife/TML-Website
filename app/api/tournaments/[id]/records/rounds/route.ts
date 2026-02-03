@@ -113,6 +113,17 @@ export async function GET(
 
       // Modal: full list per round richiesto
       if (fullRequested && requestedRound === round) {
+        // Enrich fullList and list with slugs (best-effort)
+        const idsFull = Array.from(new Set(sorted.map((it: any) => String(it.id))));
+        const { mapIdsToSlugs } = await import('@/lib/player-slugs');
+        const slugMapFull = await mapIdsToSlugs(idsFull);
+        for (const it of sorted) {
+          (it as any).slug = slugMapFull[String(it.id)] ?? null;
+        }
+        for (const it of top) {
+          (it as any).slug = slugMapFull[String(it.id)] ?? null;
+        }
+
         return NextResponse.json({
           roundItems: [
             {
@@ -129,6 +140,18 @@ export async function GET(
         title: round,
         list: top,
       });
+    }
+
+    // Enrich overview roundItems with slugs (best-effort)
+    const allIds = Array.from(new Set([].concat(...roundItems.map(r => r.list.map((it: any) => String(it.id))))));
+    if (allIds.length > 0) {
+      const { mapIdsToSlugs } = await import('@/lib/player-slugs');
+      const slugMap = await mapIdsToSlugs(allIds);
+      for (const r of roundItems) {
+        for (const it of r.list) {
+          (it as any).slug = slugMap[String(it.id)] ?? null;
+        }
+      }
     }
 
     return NextResponse.json({ roundItems });

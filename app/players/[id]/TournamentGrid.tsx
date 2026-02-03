@@ -9,6 +9,7 @@ type TourneyTile = {
   surface: string | null;
   level: string | null;
   tourney_id: string | null;
+  tourney_slug?: string | null;
   matches: number;
   wins: number;
   losses: number;
@@ -19,7 +20,8 @@ type TourneyTile = {
 
 interface TournamentGridProps {
   tourneys: TourneyTile[];
-  getTourneyLink: (tourneyId?: string, year?: number) => string;
+  // Accept either a tourney slug (preferred) OR a tourney id as fallback. Signature: (slug?, id?, year?)
+  getTourneyLink: (tourneySlug?: string, tourneyId?: string, year?: number) => string;
 }
 
 export default function TournamentGrid({ tourneys, getTourneyLink }: TournamentGridProps) {
@@ -40,13 +42,70 @@ export default function TournamentGrid({ tourneys, getTourneyLink }: TournamentG
             : new Date(String(t.date));
         const dateStr = Number.isFinite(dateObj.getTime()) ? dateObj.toLocaleDateString("it-IT") : String(t.date ?? "-");
 
+        // Render as a link when either slug or id is present; prefer slug but fallback to id for clickability
+        if (t.tourney_slug || t.tourney_id) {
+          return (
+            <Link
+              key={t.key}
+              href={getTourneyLink(t.tourney_slug ?? undefined, t.tourney_id ?? undefined, t.year)}
+              className="relative block w-full h-full card p-4 flex flex-col cursor-pointer hover:-translate-y-1 hover:shadow-xl transition-all duration-300 bg-gray-700/90 rounded-lg"
+              style={{ cursor: 'pointer' }}
+            >
+              {/* Titolo e bestRound */}
+              <div className="flex justify-between items-start gap-2">
+                <span className="font-semibold truncate">{t.name}</span>
+
+                <span
+                  className="px-3 py-1 rounded-full text-sm md:text-base font-semibold truncate"
+                  style={{ backgroundColor: roundColor, color: roundTextColor }}
+                >
+                  {t.bestRound}
+                </span>
+              </div>
+
+              {/* Data */}
+              <div className="mt-2 text-sm text-gray-300">{dateStr}</div>
+
+              {/* Statistiche e badge in basso */}
+              <div className="mt-auto flex justify-between items-center text-sm">
+                {/* Wins-Losses */}
+                <div className="flex items-center gap-3">
+                  <span className="font-medium">W - L :</span> <span className="font-semibold"> {t.wins}-{t.losses}</span>
+                </div>
+
+                {/* Categoria e superficie */}
+                <div className="flex gap-1 items-center">
+                  <span
+                    className="px-2 py-0.5 rounded-full text-xs font-semibold truncate"
+                    style={{ backgroundColor: levelColor, color: "#fff" }}
+                  >
+                    {getLevelFullName(t.level)}
+                  </span>
+                  <span
+                    className="px-2 py-0.5 rounded-full text-xs font-semibold truncate"
+                    style={{ backgroundColor: surfaceColor, color: "#000" }}
+                  >
+                    {t.surface || "Unknown"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Badge campione */}
+              {t.champion && (
+                <span className="absolute top-2 right-2 text-yellow-400 font-bold text-lg">🏆</span>
+              )}
+            </Link>
+          );
+        }
+
+        // Neither slug nor id available -> render non-clickable card and warn in console for dev visibility
+        console.warn("Tournament slug and id missing for tourney:", t.key, t.name, t.tourney_id);
         return (
-          <Link
+          <div
             key={t.key}
-            href={getTourneyLink(t.tourney_id ?? undefined, t.year)}
-            className="relative block w-full h-full card p-4 flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-300 bg-gray-700/90 rounded-lg"
+            className="relative block w-full h-full card p-4 flex flex-col bg-gray-700/60 rounded-lg opacity-80 cursor-default"
+            title="Slug torneo non disponibile"
           >
-            {/* Titolo e bestRound */}
             <div className="flex justify-between items-start gap-2">
               <span className="font-semibold truncate">{t.name}</span>
 
@@ -58,17 +117,13 @@ export default function TournamentGrid({ tourneys, getTourneyLink }: TournamentG
               </span>
             </div>
 
-            {/* Data */}
             <div className="mt-2 text-sm text-gray-300">{dateStr}</div>
 
-            {/* Statistiche e badge in basso */}
             <div className="mt-auto flex justify-between items-center text-sm">
-              {/* Wins-Losses */}
               <div className="flex items-center gap-3">
                 <span className="font-medium">W - L :</span> <span className="font-semibold"> {t.wins}-{t.losses}</span>
               </div>
 
-              {/* Categoria e superficie */}
               <div className="flex gap-1 items-center">
                 <span
                   className="px-2 py-0.5 rounded-full text-xs font-semibold truncate"
@@ -85,11 +140,10 @@ export default function TournamentGrid({ tourneys, getTourneyLink }: TournamentG
               </div>
             </div>
 
-            {/* Badge campione */}
             {t.champion && (
               <span className="absolute top-2 right-2 text-yellow-400 font-bold text-lg">🏆</span>
             )}
-          </Link>
+          </div>
         );
       })}
 

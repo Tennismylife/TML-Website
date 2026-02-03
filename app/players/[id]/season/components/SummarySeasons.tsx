@@ -1,12 +1,15 @@
 "use client";
 
 import React, { useMemo } from "react";
+import Link from "next/link";
 import type { Match } from "@/types";
+import { getPlayerHref } from "@/lib/utils";
 
 interface SummarySeasonsProps {
   years: number[];
   allMatches: Match[];
   playerId: string;
+  selectedYear?: number | null;
 }
 
 const roundWeight: Record<string, number> = {
@@ -49,7 +52,7 @@ function formatPct(num: number) {
   return num.toFixed(2);
 }
 
-export default function SummarySeasons({ years, allMatches, playerId }: SummarySeasonsProps) {
+export default function SummarySeasons({ years, allMatches, playerId, selectedYear = null }: SummarySeasonsProps) {
   const yearlySummary = useMemo(() => {
     const validMatches = allMatches.filter(m => m.status !== false);
 
@@ -62,6 +65,10 @@ export default function SummarySeasons({ years, allMatches, playerId }: SummaryS
       let ms = 0;
       let my_svpt = 0, my_ace = 0, my_df = 0, my_1stIn = 0, my_1stWon = 0, my_2ndWon = 0, my_SvGms = 0, my_bpSaved = 0, my_bpFaced = 0;
       let opp_svpt = 0, opp_1stWon = 0, opp_2ndWon = 0, opp_SvGms = 0, opp_bpSaved = 0, opp_bpFaced = 0;
+
+      let bestRound = "Unknown";
+      let bestCount = 0;
+      const bestMap = new Map<string, number>();
 
       const groups = new Map<string, Match[]>();
 
@@ -112,9 +119,6 @@ export default function SummarySeasons({ years, allMatches, playerId }: SummaryS
         if (arr) arr.push(m); else groups.set(gkey, [m]);
       }
 
-      let bestRound = "Unknown";
-      let bestCount = 0;
-      const bestMap = new Map<string, number>();
       groups.forEach((arr) => {
         const champion = arr.some(mm => mm.round === "F" && String(mm.winner_id) === String(playerId));
         let best = "Unknown";
@@ -126,10 +130,13 @@ export default function SummarySeasons({ years, allMatches, playerId }: SummaryS
         const br = champion ? "W" : best;
         bestMap.set(br, (bestMap.get(br) ?? 0) + 1);
       });
+
+      let bestLabel = "-";
+      let maxScore = -1;
       bestMap.forEach((cnt, r) => {
-        if (getRoundScore(r) > getRoundScore(bestRound)) { bestRound = r; bestCount = cnt; }
+        const sc = getRoundScore(r);
+        if (sc > maxScore) { maxScore = sc; bestLabel = `${r} (${cnt}x)`; }
       });
-      const bestLabel = bestCount > 0 ? `${bestRound} (${bestCount}x)` : "-";
 
       const winPct = safePct(W, W + L);
       const setPct = safePct(setW, setW + setL);
@@ -169,14 +176,14 @@ export default function SummarySeasons({ years, allMatches, playerId }: SummaryS
       };
     };
 
-    const rows = years.map(year => {
+    // If a specific season is selected, compute stats only for that year; otherwise compute for all years
+    const targetYears = selectedYear != null ? years.filter(y => y === selectedYear) : years;
+    const rows = targetYears.map(year => {
       const yearMatches = validMatches.filter(m => m.year === year);
       return { year, ...computeStats(yearMatches) };
     });
 
-    const career = computeStats(validMatches);
-
-    return { rows, career };
+    return { rows };
   }, [years, allMatches, playerId]);
 
   const renderTd = (val: string | number, align: "left" | "center" = "center") => (
@@ -185,36 +192,37 @@ export default function SummarySeasons({ years, allMatches, playerId }: SummaryS
 
   return (
 
-<div className="mt-8 overflow-x-auto rounded bg-gray-900 shadow">
-  <h3 className="text-base font-semibold mb-2 text-gray-200 px-2 pt-2">Summary Seasons</h3>
-  <table className="min-w-full border-collapse text-gray-200 text-sm">
-    <thead>
-      <tr className="bg-black">
-        <th className="border border-white/30 px-3 py-1 text-center text-sm text-gray-200">Year</th>
-        <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">M</th>
-        <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">W</th>
-        <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">L</th>
-        <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Win%</th>
-        <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Set W-L</th>
-        <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Set%</th>
-        <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Game W-L</th>
-        <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Game%</th>
-        <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">TB W-L</th>
-        <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">TB%</th>
-        <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">MS</th>
-        <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Hld%</th>
-        <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Brk%</th>
-        <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">A%</th>
-        <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">DF%</th>
-        <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">1stIn</th>
-        <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">1st%</th>
-        <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">2nd%</th>
-        <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">SPW</th>
-        <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">RPW</th>
-        <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">TPW</th>
-        <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">DR</th>
-        <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Best</th>
-      </tr>
+    <div className="mt-8 overflow-x-auto rounded bg-gray-900 shadow">
+      <h3 className="text-base font-semibold mb-2 text-gray-200 px-2 pt-2">Summary Season</h3>
+      <table className="min-w-full border-collapse text-gray-200 text-sm">
+        <thead>
+          <tr className="bg-black">
+            <th className="border border-white/30 px-3 py-1 text-center text-sm text-gray-200">Year</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">M</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">W</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">L</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Win%</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Set W-L</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Set%</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Game W-L</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Game%</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">TB W-L</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">TB%</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">MS</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Hld%</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Brk%</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">A%</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">DF%</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">1stIn</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">1st%</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">2nd%</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">SPW</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">RPW</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">TPW</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">DR</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Best</th>
+            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Matches</th>
+          </tr>
         </thead>
         <tbody>
           {yearlySummary.rows.map(r => (
@@ -223,54 +231,32 @@ export default function SummarySeasons({ years, allMatches, playerId }: SummaryS
               {renderTd(r.M)}
               {renderTd(r.W)}
               {renderTd(r.L)}
-              {renderTd(formatPct(r.winPct))}
+              {renderTd(`${formatPct(r.winPct)}%`)}
               {renderTd(`${r.setW}-${r.setL}`)}
-              {renderTd(formatPct(r.setPct))}
+              {renderTd(`${formatPct(r.setPct)}%`)}
               {renderTd(`${r.gameW}-${r.gameL}`)}
-              {renderTd(formatPct(r.gamePct))}
+              {renderTd(`${formatPct(r.gamePct)}%`)}
               {renderTd(`${r.tbW}-${r.tbL}`)}
-              {renderTd(formatPct(r.tbPct))}
+              {renderTd(`${formatPct(r.tbPct)}%`)}
               {renderTd(r.ms)}
-              {renderTd(formatPct(r.hldPct))}
-              {renderTd(formatPct(r.brkPct))}
-              {renderTd(formatPct(r.aPct))}
-              {renderTd(formatPct(r.dfPct))}
-              {renderTd(formatPct(r.firstInPct))}
-              {renderTd(formatPct(r.firstWonPct))}
-              {renderTd(formatPct(r.secondWonPct))}
-              {renderTd(formatPct(r.spwPct))}
-              {renderTd(formatPct(r.rpwPct))}
-              {renderTd(formatPct(r.tpwPct))}
+              {renderTd(`${formatPct(r.hldPct)}%`)}
+              {renderTd(`${formatPct(r.brkPct)}%`)}
+              {renderTd(`${formatPct(r.aPct)}%`)}
+              {renderTd(`${formatPct(r.dfPct)}%`)}
+              {renderTd(`${formatPct(r.firstInPct)}%`)}
+              {renderTd(`${formatPct(r.firstWonPct)}%`)}
+              {renderTd(`${formatPct(r.secondWonPct)}%`)}
+              {renderTd(`${formatPct(r.spwPct)}%`)}
+              {renderTd(`${formatPct(r.rpwPct)}%`)}
+              {renderTd(`${formatPct(r.tpwPct)}%`)}
               {renderTd(r.dr.toFixed(2))}
               {renderTd(r.bestLabel)}
-            </tr>
+              <td className="px-2 py-1 text-center">
+                <Link href={`${getPlayerHref(playerId)}/matches?year=${r.year}`} className="text-blue-400 hover:underline">View All Matches</Link>
+              </td>
+</tr>
           ))}
-          <tr className="bg-gray-700 font-bold text-sm">
-            {renderTd("Career")}
-            {renderTd(yearlySummary.career.M)}
-            {renderTd(yearlySummary.career.W)}
-            {renderTd(yearlySummary.career.L)}
-            {renderTd(formatPct(yearlySummary.career.winPct))}
-            {renderTd(`${yearlySummary.career.setW}-${yearlySummary.career.setL}`)}
-            {renderTd(formatPct(yearlySummary.career.setPct))}
-            {renderTd(`${yearlySummary.career.gameW}-${yearlySummary.career.gameL}`)}
-            {renderTd(formatPct(yearlySummary.career.gamePct))}
-            {renderTd(`${yearlySummary.career.tbW}-${yearlySummary.career.tbL}`)}
-            {renderTd(formatPct(yearlySummary.career.tbPct))}
-            {renderTd(yearlySummary.career.ms)}
-            {renderTd(formatPct(yearlySummary.career.hldPct))}
-            {renderTd(formatPct(yearlySummary.career.brkPct))}
-            {renderTd(formatPct(yearlySummary.career.aPct))}
-            {renderTd(formatPct(yearlySummary.career.dfPct))}
-            {renderTd(formatPct(yearlySummary.career.firstInPct))}
-            {renderTd(formatPct(yearlySummary.career.firstWonPct))}
-            {renderTd(formatPct(yearlySummary.career.secondWonPct))}
-            {renderTd(formatPct(yearlySummary.career.spwPct))}
-            {renderTd(formatPct(yearlySummary.career.rpwPct))}
-            {renderTd(formatPct(yearlySummary.career.tpwPct))}
-            {renderTd(yearlySummary.career.dr.toFixed(2))}
-            {renderTd("-")}
-          </tr>
+
         </tbody>
       </table>
     </div>

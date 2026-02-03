@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Flag from '@/components/Flag';
 import Modal from '@/components/Modal';
 import Pagination from '@/components/Pagination';
-import { getPlayerHref } from '@/lib/utils';
+import { playerMatchesUrl } from '../../../records/nav';
 
 export default function StreakSection({ id }: { id: string }) {
   const [streaks, setStreaks] = useState<any[]>([]);
@@ -112,7 +112,7 @@ export default function StreakSection({ id }: { id: string }) {
                   <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                     <div className="flex items-center gap-2">
                       <Flag ioc={s.ioc ?? undefined} className="w-4 h-3 inline-block" />
-                      <Link href={getPlayerHref(s.slug ?? String(s.playerId))} className="text-indigo-300 hover:underline">
+                      <Link href={playerMatchesUrl(s.slug ?? String(s.playerId))} className="text-indigo-300 hover:underline">
                         {s.name || `Player ${s.playerId}`}
                       </Link>
                     </div>

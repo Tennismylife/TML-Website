@@ -299,7 +299,7 @@ export default function H2HMatches({
                   <td className="px-3 py-2 text-center">{m.tourney_date ? formatDateISO(m.tourney_date) : "-"}</td>
                   <td className="px-3 py-2">
                     <Link
-                      href={getTourneyHref({ id: m.tourney_id, name: m.tourney_name, year: m.year })}
+                      href={getTourneyHref({ slug: (m as any).tourney_slug ?? undefined, id: m.tourney_id, name: m.tourney_name, year: m.year })}
                       className="text-blue-400 hover:underline"
                     >
                       {m.tourney_name}

@@ -90,7 +90,7 @@ export default function TournamentSearch({ onDebouncedSearch }: { onDebouncedSea
               if (activeSuggestionIndex != null && suggestionResults[activeSuggestionIndex]) {
                 e.preventDefault();
                 const t = suggestionResults[activeSuggestionIndex];
-                router.push(getTourneyHref({ id: t.id }));
+                router.push(getTourneyHref({ slug: (t as any).slug ?? undefined, id: t.id }));
               }
             } else if (e.key === 'Escape') {
               setActiveSuggestionIndex(null);
@@ -142,7 +142,7 @@ export default function TournamentSearch({ onDebouncedSearch }: { onDebouncedSea
                         onMouseEnter={() => setActiveSuggestionIndex(idx)}
                       >
                         <a
-                          href={getTourneyHref({ id: t.id })}
+                          href={getTourneyHref({ slug: (t as any).slug ?? undefined, id: t.id })}
                           className="block px-4 py-2 hover:bg-gray-700"
                           onClick={(e) => { e.preventDefault(); router.push(getTourneyHref({ id: t.id })); }}
                         >

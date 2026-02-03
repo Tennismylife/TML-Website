@@ -153,9 +153,19 @@ export async function GET(
         );
       }
 
+      const fullList = compute[section]();
+
+      // Enrich with slugs (best-effort)
+      const idsFull: string[] = Array.from(new Set(fullList.map((it: any) => String(it.id)))) as string[];
+      const { mapIdsToSlugs } = await import('@/lib/player-slugs');
+      const slugMapFull = await mapIdsToSlugs(idsFull);
+      for (const it of fullList) {
+        (it as any).slug = slugMapFull[String(it.id)] ?? null;
+      }
+
       return NextResponse.json({
         section,
-        fullList: compute[section](),
+        fullList,
       });
     }
 
@@ -166,6 +176,16 @@ export async function GET(
       played: top10(compute.played()),
       entries: top10(compute.entries()),
     };
+
+    // Enrich overview with slugs (best-effort)
+    const ids = Array.from(new Set(Object.values(overview).flatMap((arr: any[]) => arr.map(a => String(a.id)))));
+    const { mapIdsToSlugs } = await import('@/lib/player-slugs');
+    const slugMap = await mapIdsToSlugs(ids);
+    for (const sectionArr of Object.values(overview)) {
+      for (const it of sectionArr as any[]) {
+        (it as any).slug = slugMap[String(it.id)] ?? null;
+      }
+    }
 
     return NextResponse.json(overview);
   } catch (err) {

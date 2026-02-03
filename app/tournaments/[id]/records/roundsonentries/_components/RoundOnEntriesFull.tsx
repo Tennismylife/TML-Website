@@ -10,7 +10,7 @@ type Props = {
 };
 
 import { metadataBase } from '@/lib/site';
-import { getPlayerHref } from '@/lib/utils';
+import { playerMatchesUrl } from '../../../../../records/nav';
 
 async function fetchFull(id: string) {
   const url = new URL(`/api/tournaments/${id}/records/roundsonentries?full=true`, metadataBase).toString();
@@ -61,7 +61,7 @@ export default async function RoundOnEntriesFull({ params }: Props) {
                     <td className="py-2 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <Flag ioc={r.ioc} className="w-4 h-3" />
-                        <Link href={getPlayerHref(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link>
+                        <Link href={playerMatchesUrl(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link>
                       </div>
                     </td>
                     <td className="py-2 text-center">{r.reaches}</td>

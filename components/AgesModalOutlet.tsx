@@ -57,11 +57,11 @@ export default function AgesModalOutlet({ id }: { id: string }) {
       const shortUrl = `/api/tournaments/${id}/records/ages/${sec}`;
       const fullUrl = `${shortUrl}?full=true`;
 
-      try { console.debug('[AgesModalOutlet] openWithPayload normalized (short fetch)', { rawSec, sec, shortUrl, fullUrl }); } catch (e) {}
+      // openWithPayload: short fetch initiated
 
       if (sec === 'titles') {
         // For titles, fetch the full data immediately (keeps existing behavior and tests expectations)
-        try { console.debug('[AgesModalOutlet] fetching titles full list directly', fullUrl); } catch (e) {}
+        // fetching full titles list
         fetch(fullUrl)
           .then((res) => { if (!res.ok) throw new Error(`${res.status} ${res.statusText}`); return res.json(); })
           .then((data) => {
@@ -138,7 +138,6 @@ export default function AgesModalOutlet({ id }: { id: string }) {
         const sec = String(last.section).replace(/^ages-/, '');
         const titleParam = last.title ?? null;
         const whichParam = last.which ?? null;
-        try { console.debug('[AgesModalOutlet] consuming __lastOpenModalPayload', last); } catch(e) {}
         openWithPayload({ section: last.section, which: whichParam, title: titleParam });
         try { delete (window as any).__lastOpenModalPayload; } catch(e) {}
       }

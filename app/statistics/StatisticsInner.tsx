@@ -8,6 +8,7 @@ import Filters from "./Filters";
 import Flag from '@/components/Flag';
 import ResultsSkeleton from '@/components/ResultsSkeleton';
 import { getPlayerHref } from '@/lib/utils';
+import { playerMatchesUrl } from '../records/nav';
 
 const STAT_LABELS: Record<string, string> = {
   aces: "Aces",
@@ -291,16 +292,20 @@ export default function StatisticsInner({ initialData = [], initialStat: propIni
   const end = start + perPage;
   const playersToShow = filteredPlayers.slice(start, end);
 
-  // Format stat values
-  const formatStat = (statKey: string, value: number) => {
+  // Format stat values (robust to null/NaN)
+  const formatStat = (statKey: string, value: number | null | undefined) => {
+    // Handle missing or invalid numbers
+    if (value === null || value === undefined || !Number.isFinite(Number(value))) return "-";
+
+    const v = Number(value);
     const percentStats = [
       "1stserve","1stservewon","2ndservewon","servicewon","bpsaved",
       "1streturnwon","2ndreturnwon","returnwon","bpwon",
       "totalpointswonpct","gameswonpct","tiebreakswonpct","setswonpct"
     ];
-    if (percentStats.includes(statKey)) return `${value.toFixed(1)}%`;
-    if (statKey === "avgminutes") return value.toFixed(1);
-    return value;
+    if (percentStats.includes(statKey)) return `${v.toFixed(1)}%`;
+    if (statKey === "avgminutes") return v.toFixed(1);
+    return v;
   };
 
   // Generate table - Mobile Optimized
@@ -328,7 +333,7 @@ export default function StatisticsInner({ initialData = [], initialStat: propIni
                   <div className="flex items-center gap-2">
                     {p.ioc ? <Flag ioc={p.ioc} className="w-4 h-3" /> : <span className="text-base sm:text-lg">🏳️</span>}
                     <Link
-                      href={getPlayerHref((p as any).slug ?? String(p.id))}
+                      href={playerMatchesUrl((p as any).slug ?? String(p.id))}
                       className="text-indigo-300 hover:text-indigo-200 hover:underline text-base sm:text-lg transition-colors"
                     >
                       {p.name}

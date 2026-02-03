@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
-import { getPlayerHref } from '@/lib/utils';
+import { playerMatchesUrl } from '../../../records/nav';
 
 import { useRouter } from 'next/navigation';
 
@@ -204,7 +204,7 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
             <td className="py-1 min-w-0">
               <div className="flex items-center gap-2 truncate">
                 <Flag ioc={p.ioc} className="w-4 h-3" />
-                <Link href={getPlayerHref((p as any).slug ?? String(p.id))} className="text-blue-400 hover:underline truncate">{p.name}</Link>
+                <Link href={playerMatchesUrl((p as any).slug ?? String(p.id))} className="text-blue-400 hover:underline truncate">{p.name}</Link>
               </div>
             </td>
             <td className="py-1 text-white text-right whitespace-nowrap">{formatAge(p.age)}</td>

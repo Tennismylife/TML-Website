@@ -6,7 +6,7 @@ import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
-import { getPlayerHref } from '@/lib/utils';
+import { playerMatchesUrl } from '../../../records/nav';
 
 function fmtDate(d: Date | string | null | undefined) {
   if (!d) return '';
@@ -86,7 +86,7 @@ export default function TimespanSection({ id }: { id: string }) {
             <td className="py-1 min-w-0" style={{ maxWidth: '240px', paddingLeft: 0 }}>
               <div className="flex items-center gap-2 truncate min-w-0">
                 <Flag ioc={item.ioc} className="w-4 h-3 shrink-0" />
-                <Link href={getPlayerHref((item as any).slug ?? String(item.id))} className="text-blue-400 hover:underline truncate block min-w-0 overflow-hidden">
+                <Link href={playerMatchesUrl((item as any).slug ?? String(item.id))} className="text-blue-400 hover:underline truncate block min-w-0 overflow-hidden">
                   {item.name}
                 </Link>
               </div>

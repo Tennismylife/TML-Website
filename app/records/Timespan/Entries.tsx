@@ -52,7 +52,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
         selectedLevels.forEach(l => query.append('level', l));
         query.set('perPage', showModal ? '1000' : '100');
         const url = `/api/records/timespan/entries?${query.toString()}`;
-        console.debug('[Timespan Entries] fetching', url, { enabled, showModal, fetchRequestId });
+        // fetching entries: url, fetchRequestId omitted from logs
         const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch entries');
         const data = await res.json();

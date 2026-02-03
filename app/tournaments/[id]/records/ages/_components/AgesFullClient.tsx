@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Flag from '@/components/Flag';
-import { getPlayerHref } from '@/lib/utils';
+import { playerMatchesUrl } from '../../../../../records/nav';
 
 const TableVirtuoso = dynamic(() => import('react-virtuoso').then(mod => mod.TableVirtuoso), { ssr: false });
 
@@ -41,7 +41,7 @@ function StaticTable({ rows, heading, showYear = true }: any) {
                       <td className="py-2 text-center">
                         <div className="flex items-center justify-center gap-2">
                           <Flag ioc={r.ioc} className="w-4 h-3" />
-                          <a href={getPlayerHref(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</a>
+                          <a href={playerMatchesUrl(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</a>
                         </div>
                       </td>
                       <td className="py-2 text-center text-lg md:text-xl text-white">{formatAge(r.age)}</td>
@@ -88,7 +88,7 @@ function InnerContent({ rows, loading, error, heading, mode = 'interactive', sho
               <td className="py-2 text-center">
                 <div className="flex items-center justify-center gap-2">
                   <Flag ioc={item.ioc} className="w-4 h-3" />
-                  <a href={getPlayerHref(item.slug ?? String(item.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{item.name}</a>
+                  <a href={playerMatchesUrl(item.slug ?? String(item.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{item.name}</a>
                 </div>
               </td>
               <td className="py-2 text-center text-lg md:text-xl">{formatAge(item.age)}</td>

@@ -8,6 +8,7 @@ type TourneyTile = {
   surface: string | null;
   level: string | null;
   tourney_id: string | null;
+  tourney_slug?: string | null;
   matches: number;
   wins: number;
   losses: number;
@@ -93,8 +94,8 @@ export function useYearStats(allMatches: Match[], selectedYear: number | "All", 
     if (selectedYear === "All") return [];
     const groups = new Map<string, Match[]>();
     for (const m of yearMatches) {
-      const d = toDate(m.tourney_date ?? '');
-      const key = `${m.tourney_name ?? "Unknown"}__${d ? d.toISOString().slice(0, 10) : "nodate"}`;
+      // Use the explicit `year` field to distinguish tournament editions instead of deriving it from `tourney_date`.
+      const key = `${m.tourney_name ?? "Unknown"}__${m.year ?? "noyear"}`;
       const arr = groups.get(key);
       if (arr) arr.push(m);
       else groups.set(key, [m]);
@@ -116,13 +117,14 @@ export function useYearStats(allMatches: Match[], selectedYear: number | "All", 
 
       champion = arr.some((m) => m.round === "F" && String(m.winner_id) === String(playerId));
 
-      tiles.push({
+          tiles.push({
         key,
         name: rep.tourney_name ?? "Unknown",
         date: d,
         surface: rep.surface ?? null,
         level: rep.tourney_level ?? null,
         tourney_id: rep.tourney_id ?? null,
+        tourney_slug: (rep as any).tourney_slug ?? null,
         matches: arr.length,
         wins,
         losses,

@@ -63,12 +63,17 @@ a:hover {
   padding: 1.5rem;
   box-shadow: 0 4px 6px rgba(0,0,0,0.3);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  /* Ensure pointer cursor for clickable card anchors */
+  cursor: pointer;
 }
 
 .card:hover {
   transform: translateY(-0.25rem);
   box-shadow: 0 10px 15px rgba(0,0,0,0.4);
 }
+
+/* Explicitly enforce default cursor for non-clickable elements that opt-in */
+.cursor-default { cursor: default !important; }
 
 /* ----------------------
    Contenitore schede

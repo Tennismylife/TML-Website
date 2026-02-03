@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
 import { prisma } from '@/lib/prisma';
-import { getPlayerHref } from '@/lib/utils';
+import { playerMatchesUrl } from '../../../../../records/nav';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
 import { getRoundFullName } from '@/lib/utils';
 import { metadataBase } from '@/lib/site';
@@ -71,7 +71,7 @@ export default async function RoundFull({ id, round }: { id: string; round: stri
                 {list.map((item: any) => (
                   <tr key={item.id} className="border-b border-gray-700">
                     <td className="py-2 text-center">
-                        <div className="flex items-center justify-center gap-2"><Flag ioc={item.ioc} className="w-4 h-3" /><Link href={getPlayerHref(item.slug ?? String(item.id))} className="text-blue-400 hover:underline text-lg md:text-xl">
+                        <div className="flex items-center justify-center gap-2"><Flag ioc={item.ioc} className="w-4 h-3" /><Link href={playerMatchesUrl(item.slug ?? String(item.id))} className="text-blue-400 hover:underline text-lg md:text-xl">
                           {item.name}
                         </Link>
                       </div>

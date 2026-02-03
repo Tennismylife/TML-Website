@@ -50,7 +50,6 @@ export default function CountModalOutlet({ id }: { id: string }) {
     const allowedSections = ['wins','played','entries','titles'];
 
     const openWithPayload = (detail: any) => {
-      console.debug('[CountModalOutlet] openWithPayload', detail);
       const sec = detail?.section;
       // only accept whitelisted count sections to avoid collisions with other outlets
       if (!sec || (typeof sec === 'string' && !allowedSections.includes(String(sec)))) return;
@@ -66,8 +65,7 @@ export default function CountModalOutlet({ id }: { id: string }) {
         return;
       }
 
-      const url = `/api/tournaments/${id}/records/count?section=${encodeURIComponent(sec)}&full=true`;
-      console.debug('[CountModalOutlet] fetching', url);
+      const url = `/api/tournaments/${id}/records/count?section=${encodeURIComponent(sec)}&full=true`; // fetching count list
       fetch(url)
         .then(res => {
           if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
@@ -84,7 +82,6 @@ export default function CountModalOutlet({ id }: { id: string }) {
     // If an inner segment (e.g., 'wins') is present and allowed, use it; otherwise default to 'wins'.
     if (isModal && maybeParent === 'count') {
       const chosenSection = (maybeSection && allowedSections.includes(String(maybeSection))) ? String(maybeSection) : 'wins';
-      console.debug('[CountModalOutlet] opening via history state', chosenSection);
       openWithPayload({ section: chosenSection, list: null });
     } else {
       setShow(false);
@@ -96,7 +93,6 @@ export default function CountModalOutlet({ id }: { id: string }) {
 
     const handleOpenModal = (e: any) => {
       const detail = e?.detail;
-      console.debug('[CountModalOutlet] handleOpenModal', detail);
       if (!detail || !detail.section) return;
       openWithPayload(detail);
     };
@@ -104,7 +100,6 @@ export default function CountModalOutlet({ id }: { id: string }) {
     window.addEventListener('open-modal', handleOpenModal as EventListener);
 
     const handleCloseModal = () => {
-      try { console.debug('[CountModalOutlet] handleCloseModal'); } catch (e) {}
       setShow(false); setList(null); setSection(null); setOpenError(null);
       try { const { showServerModals } = require('./hideServerModals'); showServerModals(); } catch (e) {}
       try { delete (window as any).__lastOpenModalPayload; } catch (e) {}
@@ -116,7 +111,6 @@ export default function CountModalOutlet({ id }: { id: string }) {
     try {
       const last = (window as any).__lastOpenModalPayload;
       if (last && last.section && ['wins','played','entries','titles'].includes(String(last.section))) {
-        try { console.debug('[CountModalOutlet] consuming early payload', last); } catch (e) {}
         openWithPayload(last);
         try { delete (window as any).__lastOpenModalPayload; } catch (e) {}
       }

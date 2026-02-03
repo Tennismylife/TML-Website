@@ -45,7 +45,6 @@ export default function TournamentHeader({ id }: TournamentHeaderProps) {
       .then(res => res.json())
       .then((data) => {
         setTournament(data);
-        console.debug('TournamentHeader loaded', data);
         setLoading(false);
       })
       .catch(err => {
