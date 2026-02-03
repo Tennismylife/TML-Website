@@ -81,7 +81,7 @@ export async function getSitemapEntries(opts?: { excludePlayers?: boolean; exclu
         for (const w of wins) {
           if (!w.winner_id) continue;
           popularityMap[String(w.winner_id)] = popularityMap[String(w.winner_id)] || { count: 0 };
-          popularityMap[String(w.winner_id)].count += w._count?._all || 0;
+          popularityMap[String(w.winner_id)].count += (typeof w._count === 'object' ? (w._count._all || 0) : 0);
           if (w._max?.tourney_date) popularityMap[String(w.winner_id)].lastmod = (new Date(w._max.tourney_date)).toISOString().split('T')[0];
         }
         // losses
@@ -89,7 +89,7 @@ export async function getSitemapEntries(opts?: { excludePlayers?: boolean; exclu
         for (const l of losses) {
           if (!l.loser_id) continue;
           popularityMap[String(l.loser_id)] = popularityMap[String(l.loser_id)] || { count: 0 };
-          popularityMap[String(l.loser_id)].count += l._count?._all || 0;
+          popularityMap[String(l.loser_id)].count += (typeof l._count === 'object' ? (l._count._all || 0) : 0);
           const ldate = l._max?.tourney_date ? (new Date(l._max.tourney_date)).toISOString().split('T')[0] : undefined;
           if (ldate) {
             const cur = popularityMap[String(l.loser_id)].lastmod;
@@ -138,7 +138,8 @@ export async function getSitemapEntries(opts?: { excludePlayers?: boolean; exclu
             where: { year: year, OR: [{ winner_id: p.id }, { loser_id: p.id }] } as any,
           } as any);
           const lastmod = agg._max?.tourney_date ? new Date(agg._max.tourney_date).toISOString().split('T')[0] : undefined;
-          entries.push({ path: `/players/${slug}/season/${year}`, popularity: agg._count?._all || undefined, lastmod });
+          const seasonPopularity = (typeof agg._count === 'object') ? agg._count._all : undefined;
+          entries.push({ path: `/players/${slug}/season/${year}`, popularity: seasonPopularity, lastmod });
         }
       } catch (e) {
         // ignore per-player grouping errors
@@ -170,7 +171,8 @@ export async function getSitemapEntries(opts?: { excludePlayers?: boolean; exclu
         where: { tourney_id: sid, year: e.year },
       });
       const lastmod = agg._max?.tourney_date ? new Date(agg._max.tourney_date).toISOString().split('T')[0] : undefined;
-      entries.push({ path: `/tournaments/${tournamentMap[sid]}/${e.year}`, popularity: agg._count?._all || 0, lastmod });
+      const editionPop = (typeof agg._count === 'object') ? (agg._count._all || 0) : 0;
+      entries.push({ path: `/tournaments/${tournamentMap[sid]}/${e.year}`, popularity: editionPop, lastmod });
     }
 
     // --- COMBINE tournament-specific record pages ---
