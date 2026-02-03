@@ -122,6 +122,27 @@ export async function getSitemapEntries(opts?: { excludePlayers?: boolean; exclu
 
       const pop = popularityMap[String(p.id)];
       entries.push({ path: `/players/${slug}`, popularity: pop?.count, lastmod: pop?.lastmod });
+
+      // --- PLAYER SEASONS: add /players/:slug/season/:year pages for each year the player played
+      try {
+        const seasons = await prisma.match.groupBy({
+          by: ['year'],
+          where: { OR: [{ winner_id: p.id }, { loser_id: p.id }], year: { not: null } } as any,
+        } as any);
+        for (const s of seasons) {
+          const year = s.year as number | undefined;
+          if (!year) continue;
+          const agg = await prisma.match.aggregate({
+            _count: { _all: true },
+            _max: { tourney_date: true },
+            where: { year: year, OR: [{ winner_id: p.id }, { loser_id: p.id }] } as any,
+          } as any);
+          const lastmod = agg._max?.tourney_date ? new Date(agg._max.tourney_date).toISOString().split('T')[0] : undefined;
+          entries.push({ path: `/players/${slug}/season/${year}`, popularity: agg._count?._all || undefined, lastmod });
+        }
+      } catch (e) {
+        // ignore per-player grouping errors
+      }
     }
   }
 
