@@ -110,7 +110,7 @@ export default async function No1MaxPointsRanking({ searchParams }: { searchPara
                 { "@type": "PropertyValue", "name": "Player", "value": r.name },
                 { "@type": "PropertyValue", "name": "Points", "value": r.points },
                 { "@type": "PropertyValue", "name": "Date", "value": r.date },
-                ...(String(r.name).toLowerCase().includes('alcaraz') ? [{ "@type": "PropertyValue", "name": "Note", "value": "Post-Australian Open 2026 - Career Grand Slam completed" }] : [])
+                ...(String(r.name).toLowerCase().includes('alcaraz') ? [{ "@type": "PropertyValue", "name": "Note", "value": "Post-Australian Open 2026 - Career Grand Slam completed; also the youngest player in history to complete the Career Grand Slam" }] : [])
               ]
             }
           }))

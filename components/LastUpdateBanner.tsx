@@ -9,8 +9,8 @@ export default function LastUpdateBanner() {
     highlight: "reaches historic No. 3",
     points: "13,650",
     event: "after the 2026 Australian Open",
-    result: "defeated Novak Djokovic 2-6 6-2 6-3 7-5 in the final",
-  };
+    result: "defeated Novak Djokovic 2-6 6-2 6-3 7-5 in the final — also becoming the youngest player in history to complete the Career Grand Slam",
+  }; 
 
   return (
     <div className="mb-6 rounded-xl border border-gray-700/60 bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 p-4 shadow-md md:p-5">
