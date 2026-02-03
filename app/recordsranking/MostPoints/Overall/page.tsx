@@ -2,6 +2,7 @@ import React from 'react';
 import type { Metadata } from 'next';
 import { prisma } from "@/lib/prisma";
 import Flag from '@/components/Flag';
+import LastUpdateBanner from '@/components/LastUpdateBanner';
 
 export const metadata: Metadata = { title: 'Most ATP Points | ATP Ranking Records' };
 
@@ -53,11 +54,16 @@ export default async function No1MaxPointsRanking({ searchParams }: { searchPara
         </thead>
         <tbody>
           {list.map((r, idx) => (
-            <tr key={`${r.name}-${r.date}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
+            <tr
+              key={`${r.name}-${r.date}-${idx}`}
+              className={`${startIndex + idx + 1 === 3 && String(r.name).toLowerCase().includes('alcaraz') ? 'bg-yellow-900/30 border-l-4 border-yellow-400' : ''} hover:bg-gray-800 border-b border-white/10`}
+            >
               <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{startIndex + idx + 1}</td>
-              <td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{r.country && <Flag ioc={r.country} className="w-4 h-3" />}<span>{r.name}</span></div></td>
-              <td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">{r.points.toLocaleString()}</td>
-              <td className="border border-white/10 px-4 py-2 text-gray-300">{r.date}</td>
+              <td className={`border border-white/10 px-4 py-2 text-lg ${startIndex + idx + 1 === 3 && String(r.name).toLowerCase().includes('alcaraz') ? 'text-yellow-300 font-bold' : 'text-gray-200'}`}>
+                <div className="flex items-center gap-2">{r.country && <Flag ioc={r.country} className="w-4 h-3" />}<span>{r.name}</span></div>
+              </td>
+              <td className={`border border-white/10 px-4 py-2 text-center text-lg ${startIndex + idx + 1 === 3 && String(r.name).toLowerCase().includes('alcaraz') ? 'text-yellow-200 font-semibold' : 'text-indigo-300'}`}>{r.points.toLocaleString()}</td>
+              <td className={`border border-white/10 px-4 py-2 ${startIndex + idx + 1 === 3 && String(r.name).toLowerCase().includes('alcaraz') ? 'text-yellow-200' : 'text-gray-300'}`}>{r.date}</td>
             </tr>
           ))}
         </tbody>
@@ -68,9 +74,48 @@ export default async function No1MaxPointsRanking({ searchParams }: { searchPara
   return (
     <section className="mb-8">
 
-      <div className="mb-4 flex justify-end">
+      <LastUpdateBanner />
 
-      </div>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Most ATP Points All-Time | ATP Ranking Records",
+        "headline": "Highest ATP Ranking Points All-Time – Alcaraz Hits 13,650 in 2026",
+        "description": "Highest career-high ATP ranking points in men's singles tennis history. Updated February 3, 2026 after Australian Open 2026.",
+        "url": "https://stats.tennismylife.org/recordsranking/mostpoints/overall",
+        "dateModified": "2026-02-03",
+        "author": {
+          "@type": "Organization",
+          "name": "TennisMyLife Stats",
+          "url": "https://stats.tennismylife.org"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "TennisMyLife",
+          "logo": { "@type": "ImageObject", "url": "https://stats.tennismylife.org/logo.webp" }
+        },
+        "mainEntity": {
+          "@type": "ItemList",
+          "itemListOrder": "https://schema.org/ItemListOrderDescending",
+          "numberOfItems": 10,
+          "name": "All-Time Highest ATP Singles Ranking Points",
+          "description": "Record of highest ATP ranking points achieved in men's singles (Open Era).",
+          "itemListElement": rows.slice(0, 10).map((r, idx) => ({
+            "@type": "ListItem",
+            "position": idx + 1,
+            "item": {
+              "@type": "SportsStatistic",
+              "name": "Highest ATP Points",
+              "additionalProperty": [
+                { "@type": "PropertyValue", "name": "Player", "value": r.name },
+                { "@type": "PropertyValue", "name": "Points", "value": r.points },
+                { "@type": "PropertyValue", "name": "Date", "value": r.date },
+                ...(String(r.name).toLowerCase().includes('alcaraz') ? [{ "@type": "PropertyValue", "name": "Note", "value": "Post-Australian Open 2026 - Career Grand Slam completed" }] : [])
+              ]
+            }
+          }))
+        }
+      }) }} />
 
       {rows.length > 0 ? renderTable(rows, 0) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
     </section>
