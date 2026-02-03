@@ -40,21 +40,38 @@ export async function generateMetadata(
   const name = player?.name ?? String(id);
   const slug = player?.slug ?? String(id);
 
-  // Build canonical URL using path segments (no query params) and include year for season tab when present
+  // Build canonical URL using path segments and include query params for matches when filters are active
   const base = 'https://stats.tennismylife.org';
   const isOverview = !tab || tab === 'overview';
   let canonical = isOverview ? `${base}/players/${encodeURIComponent(slug)}` : `${base}/players/${encodeURIComponent(slug)}/${encodeURIComponent(tab as string)}`;
 
-  // If on season tab, include year segment in canonical when available in search params
+  // Resolve search params for conditional canonical building
+  const resolvedSearchParamsForCanonical = await searchParams;
+  const spForCanonical: Record<string, any> = resolvedSearchParamsForCanonical
+    ? (resolvedSearchParamsForCanonical instanceof URLSearchParams
+        ? Object.fromEntries(resolvedSearchParamsForCanonical.entries())
+        : resolvedSearchParamsForCanonical)
+    : {};
+
+  // If on season tab, include year segment in canonical when available and meaningful
   if (tab === 'season') {
-    const resolvedSearchParams = await searchParams;
-    const sp: Record<string, any> = resolvedSearchParams
-      ? (resolvedSearchParams instanceof URLSearchParams
-          ? Object.fromEntries(resolvedSearchParams.entries())
-          : resolvedSearchParams)
-      : {};
-    if (sp.year && String(sp.year) !== 'All') {
-      canonical = `${canonical}/${encodeURIComponent(String(sp.year))}`;
+    if (spForCanonical.year && String(spForCanonical.year) !== 'All') {
+      canonical = `${canonical}/${encodeURIComponent(String(spForCanonical.year))}`;
+    }
+  }
+
+  // If on matches tab and filters are active, make canonical self-referencing by including normalized query params
+  if (tab === 'matches') {
+    // Build a deterministic query string from meaningful params (exclude tab and empty/'All' values)
+    const entries = Object.entries(spForCanonical || {})
+      .filter(([k, v]) => k !== 'tab' && v !== undefined && v !== null && String(v).trim() !== '' && String(v) !== 'All')
+      .map(([k, v]) => [k, String(v)]);
+
+    if (entries.length) {
+      // Sort keys for deterministic canonical value
+      entries.sort(([a], [b]) => a.localeCompare(b));
+      const qs = entries.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&');
+      canonical = `${canonical}?${qs}`;
     }
   }
 
