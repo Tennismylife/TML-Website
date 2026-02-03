@@ -172,6 +172,7 @@ export async function generateMetadata(
       creator: '@TennisMyLife68',
     },
     robots: { index: true, follow: true },
+    alternates: { canonical },
   } as Metadata;
 }
 
