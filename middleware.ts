@@ -138,14 +138,10 @@ export async function middleware(req: NextRequest) {
         };
         // Only redirect when the subtab is provided as a query and not already present as a path segment
         if (subtabParam && !(segments.length > 2)) {
-          const normalized = normalizeSubtab(subtabParam);
-          const dest = new URL(req.url);
-          dest.pathname = `/records/${encodeURIComponent(recordSegment)}/${encodeURIComponent(String(normalized))}`;
-          // Preserve other query params except `subtab`
-          const newParams = new URLSearchParams(req.nextUrl.searchParams as any);
-          newParams.delete('subtab');
-          dest.search = newParams.toString();
-          return new Response(null, { status: 301, headers: { Location: dest.toString() } });
+          // Previously we redirected query-based records/subtab URLs to a path-based canonical form.
+          // To avoid client-visible redirects for these cases, we now allow the request to continue
+          // and let the records page render based on the query param (no 301 redirect).
+          return NextResponse.next();
         }
 
         // No rewrite here: allow the request to continue to /records/<record>
@@ -256,12 +252,18 @@ export async function middleware(req: NextRequest) {
       return NextResponse.next();
     }
 
-    // Redirect 301 al canonical slug
-    if (slug) {
+    // For tournaments we still perform a redirect to the canonical slug/path.
+    if (slug && resource === 'tournaments') {
       const dest = new URL(req.url);
       dest.pathname = `/${resource}/${slug}${rest ? '/' + rest : ''}`;
       dest.search = search;
       return new Response(null, { status: 301, headers: { Location: dest.toString() } });
+    }
+
+    // For players, avoid redirecting to the canonical slug. Instead, allow the request to continue and
+    // let the server-side page resolve and render the canonical player's data inline (no client-visible redirect).
+    if (slug && resource === 'players') {
+      return NextResponse.next();
     }
 
     return NextResponse.next();

@@ -444,6 +444,16 @@ export function getPlayerHref(input?: { id?: string | number | null; slug?: stri
   return id ? `/players/${encodeURIComponent(id)}` : '#';
 }
 
+// Build a player href optionally including a tab segment (e.g. '/players/:slug/matches').
+// Keeps `getPlayerHref` behavior unchanged when `tab` is not provided.
+export function getPlayerHrefWithTab(input?: { id?: string | number | null; slug?: string | null } | string | null, tab?: string | null) {
+  const base = getPlayerHref(input);
+  if (!tab) return base;
+  // Avoid double slashes if base is '#'
+  if (base === '#') return '#';
+  return `${base}/${encodeURIComponent(tab)}`;
+}
+
 // Create a URL-friendly slug from text. Reused across the app.
 export function createSlug(text?: string | null): string {
   if (!text) return '';

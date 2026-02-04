@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import Flag from "@/components/Flag";
-import { getPlayerHref, getTourneyHref, formatDateISO } from "@/lib/utils";
+import { getPlayerHref, getPlayerHrefWithTab, getTourneyHref, formatDateISO } from "@/lib/utils";
 
 interface AllMatchesServerProps {
   playerId: string;
@@ -84,7 +84,7 @@ export default function AllMatchesServer({ playerId, matches, heading }: AllMatc
                       <div className="flex items-center gap-2">
                         {m.winner_ioc && <Flag ioc={m.winner_ioc} className="w-6 h-4" />}
                         {m.winner_slug || m.winner_id ? (
-                          <Link href={getPlayerHref(m.winner_slug ?? String(m.winner_id))} className="text-gray-200 hover:text-yellow-400">
+                          <Link href={getPlayerHrefWithTab(m.winner_slug ?? String(m.winner_id), 'matches')} className="text-gray-200 hover:text-yellow-400">
                             {m.winner_name ?? ""}
                           </Link>
                         ) : (
@@ -97,7 +97,7 @@ export default function AllMatchesServer({ playerId, matches, heading }: AllMatc
                       <div className="flex items-center gap-2">
                         {m.loser_ioc && <Flag ioc={m.loser_ioc} className="w-6 h-4" />}
                         {m.loser_slug || m.loser_id ? (
-                          <Link href={getPlayerHref(m.loser_slug ?? String(m.loser_id))} className="text-gray-400 hover:text-gray-200">
+                          <Link href={getPlayerHrefWithTab(m.loser_slug ?? String(m.loser_id), 'matches')} className="text-gray-400 hover:text-gray-200">
                             {m.loser_name ?? ""}
                           </Link>
                         ) : (

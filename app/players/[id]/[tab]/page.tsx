@@ -17,9 +17,25 @@ export const dynamic = 'force-dynamic';
 async function getPlayerBySlug(id: string): Promise<{ name: string; slug: string } | null> {
   const isSlug = !/^\d+$/.test(String(id));
   try {
-    const p = isSlug
+    let p = isSlug
       ? await prisma.player.findUnique({ where: { slug: String(id).toLowerCase() }, select: { player: true, atpname: true, slug: true } })
       : await prisma.player.findUnique({ where: { id: String(id) }, select: { player: true, atpname: true, slug: true } });
+
+    // If slug not found and id looks like a legacy code, query /api/slug-map to resolve a canonical slug and fetch it
+    if (isSlug && !p) {
+      try {
+        const apiUrl = 'https://stats.tennismylife.org/api/slug-map';
+        const apiResp = await fetch(apiUrl, { method: 'GET', cache: 'force-cache' });
+        if (apiResp.ok) {
+          const maps = await apiResp.json();
+          const mapped = maps?.players?.[String(id).toUpperCase()];
+          if (mapped) {
+            p = await prisma.player.findUnique({ where: { slug: mapped }, select: { player: true, atpname: true, slug: true } });
+          }
+        }
+      } catch (e) {}
+    }
+
     if (!p) return null;
     const name = (p.atpname || p.player) as string;
     return { name, slug: p.slug || String(id) };
@@ -215,10 +231,9 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
 
   if (!player) return <div>Player not found: {slugParam}</div>;
 
-  // Redirect numeric ID to slug while preserving requested tab
-  if (!isSlug && player.slug) {
-    redirect(`${getPlayerHref(player.slug)}/${encodeURIComponent(String(tabParam || 'matches'))}`);
-  }
+  // Previously we redirected numeric IDs to slug paths here. To avoid redirects, render the page
+  // inline for both slug and numeric IDs. Do not perform any redirect for numeric IDs.
+  // (No-op)
 
   // Determine tab for SEO (use 'overview' when missing) and fetch matches server-side for JSON-LD
   const tab = tabParam ?? 'overview';

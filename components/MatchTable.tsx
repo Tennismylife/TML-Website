@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Match, SortDirection, SortKey } from "@/types";
 import Flag from '@/components/Flag';
-import { getTourneyHref, extractUniqueSurfaces, getPlayerHref, formatDateISO } from "@/lib/utils";
+import { getTourneyHref, extractUniqueSurfaces, getPlayerHref, getPlayerHrefWithTab, formatDateISO } from "@/lib/utils";
 import { useEffect, useState, useMemo, useRef } from "react";
 
 interface MatchTableProps {
@@ -16,6 +16,8 @@ interface MatchTableProps {
   setSortDir: (dir: SortDirection) => void;
   playerId: string;
   onHeaderHeightChange?: (h: number) => void;
+  // If provided, player links will include this tab (e.g. 'matches')
+  currentTab?: string | null;
 }
 
 function renderNameWithSeedEntry(name: string, seed?: number | null, entry?: string | null) {
@@ -49,6 +51,7 @@ export default function MatchTable({
   setSortDir,
   playerId,
   onHeaderHeightChange,
+  currentTab = null,
 }: MatchTableProps) {
   const [showWinnerStats, setShowWinnerStats] = useState(true);
 
@@ -273,7 +276,7 @@ export default function MatchTable({
                   <td className={tdBase}>
                     {m.winner_ioc && <Flag ioc={m.winner_ioc} className="w-4 h-3 mr-1" />}
                     <Link
-                      href={getPlayerHref((m as any).winner_slug ?? String(m.winner_id))}
+                      href={(currentTab ? getPlayerHrefWithTab((m as any).winner_slug ?? String(m.winner_id), currentTab) : getPlayerHref((m as any).winner_slug ?? String(m.winner_id)))}
                       className={m.winner_id === playerId ? "font-bold text-green-600" : ""}
                     >
                       {renderNameWithSeedEntry(m.winner_name ?? "", m.winner_seed, m.winner_entry)}
@@ -283,7 +286,7 @@ export default function MatchTable({
                   <td className={tdBase}>
                     {m.loser_ioc && <Flag ioc={m.loser_ioc} className="w-4 h-3 mr-1" />}
                     <Link
-                      href={getPlayerHref((m as any).loser_slug ?? String(m.loser_id))}
+                      href={(currentTab ? getPlayerHrefWithTab((m as any).loser_slug ?? String(m.loser_id), currentTab) : getPlayerHref((m as any).loser_slug ?? String(m.loser_id)))}
                       className={m.loser_id === playerId ? "font-bold text-red-600" : ""}
                     >
                       {renderNameWithSeedEntry(m.loser_name ?? "", m.loser_seed, m.loser_entry)}

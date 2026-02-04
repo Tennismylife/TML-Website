@@ -727,6 +727,7 @@ export default function AllMatches({ playerId, initialMatches, initialHeading, i
               setSortDir={setSortDir}
               playerId={playerId}
               onHeaderHeightChange={setTableHeaderHeight}
+              currentTab={'matches'}
             />
             {/* table may overflow the viewport so all rows remain visible */}
             {!showAll && (sortedMatches.length > DEFAULT_INITIAL_COUNT || (initialMatches && initialMatches.length === DEFAULT_INITIAL_COUNT)) && (

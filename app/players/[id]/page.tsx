@@ -6,7 +6,7 @@ import { getPlayerHref } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }: any) {
+export async function generateMetadata({ params, searchParams }: any) {
   // params might be a Promise in this Next.js version, match page behavior
   try { console.log('[PlayerPage.generateMetadata] raw params:', params); } catch (e) {}
   const { id: slugParam } = await params;
@@ -30,15 +30,30 @@ export async function generateMetadata({ params }: any) {
   const slug = player?.slug || String(slugParam);
   const site = 'https://stats.tennismylife.org';
   const ogUrl = `${site}/players/${slug}`;
-  // The canonical player page is the 'matches' view — the base player path redirects
-  // to `/players/:slug/matches`. Use the matches URL as the canonical to avoid
-  // Google selecting a different canonical based on redirects.
-  const canonicalWithMatches = `${ogUrl}/matches`;
+  // Build canonical following the actual requested URL: prefer self-referencing canonical
+  // If a ?tab query param is present we include the tab path and relevant query params.
+  const resolvedSearchParamsForMeta = await searchParams;
+  const defaultTab = resolvedSearchParamsForMeta?.tab || 'matches';
+  const resolvedQuery: Record<string, any> = resolvedSearchParamsForMeta instanceof URLSearchParams ? Object.fromEntries(resolvedSearchParamsForMeta.entries()) : resolvedSearchParamsForMeta || {};
+  const hasFilters = Object.entries(resolvedQuery).some(([k, v]) => k !== 'tab' && v != null && String(v) !== '' && String(v) !== 'All');
+
+  let canonical = `${site}/players/${slug}`;
+  if (defaultTab) {
+    canonical = `${canonical}/${defaultTab}`;
+  }
+  if (defaultTab === 'matches' && hasFilters) {
+    const entries = Object.entries(resolvedQuery)
+      .filter(([k, v]) => k !== 'tab' && v != null && String(v) !== '' && String(v) !== 'All')
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`);
+    if (entries.length) canonical = `${canonical}?${entries.join('&')}`;
+  }
+
   return {
     title: `${name} | Tennis Statistics, Match Results & Rankings`,
-    openGraph: { url: canonicalWithMatches },
-    alternates: { canonical: canonicalWithMatches },
-  }; 
+    openGraph: { url: canonical },
+    alternates: { canonical },
+  };
 }
 
 export default async function PlayerPage({ params, searchParams }: any) {
@@ -47,46 +62,45 @@ export default async function PlayerPage({ params, searchParams }: any) {
 
   // searchParams can be a Promise — await it before accessing properties
   const resolvedSearchParams = await searchParams;
+  // If a ?tab query param is present, prefer to render that tab inline without redirecting.
+  // Default tab when missing is 'matches' (maintains previous UX without redirect).
   const hasTab = Boolean(resolvedSearchParams && Object.prototype.hasOwnProperty.call(resolvedSearchParams, 'tab'));
-  const tabValue = resolvedSearchParams?.tab || 'overview';
+  const tabValue = resolvedSearchParams?.tab || 'matches';
   const isSlug = !/^\d+$/.test(String(slugParam)); // treat any non-all-digits as slug
 
-  // PLAYER
-  const player = !isSlug
-    ? await prisma.player.findUnique({
-        where: { id: String(slugParam) },
-        select: { id: true, player: true, atpname: true, slug: true },
-      })
-    : await prisma.player.findUnique({
-        where: { slug: String(slugParam).toLowerCase() },
-        select: { id: true, player: true, atpname: true, slug: true },
-      });
+  // PLAYER: support both slug and numeric ID. Additionally, if an incoming legacy code slug (e.g. H377)
+  // does not match a player, consult the /api/slug-map to resolve a canonical slug and use that without redirecting.
+  let player: any = null;
+  if (!isSlug) {
+    player = await prisma.player.findUnique({ where: { id: String(slugParam) }, select: { id: true, player: true, atpname: true, slug: true } });
+  } else {
+    const slugLower = String(slugParam).toLowerCase();
+    player = await prisma.player.findUnique({ where: { slug: slugLower }, select: { id: true, player: true, atpname: true, slug: true } });
+
+    // If not found, try slug-map lookup (legacy codes map to canonical slugs)
+    if (!player) {
+      try {
+        const apiUrl = 'https://stats.tennismylife.org/api/slug-map';
+        const apiResp = await fetch(apiUrl, { method: 'GET', cache: 'force-cache' });
+        if (apiResp.ok) {
+          const maps = await apiResp.json();
+          const mapped = maps?.players?.[String(slugParam).toUpperCase()];
+          if (mapped) {
+            player = await prisma.player.findUnique({ where: { slug: mapped }, select: { id: true, player: true, atpname: true, slug: true } });
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+  }
 
   if (!player) return <div>Player not found: {slugParam}</div>;
 
-  // If a ?tab query param was used, redirect to the path-based equivalent and preserve other params
-  if (hasTab) {
-    const desiredTab = tabValue || 'matches';
-    // rebuild search without 'tab'
-    const params = new URLSearchParams();
-    Object.entries(resolvedSearchParams || {}).forEach(([k, v]) => {
-      if (k === 'tab') return;
-      if (v === undefined || v === null) return;
-      params.set(k, String(v));
-    });
-    const qs = params.toString();
-    const base = getPlayerHref(player.slug || slugParam);
-    redirect(`${base}/${encodeURIComponent(desiredTab)}${qs ? `?${qs}` : ''}`);
-  }
-
-  // No tab segment and no ?tab param — redirect to canonical '/matches'
-  if (!isSlug && player.slug) {
-    redirect(`${getPlayerHref(player.slug)}/matches`);
-  }
-  // If already a slug but this route is used (no tab segment), redirect to include matches
-  if (isSlug) {
-    redirect(`${getPlayerHref(player.slug || slugParam)}/matches`);
-  }
+  // NOTE: Previously we redirected when ?tab was present or the page had no tab segment.
+  // To avoid redirects for URLs like `/players/:id?tab=matches` or numeric IDs, we now render
+  // the requested tab inline and do not perform any redirects here.
+  // The PlayerClient below will be rendered with the chosen tab (default 'matches').
 
   const name = player.atpname || player.player;
 
