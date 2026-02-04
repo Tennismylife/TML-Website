@@ -134,8 +134,6 @@ export default function HomePage() {
 
   return (
     <main className="w-full px-4 sm:px-6">
-      {/* Verification code for site ownership */}
-      <div id="site-verification" style={{ display: 'none' }}>Verification: eeebf28a9bced7a0</div>
       <style dangerouslySetInnerHTML={{ __html: criticalCss }} />
 
       {/* Hero + Intro */}
