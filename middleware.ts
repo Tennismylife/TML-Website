@@ -138,10 +138,14 @@ export async function middleware(req: NextRequest) {
         };
         // Only redirect when the subtab is provided as a query and not already present as a path segment
         if (subtabParam && !(segments.length > 2)) {
-          // Previously we redirected query-based records/subtab URLs to a path-based canonical form.
-          // To avoid client-visible redirects for these cases, we now allow the request to continue
-          // and let the records page render based on the query param (no 301 redirect).
-          return NextResponse.next();
+          const normalized = normalizeSubtab(subtabParam);
+          const dest = new URL(req.url);
+          dest.pathname = `/records/${encodeURIComponent(recordSegment)}${normalized ? '/' + encodeURIComponent(normalized) : ''}`;
+          // Preserve other query params except `subtab`
+          const newSearch = new URLSearchParams(req.nextUrl.searchParams as any);
+          newSearch.delete('subtab');
+          dest.search = newSearch.toString();
+          return new Response(null, { status: 301, headers: { Location: dest.toString() } });
         }
 
         // No rewrite here: allow the request to continue to /records/<record>

@@ -124,7 +124,7 @@ export default function WinsSection({
         selectedSurfaces.forEach(s => newQuery.append('surface', s));
         selectedLevels.forEach(l => newQuery.append('level', l));
         if (selectedRounds) newQuery.set('round', selectedRounds);
-        if (selectedBestOf != null) newQuery.set('bestOf', String(selectedBestOf));
+        if (selectedBestOf != null) newQuery.set('best_of', String(selectedBestOf));
 
         const current = (typeof window !== 'undefined') ? new URLSearchParams(window.location.search) : new URLSearchParams();
         const compareMulti = (a: URLSearchParams, b: URLSearchParams, key: string) => {
@@ -139,7 +139,7 @@ export default function WinsSection({
         const sameSurface = compareMulti(current, newQuery, 'surface');
         const sameLevel = compareMulti(current, newQuery, 'level');
         const sameRound = current.get('round') === newQuery.get('round');
-        const sameBestOf = current.get('bestOf') === newQuery.get('bestOf');
+        const sameBestOf = current.get('best_of') === newQuery.get('best_of');
 
         if (!(sameAge && sameSurface && sameLevel && sameRound && sameBestOf)) {
           router.replace(`${path}?${newQuery.toString()}`);
