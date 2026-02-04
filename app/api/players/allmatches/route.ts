@@ -51,16 +51,35 @@ export async function GET(request: NextRequest) {
     }
     if (round) where.round = round;
 
-    // Honor a `limit` query param by applying `take` at the DB level and ordering by date desc
+    // Honor a `limit` query param (preview) or pagination via `page` / `perPage` (view all paginated).
     const limitParamDb = url.searchParams.get('limit');
-    let take: number | undefined = undefined;
+    const pageParam = url.searchParams.get('page');
+    const perPageParam = url.searchParams.get('perPage') ?? url.searchParams.get('per_page');
+
+    let dbTake: number | undefined = undefined;
+    let dbSkip: number | undefined = undefined;
+
+    // Preview: explicit limit (keeps behavior compatible with existing clients)
     if (limitParamDb) {
       const n = parseInt(limitParamDb, 10);
-      if (!Number.isNaN(n) && n > 0) take = n;
+      if (!Number.isNaN(n) && n > 0) dbTake = n;
+    }
+
+    // Pagination: page + perPage (server-side cap applied)
+    if (perPageParam) {
+      const MAX_PER_PAGE = 200;
+      let p = parseInt(perPageParam, 10);
+      if (Number.isNaN(p) || p <= 0) p = 10;
+      dbTake = Math.min(p, MAX_PER_PAGE);
+      if (pageParam) {
+        const pageNum = parseInt(pageParam, 10);
+        if (!Number.isNaN(pageNum) && pageNum > 0) dbSkip = (pageNum - 1) * dbTake;
+      }
     }
 
     const findOptions: any = { where, orderBy: { tourney_date: 'desc' } };
-    if (typeof take === 'number') findOptions.take = take;
+    if (typeof dbTake === 'number') findOptions.take = dbTake;
+    if (typeof dbSkip === 'number') findOptions.skip = dbSkip;
 
     const matches = await prisma.match.findMany(findOptions);
 
@@ -145,7 +164,30 @@ export async function GET(request: NextRequest) {
         if (!Number.isNaN(n) && n > 0) enriched = enriched.slice(0, n);
       }
 
-      return NextResponse.json(enriched);
+      // Build response headers and caching policy
+      const headers = new Headers();
+      const isPreview = Boolean(limitParam);
+      const isPaginated = Boolean(url.searchParams.get('page') || url.searchParams.get('perPage') || url.searchParams.get('per_page'));
+
+      if (isPreview) {
+        // Preview responses are cacheable for a short period with SWR
+        headers.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+      } else if (isPaginated) {
+        // Paginated views are cacheable briefly - clients can revalidate
+        // Also include total count header for client pagination controls
+        try {
+          const totalCount = await prisma.match.count({ where });
+          headers.set('X-Total-Count', String(totalCount));
+        } catch (e) {
+          // ignore count failures
+        }
+        headers.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
+      } else {
+        // Fallback: keep short caching to avoid stale big payloads
+        headers.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
+      }
+
+      return new NextResponse(JSON.stringify(enriched), { status: 200, headers });
     } catch (e) {
       // fallback: return unmodified matches if slug resolution fails
       let fallback = filteredMatches;
@@ -154,7 +196,13 @@ export async function GET(request: NextRequest) {
         const n = parseInt(limitParam, 10);
         if (!Number.isNaN(n) && n > 0) fallback = fallback.slice(0, n);
       }
-      return NextResponse.json(fallback);
+
+      const headers = new Headers();
+      const isPreview = Boolean(limitParam);
+      if (isPreview) headers.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+      else headers.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
+
+      return new NextResponse(JSON.stringify(fallback), { status: 200, headers });
     }
   } catch (err) {
     console.error("Errore recupero match:", err);

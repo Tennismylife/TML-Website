@@ -2,6 +2,7 @@ import React from 'react'
 import ServerWrapper from '../../../components/ServerWrapper'
 import AtAge from './AtAge'
 import { metadataBase } from '../../../lib/site'
+import { isRecordsSsrPrefetchEnabled } from '../../../lib/recordsSsrPrefetch'
 
 type SearchParams = Record<string, string | string[] | undefined>
 
@@ -32,12 +33,14 @@ export default async function AtAgeServer({ searchParams, ...serverProps }: { se
 
   const hasFilters = selectedSurfaces.size > 0 || selectedLevels.size > 0 || !!selectedRounds || selectedBestOf !== null
 
+  const prefetchEnabled = isRecordsSsrPrefetchEnabled()
   // Prefetch at-age results with selected filters so SSR includes filtered table
   const prefetchedData: Record<string, any[] | undefined> = {}
-  try {
+  if (prefetchEnabled) {
+    try {
     const params = new URLSearchParams()
     params.set('age', initialAge.toFixed(3))
-    params.set('limit', '1000')
+    params.set('limit', '100')
     for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
     for (const l of Array.from(selectedLevels)) params.append('level', l)
     if (selectedRounds) params.set('round', selectedRounds)
@@ -55,14 +58,15 @@ export default async function AtAgeServer({ searchParams, ...serverProps }: { se
     if (activeSubTab === 'played') prefetchedData.played = await fetchJson(`/api/records/atage/played${params.toString() ? '?' + params.toString() : ''}`)
     if (activeSubTab === 'entries') prefetchedData.entries = await fetchJson(`/api/records/atage/entries${params.toString() ? '?' + params.toString() : ''}`)
     if (activeSubTab === 'titles') prefetchedData.titles = await fetchJson(`/api/records/atage/titles${params.toString() ? '?' + params.toString() : ''}`)
-    if (activeSubTab === 'slams') prefetchedData.slams = await fetchJson(`/api/records/atage/inslams${params.toString() ? '?' + params.toString() : ''}`)
-    if (activeSubTab === 'round' && selectedRounds) prefetchedData.round = await fetchJson(`/api/records/atage/rounds${params.toString() ? '?' + params.toString() : ''}`)
-  } catch (err) {
-    // best-effort prefetch
+      if (activeSubTab === 'slams') prefetchedData.slams = await fetchJson(`/api/records/atage/inslams${params.toString() ? '?' + params.toString() : ''}`)
+      if (activeSubTab === 'round' && selectedRounds) prefetchedData.round = await fetchJson(`/api/records/atage/rounds${params.toString() ? '?' + params.toString() : ''}`)
+    } catch (err) {
+      // best-effort prefetch
+    }
   }
 
-  const fetchEnabled = serverProps.fetchEnabled ?? false
-  const fetchRequestId = serverProps.fetchRequestId ?? null
+  const fetchEnabled = serverProps.fetchEnabled ?? !prefetchEnabled
+  const fetchRequestId = serverProps.fetchRequestId ?? (fetchEnabled ? String(Date.now()) : null)
 
   return (
     <ServerWrapper

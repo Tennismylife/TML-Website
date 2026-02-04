@@ -8,6 +8,51 @@ import { redirect } from 'next/navigation';
 import { getPlayerHref } from '@/lib/utils';
 import type { Metadata } from 'next';
 
+function normalizeTourneyKey(name: string) {
+  return name
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[\u200B-\u200D\uFEFF]/g, '')
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+}
+
+function canonicalGrandSlam(name: string) {
+  const key = normalizeTourneyKey(name);
+  if (key.includes('australian') && (key.includes('open') || key.includes('championship'))) return 'Australian Open';
+  if (key.includes('roland') || key.includes('french open')) return 'Roland Garros';
+  if (key.includes('wimbledon')) return 'Wimbledon';
+  if ((key.includes('us') || key.includes('u s') || key.includes('united states')) && key.includes('open')) return 'US Open';
+  return name;
+}
+
+function resolveTourneyName(raw: any): string | null {
+  if (raw == null) return null;
+  if (Array.isArray(raw)) {
+    const unique = Array.from(new Set(raw.map((v) => String(v ?? '').trim()).filter(Boolean)));
+    if (unique.length === 0) return null;
+    const joined = unique.length > 1 ? unique.join(' / ') : unique[0];
+    return canonicalGrandSlam(joined);
+  }
+  if (typeof raw === 'object') {
+    const obj = raw as Record<string, any>;
+    const candidate = obj.en ?? Object.values(obj)[0];
+    if (candidate == null) return null;
+    if (Array.isArray(candidate)) {
+      const unique = Array.from(new Set(candidate.map((v) => String(v ?? '').trim()).filter(Boolean)));
+      if (unique.length === 0) return null;
+      const joined = unique.length > 1 ? unique.join(' / ') : unique[0];
+      return canonicalGrandSlam(joined);
+    }
+    const cleaned = String(candidate).trim();
+    return cleaned ? canonicalGrandSlam(cleaned) : null;
+  }
+  const cleaned = String(raw).trim();
+  return cleaned ? canonicalGrandSlam(cleaned) : null;
+}
+
 export const dynamic = 'force-dynamic';
 
 /**
@@ -49,7 +94,6 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { params, searchParams } = props;
   const { id, tab } = (await params) as { id: string; tab?: string };
-  try { console.log('[PlayerTabPage.generateMetadata] params:', { id, tab }, 'raw params promise:', params); } catch(e) {}
   if (!id) return { title: 'Player | Tennis Statistics, Match Results & Rankings' } as Metadata; 
 
   const player = await getPlayerBySlug(id);
@@ -299,15 +343,113 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
 
   const matchesHeading = matchesHeadingParts.length ? `Matches — ${matchesHeadingParts.join(' · ')}` : 'Matches';
 
-  const matches = await prisma.match.findMany({
-    where: { OR: [{ winner_id: player.id }, { loser_id: player.id }] },
-    select: { status: true, winner_id: true, loser_id: true, surface: true },
-  });
+  // Build lightweight server-side facets for the filter panel to avoid a client fetch
+  let serverFacets: any = null;
+  let seoSummary: any = null;
+  try {
+    const whereAll: any = { OR: [{ winner_id: player.id }, { loser_id: player.id }] };
+    const yearsRows = await prisma.match.groupBy({ by: ['year'], where: whereAll, _count: { _all: true } });
+    const surfacesRows = await prisma.match.groupBy({ by: ['surface'], where: whereAll, _count: { _all: true } });
+    const levelsRows = await prisma.match.groupBy({ by: ['tourney_level'], where: whereAll, _count: { _all: true } });
+    const roundsRows = await prisma.match.groupBy({ by: ['round'], where: whereAll, _count: { _all: true } });
+    const bestOfRows = await prisma.match.groupBy({ by: ['best_of'], where: whereAll, _count: { _all: true } });
+    const tourneyRows = await prisma.match.groupBy({ by: ['tourney_id'], where: whereAll, _count: { _all: true } });
+    const tourneyNameRows = await prisma.match.groupBy({ by: ['tourney_id', 'tourney_name'], where: whereAll, _count: { _all: true } });
 
-  // Compute career totals (server-side) to pass as initialTotals to the client without fetching all rows
-  const careerMatches = matches.filter(m => m.status !== false);
-  const careerWins = careerMatches.filter(m => String(m.winner_id) === String(player.id)).length;
-  const careerLosses = careerMatches.filter(m => String(m.loser_id) === String(player.id)).length;
+    const years = (yearsRows || []).filter(r => r.year != null).map(r => ({ value: r.year, count: (r as any)._count?._all ?? 0 })).sort((a,b) => (b.value as number) - (a.value as number));
+    const surfaces = (surfacesRows || []).map(r => ({ value: r.surface ?? 'Unknown', count: (r as any)._count?._all ?? 0 }));
+    const levels = (levelsRows || []).map(r => ({ value: r.tourney_level ?? 'Unknown', count: (r as any)._count?._all ?? 0 }));
+    const rounds = (roundsRows || []).map(r => ({ value: r.round ?? 'Unknown', count: (r as any)._count?._all ?? 0 }));
+    const bestOf = (bestOfRows || []).map(r => ({ value: r.best_of ?? 0, count: (r as any)._count?._all ?? 0 }));
+
+    let tourneys = (tourneyRows || []).map(r => ({ id: String(r.tourney_id ?? '').trim(), count: (r as any)._count?._all ?? 0 })).filter(t => t.id);
+
+    // Build name map from player's own match rows (not global tournament table)
+    const nameMap = new Map<string, string[]>();
+    tourneyNameRows.forEach(r => {
+      const id = String(r.tourney_id ?? '').trim();
+      const raw = resolveTourneyName(r.tourney_name);
+      if (!id || !raw) return;
+      const list = nameMap.get(id) ?? [];
+      if (!list.includes(raw)) list.push(raw);
+      nameMap.set(id, list);
+    });
+
+    // Resolve slugs (best-effort) for links
+    let tourneySlugMap: Record<string, any> = {};
+    try {
+      const idParts = Array.from(new Set(tourneys.map(t => {
+        const parts = String(t.id).split('-').filter(Boolean);
+        return parts.length === 2 ? parts[1] : t.id;
+      }))).filter(Boolean);
+      if (idParts.length) {
+        const tours = await prisma.tournament.findMany({ where: { id: { in: idParts.map(v => Number(v)) } }, select: { id: true, slug: true } });
+        tourneySlugMap = tours.reduce((acc: Record<string, any>, t: any) => { acc[String(t.id)] = { slug: t.slug ?? null }; return acc; }, {});
+      }
+    } catch (e) {
+      tourneySlugMap = {};
+    }
+
+    let tourneysWithNames = tourneys.map(t => {
+      const parts = String(t.id).split('-').filter(Boolean);
+      const idPart = parts.length === 2 ? parts[1] : t.id;
+      const names = nameMap.get(t.id) ?? [];
+      const name = names.length > 1 ? names.join(' / ') : (names[0] ?? t.id);
+      return { id: t.id, name, count: t.count, slug: idPart ? (tourneySlugMap[idPart]?.slug ?? null) : null };
+    });
+
+    // Ensure unique tourney names (collapse duplicates by normalized name)
+    const seenNames = new Set<string>();
+    tourneysWithNames = tourneysWithNames.filter(t => {
+      const rawName = (t.name ?? t.id).toString().trim();
+      const key = rawName.replace(/\s+/g, ' ').toLowerCase();
+      if (!key) return false;
+      if (seenNames.has(key)) return false;
+      seenNames.add(key);
+      return true;
+    });
+
+    tourneys = tourneys.sort((a,b) => b.count - a.count).slice(0,100);
+    tourneysWithNames = tourneysWithNames.sort((a,b) => b.count - a.count).slice(0,100);
+
+    serverFacets = { years, surfaces, levels, rounds, tourneys: tourneysWithNames, bestOf };
+
+    // Build a lightweight SEO summary (counts and surface wins/losses) to avoid fetching full match rows
+    const total = await prisma.match.count({ where: whereAll });
+    const wins = await prisma.match.count({ where: { winner_id: player.id, status: true } });
+    const losses = await prisma.match.count({ where: { loser_id: player.id, status: true } });
+
+    const winsBySurfaceRows = await prisma.match.groupBy({ by: ['surface'], where: { winner_id: player.id, status: true }, _count: { _all: true } });
+    const lossesBySurfaceRows = await prisma.match.groupBy({ by: ['surface'], where: { loser_id: player.id, status: true }, _count: { _all: true } });
+
+    const surfaceWins: Record<string, number> = {};
+    (winsBySurfaceRows || []).forEach(r => { if (r.surface) surfaceWins[String(r.surface)] = (r as any)._count?._all ?? 0; });
+    const surfaceLosses: Record<string, number> = {};
+    (lossesBySurfaceRows || []).forEach(r => { if (r.surface) surfaceLosses[String(r.surface)] = (r as any)._count?._all ?? 0; });
+
+    seoSummary = { total, wins, losses, surfaceWins, surfaceLosses };
+  } catch (e) {
+    serverFacets = null;
+    seoSummary = null;
+  }
+
+  // If server-side facet computation failed for any reason, fallback to calling the internal
+  // lightweight facets API so SSR still passes full filter options to the client.
+  if (!serverFacets) {
+    try {
+      const base = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://stats.tennismylife.org';
+      const resFacets = await fetch(`${base}/api/players/match-facets?id=${player.id}`, { cache: 'force-cache' });
+      if (resFacets.ok) {
+        serverFacets = await resFacets.json();
+      }
+    } catch (e) {
+      // no-op: leave serverFacets null; client will fetch as fallback
+    }
+  }
+
+  // Use the precomputed SEO summary for totals (avoid fetching all match rows)
+  const careerWins = seoSummary?.wins ?? 0;
+  const careerLosses = seoSummary?.losses ?? 0;
 
   // Fetch only latest 10 matches for SSR (optimized first load)
   let allMatchesForSSR: any[] | null = null;
@@ -329,11 +471,31 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
         whereClause.surface = { contains: String(sp.surface), mode: 'insensitive' } as any;
       }
 
-      allMatchesForSSR = await prisma.match.findMany({
-        where: whereClause,
-        orderBy: { tourney_date: 'desc' },
-        take: 10, // Only fetch 10 matches for initial SSR
-      });
+      // Centralize preview behavior: fetch the preview slice from the public API so
+      // all filtering, enrichment and limits are implemented in one place (avoid duplicate logic).
+      try {
+        const base = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://stats.tennismylife.org';
+        const qs = new URLSearchParams();
+        qs.set('id', String(player.id));
+        qs.set('limit', '10');
+        if (whereClause.year) qs.set('year', String(whereClause.year));
+        if (whereClause.surface && typeof whereClause.surface === 'object' && 'contains' in whereClause.surface) qs.set('surface', String(whereClause.surface.contains));
+        const url = `${base}/api/players/allmatches?${qs.toString()}`;
+        const res = await fetch(url, { cache: 'force-cache' });
+        if (res.ok) {
+          allMatchesForSSR = await res.json();
+        } else {
+          // Fallback to direct DB query on non-OK responses
+          allMatchesForSSR = await prisma.match.findMany({ where: whereClause, orderBy: { tourney_date: 'desc' }, take: 10 });
+        }
+      } catch (e) {
+        // If API fetch fails for any reason (network, DNS, etc.), fall back to querying DB directly
+        try {
+          allMatchesForSSR = await prisma.match.findMany({ where: whereClause, orderBy: { tourney_date: 'desc' }, take: 10 });
+        } catch (err) {
+          allMatchesForSSR = null;
+        }
+      }
 
       // Enrich with slugs
       if (allMatchesForSSR && allMatchesForSSR.length) {
@@ -371,7 +533,8 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
         ioc={player.ioc}
         birthplace={player.birthplace}
         tab={tab}
-        matches={matches}
+        // Prefer server-side precomputed summary to avoid fetching all match rows
+        summary={seoSummary}
       />
 
       <SEOBreadcrumb slug={player.slug} name={player.atpname || player.player} tab={tab} />
@@ -384,7 +547,7 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
         <AllMatchesServer playerId={player.id} matches={allMatchesForSSR} heading={matchesHeading} />
       ) : null}
 
-      <PlayerClient params={{ id: player.id, tab: tabParam ?? 'matches' }} initialMatches={allMatchesForSSR ?? undefined} initialHeading={matchesHeading ?? 'Matches'} initialTotals={{ totalWins: careerWins, totalLosses: careerLosses }} />
+      <PlayerClient params={{ id: player.id, tab: tabParam ?? 'matches' }} initialMatches={allMatchesForSSR ?? undefined} initialFacets={serverFacets ?? undefined} initialHeading={matchesHeading ?? 'Matches'} initialTotals={{ totalWins: careerWins, totalLosses: careerLosses }} />
     </>
   );
 }

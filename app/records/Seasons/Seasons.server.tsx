@@ -2,6 +2,7 @@ import React from 'react'
 import ServerWrapper from '../../../components/ServerWrapper'
 import Seasons from './Seasons'
 import { metadataBase } from '../../../lib/site'
+import { isRecordsSsrPrefetchEnabled } from '../../../lib/recordsSsrPrefetch'
 
 type SearchParams = Record<string, string | string[] | undefined>
 
@@ -29,15 +30,17 @@ export default async function SeasonsServer({ searchParams, ...serverProps }: { 
     return selectedSurfaces.size > 0 || selectedLevels.size > 0 || !!selectedRounds || selectedBestOf !== null
   })()
 
+  const prefetchEnabled = isRecordsSsrPrefetchEnabled()
   // Prefetch seasons results with selected filters so SSR includes filtered table
   const prefetchedData: Record<string, any[] | undefined> = {}
-  try {
+  if (prefetchEnabled) {
+    try {
     const params = new URLSearchParams()
     for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
     for (const l of Array.from(selectedLevels)) params.append('level', l)
     if (selectedRounds) params.set('round', selectedRounds)
     if (selectedBestOf !== null) params.set('best_of', String(selectedBestOf))
-    params.set('limit', '1000')
+    params.set('limit', '100')
 
     if (activeSubTab === 'wins') {
       const url = new URL(`/api/records/seasons/wins${params.toString() ? '?' + params.toString() : ''}`, metadataBase)
@@ -85,19 +88,20 @@ export default async function SeasonsServer({ searchParams, ...serverProps }: { 
       }
     }
 
-    if (activeSubTab === 'percentage') {
-      const url = new URL(`/api/records/seasons/percentage${params.toString() ? '?' + params.toString() : ''}`, metadataBase)
-      const res = await fetch(url, { cache: 'no-store' })
-      if (res.ok) {
-        const json = await res.json()
-        if (Array.isArray(json)) prefetchedData.percentage = json
+      if (activeSubTab === 'percentage') {
+        const url = new URL(`/api/records/seasons/percentage${params.toString() ? '?' + params.toString() : ''}`, metadataBase)
+        const res = await fetch(url, { cache: 'no-store' })
+        if (res.ok) {
+          const json = await res.json()
+          if (Array.isArray(json)) prefetchedData.percentage = json
+        }
       }
+    } catch (err) {
+      // best-effort prefetch
     }
-  } catch (err) {
-    // best-effort prefetch
   }
 
-  const fetchEnabled = serverProps.fetchEnabled ?? false
+  const fetchEnabled = serverProps.fetchEnabled ?? !prefetchEnabled
   const fetchRequestId = serverProps.fetchRequestId ?? (fetchEnabled ? String(Date.now()) : null)
 
   return (

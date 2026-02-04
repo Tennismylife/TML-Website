@@ -1,5 +1,6 @@
 import React from 'react';
 import { metadataBase } from '../../lib/site';
+import { isRecordsSsrPrefetchEnabled } from '../../lib/recordsSsrPrefetch';
 
 interface Props {
   record: string | null;
@@ -10,6 +11,7 @@ interface Props {
 
 async function fetchRecord(record: string | null, sub?: string | null, filters?: Record<string, string | string[] | undefined>) {
   if (!record) return [] as any[];
+  if (!isRecordsSsrPrefetchEnabled()) return [] as any[];
   const params = new URLSearchParams();
   for (const [k, v] of Object.entries(filters || {})) {
     if (v == null) continue;

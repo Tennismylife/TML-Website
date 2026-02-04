@@ -2,6 +2,7 @@ import React from 'react'
 import ServerWrapper from '../../../components/ServerWrapper'
 import Percentage from './Percentage'
 import { metadataBase } from '../../../lib/site'
+import { isRecordsSsrPrefetchEnabled } from '../../../lib/recordsSsrPrefetch'
 
 type SearchParams = Record<string, string | string[] | undefined>
 
@@ -21,26 +22,29 @@ export default async function PercentageServer({ searchParams, ...serverProps }:
     return v ? Number(v) : null
   })()
 
+  const prefetchEnabled = isRecordsSsrPrefetchEnabled()
   // Prefetch percentage results with selected filters so SSR includes filtered table
   let topWinPercentages: any[] = []
-  try {
-    const params = new URLSearchParams()
-    for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
-    for (const l of Array.from(selectedLevels)) params.append('level', l)
-    if (selectedRounds) params.set('round', selectedRounds)
-    if (selectedBestOf !== null) params.set('best_of', String(selectedBestOf))
-    params.set('perPage', '1000')
-    const apiUrl = new URL(`/api/records/percentage${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
-    const res = await fetch(apiUrl, { cache: 'no-store' })
-    if (res.ok) {
-      const data = await res.json()
-      if (Array.isArray((data as any).topWinPercentages)) topWinPercentages = (data as any).topWinPercentages
+  if (prefetchEnabled) {
+    try {
+      const params = new URLSearchParams()
+      for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
+      for (const l of Array.from(selectedLevels)) params.append('level', l)
+      if (selectedRounds) params.set('round', selectedRounds)
+      if (selectedBestOf !== null) params.set('best_of', String(selectedBestOf))
+      params.set('perPage', '100')
+      const apiUrl = new URL(`/api/records/percentage${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
+      const res = await fetch(apiUrl, { cache: 'no-store' })
+      if (res.ok) {
+        const data = await res.json()
+        if (Array.isArray((data as any).topWinPercentages)) topWinPercentages = (data as any).topWinPercentages
+      }
+    } catch (err) {
+      // ignore
     }
-  } catch (err) {
-    // ignore
   }
 
-  const fetchEnabled = false
+  const fetchEnabled = serverProps.fetchEnabled ?? !prefetchEnabled
 
   return (
     <ServerWrapper

@@ -2,6 +2,7 @@ import React from 'react'
 import ServerWrapper from '../../../components/ServerWrapper'
 import Streak from './Streak'
 import { metadataBase } from '../../../lib/site'
+import { isRecordsSsrPrefetchEnabled } from '../../../lib/recordsSsrPrefetch'
 
 type SearchParams = Record<string, string | string[] | undefined>
 
@@ -30,9 +31,11 @@ export default async function StreakServer({ searchParams, ...serverProps }: { s
     !!selectedRounds ||
     selectedBestOf !== null
 
+  const prefetchEnabled = isRecordsSsrPrefetchEnabled()
   // Prefetch streak results with selected filters so SSR includes filtered table
   const prefetchedData: Record<string, any[] | undefined> = {}
-  try {
+  if (prefetchEnabled) {
+    try {
     const params = new URLSearchParams()
     params.set('limit', '100')
     for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
@@ -56,17 +59,18 @@ export default async function StreakServer({ searchParams, ...serverProps }: { s
       }
     }
 
-    if (activeSubTab === 'wins') {
-      prefetchedData.wins = await fetchJsonArray(`/api/records/streak/wins${params.toString() ? '?' + params.toString() : ''}`, 'global')
+      if (activeSubTab === 'wins') {
+        prefetchedData.wins = await fetchJsonArray(`/api/records/streak/wins${params.toString() ? '?' + params.toString() : ''}`, 'global')
+      }
+      if (activeSubTab === 'round') {
+        prefetchedData.round = await fetchJsonArray(`/api/records/streak/rounds${params.toString() ? '?' + params.toString() : ''}`, 'streaks')
+      }
+    } catch (err) {
+      // ignore
     }
-    if (activeSubTab === 'round') {
-      prefetchedData.round = await fetchJsonArray(`/api/records/streak/rounds${params.toString() ? '?' + params.toString() : ''}`, 'streaks')
-    }
-  } catch (err) {
-    // ignore
   }
 
-  const fetchEnabled = serverProps.fetchEnabled ?? false
+  const fetchEnabled = serverProps.fetchEnabled ?? !prefetchEnabled
   const fetchRequestId = serverProps.fetchRequestId ?? (fetchEnabled ? String(Date.now()) : null)
 
   return (

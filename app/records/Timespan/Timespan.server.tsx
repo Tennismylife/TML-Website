@@ -2,6 +2,7 @@ import React from 'react'
 import ServerWrapper from '../../../components/ServerWrapper'
 import Timespan from './Timespan'
 import { metadataBase } from '../../../lib/site'
+import { isRecordsSsrPrefetchEnabled } from '../../../lib/recordsSsrPrefetch'
 
 type SearchParams = Record<string, string | string[] | undefined>
 
@@ -25,16 +26,18 @@ export default async function TimespanServer({ searchParams, ...serverProps }: {
     return (selectedSurfaces.size > 0) || (selectedLevels.size > 0)
   })()
 
+  const prefetchEnabled = isRecordsSsrPrefetchEnabled()
   const prefetchedData: Record<string, any[] | undefined> = {}
 
   // Prefetch timespan data using selected filters so SSR includes filtered table
-  try {
+  if (prefetchEnabled) {
+    try {
     const params = new URLSearchParams()
     for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
     for (const l of Array.from(selectedLevels)) params.append('level', l)
 
     if (selectedTab === 'titles') {
-      params.set('limit', '1000')
+      params.set('limit', '100')
       const apiUrl = new URL(`/api/records/timespan/titles${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
       const res = await fetch(apiUrl, { cache: 'no-store' })
       if (res.ok) {
@@ -42,28 +45,29 @@ export default async function TimespanServer({ searchParams, ...serverProps }: {
         if (Array.isArray((json as any).data)) prefetchedData[selectedTab] = (json as any).data
       }
     } else if (selectedTab === 'entries') {
-      params.set('perPage', '1000')
+      params.set('perPage', '100')
       const apiUrl = new URL(`/api/records/timespan/entries${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
       const res = await fetch(apiUrl, { cache: 'no-store' })
       if (res.ok) {
         const json = await res.json()
         if (Array.isArray(json)) prefetchedData[selectedTab] = json as any[]
       }
-    } else if (selectedTab === 'rounds' && selectedRounds) {
-      params.set('round', selectedRounds)
-      params.set('perPage', '1000')
-      const apiUrl = new URL(`/api/records/timespan/rounds${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
-      const res = await fetch(apiUrl, { cache: 'no-store' })
-      if (res.ok) {
-        const json = await res.json()
-        if (Array.isArray((json as any).data)) prefetchedData[selectedTab] = (json as any).data
+      } else if (selectedTab === 'rounds' && selectedRounds) {
+        params.set('round', selectedRounds)
+        params.set('perPage', '100')
+        const apiUrl = new URL(`/api/records/timespan/rounds${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
+        const res = await fetch(apiUrl, { cache: 'no-store' })
+        if (res.ok) {
+          const json = await res.json()
+          if (Array.isArray((json as any).data)) prefetchedData[selectedTab] = (json as any).data
+        }
       }
+    } catch (err) {
+      // ignore prefetch failures
     }
-  } catch (err) {
-    // ignore prefetch failures
   }
 
-  const fetchEnabled = serverProps.fetchEnabled ?? false
+  const fetchEnabled = serverProps.fetchEnabled ?? !prefetchEnabled
   const fetchRequestId = serverProps.fetchRequestId ?? (fetchEnabled ? String(Date.now()) : null)
 
   return (

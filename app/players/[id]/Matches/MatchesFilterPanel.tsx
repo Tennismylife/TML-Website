@@ -6,6 +6,74 @@ import FilterBar from "./FilterBar";
 import { Match } from "@/types";
 import FilteredMatchesCalculation from "./FilteredMatchesCalculation";
 
+// Normalize a tourney name for stable deduplication (remove diacritics/zero-width/punctuation)
+function normalizeTourneyName(name: string) {
+  const base = name
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[\u200B-\u200D\uFEFF]/g, '')
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+  if (base.includes('australian') && (base.includes('open') || base.includes('championship'))) return 'australian open';
+  if (base.includes('roland') || base.includes('french open')) return 'roland garros';
+  if (base.includes('wimbledon')) return 'wimbledon';
+  if ((base.includes('us') || base.includes('u s') || base.includes('united states')) && base.includes('open')) return 'us open';
+  return base;
+}
+
+// Build a unique list of tourney names. If multiple names map to the same normalized label,
+// keep a single entry (unique name). The first id encountered is kept.
+function buildUniqueTourneyList(items: Array<{ id: string; name?: string | null }>) {
+  const order: string[] = [];
+  const idByKey = new Map<string, string>();
+  const namesByKey = new Map<string, string[]>();
+
+  items.forEach((item) => {
+    const id = String(item.id ?? '').trim();
+    const rawName = (item.name ?? id).toString().trim();
+    if (!rawName) return;
+    const key = normalizeTourneyName(rawName);
+    if (!key) return;
+    if (!namesByKey.has(key)) {
+      namesByKey.set(key, []);
+      order.push(key);
+      if (id) idByKey.set(key, id);
+    }
+    const list = namesByKey.get(key)!;
+    if (!list.includes(rawName)) list.push(rawName);
+  });
+
+  const ids = order.map((key) => idByKey.get(key) ?? key);
+  const names = order.map((key) => {
+    const list = namesByKey.get(key) ?? [];
+    return list.length > 1 ? list.join(' / ') : (list[0] ?? key);
+  });
+
+  return { ids, names };
+}
+
+function sortTourneyListByPriority(ids: string[], names: string[]) {
+  const priority: Record<string, number> = {
+    'australian open': 0,
+    'roland garros': 1,
+    'wimbledon': 2,
+    'us open': 3,
+  };
+  const items = names.map((name, i) => ({ id: ids[i], name }));
+  items.sort((a, b) => {
+    const pa = priority[normalizeTourneyName(a.name)] ?? 1000;
+    const pb = priority[normalizeTourneyName(b.name)] ?? 1000;
+    if (pa !== pb) return pa - pb;
+    return a.name.localeCompare(b.name);
+  });
+  return {
+    ids: items.map((i) => i.id),
+    names: items.map((i) => i.name),
+  };
+}
+
 interface Props {
   playerId: string;
   matches: Match[];
@@ -17,6 +85,8 @@ interface Props {
   onExplicitChange?: (key: string, value: string) => void;
   // Callback to notify parent about current selected filters (for dynamic headings etc.)
   onFiltersChange?: (filters: Record<string, string>) => void;
+  // Optional server-provided facets (SSR) to avoid a client-side fetch
+  serverFacets?: any;
 } 
 
 // ... later in the file, after filteredMatches and wins/losses state, add effect to notify parent when filters change
@@ -30,7 +100,7 @@ const TOURNEY_LEVELS = [
   { code: "O", label: "Olympics" },
 ];
 
-export default function MatchesFilterPanel({ playerId, matches, allMatches, displayedMatches, updateUrl, onExplicitChange, onFiltersChange, allMatchesFetched }: Props) {
+export default function MatchesFilterPanel({ playerId, matches, allMatches, displayedMatches, updateUrl, onExplicitChange, onFiltersChange, allMatchesFetched, serverFacets }: Props) {
   const searchParams = useSearchParams();
   const urlYear = searchParams?.get("year");
   const urlTourney = searchParams?.get("tourney");
@@ -61,7 +131,58 @@ export default function MatchesFilterPanel({ playerId, matches, allMatches, disp
   const [tourneyLevels, setTourneyLevels] = useState<string[]>([]);
   const [tourneyIds, setTourneyIds] = useState<string[]>([]);
   const [tourneyNames, setTourneyNames] = useState<string[]>([]);
-  const surfaces = ["Hard", "Clay", "Grass", "Carpet"];
+  const [availableSurfaceOptions, setAvailableSurfaceOptions] = useState<string[]>(["Hard", "Clay", "Grass", "Carpet"]);
+  const [facetsLoaded, setFacetsLoaded] = useState(false);
+  const [facets, setFacets] = useState<any>(null);
+
+  // Initialize facets: prefer server-provided facets (SSR) and skip client fetch when available; otherwise fetch lightweight facets client-side
+  const [fetchingFacets, setFetchingFacets] = useState(false);
+
+  useEffect(() => {
+    if (serverFacets) {
+      setFacets(serverFacets);
+      if (Array.isArray(serverFacets.years)) setAvailableYears(serverFacets.years.map((y: any) => String(y.value)));
+      if (Array.isArray(serverFacets.surfaces)) setAvailableSurfaceOptions(serverFacets.surfaces.map((s: any) => String(s.value)));
+      if (Array.isArray(serverFacets.levels)) setTourneyLevels(serverFacets.levels.map((l: any) => String(l.value)));
+      if (Array.isArray(serverFacets.tourneys)) {
+        const items = serverFacets.tourneys.map((t: any) => ({ id: String(t.id), name: t.name ?? String(t.id) }));
+        const { ids, names } = buildUniqueTourneyList(items);
+        const sorted = sortTourneyListByPriority(ids, names);
+        setTourneyIds(sorted.ids);
+        setTourneyNames(sorted.names);
+      }
+      setFacetsLoaded(true);
+      return;
+    }
+
+    let aborted = false;
+    setFetchingFacets(true);
+    (async () => {
+      try {
+        const res = await fetch(`/api/players/match-facets?id=${encodeURIComponent(playerId)}`, { cache: 'force-cache' });
+        if (!res.ok) throw new Error('facets fetch failed');
+        const j = await res.json();
+        if (aborted) return;
+        setFacets(j);
+        if (Array.isArray(j.years) && j.years.length) setAvailableYears(j.years.map((y: any) => String(y.value)));
+        if (Array.isArray(j.surfaces) && j.surfaces.length) setAvailableSurfaceOptions(j.surfaces.map((s: any) => String(s.value)));
+        if (Array.isArray(j.levels) && j.levels.length) setTourneyLevels(j.levels.map((l: any) => String(l.value)));
+        if (Array.isArray(j.tourneys) && j.tourneys.length) {
+          const items = j.tourneys.map((t: any) => ({ id: String(t.id), name: t.name ?? String(t.id) }));
+          const { ids, names } = buildUniqueTourneyList(items);
+          const sorted = sortTourneyListByPriority(ids, names);
+          setTourneyIds(sorted.ids);
+          setTourneyNames(sorted.names);
+        }
+        setFacetsLoaded(true);
+      } catch (e) {
+        // If facets fetch fails, fall back to computing options from the match list (as last resort)
+      } finally {
+        if (!aborted) setFetchingFacets(false);
+      }
+    })();
+    return () => { aborted = true; setFetchingFacets(false); };
+  }, [playerId, serverFacets]);
   const rounds = ["R128","R64","R32","R16","QF","SF","F","RR","3rd/4th","BR"];
 
   const initializedRef = useRef(false);
@@ -76,57 +197,120 @@ export default function MatchesFilterPanel({ playerId, matches, allMatches, disp
       return;
     }
 
+    // Only derive available options from `allMatches` when either:
+    // 1) we've fetched the full matches list (`allMatchesFetched`) OR
+    // 2) we already have server/client facets loaded (`facetsLoaded`)
+    // This prevents deriving options from the SSR preview slice (10 matches) before
+    // the server/client facets arrive.
+    if (!allMatchesFetched && !facetsLoaded) {
+      console.debug('[MatchesFilterPanel] skipping derive-from-allMatches: no full matches and no facets loaded');
+      return;
+    }
+
     if (!allMatches || allMatches.length === 0) return;
 
     // Compute the available options from the full (or partial) match set
     const years = Array.from(new Set(allMatches.map(m => m.year).filter((y): y is number => y != null)))
                        .sort((a,b) => b-a)
                        .map(String);
-    // if URL provided a year that's not in the available list, ensure it is present
-    setAvailableYears(prev => {
-      if (urlYear && !years.includes(urlYear)) return [urlYear, ...years];
-      return years;
-    });
-    console.log('[MatchesFilterPanel] availableYears, urlSurface:', years, urlSurface);
+    // Prefer facets when available; otherwise populate years from allMatches but ensure URL year remains present
+    if (!facetsLoaded) {
+      setAvailableYears(prev => {
+        if (urlYear && !years.includes(urlYear)) return [urlYear, ...years];
+        return years;
+      });
+    } else {
+      setAvailableYears(prev => {
+        const facetYears = facets?.years?.map((y: any) => String(y.value)) ?? [];
+        if (urlYear && !facetYears.includes(urlYear)) return [urlYear, ...facetYears];
+        return facetYears;
+      });
+    }
 
-    const availableLevels = TOURNEY_LEVELS.filter(l => allMatches.some(m => m.tourney_level === l.code));
-    setTourneyLevels(prev => {
-      const codes = availableLevels.map(l => l.code);
-      if (urlLevel && !codes.includes(urlLevel)) return [urlLevel, ...codes];
-      return codes;
-    });
+    if (!facetsLoaded) {
+      const availableLevels = TOURNEY_LEVELS.filter(l => allMatches.some(m => m.tourney_level === l.code));
+      setTourneyLevels(prev => {
+        const codes = availableLevels.map(l => l.code);
+        if (urlLevel && !codes.includes(urlLevel)) return [urlLevel, ...codes];
+        return codes;
+      });
+    } // else: tourney levels are populated from facets fetch
 
-    const map = new Map<string, Set<string>>();
+    // Build a map: tourney_id -> (name -> count) so we can pick a single canonical name per id
+    const nameCounts = new Map<string, Map<string, number>>();
     allMatches.forEach(m => {
       if (m.tourney_level === 'D') return;
       if (!m.tourney_id || !m.tourney_name) return;
-      const name = m.tourney_name.trim();
-      if (!map.has(m.tourney_id)) map.set(m.tourney_id, new Set([name]));
-      else map.get(m.tourney_id)!.add(name);
+      const rawName = (m.tourney_name || '').toString().trim();
+      if (!rawName) return;
+      const sub = nameCounts.get(m.tourney_id) ?? new Map<string, number>();
+      sub.set(rawName, (sub.get(rawName) ?? 0) + 1);
+      nameCounts.set(m.tourney_id, sub);
     });
 
-    let tourneys = Array.from(map.entries()).map(([id, namesSet]) => ({ id, name: Array.from(namesSet).join('/') }));
+    // For each tourney_id build a single label (raw names joined by ' / ' if multiple for the same id).
+    let tourneys = Array.from(nameCounts.entries()).map(([id, subMap]) => {
+      const entries = Array.from(subMap.entries());
+      entries.sort((a, b) => {
+        // prefer higher count, then stable alphabetical order
+        if (b[1] !== a[1]) return b[1] - a[1];
+        return a[0].localeCompare(b[0]);
+      });
+      const rawNames = entries.map(([name]) => name.trim()).filter(Boolean);
+      const seen = new Set<string>();
+      const uniqNames: string[] = [];
+      for (const n of rawNames) {
+        if (seen.has(n)) continue;
+        seen.add(n);
+        uniqNames.push(n);
+      }
+      const label = uniqNames.length > 1 ? uniqNames.join(' / ') : (uniqNames[0] ?? entries[0][0]);
+      const count = Array.from(subMap.values()).reduce((a, b) => a + b, 0);
+      return { id, name: label, count };
+    });
     if (urlTourney && !tourneys.some(t => t.id === urlTourney)) {
-      tourneys = [{ id: urlTourney, name: urlTourney }, ...tourneys];
+      tourneys = [{ id: urlTourney, name: urlTourney, count: 0 }, ...tourneys];
     }
 
-    const priorityOrder: Record<string, number> = { "580": 0, "520": 1, "540": 2, "560": 3, "605": 4 };
+    const priorityOrderByName: Record<string, number> = {
+      'australian open': 0,
+      'roland garros': 1,
+      'wimbledon': 2,
+      'us open': 3,
+    };
     tourneys.sort((a,b) => {
-      const pa = priorityOrder[a.id] ?? 1000;
-      const pb = priorityOrder[b.id] ?? 1000;
+      const na = normalizeTourneyName(a.name);
+      const nb = normalizeTourneyName(b.name);
+      const pa = priorityOrderByName[na] ?? 1000;
+      const pb = priorityOrderByName[nb] ?? 1000;
       if (pa !== pb) return pa - pb;
       return a.name.localeCompare(b.name);
     });
 
-    setTourneyIds(tourneys.map(t => t.id));
-    setTourneyNames(tourneys.map(t => t.name));
+    if (!facetsLoaded) {
+      const ids = tourneys.map(t => t.id);
+      const names = tourneys.map(t => t.name);
+      const { ids: uniqueIds, names: uniqueNames } = buildUniqueTourneyList(
+        ids.map((id, i) => ({ id, name: names[i] }))
+      );
+      const sorted = sortTourneyListByPriority(uniqueIds, uniqueNames);
+      setTourneyIds(sorted.ids);
+      setTourneyNames(sorted.names);
+    } else {
+      // Ensure URL tourney is included if not present in facets (keep list as-is)
+      if (urlTourney && !tourneyIds.includes(urlTourney)) {
+        setTourneyIds(prev => [urlTourney, ...prev]);
+        setTourneyNames(prev => [urlTourney, ...prev]);
+      }
+    }
 
     // Preserve current selections if user already interacted. If not, seed from URL if present.
     // If we already have full options populated, avoid overwriting current selections.
     if (!fullOptionsPopulatedRef.current) {
       setSelectedYear(prev => (prev && prev !== 'All' && years.includes(prev)) ? prev : (urlYear ?? prev ?? 'All'));
       setTourneyIdFilter(prev => (prev && prev !== 'All' && tourneys.some(t => t.id === prev)) ? prev : (urlTourney ?? prev ?? 'All'));
-      setTourneyLevelFilter(prev => (prev && prev !== 'All' && availableLevels.some(l => l.code === prev)) ? prev : (urlLevel ?? prev ?? 'All'));
+      // Use state-derived `tourneyLevels` rather than the block-scoped `availableLevels` which may be undefined when facets are used
+      setTourneyLevelFilter(prev => (prev && prev !== 'All' && tourneyLevels.includes(prev)) ? prev : (urlLevel ?? prev ?? 'All'));
 
       // seed surface from URL if present (respect existing user selection if any)
       setSurfaceFilter(prev => (prev && prev !== 'All') ? prev : (urlSurface ?? prev ?? 'All'));
@@ -301,6 +485,45 @@ useEffect(() => {
     return acc;
   }, {} as Record<string,string>);
 
+  // Final safety: ensure tourney_name is unique in the rendered filter list
+  const uniqueTourneyList = useMemo(() => {
+    const seen = new Set<string>();
+    const ids: string[] = [];
+    const names: string[] = [];
+    for (let i = 0; i < tourneyNames.length; i++) {
+      const name = (tourneyNames[i] ?? '').toString().trim();
+      if (!name) continue;
+      const key = normalizeTourneyName(name);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      ids.push(tourneyIds[i] ?? name);
+      names.push(name);
+    }
+    return { ids, names };
+  }, [tourneyIds, tourneyNames]);
+
+  // TEMP debug: log first 50 tourney names and normalized keys to trace duplicates
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'development') return;
+    const sample = tourneyNames.slice(0, 50).map((n) => ({
+      raw: n,
+      norm: normalizeTourneyName(String(n ?? '')),
+    }));
+    console.debug('[MatchesFilterPanel] tourneyNames sample', sample);
+    const counts = new Map<string, number>();
+    tourneyNames.forEach((n) => {
+      const key = normalizeTourneyName(String(n ?? ''));
+      if (!key) return;
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    });
+    const dupes = Array.from(counts.entries())
+      .filter(([, c]) => c > 1)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+      .map(([k, c]) => ({ key: k, count: c }));
+    console.debug('[MatchesFilterPanel] tourneyNames duplicates (top 10)', dupes);
+  }, [tourneyNames]);
+
   return (
     <div className="mb-0 text-sm pr-0">
       {tourneyIds.length > 0 && (
@@ -313,11 +536,11 @@ useEffect(() => {
             tourneyLevelLabels={tourneyLevelLabels}
             selectedLevel={tourneyLevelFilter}
             setSelectedLevel={setTourneyLevelFilter}
-            tourneyIds={tourneyIds}
-            tourneyNames={tourneyNames}
+            tourneyIds={uniqueTourneyList.ids}
+            tourneyNames={uniqueTourneyList.names}
             selectedTourneyId={tourneyIdFilter}
             setSelectedTourneyId={setTourneyIdFilter}
-            surfaces={surfaces}
+            surfaces={availableSurfaceOptions}
             selectedSurface={surfaceFilter}
             setSelectedSurface={setSurfaceFilter}
             rounds={rounds}

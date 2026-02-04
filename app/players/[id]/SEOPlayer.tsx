@@ -63,24 +63,31 @@ interface SEOPlayerProps {
   birthdate?: string | null;
   ioc?: string | null; // country IOC code
   birthplace?: string | null;
-  matches: MatchLite[]; // match già passati dal PlayerPage
+  matches?: MatchLite[]; // optional: small sample
+  // Optional server-provided summary to avoid requiring the full `matches` array
+  summary?: {
+    total?: number;
+    wins?: number;
+    losses?: number;
+    surfaceWins?: Record<string, number>;
+    surfaceLosses?: Record<string, number>;
+  };
 }
 
-export default function SEOPlayer({ playerId, slug, name, atpname, tab = 'overview', birthdate, ioc, birthplace, matches }: SEOPlayerProps) {
-  // filtered: escludi match con status === false
-  const filtered = (matches || []).filter((m) => m?.status !== false);
-  const total = filtered.length;
-  const wins = filtered.filter((m) => String(m.winner_id) === String(playerId)).length;
-  const losses = total - wins;
+export default function SEOPlayer({ playerId, slug, name, atpname, tab = 'overview', birthdate, ioc, birthplace, matches, summary }: SEOPlayerProps) {
+  // Prefer server-provided summary when available to avoid scanning large match arrays
+  const total = summary?.total ?? (matches || []).filter((m) => m?.status !== false).length;
+  const wins = summary?.wins ?? (matches || []).filter((m) => String(m.winner_id) === String(playerId)).length;
+  const losses = summary?.losses ?? (total - wins);
 
   const surf = (s?: string | null) => (s || '').toLowerCase();
-  const clayWins = filtered.filter((m) => String(m.winner_id) === String(playerId) && /clay/i.test(surf(m.surface))).length;
-  const hardWins = filtered.filter((m) => String(m.winner_id) === String(playerId) && /hard/i.test(surf(m.surface))).length;
-  const grassWins = filtered.filter((m) => String(m.winner_id) === String(playerId) && /grass/i.test(surf(m.surface))).length;
+  const clayWins = summary?.surfaceWins?.Clay ?? (matches || []).filter((m) => String(m.winner_id) === String(playerId) && /clay/i.test(surf(m.surface))).length;
+  const hardWins = summary?.surfaceWins?.Hard ?? (matches || []).filter((m) => String(m.winner_id) === String(playerId) && /hard/i.test(surf(m.surface))).length;
+  const grassWins = summary?.surfaceWins?.Grass ?? (matches || []).filter((m) => String(m.winner_id) === String(playerId) && /grass/i.test(surf(m.surface))).length;
 
-  const clayLosses = filtered.filter((m) => String(m.loser_id) === String(playerId) && /clay/i.test(surf(m.surface))).length;
-  const hardLosses = filtered.filter((m) => String(m.loser_id) === String(playerId) && /hard/i.test(surf(m.surface))).length;
-  const grassLosses = filtered.filter((m) => String(m.loser_id) === String(playerId) && /grass/i.test(surf(m.surface))).length;
+  const clayLosses = summary?.surfaceLosses?.Clay ?? (matches || []).filter((m) => String(m.loser_id) === String(playerId) && /clay/i.test(surf(m.surface))).length;
+  const hardLosses = summary?.surfaceLosses?.Hard ?? (matches || []).filter((m) => String(m.loser_id) === String(playerId) && /hard/i.test(surf(m.surface))).length;
+  const grassLosses = summary?.surfaceLosses?.Grass ?? (matches || []).filter((m) => String(m.loser_id) === String(playerId) && /grass/i.test(surf(m.surface))).length;
 
   const clayWR = (clayWins + clayLosses) > 0 ? Number(((clayWins / (clayWins + clayLosses)) * 100).toFixed(2)) : 0;
   const hardWR = (hardWins + hardLosses) > 0 ? Number(((hardWins / (hardWins + hardLosses)) * 100).toFixed(2)) : 0;

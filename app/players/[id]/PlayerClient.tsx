@@ -13,6 +13,7 @@ export default function PlayerClient(props: any) {
   const initialMatches = props.initialMatches;
   const initialHeading = props.initialHeading;
   const initialTotals = props.initialTotals;
+  const initialFacets = props.initialFacets;
 
   const [player, setPlayer] = useState<Player | null>(null);
   const [loading, setLoading] = useState(false);
@@ -301,6 +302,7 @@ export default function PlayerClient(props: any) {
         initialMatches={initialMatches}
         initialHeading={initialHeading}
         initialTotals={initialTotals}
+        initialFacets={initialFacets}
       />
 
       {/* Content */}

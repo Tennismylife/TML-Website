@@ -11,9 +11,10 @@ interface AllMatchesProps {
   initialMatches?: Match[];
   initialHeading?: string;
   initialTotals?: { totalWins?: number; totalLosses?: number };
+  initialFacets?: any;
 }
 
-export default function AllMatches({ playerId, initialMatches, initialHeading, initialTotals }: AllMatchesProps) {
+export default function AllMatches({ playerId, initialMatches, initialHeading, initialTotals, initialFacets }: AllMatchesProps) {
   const search = useSearchParams();
   const router = useRouter();
 
@@ -31,6 +32,8 @@ export default function AllMatches({ playerId, initialMatches, initialHeading, i
   const [showAll, setShowAll] = useState<boolean>(false);
   const [loadingAllMatches, setLoadingAllMatches] = useState<boolean>(false);
   const [allMatchesFetched, setAllMatchesFetched] = useState<boolean>(false);
+  // Client-fetched facets (used to populate filters when server-side facets are not present)
+  const [clientFacets, setClientFacets] = useState<any>(initialFacets ?? null);
   // Guard to avoid duplicate concurrent full-match fetches
   const fetchingAllRef = useRef<boolean>(false);
   // show all matches by default (allow table to overflow if needed)
@@ -226,6 +229,9 @@ export default function AllMatches({ playerId, initialMatches, initialHeading, i
   // there are no filters and no SSR-provided initial data, and only fetch the full set on demand
   // (Show All) or in the background for W-L and filter options.
 
+  // show only last N matches by default
+  const DEFAULT_INITIAL_COUNT = 10;
+
   // Build endpoint and include a `limit` param when we want only the latest N matches
   const endpoint = useMemo(() => {
     const params = new URLSearchParams(sanitizedFilters);
@@ -259,9 +265,6 @@ export default function AllMatches({ playerId, initialMatches, initialHeading, i
   }, [endpoint, initialMatches, sanitizedFilters]);
 
   // Helpful debug: surface the currently active endpoint and why
-  useEffect(() => {
-    console.log('[AllMatches] endpoint resolved', { endpoint, initialMatches: !!initialMatches, showAll, sanitizedFilters });
-  }, [endpoint, initialMatches, showAll, sanitizedFilters]);
 
   // Debug when `matches` or `allMatches` change so we can see unexpected replacements
   useEffect(() => {
@@ -317,20 +320,21 @@ export default function AllMatches({ playerId, initialMatches, initialHeading, i
           // full set as fetched — it's just a seed to populate filter options.
           setAllMatches(data);
 
-          // After seeding from a filtered initial payload, fetch the full unfiltered
-          // matches in background so filter panels can show all possible options.
+          // After seeding from a filtered initial payload, fetch lightweight facets
+          // in background so filter panels can show all possible options without downloading
+          // the player's full match history.
           if (!allMatchesFetched && !fetchingAllRef.current) {
             fetchingAllRef.current = true;
             (async () => {
               try {
-                console.debug('[AllMatches] background fetching FULL matches after filtered seed');
-                const resFull = await fetch(`/api/players/allmatches?id=${playerId}`, { cache: 'no-store' });
-                if (!resFull.ok) throw new Error(`HTTP ${resFull.status}`);
-                const fullData: Match[] = await resFull.json();
-                setAllMatches(fullData);
-                setAllMatchesFetched(true);
+                console.debug('[AllMatches] background fetching lightweight facets after filtered seed');
+                const resFacets = await fetch(`/api/players/match-facets?id=${playerId}`, { cache: 'force-cache' });
+                if (resFacets.ok) {
+                  const j = await resFacets.json();
+                  setClientFacets(j);
+                }
               } catch (err: any) {
-                console.error('[AllMatches] background full fetch failed', err);
+                console.error('[AllMatches] background facets fetch failed', err);
               } finally {
                 fetchingAllRef.current = false;
               }
@@ -369,57 +373,48 @@ export default function AllMatches({ playerId, initialMatches, initialHeading, i
 
     // If user requested Show All, ensure we display the full set
     if (showAll) {
-      if (allMatches && allMatches.length > 0) {
-        setMatches(allMatches);
+      const controller = new AbortController();
+      (async () => {
+        try {
+          // Always refetch the full, unfiltered list when filters are cleared
+          const res = await fetch(`/api/players/allmatches?id=${playerId}`, { signal: controller.signal, cache: "no-store" });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data: Match[] = await res.json();
+          setAllMatches(data);
+          setMatches(data);
+          setAllMatchesFetched(true);
+        } catch (err: any) {
+          if (!controller.signal.aborted) console.error(err);
+        }
+      })();
+      return () => controller.abort();
+    }
+
+    // If Show All is NOT active and filters are cleared, reset to preview slice
+    if (!showAll) {
+      if (initialMatches && initialMatches.length > 0) {
+        setMatches(initialMatches);
         return;
       }
 
-      if (!allMatchesFetched) {
-        const controller = new AbortController();
-        (async () => {
-          try {
-            const res = await fetch(`/api/players/allmatches?id=${playerId}`, { signal: controller.signal, cache: "no-store" });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data: Match[] = await res.json();
-            setAllMatches(data);
-            setMatches(data);
-            setAllMatchesFetched(true);
-          } catch (err: any) {
-            if (!controller.signal.aborted) console.error(err);
-          }
-        })();
-        return () => controller.abort();
-      }
-
-      return;
+      const controller = new AbortController();
+      (async () => {
+        try {
+          const res = await fetch(`/api/players/allmatches?id=${playerId}&limit=10`, { signal: controller.signal, cache: "no-store" });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data: Match[] = await res.json();
+          setMatches(data);
+        } catch (err: any) {
+          if (!controller.signal.aborted) console.error(err);
+        }
+      })();
+      return () => controller.abort();
     }
   }, [sanitizedFilters, allMatches, allMatchesFetched, playerId, showAll]);
 
-  // Background fetch: load full match list in the background to populate filters and
-  // enable accurate W-L calculations for filtered views. This runs after mount and will
-  // not replace the visible `matches` list unless the user requested Show All.
-  useEffect(() => {
-    if (allMatchesFetched) return;
-    if (fetchingAllRef.current) return;
-
-    fetchingAllRef.current = true;
-    const controller = new AbortController();
-    (async () => {
-      try {
-        console.debug('[AllMatches] background fetching full matches for filters/W-L');
-        const res = await fetch(`/api/players/allmatches?id=${playerId}`, { signal: controller.signal, cache: "no-store" });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data: Match[] = await res.json();
-        setAllMatches(data);
-        setAllMatchesFetched(true);
-      } catch (err: any) {
-        if (!controller.signal.aborted) console.error(err);
-      } finally {
-        fetchingAllRef.current = false;
-      }
-    })();
-    return () => controller.abort();
-  }, [playerId, allMatchesFetched]);
+  // Intentionally do NOT perform a background fetch of the full matches list on mount.
+  // Fetching the full history is only performed when the user explicitly clicks "Show All".
+  // If filter options are needed, we fetch lightweight facets on demand (client or SSR).
 
   const sortedMatches = useMemo(() => {
     if (sortKey === null) return [...matches];
@@ -508,9 +503,6 @@ export default function AllMatches({ playerId, initialMatches, initialHeading, i
   // extra offset (pixels) to push filters further down; tweak this value if you want larger gap
   const extraOffsetPx = 24;
 
-  // show only last N matches by default
-  const DEFAULT_INITIAL_COUNT = 10;
-
   const queuedPayloadRef = useRef<Record<string,string> | null>(null);
 
   const updateUrl = (filters: Record<string, string | number>) => {
@@ -570,6 +562,7 @@ export default function AllMatches({ playerId, initialMatches, initialHeading, i
     }
   };
 
+
   // explicit change handler: used when user explicitly clicks a filter (will force delete even if it existed initially)
   const updateUrlExplicit = (key: string, value: string | number) => {
     // If not on matches tab, ignore explicit updates to avoid clobbering navigation
@@ -599,16 +592,59 @@ export default function AllMatches({ playerId, initialMatches, initialHeading, i
       explicitDeletedRef.current.delete(key);
     }
     // Keep local filter state in sync for immediate H1/title updates
-    setCurrentFilters(prev => ({
-      ...(prev || {}),
-      [key]: !value || value === "All" || value === "" ? "All" : String(value)
-    }));
+    setCurrentFilters(prev => {
+      const next = { ...(prev || {}) } as Record<string, string>;
+      if (!value || value === "All" || value === "") {
+        delete next[key];
+      } else {
+        next[key] = String(value);
+      }
+      return next;
+    });
     const newSearch = searchParams.toString();
     const newUrl = window.location.pathname + (newSearch ? '?' + newSearch : '');
     if (typeof window !== 'undefined' && window.history && typeof window.history.replaceState === 'function') {
       window.history.replaceState(null, '', newUrl);
     } else {
       router.replace(newUrl, { scroll: false });
+    }
+
+    // If no filters remain, reset matches immediately
+    const hasFilters = SUPPORTED_FILTER_KEYS.some((k) => searchParams.has(k));
+    if (!hasFilters) {
+      if (showAll) {
+        if (allMatches && allMatches.length > 0) {
+          setMatches(allMatches);
+        } else {
+          (async () => {
+            try {
+              const res = await fetch(`/api/players/allmatches?id=${playerId}`, { cache: 'no-store' });
+              if (!res.ok) throw new Error(`HTTP ${res.status}`);
+              const data: Match[] = await res.json();
+              setAllMatches(data);
+              setMatches(data);
+              setAllMatchesFetched(true);
+            } catch (err: any) {
+              console.error(err);
+            }
+          })();
+        }
+      } else {
+        if (initialMatches && initialMatches.length > 0) {
+          setMatches(initialMatches);
+        } else {
+          (async () => {
+            try {
+              const res = await fetch(`/api/players/allmatches?id=${playerId}&limit=10`, { cache: 'no-store' });
+              if (!res.ok) throw new Error(`HTTP ${res.status}`);
+              const data: Match[] = await res.json();
+              setMatches(data);
+            } catch (err: any) {
+              console.error(err);
+            }
+          })();
+        }
+      }
     }
   };
 
@@ -660,14 +696,16 @@ export default function AllMatches({ playerId, initialMatches, initialHeading, i
         fetchingAllRef.current = true;
         setLoadingAllMatches(true);
         try {
+          // Fetch the full unfiltered matches list (user explicitly requested Show All)
           const res = await fetch(`/api/players/allmatches?id=${playerId}`, { cache: "no-store" });
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const data: Match[] = await res.json();
           setAllMatches(data);
           setMatches(data);
+          // Mark fetched: full list is in memory
           setAllMatchesFetched(true);
         } catch (err: any) {
-          console.error(err);
+          console.error('[AllMatches] full fetch after Show All failed', err);
         } finally {
           setLoadingAllMatches(false);
           fetchingAllRef.current = false;
@@ -697,6 +735,7 @@ export default function AllMatches({ playerId, initialMatches, initialHeading, i
                 updateUrl={updateUrl}
                 onExplicitChange={updateUrlExplicit}
                 onFiltersChange={setCurrentFilters}
+                serverFacets={initialFacets ?? clientFacets}
               />
             </div>
           </div>

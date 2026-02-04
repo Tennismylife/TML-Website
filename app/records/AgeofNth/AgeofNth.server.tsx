@@ -2,6 +2,7 @@ import React from 'react'
 import ServerWrapper from '../../../components/ServerWrapper'
 import AgeofNth from './AgeofNth'
 import { metadataBase } from '../../../lib/site'
+import { isRecordsSsrPrefetchEnabled } from '../../../lib/recordsSsrPrefetch'
 
 type SearchParams = Record<string, string | string[] | undefined>
 
@@ -40,11 +41,13 @@ export default async function AgeofNthServer({ searchParams, ...serverProps }: {
     selectedBestOf !== null ||
     nthParam !== null
 
+  const prefetchEnabled = isRecordsSsrPrefetchEnabled()
   // Prefetch ageofnth data for the active subtab using selected filters so SSR includes filtered table
   const prefetchedData: Record<string, any[] | undefined> = {}
-  try {
+  if (prefetchEnabled) {
+    try {
     const params = new URLSearchParams()
-    params.set('limit', '1000')
+    params.set('limit', '100')
     params.set('n', initialNth.toString())
     params.set('x', initialNth.toString())
     for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
@@ -64,13 +67,14 @@ export default async function AgeofNthServer({ searchParams, ...serverProps }: {
     if (activeSubTab === 'played') prefetchedData.played = await fetchJson(`/api/records/ageofnth/played${params.toString() ? '?' + params.toString() : ''}`)
     if (activeSubTab === 'entries') prefetchedData.entries = await fetchJson(`/api/records/ageofnth/entries${params.toString() ? '?' + params.toString() : ''}`)
     if (activeSubTab === 'titles') prefetchedData.titles = await fetchJson(`/api/records/ageofnth/titles${params.toString() ? '?' + params.toString() : ''}`)
-    if (activeSubTab === 'slams') prefetchedData.slams = await fetchJson(`/api/records/ageofnth/inslams${params.toString() ? '?' + params.toString() : ''}`)
-    if (activeSubTab === 'round' && selectedRounds) prefetchedData.round = await fetchJson(`/api/records/ageofnth/rounds${params.toString() ? '?' + params.toString() : ''}`)
-  } catch (err) {
-    // best-effort prefetch
+      if (activeSubTab === 'slams') prefetchedData.slams = await fetchJson(`/api/records/ageofnth/inslams${params.toString() ? '?' + params.toString() : ''}`)
+      if (activeSubTab === 'round' && selectedRounds) prefetchedData.round = await fetchJson(`/api/records/ageofnth/rounds${params.toString() ? '?' + params.toString() : ''}`)
+    } catch (err) {
+      // best-effort prefetch
+    }
   }
 
-  const fetchEnabled = serverProps.fetchEnabled ?? false
+  const fetchEnabled = serverProps.fetchEnabled ?? !prefetchEnabled
   const fetchRequestId = serverProps.fetchRequestId ?? (fetchEnabled ? String(Date.now()) : null)
 
   return (

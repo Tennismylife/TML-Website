@@ -160,19 +160,52 @@ export default function FilterBar(props: FilterBarProps) {
     scoreFilter, setScoreFilter,
   } = props;
 
+  const normalizeLabel = (label: string) =>
+    label
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[\u200B-\u200D\uFEFF]/g, '')
+      .replace(/[^\p{L}\p{N}]+/gu, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase();
+
   const createChildren = (options: string[], setter: (val: string) => void) => [
     { label: "All", value: "All", setter },
     ...options.map(v => ({ label: v, value: v, setter }))
   ];
 
-  const tourneyChildren: FilterNode[] = [
-    { label: "All", value: "All", setter: setSelectedTourneyId },
-    ...tourneyIds.map((id, idx) => ({
-      label: tourneyNames[idx] || id,
-      value: id,
-      setter: setSelectedTourneyId
-    }))
-  ];
+  const tourneyChildren: FilterNode[] = (() => {
+    const seen = new Set<string>();
+    const items: Array<{ label: string; value: string }> = [];
+    tourneyIds.forEach((id, idx) => {
+      const rawLabel = (tourneyNames[idx] || id || '').toString().trim();
+      if (!rawLabel) return;
+      const key = normalizeLabel(rawLabel);
+      if (seen.has(key)) return;
+      seen.add(key);
+      items.push({ label: rawLabel, value: id });
+    });
+
+    const priorityOrder: Record<string, number> = {
+      'australian open': 0,
+      'roland garros': 1,
+      'wimbledon': 2,
+      'us open': 3,
+    };
+
+    items.sort((a, b) => {
+      const pa = priorityOrder[normalizeLabel(a.label)] ?? 1000;
+      const pb = priorityOrder[normalizeLabel(b.label)] ?? 1000;
+      if (pa !== pb) return pa - pb;
+      return a.label.localeCompare(b.label);
+    });
+
+    return [
+      { label: "All", value: "All", setter: setSelectedTourneyId },
+      ...items.map((item) => ({ label: item.label, value: item.value, setter: setSelectedTourneyId })),
+    ];
+  })();
 
   const levelChildren: FilterNode[] = [
     { label: "All", value: "All", setter: setSelectedLevel },

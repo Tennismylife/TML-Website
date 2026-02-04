@@ -2,6 +2,7 @@ import React from 'react'
 import ServerWrapper from '../../../components/ServerWrapper'
 import Ages from './Ages'
 import { metadataBase } from '../../../lib/site'
+import { isRecordsSsrPrefetchEnabled } from '../../../lib/recordsSsrPrefetch'
 
 type SearchParams = Record<string, string | string[] | undefined>
 
@@ -20,14 +21,16 @@ export default async function AgesServer({ searchParams, ...serverProps }: { sea
 
   const hasFilters = (selectedSurfaces.size > 0) || (selectedLevels.size > 0) || (selectedRounds ? true : false)
 
+  const prefetchEnabled = isRecordsSsrPrefetchEnabled()
   // Prefetch ages data for the active subtab using selected filters so SSR includes the filtered table
   const prefetchedData: Record<string, any[] | undefined> = {}
-  try {
+  if (prefetchEnabled) {
+    try {
     const params = new URLSearchParams()
     for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
     for (const l of Array.from(selectedLevels)) params.append('level', l)
     if (selectedRounds) params.set('round', selectedRounds)
-    params.set('limit', '1000')
+    params.set('limit', '100')
     const type = activeSubTab?.toLowerCase().includes('youngest') ? 'youngest' : 'oldest'
     params.set('type', type)
 
@@ -35,17 +38,18 @@ export default async function AgesServer({ searchParams, ...serverProps }: { sea
     const endpoint = isWinners ? '/api/records/ages/winners' : '/api/records/ages/maindraw'
     const apiUrl = new URL(`${endpoint}${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
     const res = await fetch(apiUrl, { cache: 'no-store' })
-    if (res.ok) {
-      const data = await res.json()
-      const key = isWinners ? (type === 'youngest' ? 'youngestWinners' : 'oldestWinners') : (type === 'youngest' ? 'youngestPlayers' : 'oldestPlayers')
-      if (Array.isArray((data as any)[key])) prefetchedData[activeSubTab] = (data as any)[key]
+      if (res.ok) {
+        const data = await res.json()
+        const key = isWinners ? (type === 'youngest' ? 'youngestWinners' : 'oldestWinners') : (type === 'youngest' ? 'youngestPlayers' : 'oldestPlayers')
+        if (Array.isArray((data as any)[key])) prefetchedData[activeSubTab] = (data as any)[key]
+      }
+    } catch (err) {
+      // ignore prefetch errors
     }
-  } catch (err) {
-    // ignore prefetch errors
   }
 
-  const fetchEnabled = false
-  const fetchRequestId = serverProps.fetchRequestId ?? null
+  const fetchEnabled = serverProps.fetchEnabled ?? !prefetchEnabled
+  const fetchRequestId = serverProps.fetchRequestId ?? (fetchEnabled ? String(Date.now()) : null)
 
   return (
     <ServerWrapper

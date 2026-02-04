@@ -2,6 +2,7 @@ import React from 'react'
 import ServerWrapper from '../../../components/ServerWrapper'
 import H2H from './H2H'
 import { metadataBase } from '../../../lib/site'
+import { isRecordsSsrPrefetchEnabled } from '../../../lib/recordsSsrPrefetch'
 
 type SearchParams = Record<string, string | string[] | undefined>
 
@@ -31,9 +32,11 @@ export default async function H2HServer({ searchParams, ...serverProps }: { sear
     !!selectedRounds ||
     selectedBestOf !== null
 
+  const prefetchEnabled = isRecordsSsrPrefetchEnabled()
   // Prefetch H2H data for the active subtab using selected filters so SSR includes filtered results
   const prefetchedData: Record<string, any[] | undefined> = {}
-  try {
+  if (prefetchEnabled) {
+    try {
     const params = new URLSearchParams()
     for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
     for (const l of Array.from(selectedLevels)) params.append('level', l)
@@ -63,14 +66,15 @@ export default async function H2HServer({ searchParams, ...serverProps }: { sear
     if (activeSubTab === 'tournament') {
       prefetchedData.tournament = await fetchArray(`/api/records/h2h/sametournament${params.toString() ? '?' + params.toString() : ''}`, 'h2h_tourney')
     }
-    if (activeSubTab === 'timespan') {
-      prefetchedData.timespan = await fetchArray(`/api/records/h2h/timespan${params.toString() ? '?' + params.toString() : ''}`, 'h2hTimespans')
+      if (activeSubTab === 'timespan') {
+        prefetchedData.timespan = await fetchArray(`/api/records/h2h/timespan${params.toString() ? '?' + params.toString() : ''}`, 'h2hTimespans')
+      }
+    } catch (err) {
+      // ignore
     }
-  } catch (err) {
-    // ignore
   }
 
-  const fetchEnabled = serverProps.fetchEnabled ?? false
+  const fetchEnabled = serverProps.fetchEnabled ?? !prefetchEnabled
   const fetchRequestId = serverProps.fetchRequestId ?? (fetchEnabled ? String(Date.now()) : null)
 
   return (

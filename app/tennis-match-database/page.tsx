@@ -1,5 +1,5 @@
 import TennisMatchDatabaseClient from '@/components/TennisMatchDatabaseClient';
-import DataFileListClient from '@/components/DataFileListClient';
+import DataFileListClientWrapper from './DataFileListClientWrapper';
 
 import fs from 'fs';
 import path from 'path';
@@ -96,7 +96,7 @@ export default function Page() {
 
       {/* Show full file list (client, non-SSR) so it's immediately visible */}
       <div style={{ marginTop: 18 }}>
-        <DataFileListClient full={true} />
+        <DataFileListClientWrapper full={true} />
       </div>
 
       {/* Documentation section (full-width background, content centered) */}

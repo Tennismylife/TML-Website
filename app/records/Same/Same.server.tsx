@@ -2,6 +2,7 @@ import React from 'react'
 import ServerWrapper from '../../../components/ServerWrapper'
 import Same from './Same'
 import { metadataBase } from '../../../lib/site'
+import { isRecordsSsrPrefetchEnabled } from '../../../lib/recordsSsrPrefetch'
 
 type SearchParams = Record<string, string | string[] | undefined>
 
@@ -29,15 +30,17 @@ export default async function SameServer({ searchParams, ...serverProps }: { sea
     return selectedSurfaces.size > 0 || selectedLevels.size > 0 || !!selectedRounds || selectedBestOf !== null
   })()
 
+  const prefetchEnabled = isRecordsSsrPrefetchEnabled()
   // Prefetch Same results with selected filters so SSR includes filtered table
   const prefetchedData: Record<string, any[] | undefined> = {}
-  try {
+  if (prefetchEnabled) {
+    try {
     const params = new URLSearchParams()
     for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
     for (const l of Array.from(selectedLevels)) params.append('level', l)
     if (selectedRounds) params.set('round', selectedRounds)
     if (selectedBestOf !== null) params.set('best_of', String(selectedBestOf))
-    params.set('limit', '1000')
+    params.set('limit', '100')
 
     // Helper to try metadataBase first, then localhost in development
     async function tryFetchPath(path: string) {
@@ -90,19 +93,20 @@ export default async function SameServer({ searchParams, ...serverProps }: { sea
       }
     }
 
-    if (activeSubTab === 'round' && selectedRounds) {
-      params.set('round', selectedRounds)
-      const res = await tryFetchPath(`/api/records/same/rounds${params.toString() ? '?' + params.toString() : ''}`)
-      if (res && res.ok) {
-        const json = await res.json()
-        if (Array.isArray(json)) prefetchedData.round = json
+      if (activeSubTab === 'round' && selectedRounds) {
+        params.set('round', selectedRounds)
+        const res = await tryFetchPath(`/api/records/same/rounds${params.toString() ? '?' + params.toString() : ''}`)
+        if (res && res.ok) {
+          const json = await res.json()
+          if (Array.isArray(json)) prefetchedData.round = json
+        }
       }
+    } catch (err) {
+      // best-effort prefetch
     }
-  } catch (err) {
-    // best-effort prefetch
   }
 
-  const fetchEnabled = serverProps.fetchEnabled ?? false
+  const fetchEnabled = serverProps.fetchEnabled ?? !prefetchEnabled
   const fetchRequestId = serverProps.fetchRequestId ?? (fetchEnabled ? String(Date.now()) : null)
 
   return (
