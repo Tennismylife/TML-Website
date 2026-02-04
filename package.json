@@ -31,6 +31,7 @@
     "test:integration:match-visibility": "node ./tests/integration/match-visibility.spec.js",
     "start:detached": "node scripts/start-detached.js",
     "stop:detached": "node scripts/stop-detached.js",
+    "check-redirects": "node scripts/check-redirects.js",
     "start:standalone": "node scripts/start-standalone.js"
   },
   "dependencies": {
