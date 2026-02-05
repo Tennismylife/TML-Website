@@ -27,6 +27,8 @@ type NavItem = {
 };
 
 import Card from '@/components/Card'
+import BlogCard from '@/components/BlogCard'
+import { getAllPosts } from '@/lib/blog';
 
 const METADATA_BASE = process.env.NEXT_PUBLIC_SITE_ORIGIN ?? (process.env.NODE_ENV === 'production' ? 'https://stats.tennismylife.org' : 'http://localhost:3000');
 
@@ -52,7 +54,8 @@ export const metadata = {
   alternates: { canonical: '/' }
 } as const; 
 
-export default function HomePage() {
+export default async function HomePage() {
+
   const navItems: NavItem[] = [
     { href: "/tournaments", title: "Tournaments", subtitle: "Calendar & Results", description: "Browse upcoming and past tournaments with full draws, schedules, surfaces, and final results. Filter by level (Grand Slam, ATP 1000/500/250) and view match-by-match details.", colorClass: "text-rose-400 group-hover:text-rose-300", accentColor: "#fb7185", icon: (
       <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
@@ -99,6 +102,12 @@ export default function HomePage() {
     { href: "/tennis-match-database", title: "TML Database", subtitle: "Official Match DB", description: "Official TennisMyLife match database page with CSV downloads, documentation, and dataset access.", colorClass: "text-slate-400 group-hover:text-slate-300", accentColor: "#94a3b8", icon: (
       <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor" stroke="none">
         <path d="M12 .297c-6.6 0-12 5.4-12 12 0 5.3 3.4 9.8 8.2 11.4.6.1.8-.3.8-.6v-2c-3.3.7-4-1.4-4-1.4-.6-1.5-1.4-1.9-1.4-1.9-1.1-.8.1-.8.1-.8 1.2.1 1.9 1.3 1.9 1.3 1.1 1.9 2.9 1.4 3.6 1 .1-.8.4-1.4.8-1.7-2.7-.3-5.6-1.4-5.6-6 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2.9-.3 1.8-.4 2.8-.4s1.9.1 2.8.4c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.8 1.2 3.1 0 4.6-2.9 5.7-5.6 6 .5.4.9 1.1.9 2.3v3.5c0 .3.2.7.8.6 4.8-1.6 8.2-6.2 8.2-11.4 0-6.6-5.4-12-12-12z" />
+      </svg>
+    )}, 
+    { href: "/blog", title: "Blog", subtitle: "Articles & Analysis", description: "In-depth articles and commentary on tennis statistics, methods and insights.", colorClass: "text-indigo-400 group-hover:text-indigo-300", accentColor: "#818cf8", icon: (
+      <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 20h9" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16M3 8h9M3 16h9" />
       </svg>
     )}, 
   ];
@@ -197,6 +206,8 @@ export default function HomePage() {
       </div>
 
       <LatestMatchesClient />
+
+
 
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">

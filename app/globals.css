@@ -256,3 +256,66 @@ tr:hover td {
   fill: #ffffff !important;
 }
 
+/* ----------------------
+   Code block (Shiki) styles
+   ---------------------- */
+
+/* Anchor link styling for headings */
+h1 .anchor, h2 .anchor, h3 .anchor, h4 .anchor, h5 .anchor, h6 .anchor { display: inline-block; margin-left: .5rem; color: #94a3b8; font-weight: 600; opacity: 0; transition: opacity .15s ease; text-decoration: none; }
+h1:hover .anchor, h2:hover .anchor, h3:hover .anchor, h4:hover .anchor, h5:hover .anchor, h6:hover .anchor { opacity: 1; }
+
+/* Simple TOC styling */
+.card aside { padding: .75rem; }
+.card ul { list-style: none; padding-left: 0; margin: 0; }
+.card li { margin-bottom: .25rem; }
+.card a { font-size: .95rem; }
+
+/* Use high-contrast dark surface for highlighted code */
+.shiki, pre.shiki, .prose pre {
+  background: linear-gradient(180deg, #0b1220 0%, #0f1720 100%);
+  color: #e6eef6;
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 0.5rem;
+  padding: 0.8rem 1rem;
+  overflow: auto;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.6);
+  margin: 1rem 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace;
+  font-size: .92rem;
+  line-height: 1.45;
+}
+
+/* Make inline code readable */
+code, .prose code {
+  background: rgba(255,255,255,0.03);
+  padding: .15rem .4rem;
+  border-radius: .35rem;
+  font-size: .95em;
+}
+
+/* Make each line comfortable to read */
+.shiki .line, pre.shiki code > span, pre.shiki code span {
+  display: block;
+  padding-left: .5rem;
+  padding-right: .5rem;
+}
+
+/* subtle hover on lines */
+.shiki .line:hover { background: rgba(255,255,255,0.01); }
+
+/* Optional language badge if present */
+.code-badge {
+  position: absolute;
+  right: .5rem;
+  top: .5rem;
+  background: rgba(0,0,0,0.24);
+  color: #e6eef6;
+  border-radius: .375rem;
+  padding: .15rem .5rem;
+  font-size: .75rem;
+  pointer-events: none;
+}
+
+/* Make pre container positionable for badges */
+pre.shiki { position: relative; }
+

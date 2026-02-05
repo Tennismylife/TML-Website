@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<channel>
+  <title>Tennis My Life — Blog</title>
+  <link>https://stats.tennismylife.org/blog</link>
+  <description>Articles and commentary on tennis statistics.</description>
+  <lastBuildDate>Thu, 05 Feb 2026 01:41:28 GMT</lastBuildDate>
+  <item>
+    <title>2026-02-04-alcaraz-wins-australian-open-youngest-career-grand-slam</title>
+    <link>https://stats.tennismylife.org/blog/2026-02-04-alcaraz-wins-australian-open-youngest-career-grand-slam</link>
+    <guid isPermaLink="true">https://stats.tennismylife.org/blog/2026-02-04-alcaraz-wins-australian-open-youngest-career-grand-slam</guid>
+    <pubDate>Thu, 05 Feb 2026 01:41:28 GMT</pubDate>
+    <description></description>
+    <content:encoded><![CDATA[<p>import Callout from '@/components/mdx/Callout' import Chart from '@/components/mdx/Chart'</p>
+<p>&lt;div className="text-center"&gt; &lt;picture&gt; &lt;source srcSet="/blog/img/alcaraz-ao-2026-400.webp" media="(max-width:640px)" type="image/webp" /&gt; &lt;source srcSet="/blog/img/alcaraz-ao-2026-800.webp" type="image/webp" /&gt; &lt;img src="/blog/img/alcaraz-ao-2026-400.jpg" alt="Illustration of Carlos Alcaraz celebrating his Australian Open 2026 victory" className="mx-auto max-w-xs rounded-md mb-6" loading="lazy" /&gt; &lt;/picture&gt; &lt;/div&gt;</p>
+<p>&lt;p&gt; At &lt;strong&gt;22 years and 272 days&lt;/strong&gt;, &lt;a href="/players/carlos-alcaraz"&gt;Carlos Alcaraz&lt;/a&gt; captured the &lt;a href="/tournaments/australian-open/2026"&gt;Australian Open 2026&lt;/a&gt;, defeating &lt;a href="/players/novak-djokovic"&gt;Novak Djokovic&lt;/a&gt;. After dropping the first set, Alcaraz elevated his game, dominated key rallies, and controlled the pivotal moments of the match. For reference, the full &lt;strong&gt;Alcaraz Australian Open 2026 result&lt;/strong&gt; and the specific &lt;a href="/h2h/novak-djokovic-vs-carlos-alcaraz"&gt;&lt;strong&gt;Alcaraz vs Djokovic 2026 final score&lt;/strong&gt;&lt;/a&gt; were 2–6, 6–2, 6–3, 7–5. &lt;/p&gt;</p>
+<p>&lt;Callout type="info"&gt; Carlos Alcaraz is now the &lt;strong&gt;youngest Grand Slam winner men’s tennis&lt;/strong&gt; has seen to complete a &lt;strong&gt;Career Grand Slam&lt;/strong&gt;, cementing his place among tennis legends. &lt;/Callout&gt;</p>
+<p>---</p>
+<p>&lt;div class="text-center"&gt; &lt;h2 class="inline-block my-6 text-2xl font-bold pb-2"&gt;Youngest to Complete a Career Grand Slam&lt;/h2&gt; &lt;/div&gt; &lt;p&gt; At 22y 272d, Alcaraz has won all four majors faster than any player in history, surpassing previous records held by Nadal, Djokovic, and Federer. &lt;/p&gt;</p>
+<p>&lt;div class="text-center"&gt; &lt;h2 class="inline-block my-6 text-2xl font-bold pb-2"&gt;7 Grand Slam Titles at 22y 272d&lt;/h2&gt; &lt;/div&gt; &lt;p&gt; Alcaraz holds &lt;strong&gt;7 Grand Slam titles&lt;/strong&gt;, surpassing legends like Nadal and Borg at the same age. &lt;/p&gt;</p>
+<p>| Player |Grand Slam Titles | |------------ | ------------| | 🇪🇸 Carlos Alcaraz |  7 | | 🇪🇸 Rafael Nadal | 6 | | 🇸🇪 Bjorn Borg | 6 |</p>
+<p>➡️ &lt;a href="https://stats.tennismylife.org/records/atage/titles?age=22.745&amp;level=G" target="_blank"&gt;Check the stat&lt;/a&gt;</p>
+<p>&lt;div class="text-center"&gt; &lt;h2 class="inline-block my-6 text-2xl font-bold pb-2"&gt;Fewest Slams Needed to Win 7 Titles&lt;/h2&gt; &lt;/div&gt; &lt;p&gt; Only &lt;strong&gt;20 Slam tournaments&lt;/strong&gt; were needed for Alcaraz to reach 7 titles, matching Bjorn Borg's record. &lt;/p&gt; ➡️ &lt;a href="https://stats.tennismylife.org/records/neededto/titles?level=G&amp;n=7" target="_blank"&gt;Check the stats&lt;/a&gt;</p>
+<p>&lt;div class="text-center"&gt; &lt;h2 class="inline-block my-6 text-2xl font-bold pb-2"&gt;Dominant Start in Slam Finals&lt;/h2&gt; &lt;/div&gt; &lt;p&gt; Alcaraz has won &lt;strong&gt;7 of his first 8 Slam finals&lt;/strong&gt;, a feat previously achieved only by Federer and Cochet. &lt;/p&gt;</p>
+<p>&lt;div class="text-center"&gt; &lt;h2 class="inline-block my-6 text-2xl font-bold pb-2"&gt;Slam Title on Entries&lt;/h2&gt; &lt;/div&gt; &lt;p&gt; Winning &lt;strong&gt;7 titles in 20 Slam appearances&lt;/strong&gt; gives him a &lt;strong&gt;35% success rate&lt;/strong&gt;, just behind Borg (39.3%). &lt;/p&gt; ➡️ &lt;a href="https://stats.tennismylife.org/records/roundsonentries/titles?level=G" target="_blank"&gt;Check the stat&lt;/a&gt;</p>
+<p>&lt;h2 class="text-center my-6 text-2xl font-bold pb-2"&gt; Slam Match Wins Before at 22y 272d &lt;/h2&gt; &lt;p&gt; Alcaraz has already recorded &lt;strong&gt;91 Grand Slam match wins&lt;/strong&gt;, more than any other player at his age. &lt;/p&gt;</p>
+<p>| Player | Match Wins | |--------|------------| | 🇪🇸 Carlos Alcaraz | 91 | | 🇪🇸 Rafael Nadal | 87 | | 🇩🇪 Boris Becker | 86 |</p>
+<p>➡️ &lt;a href="https://stats.tennismylife.org/records/atage/slams?age=22.745" target="_blank"&gt;Check the stat&lt;/a&gt;</p>
+<p>&lt;div class="text-center"&gt; &lt;h2 class="inline-block my-6 text-2xl font-bold pb-2"&gt;The Alcaraz–Sinner Duopoly&lt;/h2&gt; &lt;/div&gt; &lt;p&gt; With the 2026 Australian Open, &lt;strong&gt;Alcaraz&lt;/strong&gt; and &lt;strong&gt;Jannik Sinner&lt;/strong&gt; have now won &lt;strong&gt;9 consecutive Slam titles&lt;/strong&gt;, establishing a new era of men’s tennis dominance. &lt;/p&gt;</p>
+<p>&lt;Callout type="success"&gt; Carlos Alcaraz is not only a prodigy of the present but a player poised to rewrite tennis history, achieving milestones at an unprecedented age. &lt;/Callout&gt;</p>
+<p>&lt;p&gt; *Discover more insights and analysis in the &lt;a href="/blog"&gt;Blog index&lt;/a&gt;.* &lt;/p&gt;</p>]]></content:encoded>
+  </item>
+</channel>
+</rss>
