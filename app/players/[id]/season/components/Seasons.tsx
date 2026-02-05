@@ -11,6 +11,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation"; // <-
 
 interface SeasonsProps {
   playerId: string;
+  playerSlug?: string | null;
   initialYears?: number[];
   initialAllMatches?: Match[];
   initialSelectedYear?: number | null;
@@ -98,10 +99,31 @@ const WLStatTable: React.FC<WLStatTableProps> = ({ title, rows }) => {
 };
 
 // ===================== Seasons Component =====================
-export default function Seasons({ playerId, initialYears, initialAllMatches, initialSelectedYear }: SeasonsProps) {
+export default function Seasons({ playerId, playerSlug, initialYears, initialAllMatches, initialSelectedYear }: SeasonsProps) {
   const router = useRouter(); // <--- added
   const pathname = usePathname(); // <--- added
   const searchParams = useSearchParams(); // <--- added
+
+  // Resolve canonical slug when parent didn't provide it (best-effort client-side fetch)
+  const [resolvedPlayerSlug, setResolvedPlayerSlug] = useState<string | null>(playerSlug ?? null);
+
+  useEffect(() => {
+    let abort = false;
+    async function resolveSlug() {
+      if (resolvedPlayerSlug) return;
+      try {
+        const resp = await fetch(`/api/players/${encodeURIComponent(playerId)}/header`);
+        if (!resp.ok) return;
+        const json = await resp.json();
+        if (abort) return;
+        if (json && json.slug) setResolvedPlayerSlug(String(json.slug));
+      } catch (e) {
+        // ignore: best-effort
+      }
+    }
+    if (!resolvedPlayerSlug && playerId) resolveSlug();
+    return () => { abort = true; };
+  }, [playerId, resolvedPlayerSlug, playerSlug]);
 
   const [years, setYears] = useState<number[]>(initialYears ?? []);
   const [selectedYear, setSelectedYear] = useState<number | null>(initialSelectedYear ?? null);
@@ -369,7 +391,7 @@ export default function Seasons({ playerId, initialYears, initialAllMatches, ini
           <button
             onClick={() => {
               if (!selectedYear) return;
-              const href = `${getPlayerHref(playerId)}/matches?year=${selectedYear}`;
+              const href = `${getPlayerHref(resolvedPlayerSlug ?? playerSlug ?? playerId)}/matches?year=${selectedYear}`;
               router.push(href);
             }}
             disabled={!selectedYear}
@@ -501,7 +523,7 @@ export default function Seasons({ playerId, initialYears, initialAllMatches, ini
             </div>
           </div>
 
-          <SummarySeasons years={years} allMatches={allMatches} playerId={playerId} selectedYear={selectedYear} />
+          <SummarySeasons years={years} allMatches={allMatches} playerId={playerId} playerSlug={resolvedPlayerSlug ?? playerSlug} selectedYear={selectedYear} />
         </>
       )}
     </div>

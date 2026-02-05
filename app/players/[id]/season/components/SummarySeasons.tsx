@@ -9,6 +9,7 @@ interface SummarySeasonsProps {
   years: number[];
   allMatches: Match[];
   playerId: string;
+  playerSlug?: string | null;
   selectedYear?: number | null;
 }
 
@@ -52,7 +53,7 @@ function formatPct(num: number) {
   return num.toFixed(2);
 }
 
-export default function SummarySeasons({ years, allMatches, playerId, selectedYear = null }: SummarySeasonsProps) {
+export default function SummarySeasons({ years, allMatches, playerId, playerSlug, selectedYear = null }: SummarySeasonsProps) {
   const yearlySummary = useMemo(() => {
     const validMatches = allMatches.filter(m => m.status !== false);
 
@@ -252,7 +253,7 @@ export default function SummarySeasons({ years, allMatches, playerId, selectedYe
               {renderTd(r.dr.toFixed(2))}
               {renderTd(r.bestLabel)}
               <td className="px-2 py-1 text-center">
-                <Link href={`${getPlayerHref(playerId)}/matches?year=${r.year}`} className="text-blue-400 hover:underline">View All Matches</Link>
+                <Link href={`${getPlayerHref(playerSlug ?? playerId)}/matches?year=${r.year}`} className="text-blue-400 hover:underline">View All Matches</Link>
               </td>
 </tr>
           ))}
