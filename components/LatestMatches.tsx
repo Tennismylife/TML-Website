@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Flag from '@/components/Flag';
-import { getTourneyHref, getPlayerHref, formatDateISO } from "@/lib/utils";
+import { getTourneyHref, getPlayerHref, getPlayerHrefWithTab, formatDateISO } from "@/lib/utils";
 
 interface Match {
   id: string | number;
@@ -182,7 +182,7 @@ export default function LatestMatches() {
                           )}
                           {m.winner_name ? (
                             <Link
-                              href={getPlayerHref((m as any).winner_slug ?? String(m.winner_id || m.winner_name))}
+                              href={getPlayerHrefWithTab((m as any).winner_slug ?? String(m.winner_id || m.winner_name), 'matches')}
                               className="text-indigo-300 hover:underline"
                             >
                               {m.winner_name}
@@ -200,7 +200,7 @@ export default function LatestMatches() {
                           )}
                           {m.loser_name ? (
                             <Link
-                              href={getPlayerHref((m as any).loser_slug ?? String(m.loser_id || m.loser_name))}
+                              href={getPlayerHrefWithTab((m as any).loser_slug ?? String(m.loser_id || m.loser_name), 'matches')}
                               className="text-indigo-300 hover:underline"
                             >
                               {m.loser_name}
