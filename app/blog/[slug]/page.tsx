@@ -200,6 +200,15 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           ]
         }) }}
       />
+
+      {post.structuredData && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: post.structuredData,
+          }}
+        />
+      )}
     </main>
   );
 }
