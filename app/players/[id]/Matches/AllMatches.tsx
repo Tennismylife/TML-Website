@@ -769,7 +769,7 @@ export default function AllMatches({ playerId, initialMatches, initialHeading, i
               currentTab={'matches'}
             />
             {/* table may overflow the viewport so all rows remain visible */}
-            {!showAll && (sortedMatches.length > DEFAULT_INITIAL_COUNT || (initialMatches && initialMatches.length === DEFAULT_INITIAL_COUNT)) && (
+            {!showAll && (sortedMatches.length >= DEFAULT_INITIAL_COUNT || (initialMatches && initialMatches.length === DEFAULT_INITIAL_COUNT)) && (
               <div className="w-full flex justify-center mt-2">
                 <button
                   className="px-3 py-1 bg-gray-800 border border-gray-700 text-sm text-white rounded hover:bg-gray-700 disabled:opacity-50"
