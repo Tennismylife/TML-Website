@@ -143,9 +143,11 @@ export async function GET(request: NextRequest) {
         const players = await db.player.findMany({
           where: { id: { in: playerIds } },
           select: { id: true, player: true, ioc: true, slug: true },
-        });
+        }) as Array<{ id: string; player: string; ioc: string | null; slug: string | null }>;
 
-        const playerMap = new Map(players.map((p: any) => [String(p.id), p]));
+        const playerMap = new Map<string, { id: string; player: string; ioc: string | null; slug: string | null }>(
+          players.map(p => [String(p.id), p]),
+        );
         for (const [playerId, eventsSet] of eventsByPlayer.entries()) {
           const p = playerMap.get(String(playerId));
           if (!p) continue;
