@@ -40,15 +40,23 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
   const [selectedAge, setSelectedAge] = useState(safeInitialAge);
   const lastRequestRef = useRef<string | null>(null);
 
+  const searchParams = useSearchParams();
+  const perPage = 20;
+  const router = useRouter();
+
+  const [after, setAfter] = useState<boolean>(() => {
+    try { const a = String(searchParams?.get('after') ?? '').toLowerCase(); return a === '1' || a === 'true' || a === 'yes'; } catch (e) { return false; }
+  });
+
+  useEffect(() => {
+    try { const a = String(searchParams?.get('after') ?? '').toLowerCase(); setAfter(a === '1' || a === 'true' || a === 'yes'); } catch (e) {}
+  }, [searchParams]);
+
   const formatAge = (age: number) => {
     const years = Math.floor(age);
     const days = Math.round((age - years) * 365);
     return `${years}y ${days}d`;
   };
-
-  const perPage = 20;
-  const searchParams = useSearchParams();
-  const router = useRouter();
 
   useEffect(() => {
     setInputAge(safeInitialAge);
@@ -76,7 +84,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
     fetchData(selectedAge, showModal ? 1000 : 100, showModal);
   }, [enabled, fetchRequestId, showModal, selectedAge, selectedSurfaces, selectedLevels, initialData]);
 
-  const fetchData = async (age: number, limit: number, force = false) => {
+  const fetchData = async (age: number, limit: number, force = false, afterOverride?: boolean) => {
     if (!Number.isFinite(age)) {
       setError('Please enter a valid age.');
       return;
@@ -89,6 +97,8 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
 
       const query = new URLSearchParams();
       query.append('age', age.toFixed(3));
+      const afterFlag = typeof afterOverride === 'boolean' ? afterOverride : after;
+      if (afterFlag) query.append('after','1');
       selectedSurfaces.forEach(s => query.append('surface', s));
       selectedLevels.forEach(l => query.append('level', l));
       query.set('limit', String(limit));
@@ -124,8 +134,21 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
         const sameSurface = compareMulti(current, newQuery, 'surface');
         const sameLevel = compareMulti(current, newQuery, 'level');
 
+        if (afterFlag) newQuery.set('after','1');
         if (!(sameAge && sameSurface && sameLevel)) {
-          router.replace(`${path}?${newQuery.toString()}`);
+          const newUrl = `${path}?${newQuery.toString()}`;
+          if (typeof window !== 'undefined') {
+            const current = window.location.pathname + window.location.search;
+            if (current !== newUrl) {
+              try {
+                window.history.replaceState(null, '', newUrl);
+              } catch (e) {
+                try { router.replace(newUrl); } catch (e) { /* ignore */ }
+              }
+            }
+          } else {
+            try { router.replace(newUrl); } catch (e) { /* ignore */ }
+          }
         }
       } catch (e) {
         // ignore
@@ -154,7 +177,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
             <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Titles at {formatAge(selectedAge)}</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">{after ? `Titles from ${formatAge(selectedAge)}` : `Titles at ${formatAge(selectedAge)}`}</th>
           </tr>
         </thead>
         <tbody>
@@ -200,7 +223,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
   }
   const filterText = filters.length ? ' ' + filters.join(' ') : '';
 
-  const headerText = hasFetched ? `Players with most titles${filterText} at ${formatAge(selectedAge)}` : (description ?? '');
+  const headerText = hasFetched ? `Players with most titles${filterText} ${after ? 'from' : 'at'} ${formatAge(selectedAge)}` : (description ?? '');
 
   return (
     <section className="mb-8">
@@ -213,6 +236,10 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
       {/* Age Input */}
       <div className="mb-4 flex items-center gap-2">
         <AgeInput value={inputAge} onChange={setInputAge} />
+        <label className="flex items-center gap-2 text-sm text-gray-200">
+          <input type="checkbox" checked={after} onChange={(e) => { const newAfter = e.target.checked; setAfter(newAfter); fetchData(inputAge, showModal ? 1000 : 100, true, newAfter); }} className="w-4 h-4" />
+          <span>After</span>
+        </label>
         <button
           onClick={() => fetchData(inputAge, showModal ? 1000 : 100, true)}
           disabled={loading || !Number.isFinite(inputAge)}
@@ -252,7 +279,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
       <Modal
         show={showModal}
         onClose={() => setShowModal(false)}
-        title={`Top Titles${filterText} at ${formatAge(selectedAge)}`}
+        title={after ? `Titles from ${formatAge(selectedAge)}` : `Top Titles${filterText} at ${formatAge(selectedAge)}`}
       >
         {renderTable(data)}
       </Modal>

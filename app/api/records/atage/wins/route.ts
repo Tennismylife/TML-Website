@@ -15,6 +15,10 @@ export async function GET(request: NextRequest) {
     const targetAge = Number(ageParam);
     if (isNaN(targetAge)) return NextResponse.json({ error: 'Invalid age parameter' }, { status: 400 });
 
+    // ----------- after flag (count from age instead of up to age) -----------
+    const afterParam = String(url.searchParams.get('after') ?? '').toLowerCase();
+    const after = (afterParam === '1' || afterParam === 'true' || afterParam === 'yes');
+
     // ----------- filters -----------
     const selectedSurfaces = url.searchParams.getAll('surface').filter(Boolean);
     const selectedLevels   = url.searchParams.getAll('level').filter(Boolean);
@@ -64,8 +68,8 @@ export async function GET(request: NextRequest) {
         else if (selectedRounds.length === 1) selectedAges = (d.ages_by_round_json as any)?.[selectedRounds[0]] ?? {};
         else if (selectedBestOf.length === 1) selectedAges = (d.ages_by_best_of_json as any)?.[String(selectedBestOf[0])] ?? {};
 
-        // conta quante vittorie hanno età <= targetAge
-        const winsAtAge = Object.values(selectedAges).filter(age => age <= targetAge).length;
+        // conta quante vittorie hanno età <= targetAge (or >= when `after` is true)
+        const winsAtAge = Object.values(selectedAges).filter(age => after ? (age >= targetAge) : (age <= targetAge)).length;
         if (winsAtAge === 0) return null;
 
         return {
@@ -118,8 +122,8 @@ export async function GET(request: NextRequest) {
           const ages = countsByWinner.get(p.id);
           if (!ages) continue;
 
-          // numero di vittorie con age <= targetAge
-          const winsAtAge = ages.filter(a => a <= targetAge).length;
+          // numero di vittorie con age <= targetAge (or >= when `after`)
+          const winsAtAge = ages.filter(a => after ? (a >= targetAge) : (a <= targetAge)).length;
           if (winsAtAge === 0) continue;
 
           playersData.push({

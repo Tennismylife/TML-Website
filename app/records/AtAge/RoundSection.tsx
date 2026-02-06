@@ -42,6 +42,25 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
   const [selectedAge, setSelectedAge] = useState(safeInitialAge);
   const lastRequestRef = useRef<string | null>(null);
 
+  const searchParams = useSearchParams();
+  const perPage = 20;
+  const router = useRouter();
+
+  const [after, setAfter] = useState<boolean>(() => {
+    try { const a = String(searchParams?.get('after') ?? '').toLowerCase(); return a === '1' || a === 'true' || a === 'yes'; } catch (e) { return false; }
+  });
+
+  useEffect(() => {
+    try { const a = String(searchParams?.get('after') ?? '').toLowerCase(); setAfter(a === '1' || a === 'true' || a === 'yes'); } catch (e) {}
+  }, [searchParams]);
+
+  useEffect(() => {
+    try {
+      const a = String(searchParams?.get('after') ?? '').toLowerCase();
+      setAfter(a === '1' || a === 'true' || a === 'yes');
+    } catch (e) {}
+  }, [searchParams]);
+
   const formatAge = (age: number) => {
     const years = Math.floor(age);
     const days = Math.round((age - years) * 365);
@@ -58,9 +77,6 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
     F: "Fs",
   };
 
-  const perPage = 20;
-  const searchParams = useSearchParams();
-  const router = useRouter();
 
   useEffect(() => {
     setInputAge(safeInitialAge);
@@ -94,7 +110,7 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
     fetchData(selectedAge, showModal ? 1000 : 100, showModal);
   }, [enabled, fetchRequestId, showModal, selectedAge, selectedSurfaces, selectedLevels, selectedRound, initialData]);
 
-  const fetchData = async (age: number, limit: number, force = false) => {
+  const fetchData = async (age: number, limit: number, force = false, afterOverride?: boolean) => {
     if (!Number.isFinite(age)) {
       setError('Please enter a valid age.');
       return;
@@ -111,6 +127,8 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
 
       const query = new URLSearchParams();
       query.append('age', age.toFixed(3));
+      const afterFlag = typeof afterOverride === 'boolean' ? afterOverride : after;
+      if (afterFlag) query.append('after','1');
       query.append('round', selectedRound);
       selectedSurfaces.forEach(s => query.append('surface', s));
       selectedLevels.forEach(l => query.append('level', l));
@@ -147,8 +165,21 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
         const sameLevel = compareMulti(current, newQuery, 'level');
         const sameRound = current.get('round') === newQuery.get('round');
 
+        if (afterFlag) newQuery.set('after','1');
         if (!(sameAge && sameSurface && sameLevel && sameRound)) {
-          router.replace(`${path}?${newQuery.toString()}`);
+          const newUrl = `${path}?${newQuery.toString()}`;
+          if (typeof window !== 'undefined') {
+            const current = window.location.pathname + window.location.search;
+            if (current !== newUrl) {
+              try {
+                window.history.replaceState(null, '', newUrl);
+              } catch (e) {
+                try { router.replace(newUrl); } catch (e) { /* ignore */ }
+              }
+            }
+          } else {
+            try { router.replace(newUrl); } catch (e) { /* ignore */ }
+          }
         }
       } catch (e) {
         // ignore
@@ -180,7 +211,7 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
             <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">
-              {roundAbbreviations[selectedRound] ? `${roundAbbreviations[selectedRound]} appearances ≤ ${formatAge(selectedAge)}` : `Appearances at ${selectedRound} ≤ ${formatAge(selectedAge)}`}
+              {roundAbbreviations[selectedRound] ? `${roundAbbreviations[selectedRound]} appearances ${after ? '≥' : '≤'} ${formatAge(selectedAge)}` : `Appearances at ${selectedRound} ${after ? '≥' : '≤'} ${formatAge(selectedAge)}`}
             </th>
           </tr>
         </thead>
@@ -227,7 +258,7 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
   }
   const filterText = filters.length ? ' ' + filters.join(' ') : '';
 
-  const headerText = hasFetched ? `Players with most ${roundAbbreviations[selectedRound] ?? `${selectedRound}s`}${filterText} at ${formatAge(selectedAge)}` : (description ?? '');
+  const headerText = hasFetched ? `Players with most ${roundAbbreviations[selectedRound] ?? `${selectedRound}s`}${filterText} ${after ? 'from' : 'at'} ${formatAge(selectedAge)}` : (description ?? '');
 
   return (
     <section className="mb-8">
@@ -240,6 +271,10 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
       {/* Age Input */}
       <div className="mb-4 flex items-center gap-2">
         <AgeInput value={inputAge} onChange={setInputAge} />
+        <label className="flex items-center gap-2 text-sm text-gray-200">
+          <input type="checkbox" checked={after} onChange={(e) => { const newAfter = e.target.checked; setAfter(newAfter); fetchData(inputAge, showModal ? 1000 : 100, true, newAfter); }} className="w-4 h-4" />
+          <span>After</span>
+        </label>
         <button
           onClick={() => fetchData(inputAge, showModal ? 1000 : 100, true)}
           disabled={loading || !Number.isFinite(inputAge)}
@@ -279,7 +314,7 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
       <Modal
         show={showModal}
         onClose={() => setShowModal(false)}
-        title={roundAbbreviations[selectedRound] ? `Top ${roundAbbreviations[selectedRound]} appearances${filterText} ≤ ${formatAge(selectedAge)}` : `Top Appearances at Round ${selectedRound}${filterText} ≤ ${formatAge(selectedAge)}`}
+        title={roundAbbreviations[selectedRound] ? `Top ${roundAbbreviations[selectedRound]} appearances${filterText} ${after ? 'from' : 'at'} ${formatAge(selectedAge)}` : `Top Appearances at Round ${selectedRound}${filterText} ${after ? 'from' : 'at'} ${formatAge(selectedAge)}`}
       >
         {renderTable(data)}
       </Modal>

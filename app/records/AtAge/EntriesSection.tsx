@@ -40,15 +40,23 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
   const [selectedAge, setSelectedAge] = useState(safeInitialAge);
   const lastRequestRef = useRef<string | null>(null);
 
+  const searchParams = useSearchParams();
+  const perPage = 20;
+  const router = useRouter();
+
+  const [after, setAfter] = useState<boolean>(() => {
+    try { const a = String(searchParams?.get('after') ?? '').toLowerCase(); return a === '1' || a === 'true' || a === 'yes'; } catch (e) { return false; }
+  });
+
+  useEffect(() => {
+    try { const a = String(searchParams?.get('after') ?? '').toLowerCase(); setAfter(a === '1' || a === 'true' || a === 'yes'); } catch (e) {}
+  }, [searchParams]);
+
   const formatAge = (age: number) => {
     const years = Math.floor(age);
     const days = Math.round((age - years) * 365);
     return `${years}y ${days}d`;
   };
-
-  const perPage = 20;
-  const searchParams = useSearchParams();
-  const router = useRouter();
 
   useEffect(() => {
     setInputAge(safeInitialAge);
@@ -76,7 +84,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
     fetchData(selectedAge, showModal ? 1000 : 100, showModal);
   }, [enabled, fetchRequestId, showModal, selectedAge, selectedSurfaces, selectedLevels, initialData]);
 
-  const fetchData = async (age: number, limit: number, force = false) => {
+  const fetchData = async (age: number, limit: number, force = false, afterOverride?: boolean) => {
     if (!Number.isFinite(age)) {
       setError('Please enter a valid age.');
       return;
@@ -89,6 +97,8 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
 
       const query = new URLSearchParams();
       query.append('age', age.toFixed(3));
+      const afterFlag = typeof afterOverride === 'boolean' ? afterOverride : after;
+      if (afterFlag) query.append('after', '1');
       selectedSurfaces.forEach(s => query.append('surface', s));
       selectedLevels.forEach(l => query.append('level', l));
 
@@ -110,6 +120,9 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
         selectedSurfaces.forEach(s => newQuery.append('surface', s));
         selectedLevels.forEach(l => newQuery.append('level', l));
 
+        // Ensure `after` is present in the candidate query before comparing
+        if (afterFlag) newQuery.set('after','1');
+
         // Compare current params semantically to avoid unnecessary replaces
         const current = (typeof window !== 'undefined') ? new URLSearchParams(window.location.search) : new URLSearchParams();
         const compareMulti = (a: URLSearchParams, b: URLSearchParams, key: string) => {
@@ -123,9 +136,22 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
         const sameAge = current.get('age') === newQuery.get('age');
         const sameSurface = compareMulti(current, newQuery, 'surface');
         const sameLevel = compareMulti(current, newQuery, 'level');
+        const sameAfter = current.get('after') === newQuery.get('after');
 
-        if (!(sameAge && sameSurface && sameLevel)) {
-          router.replace(`${path}?${newQuery.toString()}`);
+        if (!(sameAge && sameSurface && sameLevel && sameAfter)) {
+          const newUrl = `${path}?${newQuery.toString()}`;
+          if (typeof window !== 'undefined') {
+            const current = window.location.pathname + window.location.search;
+            if (current !== newUrl) {
+              try {
+                window.history.replaceState(null, '', newUrl);
+              } catch (e) {
+                try { router.replace(newUrl); } catch (e) { /* ignore */ }
+              }
+            }
+          } else {
+            try { router.replace(newUrl); } catch (e) { /* ignore */ }
+          }
         }
       } catch (e) {
         // ignore
@@ -200,7 +226,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
   }
   const filterText = filters.length ? ' ' + filters.join(' ') : '';
 
-  const headerText = hasFetched ? `Players with most entries${filterText} at ${formatAge(selectedAge)}` : (description ?? '');
+  const headerText = hasFetched ? `Players with most entries${filterText} ${after ? 'from' : 'at'} ${formatAge(selectedAge)}` : (description ?? '');
 
   return (
     <section className="mb-8">
@@ -213,6 +239,10 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
       {/* Age Input */}
       <div className="mb-4 flex items-center gap-2">
         <AgeInput value={inputAge} onChange={setInputAge} />
+        <label className="flex items-center gap-2 text-sm text-gray-200">
+          <input type="checkbox" checked={after} onChange={(e) => { const newAfter = e.target.checked; setAfter(newAfter); fetchData(inputAge, showModal ? 1000 : 100, true, newAfter); }} className="w-4 h-4" />
+          <span>After</span>
+        </label>
         <button
           onClick={() => fetchData(inputAge, showModal ? 1000 : 100, true)}
           disabled={loading || !Number.isFinite(inputAge)}

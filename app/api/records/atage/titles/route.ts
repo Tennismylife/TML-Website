@@ -15,6 +15,9 @@ export async function GET(request: NextRequest) {
     const targetAge = Number(ageParam);
     if (isNaN(targetAge)) return NextResponse.json({ error: 'Invalid age parameter' }, { status: 400 });
 
+    const afterParam = String(url.searchParams.get('after') ?? '').toLowerCase();
+    const after = (afterParam === '1' || afterParam === 'true' || afterParam === 'yes');
+
     // ----------- filters -----------
     const selectedSurfaces = url.searchParams.getAll('surface').filter(Boolean);
     const selectedLevels   = url.searchParams.getAll('level').filter(Boolean);
@@ -51,17 +54,17 @@ export async function GET(request: NextRequest) {
 
     const result = playersInfo.map(p => {
       const ages = winnersMap.get(p.id) || [];
-      const validAges = ages.filter(a => a <= targetAge);
+      const validAges = ages.filter(a => after ? (a >= targetAge) : (a <= targetAge));
       if (validAges.length === 0) return null;
 
-      // età più vicina ≤ targetAge
-      const closestAge = Math.max(...validAges);
+      // pick threshold: closest age in the selected direction
+      const closestAge = after ? Math.min(...validAges) : Math.max(...validAges);
 
       return {
         id: p.id,
         name: p.player,
         ioc: p.ioc || '',
-        titles_at_age: validAges.filter(a => a <= closestAge).length,
+        titles_at_age: validAges.length,
       };
     }).filter((x): x is { id: string; name: string; ioc: string; titles_at_age: number } => x != null);
 

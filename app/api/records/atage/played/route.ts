@@ -15,6 +15,10 @@ export async function GET(request: NextRequest) {
     const targetAge = Number(ageParam);
     if (isNaN(targetAge)) return NextResponse.json({ error: 'Invalid age parameter' }, { status: 400 });
 
+    // ----------- after flag -----------
+    const afterParam = String(url.searchParams.get('after') ?? '').toLowerCase();
+    const after = (afterParam === '1' || afterParam === 'true' || afterParam === 'yes');
+
     // ----------- filters -----------
     const selectedSurfaces = url.searchParams.getAll('surface').filter(Boolean);
     const selectedLevels   = url.searchParams.getAll('level').filter(Boolean);
@@ -77,8 +81,8 @@ export async function GET(request: NextRequest) {
         else if (selectedBestOf.length === 1)
           selectedAges = (d.ages_by_best_of_json as any)?.[String(selectedBestOf[0])] ?? {};
 
-        // conta partite con age <= targetAge
-        const playedAtAge = Object.values(selectedAges).filter(age => Number(age) <= targetAge).length;
+        // count matches with age <= targetAge (or >= when `after`)
+        const playedAtAge = Object.values(selectedAges).filter(age => after ? (Number(age) >= targetAge) : (Number(age) <= targetAge)).length;
         if (playedAtAge === 0) return null;
 
         return {
@@ -136,7 +140,7 @@ export async function GET(request: NextRequest) {
           const ages = ageMap.get(p.id);
           if (!ages) continue;
 
-          const playedAtAge = ages.filter(a => a <= targetAge).length;
+          const playedAtAge = ages.filter(a => after ? (a >= targetAge) : (a <= targetAge)).length;
           if (playedAtAge === 0) continue;
 
           playersData.push({

@@ -37,6 +37,17 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
   const [showModal, setShowModal] = useState(false);
   const [inputAge, setInputAge] = useState(safeInitialAge);
   const [selectedAge, setSelectedAge] = useState(safeInitialAge);
+  const [after, setAfter] = useState<boolean>(false);
+
+  const searchParams = useSearchParams();
+  const perPage = 20;
+
+  useEffect(() => {
+    try {
+      const a = String(searchParams?.get('after') ?? '').toLowerCase();
+      setAfter(a === '1' || a === 'true' || a === 'yes');
+    } catch (e) {}
+  }, [searchParams]);
 
   const formatAge = (age: number) => {
     const years = Math.floor(age);
@@ -54,8 +65,6 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
     F: "Fs",
   };
 
-  const perPage = 20;
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     setInputAge(safeInitialAge);
@@ -67,13 +76,15 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
   }, [safeInitialAge, initialData]);
   const router = useRouter();
 
-  const fetchData = async (age: number) => {
+  const fetchData = async (age: number, afterOverride?: boolean) => {
     try {
       setLoading(true);
       setError(null);
 
       const query = new URLSearchParams();
       query.append('age', age.toFixed(3));
+      const afterFlag = typeof afterOverride === 'boolean' ? afterOverride : after;
+      if (afterFlag) query.append('after','1');
       selectedSurfaces.forEach(s => query.append('surface', s));
       if (selectedRounds) query.append('round', selectedRounds);
       if (selectedBestOf != null) query.append('best_of', selectedBestOf.toString());
@@ -108,8 +119,21 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
         const sameRound = current.get('round') === newQuery.get('round');
         const sameBestOf = current.get('bestOf') === newQuery.get('bestOf');
 
+        if (afterFlag) newQuery.set('after','1');
         if (!(sameAge && sameSurface && sameRound && sameBestOf)) {
-          router.replace(`${path}?${newQuery.toString()}`);
+          const newUrl = `${path}?${newQuery.toString()}`;
+          if (typeof window !== 'undefined') {
+            const current = window.location.pathname + window.location.search;
+            if (current !== newUrl) {
+              try {
+                window.history.replaceState(null, '', newUrl);
+              } catch (e) {
+                try { router.replace(newUrl); } catch (e) { /* ignore */ }
+              }
+            }
+          } else {
+            try { router.replace(newUrl); } catch (e) { /* ignore */ }
+          }
         }
       } catch (e) {
         // ignore
@@ -176,7 +200,7 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
     filters.push(`on ${selectedSurfaces.join(' or ')}`);
   }
   const filterText = filters.length ? ' ' + filters.join(' ') : '';
-  const headerText = hasFetched ? (selectedRounds ? `Players with most wins in ${roundAbbreviations[selectedRounds] || selectedRounds + 's'} in Slams${filterText} at ${formatAge(selectedAge)}` : `Players with most wins in Slams${filterText} at ${formatAge(selectedAge)}`) : (description ?? '');
+  const headerText = hasFetched ? (selectedRounds ? `Players with most wins in ${roundAbbreviations[selectedRounds] || selectedRounds + 's'} in Slams${filterText} ${after ? 'from' : 'at'} ${formatAge(selectedAge)}` : `Players with most wins in Slams${filterText} ${after ? 'from' : 'at'} ${formatAge(selectedAge)}`) : (description ?? '');
 
   return (
     <section className="mb-8">
@@ -189,6 +213,10 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
       {/* Age Input */}
       <div className="mb-4 flex items-center gap-2">
         <AgeInput value={inputAge} onChange={setInputAge} />
+        <label className="flex items-center gap-2 text-sm text-gray-200">
+          <input type="checkbox" checked={after} onChange={(e) => { const newAfter = e.target.checked; setAfter(newAfter); fetchData(inputAge, newAfter); }} className="w-4 h-4" />
+          <span>After</span>
+        </label>
         <button
           onClick={() => fetchData(inputAge)}
           disabled={loading || !Number.isFinite(inputAge)}

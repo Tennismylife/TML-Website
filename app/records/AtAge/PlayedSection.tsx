@@ -52,14 +52,24 @@ export default function PlayedSection({
   const [selectedAge, setSelectedAge] = useState(safeInitialAge);
   const lastRequestRef = useRef<string | null>(null);
 
+  const searchParams = useSearchParams();
+  const perPage = 20;
+
+  const parseAfter = (sp: URLSearchParams | null) => {
+    try { const a = String(sp?.get('after') ?? '').toLowerCase(); return a === '1' || a === 'true' || a === 'yes'; } catch (e) { return false; }
+  };
+
+  const [after, setAfter] = useState<boolean>(() => parseAfter(searchParams));
+
+  useEffect(() => {
+    setAfter(parseAfter(searchParams));
+  }, [searchParams]);
+
   const formatAge = (age: number) => {
     const years = Math.floor(age);
     const days = Math.round((age - years) * 365);
     return `${years}y ${days}d`;
   };
-
-  const searchParams = useSearchParams();
-  const perPage = 20;
 
   useEffect(() => {
     setInputAge(safeInitialAge);
@@ -89,7 +99,7 @@ export default function PlayedSection({
 
   const router = useRouter();
 
-  const fetchData = async (age: number, limit: number, force = false) => {
+  const fetchData = async (age: number, limit: number, force = false, afterOverride?: boolean) => {
     if (!Number.isFinite(age)) {
       setError('Please enter a valid age.');
       return;
@@ -102,6 +112,8 @@ export default function PlayedSection({
 
       const query = new URLSearchParams();
       query.append("age", age.toFixed(3));
+      const afterFlag = typeof afterOverride === 'boolean' ? afterOverride : after;
+      if (afterFlag) query.append('after', '1');
       selectedSurfaces.forEach((s) => query.append("surface", s));
       selectedLevels.forEach((l) => query.append("level", l));
       if (selectedRounds) query.append("round", selectedRounds);
@@ -141,8 +153,21 @@ export default function PlayedSection({
         const sameRound = current.get('round') === newQuery.get('round');
         const sameBestOf = current.get('bestOf') === newQuery.get('bestOf');
 
+        if (afterFlag) newQuery.set('after','1');
         if (!(sameAge && sameSurface && sameLevel && sameRound && sameBestOf)) {
-          router.replace(`${path}?${newQuery.toString()}`);
+          const newUrl = `${path}?${newQuery.toString()}`;
+          if (typeof window !== 'undefined') {
+            const current = window.location.pathname + window.location.search;
+            if (current !== newUrl) {
+              try {
+                window.history.replaceState(null, '', newUrl);
+              } catch (e) {
+                try { router.replace(newUrl); } catch (e) { /* ignore */ }
+              }
+            }
+          } else {
+            try { router.replace(newUrl); } catch (e) { /* ignore */ }
+          }
         }
       } catch (e) {
         // ignore URL update errors
@@ -172,7 +197,7 @@ export default function PlayedSection({
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
             <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
-            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Played at {formatAge(selectedAge)}</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">{after ? `Played from ${formatAge(selectedAge)}` : `Played at ${formatAge(selectedAge)}`}</th>
           </tr>
         </thead>
         <tbody>
@@ -218,7 +243,7 @@ export default function PlayedSection({
   }
   const filterText = filters.length ? ' ' + filters.join(' ') : '';
 
-  const headerText = hasFetched ? `Players with most played${filterText} at ${formatAge(selectedAge)}` : (description ?? '');
+  const headerText = hasFetched ? `Players with most matches played${filterText} ${after ? 'from' : 'at'} ${formatAge(selectedAge)}` : (description ?? '');
 
   return (
     <section className="mb-8">
@@ -231,15 +256,19 @@ export default function PlayedSection({
       {/* Age Input */}
       <div className="mb-4 flex items-center gap-2">
         <AgeInput value={inputAge} onChange={setInputAge} />
-        <button
-          onClick={() => fetchData(inputAge, showModal ? 1000 : 100, true)}
-          disabled={loading || !Number.isFinite(inputAge)}
-          className={`px-4 py-1 rounded ${
-            loading || !Number.isFinite(inputAge) ? "bg-gray-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"
-          }`}
-        >
-          Apply
-        </button>
+    <label className="flex items-center gap-2 text-sm text-gray-200">
+      <input type="checkbox" checked={after} onChange={(e) => { const newAfter = e.target.checked; setAfter(newAfter); fetchData(inputAge, showModal ? 1000 : 100, true, newAfter); }} className="w-4 h-4" />
+      <span>After</span>
+    </label>
+    <button
+      onClick={() => fetchData(inputAge, showModal ? 1000 : 100, true)}
+      disabled={loading || !Number.isFinite(inputAge)}
+      className={`px-4 py-1 rounded ${
+        loading || !Number.isFinite(inputAge) ? "bg-gray-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"
+      }`}
+    >
+      Apply
+    </button>
       </div>
 
       {/* View All Button */}
@@ -279,7 +308,7 @@ export default function PlayedSection({
       <Modal
         show={showModal}
         onClose={() => setShowModal(false)}
-        title={`Top Played${filterText} at ${formatAge(selectedAge)}`}
+        title={`${after ? 'Top Matches played' : 'Top Played'}${filterText} at ${formatAge(selectedAge)}`}
       >
         {renderTable(data)}
       </Modal>

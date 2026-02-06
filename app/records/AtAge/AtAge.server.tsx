@@ -45,6 +45,9 @@ export default async function AtAgeServer({ searchParams, ...serverProps }: { se
     for (const l of Array.from(selectedLevels)) params.append('level', l)
     if (selectedRounds) params.set('round', selectedRounds)
     if (selectedBestOf !== null) params.set('best_of', String(selectedBestOf))
+    // include `after` if present in the incoming search params so SSR prefetch respects it
+    const afterParam = (sp['after'] ?? sp['after[]']) as string | undefined
+    if (afterParam) params.set('after', String(afterParam))
 
     const fetchJson = async (path: string) => {
       const url = new URL(path, metadataBase)

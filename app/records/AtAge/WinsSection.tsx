@@ -51,17 +51,26 @@ export default function WinsSection({
   const [showModal, setShowModal] = useState(false);
   const [inputAge, setInputAge] = useState(safeInitialAge);
   const [selectedAge, setSelectedAge] = useState(safeInitialAge);
+  const [after, setAfter] = useState<boolean>(false);
   const lastRequestRef = useRef<string | null>(null);
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const perPage = 20;
+
+  // Init `after` if present in URL
+  useEffect(() => {
+    try {
+      const a = String(searchParams?.get('after') ?? '').toLowerCase();
+      setAfter(a === '1' || a === 'true' || a === 'yes');
+    } catch (e) {}
+  }, [searchParams]);
 
   const formatAge = (age: number) => {
     const years = Math.floor(age);
     const days = Math.round((age - years) * 365);
     return `${years}y ${days}d`;
   };
-
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const perPage = 20;
 
   useEffect(() => {
     setInputAge(safeInitialAge);
@@ -89,7 +98,7 @@ export default function WinsSection({
     fetchData(selectedAge, showModal ? 1000 : 100, showModal);
   }, [enabled, fetchRequestId, showModal, selectedAge, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, initialData]);
 
-  const fetchData = async (age: number, limit: number, force = false) => {
+  const fetchData = async (age: number, limit: number, force = false, afterOverride?: boolean) => {
     if (!Number.isFinite(age)) {
       setError('Please enter a valid age.');
       return;
@@ -103,6 +112,8 @@ export default function WinsSection({
 
       const query = new URLSearchParams();
       query.append("age", age.toFixed(3));
+      const afterFlag = typeof afterOverride === 'boolean' ? afterOverride : after;
+      if (afterFlag) query.append('after', '1');
       selectedSurfaces.forEach((s) => query.append("surface", s));
       selectedLevels.forEach((l) => query.append("level", l));
       if (selectedRounds) query.append("round", selectedRounds);
@@ -141,8 +152,21 @@ export default function WinsSection({
         const sameRound = current.get('round') === newQuery.get('round');
         const sameBestOf = current.get('best_of') === newQuery.get('best_of');
 
+        if (afterFlag) newQuery.set('after','1');
         if (!(sameAge && sameSurface && sameLevel && sameRound && sameBestOf)) {
-          router.replace(`${path}?${newQuery.toString()}`);
+          const newUrl = `${path}?${newQuery.toString()}`;
+          if (typeof window !== 'undefined') {
+            const current = window.location.pathname + window.location.search;
+            if (current !== newUrl) {
+              try {
+                window.history.replaceState(null, '', newUrl);
+              } catch (e) {
+                try { router.replace(newUrl); } catch (e) { /* ignore */ }
+              }
+            }
+          } else {
+            try { router.replace(newUrl); } catch (e) { /* ignore */ }
+          }
         }
       } catch (e) {
         // ignore
@@ -176,7 +200,7 @@ export default function WinsSection({
               Player
             </th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">
-              Wins at {formatAge(selectedAge)}
+              Wins {after ? 'from' : 'at'} {formatAge(selectedAge)}
             </th>
           </tr>
         </thead>
@@ -229,7 +253,7 @@ export default function WinsSection({
   }
   const filterText = filters.length ? ' ' + filters.join(' ') : '';
 
-  const headerText = hasFetched ? `Players with most wins${filterText} at ${formatAge(selectedAge)}` : (description ?? '');
+  const headerText = hasFetched ? `Players with most wins${filterText} ${after ? 'from' : 'at'} ${formatAge(selectedAge)}` : (description ?? '');
 
   return (
     <section className="mb-8">
@@ -242,6 +266,10 @@ export default function WinsSection({
       {/* Age Input */}
       <div className="mb-4 flex items-center gap-2">
         <AgeInput value={inputAge} onChange={setInputAge} />
+        <label className="flex items-center gap-2 text-sm text-gray-200">
+          <input type="checkbox" checked={after} onChange={(e) => { const newAfter = e.target.checked; setAfter(newAfter); fetchData(inputAge, showModal ? 1000 : 100, true, newAfter); }} className="w-4 h-4" />
+          <span>After</span>
+        </label>
         <button
           onClick={() => fetchData(inputAge, showModal ? 1000 : 100, true)}
           disabled={loading || !Number.isFinite(inputAge)}

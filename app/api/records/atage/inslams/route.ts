@@ -77,10 +77,13 @@ export async function GET(request: NextRequest) {
       const info = playerInfo.get(pid);
       if (!info) continue;
 
-      const australian = (playerSlamWins['Australian Open'].get(pid) || []).filter(a => a <= targetAge).length;
-      const french = (playerSlamWins['Roland Garros'].get(pid) || []).filter(a => a <= targetAge).length;
-      const wimbledon = (playerSlamWins['Wimbledon'].get(pid) || []).filter(a => a <= targetAge).length;
-      const us = (playerSlamWins['US Open'].get(pid) || []).filter(a => a <= targetAge).length;
+      const afterParam = String(url.searchParams.get('after') ?? '').toLowerCase();
+      const after = (afterParam === '1' || afterParam === 'true' || afterParam === 'yes');
+
+      const australian = (playerSlamWins['Australian Open'].get(pid) || []).filter(a => after ? (a >= targetAge) : (a <= targetAge)).length;
+      const french = (playerSlamWins['Roland Garros'].get(pid) || []).filter(a => after ? (a >= targetAge) : (a <= targetAge)).length;
+      const wimbledon = (playerSlamWins['Wimbledon'].get(pid) || []).filter(a => after ? (a >= targetAge) : (a <= targetAge)).length;
+      const us = (playerSlamWins['US Open'].get(pid) || []).filter(a => after ? (a >= targetAge) : (a <= targetAge)).length;
 
       const total = australian + french + wimbledon + us;
       if (total > 0) {
