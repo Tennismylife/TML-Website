@@ -13,7 +13,7 @@ beforeEach(() => {
 });
 
 describe('GET /api/records/atage/rounds', () => {
-  it('for after=1 picks the minimal age >= targetAge and counts only matches at that age', async () => {
+  it('for after=1 counts matches where player age is strictly > targetAge', async () => {
     const { GET } = await import('@/app/api/records/atage/rounds/route');
 
     // Matches: player p1 appears twice: at ages 38.2 and 40.0; player p2 appears once at 39.0
@@ -45,9 +45,9 @@ describe('GET /api/records/atage/rounds', () => {
     expect(Array.isArray(body)).toBe(true);
     if (!Array.isArray(body)) throw new Error('unexpected response body');
 
-    // Expect p1 chosen age is 38.2 -> count 1 (only the match at 38.2), p2 count 1
+    // Expect p1 to have both matches > 38.0 -> count 2; p2 count 1
     const map = new Map(body.map((r: any) => [r.id, r.appearances_at_age]));
-    expect(map.get('p1')).toBe(1);
+    expect(map.get('p1')).toBe(2);
     expect(map.get('p2')).toBe(1);
   });
 

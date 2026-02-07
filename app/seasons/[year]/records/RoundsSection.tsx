@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
-import { getPlayerHref } from '@/lib/utils';
+import { getPlayerHrefWithTab } from '@/lib/utils';
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 
@@ -98,7 +98,7 @@ export default function RoundsSection({
           <tr key={item.id} className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors">
             <td className="py-1 flex items-center gap-2 text-white">
               <Flag ioc={item.ioc} className="w-4 h-3" />
-              <Link href={getPlayerHref((item as any).slug ?? String(item.id))} className="text-blue-400 hover:underline">
+              <Link href={getPlayerHrefWithTab((item as any).slug ?? String(item.id), 'matches')} className="text-blue-400 hover:underline">
                 {item.name}
               </Link>
             </td>

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
-import { getPlayerHref } from "@/lib/utils";
+import { getPlayerHrefWithTab } from "@/lib/utils";
 
 interface FirstNProps {
   selectedSurfaces: Set<string>;
@@ -134,7 +134,7 @@ export default function FirstN({ selectedSurfaces, selectedLevels, selectedRound
               <tr key={index} className="border-b">
                 <td className="py-1">
                   <Flag ioc={p.player.ioc} className="w-4 h-3 inline-block mr-1" />
-                  <Link href={getPlayerHref((p.player as any).slug ?? String(p.player.id))} className="text-blue-700 hover:underline">
+                  <Link href={getPlayerHrefWithTab((p.player as any).slug ?? String(p.player.id), 'matches')} className="text-blue-700 hover:underline">
                     {p.player.name}
                   </Link>
                 </td>

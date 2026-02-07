@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { mapIdsToSlugs } from '@/lib/player-slugs';
 
 export async function GET(request: NextRequest, context: any) {
   try {
@@ -83,8 +84,21 @@ export async function GET(request: NextRequest, context: any) {
       .filter(p => p.totalMatches > 0)
       .sort((a, b) => b.percentage - a.percentage);
 
+    // Enrich with player slugs (safe)
+    const allIds = Array.from(new Set(sortedOverall.map(p => String(p.id))));
+    let idToSlug: Record<string, string | null> = {};
+    if (allIds.length) {
+      try {
+        idToSlug = await mapIdsToSlugs(allIds);
+      } catch (err) {
+        console.error('Error mapping player slugs for percentage overall:', err);
+        idToSlug = {};
+      }
+    }
+    const enriched = sortedOverall.map(p => ({ ...p, slug: idToSlug[String(p.id)] ?? null }));
+
     return NextResponse.json({
-      sortedOverall,
+      sortedOverall: enriched,
     });
 
   } catch (error) {

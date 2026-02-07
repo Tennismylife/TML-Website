@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { mapIdsToSlugs } from '@/lib/player-slugs';
+
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
@@ -17,8 +19,13 @@ export async function GET(request: NextRequest) {
       take: 200, // solo i primi 200 giocatori
     });
 
+    // Map player ids to slugs
+    const ids = Array.from(new Set(rankings.map(r => String(r.playerId))));
+    const slugMap = await mapIdsToSlugs(ids);
+
     const result = rankings.map(r => ({
       id: r.playerId,
+      slug: slugMap[String(r.playerId)] ?? null,
       name: r.player?.player || "Unknown",
       points: r.points,
       ioc: r.player?.ioc || null,

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { mapIdsToSlugs } from '@/lib/player-slugs';
 
 export async function GET(request: Request, { params }: { params: Promise<{ year: string }> }) {
   const { year } = await params;
@@ -67,17 +68,31 @@ export async function GET(request: Request, { params }: { params: Promise<{ year
     const sortedOldest = [...mainDrawPlayers].sort((a, b) => b.age - a.age);
     const sortedYoungest = [...mainDrawPlayers].sort((a, b) => a.age - b.age);
 
+    // Enrich players with slugs where possible
+    const allIds = Array.from(new Set(mainDrawPlayers.map(p => String(p.id))));
+    let idToSlug: Record<string, string | null> = {};
+    if (allIds.length) {
+      try {
+        idToSlug = await mapIdsToSlugs(allIds);
+      } catch (err) {
+        console.error('Error mapping player slugs for ages-main:', err);
+        idToSlug = {};
+      }
+    }
+
+    const applySlugs = (arr: any[]) => arr.map(p => ({ ...p, slug: idToSlug[String(p.id)] ?? null }));
+
     if (full) {
       // Restituisci tutte le liste solo se ?full=true
       return NextResponse.json({
-        sortedOldest,
-        sortedYoungest,
+        sortedOldest: applySlugs(sortedOldest),
+        sortedYoungest: applySlugs(sortedYoungest),
       });
     } else {
       // Altrimenti solo top 10
       return NextResponse.json({
-        topOldest: sortedOldest.slice(0, 10),
-        topYoungest: sortedYoungest.slice(0, 10),
+        topOldest: applySlugs(sortedOldest.slice(0, 10)),
+        topYoungest: applySlugs(sortedYoungest.slice(0, 10)),
       });
     }
 

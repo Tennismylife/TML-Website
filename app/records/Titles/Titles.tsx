@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Flag from '@/components/Flag';
-import { getPlayerHref } from "@/lib/utils";
+import { getPlayerHrefWithTab } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
 import { playerTournamentsUrl } from "../nav";
@@ -14,6 +14,7 @@ interface PlayerData {
   ioc: string;
   count: number;
   id: string;
+  slug?: string | null;
 }
 
 interface TitlesProps {
@@ -113,15 +114,13 @@ export default function Titles({ selectedSurfaces, selectedLevels, topTitles, fe
                 <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                   <div className="flex items-center gap-2">
                     <Flag ioc={p.ioc} className="w-4 h-3" />
-                    <Link href={getPlayerHref((p as any).slug ?? String(p.id))} className="text-indigo-300 hover:underline">
+                    <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.id), 'matches')} className="text-indigo-300 hover:underline">
                       {p.name}
                     </Link>
                   </div>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
-                  <Link href={playerTournamentsUrl(p.id, (() => { const params: Record<string, string | string[]> = { tab: 'tournaments', round: 'W' }; for (const [key, value] of (searchParams?.entries() ?? [])) { if (key === 'tab' || key === 'round' || !value) continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })() )} className="text-indigo-300 hover:underline">
-                    {p.count}
-                  </Link>
+                  <span className="text-indigo-300">{p.count}</span>
                 </td>
               </tr>
             );

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import Link from 'next/link';
-import { getPlayerHref } from '@/lib/utils';
+import { getPlayerHrefWithTab } from '@/lib/utils';
 import Flag from '@/components/Flag';
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 
@@ -142,7 +142,7 @@ export default function CountSection({ year, selectedSurfaces, selectedLevels }:
           <tr key={p.id} className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors">
             <td className="py-1 flex items-center gap-2 text-white">
               <Flag ioc={p.ioc} className="w-4 h-3" />
-              <Link href={getPlayerHref(p.slug ?? String(p.id))} className="text-blue-400 hover:underline">{p.name}</Link>
+              <Link href={getPlayerHrefWithTab(p.slug ?? String(p.id), 'matches')} className="text-blue-400 hover:underline">{p.name}</Link>
             </td>
             <td className="py-1 text-white text-right whitespace-nowrap">{p.count}</td>
           </tr>
@@ -190,7 +190,7 @@ export default function CountSection({ year, selectedSurfaces, selectedLevels }:
                         <tr key={p.id} className="border-b border-gray-700 hover:bg-gray-700/30 transition-colors">
                           <td className="py-1 flex items-center gap-2 text-white min-w-0">
                             <Flag ioc={p.ioc} className="w-4 h-3" />
-                            <Link href={getPlayerHref(p.slug ?? String(p.id))} className="text-blue-400 hover:underline truncate block min-w-0">{p.name}</Link>
+                            <Link href={getPlayerHrefWithTab(p.slug ?? String(p.id), 'matches')} className="text-blue-400 hover:underline truncate block min-w-0">{p.name}</Link>
                           </td>
                           <td className="py-1 text-white text-right whitespace-nowrap">{p.count}</td>
                         </tr>

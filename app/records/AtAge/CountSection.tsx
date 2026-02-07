@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
-import { getPlayerHref } from '@/lib/utils';
+import { getPlayerHrefWithTab } from '@/lib/utils';
 import Modal from "@/components/Modal";
 
 interface CountSectionProps {
@@ -129,7 +129,7 @@ export default function CountSection({ selectedSurfaces, selectedLevels }: Count
           <tr key={p.id} className="border-b">
             <td className="py-1 flex items-center gap-2 w-1/2">
               <Flag ioc={p.ioc ?? undefined} className="w-4 h-3 inline-block" />
-              <Link href={getPlayerHref((p as any).slug ?? String(p.id))} className="text-blue-700 hover:underline">
+              <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.id), 'matches')} className="text-blue-700 hover:underline">
                 {p.name}
               </Link>
             </td>

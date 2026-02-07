@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { mapIdsToSlugs } from '@/lib/player-slugs';
+
 
 export async function GET(request: Request, context: { params: Promise<{ year: string }> }) {
   try {
@@ -105,11 +107,21 @@ export async function GET(request: Request, context: { params: Promise<{ year: s
       result[round] = players;
     }
 
-    // Ordina i round secondo roundOrder, con W primo
+    // Aggiungi slug ai giocatori, se possibile
+    const allIds = new Set<string>();
+    for (const roundKey of Object.keys(result)) {
+      for (const p of result[roundKey]) {
+        if (p.id) allIds.add(String(p.id));
+      }
+    }
+
+    const slugMap = await mapIdsToSlugs(Array.from(allIds));
+
+    // Ordina i round secondo roundOrder, con W primo e arricchisci con slug
     const orderedResult: Record<string, typeof result[string]> = {};
     for (const round of roundOrder) {
       if (result[round]) {
-        orderedResult[round] = result[round];
+        orderedResult[round] = result[round].map(p => ({ ...p, slug: slugMap[String(p.id)] })) as typeof result[string];
       }
     }
 

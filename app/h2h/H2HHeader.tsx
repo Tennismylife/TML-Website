@@ -2,6 +2,7 @@
 
 import Flag from '@/components/Flag';
 import Link from "next/link";
+import { getPlayerHrefWithTab } from '@/lib/utils';
 
 interface Player {
   atpname: string | null;
@@ -55,16 +56,16 @@ export default function H2HHeader({
         {/* Player 1 - sinistra */}
         <div className="flex items-center gap-3">
           <Flag ioc={player1.ioc ?? undefined} className="w-6 h-4 inline-block" />
-          <span className="text-xl font-bold text-gray-100">
+          <Link href={getPlayerHrefWithTab((player1 as any).slug ?? String(player1.id ?? ''), 'matches')} className="text-xl font-bold text-gray-100 hover:underline">
             {player1.atpname ?? ''}
-          </span>
+          </Link>
         </div>
 
         {/* Player 2 - destra */}
         <div className="flex items-center gap-3">
-          <span className="text-xl font-bold text-gray-100 text-right">
+          <Link href={getPlayerHrefWithTab((player2 as any).slug ?? String(player2.id ?? ''), 'matches')} className="text-xl font-bold text-gray-100 text-right hover:underline">
             {player2.atpname ?? ''}
-          </span>
+          </Link>
           <Flag ioc={player2.ioc ?? undefined} className="w-6 h-4 inline-block" />
         </div>
       </div>

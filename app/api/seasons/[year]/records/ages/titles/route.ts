@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { mapIdsToSlugs } from '@/lib/player-slugs';
 
 export async function GET(request: Request, { params }: { params: Promise<{ year: string }> }) {
   const { year } = await params;
@@ -62,15 +63,23 @@ export async function GET(request: Request, { params }: { params: Promise<{ year
     const sortedOldest = [...allWinners].sort((a, b) => b.age - a.age);
     const sortedYoungest = [...allWinners].sort((a, b) => a.age - b.age);
 
+    // Enrich with slugs
+    const allIds = Array.from(new Set(allWinners.map(p => String(p.id))));
+    let idToSlug: Record<string, string | null> = {};
+    if (allIds.length) {
+      try { idToSlug = await mapIdsToSlugs(allIds); } catch (err) { console.error('Error mapping slugs for titles:', err); idToSlug = {}; }
+    }
+    const applySlugs = (arr: any[]) => arr.map(p => ({ ...p, slug: idToSlug[String(p.id)] ?? null }));
+
     if (full) {
       return NextResponse.json({
-        topOldestTitles: sortedOldest,
-        topYoungestTitles: sortedYoungest
+        topOldestTitles: applySlugs(sortedOldest),
+        topYoungestTitles: applySlugs(sortedYoungest)
       });
     } else {
       return NextResponse.json({
-        topOldestTitles: sortedOldest.slice(0,10),
-        topYoungestTitles: sortedYoungest.slice(0,10)
+        topOldestTitles: applySlugs(sortedOldest.slice(0,10)),
+        topYoungestTitles: applySlugs(sortedYoungest.slice(0,10))
       });
     }
 

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Match } from "@/types";
 import Flag from '@/components/Flag';
-import { getTourneyHref, extractUniqueSurfaces, getPlayerHref } from "@/lib/utils";
+import { getTourneyHref, extractUniqueSurfaces, getPlayerHrefWithTab } from "@/lib/utils";
 
 interface H2HMatchesServerProps {
   matches: Match[];
@@ -142,7 +142,7 @@ export default function H2HMatchesServer({
                   <td className="px-3 py-2">
                     <Flag ioc={m.winner_ioc ?? undefined} className="w-4 h-3 inline-block mr-1" />
                     <Link
-                      href={getPlayerHref(m.winner_slug ?? String(m.winner_id ?? ''))}
+                      href={getPlayerHrefWithTab(m.winner_slug ?? String(m.winner_id ?? ''), 'matches')}
                       className={isPlayerWinner ? "font-bold text-green-400" : "text-gray-100 hover:text-white"}
                     >
                       {renderNameWithSeedEntry(
@@ -156,7 +156,7 @@ export default function H2HMatchesServer({
                   <td className="px-3 py-2">
                     <Flag ioc={m.loser_ioc ?? undefined} className="w-4 h-3 inline-block mr-1" />
                     <Link
-                      href={getPlayerHref(m.loser_slug ?? String(m.loser_id ?? ''))}
+                      href={getPlayerHrefWithTab(m.loser_slug ?? String(m.loser_id ?? ''), 'matches')}
                       className={isPlayerLoser ? "font-bold text-red-400" : "text-gray-100 hover:text-white"}
                     >
                       {renderNameWithSeedEntry(

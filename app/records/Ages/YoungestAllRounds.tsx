@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
-import { getTourneyHref, getPlayerHref } from "@/lib/utils";
+import { getTourneyHref, getPlayerHrefWithTab } from "@/lib/utils";
 import Pagination from '../../../components/Pagination';
 import Modal from "@/components/Modal";
 
@@ -71,9 +71,9 @@ export default function YoungestAllRounds({ selectedSurfaces, selectedLevels, fe
       <table className="min-w-full border-collapse text-sm text-gray-200">
         <thead>
           <tr className="bg-gray-800 text-gray-100">
-            <th className="border border-gray-700 px-4 py-2 text-left">Player</th>
+            <th className="border border-gray-700 px-4 py-2 text-center">Player</th>
             <th className="border border-gray-700 px-4 py-2 text-center">Age</th>
-            <th className="border border-gray-700 px-4 py-2 text-left">Tournament</th>
+            <th className="border border-gray-700 px-4 py-2 text-center">Tournament</th>
           </tr>
         </thead>
         <tbody>
@@ -81,16 +81,16 @@ export default function YoungestAllRounds({ selectedSurfaces, selectedLevels, fe
             const tourneyId = String(p.tourney_id).split('-')[0];
             return (
               <tr key={`${p.id}-${p.tourney_id}-${idx}`} className="hover:bg-gray-800">
-                <td className="border border-gray-700 px-4 py-2">
-                  <div className="flex items-center gap-2">
+                <td className="border border-gray-700 px-4 py-2 text-center">
+                  <div className="flex items-center justify-center gap-2">
                     <Flag ioc={p.ioc} className="text-sm" />
-                    <Link href={getPlayerHref((p as any).slug ?? String(p.id))} className="text-blue-400 hover:underline">
+                    <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.id), 'matches')} className="text-blue-400 hover:underline">
                       {p.name}
                     </Link>
                   </div>
                 </td>
                 <td className="border border-gray-700 px-4 py-2 text-center">{formatAge(p.age)}</td>
-                <td className="border border-gray-700 px-4 py-2">
+                <td className="border border-gray-700 px-4 py-2 text-center">
                   <Link href={getTourneyHref({ slug: (p as any).tourney_slug ?? undefined, id: p.tourney_id, name: p.tourney_name, year: p.year })} className="text-blue-400 hover:underline">
                     {p.tourney_name} {p.year}
                   </Link>
@@ -172,7 +172,7 @@ export default function YoungestAllRounds({ selectedSurfaces, selectedLevels, fe
                       <td className="border border-gray-700 px-4 py-2">
                         <div className="flex items-center gap-2">
                           <Flag ioc={p.ioc} className="w-4 h-3" />
-                          <Link href={getPlayerHref((p as any).slug ?? String(p.id))} className="text-blue-400 hover:underline">
+                          <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.id), 'matches')} className="text-blue-400 hover:underline">
                             {p.name}
                           </Link>
                         </div>

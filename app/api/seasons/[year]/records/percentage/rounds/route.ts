@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { mapIdsToSlugs } from '@/lib/player-slugs';
 
 export async function GET(request: Request, context: { params: Promise<{ year: string }> }) {
   try {
@@ -94,12 +95,30 @@ export async function GET(request: Request, context: { params: Promise<{ year: s
       };
     });
 
+    // Enrich with slugs for all players across rounds (safe)
+    const allIds = Array.from(new Set(allRoundItems.flatMap(it => it.fullList.map((p: any) => String(p.id)))));
+    let idToSlug: Record<string, string | null> = {};
+    if (allIds.length) {
+      try {
+        idToSlug = await mapIdsToSlugs(allIds);
+      } catch (err) {
+        console.error('Error mapping slugs for percentage rounds:', err);
+        idToSlug = {};
+      }
+    }
+
+    const enrichedAllRoundItems = allRoundItems.map(it => ({
+      title: it.title,
+      list: it.list.map((p: any) => ({ ...p, slug: idToSlug[String(p.id)] ?? null })),
+      fullList: it.fullList.map((p: any) => ({ ...p, slug: idToSlug[String(p.id)] ?? null })),
+    }));
+
     // Surfaces and levels
     const surfaceList = Array.from(new Set(allMatches.map(m => m.surface))).sort();
     const levelList = Array.from(new Set(allMatches.map(m => m.tourney_level))).sort();
 
     return NextResponse.json({
-      allRoundItems,
+      allRoundItems: enrichedAllRoundItems,
       surfaceList,
       levelList,
     });

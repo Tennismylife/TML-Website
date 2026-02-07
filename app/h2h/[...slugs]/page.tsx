@@ -4,7 +4,8 @@ import H2HClient from '../H2HClient';
 import H2HContentClient from '../H2HContentClient';
 import { prisma } from '@/lib/prisma';
 import { metadataBase } from '@/lib/site';
-import { getPlayerHref, IOC_TO_ISO, createSlug } from '@/lib/utils';
+import { getPlayerHrefWithTab, IOC_TO_ISO, createSlug } from '@/lib/utils';
+import { mapIdsToSlugs } from '@/lib/player-slugs';
 import countries from 'i18n-iso-countries';
 import enLocale from 'i18n-iso-countries/langs/en.json';
 
@@ -78,10 +79,20 @@ export default async function Page({ params }: { params?: Promise<{ slugs?: stri
     const p1slug = match[1].replace(/-/g, ' ');
     const p2slug = match[2].replace(/-/g, ' ');
     try {
-      const [p1, p2] = await Promise.all([
+        // Prefer lookup by slug (from URL) and fallback to atpname search for robustness
+      const [p1BySlug, p2BySlug] = await Promise.all([
+        prisma.player.findUnique({ where: { slug: match[1] } }),
+        prisma.player.findUnique({ where: { slug: match[2] } }),
+      ]);
+
+      const [p1ByName, p2ByName] = await Promise.all([
         prisma.player.findFirst({ where: { atpname: { equals: p1slug, mode: 'insensitive' } } }),
         prisma.player.findFirst({ where: { atpname: { equals: p2slug, mode: 'insensitive' } } }),
       ]);
+
+      const p1 = p1BySlug ?? p1ByName ?? null;
+      const p2 = p2BySlug ?? p2ByName ?? null;
+
       player1 = p1 ?? null;
       player2 = p2 ?? null;
 
@@ -97,9 +108,49 @@ export default async function Page({ params }: { params?: Promise<{ slugs?: stri
             },
             orderBy: { tourney_date: 'desc' },
           });
-          initialMatches = matches.map((m: any) => ({
+
+          // Normalize date and then enrich matches with player slugs for reliable slug links
+          const normalized = matches.map((m: any) => ({
             ...m,
             tourney_date: m.tourney_date ? (m.tourney_date instanceof Date ? m.tourney_date.toISOString().split('T')[0] : String(m.tourney_date)) : null,
+          }));
+
+          // Map unique player ids to slugs
+          const playerIds = new Set<string>();
+          for (const m of normalized) {
+            if (m.winner_id) playerIds.add(String(m.winner_id));
+            if (m.loser_id) playerIds.add(String(m.loser_id));
+          }
+          const slugMap = await mapIdsToSlugs(Array.from(playerIds));
+
+          // Resolve tourney slugs for matches so clients can link to canonical slug URLs
+          const tourneyIdParts = Array.from(new Set(normalized.map((m: any) => {
+            const s = String(m.tourney_id || '');
+            const parts = s.split('-').filter(Boolean);
+            return parts.length === 2 ? parts[1] : s;
+          }).filter(Boolean)));
+
+          let tourneyMap: Record<string, string | null> = {};
+          try {
+            if (tourneyIdParts.length > 0) {
+              const tours = await prisma.tournament.findMany({ where: { id: { in: tourneyIdParts.map((v) => Number(v)) } }, select: { id: true, slug: true } });
+              tourneyMap = tours.reduce((acc: Record<string, string | null>, t: any) => { acc[String(t.id)] = t.slug ?? null; return acc; }, {});
+            }
+          } catch (err) {
+            // best-effort: if lookup fails, continue without tourney_slug
+            tourneyMap = {};
+          }
+
+          initialMatches = normalized.map((m: any) => ({
+            ...m,
+            winner_slug: slugMap[String(m.winner_id)] ?? undefined,
+            loser_slug: slugMap[String(m.loser_id)] ?? undefined,
+            tourney_slug: (() => {
+              const s = String(m.tourney_id || '');
+              const parts = s.split('-').filter(Boolean);
+              const idPart = parts.length === 2 ? parts[1] : s;
+              return idPart ? (tourneyMap[String(idPart)] ?? undefined) : undefined;
+            })(),
           }));
         } catch (matchErr) {
           console.error('Error fetching matches:', matchErr);
@@ -130,14 +181,14 @@ export default async function Page({ params }: { params?: Promise<{ slugs?: stri
     playersAsPersons.push({
       "@type": "Person",
       name: player1.atpname,
-      sameAs: new URL(getPlayerHref(player1.slug ?? (player1.id ? String(player1.id) : player1.atpname)), canonicalOrigin).toString(),
+      sameAs: new URL(getPlayerHrefWithTab(player1.slug ?? (player1.id ? String(player1.id) : player1.atpname), 'matches'), canonicalOrigin).toString(),
     });
   }
   if (player2) {
     playersAsPersons.push({
       "@type": "Person",
       name: player2.atpname,
-      sameAs: new URL(getPlayerHref(player2.slug ?? (player2.id ? String(player2.id) : player2.atpname)), canonicalOrigin).toString(),
+      sameAs: new URL(getPlayerHrefWithTab(player2.slug ?? (player2.id ? String(player2.id) : player2.atpname), 'matches'), canonicalOrigin).toString(),
     });
   }
 
@@ -193,14 +244,14 @@ export default async function Page({ params }: { params?: Promise<{ slugs?: stri
     return {
       "@context": "https://schema.org",
       "@type": "Person",
-      "@id": new URL(getPlayerHref(player.slug ?? (player.id ? String(player.id) : String(player.atpname))), canonicalOrigin).toString(),
+      "@id": new URL(getPlayerHrefWithTab(player.slug ?? (player.id ? String(player.id) : String(player.atpname)), 'matches'), canonicalOrigin).toString(),
       name: player.atpname || player.player || '',
       givenName: player.player || player.atpname || '',
       jobTitle: 'Tennis Player',
       birthDate: player.birthdate ? (player.birthdate instanceof Date ? player.birthdate.toISOString().split('T')[0] : String(player.birthdate)) : undefined,
       nationality: countryName ? { "@type": "Country", name: countryName } : undefined,
       affiliation: { "@type": "SportsOrganization", name: 'ATP' },
-      url: new URL(getPlayerHref(player.slug ?? (player.id ? String(player.id) : String(player.atpname))), canonicalOrigin).toString(),
+      url: new URL(getPlayerHrefWithTab(player.slug ?? (player.id ? String(player.id) : String(player.atpname)), 'matches'), canonicalOrigin).toString(),
       additionalProperty: additionalProperty.length ? additionalProperty : undefined,
     };
   }
@@ -217,8 +268,8 @@ export default async function Page({ params }: { params?: Promise<{ slugs?: stri
     const pageUrl = canonical;
 
     const aboutArr = [
-      { "@id": (new URL(getPlayerHref(player1.slug ?? (player1.id ? String(player1.id) : String(player1.atpname))), canonicalOrigin).toString()) },
-      { "@id": (new URL(getPlayerHref(player2.slug ?? (player2.id ? String(player2.id) : String(player2.atpname))), canonicalOrigin).toString()) },
+      { "@id": (new URL(getPlayerHrefWithTab(player1.slug ?? (player1.id ? String(player1.id) : String(player1.atpname)), 'matches'), canonicalOrigin).toString()) },
+      { "@id": (new URL(getPlayerHrefWithTab(player2.slug ?? (player2.id ? String(player2.id) : String(player2.atpname)), 'matches'), canonicalOrigin).toString()) },
     ];
 
     const keywords = `${player1.atpname} vs ${player2.atpname}, ${player1.atpname} ${player2.atpname} h2h, ${player1.atpname} ${player2.atpname} head to head, tennis h2h stats, ${player1.atpname} ${player2.atpname} matches, ${player1.atpname} ${player2.atpname} comparison, ATP h2h`;

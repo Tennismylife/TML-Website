@@ -139,12 +139,29 @@ export async function GET(request: NextRequest) {
     // Ordinamento top 100
     finalTitles.sort((a, b) => b.total_titles - a.total_titles);
 
-    // Attach slugs when available
+    // Attach slugs when available (players and tournaments)
     const ids = Array.from(new Set(finalTitles.map(p => String(p.player_id))));
     if (ids.length > 0) {
       const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
       const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
       finalTitles = finalTitles.map(p => ({ ...p, slug: slugMap.get(String(p.player_id)) ?? null }));
+    }
+
+    // Attach tourney slugs (handle composite ids like "520-1995")
+    const tourneyIdParts = finalTitles.map(p => {
+      const tid = String(p.tourney_id ?? '');
+      return tid.includes('-') ? tid.split('-')[0] : tid;
+    }).filter(Boolean);
+
+    const uniqueTourneyIds = Array.from(new Set(tourneyIdParts.map(t => Number(t)).filter(n => Number.isFinite(n))));
+    if (uniqueTourneyIds.length > 0) {
+      const tourneyRows = await prisma.tournament.findMany({ where: { id: { in: uniqueTourneyIds } }, select: { id: true, slug: true } });
+      const tourneySlugMap = new Map(tourneyRows.map(r => [String(r.id), r.slug] as [string, string | null]));
+      finalTitles = finalTitles.map(p => {
+        const tid = String(p.tourney_id ?? '');
+        const tidPart = tid.includes('-') ? tid.split('-')[0] : tid;
+        return { ...p, tourney_slug: tourneySlugMap.get(tidPart) ?? null };
+      });
     }
 
     return jsonResponse(finalTitles.slice(0, limit));

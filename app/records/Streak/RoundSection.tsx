@@ -5,7 +5,7 @@ import Link from "next/link";
 import Modal from "@/components/Modal";
 import Pagination from "@/components/Pagination";
 import Flag from "@/components/Flag";
-import { getPlayerHref } from "@/lib/utils";
+import { getPlayerHrefWithTab } from "@/lib/utils";
 
 interface RoundSectionProps {
   selectedSurfaces: Set<string>;
@@ -165,7 +165,7 @@ export default function RoundSection({
                     <div className="flex items-center gap-2">
                       <Flag ioc={s.player?.ioc ?? undefined} className="w-4 h-3" />
                       {s.player ? (
-                        <Link href={getPlayerHref((s.player as any).slug ?? String(s.player.id))} className="text-indigo-300 hover:underline">
+                        <Link href={getPlayerHrefWithTab((s.player as any).slug ?? String(s.player.id), 'matches')} className="text-indigo-300 hover:underline">
                           {s.player.name}
                         </Link>
                       ) : (

@@ -195,12 +195,29 @@ export async function GET(request: NextRequest) {
       record.rank = index + 1; // rank 1,2,3,...
     });
 
-    // Attach slugs when available
+    // Attach slugs when available (players and tournaments)
     const ids = Array.from(new Set(finalMatches.map(m => String(m.player_id))));
     if (ids.length > 0) {
       const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
       const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
       finalMatches = finalMatches.map(m => ({ ...m, slug: slugMap.get(String(m.player_id)) ?? null }));
+    }
+
+    // Collect unique tourney ids (handle composite ids like "520-1995") and attach tourney_slug
+    const tourneyIdParts = finalMatches.map(p => {
+      const tid = String(p.tourney_id ?? '');
+      return tid.includes('-') ? tid.split('-')[0] : tid;
+    }).filter(Boolean);
+
+    const uniqueTourneyIds = Array.from(new Set(tourneyIdParts.map(t => Number(t)).filter(n => Number.isFinite(n))));
+    if (uniqueTourneyIds.length > 0) {
+      const tourneyRows = await prisma.tournament.findMany({ where: { id: { in: uniqueTourneyIds } }, select: { id: true, slug: true } });
+      const tourneySlugMap = new Map(tourneyRows.map(r => [String(r.id), r.slug] as [string, string | null]));
+      finalMatches = finalMatches.map(p => {
+        const tid = String(p.tourney_id ?? '');
+        const tidPart = tid.includes('-') ? tid.split('-')[0] : tid;
+        return { ...p, tourney_slug: tourneySlugMap.get(tidPart) ?? null };
+      });
     }
 
     return jsonResponse(finalMatches);

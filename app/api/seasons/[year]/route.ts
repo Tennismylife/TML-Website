@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { createSlug } from "@/lib/utils";
 
 export async function GET(request: Request, context: { params: Promise<{ year: string }> }) {
   try {
@@ -80,6 +81,75 @@ export async function GET(request: Request, context: { params: Promise<{ year: s
         loser_ioc: finalMatch?.loser_ioc ?? "",
         draw_size: rep.draw_size ?? 0,
       };
+    });
+
+    // Enrich with canonical slug when available (robust: numeric id parsing + slug/name fallback)
+    const tourneyIdsRaw = Array.from(new Set(tourneys.map((t) => t.tourney_id).filter(Boolean)));
+
+    // Build numeric id candidates and slug candidates (from tournament name)
+    const numericIdsSet = new Set<number>();
+    const slugCandidatesSet = new Set<string>();
+    for (const t of tourneys) {
+      if (t.tourney_id) {
+        const s = String(t.tourney_id);
+        const parts = s.split("-");
+        for (let i = parts.length - 1; i >= 0; i--) {
+          const p = parts[i];
+          if (!p) continue;
+          const n = Number(p);
+          if (Number.isFinite(n)) {
+            numericIdsSet.add(n);
+            break;
+          }
+        }
+      }
+      const cand = createSlug(t.name);
+      if (cand) slugCandidatesSet.add(cand);
+    }
+
+    // Build a flexible WHERE clause and fetch matching tournaments (safe: try/catch)
+    const whereOr: any[] = [];
+    if (numericIdsSet.size) whereOr.push({ id: { in: Array.from(numericIdsSet) } });
+    if (slugCandidatesSet.size) whereOr.push({ slug: { in: Array.from(slugCandidatesSet) } });
+
+    let dbTournaments: Array<{ id: number; slug: string }> = [];
+    if (whereOr.length) {
+      try {
+        dbTournaments = await prisma.tournament.findMany({
+          where: { OR: whereOr },
+          select: { id: true, slug: true },
+        });
+      } catch (err) {
+        console.error("Error fetching tournament slugs:", err);
+        dbTournaments = [];
+      }
+    }
+
+    const slugMapById = new Map(dbTournaments.map((d) => [String(d.id), d.slug]));
+    const slugSet = new Set(dbTournaments.map((d) => d.slug));
+
+    tourneys.forEach((t) => {
+      let found: string | null = null;
+      // Prefer matching by numeric id (try last segment)
+      if (t.tourney_id) {
+        const s = String(t.tourney_id);
+        const parts = s.split("-");
+        for (let i = parts.length - 1; i >= 0; i--) {
+          const p = parts[i];
+          if (!p) continue;
+          const n = Number(p);
+          if (Number.isFinite(n) && slugMapById.has(String(n))) {
+            found = slugMapById.get(String(n)) ?? null;
+            break;
+          }
+        }
+      }
+      // Fallback: match by slug candidate derived from name
+      if (!found) {
+        const cand = createSlug(t.name);
+        if (cand && slugSet.has(cand)) found = cand;
+      }
+      (t as any).slug = found ?? null;
     });
 
     // Ordina i tornei per data (più vecchio -> più recente), poi per nome

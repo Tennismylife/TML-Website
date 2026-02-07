@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { mapIdsToSlugs } from '@/lib/player-slugs';
 
 export async function GET(
   request: NextRequest,
@@ -141,11 +142,31 @@ export async function GET(
       .sort((a, b) => b.count - a.count);
     const topEntries = full ? sortedEntries : sortedEntries.slice(0, 10);
 
+    // --- Enrich players with canonical slugs (prefer slug if available)
+    const allPlayerIds = Array.from(new Set([
+      ...sortedTitles.map(p => String(p.id)),
+      ...sortedWins.map(p => String(p.id)),
+      ...sortedPlayed.map(p => String(p.id)),
+      ...sortedEntries.map(p => String(p.id)),
+    ].filter(Boolean)));
+
+    let idToSlug: Record<string, string | null> = {};
+    if (allPlayerIds.length) {
+      try {
+        idToSlug = await mapIdsToSlugs(allPlayerIds);
+      } catch (err) {
+        console.error('Error mapping player ids to slugs:', err);
+        idToSlug = {};
+      }
+    }
+
+    const applySlugs = (arr: Array<any>) => arr.map((p) => ({ ...p, slug: idToSlug[String(p.id)] ?? null }));
+
     return NextResponse.json({
-      topTitles: { list: topTitles, fullList: sortedTitles },
-      topWins: { list: topWins, fullList: sortedWins },
-      topPlayed: { list: topPlayed, fullList: sortedPlayed },
-      topEntries: { list: topEntries, fullList: sortedEntries },
+      topTitles: { list: applySlugs(topTitles), fullList: applySlugs(sortedTitles) },
+      topWins: { list: applySlugs(topWins), fullList: applySlugs(sortedWins) },
+      topPlayed: { list: applySlugs(topPlayed), fullList: applySlugs(sortedPlayed) },
+      topEntries: { list: applySlugs(topEntries), fullList: applySlugs(sortedEntries) },
     });
   } catch (error) {
     console.error('Error:', error);

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { mapIdsToSlugs } from '@/lib/player-slugs';
 
 export async function GET(request: Request, { params }: { params: Promise<{ year: string }> }) {
   const { year } = await params;
@@ -56,18 +57,39 @@ export async function GET(request: Request, { params }: { params: Promise<{ year
 
     if (full && turn) {
       const sorted = (roundsMap[turn] || []).sort((a,b)=>b.age-a.age); // oldest = decrescente
-      return NextResponse.json({ fullList: sorted });
+
+      const ids = Array.from(new Set(sorted.map(p => String(p.id))));
+      let idToSlug: Record<string, string | null> = {};
+      if (ids.length) {
+        try { idToSlug = await mapIdsToSlugs(ids); } catch (err) { console.error('Error mapping slugs for oldest fullList:', err); idToSlug = {}; }
+      }
+      const enriched = sorted.map(p => ({ ...p, slug: idToSlug[String(p.id)] ?? null }));
+
+      return NextResponse.json({ fullList: enriched });
     }
 
     const allOldestItems = roundOrder
       .filter(r => roundsMap[r])
       .map(r => ({
         title: r,
-        list: (roundsMap[r].sort((a,b)=>b.age-a.age)).slice(0,10)
+        list: (roundsMap[r].sort((a,b)=>b.age-a.age)).slice(0,10),
+        fullList: (roundsMap[r].sort((a,b)=>b.age-a.age))
       }))
       .reverse();
 
-    return NextResponse.json({ allOldestItems });
+    const allIds = Array.from(new Set(allOldestItems.flatMap(it => it.fullList.map((p:any) => String(p.id)))));
+    let idToSlugAll: Record<string, string | null> = {};
+    if (allIds.length) {
+      try { idToSlugAll = await mapIdsToSlugs(allIds); } catch (err) { console.error('Error mapping slugs for oldest lists:', err); idToSlugAll = {}; }
+    }
+
+    const enrichedItems = allOldestItems.map(it => ({
+      title: it.title,
+      list: it.list.map((p:any) => ({ ...p, slug: idToSlugAll[String(p.id)] ?? null })),
+      fullList: it.fullList.map((p:any) => ({ ...p, slug: idToSlugAll[String(p.id)] ?? null })),
+    }));
+
+    return NextResponse.json({ allOldestItems: enrichedItems });
 
   } catch (err) {
     console.error(err);

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { mapIdsToSlugs } from '@/lib/player-slugs';
 
 export async function GET(request: Request, context: { params: Promise<{ year: string }> }) {
   try {
@@ -70,7 +71,7 @@ export async function GET(request: Request, context: { params: Promise<{ year: s
     const dataByRound = rounds.map(round => {
       const playersInRound = allPlayers.filter(p => p.round === round);
 
-      const countMap: Record<number, { id: number; name: string; ioc: string; count: number }> = {};
+      const countMap: Record<string, { id: string; name: string; ioc: string; count: number }> = {};
       playersInRound.forEach(p => {
         if (!countMap[p.id]) countMap[p.id] = { id: p.id, name: p.name, ioc: p.ioc, count: 0 };
         countMap[p.id].count += 1;
@@ -82,7 +83,22 @@ export async function GET(request: Request, context: { params: Promise<{ year: s
       return { title: round, list, fullList };
     });
 
-    return NextResponse.json({ allRoundItems: dataByRound });
+    // Enrich players with slugs
+    const allIds = Array.from(new Set(dataByRound.flatMap(r => r.fullList.map((p: any) => String(p.id)))));
+    let idToSlug: Record<string, string | null> = {};
+    if (allIds.length) {
+      try {
+        idToSlug = await mapIdsToSlugs(allIds);
+      } catch (err) {
+        console.error('Error mapping player slugs for rounds:', err);
+        idToSlug = {};
+      }
+    }
+
+    const applySlugs = (arr: Array<any>) => arr.map(p => ({ ...p, slug: idToSlug[String(p.id)] ?? null }));
+    const enriched = dataByRound.map(r => ({ title: r.title, list: applySlugs(r.list), fullList: applySlugs(r.fullList) }));
+
+    return NextResponse.json({ allRoundItems: enriched });
   } catch (error) {
     console.error('Error fetching count records:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

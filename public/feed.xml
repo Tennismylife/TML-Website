@@ -4,12 +4,12 @@
   <title>Tennis My Life — Blog</title>
   <link>https://stats.tennismylife.org/blog</link>
   <description>Articles and commentary on tennis statistics.</description>
-  <lastBuildDate>Fri, 06 Feb 2026 07:51:38 GMT</lastBuildDate>
+  <lastBuildDate>Sat, 07 Feb 2026 04:39:00 GMT</lastBuildDate>
   <item>
     <title>2026-02-04-alcaraz-wins-australian-open-youngest-career-grand-slam</title>
     <link>https://stats.tennismylife.org/blog/2026-02-04-alcaraz-wins-australian-open-youngest-career-grand-slam</link>
     <guid isPermaLink="true">https://stats.tennismylife.org/blog/2026-02-04-alcaraz-wins-australian-open-youngest-career-grand-slam</guid>
-    <pubDate>Fri, 06 Feb 2026 07:51:38 GMT</pubDate>
+    <pubDate>Sat, 07 Feb 2026 04:39:00 GMT</pubDate>
     <description></description>
     <content:encoded><![CDATA[<p>import Callout from '@/components/mdx/Callout' import Chart from '@/components/mdx/Chart'</p>
 <p>&lt;div className="text-center"&gt; &lt;picture&gt; &lt;source srcSet="/blog/img/alcaraz-ao-2026-400.webp" media="(max-width:640px)" type="image/webp" /&gt; &lt;source srcSet="/blog/img/alcaraz-ao-2026-800.webp" type="image/webp" /&gt; &lt;img src="/blog/img/alcaraz-ao-2026-400.jpg" alt="Illustration of Carlos Alcaraz celebrating his Australian Open 2026 victory" className="mx-auto max-w-xs rounded-md mb-6" loading="lazy" /&gt; &lt;/picture&gt; &lt;/div&gt;</p>

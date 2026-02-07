@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Flag from '@/components/Flag';
-import { getPlayerHref } from "@/lib/utils";
+import { getPlayerHrefWithTab } from "@/lib/utils";
 import Pagination from "../../../components/Pagination";
 
 interface TitlesProps {
@@ -100,7 +100,7 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries, f
                 <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                   <div className="flex items-center gap-2">
                     <Flag ioc={p.ioc ?? undefined} className="w-4 h-3" />
-                    <Link href={getPlayerHref((p as any).slug ?? String(p.id))} className="text-indigo-300 hover:underline">
+                    <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.id), 'matches')} className="text-indigo-300 hover:underline">
                       {p.name}
                     </Link>
                   </div>

@@ -89,9 +89,9 @@ const YoungestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetch
         <thead>
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
-            <th className="border border-white/30 px-4 py-2 text-right text-lg text-gray-200 whitespace-nowrap">Age</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Tournament</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Player</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200 whitespace-nowrap">Age</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Tournament</th>
           </tr>
         </thead>
         <tbody>
@@ -105,8 +105,8 @@ const YoungestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetch
             return (
               <tr key={`${p.id}-${p.event_id}`} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
-                <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
-                  <div className="flex items-center gap-2">
+                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
+                  <div className="flex items-center justify-center gap-2">
                     <Flag ioc={p.ioc} className="w-4 h-3" />
                     <Link href={playerMatchesUrl((p as any).slug ?? String(p.id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="text-indigo-300 hover:underline">
                       {p.name}
@@ -114,7 +114,7 @@ const YoungestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetch
                   </div>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{formatAge(p.age)}</td>
-                <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
+                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
                   <Link href={getTourneyHref({ slug: (p as any).tourney_slug ?? undefined, id: p.tourney_id, name: p.tourney_name, year })} className="text-indigo-300 hover:underline">
                     {p.tourney_name} {year}
                   </Link>

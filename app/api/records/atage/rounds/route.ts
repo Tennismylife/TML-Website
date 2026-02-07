@@ -43,36 +43,26 @@ export async function GET(request: NextRequest) {
     const limitParam = Number(url.searchParams.get('limit') ?? '100');
     const limit = Number.isFinite(limitParam) ? Math.min(100, Math.max(1, Math.floor(limitParam))) : 100;
 
-    // ----------- collect ages per player and compute counts by closest age -----------
-    const agesByPlayer = new Map<string, number[]>();
+    // ----------- collect counts per player using strict inequalities -----------
+    // For standard mode (after=false) we count matches where the player's age is strictly < targetAge
+    // For after mode (after=true) we count matches where the player's age is strictly > targetAge
+    const countsByPlayer = new Map<string, number>();
 
     for (const m of allMatches) {
       if (m.winner_id && m.winner_age != null) {
         const id = String(m.winner_id);
-        const arr = agesByPlayer.get(id) ?? [];
-        arr.push(Number(m.winner_age));
-        agesByPlayer.set(id, arr);
+        const age = Number(m.winner_age);
+        if (after ? (age > targetAge) : (age < targetAge)) {
+          countsByPlayer.set(id, (countsByPlayer.get(id) ?? 0) + 1);
+        }
       }
       if (m.loser_id && m.loser_age != null) {
         const id = String(m.loser_id);
-        const arr = agesByPlayer.get(id) ?? [];
-        arr.push(Number(m.loser_age));
-        agesByPlayer.set(id, arr);
+        const age = Number(m.loser_age);
+        if (after ? (age > targetAge) : (age < targetAge)) {
+          countsByPlayer.set(id, (countsByPlayer.get(id) ?? 0) + 1);
+        }
       }
-    }
-
-    const countsByPlayer = new Map<string, number>();
-    for (const [id, ages] of agesByPlayer.entries()) {
-      // select candidate ages that satisfy the after/<= condition
-      const candidates = ages.filter(a => after ? (a >= targetAge) : (a <= targetAge));
-      if (candidates.length === 0) continue;
-
-      // pick the closest age according to mode
-      const chosenAge = after ? Math.min(...candidates) : Math.max(...candidates);
-
-      // count occurrences exactly at chosenAge
-      const cnt = ages.filter(a => a === chosenAge).length;
-      if (cnt > 0) countsByPlayer.set(id, cnt);
     }
 
     if (countsByPlayer.size === 0) {

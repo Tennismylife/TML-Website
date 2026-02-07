@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Flag from '@/components/Flag';
-import { getPlayerHref } from "@/lib/utils";
+import { getPlayerHrefWithTab } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
 import RecordsCountControls from "../../Count/RecordsCountControls";
 import ServerPagination from '@/components/ServerPagination';
@@ -115,6 +115,14 @@ async function StreakCountMain({ searchParams, showHeading = true }: { searchPar
 
   const resultArray: (Player & { weeks: number })[] = Object.values(resultMap).sort((a, b) => b.weeks - a.weeks);
 
+  // Enrich with slugs where available so links point to canonical /players/:slug/matches
+  const ids = resultArray.map(r => r.id).filter(Boolean) as string[];
+  let slugMap = new Map<string, string | null>();
+  if (ids.length > 0) {
+    const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
+    slugMap = new Map(rows.map(r => [r.id as string, r.slug as string | null]));
+  }
+
   const totalPages = Math.ceil(resultArray.length / perPage);
   const start = (page - 1) * perPage;
   const paginatedPlayers = resultArray.slice(start, start + perPage);
@@ -142,7 +150,7 @@ async function StreakCountMain({ searchParams, showHeading = true }: { searchPar
                   <div className="flex items-center gap-2">
                     {flagEl}
                     {p.id ? (
-                      <Link href={getPlayerHref((p as any).slug ?? String(p.id))} className="hover:underline">{p.name}</Link>
+                      <Link href={getPlayerHrefWithTab(slugMap.get(String(p.id)) ?? String(p.id), 'matches')} className="hover:underline">{p.name}</Link>
                     ) : (
                       <span>{p.name}</span>
                     )}

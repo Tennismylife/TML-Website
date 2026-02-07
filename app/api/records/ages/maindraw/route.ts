@@ -74,16 +74,36 @@ export async function GET(request: NextRequest) {
 
     const responseKey = isYoungest ? "youngestPlayers" : "oldestPlayers";
 
-    // Attach slugs when available
-    const ids = playersSorted.map(p => String(p.id)).filter(Boolean);
-    if (ids.length > 0) {
-      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
-      const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
-      const enriched = playersSorted.map(p => ({ ...p, slug: slugMap.get(String(p.id)) ?? null }));
-      return NextResponse.json({ [responseKey]: enriched });
+    // Attach player and tournament slugs when available
+    const playerIds = playersSorted.map(p => String(p.id)).filter(Boolean);
+
+    // Collect tourney id parts (some values may include composite strings like "581-1977")
+    const tourneyIdParts = playersSorted.map(p => {
+      const tid = String(p.tourney_id ?? '');
+      return tid.includes('-') ? tid.split('-')[0] : tid;
+    }).filter(Boolean);
+
+    const uniqueTourneyIds = Array.from(new Set(tourneyIdParts.map(t => Number(t)).filter(n => Number.isFinite(n))));
+
+    const result = playersSorted;
+
+    if (playerIds.length > 0) {
+      const playerRows = await prisma.player.findMany({ where: { id: { in: playerIds } }, select: { id: true, slug: true } });
+      const playerSlugMap = new Map(playerRows.map(r => [String(r.id), r.slug] as [string, string | null]));
+      result.forEach(p => { (p as any).slug = playerSlugMap.get(String(p.id)) ?? null; });
     }
 
-    return NextResponse.json({ [responseKey]: playersSorted });
+    if (uniqueTourneyIds.length > 0) {
+      const tourneyRows = await prisma.tournament.findMany({ where: { id: { in: uniqueTourneyIds } }, select: { id: true, slug: true } });
+      const tourneySlugMap = new Map(tourneyRows.map(r => [String(r.id), r.slug] as [string, string | null]));
+      result.forEach(p => {
+        const tid = String(p.tourney_id ?? '');
+        const tidPart = tid.includes('-') ? tid.split('-')[0] : tid;
+        (p as any).tourney_slug = tourneySlugMap.get(tidPart) ?? null;
+      });
+    }
+
+    return NextResponse.json({ [responseKey]: result });
   } catch (error) {
     console.error("Error fetching players:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

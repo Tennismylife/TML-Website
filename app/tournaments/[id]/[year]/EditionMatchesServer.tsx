@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Flag from '@/components/Flag';
-import { getPlayerHref } from '@/lib/utils';
+import { getPlayerHrefWithTab } from '@/lib/utils';
 
 export default function EditionMatchesServer({ matches }: { matches: any[] }) {
   if (!matches || matches.length === 0) return null;
@@ -33,14 +33,14 @@ export default function EditionMatchesServer({ matches }: { matches: any[] }) {
               <td className="px-4 py-2 text-center text-sm">{m.winner_rank ?? '-'}</td>
               <td className="px-4 py-2 flex items-center justify-center gap-2 text-sm">
                 {m.winner_ioc && <Flag ioc={m.winner_ioc} className="w-6 h-4" />}
-                <Link href={getPlayerHref(m.winner_slug ?? String(m.winner_id))} className="text-gray-200 hover:text-yellow-400">
+                <Link href={getPlayerHrefWithTab(m.winner_slug ?? String(m.winner_id), 'matches')} className="text-gray-200 hover:text-yellow-400">
                   {m.winner_name ?? ''}
                 </Link>
               </td>
               <td className="px-4 py-2 text-center text-sm">{m.loser_rank ?? '-'}</td>
               <td className="px-4 py-2 flex items-center justify-center gap-2 text-sm">
                 {m.loser_ioc && <Flag ioc={m.loser_ioc} className="w-6 h-4" />}
-                <Link href={getPlayerHref(m.loser_slug ?? String(m.loser_id))} className="text-gray-400 hover:text-gray-200">
+                <Link href={getPlayerHrefWithTab(m.loser_slug ?? String(m.loser_id), 'matches')} className="text-gray-400 hover:text-gray-200">
                   {m.loser_name ?? ''}
                 </Link>
               </td>

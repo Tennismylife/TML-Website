@@ -112,15 +112,46 @@ export async function GET(request: NextRequest) {
       if (item.fullList.length > 0) allRoundsItems.push(item);
     }
 
-    // Attach slugs when available across all rounds
+    // Attach slugs when available across all rounds (players and tournaments)
     const allIds = Array.from(new Set(allRoundsItems.flatMap(it => it.fullList.map(p => String(p.id))))).filter(Boolean);
-    if (allIds.length > 0) {
-      const rows = await prisma.player.findMany({ where: { id: { in: allIds } }, select: { id: true, slug: true } });
+    // Collect tourney id parts (handle composite event ids like '2023-540')
+    const allTourneyIdsRaw = Array.from(new Set(allRoundsItems.flatMap(it => it.fullList.map(p => String(p.event_id || '')).filter(Boolean))));
+    const tourneyIdParts = Array.from(new Set(allTourneyIdsRaw.map(s => {
+      const parts = String(s).split('-').filter(Boolean);
+      return parts.length === 2 ? parts[1] : s;
+    }).filter(Boolean))).filter(Boolean);
+
+    if (allIds.length > 0 || tourneyIdParts.length > 0) {
+      // player slugs
+      const rows = allIds.length > 0 ? await prisma.player.findMany({ where: { id: { in: allIds } }, select: { id: true, slug: true } }) : [];
       const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
+
+      // tournament slugs (best-effort, safe)
+      let tourneyMap: Record<string, string | null> = {};
+      try {
+        if (tourneyIdParts.length > 0) {
+          const tours = await prisma.tournament.findMany({ where: { id: { in: tourneyIdParts.map(v => Number(v)) } }, select: { id: true, slug: true } });
+          tourneyMap = tours.reduce((acc: Record<string, string | null>, t: any) => { acc[String(t.id)] = t.slug ?? null; return acc; }, {});
+        }
+      } catch (err) {
+        // best-effort: continue without tournament slugs
+        tourneyMap = {};
+      }
+
       const enrichedItems = allRoundsItems.map(it => ({
         ...it,
-        list: it.list.map(p => ({ ...p, slug: slugMap.get(String(p.id)) ?? null })),
-        fullList: it.fullList.map(p => ({ ...p, slug: slugMap.get(String(p.id)) ?? null })),
+        list: it.list.map(p => ({ ...p, slug: slugMap.get(String(p.id)) ?? null, tourney_slug: (() => {
+          const s = String(p.event_id || '');
+          const parts = s.split('-').filter(Boolean);
+          const idPart = parts.length === 2 ? parts[1] : s;
+          return idPart ? (tourneyMap[String(idPart)] ?? null) : null;
+        })() })),
+        fullList: it.fullList.map(p => ({ ...p, slug: slugMap.get(String(p.id)) ?? null, tourney_slug: (() => {
+          const s = String(p.event_id || '');
+          const parts = s.split('-').filter(Boolean);
+          const idPart = parts.length === 2 ? parts[1] : s;
+          return idPart ? (tourneyMap[String(idPart)] ?? null) : null;
+        })() })),
       }));
 
       return NextResponse.json(

@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
-import { getTourneyHref, getPlayerHref } from "@/lib/utils";
+import { getTourneyHref, getPlayerHrefWithTab } from "@/lib/utils";
 import Pagination from '../../../components/Pagination';
 import Modal from "@/components/Modal";
 
@@ -73,20 +73,20 @@ export default function OldestAllRounds({ selectedSurfaces, selectedLevels, fetc
         </thead>
         <tbody>
           {data.map((p, idx) => {
-            const tourneyId = String(p.tourney_id).split('-')[1];
+            // use event_id as the tournament identifier (may be composite like 2023-540)
             return (
-              <tr key={`${p.id}-${p.tourney_id}-${idx}`} className="hover:bg-gray-800">
+              <tr key={`${p.id}-${p.event_id}-${idx}`} className="hover:bg-gray-800">
                 <td className="border border-gray-700 px-4 py-2">
                   <div className="flex items-center gap-2">
                     <Flag ioc={p.ioc} className="text-sm" />
-                    <Link href={getPlayerHref((p as any).slug ?? String(p.id))} className="text-blue-400 hover:underline">
+                    <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.id), 'matches')} className="text-blue-400 hover:underline">
                       {p.name}
                     </Link>
                   </div>
                 </td>
                 <td className="border border-gray-700 px-4 py-2 text-center">{formatAge(p.age)}</td>
                 <td className="border border-gray-700 px-4 py-2">
-                  <Link href={getTourneyHref({ slug: (p as any).tourney_slug ?? undefined, id: p.tourney_id, name: p.tourney_name, year: p.year })} className="text-blue-400 hover:underline">
+                  <Link href={getTourneyHref({ slug: (p as any).tourney_slug ?? undefined, id: p.event_id, name: p.tourney_name, year: p.year })} className="text-blue-400 hover:underline">
                     {p.tourney_name} {p.year}
                   </Link>
                 </td>
@@ -167,20 +167,19 @@ export default function OldestAllRounds({ selectedSurfaces, selectedLevels, fetc
               </thead>
               <tbody>
                 {modalData.list.map((p, idx) => {
-                  const tourneyId = String(p.tourney_id).split('-')[1];
                   return (
-                    <tr key={`${p.id}-${p.tourney_id}-${idx}`} className="hover:bg-gray-800">
-                      <td className="border border-gray-700 px-4 py-2">
-                        <div className="flex items-center gap-2">
+                    <tr key={`${p.id}-${p.event_id}-${idx}`} className="hover:bg-gray-800">
+                      <td className="border border-gray-700 px-4 py-2 text-center">
+                        <div className="flex items-center justify-center gap-2">
                           <Flag ioc={p.ioc} className="w-4 h-3" />
-                          <Link href={getPlayerHref((p as any).slug ?? String(p.id))} className="text-blue-400 hover:underline">
+                          <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.id), 'matches')} className="text-blue-400 hover:underline">
                             {p.name}
                           </Link>
                         </div>
                       </td>
                       <td className="border border-gray-700 px-4 py-2 text-center">{formatAge(p.age)}</td>
-                      <td className="border border-gray-700 px-4 py-2">
-                        <Link href={getTourneyHref({ slug: (p as any).tourney_slug ?? undefined, id: p.tourney_id, name: p.tourney_name, year: p.year })} className="text-blue-400 hover:underline">
+                      <td className="border border-gray-700 px-4 py-2 text-center">
+                        <Link href={getTourneyHref({ slug: (p as any).tourney_slug ?? undefined, id: p.event_id, name: p.tourney_name, year: p.year })} className="text-blue-400 hover:underline">
                           {p.tourney_name} {p.year}
                         </Link>
                       </td>

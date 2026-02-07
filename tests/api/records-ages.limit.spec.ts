@@ -109,4 +109,42 @@ describe('Records ages endpoints: limit behavior', () => {
     expect(Array.isArray(json.youngestWinners)).toBe(true);
     expect(json.youngestWinners.length).toBeLessThanOrEqual(100);
   });
+
+  it('winners attaches tourney_slug when tourney id is numeric or composite', async () => {
+    const fakeMatches = [
+      {
+        id: '1',
+        winner_id: 'p1',
+        winner_name: 'Player One',
+        winner_ioc: 'USA',
+        winner_age: 35,
+        event_id: '1-1977',
+        tourney_id: '681-1977',
+        tourney_name: 'Miami',
+        year: 1977,
+        round: 'F',
+        score: '6-3 6-4',
+        team_event: false,
+        status: true,
+        tourney_date: new Date('1977-01-01')
+      }
+    ];
+
+    const mockPrisma: any = {
+      match: { findMany: vi.fn().mockResolvedValue(fakeMatches) },
+      player: { findMany: vi.fn().mockResolvedValue([{ id: 'p1', slug: 'player-one' }]) },
+      tournament: { findMany: vi.fn().mockResolvedValue([{ id: 681, slug: 'miami' }]) }
+    };
+
+    (globalThis as any).prisma = mockPrisma;
+
+    const { GET } = await import('../../app/api/records/ages/winners/route');
+    const req = new Request('https://example.com/api/records/ages/winners?limit=100&type=oldest');
+    const res: any = await GET(req as any);
+    const json = await res.json();
+
+    expect(Array.isArray(json.oldestWinners)).toBe(true);
+    expect(json.oldestWinners.length).toBeGreaterThan(0);
+    expect(json.oldestWinners[0].tourney_slug).toBe('miami');
+  });
 });
