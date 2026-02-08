@@ -13,9 +13,22 @@ html, body {
 }
 
 /* Essential text colors */
+/* Ripristino comportamento originale per tutto il sito (inclusi i link). */
 p, span, a, li, div, h1, h2, h3, h4, h5, h6, label, button, input, select, textarea {
   color: #FFFFFF !important;
 }
+
+/* Local override for ranking tables: force links inside `.rankingtables` to inherit the row color.
+   Placed here (after the global rule) so it takes precedence in the cascade and only affects ranking tables. */
+.rankingtables .table-row-text,
+.rankingtables .table-row-text a,
+.rankingtables td a,
+.rankingtables .table-row-text a:hover,
+.rankingtables td a:hover {
+  color: inherit !important;
+  text-decoration: none;
+}
+
 
 /* Essential headings */
 h1, h2, h3, h4, h5, h6 {

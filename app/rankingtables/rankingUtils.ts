@@ -7,6 +7,7 @@ export type Row = {
   prize_money?: string | null;
   atp_category?: string | number | null;
   tourney_id?: string | number;
+  tourney_slug?: string | null;
 };
 
 export type SortConfig = { key: keyof Row; direction: "asc" | "desc" } | null;

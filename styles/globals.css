@@ -13,6 +13,8 @@ html, body {
 }
 
 /* Essential text colors */
+/* Ripristinato comportamento globale: i link sono trattati come altri testi a livello globale.
+   Le eccezioni saranno gestite in modo locale con la classe `.rankingtables`. */
 p, span, a, li, div, h1, h2, h3, h4, h5, h6, label, button, input, select, textarea {
   color: #FFFFFF !important;
 }
@@ -239,4 +241,16 @@ tr:hover td {
 .table-row-text {
   color: inherit !important; /* usa il colore inline passato da React */
   text-shadow: none;
+}
+
+/* Override LOCALIZZATO ai ranking tables: applica l'ereditarietà del colore solo dentro il componente */
+.rankingtables .table-row-text,
+.rankingtables .table-row-text a,
+.rankingtables td a {
+  color: inherit !important;
+  text-decoration: none;
+}
+
+.rankingtables .table-row-text a:hover {
+  color: inherit !important;
 }

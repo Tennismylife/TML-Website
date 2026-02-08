@@ -24,9 +24,6 @@ export async function GET(request: NextRequest) {
     const limitParam = Number(url.searchParams.get('limit'));
     const limit = Number.isInteger(limitParam) ? Math.min(Math.max(limitParam, 1), 100) : 100;
 
-    console.log('[streaktournaments] player_id', player_id);
-    console.log('[streaktournaments] event_ids', event_ids);
-
     // Try to get tournament info directly from Match rows for robustness
     const matches = await prisma.match.findMany({
       where: {
@@ -67,21 +64,6 @@ export async function GET(request: NextRequest) {
     }));
 
     const formattedSerialized = JSON.stringify(formatted);
-    console.log('[streaktournaments] formattedSerialized', formattedSerialized);
-
-    if (url.searchParams.get('debug') === '1') {
-      // Exclude null/undefined event_ids to satisfy TypeScript index typing
-      const rawIds = Array.from(new Set(matches.map(t => t.event_id).filter((v): v is string => !!v)));
-      const counts = rawIds.reduce((acc, id) => {
-        acc[id] = matches.filter(t => t.event_id === id).length;
-        return acc;
-      }, {} as Record<string, number>);
-      const formattedIds = formatted.map(t => t.event_id ?? '');
-      console.log('[streaktournaments debug] formatted length', formatted.length, 'ids', formattedIds);
-      const parsedFromSerialized = JSON.parse(formattedSerialized);
-      console.log('[streaktournaments debug] parsedFromSerialized length', parsedFromSerialized.length, 'ids', parsedFromSerialized.map((x:any)=>x.event_id));
-      return NextResponse.json({ debug: { event_ids, found: matches.length, uniqueEventIds: event_ids.length, rawIds, counts, formattedCount: formatted.length, formattedIds, formattedSerialized }, tournaments: parsedFromSerialized.slice(0, limit), tournaments_serialized: formattedSerialized });
-    }
 
     // Return both serialized form and parsed array (parsed included for convenience)
     return NextResponse.json({ tournaments: JSON.parse(formattedSerialized).slice(0, limit), tournaments_serialized: formattedSerialized });

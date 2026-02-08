@@ -25,7 +25,26 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ rows });
+    // Attach tourney_slug when available in the tournaments table
+    const tourneyIdParts = rows.map((r: any) => {
+      const tid = String(r.tourney_id ?? "");
+      return tid.includes("-") ? tid.split("-")[0] : tid;
+    }).filter(Boolean);
+
+    const uniqueTourneyIds = Array.from(new Set(tourneyIdParts.map(t => Number(t)).filter(n => Number.isFinite(n))));
+    let rowsWithSlug = rows;
+
+    if (uniqueTourneyIds.length > 0) {
+      const tourneyRows = await prisma.tournament.findMany({ where: { id: { in: uniqueTourneyIds } }, select: { id: true, slug: true } });
+      const tourneySlugMap = new Map(tourneyRows.map(r => [String(r.id), r.slug] as [string, string | null]));
+      rowsWithSlug = rows.map((r: any) => {
+        const tid = String(r.tourney_id ?? "");
+        const tidPart = tid.includes("-") ? tid.split("-")[0] : tid;
+        return { ...r, tourney_slug: tourneySlugMap.get(tidPart) ?? null };
+      });
+    }
+
+    return NextResponse.json({ rows: rowsWithSlug });
   } catch (err: any) {
     console.error("Errore rankingTable:", err.message);
     return NextResponse.json(

@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
+import Link from "next/link";
 import { Row, sortRows, getCategoryStyle, normalizeCategory, SortConfig } from "./rankingUtils";
-import { useRouter } from "next/navigation";
 import { getTourneyHref } from "@/lib/utils";
 
 interface RankingTableProps {
@@ -20,7 +20,6 @@ export default function RankingTable({
   loading,
   error,
 }: RankingTableProps) {
-  const router = useRouter();
 
   const sortedRows = useMemo(() => sortRows(rows, sortConfig), [rows, sortConfig]);
 
@@ -29,7 +28,7 @@ export default function RankingTable({
   if (error) return <p className="text-red-400 text-center">{error}</p>;
 
   return (
-    <section className="overflow-x-auto rounded border border-white/10 bg-gray-800 p-4">
+    <section className="rankingtables overflow-x-auto rounded border border-white/10 bg-gray-800 p-4">
       <table className="min-w-full border-collapse text-white mx-auto">
         <thead>
           <tr className="border border-white/30 px-4 py-2 text-center text-lg">
@@ -81,43 +80,60 @@ export default function RankingTable({
               // Ensure keys are unique even if multiple rows share id/year/name/date
               // Append the row index to guarantee uniqueness while keeping the key mostly stable
               const key = `t-${tourneyPart}-${r.year}-${safeTournament}-${r.tourney_date ?? "nodate"}-${idx}`;
-              const href = r.tourney_id
-                ? getTourneyHref({ id: r.tourney_id, year: r.year })
-                : undefined;
+              const href = getTourneyHref({ slug: r.tourney_slug ?? undefined, id: r.tourney_id, year: r.year });
 
-              const clickable = Boolean(href);
+              // getTourneyHref returns '#' when neither slug nor id is available — treat that as non-clickable
+              const clickable = Boolean(href && href !== "#");
 
               return (
                 <tr
                   key={key}
-                  onClick={() => clickable && router.push(href!)}
-                  onKeyDown={(e) => {
-                    if (!clickable) return;
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      router.push(href!);
-                    }
-                  }}
-                  role={clickable ? "link" : undefined}
-                  tabIndex={clickable ? 0 : -1}
                   className={`border-b border-white/10 hover:bg-gray-700/50 cursor-pointer ${border}`}
                   style={{ color }}
                 >
-                  <td className="px-3 py-2 table-row-text">{r.tournament}</td>
                   <td className="px-3 py-2 table-row-text">
-                    {r.tourney_date
-                      ? new Date(r.tourney_date).toLocaleDateString()
-                      : "-"}
+                    {href ? (
+                      <Link href={href} className="block w-full h-full text-current no-underline" style={{ color }} aria-label={`Open ${r.tournament} ${r.year}`}>
+                        {r.tournament}
+                      </Link>
+                    ) : (
+                      r.tournament
+                    )}
+                  </td>
+                  <td className="px-3 py-2 table-row-text">
+                    {href ? (
+                      <Link href={href} className="block w-full h-full text-current no-underline" style={{ color }} tabIndex={-1}>
+                        {r.tourney_date ? new Date(r.tourney_date).toLocaleDateString() : "-"}
+                      </Link>
+                    ) : (
+                      r.tourney_date ? new Date(r.tourney_date).toLocaleDateString() : "-"
+                    )}
                   </td>
                   <td className="px-3 py-2">
-                    <span
-                      className={`${badge} ${px} ${py} ${text} inline-block rounded-full pointer-events-none`}
-                    >
-                      {displayValue}
-                    </span>
+                    {href ? (
+                      <Link href={href} className="block w-full h-full text-current no-underline" style={{ color }} tabIndex={-1} aria-hidden>
+                        <span
+                          className={`${badge} ${px} ${py} ${text} inline-block rounded-full pointer-events-none`}
+                        >
+                          {displayValue}
+                        </span>
+                      </Link>
+                    ) : (
+                      <span
+                        className={`${badge} ${px} ${py} ${text} inline-block rounded-full pointer-events-none`}
+                      >
+                        {displayValue}
+                      </span>
+                    )}
                   </td>
                   <td className="px-3 py-2 table-row-text">
-                    {r.prize_money ?? "-"}
+                    {href ? (
+                      <Link href={href} className="block w-full h-full text-current no-underline" style={{ color }} tabIndex={-1} aria-hidden>
+                        {r.prize_money ?? "-"}
+                      </Link>
+                    ) : (
+                      r.prize_money ?? "-"
+                    )}
                   </td>
                 </tr>
               );
