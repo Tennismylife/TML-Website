@@ -10,7 +10,6 @@ export const metadata: Metadata = {
     url: '/recordsranking',
     type: 'website',
   },
-  alternates: { canonical: '/recordsranking' },
 };
 
 export default function RecordsRankingLayout({ children }: { children: React.ReactNode }) {

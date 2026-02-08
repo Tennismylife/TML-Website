@@ -77,7 +77,11 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
     default: title = 'Records Ranking - TennisMyLife';
   }
 
-  return { title: { absolute: title } };
+  const site = process.env.SITE_URL?.replace(/\/+$/, '') || process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
+  const pathSegments = slug.length ? slug : ['count'];
+  const canonical = `${site}/recordsranking/${pathSegments.join('/')}`;
+
+  return { title: { absolute: title }, alternates: { canonical } };
 }
 
 export default async function RecordsRankingSlugPage({
