@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
 
     // Enrich matches with player slugs and tourney slugs (best-effort)
     try {
-      const playerIds = Array.from(new Set(matches.flatMap(m => [m.winner_id, m.loser_id]).filter(id => !!id)));
+      const playerIds = Array.from(new Set(matches.flatMap(m => [m.winner_id, m.loser_id]).filter((id): id is string => id != null && id !== '')));
       const { mapIdsToSlugs } = await import('@/lib/player-slugs');
       const slugMap = await mapIdsToSlugs(playerIds);
 
