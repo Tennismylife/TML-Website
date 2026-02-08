@@ -97,7 +97,40 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    return NextResponse.json(playerMatches);
+    // Try to enrich with tourney_slug when possible (best-effort)
+    try {
+      const tourneyIdParts = Array.from(new Set(playerMatches.map((m) => {
+        const s = String(m.tourney_id || '');
+        const parts = s.split('-').filter(Boolean);
+        return parts.length === 2 ? parts[1] : s;
+      }).filter(Boolean)));
+
+      let tourneyMap: Record<string, string | null> = {};
+      if (tourneyIdParts.length > 0) {
+        try {
+          const tours = await prisma.tournament.findMany({ where: { id: { in: tourneyIdParts.map(v => Number(v)) } }, select: { id: true, slug: true, name: true } });
+          tourneyMap = tours.reduce((acc: Record<string, string | null>, t: any) => { acc[String(t.id)] = t.slug ?? null; return acc; }, {});
+        } catch (e) {
+          // best-effort: continue without map
+          tourneyMap = {};
+        }
+      }
+
+      const enriched = playerMatches.map(m => ({
+        ...m,
+        tourney_slug: (() => {
+          const s = String(m.tourney_id || '');
+          const parts = s.split('-').filter(Boolean);
+          const idPart = parts.length === 2 ? parts[1] : s;
+          return idPart ? (tourneyMap[String(idPart)] ?? null) : null;
+        })(),
+      }));
+
+      return NextResponse.json(enriched);
+    } catch (e) {
+      // fallback: return unmodified matches
+      return NextResponse.json(playerMatches);
+    }
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Errore server" }, { status: 500 });
