@@ -130,8 +130,33 @@ export default function RoundSection({
     try {
       const res = await fetch(`/api/records/streak/streaktournaments?player_id=${encodeURIComponent(playerId)}&event_ids=${encodeURIComponent(eventIds.join(','))}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      setTournamentDetails(data);
+      const resJson = await res.json();
+      let tournamentsData: TournamentDetail[] = [];
+
+      // Prefer serialized form if present (more reliable in some server responses)
+      if (resJson && typeof resJson === 'object' && typeof (resJson as any).tournaments_serialized === 'string') {
+        try {
+          tournamentsData = JSON.parse((resJson as any).tournaments_serialized) as TournamentDetail[];
+        } catch (e) {
+          tournamentsData = [];
+        }
+      } else if (Array.isArray((resJson as any).tournaments)) {
+        tournamentsData = (resJson as any).tournaments as TournamentDetail[];
+      } else if (typeof (resJson as any).tournaments === 'string') {
+        try {
+          tournamentsData = JSON.parse((resJson as any).tournaments) as TournamentDetail[];
+        } catch (e) {
+          tournamentsData = [];
+        }
+      } else if (Array.isArray(resJson)) {
+        tournamentsData = resJson as TournamentDetail[];
+      } else if (resJson && typeof resJson === 'object') {
+        // Fallback: object map -> take values
+        const val = Object.values(resJson as any);
+        tournamentsData = Array.isArray(val) ? (val as TournamentDetail[]) : [];
+      }
+
+      setTournamentDetails(tournamentsData);
     } catch (err: any) {
       setTournamentError(err?.message || "Error while loading tournament details.");
     } finally {
@@ -235,6 +260,7 @@ export default function RoundSection({
             <table className="min-w-full border-collapse">
               <thead>
                 <tr className="bg-black">
+                  <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">#</th>
                   <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200 text-center">Tournament</th>
                   <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200 text-center">Date</th>
                 </tr>
@@ -242,6 +268,7 @@ export default function RoundSection({
               <tbody>
                 {tournamentDetails.map((t, idx) => (
                   <tr key={`${t.event_id}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
+                    <td className="border border-white/10 px-4 py-2 text-center text-gray-200">{idx + 1}</td>
                     <td className="border border-white/10 px-4 py-2 text-center text-gray-200">{t.tourney_name}</td>
                     <td className="border border-white/10 px-4 py-2 text-center text-gray-200">{t.tourney_date ?? '-'}</td>
                   </tr>
