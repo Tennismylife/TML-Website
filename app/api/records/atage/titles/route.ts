@@ -25,11 +25,8 @@ export async function GET(request: NextRequest) {
     const where: any = {
       round: 'F', // solo finali
       team_event: false,
-      // escludi match non giocati e finali con score contenente "WEA"
-      AND: [
-        { score: { not: 'To play' } },
-        { score: { not: { contains: 'WEA', mode: 'insensitive' } } },
-      ],
+      // escludi finali non giocate e finali con score contenente "WEA"
+      NOT: { OR: [ { score: { contains: 'WEA' } }, { score: 'To play' } ] },
       ...(selectedSurfaces.length > 0 && { surface: { in: selectedSurfaces } }),
       ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),
     };

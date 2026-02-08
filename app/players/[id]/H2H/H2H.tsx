@@ -70,8 +70,6 @@ export default function H2HPage({ playerId, mainPlayerName, filters = { year: "A
 
   return (
     <section className="p-4 space-y-4">
-      {/* Diagnostic: show counts to debug issues when visiting ?tab=h2h */}
-      <div className="text-sm text-gray-400">All matches fetched: {allMatches.length} — Matches after filtering: {displayedMatches.length}</div>
       <H2HFilters
         mainPlayer={mainPlayerName}
         allMatches={allMatches}

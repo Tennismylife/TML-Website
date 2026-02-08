@@ -57,6 +57,8 @@ export function useH2HData(allMatches: Match[], playerId: string, filters: Filte
        if (!iAmPlayer) continue;
 
        const oppId = iAmWinner ? String(m.loser_id) : String(m.winner_id);
+       // Prefer slug when available
+       const oppSlug = iAmWinner ? (m as any).loser_slug ?? undefined : (m as any).winner_slug ?? undefined;
        const d = toDate(m.tourney_date);
        const dateMs = d ? d.getTime() : 0;
        const rW = roundWeight(m.round as string);
@@ -73,6 +75,7 @@ export function useH2HData(allMatches: Match[], playerId: string, filters: Filte
            round: (m as any).round ?? "-",
            dateMs,
            roundW: rW,
+           oppSlug,
          });
        }
      }
@@ -90,9 +93,11 @@ export function useH2HData(allMatches: Match[], playerId: string, filters: Filte
          ? (m as any).loser_name ?? (m as any).loser ?? `Player ${oppId}`
          : (m as any).winner_name ?? (m as any).winner ?? `Player ${oppId}`;
        const oppIOC = extractOppIOC(m as any, iAmWinner);
+       const oppSlug = iAmWinner ? (m as any).loser_slug ?? undefined : (m as any).winner_slug ?? undefined;
 
-       const cur = byOpp.get(oppId) ?? { oppId, oppName, wins: 0, losses: 0, matches: 0, ioc: oppIOC };
+       const cur = byOpp.get(oppId) ?? { oppId, oppName, oppSlug, wins: 0, losses: 0, matches: 0, ioc: oppIOC };
        if (!cur.ioc && oppIOC) cur.ioc = oppIOC;
+       if (!cur.oppSlug && oppSlug) cur.oppSlug = oppSlug;
        if (iAmWinner) cur.wins++; else cur.losses++;
        cur.matches++;
        byOpp.set(oppId, cur);

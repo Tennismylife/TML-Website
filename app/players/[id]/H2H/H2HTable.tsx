@@ -98,7 +98,7 @@ export default function H2HTable({ playerId, playerName, allMatches, loading, er
     [filteredRows, currentPage]
   );
 
-  const goToMatchesVs = (oppId: string, oppName: string) => {
+  const goToMatchesVs = (oppIdOrSlug: string, oppName: string) => {
     const h2hUrl = createH2HUrl(playerName, oppName);
     router.push(h2hUrl, { scroll: false });
   };
@@ -156,7 +156,7 @@ export default function H2HTable({ playerId, playerName, allMatches, loading, er
 
               return (
                 <motion.tr
-                  key={r.oppId}
+                  key={(r as any).oppSlug ?? r.oppId}
                   initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.03 }}
@@ -248,7 +248,7 @@ export default function H2HTable({ playerId, playerName, allMatches, loading, er
                   {/* H2H Button */}
                   <td className="px-5 py-4 text-center">
                     <button
-                      onClick={() => goToMatchesVs(r.oppId, r.oppName)}
+                      onClick={() => goToMatchesVs((r as any).oppSlug ?? r.oppId, r.oppName)}
                       className="group relative inline-flex items-center gap-2 px-5 py-2.5 bg-purple-600 rounded-lg font-bold text-white overflow-hidden transition-all duration-300 hover:bg-purple-500 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/40"
                       aria-label={`View matches vs ${r.oppName}`}
                     >
