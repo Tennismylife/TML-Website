@@ -1,26 +1,45 @@
 /**
  * Server-side Matomo tracking endpoint
- * - Accepts POST with JSON body containing: pageUrl, pageTitle, userAgent, ip
- * - Falls back to headers (Referer, User-Agent, X-Forwarded-For, X-Original-IP)
- * - Sends POST to Matomo HTTP Tracking API: idsite=1, rec=1, apiv=1
- * - Sets `ua` and `cip` where possible
- * - Always returns HTTP 204 (never surface errors to clients)
- * - Uses server-side fetch so it works even when client-side tracking is blocked
+ * BOT-SAFE VERSION — blocks all crawlers before logging
  */
 
 import { NextRequest } from 'next/server';
 
-// Very early module load log to detect initialization failures in production
-try {
-  console.log('/api/matomo route loaded');
-} catch (e) {
-  console.warn('/api/matomo: module load log failed', e);
+// --- Bot detection ---------------------------------------------------------
+
+const BOT_PATTERNS = [
+  /googlebot/i,
+  /googleother/i,
+  /inspectiontool/i,
+  /bingbot/i,
+  /duckduckbot/i,
+  /applebot/i,
+  /amazonbot/i,
+  /facebookexternalhit/i,
+  /meta-externalagent/i,
+  /bytespider/i,
+  /perplexitybot/i,
+  /chatgpt-user/i,
+  /oai-searchbot/i,
+  /ahrefs/i,
+  /semrush/i,
+  /mj12bot/i,
+  /crawler/i,
+  /spider/i,
+  /bot/i
+];
+
+function isBot(ua: string | null): boolean {
+  if (!ua) return false;
+  return BOT_PATTERNS.some((p) => p.test(ua));
 }
 
-const MATOMO_ENDPOINT = 'https://stats.tennismylife.org/matomo-tracking/matomo.php';
+// ---------------------------------------------------------------------------
+
+const MATOMO_ENDPOINT =
+  'https://stats.tennismylife.org/matomo-tracking/matomo.php';
 const TIMEOUT_MS = 2500;
 
-// Funzione che invia i dati a Matomo
 async function sendToMatomo({
   pageUrl,
   pageTitle,
@@ -56,17 +75,12 @@ async function sendToMatomo({
       },
       body: params.toString(),
       signal: controller.signal,
-    }).catch((e) => {
-      console.warn('Matomo send failed:', e?.message || e);
-    });
+    }).catch(() => {});
 
     clearTimeout(timeout);
-  } catch (e) {
-    console.error('Error in sendToMatomo:', e);
-  }
+  } catch {}
 }
 
-// Estrae IP da header
 function extractIpFromHeader(val: string | null | undefined) {
   if (!val) return null;
   try {
@@ -76,47 +90,47 @@ function extractIpFromHeader(val: string | null | undefined) {
   }
 }
 
-// POST endpoint (robust headers-only mode to avoid body parsing issues in production)
+// --- Main POST handler -----------------------------------------------------
+
 export async function POST(req: Request) {
-  // Debug mode disabled for Matomo endpoint to avoid exposing request bodies or header snapshots.
-  try {
-    console.log('/api/matomo POST entry');
-  } catch (e) { /* ignore */ }
+  const ua =
+    req.headers.get('x-original-user-agent') ||
+    req.headers.get('user-agent') ||
+    null;
 
-  try {
-    // Prefer header-based inputs to avoid parsing body in the edge environment
-    const pageUrl =
-      req.headers.get('x-page-url') ||
-      req.headers.get('x-original-url') ||
-      req.headers.get('referer') ||
-      req.headers.get('referrer') ||
-      null;
-
-    const pageTitle = req.headers.get('x-page-title') || req.headers.get('x-title') || null;
-
-    const ua = req.headers.get('x-original-user-agent') || req.headers.get('user-agent') || null;
-
-    const ip = extractIpFromHeader(
-      req.headers.get('x-original-ip') || req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip')
-    ) || null;
-
-    const referer = req.headers.get('referer') || req.headers.get('referrer') || null;
-
-    // Minimal logging only — do not log headers or body to avoid leaking sensitive data
-    console.log('Tracking POST (headers mode) received');
-
-    // Fire-and-forget to Matomo (ignore errors)
-    sendToMatomo({ pageUrl, pageTitle, ua, ip, referer }).catch(() => {});
-
-    return new Response(null, { status: 204 });
-  } catch (e) {
-    // Swallow errors — do not expose error details to the caller
-    try { console.error('Unhandled error in /api/matomo POST (headers mode):', e && (e as Error).stack ? (e as Error).stack : e); } catch (logErr) { /* ignore */ }
+  // 🚫 BLOCK BOTS — do not log, do not forward to Matomo
+  if (isBot(ua)) {
     return new Response(null, { status: 204 });
   }
+
+  // Extract headers normally
+  const pageUrl =
+    req.headers.get('x-page-url') ||
+    req.headers.get('x-original-url') ||
+    req.headers.get('referer') ||
+    req.headers.get('referrer') ||
+    null;
+
+  const pageTitle =
+    req.headers.get('x-page-title') || req.headers.get('x-title') || null;
+
+  const ip =
+    extractIpFromHeader(
+      req.headers.get('x-original-ip') ||
+        req.headers.get('x-forwarded-for') ||
+        req.headers.get('x-real-ip')
+    ) || null;
+
+  const referer =
+    req.headers.get('referer') || req.headers.get('referrer') || null;
+
+  // Fire-and-forget
+  sendToMatomo({ pageUrl, pageTitle, ua, ip, referer }).catch(() => {});
+
+  return new Response(null, { status: 204 });
 }
 
-// Per gli altri metodi HTTP
+// Other methods
 export async function GET() {
   return new Response(null, { status: 204 });
 }
