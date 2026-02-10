@@ -28,9 +28,15 @@ export default function Page() {
 
   return (
     <main>
-      <h1 className="text-4xl sm:text-5xl font-bold text-center !text-white">
-        Tennis Match Database
-      </h1>
+      <div className="flex items-center justify-center mt-6 gap-4">
+        <h1 className="text-4xl sm:text-5xl font-bold !text-white text-center">
+          Tennis Match Database
+        </h1>
+        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-red-600 text-white font-bold animate-pulse shadow-lg">
+          <span className="inline-block w-2 h-2 bg-white rounded-full animate-pulse" aria-hidden="true"></span>
+          <span className="uppercase tracking-widest">LIVE</span>
+        </div>
+      </div>
 
       {/* Primo box: intro – ora occupa tutto lo spazio */}
 <section className="mb-10 w-full px-6 text-center bg-gray-900/80 py-10">
@@ -47,48 +53,11 @@ export default function Page() {
   </div>
 </section>
 
-
-
-
-      {/* Secondo box: AO 2026 + Montpellier – allineato e occupa lo stesso spazio */}
-<section className="mb-10 w-full px-6 text-center bg-gray-800/70 py-10">
-  <div className="mx-auto max-w-6xl">
-    <h2 className="text-2xl sm:text-3xl font-semibold mb-4 !text-white">
-      Latest Update: <span className="!text-sky-400 font-bold">Australian Open 2026</span>
-    </h2>
-    <p className="text-gray-300 mb-6">
-      The database now includes all matches from the <span className="!text-emerald-400 font-semibold">2026 Australian Open</span>, updated shortly after the final.
-    </p>
-
-    <div className="grid sm:grid-cols-2 gap-6 text-left">
-      <div className="bg-gray-700 p-6 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300">
-        <p className="font-medium !text-white !text-lg mb-2">Men's Final</p>
-        <p className="text-sm text-gray-300">
-          <span className="!text-yellow-300 font-semibold">Carlos Alcaraz</span> def. 
-          <span className="!text-pink-400 font-semibold"> Novak Djokovic</span> 
-          <span className="!text-emerald-400"> 2-6 6-2 6-3 7-5 </span> 
-          (<span className="!text-orange-400"> 3h 02m</span>) – Career Grand Slam completed at 
-          <span className="!text-sky-400 font-semibold"> 22 years, 272 days</span>.
-        </p>
-      </div>
-
-      <div className="bg-gray-700 p-6 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300">
-        <p className="font-medium !text-white !text-lg mb-2"> Alcaraz Semifinal</p>
-        <p className="text-sm text-gray-300">
-          <span className="!text-yellow-300 font-semibold"> Carlos Alcaraz</span> vs 
-          <span className="!text-pink-400 font-semibold"> Alexander Zverev</span> – epic 
-          <span className="!text-emerald-400 font-semibold"> 5+ hour match</span> with severe cramps. 
-          Full stats: aces, break points, duration, winners/errors included.
-        </p>
-      </div>
-    </div>
-
-    <p className="mt-6 text-sm text-gray-400">
-      All AO 2026 matches (with ATP IDs, set-by-set scores, detailed stats) are ready in the CSV files below.
-    </p>
-    <p className="mt-4 text-sm !text-emerald-400 font-medium">
-      Ongoing: <span className="!text-yellow-300 font-semibold"> Montpellier 2026 </span> 
-      (ATP 250 indoor hard) is currently in progress — live results and stats are being added in real-time.
+<section className="mb-8 w-full px-6 text-center bg-gray-800/70 py-6">
+  <div className="mx-auto max-w-3xl">
+    <h2 className="text-3xl sm:text-4xl font-bold mb-3 bg-gradient-to-r from-sky-400 via-emerald-400 to-yellow-300 text-transparent bg-clip-text">Live Tournaments</h2>
+    <p className="text-lg sm:text-xl font-medium text-gray-100">
+      <span className="!text-sky-400 font-semibold">Rotterdam</span>, <span className="!text-pink-400 font-semibold">Dallas</span>, and <span className="!text-amber-400 font-semibold">Buenos Aires</span> are currently in progress — live results and stats are being updated in real-time.
     </p>
   </div>
 </section>
