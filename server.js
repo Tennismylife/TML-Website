@@ -1,9 +1,8 @@
-
 // server.js — Next.js + Express + Redis v4 + Compression + Cache HIT/MISS
 // Obiettivo: cache server-side realmente efficace per HTML e API
 // - Nessun taglio dei dati (mostri tutto), ma risposte veloci e leggere
 // - Chiavi stabili (query ordinata), TTL, niente skip su 'chunked'
-// - Bypass per RSC/prefetch (Next App Router) e per richieste con nocache/x-refresh
+// - Bypass per richieste con nocache/x-refresh solo quando necessario
 
 const express = require('express');
 const { createClient } = require('redis');
@@ -14,20 +13,15 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { execSync } = require('child_process');
-// CSV parsing for /api/matches endpoint. Uses csv-parse so we keep CSV reading robust to quoted values.
-// Place CSV files in a top-level `data/` directory (see `data/README.md`). These files are served
-// from `https://<your-site>/data/<file>.csv` so they remain on the site domain.
 const { parse } = require('csv-parse/sync');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-// Archiver to stream ZIPs on-the-fly for bulk download endpoint
 const archiver = require('archiver');
 
 const dev = false; // produzione
 const nextApp = next({ dev, dir: '.', conf: { distDir: '.next' } });
 const handle = nextApp.getRequestHandler();
 
-// Parametri di controllo che NON entrano nella cache key
 const CONTROL_PARAMS = new Set(['nocache', 'x-refresh']);
 let redis = null;
 let activeRequests = 0;
@@ -75,25 +69,25 @@ async function initRedis() {
 }
 
 /* ---------------- Cache utils ---------------- */
+// Modifica principale: ora tutte le pagine e API /records vengono cache-ate
 function shouldBypassCache(req) {
-  // Bypass:
-  // - Metodi non GET
-  // - Parametri/headers di controllo
-  // - RSC/Prefetch/App Router (content-negotiation testo x-component)
-  const accept = String(req.headers['accept'] || '');
-  const isRsc =
-    req.headers['rsc'] === '1' ||
-    typeof req.headers['next-router-state-tree'] !== 'undefined' ||
-    typeof req.headers['next-router-prefetch'] !== 'undefined' ||
-    typeof req.headers['next-router-segment-prefetch'] !== 'undefined' ||
-    accept.includes('text/x-component');
+  const forceCachePaths = [
+    '/records/wins',
+    '/records/ages/',
+    '/records/seasons/',
+    '/records/same/',
+    '/records/streak/',
+    '/records/atage/',
+    '/records/counterseasons/',
+    '/api/records/'
+  ];
 
-  return (
-    req.method !== 'GET' ||
-    req.query?.nocache ||
-    req.headers['x-refresh'] === '1' ||
-    isRsc
-  );
+  const shouldForceCache = forceCachePaths.some(p => req.path.startsWith(p));
+  if (shouldForceCache) {
+    return false; // Forza cache sempre
+  }
+
+  return req.method !== 'GET' || req.query?.nocache || req.headers['x-refresh'] === '1';
 }
 
 function buildCacheKey(req, type) {
@@ -101,7 +95,6 @@ function buildCacheKey(req, type) {
   const url = new URL(`${proto}://${req.headers.host}${req.originalUrl}`);
   const params = new URLSearchParams(url.search);
 
-  // Normalizza: rimuovi parametri di controllo e ORDINA le chiavi per stabilità
   const keys = [...params.keys()]
     .filter((k) => !CONTROL_PARAMS.has(k))
     .sort();
@@ -134,19 +127,14 @@ function strongETag(buffer) {
 
   const server = express();
 
-  // ⚠️ NON registrare express.json() globalmente: Next ha bisogno del raw body per i suoi handler
-
-  /* 1) Compressione Gzip (PRIMA dei middleware di cache) */
   server.use(compression({ level: 6, threshold: 1024 }));
 
-  /* 2) Active requests counter (silenced) */
   server.use((req, res, next) => {
     activeRequests++;
     res.on('finish', () => { activeRequests--; });
     next();
   });
 
-  /* 3) Header informativi */
   server.use((req, res, next) => {
     res.setHeader('X-Cache', 'UNCACHED');
     const sha = safeReadGitSha();
@@ -156,7 +144,6 @@ function strongETag(buffer) {
     next();
   });
 
-  /* 4) Version endpoint */
   server.get('/_version', (req, res) => {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     return res.status(200).send(JSON.stringify({
@@ -168,7 +155,7 @@ function strongETag(buffer) {
     }));
   });
 
-  /* 5) CACHE READ */
+  /* ---------------- CACHE READ ---------------- */
   server.use(async (req, res, next) => {
     if (!redis || shouldBypassCache(req)) return next();
 
@@ -182,7 +169,6 @@ function strongETag(buffer) {
       const cached = JSON.parse(cachedStr);
       const body = Buffer.from(cached.body, 'base64');
 
-      // Header minimi: tipo, ETag, marker, cache-control (no client cache hard)
       res.setHeader('Content-Type', cached.type || 'text/html; charset=utf-8');
       try {
         const etag = strongETag(body);
@@ -202,13 +188,12 @@ function strongETag(buffer) {
     }
   });
 
-  /* 6) CACHE WRITE */
+  /* ---------------- CACHE WRITE ---------------- */
   server.use((req, res, next) => {
     if (!redis || shouldBypassCache(req) || res.fromCache) return next();
 
     const type = req.path.startsWith('/api') ? 'api' : 'page';
 
-    // Non cachiamo asset statici (Next già gestisce) e, salvo override, non la homepage
     if (type === 'page' && req.path === '/' && process.env.CACHE_HOME !== '1') return next();
     if (req.path.match(/\.(png|jpg|jpeg|gif|webp|svg|ico|css|js|map)$/i)) return next();
 
@@ -230,18 +215,15 @@ function strongETag(buffer) {
           const headers = res.getHeaders();
           const ct = String(headers['content-type'] || '');
 
-          // Abbiamo già catturato tutto il body: anche se la sorgente era "chunked", ora è completo
           let bodyBuffer = Buffer.concat(chunks);
           bodyBuffer = decompressIfGzip(bodyBuffer, headers);
 
-          // Facoltativo: per HTML, scarta body minuscoli (render parziale)
           if (ct.includes('text/html') && bodyBuffer.length < 512) {
             if (process.env.VERBOSE_LOGS === '1') console.warn('[CACHE SKIP] HTML troppo piccolo', key);
           } else {
-            // TTL configurabili
             const ttl = req.path.startsWith('/api')
-              ? Number(process.env.CACHE_TTL_API || 3600)   // 1h API
-              : Number(process.env.CACHE_TTL_PAGE || 900);  // 15m HTML
+              ? Number(process.env.CACHE_TTL_API || 3600)
+              : Number(process.env.CACHE_TTL_PAGE || 900);
 
             await redis.set(
               key,
@@ -268,44 +250,25 @@ function strongETag(buffer) {
     next();
   });
 
-  /* --------------------------------------------
-     Serve CSVs from /data and expose /api/matches
-     --------------------------------------------
-     - CSV files should be placed in the project `data/` directory (not GitHub). Example:
-         data/matches.csv
-         data/players.csv
-         data/rankings.csv
-     - Files in `data/` are served directly from the site domain at `/data/<file>.csv`.
-     - API `/api/matches` reads and parses `data/matches.csv` and supports query params:
-         player=<substring>, year=<YYYY>, surface=<surface>
-       Returns JSON with `count` and `results` (array of row objects). See comments below for
-       extension points (limit, offset, more filters).
-  */
-
-  // Serve CSVs as downloadable files from /data
+  /* ---------------- CSV / API endpoints ---------------- */
   server.use(
     '/data',
     express.static(path.join(process.cwd(), 'data'), {
-      // Hint browsers to download by default (optional); content-disposition used for convenience
       setHeaders: (res, filePath) => {
         res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-        // Optional: force download behavior on browsers
         res.setHeader('Content-Disposition', `attachment; filename="${path.basename(filePath)}"`);
       },
     })
   );
 
-  // API: /api/matches
   server.get('/api/matches', async (req, res) => {
     try {
-      // Query parameters: player (substring, case-insensitive), player_id (exact id), year (YYYY), surface (case-insensitive), round
       const qPlayer = (req.query.player || '').toString().trim().toLowerCase();
       const qPlayerId = (req.query.player_id || '').toString().trim();
       const qYear = (req.query.year || '').toString().trim();
       const qSurface = (req.query.surface || '').toString().trim();
       const qRound = (req.query.round || '').toString().trim();
 
-      // Build Prisma where clause and query the DB (never read CSVs)
       const where = {};
       if (qPlayerId) {
         where.OR = [{ winner_id: qPlayerId }, { loser_id: qPlayerId }];
@@ -326,13 +289,10 @@ function strongETag(buffer) {
         }
       }
 
-      // Support ?all=1 (return all filtered results) or limit=0
       const allFlag = String(req.query.all || '') === '1' || Number(req.query.limit || 1) === 0;
-      // Optional pagination (limit, offset)
-      const limit = Math.min(1000, Number(req.query.limit || 100)); // safety cap
+      const limit = Math.min(1000, Number(req.query.limit || 100));
       const offset = Math.max(0, Number(req.query.offset || 0));
 
-      // Only select commonly used fields to keep payload compact
       const select = {
         id: true,
         year: true,
@@ -363,11 +323,8 @@ function strongETag(buffer) {
       }
 
       const results = await prisma.match.findMany({ where, take: limit, skip: offset, orderBy: { tourney_date: 'desc' }, select });
-      // continue to pagination handling below by creating a 'filtered-like' response
       const filtered = results;
       const totalCount = count;
-
-
 
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
       return res.status(200).json({ count: totalCount ?? filtered.length, results: filtered });
@@ -377,14 +334,12 @@ function strongETag(buffer) {
     }
   });
 
-  // API: /api/data-files — returns list of CSV files available in /data
   server.get('/api/data-files', async (req, res) => {
     try {
       const dataDir = path.join(process.cwd(), 'data');
       if (!fs.existsSync(dataDir)) return res.status(404).json({ error: 'data directory not found' });
 
       const files = fs.readdirSync(dataDir).filter((f) => /\.csv$/i.test(f));
-      // Build absolute URLs using incoming request host/proto so links point to this domain
       const proto = req.headers['x-forwarded-proto'] || req.protocol;
       const host = req.headers.host || 'localhost:3000';
       const base = `${proto}://${host}`;
@@ -402,15 +357,12 @@ function strongETag(buffer) {
     }
   });
 
-  // API: /api/download-all — create a ZIP on-the-fly containing all or selected CSVs
   server.get('/api/download-all', async (req, res) => {
     try {
       const dataDir = path.join(process.cwd(), 'data');
       if (!fs.existsSync(dataDir)) return res.status(404).send('data directory not found');
 
-      // Optional query parameter `files=name1.csv,name2.csv` to include a subset
       const requested = req.query.files ? req.query.files.toString().split(',').map((s) => s.trim()).filter(Boolean) : null;
-
       let files = fs.readdirSync(dataDir).filter((f) => /\.csv$/i.test(f));
       if (requested && requested.length) {
         files = files.filter((f) => requested.includes(f));
@@ -427,7 +379,6 @@ function strongETag(buffer) {
         if (!res.headersSent) res.status(500).end();
       });
 
-      // Pipe archive data to the response
       archive.pipe(res);
 
       for (const f of files) {
@@ -442,32 +393,26 @@ function strongETag(buffer) {
     }
   });
 
-  // Sitemaps endpoints (if available)
   try {
     server.use('/sitemaps', require('./src/sitemaps/routes.js'));
   } catch (e) {
     console.warn('Sitemaps router not available', e?.message || e);
   }
 
-  // robots.txt exposes canonical sitemap index
   server.get('/robots.txt', (req, res) => {
     const siteRoot = (process.env.SITE_ROOT || 'https://stats.tennismylife.org').replace(/\/$/, '/') ;
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    // Expose canonical sitemap index at root
     res.send(`User-agent: *\nAllow: /\nSitemap: ${siteRoot}sitemap_index.xml\n`);
   });
 
-  /* 7) Next.js fallback */
   server.all(/.*/, (req, res) => handle(req, res));
 
-  /* 8) Start server */
   const PORT = process.env.PORT || 3000;
   const srv = server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server avviato ✅ http://localhost:${PORT}`);
     console.log(redis ? 'Redis cache attiva' : 'Cache disattivata');
   });
 
-  /* 9) Graceful shutdown */
   const shutdown = async (signal) => {
     console.log(`⚠️  Shutdown triggered by signal: ${signal}`);
     console.log(`Active requests at shutdown: ${activeRequests}`);
