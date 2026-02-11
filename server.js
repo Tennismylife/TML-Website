@@ -66,21 +66,11 @@ async function initRedis() {
 }
 
 function shouldBypassCache(req) {
-  const accept = String(req.headers['accept'] || '');
-  const isRsc =
-    req.headers['rsc'] === '1' ||
-    typeof req.headers['next-router-state-tree'] !== 'undefined' ||
-    typeof req.headers['next-router-prefetch'] !== 'undefined' ||
-    typeof req.headers['next-router-segment-prefetch'] !== 'undefined' ||
-    accept.includes('text/x-component');
-
-  return (
-    req.method !== 'GET' ||
-    req.query?.nocache ||
-    req.headers['x-refresh'] === '1' ||
-    isRsc
-  );
+  // Bypass solo se NON GET o se nocache/x-refresh
+  // Tutte le pagine e API /records saranno cachate ora
+  return req.method !== 'GET' || req.query?.nocache || req.headers['x-refresh'] === '1';
 }
+
 
 // nuova funzione: decodifica completa dell'URL
 function fullyDecode(url) {
