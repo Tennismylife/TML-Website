@@ -98,9 +98,9 @@ export async function generateMetadata({ params, searchParams }: any): Promise<M
   let titleFromParam = `${displayFromParam} | ${typeLabelFromParam}${subLabel}`;
   // Prefer /count/* for count tab root and subpages; otherwise use /records/*
   let ogUrlFromParam = tab === 'count'
-    ? `${site}/tournaments/${canonicalTournamentSlug}/count${sub ? `/${sub}` : ''}`
+    ? `${site}/tournaments/${canonicalTournamentSlug}/records/count${sub ? `/${sub}` : ''}`
     : tab === 'ages'
-      ? `${site}/tournaments/${canonicalTournamentSlug}/ages${sub ? `/${sub}` : ''}`
+      ? `${site}/tournaments/${canonicalTournamentSlug}/records/ages${sub ? `/${sub}` : ''}`
       : `${site}/tournaments/${canonicalTournamentSlug}/records${tab ? `/${tab}` : ''}${sub ? `/${sub}` : ''}`;
   const ogImageFromParam = `${site}/og/site-preview.png`;
   const fallbackDescription = `A curated collection of records at ${displayFromParam}. Explore Titles, Wins, Matches Played and Appearances, and discover historical trends in tournament history.`;

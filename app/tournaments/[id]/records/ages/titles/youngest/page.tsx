@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: any) {
 
   const title = `Youngest Title Winners at ${tournamentName} | Tennis Records`;
   const site = process.env.SITE_URL || 'https://stats.tennismylife.org';
-  const ogUrl = `${site}/tournaments/${id}/ages/titles/youngest`;
+  const ogUrl = `${site}/tournaments/${id}/records/ages/titles/youngest`;
   const ogImage = `${site}/og/site-preview.png`;
   return {
     title,

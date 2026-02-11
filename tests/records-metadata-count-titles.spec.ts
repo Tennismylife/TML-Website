@@ -5,7 +5,7 @@ describe('count titles metadata', () => {
   it('returns Most Titles title and canonical and includes FAQ JSON-LD', async () => {
     const meta = await generateMetadata({ params: { id: 'australian-open' } as any } as any);
     expect((meta as any).title).toBe('Most Titles at Australian Open | Tennis Records');
-    expect((meta as any).alternates?.canonical).toBe('https://stats.tennismylife.org/tournaments/australian-open/count/titles');
+    expect((meta as any).alternates?.canonical).toBe('https://stats.tennismylife.org/tournaments/australian-open/records/count/titles');
 
     const faqScript = (meta as any).other?.['script[data-schema="faq"][type="application/ld+json"]'];
     expect(faqScript).toBeDefined();
