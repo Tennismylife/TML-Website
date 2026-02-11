@@ -5,6 +5,8 @@ import CountFull from '../_components/CountFull';
 import TournamentHeader from '../../../TournamentHeader';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
 import { getCountSection } from '@/lib/records/count';
+import { prisma } from '@/lib/prisma';
+import { resolveCanonicalTourneyId } from '@/lib/tournament';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,10 +45,24 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     if (raw) tournamentName = humanize(raw);
   } catch (e) {}
 
-  // Match the requested phrasing (lowercase 'matches') and remove site suffix for exact match
-  const title = `Most matches played at ${tournamentName}`;
+  // Match the requested phrasing (lowercase 'matches') and include brand suffix
+  const title = `Most matches played at ${tournamentName} | Tennis Records`;
   const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
-  const canonical = `${site}/tournaments/${id}/records/count/played`;
+
+  // Resolve canonical tournament slug (prefer slug for URLs)
+  let canonicalSlug = String(id);
+  if (/^\d+$/.test(String(id))) {
+    const canonicalId = await resolveCanonicalTourneyId(String(id));
+    if (canonicalId) {
+      const t = await prisma.tournament.findUnique({ where: { id: parseInt(canonicalId, 10) }, select: { slug: true } });
+      canonicalSlug = t?.slug ?? canonicalId;
+    }
+  } else {
+    const t = await prisma.tournament.findUnique({ where: { slug: String(id) }, select: { slug: true } });
+    canonicalSlug = t?.slug ?? String(id);
+  }
+
+  const canonical = `${site}/tournaments/${canonicalSlug}/records/count/played`;
   const description = `A list of players with the most matches played at ${tournamentName} (men's singles main draw), aggregated across tournament editions.`;
 
   // Explicitly avoid injecting parent 'script[type="application/ld+json"]' as a meta entry

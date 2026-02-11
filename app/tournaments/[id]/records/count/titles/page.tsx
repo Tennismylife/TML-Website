@@ -8,6 +8,8 @@ import TournamentHeader from '../../../TournamentHeader';
 import { getTournamentName } from '@/lib/recordMetadata';
 import { getCountSection } from '@/lib/records/count';
 import Script from 'next/script';
+import { prisma } from '@/lib/prisma';
+import { resolveCanonicalTourneyId } from '@/lib/tournament';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,7 +23,21 @@ export async function generateMetadata({ params }: PageParams) {
   const title = `Most Titles at ${tournamentName} | Tennis Records`;
   const description = `ATP men's singles record: most ${tournamentName} titles in the Open Era. Interactive table with counts and years won.`;
   const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
-  const ogUrl = `${site}/tournaments/${id}/records/count/titles`;
+
+  // Resolve canonical tournament slug (prefer slug for URLs)
+  let canonicalSlug = String(id);
+  if (/^\d+$/.test(String(id))) {
+    const canonicalId = await resolveCanonicalTourneyId(String(id));
+    if (canonicalId) {
+      const t = await prisma.tournament.findUnique({ where: { id: parseInt(canonicalId, 10) }, select: { slug: true } });
+      canonicalSlug = t?.slug ?? canonicalId;
+    }
+  } else {
+    const t = await prisma.tournament.findUnique({ where: { slug: String(id) }, select: { slug: true } });
+    canonicalSlug = t?.slug ?? String(id);
+  }
+
+  const ogUrl = `${site}/tournaments/${canonicalSlug}/records/count/titles`;
   const ogImage = `${site}/og/site-preview.png`;
 
   // FAQ JSON-LD for SEO (server-side as well as client-side via Script)

@@ -2,12 +2,45 @@ import RoundFull from '../_components/RoundFull';
 import { getTournamentName, makeTitle, humanize } from '@/lib/recordMetadata';
 import ViewRecordsCTA from '../../ViewRecordsCTA';
 import { getRoundFullName } from '@/lib/utils';
+import { prisma } from '@/lib/prisma';
+import { resolveCanonicalTourneyId } from '@/lib/tournament';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string; round: string }> }) {
   const { id, round } = await params;
   const tournamentName = await getTournamentName(id);
-  const label = `Reaches of ${humanize(String(round))}`;
-  return { title: makeTitle(label, tournamentName) };
+  // Use human-friendly round name + 'Appearances' and prefix 'Most' so makeTitle does not insert 'the' before tournament name
+  const label = `Most ${getRoundFullName(String(round))} Appearances`;
+  const titleText = makeTitle(label, tournamentName);
+  const site = process.env.SITE_URL || 'https://stats.tennismylife.org';
+
+  // Resolve canonical tournament slug (prefer slug for URLs)
+  let canonicalSlug = String(id);
+  if (/^\d+$/.test(String(id))) {
+    const canonicalId = await resolveCanonicalTourneyId(String(id));
+    if (canonicalId) {
+      const t = await prisma.tournament.findUnique({ where: { id: parseInt(canonicalId, 10) }, select: { slug: true } });
+      canonicalSlug = t?.slug ?? canonicalId;
+    }
+  } else {
+    const t = await prisma.tournament.findUnique({ where: { slug: String(id) }, select: { slug: true } });
+    canonicalSlug = t?.slug ?? String(id);
+  }
+
+  const ogUrl = `${site}/tournaments/${canonicalSlug}/records/rounds/${encodeURIComponent(String(round))}`;
+  const ogImage = `${site}/og/site-preview.png`;
+
+  return {
+    title: titleText,
+    openGraph: {
+      title: titleText,
+      url: ogUrl,
+      siteName: 'Tennis My Life',
+      description: label,
+      images: [{ url: ogImage, alt: `${tournamentName} - ${label}`, width: 1200, height: 630, type: 'image/png' }],
+    },
+    twitter: { card: 'summary_large_image', title: titleText, images: [ogImage] },
+    alternates: { canonical: ogUrl },
+  };
 }
 
 export default async function Page({ params }: { params: Promise<{ id: string; round: string }> }) {

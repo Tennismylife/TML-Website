@@ -1,6 +1,8 @@
 import AgesFull from '@/app/tournaments/[id]/records/ages/_components/AgesFull';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
 import ViewRecordsCTA from '../../../ViewRecordsCTA';
+import { prisma } from '@/lib/prisma';
+import { resolveCanonicalTourneyId } from '@/lib/tournament';
 
 function extractName(nameField: any): string {
   if (!nameField) return '';
@@ -40,7 +42,21 @@ export async function generateMetadata({ params }: any) {
 
   const title = `Youngest Title Winners at ${tournamentName} | Tennis Records`;
   const site = process.env.SITE_URL || 'https://stats.tennismylife.org';
-  const ogUrl = `${site}/tournaments/${id}/records/ages/titles/youngest`;
+
+  // Resolve canonical tournament slug (prefer slug for URLs)
+  let canonicalSlug = String(id);
+  if (/^\d+$/.test(String(id))) {
+    const canonicalId = await resolveCanonicalTourneyId(String(id));
+    if (canonicalId) {
+      const t = await prisma.tournament.findUnique({ where: { id: parseInt(canonicalId, 10) }, select: { slug: true } });
+      canonicalSlug = t?.slug ?? canonicalId;
+    }
+  } else {
+    const t = await prisma.tournament.findUnique({ where: { slug: String(id) }, select: { slug: true } });
+    canonicalSlug = t?.slug ?? String(id);
+  }
+
+  const ogUrl = `${site}/tournaments/${canonicalSlug}/records/ages/titles/youngest`;
   const ogImage = `${site}/og/site-preview.png`;
   return {
     title,

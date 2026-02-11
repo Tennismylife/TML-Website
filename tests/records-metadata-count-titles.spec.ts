@@ -1,4 +1,8 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+
+vi.mock('@/lib/prisma', () => ({ prisma: { tournament: { findUnique: vi.fn(async ({ where }: any) => ({ slug: 'australian-open' })) } } }));
+vi.mock('@/lib/tournament', () => ({ resolveCanonicalTourneyId: vi.fn(async (id: string) => '1') }));
+
 import { generateMetadata } from '@/app/tournaments/[id]/records/count/titles/page';
 
 describe('count titles metadata', () => {
@@ -14,5 +18,10 @@ describe('count titles metadata', () => {
     expect(Array.isArray(faq.mainEntity)).toBe(true);
     expect(faq.mainEntity.some((q: any) => String(q.name || '').includes('Most Titles'))).toBe(true);
     expect(faq.mainEntity.some((q: any) => (q.acceptedAnswer?.text || '').includes('Open Era'))).toBe(true);
+  });
+
+  it('resolves numeric id to canonical slug for canonical URL', async () => {
+    const meta = await generateMetadata({ params: Promise.resolve({ id: '1' }) } as any);
+    expect((meta as any).alternates?.canonical).toBe('https://stats.tennismylife.org/tournaments/australian-open/records/count/titles');
   });
 });

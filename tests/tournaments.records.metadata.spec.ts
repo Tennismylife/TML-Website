@@ -50,6 +50,20 @@ describe('tournaments records generateMetadata', () => {
     expect(meta.title).toBe('Youngest Title Winners at Australian Open | Tennis Records');
   });
 
+  it('page-level generateMetadata for ages/titles/youngest resolves numeric id to canonical slug in og url', async () => {
+    const page = await import('@/app/tournaments/[id]/records/ages/titles/youngest/page');
+    const meta = await page.generateMetadata({ params: Promise.resolve({ id: '1' }) } as any);
+    expect((meta as any).openGraph?.url).toBe('https://stats.tennismylife.org/tournaments/australian-open/records/ages/titles/youngest');
+    expect((meta as any).alternates?.canonical).toBe('https://stats.tennismylife.org/tournaments/australian-open/records/ages/titles/youngest');
+  });
+
+  it('page-level generateMetadata for ages/titles/oldest resolves numeric id to canonical slug in og url', async () => {
+    const page = await import('@/app/tournaments/[id]/records/ages/titles/oldest/page');
+    const meta = await page.generateMetadata({ params: Promise.resolve({ id: '1' }) } as any);
+    expect((meta as any).openGraph?.url).toBe('https://stats.tennismylife.org/tournaments/australian-open/records/ages/titles/oldest');
+    expect((meta as any).alternates?.canonical).toBe('https://stats.tennismylife.org/tournaments/australian-open/records/ages/titles/oldest');
+  });
+
   it('ages titles oldest deep path returns specific title', async () => {
     const meta = await generateMetadata({ params: { id: 'australian-open', segments: ['ages', 'titles', 'oldest'] } });
     expect(meta.title).toBe('Oldest Title Winners at Australian Open | Tennis Records');

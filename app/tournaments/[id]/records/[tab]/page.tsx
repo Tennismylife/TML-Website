@@ -43,12 +43,13 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     percentage: 'Percentages',
     timespan: 'Timespans',
     'rounds-on-entries': 'Rounds on Entries',
+    'roundsonentries': 'Rounds on Entries',
     least: 'Least',
     'average-age': 'Average Age',
   };
 
   const typeLabelFromParam = tab ? (tabLabels[tab] ?? humanizeName(tab || 'Records')) : 'Records';
-  const titleFromParam = `${displayFromParam} | ${typeLabelFromParam}`;
+  const titleFromParam = tab ? `${displayFromParam} | ${typeLabelFromParam}` : `${displayFromParam} Records`;
   // Use /count for count tab root canonical
   const ogUrlFromParam = tab === 'count' ? `${site}/tournaments/${param}/records/count` : tab === 'ages' ? `${site}/tournaments/${param}/records/ages` : `${site}/tournaments/${param}/records${tab ? `/${tab}` : ''}`;
   // Simpler: always use the static CTA image for records previews
@@ -76,12 +77,23 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     };
   }
 
-  // Special-case: when viewing the 'rounds-on-entries' tab root, return the site-specific Round Efficiency title
-  if (tab === 'rounds-on-entries') {
-    const siteTitle = `${displayFromParam} Round Efficiency by Entries | Tennis Records`;
+  // Special-case: when viewing the 'rounds-on-entries' or 'roundsonentries' tab root, return the canonical "Rounds on Entries" title
+  if (tab === 'rounds-on-entries' || tab === 'roundsonentries') {
+    const siteTitle = `${displayFromParam} Rounds on Entries | Tennis Records`;
     return {
       title: siteTitle,
-      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Round Efficiency`, width: 1200, height: 630, type: 'image/png' }] },
+      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Rounds on Entries`, width: 1200, height: 630, type: 'image/png' }] },
+      twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
+      alternates: { canonical: ogUrlFromParam },
+    };
+  }
+
+  // Special-case: when viewing the 'titles' tab root, return the site-specific Titles title
+  if (tab === 'titles') {
+    const siteTitle = `${displayFromParam} Titles | Tennis Records`;
+    return {
+      title: siteTitle,
+      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Titles`, width: 1200, height: 630, type: 'image/png' }] },
       twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
       alternates: { canonical: ogUrlFromParam },
     };
@@ -109,12 +121,34 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     };
   }
 
-  // Special-case: when viewing the 'timespan' tab root, return the site-specific Timespan title
-  if (tab === 'timespan') {
-    const siteTitle = `${displayFromParam} Timespan Records | Tennis My Life`;
+  // Special-case: when viewing the 'percentage' tab root, return the site-specific Percentages title
+  if (tab === 'percentage') {
+    const siteTitle = `${displayFromParam} Percentages | Tennis Records`;
     return {
       title: siteTitle,
-      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Rounds`, width: 1200, height: 630, type: 'image/png' }] },
+      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Percentages`, width: 1200, height: 630, type: 'image/png' }] },
+      twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
+      alternates: { canonical: ogUrlFromParam },
+    };
+  }
+
+  // Special-case: when viewing the 'streak' tab root, return the site-specific Longest Winning Streaks title
+  if (tab === 'streak') {
+    const siteTitle = `${displayFromParam} Longest Winning Streaks | Tennis Records`;
+    return {
+      title: siteTitle,
+      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Longest Winning Streaks`, width: 1200, height: 630, type: 'image/png' }] },
+      twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
+      alternates: { canonical: ogUrlFromParam },
+    };
+  }
+
+  // Special-case: when viewing the 'timespan' tab root, return the site-specific Timespans title
+  if (tab === 'timespan') {
+    const siteTitle = `${displayFromParam} Timespans | Tennis Records`;
+    return {
+      title: siteTitle,
+      openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Timespans`, width: 1200, height: 630, type: 'image/png' }] },
       twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
       alternates: { canonical: ogUrlFromParam },
     };
@@ -193,10 +227,11 @@ export default async function RecordsTabPage({ params }: { params: Promise<{ id:
   // For server-rendering contexts, normalize to a Promise that resolves to { id }
   const idPromise = Promise.resolve({ id });
 
+  const headerTitle = tab ? `${tournamentName} | ${recordTitle}` : `${tournamentName} Records`;
   return (
     <div>
       <main className="w-full mx-auto py-8 px-0 text-white" style={{ backgroundColor: 'rgba(17,24,39,0.95)', backdropFilter: 'blur(6px)', minHeight: '100vh' }}>
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-6 text-center">{`${tournamentName} | ${recordTitle}`}</h1>
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-6 text-center">{headerTitle}</h1>
 
 
 
