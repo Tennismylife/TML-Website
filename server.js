@@ -2,7 +2,7 @@
 // Obiettivo: cache server-side realmente efficace per HTML e API
 // - Nessun taglio dei dati (mostri tutto), ma risposte veloci e leggere
 // - Chiavi stabili (query ordinata), TTL, niente skip su 'chunked'
-// - Bypass per richieste con nocache/x-refresh
+// - Bypass per RSC/prefetch (Next App Router) e per richieste con nocache/x-refresh
 
 const express = require('express');
 const { createClient } = require('redis');
@@ -26,7 +26,6 @@ const CONTROL_PARAMS = new Set(['nocache', 'x-refresh']);
 let redis = null;
 let activeRequests = 0;
 
-/* ---------------- Helpers build info ---------------- */
 function safeReadBuildId() {
   try {
     const buildIdPath = path.join(process.cwd(), '.next', 'BUILD_ID');
@@ -47,7 +46,6 @@ function safeReadGitSha() {
   }
 }
 
-/* ---------------- Global error handling ---------------- */
 process.on('uncaughtException', (err) => {
   console.error('?? Uncaught Exception:', err);
 });
@@ -55,7 +53,6 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('?? Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
-/* ---------------- Redis init ---------------- */
 async function initRedis() {
   try {
     redis = createClient({ url: process.env.REDIS_URL || 'redis://127.0.0.1:6379' });
@@ -68,7 +65,34 @@ async function initRedis() {
   }
 }
 
-/* ---------------- Cache utils ---------------- */
+function shouldBypassCache(req) {
+  const accept = String(req.headers['accept'] || '');
+  const isRsc =
+    req.headers['rsc'] === '1' ||
+    typeof req.headers['next-router-state-tree'] !== 'undefined' ||
+    typeof req.headers['next-router-prefetch'] !== 'undefined' ||
+    typeof req.headers['next-router-segment-prefetch'] !== 'undefined' ||
+    accept.includes('text/x-component');
+
+  return (
+    req.method !== 'GET' ||
+    req.query?.nocache ||
+    req.headers['x-refresh'] === '1' ||
+    isRsc
+  );
+}
+
+// nuova funzione: decodifica completa dell'URL
+function fullyDecode(url) {
+  let prev;
+  let decoded = url;
+  do {
+    prev = decoded;
+    decoded = decodeURIComponent(prev);
+  } while (decoded !== prev);
+  return decoded;
+}
+
 function buildCacheKey(req, type) {
   const proto = req.headers['x-forwarded-proto'] || req.protocol;
   const url = new URL(`${proto}://${req.headers.host}${req.originalUrl}`);
@@ -82,7 +106,11 @@ function buildCacheKey(req, type) {
   for (const k of keys) normalized.append(k, params.get(k));
 
   const qs = normalized.toString();
-  return `tennismylife:${type}:${req.path}${qs ? `?${qs}` : ''}`;
+
+  // decodifica completa del path per uniformare le chiavi
+  const decodedPath = fullyDecode(url.pathname);
+
+  return `tennismylife:${type}:${decodedPath}${qs ? `?${qs}` : ''}`;
 }
 
 function decompressIfGzip(buffer, headers) {
@@ -99,24 +127,19 @@ function strongETag(buffer) {
   } catch { return undefined; }
 }
 
-/* ---------------- Bootstrap ---------------- */
 (async () => {
   await nextApp.prepare();
   await initRedis();
 
   const server = express();
-
-  // Compressione Gzip
   server.use(compression({ level: 6, threshold: 1024 }));
 
-  // Active requests counter
   server.use((req, res, next) => {
     activeRequests++;
     res.on('finish', () => { activeRequests--; });
     next();
   });
 
-  // Header informativi
   server.use((req, res, next) => {
     res.setHeader('X-Cache', 'UNCACHED');
     const sha = safeReadGitSha();
@@ -126,7 +149,6 @@ function strongETag(buffer) {
     next();
   });
 
-  // Version endpoint
   server.get('/_version', (req, res) => {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     return res.status(200).send(JSON.stringify({
@@ -138,10 +160,8 @@ function strongETag(buffer) {
     }));
   });
 
-  /* ---------------- CACHE READ ---------------- */
   server.use(async (req, res, next) => {
-    if (!redis) return next();
-    if (req.method !== 'GET' || req.query?.nocache || req.headers['x-refresh'] === '1') return next();
+    if (!redis || shouldBypassCache(req)) return next();
 
     const type = req.path.startsWith('/api') ? 'api' : 'page';
     const key = buildCacheKey(req, type);
@@ -154,9 +174,10 @@ function strongETag(buffer) {
       const body = Buffer.from(cached.body, 'base64');
 
       res.setHeader('Content-Type', cached.type || 'text/html; charset=utf-8');
-      const etag = strongETag(body);
-      if (etag) res.setHeader('ETag', etag);
-
+      try {
+        const etag = strongETag(body);
+        if (etag) res.setHeader('ETag', etag);
+      } catch {}
       res.setHeader('Cache-Control', 'private, max-age=0');
       res.setHeader('X-Cache', `${type.toUpperCase()}-HIT`);
       res.setHeader('X-SSR-COMPLETE', '1');
@@ -171,9 +192,8 @@ function strongETag(buffer) {
     }
   });
 
-  /* ---------------- CACHE WRITE ---------------- */
   server.use((req, res, next) => {
-    if (!redis || req.method !== 'GET' || req.query?.nocache || req.headers['x-refresh'] === '1' || res.fromCache) return next();
+    if (!redis || shouldBypassCache(req) || res.fromCache) return next();
 
     const type = req.path.startsWith('/api') ? 'api' : 'page';
     if (type === 'page' && req.path === '/' && process.env.CACHE_HOME !== '1') return next();
@@ -199,8 +219,12 @@ function strongETag(buffer) {
           let bodyBuffer = Buffer.concat(chunks);
           bodyBuffer = decompressIfGzip(bodyBuffer, headers);
 
-          if (!(ct.includes('text/html') && bodyBuffer.length < 512)) {
-            const ttl = type === 'api' ? Number(process.env.CACHE_TTL_API || 3600) : Number(process.env.CACHE_TTL_PAGE || 900);
+          if (ct.includes('text/html') && bodyBuffer.length < 512) {
+            if (process.env.VERBOSE_LOGS === '1') console.warn('[CACHE SKIP] HTML troppo piccolo', key);
+          } else {
+            const ttl = req.path.startsWith('/api')
+              ? Number(process.env.CACHE_TTL_API || 3600)
+              : Number(process.env.CACHE_TTL_PAGE || 900);
 
             await redis.set(
               key,
@@ -227,16 +251,12 @@ function strongETag(buffer) {
     next();
   });
 
-  /* ---------------- Serve CSVs e API ---------------- */
-  server.use(
-    '/data',
-    express.static(path.join(process.cwd(), 'data'), {
-      setHeaders: (res, filePath) => {
-        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-        res.setHeader('Content-Disposition', `attachment; filename="${path.basename(filePath)}"`);
-      },
-    })
-  );
+  server.use('/data', express.static(path.join(process.cwd(), 'data'), {
+    setHeaders: (res, filePath) => {
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+      res.setHeader('Content-Disposition', `attachment; filename="${path.basename(filePath)}"`);
+    },
+  }));
 
   server.get('/api/matches', async (req, res) => {
     try {
@@ -271,11 +291,21 @@ function strongETag(buffer) {
       const offset = Math.max(0, Number(req.query.offset || 0));
 
       const select = {
-        id: true, year: true, round: true, surface: true,
-        winner_id: true, winner_name: true, winner_ioc: true,
-        loser_id: true, loser_name: true, loser_ioc: true,
-        score: true, status: true,
-        tourney_name: true, tourney_level: true, team_event: true,
+        id: true,
+        year: true,
+        round: true,
+        surface: true,
+        winner_id: true,
+        winner_name: true,
+        winner_ioc: true,
+        loser_id: true,
+        loser_name: true,
+        loser_ioc: true,
+        score: true,
+        status: true,
+        tourney_name: true,
+        tourney_level: true,
+        team_event: true,
         tourney_date: true,
       };
 
@@ -329,16 +359,28 @@ function strongETag(buffer) {
       const requested = req.query.files ? req.query.files.toString().split(',').map((s) => s.trim()).filter(Boolean) : null;
 
       let files = fs.readdirSync(dataDir).filter((f) => /\.csv$/i.test(f));
-      if (requested && requested.length) files = files.filter((f) => requested.includes(f));
+      if (requested && requested.length) {
+        files = files.filter((f) => requested.includes(f));
+      }
+
       if (files.length === 0) return res.status(404).send('No CSV files to include in ZIP');
 
       res.setHeader('Content-Type', 'application/zip');
       res.setHeader('Content-Disposition', 'attachment; filename="tml-data.zip"');
 
       const archive = archiver('zip', { zlib: { level: 9 } });
-      archive.on('error', (err) => { console.error('Archive error', err); if (!res.headersSent) res.status(500).end(); });
+      archive.on('error', (err) => {
+        console.error('Archive error', err);
+        if (!res.headersSent) res.status(500).end();
+      });
+
       archive.pipe(res);
-      for (const f of files) archive.file(path.join(dataDir, f), { name: f });
+
+      for (const f of files) {
+        const p = path.join(dataDir, f);
+        archive.file(p, { name: f });
+      }
+
       await archive.finalize();
     } catch (err) {
       console.error('Error in /api/download-all', err);
@@ -348,10 +390,12 @@ function strongETag(buffer) {
 
   try {
     server.use('/sitemaps', require('./src/sitemaps/routes.js'));
-  } catch (e) { console.warn('Sitemaps router not available', e?.message || e); }
+  } catch (e) {
+    console.warn('Sitemaps router not available', e?.message || e);
+  }
 
   server.get('/robots.txt', (req, res) => {
-    const siteRoot = (process.env.SITE_ROOT || 'https://stats.tennismylife.org').replace(/\/$/, '/');
+    const siteRoot = (process.env.SITE_ROOT || 'https://stats.tennismylife.org').replace(/\/$/, '/') ;
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.send(`User-agent: *\nAllow: /\nSitemap: ${siteRoot}sitemap_index.xml\n`);
   });
@@ -368,9 +412,12 @@ function strongETag(buffer) {
     console.log(`? Shutdown triggered by signal: ${signal}`);
     console.log(`Active requests at shutdown: ${activeRequests}`);
     srv.close(() => console.log('Server chiuso'));
-    if (redis) { try { await redis.quit(); console.log('Redis disconnesso'); } catch {} }
+    if (redis) {
+      try { await redis.quit(); console.log('Redis disconnesso'); } catch {}
+    }
     process.exit(0);
   };
+
   process.on('SIGINT', () => shutdown('SIGINT'));
   process.on('SIGTERM', () => shutdown('SIGTERM'));
 })();
