@@ -109,7 +109,7 @@ export default function SEOPlayer({ playerId, slug, name, atpname, tab = 'overvi
     name: atpname || name,
     url,
     mainEntityOfPage: url,
-    description: `Statistiche, risultati e record ATP di ${name}.`,
+    description: `Complete statistics for ${name}: ATP results, matches in 2026, career records, ranking, titles, head-to-head records and surface performance. Updated to 2026.`,
     additionalProperty: [],
     sameAs: [
       `https://en.wikipedia.org/wiki/${encodeURIComponent(nameForWiki)}`,

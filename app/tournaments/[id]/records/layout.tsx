@@ -58,9 +58,23 @@ function generateKeywords(displayName: string, tab: string | null, sub: string |
 }
 
 // ---------------- METADATA ----------------
-export async function generateMetadata({ params }: any): Promise<Metadata> {
+async function getTournament(param: string) {
+  if (/^\d+$/.test(param)) {
+    const canonicalId = await resolveCanonicalTourneyId(param);
+    if (!canonicalId) return null;
+    return prisma.tournament.findUnique({ where: { id: parseInt(canonicalId, 10) } });
+  }
+  return prisma.tournament.findUnique({ where: { slug: param } });
+}
+
+export async function generateMetadata({ params, searchParams }: any): Promise<Metadata> {
   const { id: param, segments } = await params;
+  const sp = (await searchParams) ?? {};
   const site = process.env.SITE_URL || 'https://stats.tennismylife.org';
+
+  // Resolve canonical tournament slug and prefer it for canonical URLs
+  const tournament = await getTournament(String(param));
+  const canonicalTournamentSlug = tournament?.slug ?? String(param);
 
   const segs = Array.isArray(segments) ? segments : (segments ? [segments] : []);
   const tab = segs.length > 0 ? segs[0] : null;
@@ -82,68 +96,109 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   const subLabel = sub ? ` — ${humanizeName(sub)}` : '';
 
   let titleFromParam = `${displayFromParam} | ${typeLabelFromParam}${subLabel}`;
-  let ogUrlFromParam = `${site}/tournaments/${param}/records${tab ? `/${tab}` : ''}${sub ? `/${sub}` : ''}`;
+  let ogUrlFromParam = `${site}/tournaments/${canonicalTournamentSlug}/records${tab ? `/${tab}` : ''}${sub ? `/${sub}` : ''}`;
   const ogImageFromParam = `${site}/og/site-preview.png`;
   const fallbackDescription = `A curated collection of records at ${displayFromParam}. Explore Titles, Wins, Matches Played and Appearances, and discover historical trends in tournament history.`;
   const keywords = generateKeywords(displayFromParam, tab, sub);
 
+  // Build canonical query string from common filters so filtered variants can be canonicalized when necessary
+  function canonicalizeParamsObj(p: Record<string, any> | undefined) {
+    if (!p) return '';
+    const map = new Map<string, string[]>();
+
+    for (const [k, v] of Object.entries(p)) {
+      if (v === undefined) continue;
+      const normalizeVal = (val: string) => {
+        if (k === 'level') return val.toUpperCase();
+        if (k === 'surface') return val.charAt(0).toUpperCase() + val.slice(1).toLowerCase();
+        if (k === 'round') return val.toUpperCase();
+        if (k === 'subtab') return val.toLowerCase();
+        return val;
+      };
+
+      const values = Array.isArray(v)
+        ? v.map(String).map(normalizeVal)
+        : [normalizeVal(String(v))];
+
+      map.set(k, (map.get(k) ?? []).concat(values));
+    }
+
+    return Array.from(map.keys())
+      .sort()
+      .flatMap(k =>
+        Array.from(new Set(map.get(k)!))
+          .sort()
+          .map(v => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+      )
+      .join('&');
+  }
+
+  const canonicalParams: Record<string, any> = {};
+  ['surface','level','round','bestOf'].forEach(k => {
+    const v = sp[k] ?? sp[`${k}[]`];
+    if (v !== undefined) canonicalParams[k] = v;
+  });
+
+  const query = canonicalizeParamsObj(canonicalParams);
+  const canonicalFull = ogUrlFromParam + (query ? `?${query}` : '');
+
   // Special-case: Youngest Title
   if (tab === 'ages' && sub === 'titles' && segs[2] === 'youngest') {
     const siteTitle = `Youngest Title Winners at ${displayFromParam} | Tennis Records`;
-    const ogUrl = `${site}/tournaments/${param}/records/${tab}/${sub}/${segs[2]}`;
+    const ogUrl = `${site}/tournaments/${canonicalTournamentSlug}/records/${tab}/${sub}/${segs[2]}`;
     return {
       title: siteTitle,
       description: fallbackDescription,
       keywords,
       openGraph: {
         title: siteTitle,
-        url: ogUrl,
+        url: ogUrl + (query ? `?${query}` : ''),
         siteName: 'Tennis My Life',
         description: fallbackDescription,
         images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Youngest Title Winners`, width: 1200, height: 630, type: 'image/png' }],
       },
       twitter: { card: 'summary_large_image', title: siteTitle, description: fallbackDescription, images: [ogImageFromParam] },
-      alternates: { canonical: ogUrl },
+      alternates: { canonical: ogUrl + (query ? `?${query}` : '') },
     };
   }
 
   // Special-case: Oldest Title
   if (tab === 'ages' && sub === 'titles' && segs[2] === 'oldest') {
     const siteTitle = `Oldest Title Winners at ${displayFromParam} | Tennis Records`;
-    const ogUrl = `${site}/tournaments/${param}/records/${tab}/${sub}/${segs[2]}`;
+    const ogUrl = `${site}/tournaments/${canonicalTournamentSlug}/records/${tab}/${sub}/${segs[2]}`;
     return {
       title: siteTitle,
       description: fallbackDescription,
       keywords,
       openGraph: {
         title: siteTitle,
-        url: ogUrl,
+        url: ogUrl + (query ? `?${query}` : ''),
         siteName: 'Tennis My Life',
         description: fallbackDescription,
         images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Oldest Title Winners`, width: 1200, height: 630, type: 'image/png' }],
       },
       twitter: { card: 'summary_large_image', title: siteTitle, description: fallbackDescription, images: [ogImageFromParam] },
-      alternates: { canonical: ogUrl },
+      alternates: { canonical: ogUrl + (query ? `?${query}` : '') },
     };
   }
 
   // Special-case: Least root (tournament-specific phrasing)
   if (tab === 'least' && !sub) {
     const siteTitle = `${displayFromParam} Least Games Lost to Reach a Round | Tennis Records`;
-    const ogUrl = `${site}/tournaments/${param}/records/least`;
+    const ogUrl = `${site}/tournaments/${canonicalTournamentSlug}/records/least`;
     return {
       title: siteTitle,
       description: fallbackDescription,
       keywords,
       openGraph: {
         title: siteTitle,
-        url: ogUrl,
+        url: ogUrl + (query ? `?${query}` : ''),
         siteName: 'Tennis My Life',
         description: fallbackDescription,
         images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Least Games Lost`, width: 1200, height: 630, type: 'image/png' }],
       },
       twitter: { card: 'summary_large_image', title: siteTitle, description: fallbackDescription, images: [ogImageFromParam] },
-      alternates: { canonical: ogUrl },
+      alternates: { canonical: ogUrl + (query ? `?${query}` : '') },
     };
   }
 
@@ -154,7 +209,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     keywords,
     openGraph: {
       title: titleFromParam,
-      url: ogUrlFromParam,
+      url: canonicalFull,
       siteName: 'Tennis My Life',
       description: fallbackDescription,
       images: [{ url: ogImageFromParam, alt: `${displayFromParam} - ${typeLabelFromParam}`, width: 1200, height: 630, type: 'image/png' }],
@@ -165,7 +220,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
       description: fallbackDescription,
       images: [ogImageFromParam],
     },
-    alternates: { canonical: ogUrlFromParam },
+    alternates: { canonical: canonicalFull },
   };
 
   return baseMeta;

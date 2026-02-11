@@ -10,7 +10,7 @@ import type { Metadata } from 'next';
 
 const ogImage = new URL('/og/site-preview.png', metadataBase).toString();
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title: {
     absolute: 'Tennis Records – TennisMyLife',
   },
@@ -30,9 +30,30 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://stats.tennismylife.org/records' },
 };
 
+export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> | Record<string, string | string[] | undefined> }): Promise<Metadata> {
+  const sp = searchParams ? await (searchParams as any) : {};
+  const record = typeof sp.record === 'string' ? String(sp.record) : null;
+  const sub = typeof sp.subtab === 'string' ? String(sp.subtab) : (typeof sp.tab === 'string' ? String(sp.tab) : null);
+
+  if (!record) return baseMetadata;
+
+  const canonicalUrl = new URL(`/records/${record}${sub ? `/${sub}` : ''}`, metadataBase).toString();
+
+  return {
+    ...baseMetadata,
+    openGraph: {
+      ...(baseMetadata.openGraph ?? {}),
+      url: canonicalUrl,
+    },
+    alternates: { canonical: canonicalUrl },
+  };
+}
+
 // Server-rendered Records landing page.
 // If the request is to `/records` with no query params, perform a server-side redirect
 // to `/records/count` so a tab is always present (parity with previous client behavior).
+export const dynamic = 'force-dynamic';
+
 export default async function RecordsPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   // `searchParams` is awaited (may be Promise-like)
   const params = searchParams ? await (searchParams as any) : {};
