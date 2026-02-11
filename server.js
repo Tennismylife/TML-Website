@@ -2,7 +2,7 @@
 // Obiettivo: cache server-side realmente efficace per HTML e API
 // - Nessun taglio dei dati (mostri tutto), ma risposte veloci e leggere
 // - Chiavi stabili (query ordinata), TTL, niente skip su 'chunked'
-// - Bypass solo per richieste nocache/x-refresh o metodi non GET
+// - Bypass solo per nocache/x-refresh e metodi non GET
 
 const express = require('express');
 const { createClient } = require('redis');
@@ -18,7 +18,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const archiver = require('archiver');
 
-const dev = false; // produzione
+const dev = false;
 const nextApp = next({ dev, dir: '.', conf: { distDir: '.next' } });
 const handle = nextApp.getRequestHandler();
 
@@ -69,26 +69,15 @@ async function initRedis() {
 }
 
 /* ---------------- Cache utils ---------------- */
-// Modifica: tutte le API /records vengono sempre cachate, anche se RSC/Prefetch
 function shouldBypassCache(req) {
-  const forceCachePaths = [
-    '/records/wins',
-    '/records/ages/',
-    '/records/seasons/',
-    '/records/same/',
-    '/records/streak/',
-    '/records/atage/',
-    '/records/counterseasons/',
-    '/api/records/'
-  ];
-
-  const shouldForceCache = forceCachePaths.some(p => req.path.startsWith(p));
-  if (shouldForceCache) {
-    return false; // Forza cache sempre
-  }
-
-  // Bypass solo per metodi diversi da GET o parametri nocache/x-refresh
-  return req.method !== 'GET' || req.query?.nocache || req.headers['x-refresh'] === '1';
+  // Bypass solo per:
+  // - Metodi diversi da GET
+  // - Parametri nocache/x-refresh
+  return (
+    req.method !== 'GET' ||
+    req.query?.nocache ||
+    req.headers['x-refresh'] === '1'
+  );
 }
 
 function buildCacheKey(req, type) {
@@ -128,17 +117,14 @@ function strongETag(buffer) {
 
   const server = express();
 
-  /* 1) Compressione Gzip */
   server.use(compression({ level: 6, threshold: 1024 }));
 
-  /* 2) Active requests counter */
   server.use((req, res, next) => {
     activeRequests++;
     res.on('finish', () => { activeRequests--; });
     next();
   });
 
-  /* 3) Header informativi */
   server.use((req, res, next) => {
     res.setHeader('X-Cache', 'UNCACHED');
     const sha = safeReadGitSha();
@@ -148,7 +134,6 @@ function strongETag(buffer) {
     next();
   });
 
-  /* 4) Version endpoint */
   server.get('/_version', (req, res) => {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     return res.status(200).send(JSON.stringify({
@@ -160,7 +145,7 @@ function strongETag(buffer) {
     }));
   });
 
-  /* 5) CACHE READ */
+  /* ---------------- CACHE READ ---------------- */
   server.use(async (req, res, next) => {
     if (!redis || shouldBypassCache(req)) return next();
 
@@ -193,7 +178,7 @@ function strongETag(buffer) {
     }
   });
 
-  /* 6) CACHE WRITE */
+  /* ---------------- CACHE WRITE ---------------- */
   server.use((req, res, next) => {
     if (!redis || shouldBypassCache(req) || res.fromCache) return next();
 
@@ -222,7 +207,9 @@ function strongETag(buffer) {
           let bodyBuffer = Buffer.concat(chunks);
           bodyBuffer = decompressIfGzip(bodyBuffer, headers);
 
-          if (!(ct.includes('text/html') && bodyBuffer.length < 512)) {
+          if (ct.includes('text/html') && bodyBuffer.length < 512) {
+            if (process.env.VERBOSE_LOGS === '1') console.warn('[CACHE SKIP] HTML troppo piccolo', key);
+          } else {
             const ttl = req.path.startsWith('/api')
               ? Number(process.env.CACHE_TTL_API || 3600)
               : Number(process.env.CACHE_TTL_PAGE || 900);
@@ -252,10 +239,7 @@ function strongETag(buffer) {
     next();
   });
 
-  /* --------------------------------------------
-     Serve CSVs from /data e API /api/matches
-     -------------------------------------------- */
-
+  /* ---------------- Serve CSVs e API /api/matches ---------------- */
   server.use(
     '/data',
     express.static(path.join(process.cwd(), 'data'), {
@@ -299,11 +283,22 @@ function strongETag(buffer) {
       const offset = Math.max(0, Number(req.query.offset || 0));
 
       const select = {
-        id: true, year: true, round: true, surface: true,
-        winner_id: true, winner_name: true, winner_ioc: true,
-        loser_id: true, loser_name: true, loser_ioc: true,
-        score: true, status: true, tourney_name: true,
-        tourney_level: true, team_event: true, tourney_date: true,
+        id: true,
+        year: true,
+        round: true,
+        surface: true,
+        winner_id: true,
+        winner_name: true,
+        winner_ioc: true,
+        loser_id: true,
+        loser_name: true,
+        loser_ioc: true,
+        score: true,
+        status: true,
+        tourney_name: true,
+        tourney_level: true,
+        team_event: true,
+        tourney_date: true,
       };
 
       const count = await prisma.match.count({ where });
@@ -317,11 +312,8 @@ function strongETag(buffer) {
       }
 
       const results = await prisma.match.findMany({ where, take: limit, skip: offset, orderBy: { tourney_date: 'desc' }, select });
-      const filtered = results;
-      const totalCount = count;
-
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      return res.status(200).json({ count: totalCount ?? filtered.length, results: filtered });
+      return res.status(200).json({ count: count ?? results.length, results });
     } catch (err) {
       console.error('Error in /api/matches', err);
       return res.status(500).json({ error: 'Internal server error reading CSV.' });
@@ -359,7 +351,10 @@ function strongETag(buffer) {
       const requested = req.query.files ? req.query.files.toString().split(',').map((s) => s.trim()).filter(Boolean) : null;
 
       let files = fs.readdirSync(dataDir).filter((f) => /\.csv$/i.test(f));
-      if (requested && requested.length) files = files.filter((f) => requested.includes(f));
+      if (requested && requested.length) {
+        files = files.filter((f) => requested.includes(f));
+      }
+
       if (files.length === 0) return res.status(404).send('No CSV files to include in ZIP');
 
       res.setHeader('Content-Type', 'application/zip');
@@ -372,6 +367,7 @@ function strongETag(buffer) {
       });
 
       archive.pipe(res);
+
       for (const f of files) {
         const p = path.join(dataDir, f);
         archive.file(p, { name: f });
@@ -396,17 +392,14 @@ function strongETag(buffer) {
     res.send(`User-agent: *\nAllow: /\nSitemap: ${siteRoot}sitemap_index.xml\n`);
   });
 
-  /* 7) Next.js fallback */
   server.all(/.*/, (req, res) => handle(req, res));
 
-  /* 8) Start server */
   const PORT = process.env.PORT || 3000;
   const srv = server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server avviato ? http://localhost:${PORT}`);
     console.log(redis ? 'Redis cache attiva' : 'Cache disattivata');
   });
 
-  /* 9) Graceful shutdown */
   const shutdown = async (signal) => {
     console.log(`? Shutdown triggered by signal: ${signal}`);
     console.log(`Active requests at shutdown: ${activeRequests}`);
