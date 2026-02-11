@@ -1,4 +1,4 @@
-// server.js — Next.js + Express + Redis v4 + Compression + Cache HIT/MISS
+// server.js ï¿½ Next.js + Express + Redis v4 + Compression + Cache HIT/MISS
 // Obiettivo: cache server-side realmente efficace per HTML e API
 // - Nessun taglio dei dati (mostri tutto), ma risposte veloci e leggere
 // - Chiavi stabili (query ordinata), TTL, niente skip su 'chunked'
@@ -22,7 +22,7 @@ const dev = false; // produzione
 const nextApp = next({ dev, dir: '.', conf: { distDir: '.next' } });
 const handle = nextApp.getRequestHandler();
 
-const CONTROL_PARAMS = new Set(['nocache', 'x-refresh']);
+const CONTROL_PARAMS = new Set(['nocache', 'x-refresh', '_rsc', 'rsc', 'prefetch']);
 let redis = null;
 let activeRequests = 0;
 
@@ -72,15 +72,49 @@ function shouldBypassCache(req) {
 }
 
 
-// nuova funzione: decodifica completa dell'URL
+// nuova funzione: decodifica completa dell'URL (resistente a valori null/undefined)
+// Miglioramenti:
+// - gestisce ripetuti livelli di percent-encoding (es. %252525...)
+// - collassa '%25' ripetuti prima di decodeURIComponent
+// - fallback robusto che prova a ridurre gli escape progressivamente
 function fullyDecode(url) {
-  let prev;
-  let decoded = url;
-  do {
-    prev = decoded;
-    decoded = decodeURIComponent(prev);
-  } while (decoded !== prev);
-  return decoded;
+  if (url === undefined || url === null) return '';
+  let decoded = String(url);
+
+  // Pre-unescape repeated %25 -> % to deal with multiple layers of encoding
+  // Loop a few times to avoid pathological infinite loops
+  for (let i = 0; i < 8 && decoded.includes('%25'); i++) {
+    decoded = decoded.replace(/%25/g, '%');
+  }
+
+  try {
+    let prev;
+    // Repeated decodeURIComponent until stable
+    do {
+      prev = decoded;
+      decoded = decodeURIComponent(prev);
+    } while (decoded !== prev);
+    // Normalize Unicode and trim spaces
+    try { decoded = decoded.normalize ? decoded.normalize('NFC') : decoded; } catch (e) {}
+    return decoded;
+  } catch (e) {
+    // Fallback: try progressive reduction of encoding and attempt decode
+    try {
+      let tmp = String(url);
+      for (let i = 0; i < 8; i++) {
+        tmp = tmp.replace(/%25/g, '%');
+        try {
+          tmp = decodeURIComponent(tmp);
+        } catch (err) {
+          // ignore and continue reducing
+        }
+      }
+      try { tmp = tmp.normalize ? tmp.normalize('NFC') : tmp; } catch (e) {}
+      return tmp;
+    } catch (err) {
+      return String(url);
+    }
+  }
 }
 
 function buildCacheKey(req, type) {
@@ -88,19 +122,28 @@ function buildCacheKey(req, type) {
   const url = new URL(`${proto}://${req.headers.host}${req.originalUrl}`);
   const params = new URLSearchParams(url.search);
 
+  // Exclude control/ephemeral params (like _rsc) and sort keys for stable order
   const keys = [...params.keys()]
     .filter((k) => !CONTROL_PARAMS.has(k))
     .sort();
 
   const normalized = new URLSearchParams();
-  for (const k of keys) normalized.append(k, params.get(k));
+  for (const k of keys) {
+    // Support multiple values for the same key and fully decode values
+    const values = params.getAll(k).map((v) => fullyDecode(v || '')).sort();
+    normalized.append(k, values.join(','));
+  }
 
   const qs = normalized.toString();
 
-  // decodifica completa del path per uniformare le chiavi
-  const decodedPath = fullyDecode(url.pathname);
+  // Decodifica della path, collassa slash multipli e normalizza il trailing slash
+  const decodedPath = (fullyDecode(url.pathname) || '/')
+    .replace(/\/\/{2,}/g, '/')    // collapse multiple slashes
+    .replace(/\/+$/,'');           // remove trailing slash
 
-  return `tennismylife:${type}:${decodedPath}${qs ? `?${qs}` : ''}`;
+  const finalPath = decodedPath === '' ? '/' : decodedPath;
+
+  return `tennismylife:${type}:${finalPath}${qs ? `?${qs}` : ''}`;
 }
 
 function decompressIfGzip(buffer, headers) {
