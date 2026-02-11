@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   // Match the requested phrasing (lowercase 'matches') and remove site suffix for exact match
   const title = `Most matches played at ${tournamentName}`;
   const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
-  const canonical = `${site}/tournaments/${id}/records/count/played`;
+  const canonical = `${site}/tournaments/${id}/count/played`;
   const description = `A list of players with the most matches played at ${tournamentName} (men's singles main draw), aggregated across tournament editions.`;
 
   // Explicitly avoid injecting parent 'script[type="application/ld+json"]' as a meta entry
@@ -79,7 +79,7 @@ export default async function PlayedPage({ params }: { params: Promise<{ id: str
   const list = await getCountSection(id, 'played');
 
   const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
-  const canonical = `${site}/tournaments/${id}/records/count/played`;
+  const canonical = `${site}/tournaments/${id}/count/played`;
 
   const webPageJson = {
     '@context': 'https://schema.org',
@@ -112,7 +112,8 @@ export default async function PlayedPage({ params }: { params: Promise<{ id: str
       { '@type': 'ListItem', position: 2, name: 'Tournaments', item: site + '/tournaments' },
       { '@type': 'ListItem', position: 3, name: tournamentName, item: site + `/tournaments/${id}` },
       { '@type': 'ListItem', position: 4, name: 'Records', item: site + `/tournaments/${id}/records` },
-      { '@type': 'ListItem', position: 5, name: 'Counts', item: site + `/tournaments/${id}/records/count` },
+      { '@type': 'ListItem', position: 5, name: 'Counts', item: site + `/tournaments/${id}/count` },
+
       { '@type': 'ListItem', position: 6, name: 'Most matches played', item: canonical },
     ],
   };
