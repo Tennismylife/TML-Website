@@ -1,8 +1,8 @@
 // server.js — Next.js + Express + Redis v4 + Compression + Cache HIT/MISS
 // Obiettivo: cache server-side realmente efficace per HTML e API
-// - Nessun taglio dei dati (mostri tutto), ma risposte veloci e leggere
+// - Nessun taglio dei dati (mostri tutto), risposte veloci e leggere
 // - Chiavi stabili (query ordinata), TTL, niente skip su 'chunked'
-// - Bypass solo per nocache/x-refresh e metodi non GET
+// - Bypass per RSC/prefetch (Next App Router) e per richieste con nocache/x-refresh
 
 const express = require('express');
 const { createClient } = require('redis');
@@ -70,13 +70,19 @@ async function initRedis() {
 
 /* ---------------- Cache utils ---------------- */
 function shouldBypassCache(req) {
-  // Bypass solo per:
-  // - Metodi diversi da GET
-  // - Parametri nocache/x-refresh
+  const accept = String(req.headers['accept'] || '');
+  const isRsc =
+    req.headers['rsc'] === '1' ||
+    typeof req.headers['next-router-state-tree'] !== 'undefined' ||
+    typeof req.headers['next-router-prefetch'] !== 'undefined' ||
+    typeof req.headers['next-router-segment-prefetch'] !== 'undefined' ||
+    accept.includes('text/x-component');
+
   return (
     req.method !== 'GET' ||
     req.query?.nocache ||
-    req.headers['x-refresh'] === '1'
+    req.headers['x-refresh'] === '1' ||
+    isRsc
   );
 }
 
@@ -85,15 +91,13 @@ function buildCacheKey(req, type) {
   const url = new URL(`${proto}://${req.headers.host}${req.originalUrl}`);
   const params = new URLSearchParams(url.search);
 
-  const keys = [...params.keys()]
-    .filter((k) => !CONTROL_PARAMS.has(k))
-    .sort();
-
+  const keys = [...params.keys()].filter((k) => !CONTROL_PARAMS.has(k)).sort();
   const normalized = new URLSearchParams();
   for (const k of keys) normalized.append(k, params.get(k));
 
   const qs = normalized.toString();
-  return `tennismylife:${type}:${req.path}${qs ? `?${qs}` : ''}`;
+  // ?? Usa originalUrl per mantenere codifica esatta nel path
+  return `tennismylife:${type}:${req.originalUrl.split('?')[0]}${qs ? `?${qs}` : ''}`;
 }
 
 function decompressIfGzip(buffer, headers) {
@@ -160,17 +164,13 @@ function strongETag(buffer) {
       const body = Buffer.from(cached.body, 'base64');
 
       res.setHeader('Content-Type', cached.type || 'text/html; charset=utf-8');
-      try {
-        const etag = strongETag(body);
-        if (etag) res.setHeader('ETag', etag);
-      } catch {}
+      const etag = strongETag(body);
+      if (etag) res.setHeader('ETag', etag);
       res.setHeader('Cache-Control', 'private, max-age=0');
       res.setHeader('X-Cache', `${type.toUpperCase()}-HIT`);
       res.setHeader('X-SSR-COMPLETE', '1');
 
       res.fromCache = true;
-      if (process.env.VERBOSE_LOGS === '1') console.log('[CACHE HIT]', key, body.length, 'bytes');
-
       return res.send(body);
     } catch (e) {
       console.error('[CACHE READ ERROR]', e);
@@ -225,8 +225,6 @@ function strongETag(buffer) {
             }
             res.setHeader('X-SSR-COMPLETE', '1');
             res.setHeader('Cache-Control', 'private, max-age=0');
-
-            if (process.env.VERBOSE_LOGS === '1') console.log('[CACHE STORED]', key, bodyBuffer.length, 'bytes');
           }
         }
       } catch (e) {
@@ -239,7 +237,7 @@ function strongETag(buffer) {
     next();
   });
 
-  /* ---------------- Serve CSVs e API /api/matches ---------------- */
+  /* ---------------- Serve CSVs e API matches ---------------- */
   server.use(
     '/data',
     express.static(path.join(process.cwd(), 'data'), {
@@ -283,22 +281,11 @@ function strongETag(buffer) {
       const offset = Math.max(0, Number(req.query.offset || 0));
 
       const select = {
-        id: true,
-        year: true,
-        round: true,
-        surface: true,
-        winner_id: true,
-        winner_name: true,
-        winner_ioc: true,
-        loser_id: true,
-        loser_name: true,
-        loser_ioc: true,
-        score: true,
-        status: true,
-        tourney_name: true,
-        tourney_level: true,
-        team_event: true,
-        tourney_date: true,
+        id: true, year: true, round: true, surface: true,
+        winner_id: true, winner_name: true, winner_ioc: true,
+        loser_id: true, loser_name: true, loser_ioc: true,
+        score: true, status: true, tourney_name: true,
+        tourney_level: true, team_event: true, tourney_date: true,
       };
 
       const count = await prisma.match.count({ where });
@@ -313,7 +300,7 @@ function strongETag(buffer) {
 
       const results = await prisma.match.findMany({ where, take: limit, skip: offset, orderBy: { tourney_date: 'desc' }, select });
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      return res.status(200).json({ count: count ?? results.length, results });
+      return res.status(200).json({ count, results });
     } catch (err) {
       console.error('Error in /api/matches', err);
       return res.status(500).json({ error: 'Internal server error reading CSV.' });
@@ -324,7 +311,6 @@ function strongETag(buffer) {
     try {
       const dataDir = path.join(process.cwd(), 'data');
       if (!fs.existsSync(dataDir)) return res.status(404).json({ error: 'data directory not found' });
-
       const files = fs.readdirSync(dataDir).filter((f) => /\.csv$/i.test(f));
       const proto = req.headers['x-forwarded-proto'] || req.protocol;
       const host = req.headers.host || 'localhost:3000';
@@ -349,7 +335,6 @@ function strongETag(buffer) {
       if (!fs.existsSync(dataDir)) return res.status(404).send('data directory not found');
 
       const requested = req.query.files ? req.query.files.toString().split(',').map((s) => s.trim()).filter(Boolean) : null;
-
       let files = fs.readdirSync(dataDir).filter((f) => /\.csv$/i.test(f));
       if (requested && requested.length) {
         files = files.filter((f) => requested.includes(f));
@@ -369,8 +354,7 @@ function strongETag(buffer) {
       archive.pipe(res);
 
       for (const f of files) {
-        const p = path.join(dataDir, f);
-        archive.file(p, { name: f });
+        archive.file(path.join(dataDir, f), { name: f });
       }
 
       await archive.finalize();
