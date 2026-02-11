@@ -121,9 +121,9 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
   return (
     <section className="mb-8">
       {description && (
-        <h1 className="mb-6 text-center text-2xl font-semibold text-gray-200">
+        <h2 className="mb-6 text-center text-2xl font-semibold text-gray-200">
           {description}
-        </h1>
+        </h2>
       )}
       <div className="flex justify-end mb-4">
         <button

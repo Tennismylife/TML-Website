@@ -129,7 +129,7 @@ export default function TimespanSection({ selectedSurfaces, selectedLevels, sele
 
   return (
     <section className="rounded border bg-white p-4">
-      {description && <h1 className="mb-6 text-center text-2xl font-semibold text-white">{description}</h1>}  
+      {description && <h2 className="mb-6 text-center text-2xl font-semibold text-white">{description}</h2>}  
 
 
 

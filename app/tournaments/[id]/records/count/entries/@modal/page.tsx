@@ -7,7 +7,7 @@ export default async function EntriesModalPage({ params }: { params: Promise<{ i
   return (
     <div className="w-full mx-auto text-white">
       <main>
-        <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">{`Entries`}</h1>
+        <h2 className="text-3xl font-extrabold mb-4 text-center mx-0">{`Entries`}</h2>
         {/* @ts-ignore */}
         <CountFull id={id} section="entries" />
       </main>

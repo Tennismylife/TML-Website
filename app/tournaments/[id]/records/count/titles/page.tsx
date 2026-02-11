@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: PageParams) {
   const title = `Most Titles at ${tournamentName} | Tennis Records`;
   const description = `ATP men's singles record: most ${tournamentName} titles in the Open Era. Interactive table with counts and years won.`;
   const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
-  const ogUrl = 'https://stats.tennismylife.org/tournaments/australian-open/records/titles';
+  const ogUrl = `${site}/tournaments/${id}/records/titles`;
   const ogImage = `${site}/og/site-preview.png`;
 
   // FAQ JSON-LD for SEO (server-side as well as client-side via Script)

@@ -33,6 +33,6 @@ describe('Ages youngestrounds per-round heading and title', () => {
     });
 
     expect(getTournamentName).toHaveBeenCalledWith('australian-open');
-    expect(screen.getByText('Youngest Players in F at Australian Open')).toBeTruthy();
+    expect(screen.getAllByText('Youngest Players in Finals at Australian Open').length).toBeGreaterThan(0);
   });
 });

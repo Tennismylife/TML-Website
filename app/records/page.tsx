@@ -92,7 +92,7 @@ export default async function RecordsPage({ searchParams }: { searchParams?: Pro
   return (
     <main className="w-full min-h-screen p-4 bg-gray-900 text-white">
       <section className="mb-6 text-gray-200">
-        <h1 className="text-2xl sm:text-3xl font-semibold mb-2 text-white">{record ? String(record).toUpperCase() : ''}</h1>
+        <h2 className="text-2xl sm:text-3xl font-semibold mb-2 text-white">{record ? String(record).toUpperCase() : ''}</h2>
         <RecordsTabs activeTab={record || null} activeSubTab={sub || null} />
         {description ? <p className="text-gray-300 mb-4">{description}</p> : <p className="text-gray-300">Records</p>}
         <RecordsFilters activeTab={record || ''} activeSubTab={sub} searchParams={params} />

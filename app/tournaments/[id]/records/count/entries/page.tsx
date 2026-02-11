@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   // Use the requested phrasing
   const title = `Most Entries at ${tournamentName}`;
   const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
-  const canonical = 'https://stats.tennismylife.org/tournaments/australian-open/records/entries';
+  const canonical = `${site}/tournaments/${id}/records/entries`;
   const description = `Discover the players with the most entries in the men's singles main draw at ${tournamentName}. This page lists historical records from the Open Era, updated after each tournament edition.`;
 
   // Explicitly avoid injecting parent 'script[type="application/ld+json"]' as a meta entry
@@ -42,7 +42,7 @@ export default async function EntriesPage({ params }: { params: Promise<{ id: st
   const list = await getCountSection(id, 'entries');
 
   const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
-  const canonical = `${site}/tournaments/${id}/records/count/entries`;
+  const canonical = `${site}/tournaments/${id}/records/entries`;
 
   const webPageJson = {
     '@context': 'https://schema.org',

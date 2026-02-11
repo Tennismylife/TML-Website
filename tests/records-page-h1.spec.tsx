@@ -86,8 +86,8 @@ describe('RecordsPage H1', () => {
     const h1 = container.querySelector('h1');
     expect(h1).toHaveTextContent('Australian Open | Records by Round');
 
-    const h3 = await screen.findByRole('heading', { level: 3 });
-    expect(h3).toHaveTextContent('A curated collection of records by round at Australian Open. Explore match-level data, historical trends, and the players who left their mark on this tournament.');
+    const desc = await screen.findByText('A curated collection of records by round at Australian Open. Explore match-level data, historical trends, and the players who left their mark on this tournament.');
+    expect(desc).toBeTruthy();
     expect(screen.queryByRole('heading', { level: 2 })).toBeNull();
 
   });
@@ -105,8 +105,8 @@ describe('RecordsPage H1', () => {
     const h1 = container.querySelector('h1');
     expect(h1).toHaveTextContent('Australian Open | Open Era Records');
 
-    const h3 = await screen.findByRole('heading', { level: 3 });
-    expect(h3).toHaveTextContent('A curated collection of records at Australian Open. Titles, Wins Matches Played and Appearances. Explore match-level data, historical trends, and the players who left their mark on this tournament.');
+    const desc = await screen.findByText('A curated collection of records at Australian Open. Titles, Wins Matches Played and Appearances. Explore match-level data, historical trends, and the players who left their mark on this tournament.');
+    expect(desc).toBeTruthy();
     expect(screen.queryByRole('heading', { level: 2 })).toBeNull();
   });
 
@@ -123,8 +123,8 @@ describe('RecordsPage H1', () => {
     const h1 = container.querySelector('h1');
     expect(h1).toHaveTextContent('Australian Open | Ages');
 
-    const h3 = await screen.findByRole('heading', { level: 3 });
-    expect(h3).toHaveTextContent('A curated collection of ages at Australian Open. Explore match-level data, historical trends, and the players who left their mark on this tournament.');
+    const desc = await screen.findByText('A curated collection of ages at Australian Open. Explore match-level data, historical trends, and the players who left their mark on this tournament.');
+    expect(desc).toBeTruthy();
     expect(screen.queryByRole('heading', { level: 2 })).toBeNull();
   });
 

@@ -130,9 +130,9 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
   return (
     <section className="mb-8">
       {description && (
-        <h1 className="mb-6 text-center text-2xl font-semibold text-white">
+        <h2 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
-        </h1>
+        </h2>
       )}
 
       <div className="mb-4 flex justify-end">

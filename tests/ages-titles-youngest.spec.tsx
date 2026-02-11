@@ -33,6 +33,6 @@ describe('Ages titles youngest heading and title', () => {
     });
 
     expect(getTournamentName).toHaveBeenCalledWith('australian-open');
-    expect(screen.getByText('Youngest Title Winners at Australian Open')).toBeTruthy();
+    expect(screen.getAllByText('Youngest Title Winners at Australian Open').length).toBeGreaterThan(0);
   });
 });

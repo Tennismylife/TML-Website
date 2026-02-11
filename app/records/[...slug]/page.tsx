@@ -281,9 +281,9 @@ export default async function SlugPage({ params, searchParams }: Props) {
       <main className="w-full min-h-screen p-4 bg-gray-900 text-white">
         <React.Suspense fallback={<div className="text-gray-300">Loading…</div>}>
           <section className="mb-6 text-gray-200">
-            <h1 className="text-2xl sm:text-3xl font-semibold mb-2 text-white">
+            <h2 className="text-2xl sm:text-3xl font-semibold mb-2 text-white">
               {record ? `${record.toUpperCase()} Records` : 'Records'}
-            </h1>
+            </h2>
             <p className="text-gray-300">
               {record ? `Record page for ${record}${sub ? ` / ${sub}` : ''}` : 'All records'}
             </p>

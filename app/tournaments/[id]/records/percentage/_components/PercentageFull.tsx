@@ -109,7 +109,7 @@ export default async function PercentageFull({ id, section = 'wins', title }: Pr
         return (
           <div className="max-w-4xl mx-auto text-white p-4">
             <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
-              <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">{`Best winning percentage in ${roundLabel} at ${tournamentName}`}</h1>
+              <h2 className="text-3xl font-extrabold mb-4 text-center mx-0">{`Best winning percentage in ${roundLabel} at ${tourneyName}`}</h2>
               <div className="overflow-x-auto">
                 <div className="p-1 border border-gray-700 bg-gray-800 rounded"><div className="p-3">{renderTable(rows)}</div></div>
               </div>

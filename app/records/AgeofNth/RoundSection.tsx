@@ -242,7 +242,7 @@ export default function RoundSection({ selectedSurfaces, selectedRounds, selecte
 
   return (
     <section className="mb-8">
-      {headerText && <h1 className="mb-6 text-center text-2xl font-semibold text-white">{headerText}</h1>}  
+      {headerText && <h2 className="mb-6 text-center text-2xl font-semibold text-white">{headerText}</h2>}  
 
       <div className="mb-4 flex items-center gap-2">
         <NInput value={inputN} onChange={setInputN} />

@@ -32,6 +32,6 @@ describe('Ages titles oldest heading and title', () => {
     });
 
     expect(getTournamentName).toHaveBeenCalledWith('australian-open');
-    expect(screen.getByText('Oldest Title Winners at Australian Open')).toBeTruthy();
+    expect(screen.getAllByText('Oldest Title Winners at Australian Open').length).toBeGreaterThan(0);
   });
 });

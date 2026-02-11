@@ -262,9 +262,9 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
   return (
     <section className="mb-8">
       {headerText && (
-        <h1 className="mb-6 text-center text-2xl font-semibold text-white">
+        <h2 className="mb-6 text-center text-2xl font-semibold text-white">
           {headerText}
-        </h1>
+        </h2>
       )} 
 
       {/* Age Input */}

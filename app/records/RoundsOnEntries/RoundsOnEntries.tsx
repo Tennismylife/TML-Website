@@ -23,9 +23,9 @@ export default function Roundsonentries({ selectedSurfaces, selectedLevels, sele
   return (
     <section className="mb-8">
       {description && (
-        <h1 className="mb-6 text-center text-2xl font-semibold text-white">
+        <h2 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
-        </h1>
+        </h2>
       )}
 
       {/* Minimum Entries Filter */}

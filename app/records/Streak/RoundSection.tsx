@@ -219,7 +219,7 @@ export default function RoundSection({
 
   return (
     <section className="mb-0">
-      {description && <h1 className="mb-6 text-center text-2xl font-semibold text-white">{description}</h1>} 
+      {description && <h2 className="mb-6 text-center text-2xl font-semibold text-white">{description}</h2>} 
 
 
 

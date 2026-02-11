@@ -32,7 +32,7 @@ export default async function LeastFull({ id, title }: { id: string; title?: str
     const tableId = `least-${encodeURIComponent(String(title))}`;
     return (
       <div className="max-w-4xl mx-auto text-white p-4">
-        <h1 className="text-3xl font-bold mb-4">{`${makeLeastLabel(title)} at ${tourneyName}`}</h1>
+        <h2 className="text-3xl font-bold mb-4">{`${makeLeastLabel(title)} at ${tourneyName}`}</h2>
         <h2 className="sr-only">{`${makeLeastLabel(title)} at ${tourneyName}`}</h2>
 
         {items.length === 0 ? (
@@ -78,7 +78,7 @@ export default async function LeastFull({ id, title }: { id: string; title?: str
 
   return (
     <div className="w-full mx-auto text-white">
-      <h1 className="text-3xl font-bold mb-4">Least Records at {tourneyName}</h1>
+      <h2 className="text-3xl font-bold mb-4">Least Records at {tourneyName}</h2>
 
       {items.length === 0 ? (
         <p className="text-gray-400">No data available</p>

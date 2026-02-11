@@ -35,7 +35,7 @@ export default async function RoundOnEntriesFull({ params }: Props) {
     const tableId = `roundonentries-${encodeURIComponent(String(normalized))}`;
     return (
       <div className="max-w-4xl mx-auto text-white p-4">
-        <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">Most {displayTitle} on Entries at {tourneyName}</h1>
+        <h2 className="text-3xl font-extrabold mb-4 text-center mx-0">Most {displayTitle} on Entries at {tourneyName}</h2>
         {/* Keep an sr-only H2 for accessibility like CountFull */}
         <h2 className="sr-only">Most {displayTitle} on Entries at {tourneyName}</h2>
         <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
@@ -80,7 +80,7 @@ export default async function RoundOnEntriesFull({ params }: Props) {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold mb-4">Round on Entries at {tourneyName}</h1>
+      <h2 className="text-2xl font-semibold mb-4">Round on Entries at {tourneyName}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {rounds.map((r: any) => (
           <div key={r.title} className="bg-white rounded shadow p-4">

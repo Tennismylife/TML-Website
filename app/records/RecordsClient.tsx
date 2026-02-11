@@ -249,7 +249,7 @@ export default function RecordsClient({ initialRecord = null, initialSubtab = nu
   return (
     <main className="w-full min-h-screen p-4 bg-gray-900 text-white">
       <section className="mb-6 text-gray-200">
-        <h1 className="text-2xl sm:text-3xl font-semibold mb-2 text-white">Records</h1>
+        <h2 className="text-2xl sm:text-3xl font-semibold mb-2 text-white">Records</h2>
       </section>
 
       <div className="mb-6 flex flex-wrap gap-2 bg-gray-800/40 rounded-2xl p-2 shadow-lg">
