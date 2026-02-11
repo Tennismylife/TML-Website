@@ -252,8 +252,14 @@ function strongETag(buffer) {
           let bodyBuffer = Buffer.concat(chunks);
           bodyBuffer = decompressIfGzip(bodyBuffer, headers);
 
-          if (ct.includes('text/html') && bodyBuffer.length < 512) {
-            if (process.env.VERBOSE_LOGS === '1') console.warn('[CACHE SKIP] HTML troppo piccolo', key);
+          const MIN_HTML = Number(process.env.CACHE_MIN_HTML_BYTES || 128);
+          const isHtml = ct.includes('text/html');
+          const sample = isHtml ? bodyBuffer.toString('utf8', 0, Math.min(bodyBuffer.length, 2048)) : '';
+
+          if (isHtml && bodyBuffer.length < MIN_HTML) {
+            if (process.env.VERBOSE_LOGS === '1') console.warn('[CACHE SKIP] HTML troppo piccolo', key, 'len', bodyBuffer.length, 'min', MIN_HTML);
+          } else if (isHtml && /loading|loading\u2026|<div[^>]*>\s*Loading/i.test(sample)) {
+            if (process.env.VERBOSE_LOGS === '1') console.warn('[CACHE SKIP] HTML incompleto (client shell or RSC)', key, 'len', bodyBuffer.length);
           } else {
             const ttl = req.path.startsWith('/api')
               ? Number(process.env.CACHE_TTL_API || 3600)
