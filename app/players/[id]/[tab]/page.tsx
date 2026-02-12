@@ -216,7 +216,7 @@ export async function generateMetadata(
     }
   }
 
-  metaDescription = `Statistiche complete di ${name}: risultati ATP, ${tab === 'matches' ? 'match 2026, ' : ''}record carriera, ranking, titoli, head‑to‑head e performance per superficie. Aggiornato al 2026.`;
+  metaDescription = `Complete statistics for ${name}: ATP results, ${tab === 'matches' ? '2026 matches, ' : ''}career record, rankings, titles, head-to-head records, and surface performance. Updated as of 2026.`;
   const imageUrl = `${base}/og/${encodeURIComponent(slug)}.png`;
 
   // Derive profile fields for Open Graph profile (if available)
