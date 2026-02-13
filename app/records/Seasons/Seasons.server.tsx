@@ -40,7 +40,7 @@ export default async function SeasonsServer({ searchParams, ...serverProps }: { 
     for (const l of Array.from(selectedLevels)) params.append('level', l)
     if (selectedRounds) params.set('round', selectedRounds)
     if (selectedBestOf !== null) params.set('best_of', String(selectedBestOf))
-    params.set('limit', '100')
+    params.set('limit', '10')
 
     if (activeSubTab === 'wins') {
       const url = new URL(`/api/records/seasons/wins${params.toString() ? '?' + params.toString() : ''}`, metadataBase)

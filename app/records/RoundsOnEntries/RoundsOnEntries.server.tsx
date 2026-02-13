@@ -34,7 +34,7 @@ export default async function RoundsOnEntriesServer({ searchParams, ...serverPro
     try {
       if (activeSubTab === 'titles') {
         const params = new URLSearchParams()
-        params.set('limit', '100')
+        params.set('limit', '10')
         for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
         for (const l of Array.from(selectedLevels)) params.append('level', l)
         const apiUrl = new URL(`/api/records/roundsonentries/titles${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
@@ -45,7 +45,7 @@ export default async function RoundsOnEntriesServer({ searchParams, ...serverPro
         }
       } else if (activeSubTab === 'round' && selectedRounds) {
         const params = new URLSearchParams()
-        params.set('limit', '100')
+        params.set('limit', '10')
         params.set('round', selectedRounds)
         for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
         for (const l of Array.from(selectedLevels)) params.append('level', l)

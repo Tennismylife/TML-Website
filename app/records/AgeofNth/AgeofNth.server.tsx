@@ -47,7 +47,7 @@ export default async function AgeofNthServer({ searchParams, ...serverProps }: {
   if (prefetchEnabled) {
     try {
     const params = new URLSearchParams()
-    params.set('limit', '100')
+    params.set('limit', '10')
     params.set('n', initialNth.toString())
     params.set('x', initialNth.toString())
     for (const s of Array.from(selectedSurfaces)) params.append('surface', s)

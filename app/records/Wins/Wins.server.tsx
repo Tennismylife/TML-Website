@@ -30,8 +30,8 @@ export default async function WinsServer({ searchParams, ...serverProps }: { sea
   for (const l of Array.from(selectedLevels)) params.append('level', l)
   if (selectedRounds) params.set('round', selectedRounds)
   if (selectedBestOf) params.set('bestOf', String(selectedBestOf))
-  // request a large perPage so we get all winners for initial render
-  params.set('perPage', '100')
+  // request a small perPage for SSR prefetch (only top 10)
+  params.set('perPage', '10')
 
   const apiUrl = new URL(`/api/records/wins${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
   let topWinners: any[] = []

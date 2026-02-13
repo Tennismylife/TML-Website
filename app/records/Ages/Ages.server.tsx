@@ -30,7 +30,7 @@ export default async function AgesServer({ searchParams, ...serverProps }: { sea
     for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
     for (const l of Array.from(selectedLevels)) params.append('level', l)
     if (selectedRounds) params.set('round', selectedRounds)
-    params.set('limit', '100')
+    params.set('limit', '10')
     const type = activeSubTab?.toLowerCase().includes('youngest') ? 'youngest' : 'oldest'
     params.set('type', type)
 

@@ -25,7 +25,7 @@ export default async function TitlesServer({ searchParams, ...serverProps }: { s
       const params = new URLSearchParams()
       for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
       for (const l of Array.from(selectedLevels)) params.append('level', l)
-      params.set('perPage', '100')
+      params.set('perPage', '10')
       const apiUrl = new URL(`/api/records/titles${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
       const res = await fetch(apiUrl, { cache: 'no-store' })
       if (res.ok) {

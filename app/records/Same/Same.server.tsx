@@ -40,7 +40,7 @@ export default async function SameServer({ searchParams, ...serverProps }: { sea
     for (const l of Array.from(selectedLevels)) params.append('level', l)
     if (selectedRounds) params.set('round', selectedRounds)
     if (selectedBestOf !== null) params.set('best_of', String(selectedBestOf))
-    params.set('limit', '100')
+    params.set('limit', '10')
 
     // Helper to try metadataBase first, then localhost in development
     async function tryFetchPath(path: string) {

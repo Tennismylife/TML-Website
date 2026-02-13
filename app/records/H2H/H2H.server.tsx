@@ -42,7 +42,8 @@ export default async function H2HServer({ searchParams, ...serverProps }: { sear
     for (const l of Array.from(selectedLevels)) params.append('level', l)
     if (selectedRounds) params.set('round', selectedRounds)
     if (selectedBestOf !== null) params.set('best_of', String(selectedBestOf))
-    params.set('limit', '200')
+    // limit SSR prefetch to top 10
+    params.set('limit', '10')
 
     const fetchArray = async (path: string, key: string) => {
       try {

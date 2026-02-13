@@ -61,7 +61,7 @@ export default async function NeededToServer({ searchParams, ...serverProps }: {
 
     if (activeSubTab === 'titles') {
       const params = new URLSearchParams()
-      params.set('limit', '100')
+      params.set('limit', '10')
       params.set('maxTitles', initialNth.toString())
       for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
       for (const l of Array.from(selectedLevels)) params.append('level', l)
@@ -70,7 +70,7 @@ export default async function NeededToServer({ searchParams, ...serverProps }: {
 
       if (activeSubTab === 'rounds') {
         const params = new URLSearchParams()
-        params.set('limit', '100')
+        params.set('limit', '10')
         params.set('round_number', initialRoundNumber.toString())
         if (selectedRounds) params.set('round', selectedRounds)
         for (const s of Array.from(selectedSurfaces)) params.append('surface', s)

@@ -40,7 +40,7 @@ export default async function AtAgeServer({ searchParams, ...serverProps }: { se
     try {
     const params = new URLSearchParams()
     params.set('age', initialAge.toFixed(3))
-    params.set('limit', '100')
+    params.set('limit', '10')
     for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
     for (const l of Array.from(selectedLevels)) params.append('level', l)
     if (selectedRounds) params.set('round', selectedRounds)

@@ -37,7 +37,7 @@ export default async function TimespanServer({ searchParams, ...serverProps }: {
     for (const l of Array.from(selectedLevels)) params.append('level', l)
 
     if (selectedTab === 'titles') {
-      params.set('limit', '100')
+      params.set('limit', '10')
       const apiUrl = new URL(`/api/records/timespan/titles${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
       const res = await fetch(apiUrl, { cache: 'no-store' })
       if (res.ok) {
@@ -45,7 +45,7 @@ export default async function TimespanServer({ searchParams, ...serverProps }: {
         if (Array.isArray((json as any).data)) prefetchedData[selectedTab] = (json as any).data
       }
     } else if (selectedTab === 'entries') {
-      params.set('perPage', '100')
+      params.set('perPage', '10')
       const apiUrl = new URL(`/api/records/timespan/entries${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
       const res = await fetch(apiUrl, { cache: 'no-store' })
       if (res.ok) {
@@ -54,7 +54,7 @@ export default async function TimespanServer({ searchParams, ...serverProps }: {
       }
       } else if (selectedTab === 'rounds' && selectedRounds) {
         params.set('round', selectedRounds)
-        params.set('perPage', '100')
+        params.set('perPage', '10')
         const apiUrl = new URL(`/api/records/timespan/rounds${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
         const res = await fetch(apiUrl, { cache: 'no-store' })
         if (res.ok) {

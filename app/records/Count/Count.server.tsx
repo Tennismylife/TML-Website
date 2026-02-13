@@ -33,7 +33,7 @@ export default async function CountServer({ searchParams, ...serverProps }: { se
       for (const l of Array.from(selectedLevels)) params.append('level', l)
       if (selectedRounds) params.set('round', selectedRounds)
       if (selectedBestOf) params.set('bestOf', String(selectedBestOf))
-      params.set('perPage', '100')
+      params.set('perPage', '10')
       const apiUrl = new URL(`/api/records/count${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
       const res = await fetch(apiUrl, { cache: 'no-store' })
       if (res.ok) {

@@ -59,7 +59,7 @@ export default async function CounterSeasonsServer({ searchParams, ...serverProp
     }
 
     const params = new URLSearchParams()
-    params.set('limit', '100')
+    params.set('limit', '10')
     for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
     for (const l of Array.from(selectedLevels)) params.append('level', l)
     if (selectedBestOf !== null) params.set('best_of', String(selectedBestOf))
