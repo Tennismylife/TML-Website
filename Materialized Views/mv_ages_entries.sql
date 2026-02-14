@@ -3,33 +3,35 @@ DROP MATERIALIZED VIEW IF EXISTS mv_ages_entries;
 CREATE MATERIALIZED VIEW mv_ages_entries AS
 
 WITH base AS (
-    -- Winner: prima partita per torneo
-    SELECT *
+    -- Consolidate winner/loser rows then select a single participation per (player_id, event_id)
+    SELECT DISTINCT ON (player_id, event_id)
+        player_id,
+        age,
+        surface,
+        tourney_level,
+        event_id
     FROM (
-        SELECT DISTINCT ON (m.event_id, m.winner_id)
-            m.winner_id AS player_id,
-            ROUND(m.winner_age::numeric, 3) AS age,
-            COALESCE(m.surface, 'Unknown') AS surface,
-            COALESCE(m.tourney_level, 'Unknown') AS tourney_level
+        SELECT m.event_id,
+               m.winner_id   AS player_id,
+               ROUND(m.winner_age::numeric, 3) AS age,
+               COALESCE(m.surface, 'Unknown') AS surface,
+               COALESCE(m.tourney_level, 'Unknown') AS tourney_level
         FROM "Match" m
         WHERE m.winner_age IS NOT NULL
-        ORDER BY m.event_id, m.winner_id, m.winner_age
-    ) AS winners
 
-    UNION ALL
+        UNION ALL
 
-    -- Loser: prima partita per torneo
-    SELECT *
-    FROM (
-        SELECT DISTINCT ON (m.event_id, m.loser_id)
-            m.loser_id AS player_id,
-            ROUND(m.loser_age::numeric, 3) AS age,
-            COALESCE(m.surface, 'Unknown') AS surface,
-            COALESCE(m.tourney_level, 'Unknown') AS tourney_level
+        SELECT m.event_id,
+               m.loser_id    AS player_id,
+               ROUND(m.loser_age::numeric, 3) AS age,
+               COALESCE(m.surface, 'Unknown') AS surface,
+               COALESCE(m.tourney_level, 'Unknown') AS tourney_level
         FROM "Match" m
         WHERE m.loser_age IS NOT NULL
-        ORDER BY m.event_id, m.loser_id, m.loser_age
-    ) AS losers
+    ) combined
+    WHERE player_id IS NOT NULL
+    -- choose the earliest age for that player/event
+    ORDER BY player_id, event_id, age
 ),
 
 counts AS (
@@ -41,11 +43,12 @@ counts AS (
     GROUP BY player_id, age
 ),
 
+-- cumulative per player (sommatoria dei partecipations_at_age ordinata per età)
 progressive AS (
     SELECT
         player_id,
         age,
-        ROW_NUMBER() OVER (PARTITION BY player_id ORDER BY age) AS cumulative_participations
+        SUM(participations_at_age) OVER (PARTITION BY player_id ORDER BY age ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS cumulative_participations
     FROM counts
 ),
 
@@ -57,6 +60,26 @@ agg_total AS (
     GROUP BY player_id
 ),
 
+-- counts e cumulativi per superficie
+counts_surface AS (
+    SELECT
+        player_id,
+        surface,
+        age,
+        COUNT(*) AS participations_at_age
+    FROM base
+    GROUP BY player_id, surface, age
+),
+
+progressive_surface AS (
+    SELECT
+        player_id,
+        surface,
+        age,
+        SUM(participations_at_age) OVER (PARTITION BY player_id, surface ORDER BY age ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS cumulative_participations
+    FROM counts_surface
+),
+
 agg_surface AS (
     SELECT
         player_id,
@@ -66,17 +89,30 @@ agg_surface AS (
             player_id,
             surface,
             jsonb_object_agg(age::text, cumulative_participations ORDER BY age) AS surface_json
-        FROM (
-            SELECT
-                player_id,
-                surface,
-                age,
-                ROW_NUMBER() OVER (PARTITION BY player_id, surface ORDER BY age) AS cumulative_participations
-            FROM base
-        ) x
+        FROM progressive_surface
         GROUP BY player_id, surface
     ) y
     GROUP BY player_id
+),
+
+-- counts e cumulativi per livello torneo
+counts_level AS (
+    SELECT
+        player_id,
+        tourney_level,
+        age,
+        COUNT(*) AS participations_at_age
+    FROM base
+    GROUP BY player_id, tourney_level, age
+),
+
+progressive_level AS (
+    SELECT
+        player_id,
+        tourney_level,
+        age,
+        SUM(participations_at_age) OVER (PARTITION BY player_id, tourney_level ORDER BY age ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS cumulative_participations
+    FROM counts_level
 ),
 
 agg_level AS (
@@ -88,14 +124,7 @@ agg_level AS (
             player_id,
             tourney_level,
             jsonb_object_agg(age::text, cumulative_participations ORDER BY age) AS level_json
-        FROM (
-            SELECT
-                player_id,
-                tourney_level,
-                age,
-                ROW_NUMBER() OVER (PARTITION BY player_id, tourney_level ORDER BY age) AS cumulative_participations
-            FROM base
-        ) x
+        FROM progressive_level
         GROUP BY player_id, tourney_level
     ) y
     GROUP BY player_id

@@ -24,7 +24,7 @@ export default async function AgeofNthServer({ searchParams, ...serverProps }: {
     return Number.isFinite(parsed) ? parsed : null
   })()
   const nthParam = (() => {
-    const v = getFirst('n') ?? getFirst('x')
+    const v = getFirst('n')
     if (!v) return null
     const parsed = Number(v)
     return Number.isFinite(parsed) ? parsed : null
@@ -48,19 +48,38 @@ export default async function AgeofNthServer({ searchParams, ...serverProps }: {
     try {
     const params = new URLSearchParams()
     params.set('limit', '10')
+    // Use `n` for all AgeofNth endpoints (client and APIs expect `n`)
     params.set('n', initialNth.toString())
-    params.set('x', initialNth.toString())
+
     for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
     for (const l of Array.from(selectedLevels)) params.append('level', l)
     if (selectedRounds) params.set('round', selectedRounds)
     if (selectedBestOf !== null) params.set('best_of', String(selectedBestOf))
 
     const fetchJson = async (path: string) => {
-      const url = new URL(path, metadataBase)
-      const res = await fetch(url, { cache: 'no-store' })
-      if (!res.ok) return undefined
-      const json = await res.json()
-      return Array.isArray(json) ? json : undefined
+      try {
+        // If the path targets an internal ageofnth API, call the route handler
+        // directly (server-side) to avoid making an HTTP request to our own
+        // API endpoint — this prevents the server from logging an extra
+        // /api/... HTTP call and removes the perceived double-render.
+        if (path.startsWith('/api/records/ageofnth/')) {
+          const endpoint = path.replace('/api/records/ageofnth/', '').split('?')[0];
+          // dynamic import of the route module (wins, played, entries, titles, inslams, rounds)
+          const mod = await import(`../../api/records/ageofnth/${endpoint}/route` as any);
+          const fakeReq: any = { url: new URL(path, metadataBase).toString() };
+          const res = await mod.GET(fakeReq as any);
+          const json = await res.json();
+          return Array.isArray(json) ? json : undefined;
+        }
+
+        const url = new URL(path, metadataBase)
+        const res = await fetch(url, { cache: 'no-store' })
+        if (!res.ok) return undefined
+        const json = await res.json()
+        return Array.isArray(json) ? json : undefined
+      } catch (err) {
+        return undefined
+      }
     }
 
     if (activeSubTab === 'wins') prefetchedData.wins = await fetchJson(`/api/records/ageofnth/wins${params.toString() ? '?' + params.toString() : ''}`)
@@ -74,8 +93,16 @@ export default async function AgeofNthServer({ searchParams, ...serverProps }: {
     }
   }
 
-  const fetchEnabled = serverProps.fetchEnabled ?? !prefetchEnabled
-  const fetchRequestId = serverProps.fetchRequestId ?? (fetchEnabled ? String(Date.now()) : null)
+  let fetchEnabled = serverProps.fetchEnabled ?? !prefetchEnabled
+  let fetchRequestId = serverProps.fetchRequestId ?? (fetchEnabled ? String(Date.now()) : null)
+
+  // If server-side prefetch provided data for the active subtab, ensure the
+  // client does not perform the same fetch again — disable client fetch and
+  // clear the request id to prevent duplicate retrievals.
+  if (prefetchEnabled && prefetchedData && activeSubTab && Array.isArray(prefetchedData[activeSubTab]) && (prefetchedData[activeSubTab] as any[]).length > 0) {
+    fetchEnabled = false
+    fetchRequestId = null
+  }
 
   return (
     <ServerWrapper

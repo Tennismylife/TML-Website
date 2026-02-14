@@ -55,6 +55,21 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
     return `${years}y ${days}d`;
   };
 
+  // Read age from AgeInput DOM to avoid race conditions on Apply/After
+  const readAgeFromDom = () => {
+    try {
+      const yEl = document.querySelector('[data-testid="age-years"]') as HTMLInputElement | null;
+      const dEl = document.querySelector('[data-testid="age-days"]') as HTMLInputElement | null;
+      const y = yEl ? Number(yEl.value) : NaN;
+      const d = dEl ? Number(dEl.value) : NaN;
+      if (!Number.isFinite(y) || !Number.isFinite(d)) return NaN;
+      const dClamped = Math.min(364, Math.max(0, d));
+      return +(y + dClamped / 365).toFixed(3);
+    } catch (e) {
+      return inputAge;
+    }
+  };
+
   const roundAbbreviations: Record<string, string> = {
     R128: "R128s",
     R64: "R64s",
@@ -69,11 +84,11 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
   useEffect(() => {
     setInputAge(safeInitialAge);
     setSelectedAge(safeInitialAge);
-    if (Array.isArray(initialData)) {
+    if (!hasFetched && Array.isArray(initialData)) {
       setData(initialData);
       setHasFetched(initialData.length > 0);
     }
-  }, [safeInitialAge, initialData]);
+  }, [safeInitialAge, initialData, hasFetched]);
   const router = useRouter();
 
   const fetchData = async (age: number, afterOverride?: boolean) => {
@@ -214,11 +229,11 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
       <div className="mb-4 flex items-center gap-2">
         <AgeInput value={inputAge} onChange={setInputAge} />
         <label className="flex items-center gap-2 text-sm text-gray-200">
-          <input type="checkbox" checked={after} onChange={(e) => { const newAfter = e.target.checked; setAfter(newAfter); fetchData(inputAge, newAfter); }} className="w-4 h-4" />
+          <input type="checkbox" checked={after} onChange={(e) => { const newAfter = e.target.checked; setAfter(newAfter); const ageNow = readAgeFromDom(); fetchData(ageNow, newAfter); }} className="w-4 h-4" />
           <span>After</span>
         </label>
         <button
-          onClick={() => fetchData(inputAge)}
+          onClick={() => { const ageNow = readAgeFromDom(); fetchData(ageNow); }}
           disabled={loading || !Number.isFinite(inputAge)}
           className={`px-4 py-1 rounded ${loading || !Number.isFinite(inputAge) ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
         >

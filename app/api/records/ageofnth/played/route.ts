@@ -6,11 +6,11 @@ const prisma = globalForPrisma.prisma || new PrismaClient();
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
 // Funzione per ottenere età alla X-esima partita
-function getAgeForNthGame(cumulative: Record<string, number>, x: number): number | null {
+function getAgeForNthGame(cumulative: Record<string, number>, n: number): number | null {
   const entries = Object.entries(cumulative)
     .map(([num, age]) => [parseInt(num), age] as [number, number])
     .sort((a, b) => a[0] - b[0]);
-  const entry = entries.find(([num]) => num >= x);
+  const entry = entries.find(([num]) => num >= n);
   return entry ? entry[1] : null;
 }
 
@@ -26,9 +26,9 @@ export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url);
 
-    const x = Number(url.searchParams.get("x"));
-    if (!Number.isInteger(x) || x <= 0) {
-      return NextResponse.json({ error: "Invalid x parameter" }, { status: 400 });
+    const n = Number(url.searchParams.get("n"));
+    if (!Number.isInteger(n) || n <= 0) {
+      return NextResponse.json({ error: "Invalid n parameter" }, { status: 400 });
     }
 
     const limitParam = Number(url.searchParams.get("limit"));
@@ -93,14 +93,14 @@ export async function GET(request: NextRequest) {
             selectedAges = (d.ages_by_best_of_json as any)?.[String(selectedBestOf[0])] ?? {};
           }
 
-          const ageAtX = getAgeForNthGame(selectedAges, x);
-          if (ageAtX == null) return null; // escludi se non ha X partite
+          const ageAtN = getAgeForNthGame(selectedAges, n);
+          if (ageAtN == null) return null; // escludi se non ha N partite
 
           return {
             id: p.id,
             name: p.player,
             ioc: p.ioc || "",
-            age_at_game: ageAtX,
+            age_at_game: ageAtN,
           };
         })
         .filter(Boolean) as { id: string; name: string; ioc: string; age_at_game: number }[];
@@ -170,8 +170,8 @@ export async function GET(request: NextRequest) {
 
     for (const [id, ages] of map) {
       ages.sort((a, b) => a - b);
-      const ageAtX = ages.length < x ? null : ages[x - 1];
-      if (ageAtX == null) continue; // escludi se non ha X partite
+      const ageAtN = ages.length < n ? null : ages[n - 1];
+      if (ageAtN == null) continue; // escludi se non ha N partite
       const player = await prisma.player.findUnique({
         where: { id },
         select: { id: true, player: true, ioc: true },
@@ -181,7 +181,7 @@ export async function GET(request: NextRequest) {
           id: player.id,
           name: player.player,
           ioc: player.ioc || "",
-          age_at_game: ageAtX,
+          age_at_game: ageAtN,
         });
       }
     }

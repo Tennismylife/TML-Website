@@ -30,11 +30,16 @@ interface Player {
 function NInput({ value, onChange }: { value: number; onChange: (n: number) => void }) {
   return (
     <input
+      data-testid="nth-input"
       type="number"
       min={1}
       className="w-24 px-2 py-1 bg-gray-800 text-white border border-gray-600 rounded"
       value={Number.isFinite(value) ? value : ''}
-      onChange={(e) => onChange(Number(e.target.value))}
+      onChange={(e) => {
+        if (e.currentTarget.value === '') { onChange(Number.NaN); return; }
+        const v = Number(e.currentTarget.value);
+        onChange(Number.isNaN(v) ? Number.NaN : v);
+      }}
     />
   );
 }
@@ -74,22 +79,33 @@ export default function RoundSection({ selectedSurfaces, selectedRounds, selecte
       : [];
   }
 
+  // Read N value directly from the DOM to avoid race conditions when clicking Apply
+  const readNthFromDom = () => {
+    try {
+      const el = document.querySelector('[data-testid="nth-input"]') as HTMLInputElement | null;
+      const v = el ? Number(el.value) : NaN;
+      return Number.isFinite(v) ? v : inputN;
+    } catch (e) {
+      return inputN;
+    }
+  };
+
   useEffect(() => {
     setInputN(safeInitialNth);
     setSelectedN(safeInitialNth);
-    if (Array.isArray(initialData)) {
+    if (!hasFetched && Array.isArray(initialData)) {
       const normalized = formatData(initialData);
       setData(normalized);
       setHasFetched(normalized.length > 0);
     }
-  }, [safeInitialNth, initialData]);
+  }, [safeInitialNth, initialData, hasFetched]);
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds]);
 
   useEffect(() => {
     const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal);
     if (!shouldFetch) {
-      if (Array.isArray(initialData)) {
+      if (!hasFetched && Array.isArray(initialData)) {
         const normalized = formatData(initialData);
         setData(normalized);
         setHasFetched(normalized.length > 0);
@@ -128,7 +144,7 @@ export default function RoundSection({ selectedSurfaces, selectedRounds, selecte
       const fetchedData = await res.json();
       const formattedData = formatData(fetchedData);
 
-      setData(formattedData);
+      setData(force ? formattedData : formattedData.slice(0, 100));
       setPage(1);
       setSelectedN(n);
       setHasFetched(true);
@@ -156,7 +172,12 @@ export default function RoundSection({ selectedSurfaces, selectedRounds, selecte
         const sameRound = current.get('round') === newQuery.get('round');
 
         if (!(sameN && sameSurface && sameLevel && sameRound)) {
-          router.replace(`${path}?${newQuery.toString()}`);
+          try {
+            const newUrl = `${path}?${newQuery.toString()}`;
+            if (typeof window !== 'undefined') window.history.replaceState(null, '', newUrl);
+          } catch (e) {
+            /* ignore */
+          }
         }
       } catch (e) {
         // ignore
@@ -247,7 +268,13 @@ export default function RoundSection({ selectedSurfaces, selectedRounds, selecte
       <div className="mb-4 flex items-center gap-2">
         <NInput value={inputN} onChange={setInputN} />
         <button
-          onClick={() => Number.isFinite(inputN) && fetchData(inputN, showModal ? 1000 : 100, true)}
+          onClick={() => {
+            const nEl = document.querySelector('[data-testid="nth-input"]') as HTMLInputElement | null;
+            const n = nEl ? Number(nEl.value) : inputN;
+            if (!Number.isFinite(n) || n <= 0) return;
+            setInputN(n);
+            setTimeout(() => fetchData(n, showModal ? 1000 : 100, true), 0);
+          }}
           disabled={loading || !Number.isFinite(inputN) || inputN <= 0}
           className={`px-4 py-1 rounded ${
             loading || !Number.isFinite(inputN) || inputN <= 0

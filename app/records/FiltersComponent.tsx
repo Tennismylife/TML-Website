@@ -339,7 +339,11 @@ export default function FiltersComponent({
       }
 
       lastAppliedQS.current = newCanon;
-      router.replace(newPath + desiredSearch);
+      try {
+        if (typeof window !== 'undefined') window.history.replaceState(null, '', newPath + desiredSearch);
+      } catch (e) {
+        try { router.replace(newPath + desiredSearch); } catch {}
+      }
       return;
     }
 
@@ -357,7 +361,11 @@ export default function FiltersComponent({
     }
     lastAppliedQS.current = newCanon;
     if (debugMode) console.log("[filters-debug] performing replace ->", newPath + desiredSearch);
-    router.replace(newPath + desiredSearch);
+    try {
+      if (typeof window !== 'undefined') window.history.replaceState(null, '', newPath + desiredSearch);
+    } catch (e) {
+      try { router.replace(newPath + desiredSearch); } catch {}
+    }
   }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeTab, activeSubTab, searchParams, router]);
 
   const selectSurface = (surface: string) => setSelectedSurfaces(new Set([surface]));

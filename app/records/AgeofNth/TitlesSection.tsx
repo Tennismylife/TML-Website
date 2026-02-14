@@ -29,11 +29,17 @@ interface Player {
 function NInput({ value, onChange }: { value: number; onChange: (n: number) => void }) {
   return (
     <input
+      data-testid="nth-input"
       type="number"
       min={1}
       className="w-24 px-2 py-1 bg-gray-800 text-white border border-gray-600 rounded"
       value={Number.isFinite(value) ? value : ''}
-      onChange={(e) => onChange(Number(e.target.value))}
+      onChange={(e) => {
+        if (e.currentTarget.value === '') { onChange(Number.NaN); return; }
+        const v = Number(e.currentTarget.value);
+        onChange(Number.isNaN(v) ? Number.NaN : v);
+      }}
+      onKeyDown={(e) => e.key === 'Enter' && (e.currentTarget.value === '' ? onChange(Number.NaN) : onChange(Number((e.currentTarget as HTMLInputElement).value)))}
     />
   );
 }
@@ -59,18 +65,28 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
   useEffect(() => {
     setInputN(safeInitialNth);
     setSelectedN(safeInitialNth);
-    if (Array.isArray(initialData)) {
+    if (!hasFetched && Array.isArray(initialData)) {
       setData(initialData);
       setHasFetched(initialData.length > 0);
     }
-  }, [safeInitialNth, initialData]);
+  }, [safeInitialNth, initialData, hasFetched]);
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels]);
+
+  const readNthFromDom = () => {
+    try {
+      const el = document.querySelector('[data-testid="nth-input"]') as HTMLInputElement | null;
+      const v = el ? Number(el.value) : NaN;
+      return Number.isFinite(v) ? v : inputN;
+    } catch (e) {
+      return inputN;
+    }
+  };
 
   useEffect(() => {
     const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal);
     if (!shouldFetch) {
-      if (Array.isArray(initialData)) {
+      if (!hasFetched && Array.isArray(initialData)) {
         setData(initialData);
         setHasFetched(initialData.length > 0);
       }
@@ -80,7 +96,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
 
     if (fetchRequestId) lastRequestRef.current = fetchRequestId;
     fetchData(selectedN, showModal ? 1000 : 100, showModal);
-  }, [enabled, fetchRequestId, showModal, selectedN, selectedSurfaces, selectedLevels, initialData]);
+  }, [enabled, fetchRequestId, showModal, selectedN, selectedSurfaces, selectedLevels, initialData, hasFetched]);
 
   const fetchData = async (n: number, limit: number, force = false) => {
     if (!Number.isFinite(n) || n <= 0) {
@@ -105,7 +121,8 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
         throw new Error(errData.error || 'Failed to fetch data');
       }
       const fetchedData: Player[] = await res.json();
-      setData(Array.isArray(fetchedData) ? fetchedData : []);
+      const fetchedArray = Array.isArray(fetchedData) ? fetchedData : [];
+      setData(force ? fetchedArray : fetchedArray.slice(0, 100));
       setPage(1);
       setSelectedN(n);
       setHasFetched(true);
@@ -131,7 +148,12 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
         const sameLevel = compareMulti(current, newQuery, 'level');
 
         if (!(sameN && sameSurface && sameLevel)) {
-          router.replace(`${path}?${newQuery.toString()}`);
+          try {
+            const newUrl = `${path}?${newQuery.toString()}`;
+            if (typeof window !== 'undefined') window.history.replaceState(null, '', newUrl);
+          } catch (e) {
+            /* ignore */
+          }
         }
       } catch (e) {
         // ignore
@@ -226,7 +248,13 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
       <div className="mb-4 flex items-center gap-2">
         <NInput value={inputN} onChange={setInputN} />
         <button
-          onClick={() => Number.isFinite(inputN) && fetchData(inputN, showModal ? 1000 : 100, true)}
+          onClick={() => {
+            const n = readNthFromDom();
+            if (!Number.isFinite(n) || n <= 0) return;
+            setInputN(n);
+            // schedule fetch on next tick so any pending input onChange commits first
+            setTimeout(() => fetchData(n, showModal ? 1000 : 100, true), 0);
+          }}
           disabled={loading || !Number.isFinite(inputN) || inputN <= 0}
           className={`px-4 py-1 rounded ${
             loading || !Number.isFinite(inputN) || inputN <= 0

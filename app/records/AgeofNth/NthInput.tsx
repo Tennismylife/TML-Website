@@ -16,6 +16,7 @@ export default function NthInput({ label = 'Nth', value, onChange, min = 1, clas
       <label className="flex items-center gap-2 flex-1 text-gray-200">
         <span className="whitespace-nowrap">{label}</span>
         <input
+          data-testid="nth-input"
           type="number"
           min={min}
           value={Number.isFinite(value) ? value : ''}

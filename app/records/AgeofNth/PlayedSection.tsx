@@ -31,11 +31,16 @@ interface Player {
 function XInput({ value, onChange }: { value: number; onChange: (n: number) => void }) {
   return (
     <input
+      data-testid="nth-input"
       type="number"
       min={1}
       className="w-24 px-2 py-1 bg-gray-800 text-white border border-gray-600 rounded"
       value={Number.isFinite(value) ? value : ''}
-      onChange={(e) => onChange(Number(e.target.value))}
+      onChange={(e) => {
+        if (e.currentTarget.value === '') { onChange(Number.NaN); return; }
+        const v = Number(e.currentTarget.value);
+        onChange(Number.isNaN(v) ? Number.NaN : v);
+      }}
     />
   );
 }
@@ -60,29 +65,42 @@ export default function PlayedSection({
   const [hasFetched, setHasFetched] = useState(Array.isArray(initialData) && initialData.length > 0);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
-  const [inputX, setInputX] = useState(safeInitialNth);
-  const [selectedX, setSelectedX] = useState(safeInitialNth);
+  const [inputN, setInputN] = useState(safeInitialNth);
+  const [selectedN, setSelectedN] = useState(safeInitialNth);
   const lastRequestRef = useRef<string | null>(null);
 
   const searchParams = useSearchParams();
   const router = useRouter();
   const perPage = 20;
 
+  // Read N value directly from the DOM to avoid race conditions when clicking Apply
+  const readNthFromDom = () => {
+    try {
+      const el = document.querySelector('[data-testid="nth-input"]') as HTMLInputElement | null;
+      const v = el ? Number(el.value) : NaN;
+      return Number.isFinite(v) ? v : inputN;
+    } catch (e) {
+      return inputN;
+    }
+  };
+
   useEffect(() => {
-    setInputX(safeInitialNth);
-    setSelectedX(safeInitialNth);
-    if (Array.isArray(initialData)) {
+    setInputN(safeInitialNth);
+    setSelectedN(safeInitialNth);
+    if (!hasFetched && Array.isArray(initialData)) {
       setData(initialData);
       setHasFetched(initialData.length > 0);
     }
-  }, [safeInitialNth, initialData]);
+  }, [safeInitialNth, initialData, hasFetched]);
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
 
+  // Ensure we do not overwrite client-fetched results with server `initialData` after the user has fetched.
   useEffect(() => {
     const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal);
     if (!shouldFetch) {
-      if (Array.isArray(initialData)) {
+      // only apply server-prefetched `initialData` when we haven't already fetched on the client
+      if (!hasFetched && Array.isArray(initialData)) {
         setData(initialData);
         setHasFetched(initialData.length > 0);
       }
@@ -91,11 +109,11 @@ export default function PlayedSection({
     }
 
     if (fetchRequestId) lastRequestRef.current = fetchRequestId;
-    fetchData(selectedX, showModal ? 1000 : 100, showModal);
-  }, [enabled, fetchRequestId, showModal, selectedX, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, initialData]);
+    fetchData(selectedN, showModal ? 1000 : 100, showModal);
+  }, [enabled, fetchRequestId, showModal, selectedN, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, initialData, hasFetched]);
 
-  const fetchData = async (x: number, limit: number, force = false) => {
-    if (!Number.isFinite(x) || x <= 0) {
+  const fetchData = async (n: number, limit: number, force = false) => {
+    if (!Number.isFinite(n) || n <= 0) {
       setError('Please enter a valid N value.');
       return;
     }
@@ -106,7 +124,7 @@ export default function PlayedSection({
       setError(null);
 
       const query = new URLSearchParams();
-      query.append("x", x.toString());
+      query.append("n", n.toString());
       selectedSurfaces.forEach((s) => query.append("surface", s));
       selectedLevels.forEach((l) => query.append("level", l));
       if (selectedRounds) query.append("round", selectedRounds);
@@ -119,15 +137,16 @@ export default function PlayedSection({
         throw new Error(errData.error || 'Failed to fetch data');
       }
       const fetchedData: Player[] = await res.json();
-      setData(Array.isArray(fetchedData) ? fetchedData : []);
+      const fetchedArray = Array.isArray(fetchedData) ? fetchedData : [];
+      setData(force ? fetchedArray : fetchedArray.slice(0, 100));
       setPage(1);
-      setSelectedX(x);
+      setSelectedN(n);
       setHasFetched(true);
 
       try {
         const path = window.location.pathname;
         const newQuery = new URLSearchParams();
-        newQuery.set('n', String(x));
+        newQuery.set('n', String(n));
         selectedSurfaces.forEach(s => newQuery.append('surface', s));
         selectedLevels.forEach(l => newQuery.append('level', l));
         if (selectedRounds) newQuery.set('round', selectedRounds);
@@ -149,7 +168,12 @@ export default function PlayedSection({
         const sameBestOf = current.get('bestOf') === newQuery.get('bestOf');
 
         if (!(sameN && sameSurface && sameLevel && sameRound && sameBestOf)) {
-          router.replace(`${path}?${newQuery.toString()}`);
+          try {
+            const newUrl = `${path}?${newQuery.toString()}`;
+            if (typeof window !== 'undefined') window.history.replaceState(null, '', newUrl);
+          } catch (e) {
+            /* ignore */
+          }
         }
       } catch (e) {
         // ignore
@@ -184,7 +208,7 @@ export default function PlayedSection({
               Player
             </th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">
-              Age of {toOrdinal(selectedX)} match
+              Age of {toOrdinal(selectedN)} match
             </th>
           </tr>
         </thead>
@@ -237,7 +261,7 @@ export default function PlayedSection({
   }
   const filterText = filters.length ? ' ' + filters.join(' ') : '';
 
-  const headerText = hasFetched ? `Age of ${toOrdinal(selectedX)} match${filterText}` : (description ?? '');
+  const headerText = hasFetched ? `Age of ${toOrdinal(selectedN)} match${filterText}` : (description ?? '');
 
   return (
     <section className="mb-8">
@@ -245,12 +269,18 @@ export default function PlayedSection({
 
       {/* X Input */}
       <div className="mb-4 flex items-center gap-2">
-        <XInput value={inputX} onChange={setInputX} />
+        <XInput value={inputN} onChange={setInputN} />
         <button
-          onClick={() => Number.isFinite(inputX) && fetchData(inputX, showModal ? 1000 : 100, true)}
-          disabled={loading || !Number.isFinite(inputX) || inputX <= 0}
+          onClick={() => {
+            const n = readNthFromDom();
+            if (!Number.isFinite(n) || n <= 0) return;
+            setInputN(n);
+            // schedule fetch on next tick so any pending input onChange commits first
+            setTimeout(() => fetchData(n, showModal ? 1000 : 100, true), 0);
+          }}
+          disabled={loading || !Number.isFinite(inputN) || inputN <= 0}
           className={`px-4 py-1 rounded ${
-            loading || !Number.isFinite(inputX) || inputX <= 0
+            loading || !Number.isFinite(inputN) || inputN <= 0
               ? "bg-gray-600 cursor-not-allowed"
               : "bg-blue-600 hover:bg-blue-700 text-white"
           }`}
@@ -296,7 +326,7 @@ export default function PlayedSection({
       <Modal
         show={showModal}
         onClose={() => setShowModal(false)}
-        title={`Age of ${toOrdinal(selectedX)} match${filterText}`}
+        title={`Age of ${toOrdinal(selectedN)} match${filterText}`}
       >
         {renderTable(data)}
       </Modal>
