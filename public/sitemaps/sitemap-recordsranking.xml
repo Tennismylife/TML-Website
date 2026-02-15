@@ -7,193 +7,193 @@
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/Ages</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/ages</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/Ages/OldestCount</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/ages/oldestcount</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/Ages/OldestTop</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/ages/oldesttop</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/Ages/YoungestCount</loc>
+   https://stats.tennismylife.org/recordsranking/ages/youngestcount</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/Ages/YoungestTop</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/ages/youngesttop</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/AgesEndOfTheSeason</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/agesendoftheseason</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/AgesEndOfTheSeason/OldestCount</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/agesendoftheseason/oldestcount</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/AgesEndOfTheSeason/OldestTop</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/agesendoftheseason/oldesttop</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/AgesEndOfTheSeason/YoungestCount</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/agesendoftheseason/youngestcount</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/AgesEndOfTheSeason/YoungestTop</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/agesendoftheseason/youngesttop</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/Count</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/count</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/DiffPoints</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/diffpoints</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/DiffPoints/EndOfTheSeason</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/diffpoints/endoftheseason</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/DiffPoints/Overall</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/diffpoints/overall</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/EndOfTheSeason</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/endoftheseason</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/EndOfTheSeason/Count</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/endoftheseason/count</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/EndOfTheSeason/StreakCount</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/endoftheseason/streakcount</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/EndOfTheSeason/StreakTop</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/endoftheseason/streaktop</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/EndOfTheSeason/Top</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/endoftheseason/top</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/MostPoints</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/mostpoints</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/MostPoints/EndOfTheSeason</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/mostpoints/endoftheseason</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/MostPoints/Overall</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/mostpoints/overall</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/Streak</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/streak</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/Streak/Count</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/streak/count</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/Streak/Top</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/streak/top</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/Timespan</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/timespan</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/Timespan/TimespanCount</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/timespan/timespancount</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/Timespan/TimespanTop</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/timespan/timespantop</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/TimespanEndOfTheSeason</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/timespanendoftheseason</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/TimespanEndOfTheSeason/TimespanCountEndOfTheSeason</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/timespanendoftheseason/timespancountendoftheseason</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/TimespanEndOfTheSeason/TimespanTopEndOfTheSeason</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/timespanendoftheseason/timespantopendoftheseason</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/recordsranking/Top</loc>
+    <loc>https://stats.tennismylife.org/recordsranking/top</loc>
     <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
