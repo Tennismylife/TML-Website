@@ -42,7 +42,7 @@ export default async function AgesServer({ searchParams, ...serverProps }: { sea
       if (res.ok) {
         const data = await res.json()
         const key = isWinners ? (type === 'youngest' ? 'youngestWinners' : 'oldestWinners') : (type === 'youngest' ? 'youngestPlayers' : 'oldestPlayers')
-        if (Array.isArray((data as any)[key])) prefetchedData[activeSubTab] = (data as any)[key]
+        if (Array.isArray((data as any)[key])) prefetchedData[activeSubTab] = (data as any)[key].slice(0, 10)
       }
     } catch (err) {
       // ignore prefetch errors

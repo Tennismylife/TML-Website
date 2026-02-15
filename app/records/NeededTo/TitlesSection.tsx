@@ -69,7 +69,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels]);
 
   useEffect(() => {
-    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal);
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal || (Array.isArray(initialData) && initialData.length > 0));
     if (!shouldFetch) {
       if (Array.isArray(initialData)) {
         setData(initialData);
@@ -80,7 +80,8 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
     }
 
     if (fetchRequestId) lastRequestRef.current = fetchRequestId;
-    fetchData(selectedN, showModal ? 1000 : 100, showModal);
+    const forceFetch = showModal || (Array.isArray(initialData) && initialData.length > 0);
+    fetchData(selectedN, showModal ? 1000 : 100, forceFetch);
   }, [enabled, fetchRequestId, showModal, selectedN, selectedSurfaces, selectedLevels, initialData]);
 
   const fetchData = async (n: number, limit: number, force = false) => {

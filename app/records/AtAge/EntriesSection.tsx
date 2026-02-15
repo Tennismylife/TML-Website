@@ -85,7 +85,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels]);
 
   useEffect(() => {
-    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal);
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal || (Array.isArray(initialData) && initialData.length > 0));
     if (!shouldFetch) {
       // only apply server-prefetched `initialData` when we haven't fetched on the client yet
       if (!hasFetched && Array.isArray(initialData)) {
@@ -97,7 +97,8 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
     }
 
     if (fetchRequestId) lastRequestRef.current = fetchRequestId;
-    fetchData(selectedAge, showModal ? 1000 : 100, showModal);
+    const forceFetch = showModal || (Array.isArray(initialData) && initialData.length > 0);
+    fetchData(selectedAge, showModal ? 1000 : 100, forceFetch);
   }, [enabled, fetchRequestId, showModal, selectedAge, selectedSurfaces, selectedLevels, initialData, hasFetched]);
 
   const fetchData = async (age: number, limit: number, force = false, afterOverride?: boolean) => {

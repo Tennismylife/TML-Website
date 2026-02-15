@@ -47,7 +47,9 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
       return;
     }
 
-    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModalRounds);
+    // If SSR passed `initialData`, trigger client fetch on mount so the
+    // client replaces the SSR top‑10 with the full `limit=100` result set.
+    const shouldFetch = showModalRounds || (enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || (Array.isArray(initialData) && initialData.length > 0);
     if (!shouldFetch) {
       if (Array.isArray(initialData)) setTopSeasonRounds(initialData);
       setLoading(false);

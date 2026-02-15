@@ -38,7 +38,9 @@ export default function Titles({
   const enabled = !!fetchEnabled;
 
   useEffect(() => {
-    if (!(enabled || showModal)) {
+    // If server provided `initialData`, allow the client to re-fetch so the
+    // SSR top‑10 will be replaced by the full `limit=100` client result.
+    if (!(enabled || showModal || (Array.isArray(initialData) && initialData.length > 0))) {
       if (Array.isArray(initialData)) setData(initialData);
       setLoading(false);
       return;

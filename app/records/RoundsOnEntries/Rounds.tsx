@@ -42,7 +42,9 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
     }
 
     const fetchData = async () => {
-      const shouldFetch = ((enabled && fetchRequestId) || showModal)
+      // If SSR passed `initialData`, trigger client fetch on mount so the
+      // client replaces SSR top‑10 with the full `limit=100` result set.
+      const shouldFetch = ((enabled && fetchRequestId) || showModal || (Array.isArray(initialData) && initialData.length > 0))
       if (!shouldFetch) {
         if (Array.isArray(initialData)) setData(initialData)
         setLoading(false);

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
@@ -89,6 +89,17 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
       setHasFetched(initialData.length > 0);
     }
   }, [safeInitialAge, initialData, hasFetched]);
+
+  // If SSR provided `initialData` (top‑10), immediately fetch the full
+  // `limit=100` result set on the client to replace the SSR stub.
+  const initialClientFetchRef = useRef(false);
+  useEffect(() => {
+    const shouldFetch = Array.isArray(initialData) && initialData.length > 0;
+    if (!shouldFetch) return;
+    if (initialClientFetchRef.current) return;
+    initialClientFetchRef.current = true;
+    fetchData(safeInitialAge);
+  }, [initialData, safeInitialAge, selectedSurfaces, selectedRounds, selectedBestOf, after]);
   const router = useRouter();
 
   const fetchData = async (age: number, afterOverride?: boolean) => {

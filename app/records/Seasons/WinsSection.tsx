@@ -42,7 +42,9 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
 
   useEffect(() => {
-    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal);
+    // If SSR passed `initialData`, trigger client fetch on mount so the
+    // client replaces the SSR top‑10 with the full `limit=100` result set.
+    const shouldFetch = showModal || (enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || (Array.isArray(initialData) && initialData.length > 0);
     if (!shouldFetch) {
       if (Array.isArray(initialData)) setTopSameTournamentWins(initialData);
       setLoading(false);

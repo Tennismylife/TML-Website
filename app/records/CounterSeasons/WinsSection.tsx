@@ -195,10 +195,12 @@ export default function WinsSection({
   };
 
   useEffect(() => {
-    if (!fetchEnabled) return;
-    fetchPlayers();
+    const shouldFetch = fetchEnabled || (Array.isArray(initialData) && initialData.length > 0) || (fetchRequestId && lastRequestIdRef.current !== fetchRequestId);
+    if (!shouldFetch) return;
+    const forceFetch = Array.isArray(initialData) && initialData.length > 0;
+    fetchPlayers(100, forceFetch);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchEnabled, fetchRequestId]);
+  }, [fetchEnabled, fetchRequestId, initialData]);
 
   // Ensure that when the page is loaded directly (e.g., /records/counterseasons/wins?n=7)
   // we pick up the `n` query parameter and apply it so the H1/modal show the correct value.

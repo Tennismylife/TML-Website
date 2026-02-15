@@ -8,7 +8,7 @@ export async function GET(request: NextRequest, context: any) {
   const tournamentId = params?.id ? String(params.id) : "";
 
   if (!tournamentId) {
-    return NextResponse.json({ error: "Invalid tournament ID" }, { status: 400, headers: { 'X-Robots-Tag': 'noindex, follow' } });
+    return NextResponse.json({ error: "Invalid tournament ID" }, { status: 400 });
   }
 
   try {
@@ -121,7 +121,7 @@ export async function GET(request: NextRequest, context: any) {
     }
 
     if (!tournament) {
-      return NextResponse.json({ error: "Tournament not found" }, { status: 404, headers: { 'X-Robots-Tag': 'noindex, follow' } });
+      return NextResponse.json({ error: "Tournament not found" }, { status: 404 });
     }
 
     // 2️⃣ Recupera le edizioni dal modello Match
@@ -176,8 +176,8 @@ export async function GET(request: NextRequest, context: any) {
       editions: fullYears,
     };
 
-    return NextResponse.json(sanitized, { headers: { 'X-Robots-Tag': 'noindex, follow' } });
+    return NextResponse.json(sanitized);
   } catch (error) {
-    return NextResponse.json({ error: "Server error" }, { status: 500, headers: { 'X-Robots-Tag': 'noindex, follow' } });
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

@@ -96,7 +96,11 @@ export default function WinsSection({
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
 
   useEffect(() => {
-    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal);
+    // Trigger client fetch when:
+    // - View All is opened (showModal)
+    // - a new fetchRequestId arrives (controlled client refresh)
+    // - SSR provided `initialData` (replace SSR top‑10 with full limit=100)
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal || (Array.isArray(initialData) && initialData.length > 0));
     if (!shouldFetch) {
       // only apply server-prefetched `initialData` when we haven't already fetched on the client
       if (!hasFetched && Array.isArray(initialData)) {
@@ -108,7 +112,8 @@ export default function WinsSection({
     }
 
     if (fetchRequestId) lastRequestRef.current = fetchRequestId;
-    fetchData(selectedN, showModal ? 1000 : 100, showModal);
+    const forceFetch = showModal || (Array.isArray(initialData) && initialData.length > 0);
+    fetchData(selectedN, showModal ? 1000 : 100, forceFetch);
   }, [enabled, fetchRequestId, showModal, selectedN, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, initialData, hasFetched]);
 
   const fetchData = async (n: number, limit: number, force = false) => {

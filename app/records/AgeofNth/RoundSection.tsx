@@ -103,7 +103,7 @@ export default function RoundSection({ selectedSurfaces, selectedRounds, selecte
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds]);
 
   useEffect(() => {
-    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal);
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal || (Array.isArray(initialData) && initialData.length > 0));
     if (!shouldFetch) {
       if (!hasFetched && Array.isArray(initialData)) {
         const normalized = formatData(initialData);
@@ -115,7 +115,8 @@ export default function RoundSection({ selectedSurfaces, selectedRounds, selecte
     }
 
     if (fetchRequestId) lastRequestRef.current = fetchRequestId;
-    fetchData(selectedN, showModal ? 1000 : 100, showModal);
+    const forceFetch = showModal || (Array.isArray(initialData) && initialData.length > 0);
+    fetchData(selectedN, showModal ? 1000 : 100, forceFetch);
   }, [enabled, fetchRequestId, showModal, selectedN, selectedSurfaces, selectedLevels, selectedRounds, initialData]);
 
   const fetchData = async (n: number, limit: number, force = false) => {

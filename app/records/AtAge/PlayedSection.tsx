@@ -98,7 +98,7 @@ export default function PlayedSection({
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
 
   useEffect(() => {
-    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal);
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal || (Array.isArray(initialData) && initialData.length > 0));
     if (!shouldFetch) {
       if (!hasFetched && Array.isArray(initialData)) {
         setData(initialData);
@@ -109,7 +109,8 @@ export default function PlayedSection({
     }
 
     if (fetchRequestId) lastRequestRef.current = fetchRequestId;
-    fetchData(selectedAge, showModal ? 1000 : 100, showModal);
+    const forceFetch = showModal || (Array.isArray(initialData) && initialData.length > 0);
+    fetchData(selectedAge, showModal ? 1000 : 100, forceFetch);
   }, [enabled, fetchRequestId, showModal, selectedAge, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, initialData]);
 
   const router = useRouter();

@@ -37,7 +37,9 @@ const Rounds = ({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled
         return;
       }
 
-      const shouldFetch = ((enabled && fetchRequestId) || showModal || (!enabled && fetchRequestId))
+      // Trigger client fetch on mount when server provided `initialData`
+      // so SSR top‑10 is replaced by the client's `perPage=100` response.
+      const shouldFetch = showModal || (enabled && fetchRequestId) || (!enabled && fetchRequestId) || (Array.isArray(initialData) && initialData.length > 0)
       if (!shouldFetch) {
         if (Array.isArray(initialData)) setData(initialData);
         setLoading(false);

@@ -39,7 +39,9 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
 
   useEffect(() => {
     const fetchData = async () => {
-      const shouldFetch = ((enabled && fetchRequestId) || showModal);
+      // Trigger client fetch on mount when server provided `initialData`
+      // so SSR top‑10 is replaced by the client's `perPage=100` result.
+      const shouldFetch = showModal || (enabled && fetchRequestId) || (Array.isArray(initialData) && initialData.length > 0);
       if (!shouldFetch) {
         if (Array.isArray(initialData)) setEntries(initialData);
         setLoading(false);

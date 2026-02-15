@@ -44,7 +44,9 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
   useEffect(() => {
     const controller = new AbortController();
     const fetchData = async () => {
-      const shouldFetch = ((enabled && fetchRequestId) || showModal);
+      // Always re-fetch on mount when server provided `initialData` so the
+      // client replaces SSR top‑10 with the full (limit=100) result set.
+      const shouldFetch = showModal || (enabled && fetchRequestId) || (Array.isArray(initialData) && initialData.length > 0);
       if (!shouldFetch) {
         if (Array.isArray(initialData)) setData(initialData);
         setLoading(false);

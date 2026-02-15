@@ -97,7 +97,7 @@ export default function PlayedSection({
 
   // Ensure we do not overwrite client-fetched results with server `initialData` after the user has fetched.
   useEffect(() => {
-    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal);
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal || (Array.isArray(initialData) && initialData.length > 0));
     if (!shouldFetch) {
       // only apply server-prefetched `initialData` when we haven't already fetched on the client
       if (!hasFetched && Array.isArray(initialData)) {
@@ -109,7 +109,8 @@ export default function PlayedSection({
     }
 
     if (fetchRequestId) lastRequestRef.current = fetchRequestId;
-    fetchData(selectedN, showModal ? 1000 : 100, showModal);
+    const forceFetch = showModal || (Array.isArray(initialData) && initialData.length > 0);
+    fetchData(selectedN, showModal ? 1000 : 100, forceFetch);
   }, [enabled, fetchRequestId, showModal, selectedN, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, initialData, hasFetched]);
 
   const fetchData = async (n: number, limit: number, force = false) => {

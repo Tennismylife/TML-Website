@@ -85,7 +85,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels]);
 
   useEffect(() => {
-    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal);
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal || (Array.isArray(initialData) && initialData.length > 0));
     if (!shouldFetch) {
       if (!hasFetched && Array.isArray(initialData)) {
         setData(initialData);
@@ -96,7 +96,8 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
     }
 
     if (fetchRequestId) lastRequestRef.current = fetchRequestId;
-    fetchData(selectedAge, showModal ? 1000 : 100, showModal);
+    const forceFetch = showModal || (Array.isArray(initialData) && initialData.length > 0);
+    fetchData(selectedAge, showModal ? 1000 : 100, forceFetch);
   }, [enabled, fetchRequestId, showModal, selectedAge, selectedSurfaces, selectedLevels, initialData]);
 
   const fetchData = async (age: number, limit: number, force = false, afterOverride?: boolean) => {

@@ -39,7 +39,9 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels]);
 
   useEffect(() => {
-    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModalEntries);
+    // If SSR passed `initialData`, trigger client fetch on mount so the
+    // client replaces the SSR top‑10 with the full `limit=100` result set.
+    const shouldFetch = showModalEntries || (enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || (Array.isArray(initialData) && initialData.length > 0);
     if (!shouldFetch) {
       if (Array.isArray(initialData)) setTopSeasonEntries(initialData);
       setLoading(false);
