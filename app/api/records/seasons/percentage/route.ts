@@ -38,7 +38,11 @@ export async function GET(request: NextRequest) {
 
     // --- CASO 1: zero o un filtro → usa MV ---
     if (totalFilters <= 1) {
-      const records = await prisma.mVSameSeasonPercentage.findMany({
+      // Ensure we filter by `minPlayed` at the DB level before ordering
+    // and taking the top rows. Previously we applied `minPlayed` *after*
+    // taking the top N which could result in an empty response.
+    const records = await prisma.mVSameSeasonPercentage.findMany({
+        where: { total_played: { gte: minPlayed } },
         orderBy: { win_rate: 'desc' },
         take: limit,
       });

@@ -42,45 +42,64 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
 
+  // Reusable fetch function so we can attempt a one-time retry when the
+  // component mounts with no data (defensive fix so UI doesn't stay empty).
+  const lastRequestRefLocal = lastRequestRef; // keep name used below
+  const doFetch = async (forceLimit?: number) => {
+    setLoading(true);
+    try {
+      const query = new URLSearchParams();
+      selectedSurfaces.forEach(s => query.append('surface', s));
+      selectedLevels.forEach(l => query.append('tourney_level', l));
+      if (selectedRounds) query.append('round', selectedRounds);
+      if (selectedBestOf) query.append('best_of', selectedBestOf?.toString() || '');
+      query.set('limit', String(typeof forceLimit === 'number' ? forceLimit : (showModal ? 1000 : 100)));
+
+      const url = `/api/records/seasons/percentage?${query.toString()}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Failed to fetch season percentage');
+
+      const data: PercentageRecord[] = await res.json();
+      setSeasonPercentageData(Array.isArray(data) ? data : []);
+      setPage(1);
+    } catch (err) {
+      console.error(err);
+      setSeasonPercentageData([]);
+    } finally {
+      setLoading(false);
+      if (enabled) setFetchEnabled?.(false);
+    }
+  };
+
+  useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
+
   useEffect(() => {
     // If SSR passed `initialData`, trigger client fetch on mount so the
     // client replaces the SSR top‑10 with the full `limit=100` result set.
-    const shouldFetch = showModal || (enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || (Array.isArray(initialData) && initialData.length > 0);
+    const shouldFetch = showModal || (enabled && fetchRequestId && lastRequestRefLocal.current !== fetchRequestId) || (Array.isArray(initialData) && initialData.length > 0);
     if (!shouldFetch) {
       if (Array.isArray(initialData)) setSeasonPercentageData(initialData);
       setLoading(false);
       return;
     }
 
-    if (fetchRequestId) lastRequestRef.current = fetchRequestId;
-
-    const fetchSeasonPercentage = async () => {
-      setLoading(true);
-      try {
-        const query = new URLSearchParams();
-        selectedSurfaces.forEach(s => query.append('surface', s));
-        selectedLevels.forEach(l => query.append('tourney_level', l));
-        if (selectedRounds) query.append('round', selectedRounds);
-        if (selectedBestOf) query.append('best_of', selectedBestOf?.toString() || '');
-        query.set('limit', showModal ? '1000' : '100');
-
-        const url = `/api/records/seasons/percentage?${query.toString()}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('Failed to fetch season percentage');
-
-        const data: PercentageRecord[] = await res.json();
-        setSeasonPercentageData(Array.isArray(data) ? data : []);
-        setPage(1);
-      } catch (err) {
-        console.error(err);
-        setSeasonPercentageData([]);
-      } finally {
-        setLoading(false);
-        if (enabled) setFetchEnabled?.(false);
-      }
-    };
-    fetchSeasonPercentage();
+    if (fetchRequestId) lastRequestRefLocal.current = fetchRequestId;
+    doFetch();
   }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, enabled, fetchRequestId, showModal, initialData, setFetchEnabled]);
+
+  // Defensive one-time retry: if after mount we still have no data, attempt
+  // a single client fetch (covers cases where SSR prefetch returned empty and
+  // for some reason `fetchEnabled` was not true). This prevents the page from
+  // permanently displaying "No data".
+  const attemptedRetryRef = useRef(false);
+  useEffect(() => {
+    if (attemptedRetryRef.current) return;
+    if (loading) return;
+    if (Array.isArray(seasonPercentageData) && seasonPercentageData.length === 0) {
+      attemptedRetryRef.current = true;
+      doFetch();
+    }
+  }, [loading, seasonPercentageData]);
 
   if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
   if (!seasonPercentageData.length) return <div className="text-center py-8 text-gray-300 text-lg">No data found.</div>;
