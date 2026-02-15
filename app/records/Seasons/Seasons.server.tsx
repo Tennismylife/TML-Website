@@ -38,7 +38,9 @@ export default async function SeasonsServer({ searchParams, ...serverProps }: { 
     try {
     const params = new URLSearchParams()
     for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
-    for (const l of Array.from(selectedLevels)) params.append('level', l)
+    // append both keys so downstream APIs that expect `level` _or_
+    // `tourney_level` receive the filter during SSR prefetch
+    for (const l of Array.from(selectedLevels)) { params.append('level', l); params.append('tourney_level', l); }
     if (selectedRounds) params.set('round', selectedRounds)
     if (selectedBestOf !== null) params.set('best_of', String(selectedBestOf))
     params.set('limit', '10')
@@ -102,7 +104,13 @@ export default async function SeasonsServer({ searchParams, ...serverProps }: { 
     }
   }
 
-  const fetchEnabled = serverProps.fetchEnabled ?? !prefetchEnabled
+  let fetchEnabled = serverProps.fetchEnabled ?? !prefetchEnabled
+  // If SSR prefetching was attempted but produced no useful results for the
+  // active subtab, allow the client to run its fetch so the page doesn't stay empty.
+  if (prefetchEnabled) {
+    const pref = (prefetchedData as any)?.[activeSubTab];
+    if (!Array.isArray(pref) || pref.length === 0) fetchEnabled = true;
+  }
   const fetchRequestId = serverProps.fetchRequestId ?? (fetchEnabled ? String(Date.now()) : null)
 
   return (
