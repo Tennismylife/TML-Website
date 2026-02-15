@@ -3,6 +3,7 @@ import ServerWrapper from '../../../components/ServerWrapper'
 import Entries from './Entries'
 import { metadataBase } from '../../../lib/site'
 import { isRecordsSsrPrefetchEnabled } from '../../../lib/recordsSsrPrefetch'
+import { rateLimitedFetch } from '../../../lib/recordsPrefetchThrottle'
 
 type SearchParams = Record<string, string | string[] | undefined>
 
@@ -27,7 +28,7 @@ export default async function EntriesServer({ searchParams, ...serverProps }: { 
       for (const l of Array.from(selectedLevels)) params.append('level', l)
       params.set('perPage', '10')
       const apiUrl = new URL(`/api/records/entries${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
-      const res = await fetch(apiUrl, { cache: 'no-store' })
+      const res = await rateLimitedFetch(apiUrl, { cache: 'force-cache' })
       if (res.ok) {
         const data = await res.json()
         if (Array.isArray((data as any).topEntries)) topEntries = (data as any).topEntries

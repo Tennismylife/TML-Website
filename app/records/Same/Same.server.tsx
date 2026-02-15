@@ -3,6 +3,7 @@ import ServerWrapper from '../../../components/ServerWrapper'
 import Same from './Same'
 import { metadataBase } from '../../../lib/site'
 import { isRecordsSsrPrefetchEnabled } from '../../../lib/recordsSsrPrefetch'
+import { rateLimitedFetch } from '../../../lib/recordsPrefetchThrottle'
 
 type SearchParams = Record<string, string | string[] | undefined>
 
@@ -46,11 +47,11 @@ export default async function SameServer({ searchParams, ...serverProps }: { sea
     async function tryFetchPath(path: string) {
       try {
         const url = new URL(path, metadataBase).toString();
-        let res = await fetch(url, { cache: 'no-store' })
+        let res = await rateLimitedFetch(url, { cache: 'force-cache' })
         if (!res.ok && process.env.NODE_ENV !== 'production') {
           try {
             const devUrl = `http://localhost:${process.env.PORT ?? 3000}${path}`;
-            res = await fetch(devUrl, { cache: 'no-store' })
+            res = await rateLimitedFetch(devUrl, { cache: 'force-cache' })
           } catch (e) {
             // swallow
           }

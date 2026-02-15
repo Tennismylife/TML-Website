@@ -3,6 +3,7 @@ import ServerWrapper from '../../../components/ServerWrapper'
 import Wins from './Wins'
 import { metadataBase } from '../../../lib/site'
 import { isRecordsSsrPrefetchEnabled } from '../../../lib/recordsSsrPrefetch'
+import { rateLimitedFetch } from '../../../lib/recordsPrefetchThrottle'
 
 type SearchParams = Record<string, string | string[] | undefined>
 
@@ -37,7 +38,7 @@ export default async function WinsServer({ searchParams, ...serverProps }: { sea
   let topWinners: any[] = []
   if (prefetchEnabled) {
     try {
-      const res = await fetch(apiUrl, { cache: 'no-store' })
+      const res = await rateLimitedFetch(apiUrl, { cache: 'force-cache' })
       if (res.ok) {
         const data = await res.json()
         if (Array.isArray(data)) topWinners = data

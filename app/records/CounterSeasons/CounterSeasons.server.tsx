@@ -3,6 +3,7 @@ import ServerWrapper from '../../../components/ServerWrapper'
 import CounterSeasons from './CounterSeasons'
 import { metadataBase } from '../../../lib/site'
 import { isRecordsSsrPrefetchEnabled } from '../../../lib/recordsSsrPrefetch'
+import { rateLimitedFetch } from '../../../lib/recordsPrefetchThrottle'
 
 type SearchParams = Record<string, string | string[] | undefined>
 
@@ -51,7 +52,7 @@ export default async function CounterSeasonsServer({ searchParams, ...serverProp
     try {
     const fetchJson = async (path: string) => {
       const url = new URL(path, metadataBase)
-      const res = await fetch(url, { cache: 'no-store' })
+      const res = await rateLimitedFetch(url, { cache: 'force-cache' })
       if (!res.ok) return undefined
       const json = await res.json()
       const arr = Array.isArray(json?.players) ? json.players : Array.isArray(json) ? json : undefined

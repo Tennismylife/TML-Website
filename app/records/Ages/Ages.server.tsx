@@ -3,6 +3,7 @@ import ServerWrapper from '../../../components/ServerWrapper'
 import Ages from './Ages'
 import { metadataBase } from '../../../lib/site'
 import { isRecordsSsrPrefetchEnabled } from '../../../lib/recordsSsrPrefetch'
+import { rateLimitedFetch } from '../../../lib/recordsPrefetchThrottle'
 
 type SearchParams = Record<string, string | string[] | undefined>
 
@@ -37,7 +38,7 @@ export default async function AgesServer({ searchParams, ...serverProps }: { sea
     const isWinners = activeSubTab?.toLowerCase().includes('winner')
     const endpoint = isWinners ? '/api/records/ages/winners' : '/api/records/ages/maindraw'
     const apiUrl = new URL(`${endpoint}${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
-    const res = await fetch(apiUrl, { cache: 'no-store' })
+    const res = await rateLimitedFetch(apiUrl, { cache: 'force-cache' })
       if (res.ok) {
         const data = await res.json()
         const key = isWinners ? (type === 'youngest' ? 'youngestWinners' : 'oldestWinners') : (type === 'youngest' ? 'youngestPlayers' : 'oldestPlayers')

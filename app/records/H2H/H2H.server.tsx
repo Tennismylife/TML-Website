@@ -3,6 +3,7 @@ import ServerWrapper from '../../../components/ServerWrapper'
 import H2H from './H2H'
 import { metadataBase } from '../../../lib/site'
 import { isRecordsSsrPrefetchEnabled } from '../../../lib/recordsSsrPrefetch'
+import { rateLimitedFetch } from '../../../lib/recordsPrefetchThrottle'
 
 type SearchParams = Record<string, string | string[] | undefined>
 
@@ -48,7 +49,7 @@ export default async function H2HServer({ searchParams, ...serverProps }: { sear
     const fetchArray = async (path: string, key: string) => {
       try {
         const url = new URL(path, metadataBase)
-        const res = await fetch(url, { cache: 'no-store' })
+        const res = await rateLimitedFetch(url, { cache: 'force-cache' })
         if (!res.ok) return undefined
         const json = await res.json()
         const value = (json && typeof json === 'object') ? (json as any)[key] : undefined

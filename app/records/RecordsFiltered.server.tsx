@@ -21,7 +21,7 @@ async function fetchRecord(record: string | null, sub?: string | null, filters?:
   const path = `/api/records/${encodeURIComponent(record)}${sub ? '/' + encodeURIComponent(sub) : ''}` + (params.toString() ? `?${params.toString()}` : '');
   const url = new URL(path, metadataBase).toString();
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, { cache: 'force-cache' });
     if (!res.ok) return [] as any[];
     const json = await res.json();
     return Array.isArray(json) ? json : (json && typeof json === 'object' ? (json.rows || json.top || json.topWinners || json.topPlayed || []) : []);

@@ -3,6 +3,7 @@ import ServerWrapper from '../../../components/ServerWrapper'
 import AtAge from './AtAge'
 import { metadataBase } from '../../../lib/site'
 import { isRecordsSsrPrefetchEnabled } from '../../../lib/recordsSsrPrefetch'
+import { rateLimitedFetch } from '../../../lib/recordsPrefetchThrottle'
 
 type SearchParams = Record<string, string | string[] | undefined>
 
@@ -51,7 +52,7 @@ export default async function AtAgeServer({ searchParams, ...serverProps }: { se
 
     const fetchJson = async (path: string) => {
       const url = new URL(path, metadataBase)
-      const res = await fetch(url, { cache: 'no-store' })
+      const res = await rateLimitedFetch(url, { cache: 'force-cache' })
       if (!res.ok) return undefined
       const json = await res.json()
       return Array.isArray(json) ? json : undefined
