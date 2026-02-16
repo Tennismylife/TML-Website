@@ -13,32 +13,53 @@ function parseFrontmatter(content: string) {
   const fm = content.slice(3, end).trim();
   const body = content.slice(end + 4).trim();
   const meta: Record<string, any> = {};
-  for (const line of fm.split(/\n/)) {
+
+  const lines = fm.split(/\n/);
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
     const trimmedLine = line.trim();
     const m = trimmedLine.match(/^([\w-]+):\s*(.*)$/);
-    if (m) {
-      const key = m[1].trim();
-      const rawVal = m[2].trim();
-      // boolean
-      if (/^(true|false)$/i.test(rawVal)) {
-        meta[key] = rawVal.toLowerCase() === 'true';
-        continue;
+    if (!m) continue;
+
+    const key = m[1].trim();
+    let rawVal = m[2].trim();
+
+    // Handle YAML block scalar (pipe) for multi-line values
+    if (rawVal === '|') {
+      const blockLines: string[] = [];
+      i++;
+      // Collect subsequent indented lines as the block value
+      while (i < lines.length && (/^\s/.test(lines[i]) || lines[i].trim() === '')) {
+        // remove a single level of indentation to preserve relative formatting
+        blockLines.push(lines[i].replace(/^\s{1,4}/, ''));
+        i++;
       }
-      // date (YYYY-MM-DD)
-      if (/^\d{4}-\d{2}-\d{2}/.test(rawVal)) {
-        meta[key] = rawVal.replace(/^"|"$/g, '');
-        continue;
-      }
-      // array like [a, b, c]
-      if (/^\[.*\]$/.test(rawVal)) {
-        const items = rawVal.slice(1, -1).split(',').map(s => s.trim().replace(/^"|"$/g, ''));
-        meta[key] = items;
-        continue;
-      }
-      // fallback string (strip surrounding quotes if present)
-      meta[key] = rawVal.replace(/^"|"$/g, '');
+      i--; // step back so outer loop continues correctly
+      rawVal = blockLines.join('\n');
+      meta[key] = rawVal;
+      continue;
     }
+
+    // boolean
+    if (/^(true|false)$/i.test(rawVal)) {
+      meta[key] = rawVal.toLowerCase() === 'true';
+      continue;
+    }
+    // date (YYYY-MM-DD)
+    if (/^\d{4}-\d{2}-\d{2}/.test(rawVal)) {
+      meta[key] = rawVal.replace(/^"|"$/g, '');
+      continue;
+    }
+    // array like [a, b, c]
+    if (/^\[.*\]$/.test(rawVal)) {
+      const items = rawVal.slice(1, -1).split(',').map(s => s.trim().replace(/^"|"$/g, ''));
+      meta[key] = items;
+      continue;
+    }
+    // fallback string (strip surrounding quotes if present)
+    meta[key] = rawVal.replace(/^"|"$/g, '');
   }
+
   return { meta, body };
 }
 
@@ -109,10 +130,10 @@ export async function getPostBySlug(slug: string) {
         const htmlSource = highlighted.replace(/^\s*(import|export).*?(?:\r?\n|$)/gm, '');
         const contentHtml = await markdownToHtml(htmlSource);
         const { humanizeSlug } = await import('./blogHelpers');
-        return { slug, title: meta.title ?? humanizeSlug(slug), date: meta.date ?? null, author: meta.author ?? null, summary: meta.summary ?? '', ogTitle: meta.ogTitle ?? null, ogDescription: meta.ogDescription ?? null, ogType: meta.ogType ?? null, mdxSource, contentHtml, toc, readingTime: rt, showToc: meta.showToc ?? true, structuredData: meta.structuredData };
+        return { slug, title: meta.title ?? humanizeSlug(slug), date: meta.date ?? null, author: meta.author ?? null, summary: meta.summary ?? '', thumbnail: meta.thumbnail ?? null, ogTitle: meta.ogTitle ?? null, ogDescription: meta.ogDescription ?? null, ogType: meta.ogType ?? null, mdxSource, contentHtml, toc, readingTime: rt, showToc: meta.showToc ?? true, structuredData: meta.structuredData };
       } else {
         const html = await markdownToHtml(body);
-        return { slug, title: meta.title ?? slug, date: meta.date ?? null, author: meta.author ?? null, summary: meta.summary ?? '', ogTitle: meta.ogTitle ?? null, ogDescription: meta.ogDescription ?? null, ogType: meta.ogType ?? null, contentHtml: html, toc, readingTime: rt, showToc: meta.showToc ?? true, structuredData: meta.structuredData };
+        return { slug, title: meta.title ?? slug, date: meta.date ?? null, author: meta.author ?? null, summary: meta.summary ?? '', thumbnail: meta.thumbnail ?? null, ogTitle: meta.ogTitle ?? null, ogDescription: meta.ogDescription ?? null, ogType: meta.ogType ?? null, contentHtml: html, toc, readingTime: rt, showToc: meta.showToc ?? true, structuredData: meta.structuredData };
       }
     } catch (e) {
       // Log error for debugging and continue to next extension
