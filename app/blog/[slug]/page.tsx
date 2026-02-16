@@ -18,7 +18,26 @@ export async function generateMetadata({ params }: { params: any }) {
     if (!slug) return { title: 'Blog — Tennis My Life' } as any;
     const { getPostBySlug } = await import('@/lib/blog');
     const post = await getPostBySlug(slug);
-    return { title: post?.title ?? 'Blog — Tennis My Life' } as any;
+
+    const METADATA_BASE = process.env.NEXT_PUBLIC_SITE_ORIGIN ?? 'https://stats.tennismylife.org';
+    const imageUrl = post?.thumbnail ? (post.thumbnail.startsWith('/') ? new URL(post.thumbnail, METADATA_BASE).toString() : post.thumbnail) : new URL('/og/site-preview.png', METADATA_BASE).toString();
+
+    const description = post?.ogDescription ?? post?.summary ?? '';
+    const ogTitle = post?.ogTitle ?? post?.title ?? 'Blog — Tennis My Life';
+    const ogType = post?.ogType ?? 'article';
+
+    return {
+      title: post?.title ?? 'Blog — Tennis My Life',
+      description,
+      openGraph: {
+        title: ogTitle,
+        description,
+        type: ogType,
+        url: new URL(`/blog/${slug}`, METADATA_BASE).toString(),
+        images: [{ url: imageUrl, width: 1200, height: 630, alt: post?.title ?? ogTitle }]
+      },
+      twitter: { card: 'summary_large_image', images: [imageUrl] }
+    } as any;
   } catch (e) {
     try { console.error('generateMetadata error for slug', params && (params.slug || params), e && (e.stack || e.message || e)); } catch (_) {}
     return { title: 'Blog — Tennis My Life' } as any;

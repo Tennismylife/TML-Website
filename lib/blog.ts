@@ -109,10 +109,10 @@ export async function getPostBySlug(slug: string) {
         const htmlSource = highlighted.replace(/^\s*(import|export).*?(?:\r?\n|$)/gm, '');
         const contentHtml = await markdownToHtml(htmlSource);
         const { humanizeSlug } = await import('./blogHelpers');
-        return { slug, title: meta.title ?? humanizeSlug(slug), date: meta.date ?? null, author: meta.author ?? null, summary: meta.summary ?? '', mdxSource, contentHtml, toc, readingTime: rt, showToc: meta.showToc ?? true, structuredData: meta.structuredData };
+        return { slug, title: meta.title ?? humanizeSlug(slug), date: meta.date ?? null, author: meta.author ?? null, summary: meta.summary ?? '', ogTitle: meta.ogTitle ?? null, ogDescription: meta.ogDescription ?? null, ogType: meta.ogType ?? null, mdxSource, contentHtml, toc, readingTime: rt, showToc: meta.showToc ?? true, structuredData: meta.structuredData };
       } else {
         const html = await markdownToHtml(body);
-        return { slug, title: meta.title ?? slug, date: meta.date ?? null, author: meta.author ?? null, summary: meta.summary ?? '', contentHtml: html, toc, readingTime: rt, showToc: meta.showToc ?? true, structuredData: meta.structuredData };
+        return { slug, title: meta.title ?? slug, date: meta.date ?? null, author: meta.author ?? null, summary: meta.summary ?? '', ogTitle: meta.ogTitle ?? null, ogDescription: meta.ogDescription ?? null, ogType: meta.ogType ?? null, contentHtml: html, toc, readingTime: rt, showToc: meta.showToc ?? true, structuredData: meta.structuredData };
       }
     } catch (e) {
       // Log error for debugging and continue to next extension

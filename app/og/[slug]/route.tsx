@@ -22,15 +22,15 @@ export async function GET(request: Request, context: any) {
     const url = new URL(request.url);
     const force = url.searchParams.get('force') === '1' || url.searchParams.get('refresh') === '1';
 
-    // path to persisted OG images
-    const publicDir = path.join(process.cwd(), 'public', 'og');
-    const filePath = slug ? path.join(publicDir, `${slug}.png`) : null;
+    // cache generated OG images outside `public` to avoid bundling very large directories
+    const cacheDir = path.join(process.cwd(), 'tmp', 'og-cache');
+    const cachedPath = slug ? path.join(cacheDir, `${slug}.png`) : null;    
 
-    // serve cached file if present and not forced
-    if (filePath && !force) {
+    // serve cached file if present (from cache dir) and not forced
+    if (cachedPath && !force) {
       try {
-        if (fs.existsSync(filePath)) {
-          const data = await fs.promises.readFile(filePath);
+        if (fs.existsSync(cachedPath)) {
+          const data = await fs.promises.readFile(cachedPath);
           return new Response(Buffer.from(data), { headers: { 'Content-Type': 'image/png', 'Cache-Control': CACHE_FOREVER } });
         }
       } catch (e) {
@@ -103,13 +103,13 @@ export async function GET(request: Request, context: any) {
     const buf = await img.arrayBuffer();
     const buffer = Buffer.from(buf);
 
-    // try to persist the generated image to public/og
+    // try to persist the generated image to the cache directory (not `public/og`)
     try {
-      if (filePath) {
-        await fs.promises.mkdir(publicDir, { recursive: true });
-        const tmpPath = filePath + '.tmp';
+      if (cachedPath) {
+        await fs.promises.mkdir(cacheDir, { recursive: true });
+        const tmpPath = cachedPath + '.tmp';
         await fs.promises.writeFile(tmpPath, buffer);
-        await fs.promises.rename(tmpPath, filePath);
+        await fs.promises.rename(tmpPath, cachedPath);
       }
     } catch (e) {
       // ignore write errors
