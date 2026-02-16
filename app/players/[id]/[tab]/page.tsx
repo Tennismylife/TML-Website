@@ -248,7 +248,15 @@ export async function generateMetadata(
       site: '@TennisMyLife68',
       creator: '@TennisMyLife68',
     },
-    robots: { index: true, follow: true },
+    // If the page has 4 or more active query filters, mark it as noindex to avoid indexing
+    // combinations of filters that create thin/duplicate pages.
+    robots: ((): { index: boolean; follow: boolean } => {
+      const resolvedSearchParamsForRobots = spForCanonical ?? {} as Record<string, any>;
+      const isActive = (v: any) => v != null && String(v).trim() !== '' && String(v) !== 'All';
+      const activeCount = Object.entries(resolvedSearchParamsForRobots).filter(([k, v]) => k !== 'tab' && isActive(v)).length;
+      // noindex when 4 or more active filters
+      return activeCount >= 4 ? { index: false, follow: true } : { index: true, follow: true };
+    })(),
     alternates: { canonical },
   } as Metadata;
 }
