@@ -256,18 +256,13 @@ export async function middleware(req: NextRequest) {
       return NextResponse.next();
     }
 
-    // For tournaments we still perform a redirect to the canonical slug/path.
-    if (slug && resource === 'tournaments') {
+    // If we resolved a slug (from slug-map, header API or local map), redirect the
+    // incoming request to the canonical slug path for both tournaments and players.
+    if (slug) {
       const dest = new URL(req.url);
       dest.pathname = `/${resource}/${slug}${rest ? '/' + rest : ''}`;
       dest.search = search;
       return new Response(null, { status: 301, headers: { Location: dest.toString() } });
-    }
-
-    // For players, avoid redirecting to the canonical slug. Instead, allow the request to continue and
-    // let the server-side page resolve and render the canonical player's data inline (no client-visible redirect).
-    if (slug && resource === 'players') {
-      return NextResponse.next();
     }
 
     return NextResponse.next();
