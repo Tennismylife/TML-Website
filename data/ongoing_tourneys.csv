@@ -1,7 +1,7 @@
 tourney_id,tourney_name,surface,draw_size,tourney_level,indoor,tourney_date,match_num,winner_id,winner_seed,winner_entry,winner_name,winner_hand,winner_ht,winner_ioc,winner_age,winner_rank,winner_rank_points,loser_id,loser_seed,loser_entry,loser_name,loser_hand,loser_ht,loser_ioc,loser_age,loser_rank,loser_rank_points,score,best_of,round,minutes,w_ace,w_df,w_svpt,w_1stIn,w_1stWon,w_2ndWon,w_SvGms,w_bpSaved,w_bpFaced,l_ace,l_df,l_svpt,l_1stIn,l_1stWon,l_2ndWon,l_SvGms,l_bpSaved,l_bpFaced
 2026-451,Doha,Hard,32,500,O,20260216,1,R0EB,,,Valentin Royer,R,188,FRA,24.72,60,897,H996,,,Pierre-Hugues Herbert,R,188,FRA,34.919,190,313,6-0 6-3,3,R32,62,2,1,48,30,24,8,8,1,2,4,4,51,35,19,2,7,1,6
 2026-451,Doha,Hard,32,500,O,20260216,2,P09Z,,,Alexei Popyrin,R,196,AUS,26.535,53,1000,AC39,,,Mubarak Shannan Zayid,R,,QAT,30.845,,,6-0 6-2,3,R32,58,5,1,40,27,23,8,7,1,1,0,6,40,21,9,6,7,3,8
-2026-451,Doha,Hard,32,500,O,20260216,3,S0AG,2,,Jannik Sinner,R,191,ITA,24.504,2,10300,M0FH,,,Tomas MacHac,R,183,CZE,25.350,31,1510,6-1 6-4,3,R32,70,7,0,42,29,25,11,9,0,0,1,4,64,38,25,10,8,8,11
+2026-451,Doha,Hard,32,500,O,20260216,3,S0AG,2,,Jannik Sinner,R,191,ITA,24.504,2,10300,M0FH,,,Tomas Machac,R,183,CZE,25.35,31,1510,6-1 6-4,3,R32,70,7,0,42,29,25,11,9,0,0,1,4,64,38,25,10,8,8,11
 2026-451,Doha,Hard,32,500,O,20260216,4,M0NI,6,,Jakub Mensik,R,196,CZE,20.46,16,2425,CH12,,,Jan Choinski,R,196,GBR,29.687,124,498,6-7(6) 6-2 6-4,3,R32,138,10,2,93,61,46,16,15,2,4,3,2,103,70,44,16,15,5,10
 2026-451,Doha,Hard,32,500,O,20260216,5,F0F1,,,Arthur Fils,R,185,FRA,21.681,40,1110,MQ75,,,Kamil Majchrzak,R,183,POL,30.094,56,920,6-7(5) 6-3 6-4,3,R32,130,5,5,99,65,49,18,16,0,1,7,5,107,70,50,16,15,3,6
 2026-451,Doha,Hard,32,500,O,20260216,6,MM58,4,,Daniil Medvedev,R,198,RUS,30.015,11,3010,S0RE,,,Juncheng Shang,L,180,CHN,21.038,261,205,6-4 6-2,3,R32,75,6,1,53,42,33,7,9,1,1,1,2,59,39,25,8,9,5,8
@@ -25,7 +25,7 @@ tourney_id,tourney_name,surface,draw_size,tourney_level,indoor,tourney_date,matc
 2026-451,Doha,Hard,32,500,O,20260217,13,M0CI,,,Fabian Marozsan,R,193,HUN,26.363,48,1040,HH26,,,Ugo Humbert,L,188,FRA,27.647,36,1285,6-3 6-1,3,R32,57,1,1,39,30,26,6,8,0,0,1,2,47,25,14,11,8,3,7
 2026-451,Doha,Hard,32,500,O,20260217,14,TE51,,,Stefanos Tsitsipas,R,193,GRE,27.518,33,1485,EA13,,,Moez Echargui,R,178,TUN,33.103,139,449,6-4 6-4,3,R32,84,5,0,54,33,27,14,10,0,0,4,1,63,44,31,8,10,5,7
 2026-451,Doha,Hard,32,500,O,20260217,15,Z371,,,Zhizhen Zhang,R,193,CHN,29.339,319,155,CF59,,,Roberto Carballes Baena,R,183,ESP,32.906,175,350,6-4 6-4,3,R32,74,10,0,60,40,35,10,10,1,1,7,2,54,37,28,8,10,0,2
-2026-451,Doha,Hard,32,500,O,20260218,16,RE44,5,,Andrey Rublev,R,188,RUS,28.331,14,2510,D0C1,,,Jesper de Jong,R,180,NED,25.720,86,665,6-4 6-3,3,R32,78,4,2,54,34,22,10,9,2,4,5,1,59,36,22,9,10,3,8
+2026-451,Doha,Hard,32,500,O,20260218,16,RE44,5,,Andrey Rublev,R,188,RUS,28.331,14,2510,D0C1,,,Jesper de Jong,R,180,NED,25.72,86,665,6-4 6-3,3,R32,78,4,2,54,34,22,10,9,2,4,5,1,59,36,22,9,10,3,8
 2026-499,Delray Beach,Hard,28,250,O,20260218,6,KI95,,,Miomir Kecmanovic,R,183,SRB,26.47,83,670,B0GG,,,Mattia Bellucci,L,175,ITA,24.717,109,553,6-1 6-4,3,R32,62,3,1,42,27,23,13,9,0,0,3,3,49,29,18,8,8,1,4
 2026-499,Delray Beach,Hard,28,250,O,20260218,7,N0AE,7,,Brandon Nakashima,R,188,USA,24.545,29,1535,C977,,,Marin Cilic,R,198,CRO,37.391,43,1090,7-6(4) 7-6(5),3,R32,132,13,0,87,56,47,17,12,1,1,8,1,89,58,47,15,12,2,2
 2026-499,Delray Beach,Hard,28,250,O,20260218,8,J0DZ,,,Rafael Jodar,R,191,ESP,19.422,118,523,Q02L,,,Ethan Quinn,R,191,USA,21.938,70,776,6-2 6-3,3,R32,78,2,2,51,30,18,13,8,1,3,4,3,64,44,27,4,9,4,10
@@ -43,3 +43,16 @@ tourney_id,tourney_name,surface,draw_size,tourney_level,indoor,tourney_date,matc
 2026-6932,Rio de Janeiro,Clay,32,500,O,20260218,15,F0F2,,,Jaime Faria,R,188,POR,22.538,147,425,B0BI,4,,Sebastian Baez,R,170,ARG,25.142,32,1495,7-5 6-1,3,R32,95,2,2,54,35,28,8,10,1,3,2,5,68,47,29,3,9,6,11
 2026-6932,Rio de Janeiro,Clay,32,500,O,20260218,16,D923,,,Damir Dzumhur,R,175,BIH,33.749,62,877,MO44,,,Pedro Martinez,R,185,ESP,28.816,101,586,0-6 7-6(5) 6-4,3,R32,159,1,0,91,65,37,10,14,6,12,4,4,81,52,34,14,14,1,5
 2026-6932,Rio de Janeiro,Clay,32,500,O,20260218,17,G0FW,,,Vilius Gaubas,R,178,LTU,21.139,126,490,M0WY,,,Luis Guto Miguel,R,180,BRA,16.977,1593,3,6-3 2-6 6-2,3,R32,131,0,2,80,61,36,12,13,1,3,1,1,84,59,43,10,12,7,10
+2026-451,Doha,Hard,32,500,O,20260219,17,A0E2,1,,Carlos Alcaraz,R,183,ESP,22.795,1,13150,R0EB,,,Valentin Royer,R,188,FRA,24.728,60,897,6-2 7-5,3,R16,95,4,2,69,56,37,8,10,4,5,2,2,63,35,21,12,10,4,8
+2026-451,Doha,Hard,32,500,O,20260219,18,S0AG,2,,Jannik Sinner,R,191,ITA,24.512,2,10300,P09Z,,,Alexei Popyrin,R,196,AUS,26.543,53,1000,6-3 7-5,3,R16,84,7,0,58,43,34,11,11,0,0,4,0,51,33,24,12,10,1,3
+2026-451,Doha,Hard,32,500,O,20260219,19,TE51,,,Stefanos Tsitsipas,R,193,GRE,27.524,33,1485,MM58,4,,Daniil Medvedev,R,198,RUS,30.023,11,3010,6-3 6-4,3,R16,76,4,1,60,45,36,8,10,0,0,3,4,60,39,27,10,9,5,7
+2026-451,Doha,Hard,32,500,O,20260219,20,RE44,5,,Andrey Rublev,R,188,RUS,28.334,14,2510,M0CI,,,Fabian Marozsan,R,193,HUN,26.368,48,1040,6-2 6-4,3,R16,67,6,0,47,25,22,15,9,0,0,4,4,58,32,17,16,9,2,5
+2026-451,Doha,Hard,32,500,O,20260219,21,M0NI,6,,Jakub Mensik,R,196,CZE,20.468,16,2425,Z371,,,Zhizhen Zhang,R,193,CHN,29.344,319,155,6-3 6-2,3,R16,66,7,1,47,30,24,12,9,0,0,2,3,57,34,21,10,8,9,12
+2026-451,Doha,Hard,32,500,O,20260219,22,KE29,7,,Karen Khachanov,R,198,RUS,29.749,17,2360,F724,,,Marton Fucsovics,R,188,HUN,34.031,61,891,6-2 4-6 6-4,3,R16,121,7,1,77,55,46,10,14,5,6,6,2,85,53,39,15,14,3,6
+2026-451,Doha,Hard,32,500,O,20260219,23,L0BV,8,,Jiri Lehecka,R,185,CZE,24.282,22,1860,BU13,,,Zizou Bergs,R,185,BEL,26.716,44,1080,6-2 6-1,3,R16,69,9,1,49,28,24,10,8,3,3,2,4,35,20,11,3,7,0,4
+2026-451,Doha,Hard,32,500,O,20260219,24,F0F1,,,Arthur Fils,R,185,FRA,21.689,40,1110,HB64,,,Quentin Halys,R,191,FRA,29.317,72,762,6-1 7-6(7),3,R16,89,5,2,62,42,31,14,10,5,6,5,1,70,38,23,17,9,4,7
+2026-499,Delray Beach,Hard,28,250,O,20260219,13,W0BH,,,Coleman Wong,R,191,HKG,21.706,137,458,N0AE,7,,Brandon Nakashima,R,188,USA,24.548,29,1535,6-4 7-6(4),3,R16,88,13,0,64,38,32,14,11,2,3,11,0,63,46,33,9,11,2,4
+2026-499,Delray Beach,Hard,28,250,O,20260219,14,C0E9,3,,Flavio Cobolli,R,183,ITA,23.792,20,1955,A0GC,,,Terence Atmane,L,193,FRA,24.112,66,833,7-5 6-4,3,R16,101,9,2,67,37,32,15,11,1,2,9,4,72,38,26,16,11,4,7
+2026-6932,Rio de Janeiro,Clay,32,500,O,20260219,18,T0A1,,,Thiago Agustin Tirante,R,185,ARG,24.862,92,647,C0AU,1,,Francisco Cerundolo,R,185,ARG,27.521,19,2220,6-2 3-1 RET,3,R16,73,7,0,37,24,19,8,6,1,1,0,2,52,31,14,12,6,6,9
+2026-6932,Rio de Janeiro,Clay,32,500,O,20260219,19,C0C8,,,Juan Manuel Cerundolo,L,183,ARG,24.263,78,706,H997,,,Yannick Hanfmann,R,193,GER,34.27,90,653,6-4 6-7(1) 6-4,3,R16,169,9,3,91,64,42,15,16,1,4,6,3,115,72,47,20,16,9,14
+2026-6932,Rio de Janeiro,Clay,32,500,O,20260219,20,KI82,,,Vit Kopriva,R,178,CZE,28.682,87,660,B0FV,,,Roman Andres Burruchaga,R,183,ARG,24.074,102,580,6-3 6-1,3,R16,88,3,2,59,38,26,14,8,6,6,6,2,53,29,19,9,8,4,8
