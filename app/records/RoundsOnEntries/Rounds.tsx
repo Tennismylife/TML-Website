@@ -62,7 +62,6 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
           `/api/records/roundsonentries/rounds?round=${selectedRounds}` +
           (queryString ? `&${queryString}` : "");
 
-          if (!enabled) return;
       const res = await fetch(url);
         if (!res.ok) throw new Error("Failed to fetch data");
         const json = await res.json();
