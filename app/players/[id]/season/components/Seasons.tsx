@@ -428,15 +428,13 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
             </div>
           )}
 
-          <div className="sm:block hidden">
-            <LazyRender>
+          <LazyRender>
             <TournamentGrid tourneys={tourneysForDisplay} getTourneyLink={getTourneyLink} />
           </LazyRender>
-          </div>
 
           {/* Row 1 */}
           <LazyRender>
-          <div className="flex flex-wrap gap-6 mt-8 sm:flex hidden">
+          <div className="flex flex-wrap gap-6 mt-8">
             <div className="flex-1 min-w-[300px]">
               <WLStatTable
                 title="W-L"
@@ -485,7 +483,7 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
 
           {/* Row 2 */}
           <LazyRender>
-          <div className="flex flex-wrap gap-6 mt-8 sm:flex hidden">
+          <div className="flex flex-wrap gap-6 mt-8">
             <div className="flex-1 min-w-[300px]">
               <WLStatTable
                 title="Ranking"
@@ -524,7 +522,7 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
 
           {/* Row 3 */}
           <LazyRender>
-          <div className="flex flex-wrap gap-6 mt-8 sm:flex hidden">
+          <div className="flex flex-wrap gap-6 mt-8">
             <div className="flex-1 min-w-[300px]">
               <WLStatTable
                 title="W-L Sets"

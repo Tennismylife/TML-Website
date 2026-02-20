@@ -28,5 +28,9 @@ export default function LazyRender({ children, rootMargin = "200px" }: LazyRende
     return () => obs.disconnect();
   }, [visible, rootMargin]);
 
-  return <div ref={ref}>{visible ? children : null}</div>;
+  return (
+    <div ref={ref} style={!visible ? { minHeight: "120px" } : undefined}>
+      {visible ? children : null}
+    </div>
+  );
 }
