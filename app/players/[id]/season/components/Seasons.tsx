@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo, useDeferredValue } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import dynamic from 'next/dynamic';
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import type { Match } from "@/types";
@@ -9,7 +9,7 @@ import { getSurfaceColor, palette } from "@/lib/colors";
 // SummarySeasons is a server component; import it dynamically since this file is a client component
 const SummarySeasons = dynamic(() => import('./SummarySeasons'), { ssr: true });
 import TournamentGrid from "../../TournamentGrid";
-import { useYearStats } from "./useYearStats";
+import { useYearStatsAsync } from "./useYearStatsAsync";
 import { useRouter, usePathname, useSearchParams } from "next/navigation"; // <--- added
 
 interface SeasonsProps {
@@ -318,16 +318,8 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
     }
   };
 
-  const matchesForStats = allMatches;
-  const deferredYear = useDeferredValue(selectedYear);
-  const deferredMatches = useDeferredValue(matchesForStats);
-
-  // 5 sections total; on mobile reveal one at a time via requestIdleCallback
-  const SECTION_COUNT = 5;
-  const { isMobile: isMobileCards, visibleCount, sentinelRef } = useIncrementalCards(
-    selectedYear ? SECTION_COUNT : 0,
-    { initialVisible: 1, debounceMs: 800 }
-  );
+  // Heavy computation runs off the main thread via requestIdleCallback
+  const { stats, computing } = useYearStatsAsync(allMatches, selectedYear ?? 0, playerId);
   const {
     tourneysForYear,
     seasonAgg,
@@ -338,7 +330,14 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
     setsAgg,
     gamesAgg,
     tiebreakAgg,
-  } = useYearStats(deferredMatches, deferredYear ?? 0, playerId);
+  } = stats;
+
+  // 5 sections total; on mobile reveal one at a time via requestIdleCallback
+  const SECTION_COUNT = 5;
+  const { isMobile: isMobileCards, visibleCount, sentinelRef } = useIncrementalCards(
+    selectedYear && !computing ? SECTION_COUNT : 0,
+    { initialVisible: 1, debounceMs: 800 }
+  );
 
   const matchesIndividual = useMemo(
     () => allMatches.filter((m) => !m.team_event),
@@ -430,11 +429,14 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
 
       {loading && <div className="text-gray-400 mb-4">Loading...</div>}
       {error && <div className="text-red-500 mb-4">{error}</div>}
+      {computing && !loading && (
+        <div className="text-yellow-400/70 text-sm mb-2 animate-pulse">Computing stats…</div>
+      )}
 
       {!selectedYear ? (
         <div className="text-gray-400 text-xl">Select a season</div>
       ) : (
-        <>
+        <div style={{ opacity: computing ? 0.6 : 1, transition: "opacity 0.3s" }}>
           {isMobile && (
             <div className="text-gray-200 mb-4">
               Wins: {seasonAgg.wins}–{seasonAgg.losses} ({((seasonAgg.wins/(seasonAgg.wins+seasonAgg.losses))*100).toFixed(1)}%)
@@ -571,7 +573,7 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
           {(!isMobileCards || visibleCount >= 5) && (
             <SummarySeasons years={years} allMatches={allMatches} playerId={playerId} playerSlug={resolvedPlayerSlug ?? playerSlug} selectedYear={selectedYear!} />
           )}
-        </>
+        </div>
       )}
     </div>
   );
