@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useMemo, useDeferredValue } from "react";
 import dynamic from 'next/dynamic';
-import LazyRender from '@/components/LazyRender';
+import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import type { Match } from "@/types";
 import { getLevelColors, getLevelFullName, getTourneyHref, getPlayerHref } from "@/lib/utils";
 import { getSurfaceColor, palette } from "@/lib/colors";
@@ -321,6 +321,13 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
   const matchesForStats = allMatches;
   const deferredYear = useDeferredValue(selectedYear);
   const deferredMatches = useDeferredValue(matchesForStats);
+
+  // 5 sections total; on mobile reveal one at a time via requestIdleCallback
+  const SECTION_COUNT = 5;
+  const { isMobile: isMobileCards, visibleCount, sentinelRef } = useIncrementalCards(
+    selectedYear ? SECTION_COUNT : 0,
+    { initialVisible: 1, debounceMs: 800 }
+  );
   const {
     tourneysForYear,
     seasonAgg,
@@ -434,12 +441,13 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
             </div>
           )}
 
-          <LazyRender>
+          {/* Section 1: Tournament Grid */}
+          {(!isMobileCards || visibleCount >= 1) && (
             <TournamentGrid tourneys={tourneysForDisplay} getTourneyLink={getTourneyLink} />
-          </LazyRender>
+          )}
 
-          {/* Row 1 */}
-          <LazyRender>
+          {/* Section 2: Row 1 */}
+          {(!isMobileCards || visibleCount >= 2) && (
           <div className="flex flex-wrap gap-6 mt-8">
             <div className="flex-1 min-w-[300px]">
               <WLStatTable
@@ -485,10 +493,10 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
               />
             </div>
           </div>
-          </LazyRender>
+          )}
 
-          {/* Row 2 */}
-          <LazyRender>
+          {/* Section 3: Row 2 */}
+          {(!isMobileCards || visibleCount >= 3) && (
           <div className="flex flex-wrap gap-6 mt-8">
             <div className="flex-1 min-w-[300px]">
               <WLStatTable
@@ -524,10 +532,10 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
               />
             </div>
           </div>
-          </LazyRender>
+          )}
 
-          {/* Row 3 */}
-          <LazyRender>
+          {/* Section 4: Row 3 */}
+          {(!isMobileCards || visibleCount >= 4) && (
           <div className="flex flex-wrap gap-6 mt-8">
             <div className="flex-1 min-w-[300px]">
               <WLStatTable
@@ -552,9 +560,17 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
               />
             </div>
           </div>
-          </LazyRender>
+          )}
 
-          <SummarySeasons years={years} allMatches={allMatches} playerId={playerId} playerSlug={resolvedPlayerSlug ?? playerSlug} selectedYear={selectedYear!} />
+          {/* Sentinel: triggers next section load on mobile */}
+          {isMobileCards && visibleCount < SECTION_COUNT && (
+            <div ref={sentinelRef} style={{ height: 1 }} />
+          )}
+
+          {/* Section 5: Summary table */}
+          {(!isMobileCards || visibleCount >= 5) && (
+            <SummarySeasons years={years} allMatches={allMatches} playerId={playerId} playerSlug={resolvedPlayerSlug ?? playerSlug} selectedYear={selectedYear!} />
+          )}
         </>
       )}
     </div>
