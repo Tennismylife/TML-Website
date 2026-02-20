@@ -120,7 +120,7 @@ export default function PlayerTabs({ player, tabs, initialTab, setTab, tournamen
       content = <Profile player={player} />;
       break;
     case "matches":
-      content = <AllMatches playerId={player.id} initialMatches={initialMatches} initialHeading={initialHeading} initialTotals={initialTotals} initialFacets={initialFacets} />;
+      content = <AllMatches playerId={player.id} playerSlug={player.slug} initialMatches={initialMatches} initialHeading={initialHeading} initialTotals={initialTotals} initialFacets={initialFacets} />;
       break;
     case "season":
       content = (

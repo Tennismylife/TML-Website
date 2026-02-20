@@ -8,13 +8,14 @@ import { Match, SortKey, SortDirection } from "@/types";
 
 interface AllMatchesProps {
   playerId: string;
+  playerSlug?: string | null;
   initialMatches?: Match[];
   initialHeading?: string;
   initialTotals?: { totalWins?: number; totalLosses?: number };
   initialFacets?: any;
 }
 
-export default function AllMatches({ playerId, initialMatches, initialHeading, initialTotals, initialFacets }: AllMatchesProps) {
+export default function AllMatches({ playerId, playerSlug, initialMatches, initialHeading, initialTotals, initialFacets }: AllMatchesProps) {
   const search = useSearchParams();
   const router = useRouter();
 
@@ -765,6 +766,7 @@ export default function AllMatches({ playerId, initialMatches, initialHeading, i
               setSortKey={(key) => setSortKey(key)}
               setSortDir={setSortDir}
               playerId={playerId}
+              playerSlug={playerSlug}
               onHeaderHeightChange={setTableHeaderHeight}
               currentTab={'matches'}
             />
