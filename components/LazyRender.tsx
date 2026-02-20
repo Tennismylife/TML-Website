@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, startTransition } from "react";
 
 interface LazyRenderProps {
   children: React.ReactNode;
@@ -26,12 +26,14 @@ export default function LazyRender({
         entries.forEach((e) => {
           if (e.isIntersecting) {
             obs.disconnect();
-            // Defer render by one frame so the browser can finish painting the scroll
-            timerRef.current = setTimeout(() => setVisible(true), 50);
+            // Use startTransition so this render is non-urgent and won't block scroll events
+            timerRef.current = setTimeout(() => {
+              startTransition(() => setVisible(true));
+            }, 80);
           }
         });
       },
-      { rootMargin }
+      { rootMargin, threshold: 0.01 }
     );
     obs.observe(ref.current);
     return () => {
@@ -40,9 +42,19 @@ export default function LazyRender({
     };
   }, [visible, rootMargin]);
 
+  if (visible) {
+    return <div>{children}</div>;
+  }
+
   return (
-    <div ref={ref} style={!visible ? { minHeight: `${placeholderHeight}px` } : undefined}>
-      {visible ? children : null}
-    </div>
+    <div
+      ref={ref}
+      style={{
+        minHeight: `${placeholderHeight}px`,
+        // Tells the browser it can skip paint/layout for offscreen subtrees
+        contentVisibility: "auto" as any,
+        containIntrinsicSize: `0 ${placeholderHeight}px`,
+      }}
+    />
   );
 }

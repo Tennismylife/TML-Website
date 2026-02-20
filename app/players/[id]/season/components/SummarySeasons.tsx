@@ -10,7 +10,7 @@ interface SummarySeasonsProps {
   allMatches: Match[];
   playerId: string;
   playerSlug?: string | null;
-  selectedYear?: number | null;
+  selectedYear: number;
 }
 
 const roundWeight: Record<string, number> = {
@@ -177,15 +177,12 @@ export default function SummarySeasons({ years, allMatches, playerId, playerSlug
       };
     };
 
-    // If a specific season is selected, compute stats only for that year; otherwise compute for all years
-    const targetYears = selectedYear != null ? years.filter(y => y === selectedYear) : years;
-    const rows = targetYears.map(year => {
-      const yearMatches = validMatches.filter(m => m.year === year);
-      return { year, ...computeStats(yearMatches) };
-    });
+    // Compute stats only for the selected year
+    const yearMatches = validMatches.filter(m => m.year === selectedYear);
+    const rows = [{ year: selectedYear, ...computeStats(yearMatches) }];
 
     return { rows };
-  }, [years, allMatches, playerId]);
+  }, [years, allMatches, playerId, selectedYear]);
 
   const renderTd = (val: string | number, align: "left" | "center" = "center") => (
     <td className={`px-2 py-1 text-sm text-${align}`}>{val}</td>

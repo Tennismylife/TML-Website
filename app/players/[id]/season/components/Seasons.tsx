@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useDeferredValue } from "react";
 import dynamic from 'next/dynamic';
 import LazyRender from '@/components/LazyRender';
 import type { Match } from "@/types";
@@ -64,7 +64,7 @@ const WLStatTable: React.FC<WLStatTableProps> = ({ title, rows }) => {
         {title}
       </div>
 
-      <div className="card relative border-l-4 border-yellow-400 bg-gray-800/90 p-6 pl-8 pt-8 shadow-xl rounded-2xl backdrop-blur-md overflow-visible">
+      <div className="relative border-l-4 border-yellow-400 bg-gray-800 p-6 pl-8 pt-8 shadow-xl rounded-2xl overflow-visible">
         <div className="flex flex-col gap-3">
           {rows.map((row, idx) => {
             const total = row.wins + row.losses;
@@ -319,6 +319,8 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
   };
 
   const matchesForStats = allMatches;
+  const deferredYear = useDeferredValue(selectedYear);
+  const deferredMatches = useDeferredValue(matchesForStats);
   const {
     tourneysForYear,
     seasonAgg,
@@ -329,7 +331,7 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
     setsAgg,
     gamesAgg,
     tiebreakAgg,
-  } = useYearStats(matchesForStats, selectedYear ?? "All", playerId);
+  } = useYearStats(deferredMatches, deferredYear ?? 0, playerId);
 
   const matchesIndividual = useMemo(
     () => allMatches.filter((m) => !m.team_event),
@@ -355,7 +357,11 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
   return (
     <div
       className="h-full w-full p-4 overflow-auto section"
-      style={{ backgroundColor: "rgba(31,41,55,0.95)", backdropFilter: "blur(4px)" }}
+      style={{
+        backgroundColor: "rgb(27,36,48)",
+        overscrollBehaviorY: "contain",
+        WebkitOverflowScrolling: "touch" as any,
+      }}
     >
       {/* --- Super Cool Season Selector + View All Matches Button (inline label) --- */}
       <div className="mb-6 flex items-center gap-6">
@@ -548,7 +554,7 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
           </div>
           </LazyRender>
 
-          <SummarySeasons years={years} allMatches={allMatches} playerId={playerId} playerSlug={resolvedPlayerSlug ?? playerSlug} selectedYear={selectedYear} />
+          <SummarySeasons years={years} allMatches={allMatches} playerId={playerId} playerSlug={resolvedPlayerSlug ?? playerSlug} selectedYear={selectedYear!} />
         </>
       )}
     </div>

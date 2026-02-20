@@ -80,18 +80,17 @@ function parseSetScores(score?: string | null) {
   return sets;
 }
 
-export function useYearStats(allMatches: Match[], selectedYear: number | "All", playerId: string) {
+export function useYearStats(allMatches: Match[], selectedYear: number, playerId: string) {
   // Filtra i match una volta sola
   const yearMatches = useMemo(
     () =>
       allMatches.filter(
-        (m) => m.status === true && (selectedYear === "All" ? true : m.year === selectedYear)
+        (m) => m.status === true && m.year === selectedYear
       ),
     [allMatches, selectedYear]
   );
 
   const tourneysForYear = useMemo<TourneyTile[]>(() => {
-    if (selectedYear === "All") return [];
     const groups = new Map<string, Match[]>();
     for (const m of yearMatches) {
       // Use the explicit `year` field to distinguish tournament editions instead of deriving it from `tourney_date`.
@@ -134,7 +133,7 @@ export function useYearStats(allMatches: Match[], selectedYear: number | "All", 
       });
     }
 
-    return tiles.sort((a, b) => a.date.getTime() - b.date.getTime());
+    return tiles.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [yearMatches, playerId, selectedYear]);
 
   const seasonAgg = useMemo(() => {
