@@ -285,7 +285,7 @@ export default function PlayerClient(props: any) {
   return (
     <main className="min-h-screen w-full bg-gray-900 text-gray-100">
       {/* Header */}
-      <header className="sticky top-0 z-20 bg-gray-800/95 backdrop-blur-md border-b border-gray-700 py-3 px-0">
+        <header className="sticky top-0 z-20 bg-gray-800 border-b border-gray-700 py-3 px-0">
         <div className="w-full flex items-center gap-2">
           {player.ioc && <Flag ioc={player.ioc} className="w-5 h-4 inline-block mr-2" />}
           <h1 className="text-2xl font-bold">{player.atpname}</h1>

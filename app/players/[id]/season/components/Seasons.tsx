@@ -336,11 +336,9 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
 
   return (
     <div
-      className="h-full w-full p-4 overflow-auto section"
+      className="w-full p-4 section"
       style={{
         backgroundColor: "rgb(27,36,48)",
-        overscrollBehaviorY: "contain",
-        WebkitOverflowScrolling: "touch" as any,
       }}
     >
       {/* --- Super Cool Season Selector + View All Matches Button (inline label) --- */}

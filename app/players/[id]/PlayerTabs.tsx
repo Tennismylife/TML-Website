@@ -170,7 +170,7 @@ export default function PlayerTabs({ player, tabs, initialTab, setTab, tournamen
     <div className="flex flex-col w-full h-full">
       {/* Tab bar */}
       <div
-        className="sticky top-16 z-10 w-full bg-gray-800/95 backdrop-blur-md border-b border-gray-700 py-2 px-4"
+        className="sticky top-16 z-10 w-full bg-gray-800 border-b border-gray-700 py-2 px-4"
         onKeyDown={handleKeyDown}
       >
         <div className="flex flex-wrap gap-2" role="tablist">
