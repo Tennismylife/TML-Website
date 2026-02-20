@@ -288,7 +288,7 @@ export default function PlayerClient(props: any) {
         <header className="sticky top-0 z-20 bg-gray-800 border-b border-gray-700 py-3 px-0">
         <div className="w-full flex items-center gap-2">
           {player.ioc && <Flag ioc={player.ioc} className="w-5 h-4 inline-block mr-2" />}
-          <h1 className="text-2xl font-bold">{player.atpname}</h1>
+          <p className="text-2xl font-bold">{player.atpname}</p>
         </div>
       </header>
 

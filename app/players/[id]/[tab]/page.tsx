@@ -635,7 +635,7 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
 
       {/* Server-rendered matches table for SSR (visible in HTML when matches tab) */}
       {tab === 'matches' && (
-        <h1 className="sr-only">{matchesHeading}</h1>
+        <p className="sr-only">{matchesHeading}</p>
       )}
       {allMatchesForSSR && allMatchesForSSR.length ? (
         <AllMatchesServer playerId={player.id} matches={allMatchesForSSR} heading={matchesHeading} />
