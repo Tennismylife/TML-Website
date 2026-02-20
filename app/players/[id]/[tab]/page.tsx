@@ -552,6 +552,11 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
               round: true, winner_id: true, loser_id: true, surface: true,
               tourney_level: true, tourney_id: true, winner_rank: true,
               loser_rank: true, score: true, team_event: true,
+              // serve stats — required for Summary Season MS/Hld%/Brk%/A%/DF%/1stIn/1st%/2nd%/SPW/RPW/TPW/DR
+              w_svpt: true, w_ace: true, w_df: true, w_1stIn: true, w_1stWon: true,
+              w_2ndWon: true, w_SvGms: true, w_bpSaved: true, w_bpFaced: true,
+              l_svpt: true, l_ace: true, l_df: true, l_1stIn: true, l_1stWon: true,
+              l_2ndWon: true, l_SvGms: true, l_bpSaved: true, l_bpFaced: true,
             }
           }),
           prisma.match.groupBy({
