@@ -1,9 +1,9 @@
-"use client";
 
 import React, { useMemo } from "react";
 import Link from "next/link";
 import type { Match } from "@/types";
 import { getPlayerHref } from "@/lib/utils";
+import SummarySeasonsClient from './SummarySeasonsClient';
 
 interface SummarySeasonsProps {
   years: number[];
@@ -190,6 +190,10 @@ export default function SummarySeasons({ years, allMatches, playerId, playerSlug
   const renderTd = (val: string | number, align: "left" | "center" = "center") => (
     <td className={`px-2 py-1 text-sm text-${align}`}>{val}</td>
   );
+
+  // previously mobile detection for client-side fallback; now always server-rendered
+  // const ua = headers().get('user-agent') || '';
+  // const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
 
   return (
 

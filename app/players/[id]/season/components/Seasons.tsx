@@ -1,10 +1,13 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
+import dynamic from 'next/dynamic';
+import LazyRender from '@/components/LazyRender';
 import type { Match } from "@/types";
 import { getLevelColors, getLevelFullName, getTourneyHref, getPlayerHref } from "@/lib/utils";
 import { getSurfaceColor, palette } from "@/lib/colors";
-import SummarySeasons from "./SummarySeasons";
+// SummarySeasons is a server component; import it dynamically since this file is a client component
+const SummarySeasons = dynamic(() => import('./SummarySeasons'), { ssr: true });
 import TournamentGrid from "../../TournamentGrid";
 import { useYearStats } from "./useYearStats";
 import { useRouter, usePathname, useSearchParams } from "next/navigation"; // <--- added
@@ -131,6 +134,14 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
   const [error, setError] = useState<string | null>(null);
   const [allMatches, setAllMatches] = useState<Match[]>(initialAllMatches ?? []);
   const [openDropdown, setOpenDropdown] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 640);
+    handler();
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
 
   useEffect(() => {
     // If server provided initial data, skip fetching on mount
@@ -411,10 +422,21 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
         <div className="text-gray-400 text-xl">Select a season</div>
       ) : (
         <>
-          <TournamentGrid tourneys={tourneysForDisplay} getTourneyLink={getTourneyLink} />
+          {isMobile && (
+            <div className="text-gray-200 mb-4">
+              Wins: {seasonAgg.wins}–{seasonAgg.losses} ({((seasonAgg.wins/(seasonAgg.wins+seasonAgg.losses))*100).toFixed(1)}%)
+            </div>
+          )}
+
+          <div className="sm:block hidden">
+            <LazyRender>
+            <TournamentGrid tourneys={tourneysForDisplay} getTourneyLink={getTourneyLink} />
+          </LazyRender>
+          </div>
 
           {/* Row 1 */}
-          <div className="flex flex-wrap gap-6 mt-8">
+          <LazyRender>
+          <div className="flex flex-wrap gap-6 mt-8 sm:flex hidden">
             <div className="flex-1 min-w-[300px]">
               <WLStatTable
                 title="W-L"
@@ -459,9 +481,11 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
               />
             </div>
           </div>
+          </LazyRender>
 
           {/* Row 2 */}
-          <div className="flex flex-wrap gap-6 mt-8">
+          <LazyRender>
+          <div className="flex flex-wrap gap-6 mt-8 sm:flex hidden">
             <div className="flex-1 min-w-[300px]">
               <WLStatTable
                 title="Ranking"
@@ -496,9 +520,11 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
               />
             </div>
           </div>
+          </LazyRender>
 
           {/* Row 3 */}
-          <div className="flex flex-wrap gap-6 mt-8">
+          <LazyRender>
+          <div className="flex flex-wrap gap-6 mt-8 sm:flex hidden">
             <div className="flex-1 min-w-[300px]">
               <WLStatTable
                 title="W-L Sets"
@@ -522,6 +548,7 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
               />
             </div>
           </div>
+          </LazyRender>
 
           <SummarySeasons years={years} allMatches={allMatches} playerId={playerId} playerSlug={resolvedPlayerSlug ?? playerSlug} selectedYear={selectedYear} />
         </>

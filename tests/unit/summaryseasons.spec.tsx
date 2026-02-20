@@ -1,5 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+
+
 import SummarySeasons from '@/app/players/[id]/season/components/SummarySeasons';
 
 describe('SummarySeasons', () => {
