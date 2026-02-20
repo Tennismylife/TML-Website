@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import dynamic from 'next/dynamic';
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import type { Match } from "@/types";
@@ -150,9 +150,21 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
     }
     return null;
   });
-  const [loading, setLoading] = useState<boolean>(initialAllMatches ? false : true);
+  const [loading, setLoading] = useState<boolean>(!initialAllMatches);
   const [error, setError] = useState<string | null>(null);
-  const [allMatches, setAllMatches] = useState<Match[]>(initialAllMatches ?? []);
+
+  // Per-year match cache: avoids re-fetching and avoids fetching all-years at once
+  const matchCacheRef = useRef<Map<number, Match[]>>(new Map());
+  // Pre-populate cache with SSR data
+  if (initialAllMatches && initialSeasonYear &&
+      !matchCacheRef.current.has(initialSeasonYear)) {
+    matchCacheRef.current.set(initialSeasonYear, initialAllMatches as Match[]);
+  }
+
+  const [allMatches, setAllMatches] = useState<Match[]>(() => {
+    if (initialAllMatches && initialAllMatches.length) return initialAllMatches as Match[];
+    return [];
+  });
   const [openDropdown, setOpenDropdown] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -163,117 +175,54 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
     return () => window.removeEventListener('resize', handler);
   }, []);
 
+  // Fetch years list once if not provided by SSR
   useEffect(() => {
-    // If server provided initial data, skip fetching on mount
-    if (initialAllMatches && initialYears) return;
+    if (initialYears && initialYears.length) return;
+    let abort = false;
+    fetch(`/api/players/seasons?id=${encodeURIComponent(playerId)}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (abort || !Array.isArray(data)) return;
+        const sorted = (data as number[]).filter(y => typeof y === 'number').sort((a, b) => b - a);
+        setYears(sorted);
+        if (!selectedYear && sorted.length) setSelectedYear(sorted[0]);
+      })
+      .catch(() => {});
+    return () => { abort = true; };
+  }, [playerId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Fetch matches for the selected year (uses cache, never fetches all years)
+  useEffect(() => {
+    if (!selectedYear) return;
+
+    // Already have data for this year (SSR or prev fetch)
+    if (matchCacheRef.current.has(selectedYear)) {
+      setAllMatches(matchCacheRef.current.get(selectedYear)!);
+      setLoading(false);
+      return;
+    }
 
     let abort = false;
-    async function load() {
-      let fetchUrl = '';
-      try {
-        setLoading(true);
-        setError(null);
+    setLoading(true);
+    setError(null);
 
-        // Prefer fetching only for the selected year when the URL encodes it
-        const targetPathYear = (() => {
-          if (!pathname) return null;
-          const parts = pathname.split("/").filter(Boolean);
-          const last = parts[parts.length - 1];
-          const maybeYear = /^[0-9]{4}$/.test(last) ? Number(last) : null;
-          if (maybeYear) {
-            const seasonIdx = parts.lastIndexOf("season");
-            if (seasonIdx !== -1 && seasonIdx === parts.length - 2) return maybeYear;
-          }
-          return null;
-        })();
-
-        const fetchParamYear = searchParams?.get("year");
-        const fetchNumericParamYear = fetchParamYear ? Number(fetchParamYear) : null;
-
-        const targetYear = targetPathYear ?? fetchNumericParamYear ?? null;
-        if (targetYear) {
-          fetchUrl = `/api/seasons/${targetYear}/allmatches?id=${encodeURIComponent(playerId)}`;
-        } else {
-          fetchUrl = `/api/players/allmatches?id=${encodeURIComponent(playerId)}`;
-        }
-
-        // Dev-only diagnostic: log the resolved fetch URL and context so we can see which endpoint the client calls
-        if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
-          try { console.debug('[Seasons] resolved fetchUrl', { fetchUrl, targetYear, fetchParamYear, pathname, playerId }); } catch (e) {}
-        }
-
-        const res = await fetch(fetchUrl);
-        if (!res.ok) {
-          // Keep thrown error for existing error UI, but avoid noisy console logs in production.
-          throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-        }
-        const data: Match[] = await res.json();
+    fetch(`/api/seasons/${selectedYear}/allmatches?id=${encodeURIComponent(playerId)}`)
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then((data: Match[]) => {
         if (abort) return;
-
+        matchCacheRef.current.set(selectedYear, data);
         setAllMatches(data);
-        const uniqYearsFromMatches = Array.from(new Set(data.map((m) => m.year).filter((y): y is number => y != null))).sort((a, b) => b - a);
+        setLoading(false);
+      })
+      .catch(e => {
+        if (!abort) { setError(e.message); setLoading(false); }
+      });
 
-        // Try to fetch authoritative list of seasons for this player (lighter and more accurate than deriving from a single-season fetch)
-        let fetchedPlayerYears: number[] | null = null;
-        try {
-          const sres = await fetch(`/api/players/seasons?id=${encodeURIComponent(playerId)}`);
-          if (sres.ok) {
-            const sy = await sres.json();
-            if (Array.isArray(sy) && sy.length > 0) {
-              fetchedPlayerYears = (sy as number[]).filter(y => typeof y === 'number').sort((a,b) => b - a);
-            }
-          }
-        } catch (e) {
-          // swallow: fall back to uniqYearsFromMatches
-        }
-
-        const finalYears = fetchedPlayerYears ?? uniqYearsFromMatches;
-
-        // Dev-only diagnostic: log count of returned matches and unique years
-        if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
-          try {
-            console.debug('[Seasons] fetched data', { fetchUrl, count: (data || []).length, uniqYears: uniqYearsFromMatches.slice(0, 10), playerYears: fetchedPlayerYears?.slice(0,10) });
-            if (!data || data.length === 0) console.debug('[Seasons] no matches returned from', fetchUrl);
-          } catch (e) {}
-        }
-
-        setYears(finalYears);
-
-        // If a year is present in the pathname (e.g. /players/:slug/season/2026) prefer it,
-        // otherwise fallback to URL query param 'year'; finally default to the most recent year in the player's seasons list.
-        const pathYear = (() => {
-          if (!pathname) return null;
-          const parts = pathname.split("/").filter(Boolean);
-          const last = parts[parts.length - 1];
-          const maybeYear = /^[0-9]{4}$/.test(last) ? Number(last) : null;
-          if (maybeYear) {
-            const seasonIdx = parts.lastIndexOf("season");
-            if (seasonIdx !== -1 && seasonIdx === parts.length - 2) return maybeYear;
-          }
-          return null;
-        })();
-
-        const paramYear = searchParams?.get("year");
-        const numericParamYear = paramYear ? Number(paramYear) : null;
-
-        if (pathYear && finalYears.includes(pathYear)) {
-          setSelectedYear(pathYear);
-        } else if (numericParamYear && finalYears.includes(numericParamYear)) {
-          setSelectedYear(numericParamYear);
-        } else if (finalYears.length > 0) {
-          setSelectedYear(finalYears[0]);
-        }
-      } catch (e: any) {
-        if (!abort) setError(e instanceof Error ? e.message : 'Error loading seasons');
-      } finally {
-        if (!abort) setLoading(false);
-      }
-    }
-    load();
-    return () => {
-      abort = true;
-    };
-  }, [playerId, searchParams, pathname, initialAllMatches, initialYears]);
+    return () => { abort = true; };
+  }, [selectedYear, playerId]);
 
   // Keep component state in sync with URL query param changes
   useEffect(() => {

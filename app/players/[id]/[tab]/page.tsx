@@ -532,24 +532,35 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
   // ── Season tab: compute stats server-side so the client renders without any JS computation ──
   let initialSeasonStats: any = null;
   let initialSeasonYear: number | null = null;
+  let initialSeasonMatches: any[] | null = null;
+  let initialSeasonYears: number[] | null = null;
   if (tab === 'season') {
     const sp: Record<string, any> = resolvedParamsObj || {};
     const yearParam = sp?.year ? Number(sp.year) : null;
     if (yearParam && player) {
       try {
-        const raw = await prisma.match.findMany({
-          where: {
-            status: true,
-            year: yearParam,
-            OR: [{ winner_id: player.id }, { loser_id: player.id }],
-          },
-          select: {
-            status: true, year: true, tourney_name: true, tourney_date: true,
-            round: true, winner_id: true, loser_id: true, surface: true,
-            tourney_level: true, tourney_id: true, winner_rank: true,
-            loser_rank: true, score: true, team_event: true,
-          }
-        });
+        // Fetch year matches + full years list in parallel
+        const [raw, yearsGroupBy] = await Promise.all([
+          prisma.match.findMany({
+            where: {
+              status: true,
+              year: yearParam,
+              OR: [{ winner_id: player.id }, { loser_id: player.id }],
+            },
+            select: {
+              status: true, year: true, tourney_name: true, tourney_date: true,
+              round: true, winner_id: true, loser_id: true, surface: true,
+              tourney_level: true, tourney_id: true, winner_rank: true,
+              loser_rank: true, score: true, team_event: true,
+            }
+          }),
+          prisma.match.groupBy({
+            by: ['year'],
+            where: { status: true, OR: [{ winner_id: player.id }, { loser_id: player.id }] },
+            _count: { _all: true },
+          }),
+        ]);
+
         // Serialize for server→client: convert Date→ISO string, IDs→string
         const serialized = raw.map((m: any) => ({
           ...m,
@@ -557,6 +568,12 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
           winner_id: m.winner_id != null ? String(m.winner_id) : null,
           loser_id:  m.loser_id  != null ? String(m.loser_id)  : null,
         }));
+        initialSeasonMatches = serialized;
+        initialSeasonYears = (yearsGroupBy || [])
+          .map((r: any) => r.year as number)
+          .filter((y: any) => typeof y === 'number')
+          .sort((a: number, b: number) => b - a);
+
         const { computeYearStats } = await import('../season/components/computeYearStats');
         const computed = computeYearStats(serialized as any[], yearParam, String(player.id));
         // Serialize Date objects inside tourneysForYear
@@ -600,7 +617,7 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
         <AllMatchesServer playerId={player.id} matches={allMatchesForSSR} heading={matchesHeading} />
       ) : null}
 
-      <PlayerClient params={{ id: player.id, tab: tabParam ?? 'matches' }} initialMatches={allMatchesForSSR ?? undefined} initialFacets={serverFacets ?? undefined} initialHeading={matchesHeading ?? 'Matches'} initialTotals={{ totalWins: careerWins, totalLosses: careerLosses }} initialSeasonStats={initialSeasonStats ?? undefined} initialSeasonYear={initialSeasonYear ?? undefined} />
+      <PlayerClient params={{ id: player.id, tab: tabParam ?? 'matches' }} initialMatches={allMatchesForSSR ?? undefined} initialFacets={serverFacets ?? undefined} initialHeading={matchesHeading ?? 'Matches'} initialTotals={{ totalWins: careerWins, totalLosses: careerLosses }} initialSeasonStats={initialSeasonStats ?? undefined} initialSeasonYear={initialSeasonYear ?? undefined} initialSeasonMatches={initialSeasonMatches ?? undefined} initialSeasonYears={initialSeasonYears ?? undefined} />
     </>
   );
 }

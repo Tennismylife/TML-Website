@@ -16,6 +16,8 @@ export default function PlayerClient(props: any) {
   const initialFacets = props.initialFacets;
   const initialSeasonStats = props.initialSeasonStats;
   const initialSeasonYear = props.initialSeasonYear;
+  const initialSeasonMatches = props.initialSeasonMatches;
+  const initialSeasonYears = props.initialSeasonYears;
 
   const [player, setPlayer] = useState<Player | null>(null);
   const [loading, setLoading] = useState(false);
@@ -307,6 +309,8 @@ export default function PlayerClient(props: any) {
         initialFacets={initialFacets}
         initialSeasonStats={initialSeasonStats}
         initialSeasonYear={initialSeasonYear}
+        initialSeasonMatches={initialSeasonMatches}
+        initialSeasonYears={initialSeasonYears}
       />
 
       {/* Content */}
