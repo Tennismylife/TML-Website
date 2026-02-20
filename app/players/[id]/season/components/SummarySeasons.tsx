@@ -53,7 +53,7 @@ function formatPct(num: number) {
   return num.toFixed(2);
 }
 
-export default function SummarySeasons({ years, allMatches, playerId, playerSlug, selectedYear = null }: SummarySeasonsProps) {
+export default function SummarySeasons({ years, allMatches, playerId, playerSlug, selectedYear }: SummarySeasonsProps) {
   const yearlySummary = useMemo(() => {
     const validMatches = allMatches.filter(m => m.status !== false);
 
