@@ -108,6 +108,7 @@ export async function GET(request: NextRequest) {
 
       // For correctness, derive entries by deduplicating events from actual matches (one entry per event)
       const matchWhere: any = {
+        team_event: false,
         ...(selectedSurfaces.length > 0 && { surface: { in: selectedSurfaces } }),
         ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),
       };
@@ -132,6 +133,7 @@ export async function GET(request: NextRequest) {
     // =====================================================
     else {
       const where: any = {
+        team_event: false,
         ...(selectedSurfaces.length > 0 && { surface: { in: selectedSurfaces } }),
         ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),
       };

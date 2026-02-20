@@ -17,7 +17,7 @@ WITH base AS (
                COALESCE(m.surface, 'Unknown') AS surface,
                COALESCE(m.tourney_level, 'Unknown') AS tourney_level
         FROM "Match" m
-        WHERE m.winner_age IS NOT NULL
+        WHERE m.winner_age IS NOT NULL AND m.team_event = FALSE
 
         UNION ALL
 
@@ -27,7 +27,7 @@ WITH base AS (
                COALESCE(m.surface, 'Unknown') AS surface,
                COALESCE(m.tourney_level, 'Unknown') AS tourney_level
         FROM "Match" m
-        WHERE m.loser_age IS NOT NULL
+        WHERE m.loser_age IS NOT NULL AND m.team_event = FALSE
     ) combined
     WHERE player_id IS NOT NULL
     -- choose the earliest age for that player/event

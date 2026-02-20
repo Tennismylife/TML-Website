@@ -30,6 +30,7 @@ export async function GET(request: NextRequest) {
 
     const where: any = {
       round: targetRound,
+      team_event: false,
       ...(selectedSurfaces.length > 0 && { surface: { in: selectedSurfaces } }),
       ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),
     };

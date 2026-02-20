@@ -103,7 +103,7 @@ export async function GET(request: NextRequest) {
         ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),
         ...(selectedRounds.length > 0 && { round: { in: selectedRounds } }),
         ...(selectedBestOf.length > 0 && { best_of: { in: selectedBestOf } }),
-         status: true,
+        status: true,
       };
 
       const allMatches = await prisma.match.findMany({
