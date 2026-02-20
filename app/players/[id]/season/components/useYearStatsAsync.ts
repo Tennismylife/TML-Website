@@ -11,10 +11,20 @@ import { computeYearStats, emptyYearStats, type YearStatsResult } from "./comput
 export function useYearStatsAsync(
   allMatches: Match[],
   selectedYear: number,
-  playerId: string
+  playerId: string,
+  options?: {
+    /** Pre-computed stats from SSR — skips client computation for this year */
+    initialStatsForYear?: { stats: YearStatsResult; year: number } | null;
+  }
 ): { stats: YearStatsResult; computing: boolean } {
-  const [stats,     setStats    ] = useState<YearStatsResult>(emptyYearStats);
+  const initialSsr = options?.initialStatsForYear;
+  const ssrMatchesYear = initialSsr?.year === selectedYear && initialSsr?.stats != null;
+
+  const [stats,     setStats    ] = useState<YearStatsResult>(ssrMatchesYear ? initialSsr!.stats : emptyYearStats);
   const [computing, setComputing] = useState(false);
+
+  // Track whether we've already served the SSR initial stats
+  const ssrConsumedRef = useRef(ssrMatchesYear);
 
   // Refs to cancel the pending idle/timeout work on deps change
   const idleHandleRef    = useRef<number | null>(null);
@@ -27,6 +37,15 @@ export function useYearStatsAsync(
   }, [allMatches, selectedYear, playerId]);
 
   useEffect(() => {
+    // If SSR stats are valid for this year and haven't been superseded by a year change, use them directly
+    if (ssrConsumedRef.current && initialSsr?.year === selectedYear) {
+      setStats(initialSsr!.stats);
+      setComputing(false);
+      return;
+    }
+    // After a year change invalidate the SSR cache
+    ssrConsumedRef.current = false;
+
     if (!selectedYear || !allMatches.length) {
       setStats(emptyYearStats);
       setComputing(false);
@@ -75,7 +94,7 @@ export function useYearStatsAsync(
         timeoutHandleRef.current = null;
       }
     };
-  }, [allMatches, selectedYear, playerId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [allMatches, selectedYear, playerId, initialSsr]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return { stats, computing };
 }

@@ -10,6 +10,7 @@ import { getSurfaceColor, palette } from "@/lib/colors";
 const SummarySeasons = dynamic(() => import('./SummarySeasons'), { ssr: true });
 import TournamentGrid from "../../TournamentGrid";
 import { useYearStatsAsync } from "./useYearStatsAsync";
+import type { YearStatsResult } from "./computeYearStats";
 import { useRouter, usePathname, useSearchParams } from "next/navigation"; // <--- added
 
 interface SeasonsProps {
@@ -18,6 +19,9 @@ interface SeasonsProps {
   initialYears?: number[];
   initialAllMatches?: Match[];
   initialSelectedYear?: number | null;
+  /** Pre-computed stats from SSR — avoids all client-side calculation on first render */
+  initialSeasonStats?: YearStatsResult | null;
+  initialSeasonYear?: number | null;
 }
 
 const getTourneyLink = (tourneySlug?: string | null, tourneyId?: string | null, year?: number | null) => {
@@ -102,7 +106,7 @@ const WLStatTable: React.FC<WLStatTableProps> = ({ title, rows }) => {
 };
 
 // ===================== Seasons Component =====================
-export default function Seasons({ playerId, playerSlug, initialYears, initialAllMatches, initialSelectedYear }: SeasonsProps) {
+export default function Seasons({ playerId, playerSlug, initialYears, initialAllMatches, initialSelectedYear, initialSeasonStats, initialSeasonYear }: SeasonsProps) {
   const router = useRouter(); // <--- added
   const pathname = usePathname(); // <--- added
   const searchParams = useSearchParams(); // <--- added
@@ -129,7 +133,23 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
   }, [playerId, resolvedPlayerSlug, playerSlug]);
 
   const [years, setYears] = useState<number[]>(initialYears ?? []);
-  const [selectedYear, setSelectedYear] = useState<number | null>(initialSelectedYear ?? null);
+  // Lazy initializer: read from props first, then fall back to URL at mount time (avoids one-frame flicker)
+  const [selectedYear, setSelectedYear] = useState<number | null>(() => {
+    if (initialSelectedYear) return initialSelectedYear;
+    if (initialSeasonYear)   return initialSeasonYear;
+    // Try to read from URL synchronously (only works client-side)
+    if (typeof window !== 'undefined') {
+      const parts = window.location.pathname.split('/').filter(Boolean);
+      const seasonIdx = parts.lastIndexOf('season');
+      if (seasonIdx !== -1 && seasonIdx < parts.length - 1) {
+        const maybeYear = Number(parts[seasonIdx + 1]);
+        if (!Number.isNaN(maybeYear) && maybeYear > 1900) return maybeYear;
+      }
+      const yp = new URLSearchParams(window.location.search).get('year');
+      if (yp) { const y = Number(yp); if (!Number.isNaN(y) && y > 1900) return y; }
+    }
+    return null;
+  });
   const [loading, setLoading] = useState<boolean>(initialAllMatches ? false : true);
   const [error, setError] = useState<string | null>(null);
   const [allMatches, setAllMatches] = useState<Match[]>(initialAllMatches ?? []);
@@ -318,8 +338,13 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
     }
   };
 
-  // Heavy computation runs off the main thread via requestIdleCallback
-  const { stats, computing } = useYearStatsAsync(allMatches, selectedYear ?? 0, playerId);
+  // Heavy computation runs off the main thread via requestIdleCallback.
+  // When SSR pre-computed initialSeasonStats, the hook skips client-side computation entirely for that year.
+  const { stats, computing } = useYearStatsAsync(allMatches, selectedYear ?? 0, playerId, {
+    initialStatsForYear: (initialSeasonStats && initialSeasonYear)
+      ? { stats: initialSeasonStats, year: initialSeasonYear }
+      : null,
+  });
   const {
     tourneysForYear,
     seasonAgg,

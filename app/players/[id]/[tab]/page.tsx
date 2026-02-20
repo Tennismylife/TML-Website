@@ -529,6 +529,51 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
     }
   }
 
+  // ── Season tab: compute stats server-side so the client renders without any JS computation ──
+  let initialSeasonStats: any = null;
+  let initialSeasonYear: number | null = null;
+  if (tab === 'season') {
+    const sp: Record<string, any> = resolvedParamsObj || {};
+    const yearParam = sp?.year ? Number(sp.year) : null;
+    if (yearParam && player) {
+      try {
+        const raw = await prisma.match.findMany({
+          where: {
+            status: true,
+            year: yearParam,
+            OR: [{ winner_id: player.id }, { loser_id: player.id }],
+          },
+          select: {
+            status: true, year: true, tourney_name: true, tourney_date: true,
+            round: true, winner_id: true, loser_id: true, surface: true,
+            tourney_level: true, tourney_id: true, winner_rank: true,
+            loser_rank: true, score: true, team_event: true,
+          }
+        });
+        // Serialize for server→client: convert Date→ISO string, IDs→string
+        const serialized = raw.map((m: any) => ({
+          ...m,
+          tourney_date: m.tourney_date instanceof Date ? m.tourney_date.toISOString() : (m.tourney_date ?? null),
+          winner_id: m.winner_id != null ? String(m.winner_id) : null,
+          loser_id:  m.loser_id  != null ? String(m.loser_id)  : null,
+        }));
+        const { computeYearStats } = await import('../season/components/computeYearStats');
+        const computed = computeYearStats(serialized as any[], yearParam, String(player.id));
+        // Serialize Date objects inside tourneysForYear
+        initialSeasonStats = {
+          ...computed,
+          tourneysForYear: computed.tourneysForYear.map((t: any) => ({
+            ...t,
+            date: t.date instanceof Date ? t.date.toISOString() : t.date,
+          })),
+        };
+        initialSeasonYear = yearParam;
+      } catch (e) {
+        // SSR stats failed; client will compute on its own
+      }
+    }
+  }
+
   // Render SEO script BEFORE the client component (must be server-rendered)
   return (
     <>
@@ -555,7 +600,7 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
         <AllMatchesServer playerId={player.id} matches={allMatchesForSSR} heading={matchesHeading} />
       ) : null}
 
-      <PlayerClient params={{ id: player.id, tab: tabParam ?? 'matches' }} initialMatches={allMatchesForSSR ?? undefined} initialFacets={serverFacets ?? undefined} initialHeading={matchesHeading ?? 'Matches'} initialTotals={{ totalWins: careerWins, totalLosses: careerLosses }} />
+      <PlayerClient params={{ id: player.id, tab: tabParam ?? 'matches' }} initialMatches={allMatchesForSSR ?? undefined} initialFacets={serverFacets ?? undefined} initialHeading={matchesHeading ?? 'Matches'} initialTotals={{ totalWins: careerWins, totalLosses: careerLosses }} initialSeasonStats={initialSeasonStats ?? undefined} initialSeasonYear={initialSeasonYear ?? undefined} />
     </>
   );
 }

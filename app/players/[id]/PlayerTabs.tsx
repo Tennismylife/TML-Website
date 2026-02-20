@@ -31,10 +31,11 @@ interface PlayerTabsProps {
   initialHeading?: string;
   initialTotals?: { totalWins?: number; totalLosses?: number };
   initialFacets?: any;
-
+  initialSeasonStats?: any;
+  initialSeasonYear?: number | null;
 }
 
-export default function PlayerTabs({ player, tabs, initialTab, setTab, tournamentsFilters, setTournamentsFilters, h2hFilters, setH2HFilters, initialMatches, initialHeading, initialTotals, initialFacets }: PlayerTabsProps) {
+export default function PlayerTabs({ player, tabs, initialTab, setTab, tournamentsFilters, setTournamentsFilters, h2hFilters, setH2HFilters, initialMatches, initialHeading, initialTotals, initialFacets, initialSeasonStats, initialSeasonYear }: PlayerTabsProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -120,7 +121,7 @@ export default function PlayerTabs({ player, tabs, initialTab, setTab, tournamen
       content = <AllMatches playerId={player.id} initialMatches={initialMatches} initialHeading={initialHeading} initialTotals={initialTotals} initialFacets={initialFacets} />;
       break;
     case "season":
-      content = <Seasons playerId={player.id} playerSlug={player.slug} />;
+      content = <Seasons playerId={player.id} playerSlug={player.slug} initialSeasonStats={initialSeasonStats} initialSeasonYear={initialSeasonYear} />;
       break;
     case "tournaments":
       content = <Tournaments playerId={player.id} filters={tournamentsFilters} setFilters={setTournamentsFilters} />;
