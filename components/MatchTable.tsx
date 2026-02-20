@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Match, SortDirection, SortKey } from "@/types";
 import Flag from '@/components/Flag';
-import { getTourneyHref, extractUniqueSurfaces, getPlayerHref, getPlayerHrefWithTab, formatDateISO } from "@/lib/utils";
+import { getTourneyHref, extractUniqueSurfaces, getPlayerHref, getPlayerHrefWithTab, formatDateISO, createH2HUrl } from "@/lib/utils";
 import { useEffect, useState, useMemo, useRef } from "react";
 
 interface MatchTableProps {
@@ -15,6 +15,7 @@ interface MatchTableProps {
   setSortKey: (key: SortKey) => void;
   setSortDir: (dir: SortDirection) => void;
   playerId: string;
+  playerSlug?: string | null;
   onHeaderHeightChange?: (h: number) => void;
   // If provided, player links will include this tab (e.g. 'matches')
   currentTab?: string | null;
@@ -50,6 +51,7 @@ export default function MatchTable({
   setSortKey,
   setSortDir,
   playerId,
+  playerSlug,
   onHeaderHeightChange,
   currentTab = null,
 }: MatchTableProps) {
@@ -233,6 +235,7 @@ export default function MatchTable({
                   { id: "loser_rank", label: "Lrk", key: "loser_rank" as SortKey },
                   { id: "loser_name", label: "Loser", key: "loser_name" as SortKey },
                   { id: "score", label: "Score", key: "score" as SortKey },
+                  { id: "h2h", label: "H2H", key: null as unknown as SortKey },
                   { id: "best_of", label: "BoF", key: "best_of" as SortKey },
                   { id: "minutes", label: "Min", key: "minutes" as SortKey },
                   ...statsColumns.map(c => ({ ...c, key: c.id as SortKey })),
@@ -264,7 +267,13 @@ export default function MatchTable({
 
               return (
                 <tr key={index} className="hover:bg-gray-800/50">
-                  <td className={tdBase}>{formatDateISO(m.tourney_date)}</td>
+                  <td className={tdBase}>
+                    {m.year && playerSlug ? (
+                      <Link href={`/players/${playerSlug}/season/${m.year}`} className="hover:underline">
+                        {formatDateISO(m.tourney_date)}
+                      </Link>
+                    ) : formatDateISO(m.tourney_date)}
+                  </td>
                   <td className={tdBase}>
                     <Link href={getTourneyHref({ slug: (m as any).tourney_slug ?? undefined, id: m.tourney_id, name: m.tourney_name, year: m.year })} className="text-white hover:underline">
                       {m.tourney_name}
@@ -293,6 +302,17 @@ export default function MatchTable({
                     </Link>
                   </td>
                   <td className={tdBase}>{m.score}</td>
+                  <td className={tdBase}>
+                    {m.winner_name && m.loser_name && (
+                      <Link
+                        href={createH2HUrl(m.winner_name, m.loser_name)}
+                        className="text-yellow-400 hover:underline text-xs font-semibold"
+                        title={`${m.winner_name} vs ${m.loser_name} H2H`}
+                      >
+                        H2H
+                      </Link>
+                    )}
+                  </td>
                   <td className={`${tdBase}`}>{m.best_of ?? "-"}</td>
                   <td className={`${tdBase}`}>{m.minutes ?? "-"}</td>
 

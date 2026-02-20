@@ -113,6 +113,13 @@ export default async function SeasonsServer({ searchParams, ...serverProps }: { 
   }
   const fetchRequestId = serverProps.fetchRequestId ?? (fetchEnabled ? String(Date.now()) : null)
 
+  // Debugging: log prefetch status for the `percentage` subtab in dev
+  if (process.env.NODE_ENV !== 'production') {
+    try {
+      console.debug('[Seasons.server] activeSubTab=%s prefetchEnabled=%s prefetched.percentage=%s fetchEnabled=%s', activeSubTab, String(prefetchEnabled), Array.isArray(prefetchedData?.percentage) ? String(prefetchedData.percentage.length) : String(prefetchedData?.percentage), String(fetchEnabled));
+    } catch (e) { /* ignore */ }
+  }
+
   return (
     <ServerWrapper
       Component={Seasons}

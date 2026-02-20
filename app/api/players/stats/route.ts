@@ -21,11 +21,14 @@ export async function GET(request: NextRequest) {
             { score: { contains: "DEF", mode: "insensitive" } },
             { score: { contains: "W/O", mode: "insensitive" } },
             { score: { contains: "WEA", mode: "insensitive" } },
+            // Exclude matches explicitly marked as not counting (status === false)
+            { status: false },
           ],
         },
       },
       select: {
         winner_id: true,
+        loser_id: true,
         tourney_level: true,
         surface: true,
         round: true,
@@ -43,6 +46,12 @@ export async function GET(request: NextRequest) {
     let winsGrass = 0;
     let winsClay = 0;
     let winsCarpet = 0;
+
+    let lossesAll = 0;
+    let lossesHard = 0;
+    let lossesGrass = 0;
+    let lossesClay = 0;
+    let lossesCarpet = 0;
 
     let totalAll = 0;
     let totalGrandSlam = 0;
@@ -64,29 +73,34 @@ export async function GET(request: NextRequest) {
       totalAll += 1;
       if (m.tourney_level === 'G') totalGrandSlam += 1;
       if (m.tourney_level === 'M') totalMasters1000 += 1;
-      if (m.surface === 'Hard') totalHard += 1;
-      if (m.surface === 'Grass') totalGrass += 1;
-      if (m.surface === 'Clay') totalClay += 1;
-      if (m.surface === 'Carpet') totalCarpet += 1;
+      const surfRaw = m.surface;
+      if (surfRaw === 'Hard') totalHard += 1;
+      if (surfRaw === 'Grass') totalGrass += 1;
+      if (surfRaw === 'Clay') totalClay += 1;
+      if (surfRaw === 'Carpet') totalCarpet += 1; 
 
       if (m.winner_id === id) {
         winsAll += 1;
         if (m.tourney_level === 'G') winsGrandSlam += 1;
         if (m.tourney_level === 'M') winsMasters1000 += 1;
-        if (m.surface === 'Hard') winsHard += 1;
-        if (m.surface === 'Grass') winsGrass += 1;
-        if (m.surface === 'Clay') winsClay += 1;
-        if (m.surface === 'Carpet') winsCarpet += 1;
-
-        if (m.round === 'F' && !m.score?.includes("WEA") && !["Davis Cup", "World Team Cup", "Laver Cup", "ATP Cup"].some(name => (m.tourney_name ?? '').includes(name))) {
-          titlesAll += 1;
-          if (m.tourney_level === 'G') titlesGrandSlam += 1;
+        const surfRaw = m.surface;
+        if (surfRaw === 'Hard') winsHard += 1;
+        if (surfRaw === 'Grass') winsGrass += 1;
+        if (surfRaw === 'Clay') winsClay += 1;
+        if (surfRaw === 'Carpet') winsCarpet += 1;
           if (m.tourney_level === 'M') titlesMasters1000 += 1;
           if (m.surface === 'Hard') titlesHard += 1;
           if (m.surface === 'Grass') titlesGrass += 1;
           if (m.surface === 'Clay') titlesClay += 1;
           if (m.surface === 'Carpet') titlesCarpet += 1;
-        }
+      } else {
+        // player lost this match
+        lossesAll += 1;
+        const surfRaw = m.surface;
+        if (surfRaw === 'Hard') lossesHard += 1;
+        if (surfRaw === 'Grass') lossesGrass += 1;
+        if (surfRaw === 'Clay') lossesClay += 1;
+        if (surfRaw === 'Carpet') lossesCarpet += 1;
       }
     });
 
@@ -98,6 +112,11 @@ export async function GET(request: NextRequest) {
       winsGrass,
       winsClay,
       winsCarpet,
+      lossesAll,
+      lossesHard,
+      lossesGrass,
+      lossesClay,
+      lossesCarpet,
       totalAll,
       totalGrandSlam,
       totalMasters1000,
