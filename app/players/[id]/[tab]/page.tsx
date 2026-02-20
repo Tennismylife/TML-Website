@@ -277,9 +277,28 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
       : (resolvedSearchParams || {});
 
   // PLAYER
-  const player = !isSlug
-    ? await prisma.player.findUnique({ where: { id: String(slugParam) }, select: { id: true, player: true, atpname: true, slug: true, birthdate: true, ioc: true, birthplace: true } })
-    : await prisma.player.findUnique({ where: { slug: String(slugParam).toLowerCase() }, select: { id: true, player: true, atpname: true, slug: true, birthdate: true, ioc: true, birthplace: true } });
+  let player: any = null;
+  if (!isSlug) {
+    player = await prisma.player.findUnique({ where: { id: String(slugParam) }, select: { id: true, player: true, atpname: true, slug: true, birthdate: true, ioc: true, birthplace: true } });
+  } else {
+    player = await prisma.player.findUnique({ where: { slug: String(slugParam).toLowerCase() }, select: { id: true, player: true, atpname: true, slug: true, birthdate: true, ioc: true, birthplace: true } });
+    // Fallback: legacy codes (e.g. C274, H377) → resolve via slug-map
+    if (!player) {
+      try {
+        const apiUrl = 'https://stats.tennismylife.org/api/slug-map';
+        const apiResp = await fetch(apiUrl, { method: 'GET', cache: 'force-cache' });
+        if (apiResp.ok) {
+          const maps = await apiResp.json();
+          const mapped = maps?.players?.[String(slugParam).toUpperCase()];
+          if (mapped) {
+            player = await prisma.player.findUnique({ where: { slug: mapped }, select: { id: true, player: true, atpname: true, slug: true, birthdate: true, ioc: true, birthplace: true } });
+          }
+        }
+      } catch (e) {
+        // ignore: best-effort
+      }
+    }
+  }
 
   if (!player) return <div>Player not found: {slugParam}</div>;
 
