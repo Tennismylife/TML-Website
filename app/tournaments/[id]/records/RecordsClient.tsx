@@ -13,6 +13,32 @@ import AverageAgeSection from "./AverageAgeSection";
 import RoundsSection from "./RoundsSection";import StreakSection from './StreakSection';import TournamentHeader from "../TournamentHeader";
 import TournamentTabs from "./TournamentTabs";
 
+/** Safely extract a non-numeric display name from a Json? tournament.name field.
+ *  Returns `fallback` if the value is missing, a bare number, or a pure-digit string. */
+function safeTournamentName(name: any, fallback: string): string {
+  if (!name) return fallback;
+  if (typeof name === 'number' || typeof name === 'boolean') return fallback;
+  if (typeof name === 'string') {
+    const t = name.trim();
+    return (t && !/^\d+$/.test(t)) ? t : fallback;
+  }
+  if (Array.isArray(name)) {
+    for (const v of name) {
+      const r = safeTournamentName(v, '');
+      if (r) return r;
+    }
+    return fallback;
+  }
+  if (typeof name === 'object') {
+    for (const v of Object.values(name as object)) {
+      const r = safeTournamentName(v, '');
+      if (r) return r;
+    }
+    return fallback;
+  }
+  return fallback;
+}
+
 export default function RecordsPageClient({ params }: { params: Promise<{ id: string }> } ) {
   // Accept both a Promise (Next's server use(params)) or a plain object (useful in tests)
   // Resolve params into a stable `id` state so hooks and effects run predictably
@@ -144,9 +170,7 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
       if (!(sub === 'youngestrounds' || sub === 'oldestrounds')) return;
       if (!titleSeg) return;
 
-      const displayName = tournament
-        ? (Array.isArray(tournament.name) ? (tournament.name as any[]).at(-1) || String(id).replace(/-/g, ' ') : (tournament.name as any) || String(id).replace(/-/g, ' '))
-        : String(id).replace(/-/g, ' ');
+      const displayName = safeTournamentName(tournament?.name, String(id).replace(/-/g, ' '));
       const humanizedDisplayName = String(displayName).replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
       const side = sub === 'youngestrounds' ? 'Youngest Players' : 'Oldest Players';
@@ -187,9 +211,7 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
   }
 
   // Compute a display name for the H1: prefer DB name when available, otherwise humanize the route id
-  const displayName = tournament
-    ? (Array.isArray(tournament.name) ? (tournament.name as any[]).at(-1) || String(id).replace(/-/g, ' ') : (tournament.name as any) || String(id).replace(/-/g, ' '))
-    : String(id).replace(/-/g, ' ');
+  const displayName = safeTournamentName(tournament?.name, String(id).replace(/-/g, ' '));
   const humanizedDisplayName = String(displayName).replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
 

@@ -7,8 +7,12 @@ import type { Metadata } from 'next';
 
 function extractName(nameField: any): string {
   if (!nameField) return '';
-  if (typeof nameField === 'string') return nameField;
-  if (typeof nameField === 'number' || typeof nameField === 'boolean') return String(nameField);
+  if (typeof nameField === 'string') {
+    if (/^\d+$/.test(nameField.trim())) return '';
+    return nameField;
+  }
+  // Numbers are never valid names
+  if (typeof nameField === 'number' || typeof nameField === 'boolean') return '';
   if (Array.isArray(nameField)) {
     for (const v of nameField) {
       const r = extractName(v);

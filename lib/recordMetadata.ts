@@ -2,8 +2,13 @@ import { fetchTournamentHeaderCached } from './tournamentHeaderCache';
 
 function extractName(nameField: any): string {
   if (!nameField) return '';
-  if (typeof nameField === 'string') return nameField;
-  if (typeof nameField === 'number' || typeof nameField === 'boolean') return String(nameField);
+  if (typeof nameField === 'string') {
+    // Reject purely numeric strings (e.g. a DB id stored as name)
+    if (/^\d+$/.test(nameField.trim())) return '';
+    return nameField;
+  }
+  // Numbers are never valid names (they're likely DB IDs stored in the wrong field)
+  if (typeof nameField === 'number' || typeof nameField === 'boolean') return '';
   if (Array.isArray(nameField)) {
     for (const v of nameField) {
       const r = extractName(v);
