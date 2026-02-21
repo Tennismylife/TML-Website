@@ -119,14 +119,7 @@ export default async function RecordsCatchAllPage({
   }
 
   // Compute a server-side H1 for deeper record routes (percentage/overall, percentage/per-round, ages per-round overviews, etc.)
-  let tournamentName = String(id || '').replace(/-/g, ' ');
-  try {
-    const header = await fetchTournamentHeaderCached(id);
-    const raw = header && header.name ? (Array.isArray(header.name) ? header.name.at(-1) : header.name) : null;
-    if (raw) tournamentName = extractName(raw) || tournamentName;
-  } catch (e) {
-    // ignore and use humanized id
-  }
+  let tournamentName = await getTournamentName(id);
 
   const humanTournament = humanize(tournamentName);
 
