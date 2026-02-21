@@ -1,34 +1,8 @@
 import React from 'react';
 import RecordsPage from "../page";
-import { getTournamentName } from '@/lib/recordMetadata';
-import { prisma } from '@/lib/prisma';
-import { resolveCanonicalTourneyId } from '@/lib/tournament';
+import { getTournamentName } from '@/lib/getTournamentName';
 import type { Metadata } from 'next';
 
-function extractName(nameField: any): string {
-  if (!nameField) return '';
-  if (typeof nameField === 'string') {
-    if (/^\d+$/.test(nameField.trim())) return '';
-    return nameField;
-  }
-  // Numbers are never valid names
-  if (typeof nameField === 'number' || typeof nameField === 'boolean') return '';
-  if (Array.isArray(nameField)) {
-    for (const v of nameField) {
-      const r = extractName(v);
-      if (r) return r;
-    }
-    return '';
-  }
-  if (typeof nameField === 'object') {
-    for (const v of Object.values(nameField)) {
-      const r = extractName(v);
-      if (r) return r;
-    }
-    return '';
-  }
-  return '';
-}
 function humanizeName(name: any) {
   const s = String(name || '');
   return s.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
@@ -38,7 +12,8 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   const { id: param, tab } = await params;
 
   const site = process.env.SITE_URL || 'https://stats.tennismylife.org';
-  const displayFromParam = humanizeName(String(param ?? 'Tournament').replace(/-/g, ' '));
+  // Use real DB name (works in SSR via prisma)
+  const displayFromParam = await getTournamentName(String(param ?? ''));
 
   const tabLabels: Record<string, string> = {
     count: 'Counts',
@@ -159,32 +134,12 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   }
 
   // Return deterministic metadata based on the path (fast and reliable)
-  const baseMeta: Metadata = {
+  return {
     title: titleFromParam,
     openGraph: { title: titleFromParam, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - ${typeLabelFromParam}`, width: 1200, height: 630, type: 'image/png' }] },
     twitter: { card: 'summary_large_image', title: titleFromParam, images: [ogImageFromParam] },
     alternates: { canonical: ogUrlFromParam },
   };
-
-  // Best-effort DB lookup (do not block metadata)
-  (async () => {
-    try {
-      let tournament: any = null;
-      if (/^\d+$/.test(param)) {
-        const canonicalId = await resolveCanonicalTourneyId(param);
-        if (canonicalId) {
-          const idNum = parseInt(canonicalId, 10);
-          tournament = await prisma.tournament.findUnique({ where: { id: idNum }, select: { id: true, name: true, slug: true } });
-        }
-      } else {
-        tournament = await prisma.tournament.findUnique({ where: { slug: param }, select: { id: true, name: true, slug: true } });
-      }
-    } catch (err) {
-      // ignore
-    }
-  })();
-
-  return baseMeta;
 }
 
 export default async function RecordsTabPage({ params }: { params: Promise<{ id: string; tab?: string }> }) {

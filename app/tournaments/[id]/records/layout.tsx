@@ -76,11 +76,27 @@ export async function generateMetadata({ params, searchParams }: any): Promise<M
   const tournament = await getTournament(String(param));
   const canonicalTournamentSlug = tournament?.slug ?? String(param);
 
+  // Resolve a human-readable display name from the DB record
+  function extractTourneyName(nameField: any): string {
+    if (!nameField) return '';
+    if (typeof nameField === 'string') return /^\d+$/.test(nameField.trim()) ? '' : nameField;
+    if (typeof nameField === 'number' || typeof nameField === 'boolean') return '';
+    if (Array.isArray(nameField)) { let last = ''; for (const v of nameField) { const r = extractTourneyName(v); if (r) last = r; } return last; }
+    if (typeof nameField === 'object') { let last = ''; for (const v of Object.values(nameField)) { const r = extractTourneyName(v); if (r) last = r; } return last; }
+    return '';
+  }
+  const rawName = tournament ? extractTourneyName(tournament.name) : '';
+  const resolvedDisplayName = rawName
+    ? humanizeName(rawName)
+    : (tournament?.slug && !/^\d+$/.test(String(tournament.slug))
+        ? humanizeName(String(tournament.slug).replace(/-/g, ' '))
+        : humanizeName(String(param ?? 'Tournament').replace(/-/g, ' ')));
+
   const segs = Array.isArray(segments) ? segments : (segments ? [segments] : []);
   const tab = segs.length > 0 ? segs[0] : null;
   const sub = segs.length > 1 ? segs[1] : null;
 
-  const displayFromParam = humanizeName(String(param ?? 'Tournament').replace(/-/g, ' '));
+  const displayFromParam = resolvedDisplayName;
   const tabLabels: Record<string, string> = {
     count: 'Counts',
     rounds: 'Rounds',

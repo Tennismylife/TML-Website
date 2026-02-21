@@ -1,5 +1,6 @@
 import AgesFull from '@/app/tournaments/[id]/records/ages/_components/AgesFull';
-import { getTournamentName, makeTitle } from '@/lib/recordMetadata';
+import { getTournamentName } from '@/lib/getTournamentName';
+import { makeTitle } from '@/lib/recordMetadata';
 import ViewRecordsCTA from '../../../ViewRecordsCTA';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string; title: string }> }) {

@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
 // Mock the metadata helper to return the canonical tournament name on the server
-vi.mock('@/lib/recordMetadata', () => ({
+vi.mock('@/lib/getTournamentName', () => ({
   getTournamentName: vi.fn().mockResolvedValue('Australian Open'),
 }));
 
@@ -24,11 +24,6 @@ vi.mock('next/navigation', () => ({
 }));
 vi.mock('@/lib/tournamentHeaderCache', () => ({
   fetchTournamentHeaderCached: () => Promise.resolve({ name: 'Australian Open' })
-}));
-
-// Mock the metadata helper to return the canonical tournament name on the server
-vi.mock('@/lib/recordMetadata', () => ({
-  getTournamentName: vi.fn().mockResolvedValue('Australian Open'),
 }));
 
 // avoid rendering heavier header/tabs components in unit tests; mock them to simple placeholders

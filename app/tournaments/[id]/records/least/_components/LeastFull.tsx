@@ -1,7 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
-import { getTournamentName, makeLeastLabel } from '@/lib/recordMetadata';
+import { getTournamentName } from '@/lib/getTournamentName';
+import { makeLeastLabel } from '@/lib/recordMetadata';
 import { playerMatchesUrl } from '../../../../../records/nav';
 
 import { metadataBase } from '@/lib/site';

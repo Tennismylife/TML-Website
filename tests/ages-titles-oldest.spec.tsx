@@ -2,12 +2,12 @@ import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
 
-vi.mock('@/lib/recordMetadata', () => ({
+vi.mock('@/lib/getTournamentName', () => ({
   getTournamentName: vi.fn().mockResolvedValue('Australian Open'),
 }));
 
 import AgesFull from '@/app/tournaments/[id]/records/ages/_components/AgesFull';
-import { getTournamentName } from '@/lib/recordMetadata';
+import { getTournamentName } from '@/lib/getTournamentName';
 
 describe('Ages titles oldest heading and title', () => {
   let originalFetch: any;

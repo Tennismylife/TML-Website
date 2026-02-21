@@ -1,5 +1,6 @@
 import RoundFull from '../_components/RoundFull';
-import { getTournamentName, makeTitle, humanize } from '@/lib/recordMetadata';
+import { getTournamentName } from '@/lib/getTournamentName';
+import { makeTitle, humanize } from '@/lib/recordMetadata';
 import ViewRecordsCTA from '../../ViewRecordsCTA';
 import { getRoundFullName } from '@/lib/utils';
 import { prisma } from '@/lib/prisma';

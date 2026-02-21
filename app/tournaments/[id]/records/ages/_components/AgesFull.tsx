@@ -4,7 +4,7 @@ import Flag from '@/components/Flag';
 import { playerMatchesUrl } from '../../../../../records/nav';
 
 import { metadataBase } from '@/lib/site';
-import { getTournamentName } from '@/lib/recordMetadata';
+import { getTournamentName } from '@/lib/getTournamentName';
 import { getRoundFullName } from '@/lib/utils';
 import AgesFullClient from './AgesFullClient';
 

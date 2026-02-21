@@ -1,5 +1,6 @@
 import PercentageFull from '@/app/tournaments/[id]/records/percentage/_components/PercentageFull';
-import { getTournamentName, makeTitle } from '@/lib/recordMetadata';
+import { getTournamentName } from '@/lib/getTournamentName';
+import { makeTitle } from '@/lib/recordMetadata';
 import { getRoundFullName } from '@/lib/utils';
 import ViewRecordsCTA from '../../../ViewRecordsCTA';
 import { prisma } from '@/lib/prisma';

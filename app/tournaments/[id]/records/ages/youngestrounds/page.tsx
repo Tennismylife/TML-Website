@@ -1,6 +1,6 @@
 import React from 'react';
 import TournamentPage from '@/app/tournaments/[id]/records/page';
-import { getTournamentName } from '@/lib/recordMetadata';
+import { getTournamentName } from '@/lib/getTournamentName';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const p = await params;

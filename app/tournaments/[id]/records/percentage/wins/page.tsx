@@ -1,5 +1,6 @@
 import TournamentPage from '@/app/tournaments/[id]/records/page';
-import { getTournamentName, makeTitle } from '@/lib/recordMetadata';
+import { getTournamentName } from '@/lib/getTournamentName';
+import { makeTitle } from '@/lib/recordMetadata';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const p = await params;

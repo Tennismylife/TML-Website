@@ -5,7 +5,7 @@ import Link from 'next/link';
 import ViewRecordsCTA from '../../ViewRecordsCTA';
 import CountFull from '../_components/CountFull';
 import TournamentHeader from '../../../TournamentHeader';
-import { getTournamentName } from '@/lib/recordMetadata';
+import { getTournamentName } from '@/lib/getTournamentName';
 import { getCountSection } from '@/lib/records/count';
 import Script from 'next/script';
 import { prisma } from '@/lib/prisma';

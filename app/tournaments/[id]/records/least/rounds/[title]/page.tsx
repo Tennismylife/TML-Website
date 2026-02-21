@@ -2,7 +2,8 @@ import LeastFull from '@/app/tournaments/[id]/records/least/_components/LeastFul
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import TournamentHeader from '../../../../TournamentHeader';
-import { getTournamentName, makeTitle, makeLeastLabel } from '@/lib/recordMetadata';
+import { getTournamentName } from '@/lib/getTournamentName';
+import { makeTitle, makeLeastLabel } from '@/lib/recordMetadata';
 import { prisma } from '@/lib/prisma';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
 

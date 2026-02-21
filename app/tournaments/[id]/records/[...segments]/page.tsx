@@ -2,32 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import RecordsPage from "../page";
-import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
-
-function extractName(nameField: any): string {
-  if (!nameField) return '';
-  if (typeof nameField === 'string') {
-    if (/^\d+$/.test(nameField.trim())) return '';
-    return nameField;
-  }
-  // Numbers are never valid names
-  if (typeof nameField === 'number' || typeof nameField === 'boolean') return '';
-  if (Array.isArray(nameField)) {
-    for (const v of nameField) {
-      const r = extractName(v);
-      if (r) return r;
-    }
-    return '';
-  }
-  if (typeof nameField === 'object') {
-    for (const v of Object.values(nameField)) {
-      const r = extractName(v);
-      if (r) return r;
-    }
-    return '';
-  }
-  return '';
-}
+import { getTournamentName } from '@/lib/getTournamentName';
 
 function humanize(s: string) {
   return String(s || '').replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
@@ -71,15 +46,8 @@ function chooseRecordLabel(segments: string[] | undefined) {
 export async function generateMetadata({ params }: { params: Promise<{ id: string; segments?: string[] }> }) {
   const p = await params;
   const { id, segments } = p;
-  // Humanize the param by default (e.g., 'australian-open' -> 'Australian Open')
-  let tournamentName = humanize(String(id).replace(/-/g, ' '));
-  try {
-    const header = await fetchTournamentHeaderCached(id);
-    const raw = extractName(header?.name);
-    if (raw) tournamentName = humanize(raw);
-  } catch (e) {
-    // ignore and use humanized id as fallback
-  }
+  // Use real DB name via prisma (works in SSR)
+  const tournamentName = await getTournamentName(id);
 
   // Special-case: when path is /records/count (no inner section), use the site-specific title required.
   if (segments && segments.length === 1 && segments[0] === 'count') {
@@ -182,9 +150,12 @@ export default async function RecordsCatchAllPage({
 
   const idPromise = Promise.resolve({ id });
 
+  const showViewRecords = !(segments && segments[0] === 'percentage');
+
   return (
     <div>
-      <main className="w-full mx-auto pt-24 md:pt-32 py-8 px-0 text-white relative" style={{ backgroundColor: 'rgba(17,24,39,0.95)', backdropFilter: 'blur(6px)', minHeight: '100vh' }}>
+      <main className={`w-full mx-auto ${showViewRecords ? 'pt-24 md:pt-32' : 'pt-16 md:pt-20'} py-8 px-0 text-white relative`} style={{ backgroundColor: 'rgba(17,24,39,0.95)', backdropFilter: 'blur(6px)', minHeight: '100vh' }}>
+          {showViewRecords && (
           <Link
             href={`/tournaments/${id}/records`}
             className="group relative inline-flex items-center gap-3 px-5 py-2 bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-black text-sm md:text-base rounded-full shadow-2xl hover:shadow-yellow-500/50 transform hover:scale-105 transition-all duration-300 overflow-hidden absolute top-6 left-6 z-50"
@@ -195,8 +166,9 @@ export default async function RecordsCatchAllPage({
             <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-2 transition-transform" />
             <span className="uppercase">VIEW RECORDS</span>
           </Link>
+          )}
 
-          <h1 className="relative z-50 mt-8 text-4xl md:text-5xl font-extrabold mb-6 text-center text-white">{`${humanTournament} | ${recordTitle}`}</h1>
+          <h1 className={`relative z-50 text-4xl md:text-5xl font-extrabold mb-6 text-center text-white${showViewRecords ? ' mt-8' : ''}`}>{`${humanTournament} | ${recordTitle}`}</h1>
           <RecordsPage params={idPromise} />
       </main>
     </div>

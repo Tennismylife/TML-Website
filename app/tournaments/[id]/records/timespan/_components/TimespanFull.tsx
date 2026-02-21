@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
 import { metadataBase } from '@/lib/site';
-import { getTournamentName } from '@/lib/recordMetadata';
+import { getTournamentName } from '@/lib/getTournamentName';
 import { playerMatchesUrl } from '../../../../../records/nav';
 import { getRoundFullName } from '@/lib/utils';
 

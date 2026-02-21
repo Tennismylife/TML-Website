@@ -1,5 +1,6 @@
 import RoundOnEntriesFull from '@/app/tournaments/[id]/records/roundsonentries/_components/RoundOnEntriesFull';
-import { getTournamentName, makeTitle } from '@/lib/recordMetadata';
+import { getTournamentName } from '@/lib/getTournamentName';
+import { makeTitle } from '@/lib/recordMetadata';
 import { getRoundFullName } from '@/lib/utils';
 import ViewRecordsCTA from '../../../ViewRecordsCTA';
 import { prisma } from '@/lib/prisma';

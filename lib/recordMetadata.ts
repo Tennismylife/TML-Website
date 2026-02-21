@@ -1,46 +1,5 @@
-import { fetchTournamentHeaderCached } from './tournamentHeaderCache';
-
-function extractName(nameField: any): string {
-  if (!nameField) return '';
-  if (typeof nameField === 'string') {
-    // Reject purely numeric strings (e.g. a DB id stored as name)
-    if (/^\d+$/.test(nameField.trim())) return '';
-    return nameField;
-  }
-  // Numbers are never valid names (they're likely DB IDs stored in the wrong field)
-  if (typeof nameField === 'number' || typeof nameField === 'boolean') return '';
-  if (Array.isArray(nameField)) {
-    for (const v of nameField) {
-      const r = extractName(v);
-      if (r) return r;
-    }
-    return '';
-  }
-  if (typeof nameField === 'object') {
-    for (const v of Object.values(nameField)) {
-      const r = extractName(v);
-      if (r) return r;
-    }
-    return '';
-  }
-  return '';
-}
-
 export function humanize(s: string) {
   return String(s || '').replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-export async function getTournamentName(id: string) {
-  // default to a humanized version of the id (handles slugs like 'australian-open')
-  let tournamentName = humanize(String(id).replace(/-/g, ' '));
-  try {
-    const header = await fetchTournamentHeaderCached(id);
-    const raw = extractName(header?.name);
-    if (raw) tournamentName = humanize(raw);
-  } catch (e) {
-    // ignore and keep humanized id as fallback
-  }
-  return tournamentName;
 }
 
 export function makeTitle(recordLabel: string, tournamentName: string) {

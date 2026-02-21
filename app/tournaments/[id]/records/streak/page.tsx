@@ -1,5 +1,5 @@
 import TournamentPage from '@/app/tournaments/[id]/records/page';
-import { getTournamentName } from '@/lib/recordMetadata';
+import { getTournamentName } from '@/lib/getTournamentName';
 import { prisma } from '@/lib/prisma';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
 
