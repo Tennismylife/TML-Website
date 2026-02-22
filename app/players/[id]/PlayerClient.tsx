@@ -18,8 +18,10 @@ export default function PlayerClient(props: any) {
   const initialSeasonYear = props.initialSeasonYear;
   const initialSeasonMatches = props.initialSeasonMatches;
   const initialSeasonYears = props.initialSeasonYears;
+  // SSR-provided player data: render immediately without waiting for the API call
+  const initialPlayer: Player | null = props.initialPlayer ?? null;
 
-  const [player, setPlayer] = useState<Player | null>(null);
+  const [player, setPlayer] = useState<Player | null>(initialPlayer);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -114,7 +116,8 @@ export default function PlayerClient(props: any) {
     })();
 
     return () => controller.abort();
-  }, [playerId, router]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [playerId]);
 
   // Initialize lifted filters from current URL on mount
   const initializedRef = React.useRef(false);
@@ -268,9 +271,8 @@ export default function PlayerClient(props: any) {
     buildAndReplace();
   }, [activeTab, tournamentsFilters, h2hFilters, router]);
 
-  if (loading) return <p className="p-4 text-gray-400">Loading…</p>;
   if (error) return <p className="p-4 text-red-400">{error}</p>;
-  if (!player) return null;
+  if (!player) return <p className="p-4 text-gray-400">Loading…</p>;
 
   const tabs = [
     { id: "profile", label: "Profile" },

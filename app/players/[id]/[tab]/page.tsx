@@ -641,7 +641,7 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
         <AllMatchesServer playerId={player.id} matches={allMatchesForSSR} heading={matchesHeading} />
       ) : null}
 
-      <PlayerClient params={{ id: player.id, tab: tabParam ?? 'matches' }} initialMatches={allMatchesForSSR ?? undefined} initialFacets={serverFacets ?? undefined} initialHeading={matchesHeading ?? 'Matches'} initialTotals={{ totalWins: careerWins, totalLosses: careerLosses }} initialSeasonStats={initialSeasonStats ?? undefined} initialSeasonYear={initialSeasonYear ?? undefined} initialSeasonMatches={initialSeasonMatches ?? undefined} initialSeasonYears={initialSeasonYears ?? undefined} />
+      <PlayerClient params={{ id: player.id, tab: tabParam ?? 'matches' }} initialPlayer={player} initialMatches={allMatchesForSSR ?? undefined} initialFacets={serverFacets ?? undefined} initialHeading={matchesHeading ?? 'Matches'} initialTotals={{ totalWins: careerWins, totalLosses: careerLosses }} initialSeasonStats={initialSeasonStats ?? undefined} initialSeasonYear={initialSeasonYear ?? undefined} initialSeasonMatches={initialSeasonMatches ?? undefined} initialSeasonYears={initialSeasonYears ?? undefined} />
     </>
   );
 }

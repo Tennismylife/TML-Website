@@ -227,7 +227,7 @@ export default async function PlayerPage({ params, searchParams }: any) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
 
-      <PlayerClient params={{ id: player.id, tab: tabValue }} />
+      <PlayerClient params={{ id: player.id, tab: tabValue }} initialPlayer={player} />
     </>
   );
 }
