@@ -22,6 +22,24 @@ test.describe('Sebastian Korda – 10 latest matches on first visit', () => {
     await expect(rows.first().locator('td').first()).not.toBeEmpty();
   });
 
+  test('SSR output matches fresh API slice', async ({ page }) => {
+    // fetch API directly with no-store to bypass any caches
+    const apiResp = await page.request.get('/api/players/allmatches?id=K0AH&limit=10', { cache: 'no-store' });
+    expect(apiResp.ok()).toBe(true);
+    const apiMatches: any[] = await apiResp.json();
+    const apiDates = apiMatches.map(m => String(m.tourney_date ?? '').slice(0,10));
+
+    await page.route('**/*.js', route => route.abort());
+    await page.goto(PLAYER_URL, { waitUntil: 'domcontentloaded' });
+    const rows = page.locator('#server-all-matches table tbody tr');
+    const ssrDates = await rows.locator('td:first-child').allTextContents();
+    const norm = (d: string) => normalizeDate(d);
+    const ssrNorm = ssrDates.map(norm);
+    const apiNorm = apiDates.map(norm);
+
+    expect(ssrNorm).toEqual(apiNorm);
+  });
+
   test('Interactive: 10 rows shown in descending date order after hydration', async ({ page }) => {
     await page.goto(PLAYER_URL, { waitUntil: 'networkidle' });
 

@@ -507,8 +507,15 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
         qs.set('limit', '10');
         if (whereClause.year) qs.set('year', String(whereClause.year));
         if (whereClause.surface && typeof whereClause.surface === 'object' && 'contains' in whereClause.surface) qs.set('surface', String(whereClause.surface.contains));
-        const url = `${base}/api/players/allmatches?${qs.toString()}`;
-        const res = await fetch(url, { cache: 'force-cache' });
+        // Use relative URL so SSR fetch hits whichever host rendered this page
+        // (dev, test, or prod) instead of hardcoding the production domain.
+        const url = `/api/players/allmatches?${qs.toString()}`;
+        // For SSR preview slice we used to cache aggressively, which could
+        // return very stale results (as seen when the page initially showed
+        // 1980s matches). Always fetch fresh data here – the API itself
+        // is already cache-controlled so this does not hit the DB on every
+        // request.
+        const res = await fetch(url, { cache: 'no-store' });
         if (res.ok) {
           allMatchesForSSR = await res.json();
         } else {
