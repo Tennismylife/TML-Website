@@ -31,3 +31,6 @@ npm-debug.log*
 .yarn-debug.log*
 .yarn-integrity
 Log GPT.png
+
+# Data folder
+data/
