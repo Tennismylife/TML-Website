@@ -33,8 +33,8 @@ export default function AllMatchesServer({ playerId, matches, heading }: AllMatc
 
   return (
     <div className="w-full">
-      {/* Hidden server table (kept hidden to avoid DOM/hydration issues) */}
-      <div id="server-all-matches" className="w-full bg-gray-900/80 rounded-md p-4" style={{ display: 'none' }} suppressHydrationWarning>
+      {/* Server-rendered table: visible immediately on first load; hidden by AllMatches once the client mounts */}
+      <div id="server-all-matches" className="w-full bg-gray-900/80 rounded-md p-4" suppressHydrationWarning>
         <div className="w-full text-center mb-4">
           <div className="font-semibold text-xl sm:text-2xl leading-none text-gray-100">
             W-L: {wins}-{losses} ({winPercentage}%)

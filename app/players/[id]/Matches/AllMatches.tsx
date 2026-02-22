@@ -220,9 +220,14 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
     if (typeof window === 'undefined') return;
   }, []);
 
-  // Mount immediately (server render is already hidden with CSS)
+  // Mount immediately and hide the SSR server table (it was visible before JS loaded)
   useEffect(() => {
     setMounted(true);
+    // Hide the server-rendered table now that the interactive client component has taken over
+    if (typeof document !== 'undefined') {
+      const serverTable = document.getElementById('server-all-matches');
+      if (serverTable) serverTable.style.display = 'none';
+    }
   }, []);
 
   // NOTE: removed unconditional full fetch on mount to avoid downloading the entire match history
