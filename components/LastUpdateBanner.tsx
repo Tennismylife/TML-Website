@@ -1,10 +1,12 @@
 export default function LastUpdateBanner() {
+  const now = new Date();
   const latestUpdate = {
-    date: new Date("2026-02-03").toLocaleDateString("en-US", {
+    date: now.toLocaleDateString("en-US", {
       day: "numeric",
       month: "long",
       year: "numeric",
-    }), // → February 3, 2026
+    }),
+    iso: now.toISOString().slice(0,10),
     player: "Carlos Alcaraz",
     highlight: "reaches historic No. 3",
     points: "13,650",
@@ -20,7 +22,7 @@ export default function LastUpdateBanner() {
           <span className="inline-flex items-center rounded-full bg-emerald-600/20 px-3 py-1 text-sm font-semibold text-emerald-400 ring-1 ring-emerald-500/30">
             Last update
           </span>
-          <time className="text-sm font-medium text-gray-300" dateTime="2026-02-03">
+          <time className="text-sm font-medium text-gray-300" dateTime={latestUpdate.iso}>
             {latestUpdate.date}
           </time>
         </div>
