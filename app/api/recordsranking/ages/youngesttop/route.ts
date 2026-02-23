@@ -22,14 +22,16 @@ export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
     const top = Number(url.searchParams.get("top") ?? NaN);
-    // limit response to at most 10 entries
-    const limit = Math.min(10, Math.max(1, Number(url.searchParams.get("limit") ?? 10)));
+    // for top=50 or 100 we only want the first 10 results, otherwise allow up to 100
+    const maxAllowed = top === 50 || top === 100 ? 10 : 100;
+    const limit = Math.min(maxAllowed, Math.max(1, Number(url.searchParams.get("limit") ?? maxAllowed)));
 
     if (!Number.isInteger(top) || top < 1) {
       return NextResponse.json({ error: "Param 'top' non valido" }, { status: 400 });
     }
 
     const rows = await prisma.ranking.findMany({
+      take: limit,
       where: { rank: { lte: top } },
       select: {
         playerId: true,

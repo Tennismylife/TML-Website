@@ -22,8 +22,9 @@ export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
     const top = Number(url.searchParams.get("top") ?? NaN);
-    // limit for payload size (max 10)
-    const limit = Math.min(10, Math.max(1, Number(url.searchParams.get("limit") ?? 10)));
+    // restrict to 10 when top is 50 or 100, otherwise 100
+    const maxAllowed = top === 50 || top === 100 ? 10 : 100;
+    const limit = Math.min(maxAllowed, Math.max(1, Number(url.searchParams.get("limit") ?? maxAllowed)));
 
     if (!Number.isInteger(top) || top < 1) {
       return NextResponse.json({ error: "Param 'top' non valido" }, { status: 400 });
@@ -31,6 +32,7 @@ export async function GET(req: Request) {
 
     // 1️⃣ Query ranking entries
     const rows = await prisma.ranking.findMany({
+      take: limit,
       where: { rank: { lte: top } },
       select: {
         playerId: true,
