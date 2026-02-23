@@ -43,17 +43,17 @@ function buildAgeQuery(direction: 'youngest' | 'oldest'): string {
            date,
            floor(extract(epoch from date - birthdate) / 86400)::int as age_days
     from (
-      select r.player_id,
+      select r."playerId" as player_id,
              p.atpname,
              p.ioc,
              p.birthdate,
              rd.date,
              row_number() over (
-               partition by r.player_id
+               partition by r."playerId"
                order by (date - birthdate) ${orderAges}, date ${orderDate}
              ) as rn
       from "Ranking" r
-      join "Player" p on p.id = r.player_id
+      join "Player" p on p.id = r."playerId"
       join "RankingDate" rd on rd.id = r."rankingDateId"
       where r.rank <= $1
         and p.birthdate is not null
