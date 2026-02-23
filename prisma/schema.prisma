@@ -423,7 +423,6 @@ model mvWinsAges {
   @@id([winner_id])
 }
 
-
 model mVPlayedAges {
   player_id              String
   ages_json              Json?
