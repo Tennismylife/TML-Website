@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { getOldestTop } from '@/lib/recordsranking';
 import ServerPagination from '@/components/ServerPagination';
 import Flag from '@/components/Flag';
 import DropdownNavSelect from '../../../../components/DropdownNavSelect';
@@ -19,52 +19,13 @@ interface OldestTopItem {
   date: string;     // "YYYY-MM-DD"
 }
 
-function diffYMD(birth: Date, ref: Date) {
-  let y = ref.getUTCFullYear() - birth.getUTCFullYear();
-  let m = ref.getUTCMonth() - birth.getUTCMonth();
-  let d = ref.getUTCDate() - birth.getUTCDate();
-  if (d < 0) {
-    const prevMonth = new Date(Date.UTC(ref.getUTCFullYear(), ref.getUTCMonth(), 0));
-    d += prevMonth.getUTCDate();
-    m -= 1;
-  }
-  if (m < 0) {
-    m += 12;
-    y -= 1;
-  }
-  return { y, m, d };
-}
-
 export default async function OldestAtTopX({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
   const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
   const top = Number((sp.top as string) ?? (sp.rank as string) ?? 2);
   // cap results to 100 as well
   const limit = Math.min(100, Math.max(1, Number((sp.limit as string) ?? 100)));
 
-  const rowsData = await prisma.ranking.findMany({
-    where: { rank: { lte: top } },
-    select: { playerId: true, player: { select: { atpname: true, ioc: true, birthdate: true } }, rankingDate: { select: { date: true } } },
-  });
-
-  const bestByPlayer = new Map<string, { name: string; ioc: string | null; date: Date; birth: Date; ageDays: number }>();
-  const missingBirthIds: string[] = [];
-
-  for (const r of rowsData) {
-    if (!r.player || r.playerId == null) continue;
-    const id = String(r.playerId);
-    const birth = r.player.birthdate;
-    if (!birth) { missingBirthIds.push(id); continue; }
-    const date = r.rankingDate.date;
-    if (date < birth) continue;
-
-    const ageDays = Math.floor((date.getTime() - birth.getTime()) / (1000 * 60 * 60 * 24));
-    const prev = bestByPlayer.get(id);
-    if (!prev || ageDays > prev.ageDays || (ageDays === prev.ageDays && date > prev.date)) {
-      bestByPlayer.set(id, { name: r.player.atpname ?? '', ioc: r.player.ioc, date, birth, ageDays });
-    }
-  }
-
-  const data: OldestTopItem[] = Array.from(bestByPlayer.entries()).map(([id, v]) => { const { y,m,d } = diffYMD(v.birth, v.date); return { id, name: v.name, ioc: v.ioc, ageDays: v.ageDays, ageLabel: `${y}y ${m}m ${d}d`, date: v.date.toISOString().slice(0,10) }; }).sort((a,b) => b.ageDays - a.ageDays || a.name.localeCompare(b.name,'en',{sensitivity:'base'})).slice(0,limit);
+  const data: OldestTopItem[] = await getOldestTop(top, limit);
 
   const perPage = 20;
   const page = Number((sp.page as string) ?? '1');
