@@ -39,6 +39,15 @@ export async function GET(req: Request) {
       },
     });
 
+    // helper for tracking the single "oldest" record per player
+    type MaxRec = {
+      name: string;
+      ioc: string | null;
+      date: Date;
+      birth: Date;
+      ageDays: number;
+    };
+
     const bestByPlayer = new Map<string, MaxRec>();
     const missingBirthIds: string[] = [];
 
