@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { getYoungestTop } from '@/lib/recordsranking';
 import Flag from '@/components/Flag';
 import DropdownNavSelect from '../../../../components/DropdownNavSelect';
 import ServerPagination from '@/components/ServerPagination';
@@ -19,46 +19,21 @@ interface YoungestTopItem {
   date: string;     // "YYYY-MM-DD"
 }
 
-function diffYMD(birth: Date, ref: Date) {
-  let y = ref.getUTCFullYear() - birth.getUTCFullYear();
-  let m = ref.getUTCMonth() - birth.getUTCMonth();
-  let d = ref.getUTCDate() - birth.getUTCDate();
-  if (d < 0) {
-    const prevMonth = new Date(Date.UTC(ref.getUTCFullYear(), ref.getUTCMonth(), 0));
-    d += prevMonth.getUTCDate();
-    m -= 1;
-  }
-  if (m < 0) {
-    m += 12;
-    y -= 1;
-  }
-  return { y, m, d };
-}
-
 export default async function YoungestAtTopX({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
   const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
   const top = Number((sp.top as string) ?? (sp.rank as string) ?? 2);
-  const limit = Math.min(500, Math.max(1, Number((sp.limit as string) ?? 200)));
+  // keep at most 100 results client‑side as well
+  const limit = Math.min(100, Math.max(1, Number((sp.limit as string) ?? 100)));
 
-  const rowsData = await prisma.ranking.findMany({ where: { rank: { lte: top } }, select: { playerId: true, player: { select: { atpname: true, ioc: true, birthdate: true } }, rankingDate: { select: { date: true } } } });
-
-  const bestByPlayer = new Map<string, { name: string; ioc: string | null; date: Date; birth: Date; ageDays: number }>();
-  for (const r of rowsData) {
-    if (!r.player || r.playerId == null) continue;
-    const id = String(r.playerId);
-    const birth = r.player.birthdate;
-    if (!birth) continue;
-    const ref = r.rankingDate.date;
-    if (ref < birth) continue;
-
-    const ageDays = Math.floor((ref.getTime() - birth.getTime()) / (1000 * 60 * 60 * 24));
-    const prev = bestByPlayer.get(id);
-    if (!prev || ageDays < prev.ageDays || (ageDays === prev.ageDays && ref < prev.date)) {
-      bestByPlayer.set(id, { name: r.player.atpname ?? '', ioc: r.player.ioc, date: ref, birth, ageDays });
-    }
+  // fetch already-filtered/aggregated data using the optimized helper
+  let data: YoungestTopItem[] = [];
+  try {
+    data = await getYoungestTop(top, limit);
+  } catch (err) {
+    console.error('Error in YoungestTop page data fetch', err);
+    // fail gracefully with empty list
+    data = [];
   }
-
-  const data: YoungestTopItem[] = Array.from(bestByPlayer.entries()).map(([id, v]) => { const { y, m, d } = diffYMD(v.birth, v.date); return { id, name: v.name, ioc: v.ioc, ageDays: v.ageDays, ageLabel: `${y}y ${m}m ${d}d`, date: v.date.toISOString().slice(0,10) }; }).sort((a, b) => a.ageDays - b.ageDays).slice(0, limit);
 
   const perPage = 20;
   const page = Number((sp.page as string) ?? '1');
@@ -92,7 +67,15 @@ export default async function YoungestAtTopX({ searchParams }: { searchParams?: 
       {paginatedRows.length > 0 ? renderTable(paginatedRows, start) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
 
       { totalPages > 1 && (
-        <ServerPagination page={page} totalPages={totalPages} getHref={(p) => `?top=${top}&page=${p}`} />
+        <ServerPagination
+          page={page}
+          totalPages={totalPages}
+          getHref={(p) => {
+            let href = `?top=${top}&page=${p}`;
+            if (limit !== 100) href += `&limit=${limit}`;
+            return href;
+          }}
+        />
       )}
     </section>
   );

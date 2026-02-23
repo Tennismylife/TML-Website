@@ -25,7 +25,13 @@ export default async function OldestAtTopX({ searchParams }: { searchParams?: Pr
   // cap results to 100 as well
   const limit = Math.min(100, Math.max(1, Number((sp.limit as string) ?? 100)));
 
-  const data: OldestTopItem[] = await getOldestTop(top, limit);
+  let data: OldestTopItem[] = [];
+  try {
+    data = await getOldestTop(top, limit);
+  } catch (err) {
+    console.error('Error in OldestTop page data fetch', err);
+    data = [];
+  }
 
   const perPage = 20;
   const page = Number((sp.page as string) ?? '1');
@@ -59,7 +65,15 @@ export default async function OldestAtTopX({ searchParams }: { searchParams?: Pr
       {paginatedRows.length > 0 ? renderTable(paginatedRows, start) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
 
       {totalPages > 1 && (
-        <ServerPagination page={page} totalPages={totalPages} getHref={(p) => `?top=${top}&page=${p}`} />
+        <ServerPagination
+          page={page}
+          totalPages={totalPages}
+          getHref={(p) => {
+            let href = `?top=${top}&page=${p}`;
+            if (limit !== 100) href += `&limit=${limit}`;
+            return href;
+          }}
+        />
       )}
     </section>
   );
