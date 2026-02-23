@@ -478,6 +478,62 @@ model mvAllConsecutiveWinStreaks {
   @@map("mv_all_consecutive_win_streaks") // nome della view nel DB
 }
 
+// ---------------------------------------------------------------------------
+// ad-hoc views for youngest/oldest at top thresholds
+// ---------------------------------------------------------------------------
+
+model mv_ages_youngesttop_100 {
+  player_id String  @map("player_id")
+  rank      Int
+  atpname   String?
+  ioc       String?
+  birthdate DateTime
+  date      DateTime
+  age_days  Int     @map("age_days")
+
+  @@map("mv_ages_youngesttop_100")
+  @@ignore
+}
+
+model mv_ages_youngesttop_50 {
+  player_id String  @map("player_id")
+  rank      Int
+  atpname   String?
+  ioc       String?
+  birthdate DateTime
+  date      DateTime
+  age_days  Int     @map("age_days")
+
+  @@map("mv_ages_youngesttop_50")
+  @@ignore
+}
+
+model mv_ages_oldesttop_100 {
+  player_id String  @map("player_id")
+  rank      Int
+  atpname   String?
+  ioc       String?
+  birthdate DateTime
+  date      DateTime
+  age_days  Int     @map("age_days")
+
+  @@map("mv_ages_oldesttop_100")
+  @@ignore
+}
+
+model mv_ages_oldesttop_50 {
+  player_id String  @map("player_id")
+  rank      Int
+  atpname   String?
+  ioc       String?
+  birthdate DateTime
+  date      DateTime
+  age_days  Int     @map("age_days")
+
+  @@map("mv_ages_oldesttop_50")
+  @@ignore
+}
+
 model mVStreakRounds {
   player_id   String
   player_name String

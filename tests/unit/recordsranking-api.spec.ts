@@ -24,13 +24,14 @@ describe('recordsranking age routes conditional limits', () => {
     await getYoungestRoute(makeReq('?top=100'));
     expect(prisma.ranking.findMany).toHaveBeenCalledWith(expect.objectContaining({
       take: 10,
-      where: expect.any(Object),
+      where: expect.objectContaining({ rank: { lte: 100 } }),
     }));
 
     (prisma.ranking.findMany as any).mockResolvedValueOnce(fakeRows);
     await getYoungestRoute(makeReq('?top=50'));
     expect(prisma.ranking.findMany).toHaveBeenCalledWith(expect.objectContaining({
       take: 10,
+      where: expect.objectContaining({ rank: { lte: 50 } }),
     }));
   });
 
@@ -41,12 +42,14 @@ describe('recordsranking age routes conditional limits', () => {
     await getOldestRoute(makeReq('?top=100'));
     expect(prisma.ranking.findMany).toHaveBeenCalledWith(expect.objectContaining({
       take: 10,
+      where: expect.objectContaining({ rank: { lte: 100 } }),
     }));
 
     (prisma.ranking.findMany as any).mockResolvedValueOnce(fakeRows);
     await getOldestRoute(makeReq('?top=50'));
     expect(prisma.ranking.findMany).toHaveBeenCalledWith(expect.objectContaining({
       take: 10,
+      where: expect.objectContaining({ rank: { lte: 50 } }),
     }));
   });
 });

@@ -42,11 +42,27 @@ export default async function YoungestAtTopX({ searchParams }: { searchParams?: 
   const maxAllowed = top === 50 || top === 100 ? 10 : 100;
   const limit = Math.min(maxAllowed, Math.max(1, Number((sp.limit as string) ?? maxAllowed)));
 
-  const rowsData = await prisma.ranking.findMany({
-    take: limit,
-    where: { rank: { lte: top } },
-    select: { playerId: true, player: { select: { atpname: true, ioc: true, birthdate: true } }, rankingDate: { select: { date: true } } }
-  });
+  // fetch from materialized view via Prisma models when available
+  let rowsData: any[];
+  if (top === 100) {
+    rowsData = await prisma.mv_ages_youngesttop_100.findMany({
+      where: { rank: { lte: top } },
+      take: limit,
+      orderBy: { age_days: 'asc' },
+    });
+  } else if (top === 50) {
+    rowsData = await prisma.mv_ages_youngesttop_50.findMany({
+      where: { rank: { lte: top } },
+      take: limit,
+      orderBy: { age_days: 'asc' },
+    });
+  } else {
+    rowsData = await prisma.ranking.findMany({
+      take: limit,
+      where: { rank: { lte: top } },
+      select: { playerId: true, player: { select: { atpname: true, ioc: true, birthdate: true } }, rankingDate: { select: { date: true } } }
+    });
+  }
   console.log('youngesttop page: fetched rows', rowsData.length, 'top', top);
 
   const bestByPlayer = new Map<string, { name: string; ioc: string | null; date: Date; birth: Date; ageDays: number }>();

@@ -30,16 +30,31 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Param 'top' non valido" }, { status: 400 });
     }
 
-    // 1️⃣ Query ranking entries
-    const rows = await prisma.ranking.findMany({
-      take: limit,
-      where: { rank: { lte: top } },
-      select: {
-        playerId: true,
-        player: { select: { atpname: true, ioc: true, birthdate: true } },
-        rankingDate: { select: { date: true } },
-      },
-    });
+    // 1️⃣ Query ranking entries (use MV models when available)
+    let rows: any[];
+    if (top === 100) {
+      rows = await prisma.mv_ages_oldesttop_100.findMany({
+        where: { rank: { lte: top } },
+        take: limit,
+        orderBy: { age_days: 'desc' },
+      });
+    } else if (top === 50) {
+      rows = await prisma.mv_ages_oldesttop_50.findMany({
+        where: { rank: { lte: top } },
+        take: limit,
+        orderBy: { age_days: 'desc' },
+      });
+    } else {
+      rows = await prisma.ranking.findMany({
+        take: limit,
+        where: { rank: { lte: top } },
+        select: {
+          playerId: true,
+          player: { select: { atpname: true, ioc: true, birthdate: true } },
+          rankingDate: { select: { date: true } },
+        },
+      });
+    }
 
     // helper for tracking the single "oldest" record per player
     type MaxRec = {
