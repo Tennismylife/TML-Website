@@ -12,6 +12,7 @@ export async function POST(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const tag = searchParams.get('tag') ?? 'records';
 
-  revalidateTag(tag);
+  // revalidateTag requires a second options argument; passing empty object
+  revalidateTag(tag, {});
   return NextResponse.json({ revalidated: true, tag });
 }
