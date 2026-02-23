@@ -38,7 +38,7 @@ export default async function WinsServer({ searchParams, ...serverProps }: { sea
   let topWinners: any[] = []
   if (prefetchEnabled) {
     try {
-      const res = await rateLimitedFetch(apiUrl, { cache: 'force-cache' })
+      const res = await rateLimitedFetch(apiUrl, { next: { tags: ['records'] } })
       if (res.ok) {
         const data = await res.json()
         if (Array.isArray(data)) topWinners = data

@@ -39,6 +39,41 @@ const MV_NAMES = [
 
 const DEBOUNCE_MS = Number(process.env.MV_REFRESH_DEBOUNCE_MS) || 5000;
 const { createClient } = require('redis');
+const { execSync } = require('child_process');
+
+async function clearNginxCache() {
+  const dir = process.env.NGINX_CACHE_DIR || '/var/cache/nginx/ssr';
+  try {
+    execSync(`rm -rf ${dir}/*`, { stdio: 'pipe' });
+    console.log('Cleared Nginx micro-cache:', dir);
+  } catch (err) {
+    // Non-fatal: dir may not exist or no permission
+    console.warn('Could not clear Nginx cache (non-fatal):', err.message || err);
+  }
+}
+
+async function clearNextCache() {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://localhost:3000';
+  const secret = process.env.REVALIDATE_SECRET;
+  if (!secret) {
+    console.warn('REVALIDATE_SECRET not set — skipping Next.js cache revalidation');
+    return;
+  }
+  try {
+    const fetch = globalThis.fetch || require('node-fetch');
+    const res = await fetch(`${baseUrl}/api/revalidate?tag=records`, {
+      method: 'POST',
+      headers: { 'x-revalidate-secret': secret },
+    });
+    if (res.ok) {
+      console.log('Revalidated Next.js cache tag: records');
+    } else {
+      console.warn('Next.js revalidation failed:', res.status, res.statusText);
+    }
+  } catch (err) {
+    console.warn('Could not revalidate Next.js cache (non-fatal):', err.message || err);
+  }
+}
 
 async function clearRedisCache(clientFactory) {
   const url = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
@@ -94,6 +129,8 @@ async function main() {
     try {
       await refreshAll(sql);
       await clearRedisCache();
+      await clearNginxCache();
+      await clearNextCache();
     } finally {
       await sql.end();
       // In tests we avoid calling process.exit to allow the test runner to continue
@@ -117,8 +154,10 @@ async function main() {
       running = true;
       try {
         await refreshAll(sql);
-        // After DB changes / materialized views refreshed, clear Redis cache so next requests fetch fresh data
+        // After DB changes / materialized views refreshed, clear all caches
         await clearRedisCache();
+        await clearNginxCache();
+        await clearNextCache();
       } finally {
         running = false;
       }
@@ -146,7 +185,7 @@ async function main() {
   process.stdin.resume();
 }
 
-module.exports = { refreshAll, main, clearRedisCache };
+module.exports = { refreshAll, main, clearRedisCache, clearNginxCache, clearNextCache };
 
 if (require.main === module) {
   main().catch((err) => {

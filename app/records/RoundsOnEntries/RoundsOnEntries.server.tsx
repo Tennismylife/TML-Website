@@ -39,7 +39,7 @@ export default async function RoundsOnEntriesServer({ searchParams, ...serverPro
         for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
         for (const l of Array.from(selectedLevels)) params.append('level', l)
         const apiUrl = new URL(`/api/records/roundsonentries/titles${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
-        const res = await rateLimitedFetch(apiUrl, { cache: 'force-cache' })
+        const res = await rateLimitedFetch(apiUrl, { next: { tags: ['records'] } })
         if (res.ok) {
           const json = await res.json()
           if (Array.isArray((json as any).FinalWins)) prefetchedData.titles = (json as any).FinalWins
@@ -51,7 +51,7 @@ export default async function RoundsOnEntriesServer({ searchParams, ...serverPro
         for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
         for (const l of Array.from(selectedLevels)) params.append('level', l)
         const apiUrl = new URL(`/api/records/roundsonentries/rounds${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
-        const res = await rateLimitedFetch(apiUrl, { cache: 'force-cache' })
+        const res = await rateLimitedFetch(apiUrl, { next: { tags: ['records'] } })
         if (res.ok) {
           const json = await res.json()
           if (Array.isArray((json as any).FinalWins)) prefetchedData.round = (json as any).FinalWins

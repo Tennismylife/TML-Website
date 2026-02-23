@@ -47,11 +47,11 @@ export default async function SameServer({ searchParams, ...serverProps }: { sea
     async function tryFetchPath(path: string) {
       try {
         const url = new URL(path, metadataBase).toString();
-        let res = await rateLimitedFetch(url, { cache: 'force-cache' })
+        let res = await rateLimitedFetch(url, { next: { tags: ['records'] } })
         if (!res.ok && process.env.NODE_ENV !== 'production') {
           try {
             const devUrl = `http://localhost:${process.env.PORT ?? 3000}${path}`;
-            res = await rateLimitedFetch(devUrl, { cache: 'force-cache' })
+            res = await rateLimitedFetch(devUrl, { next: { tags: ['records'] } })
           } catch (e) {
             // swallow
           }

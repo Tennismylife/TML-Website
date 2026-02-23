@@ -49,7 +49,7 @@ export default async function H2HServer({ searchParams, ...serverProps }: { sear
     const fetchArray = async (path: string, key: string) => {
       try {
         const url = new URL(path, metadataBase)
-        const res = await rateLimitedFetch(url, { cache: 'force-cache' })
+        const res = await rateLimitedFetch(url, { next: { tags: ['records'] } })
         if (!res.ok) return undefined
         const json = await res.json()
         const value = (json && typeof json === 'object') ? (json as any)[key] : undefined

@@ -47,7 +47,7 @@ export default async function StreakServer({ searchParams, ...serverProps }: { s
     const fetchJsonArray = async (path: string, key?: string) => {
       try {
         const url = new URL(path, metadataBase)
-        const res = await rateLimitedFetch(url, { cache: 'force-cache' })
+        const res = await rateLimitedFetch(url, { next: { tags: ['records'] } })
         if (!res.ok) return undefined
         const json = await res.json()
         if (key) {

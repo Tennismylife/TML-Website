@@ -74,7 +74,7 @@ export default async function AgeofNthServer({ searchParams, ...serverProps }: {
         }
 
         const url = new URL(path, metadataBase)
-        const res = await rateLimitedFetch(url, { cache: 'force-cache' })
+        const res = await rateLimitedFetch(url, { next: { tags: ['records'] } })
         if (!res.ok) return undefined
         const json = await res.json()
         return Array.isArray(json) ? json : undefined

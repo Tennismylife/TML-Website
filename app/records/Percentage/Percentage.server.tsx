@@ -35,7 +35,7 @@ export default async function PercentageServer({ searchParams, ...serverProps }:
       if (selectedBestOf !== null) params.set('best_of', String(selectedBestOf))
       params.set('perPage', '10')
       const apiUrl = new URL(`/api/records/percentage${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
-      const res = await rateLimitedFetch(apiUrl, { cache: 'force-cache' })
+      const res = await rateLimitedFetch(apiUrl, { next: { tags: ['records'] } })
       if (res.ok) {
         const data = await res.json()
         if (Array.isArray((data as any).topWinPercentages)) topWinPercentages = (data as any).topWinPercentages

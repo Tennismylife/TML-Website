@@ -38,7 +38,7 @@ export default async function AgesServer({ searchParams, ...serverProps }: { sea
     const isWinners = activeSubTab?.toLowerCase().includes('winner')
     const endpoint = isWinners ? '/api/records/ages/winners' : '/api/records/ages/maindraw'
     const apiUrl = new URL(`${endpoint}${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
-    const res = await rateLimitedFetch(apiUrl, { cache: 'force-cache' })
+    const res = await rateLimitedFetch(apiUrl, { next: { tags: ['records'] } })
       if (res.ok) {
         const data = await res.json()
         const key = isWinners ? (type === 'youngest' ? 'youngestWinners' : 'oldestWinners') : (type === 'youngest' ? 'youngestPlayers' : 'oldestPlayers')

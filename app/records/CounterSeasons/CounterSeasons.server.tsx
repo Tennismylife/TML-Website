@@ -52,7 +52,7 @@ export default async function CounterSeasonsServer({ searchParams, ...serverProp
     try {
     const fetchJson = async (path: string) => {
       const url = new URL(path, metadataBase)
-      const res = await rateLimitedFetch(url, { cache: 'force-cache' })
+      const res = await rateLimitedFetch(url, { next: { tags: ['records'] } })
       if (!res.ok) return undefined
       const json = await res.json()
       const arr = Array.isArray(json?.players) ? json.players : Array.isArray(json) ? json : undefined

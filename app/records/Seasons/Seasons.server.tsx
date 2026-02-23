@@ -47,7 +47,7 @@ export default async function SeasonsServer({ searchParams, ...serverProps }: { 
 
     if (activeSubTab === 'wins') {
       const url = new URL(`/api/records/seasons/wins${params.toString() ? '?' + params.toString() : ''}`, metadataBase)
-      const res = await rateLimitedFetch(url, { cache: 'force-cache' })
+      const res = await rateLimitedFetch(url, { next: { tags: ['records'] } })
       if (res.ok) {
         const json = await res.json()
         if (Array.isArray(json)) prefetchedData.wins = json
@@ -56,7 +56,7 @@ export default async function SeasonsServer({ searchParams, ...serverProps }: { 
 
     if (activeSubTab === 'played') {
       const url = new URL(`/api/records/seasons/played${params.toString() ? '?' + params.toString() : ''}`, metadataBase)
-      const res = await rateLimitedFetch(url, { cache: 'force-cache' })
+      const res = await rateLimitedFetch(url, { next: { tags: ['records'] } })
       if (res.ok) {
         const json = await res.json()
         if (Array.isArray(json)) prefetchedData.played = json
@@ -65,7 +65,7 @@ export default async function SeasonsServer({ searchParams, ...serverProps }: { 
 
     if (activeSubTab === 'entries') {
       const url = new URL(`/api/records/seasons/entries${params.toString() ? '?' + params.toString() : ''}`, metadataBase)
-      const res = await rateLimitedFetch(url, { cache: 'force-cache' })
+      const res = await rateLimitedFetch(url, { next: { tags: ['records'] } })
       if (res.ok) {
         const json = await res.json()
         if (Array.isArray(json)) prefetchedData.entries = json
@@ -74,7 +74,7 @@ export default async function SeasonsServer({ searchParams, ...serverProps }: { 
 
     if (activeSubTab === 'titles') {
       const url = new URL(`/api/records/seasons/titles${params.toString() ? '?' + params.toString() : ''}`, metadataBase)
-      const res = await rateLimitedFetch(url, { cache: 'force-cache' })
+      const res = await rateLimitedFetch(url, { next: { tags: ['records'] } })
       if (res.ok) {
         const json = await res.json()
         if (Array.isArray(json)) prefetchedData.titles = json
@@ -84,7 +84,7 @@ export default async function SeasonsServer({ searchParams, ...serverProps }: { 
     if (activeSubTab === 'round' && selectedRounds) {
       params.set('round', selectedRounds)
       const url = new URL(`/api/records/seasons/rounds${params.toString() ? '?' + params.toString() : ''}`, metadataBase)
-      const res = await rateLimitedFetch(url, { cache: 'force-cache' })
+      const res = await rateLimitedFetch(url, { next: { tags: ['records'] } })
       if (res.ok) {
         const json = await res.json()
         if (Array.isArray(json)) prefetchedData.round = json
@@ -93,7 +93,7 @@ export default async function SeasonsServer({ searchParams, ...serverProps }: { 
 
       if (activeSubTab === 'percentage') {
         const url = new URL(`/api/records/seasons/percentage${params.toString() ? '?' + params.toString() : ''}`, metadataBase)
-        const res = await rateLimitedFetch(url, { cache: 'force-cache' })
+        const res = await rateLimitedFetch(url, { next: { tags: ['records'] } })
         if (res.ok) {
           const json = await res.json()
           if (Array.isArray(json)) prefetchedData.percentage = json

@@ -36,7 +36,7 @@ export default async function PlayedServer({ searchParams, ...serverProps }: { s
       if (selectedBestOf) params.set('bestOf', String(selectedBestOf))
       params.set('perPage', '10')
       const apiUrl = new URL(`/api/records/played${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
-      const res = await rateLimitedFetch(apiUrl, { cache: 'force-cache' })
+      const res = await rateLimitedFetch(apiUrl, { next: { tags: ['records'] } })
       if (res.ok) {
         const data = await res.json()
         if (Array.isArray(data)) topPlayed = data
