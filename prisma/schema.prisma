@@ -482,55 +482,51 @@ model mvAllConsecutiveWinStreaks {
 // ---------------------------------------------------------------------------
 
 model mv_ages_youngesttop_100 {
-  player_id String  @map("player_id")
+  player_id String   @id @map("player_id")
   rank      Int
   atpname   String?
   ioc       String?
   birthdate DateTime
   date      DateTime
-  age_days  Int     @map("age_days")
+  age_days  Int      @map("age_days")
 
   @@map("mv_ages_youngesttop_100")
-  @@ignore
 }
 
 model mv_ages_youngesttop_50 {
-  player_id String  @map("player_id")
+  player_id String   @id @map("player_id")
   rank      Int
   atpname   String?
   ioc       String?
   birthdate DateTime
   date      DateTime
-  age_days  Int     @map("age_days")
+  age_days  Int      @map("age_days")
 
   @@map("mv_ages_youngesttop_50")
-  @@ignore
 }
 
 model mv_ages_oldesttop_100 {
-  player_id String  @map("player_id")
+  player_id String   @id @map("player_id")
   rank      Int
   atpname   String?
   ioc       String?
   birthdate DateTime
   date      DateTime
-  age_days  Int     @map("age_days")
+  age_days  Int      @map("age_days")
 
   @@map("mv_ages_oldesttop_100")
-  @@ignore
 }
 
 model mv_ages_oldesttop_50 {
-  player_id String  @map("player_id")
+  player_id String   @id @map("player_id")
   rank      Int
   atpname   String?
   ioc       String?
   birthdate DateTime
   date      DateTime
-  age_days  Int     @map("age_days")
+  age_days  Int      @map("age_days")
 
   @@map("mv_ages_oldesttop_50")
-  @@ignore
 }
 
 model mVStreakRounds {

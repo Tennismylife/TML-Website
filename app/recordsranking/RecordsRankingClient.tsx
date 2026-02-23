@@ -53,7 +53,7 @@ export default function RecordsRankingClient({ currentTabSeg = 'count', currentS
   })();
 
   return (
-    <main className="w-full px-8 py-8 text-white bg-gray-900">
+    <div className="w-full px-8 py-8 text-white bg-gray-900">
       <nav className="mb-4 flex flex-wrap gap-3 bg-gray-800/40 rounded-2xl p-4 shadow-lg w-full justify-center" aria-label="Ranking tabs">
         {tabs.map((tab) => {
           const tabSeg = (tabPathMap as any)[tab.key] ?? tab.key;
@@ -96,6 +96,6 @@ export default function RecordsRankingClient({ currentTabSeg = 'count', currentS
       </nav>
 
       <div id="recordsranking-server-content" className="mt-6 w-full overflow-x-auto" />
-    </main>
+    </div>
   );
 }
