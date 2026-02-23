@@ -81,8 +81,12 @@ export async function GET(request: NextRequest) {
         else if (selectedBestOf.length === 1)
           selectedAges = (d.ages_by_best_of_json as any)?.[String(selectedBestOf[0])] ?? {};
 
-        // count matches with age <= targetAge (or >= when `after`)
-        const playedAtAge = Object.values(selectedAges).filter(age => after ? (Number(age) >= targetAge) : (Number(age) <= targetAge)).length;
+        // count matches with age in the requested range
+        // selectedAges maps age-string -> count, so filter by key and sum counts
+        const playedAtAge = Object.entries(selectedAges)
+          .map(([ageStr, count]) => ({ age: Number(ageStr), count: Number(count) }))
+          .filter(({ age }) => after ? age >= targetAge : age <= targetAge)
+          .reduce((sum, { count }) => sum + count, 0);
         if (playedAtAge === 0) return null;
 
         return {

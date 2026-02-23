@@ -68,8 +68,12 @@ export async function GET(request: NextRequest) {
         else if (selectedRounds.length === 1) selectedAges = (d.ages_by_round_json as any)?.[selectedRounds[0]] ?? {};
         else if (selectedBestOf.length === 1) selectedAges = (d.ages_by_best_of_json as any)?.[String(selectedBestOf[0])] ?? {};
 
-        // conta quante vittorie hanno età <= targetAge (or >= when `after` is true)
-        const winsAtAge = Object.values(selectedAges).filter(age => after ? (age >= targetAge) : (age <= targetAge)).length;
+        // count victories at ages matching the range filter
+        // selectedAges maps age-string -> count, so we use keys for comparison and sum values
+        const winsAtAge = Object.entries(selectedAges)
+          .map(([ageStr, count]) => ({ age: Number(ageStr), count: Number(count) }))
+          .filter(({ age }) => after ? age >= targetAge : age <= targetAge)
+          .reduce((sum, { count }) => sum + count, 0);
         if (winsAtAge === 0) return null;
 
         return {
