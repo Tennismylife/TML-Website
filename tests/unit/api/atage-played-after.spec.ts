@@ -13,9 +13,9 @@ describe('GET /api/records/atage/played (after behavior)', () => {
     (globalThis.prisma!.mVPlayedAges!.findMany as any).mockResolvedValueOnce([
       {
         player_id: 'p1',
-        ages_json: { '39.000': 1, '40.000': 2, '42.000': 1 },
+        ages_json: { '1': 39.000, '2': 40.000, '3': 42.000, '4': 39.999 },
         ages_by_surface_json: {},
-        ages_by_level_json: { G: { '39.000': 1, '40.000': 2, '42.000': 1 } },
+        ages_by_level_json: { G: { '1': 39.000, '2': 40.000, '3': 42.000, '4': 39.999 } },
       },
     ]);
 
@@ -38,7 +38,7 @@ describe('GET /api/records/atage/played (after behavior)', () => {
     expect((res as any).status).toBe(200);
     expect(Array.isArray(body)).toBe(true);
     const map = new Map(body.map((r: any) => [r.id, r.played_at_age]));
-    // ages >=40 => 40.000 (2) + 42.000 (1) = 3
-    expect(map.get('p1')).toBe(3);
+    // ages >=40 => two matches (ages 40.000 and 42.000)
+    expect(map.get('p1')).toBe(2);
   });
 });

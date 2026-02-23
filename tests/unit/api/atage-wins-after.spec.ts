@@ -10,13 +10,14 @@ beforeEach(() => {
 
 describe('GET /api/records/atage/wins (after behavior)', () => {
   it('sums victories for ages >= targetAge when after=1 (materialized view)', async () => {
-    // mvWinsAges mock: player p1 has some wins at several ages
+    // mvWinsAges mock: player p1 has three wins recorded at specific ages
+    // ages_json maps win number -> age
     (globalThis.prisma!.mvWinsAges!.findMany as any).mockResolvedValueOnce([
       {
         winner_id: 'p1',
-        ages_json: { '39.000': 2, '40.000': 1, '41.500': 3 },
+        ages_json: { '1': 39.000, '2': 40.000, '3': 41.500, '4': 39.999 },
         ages_by_surface_json: {},
-        ages_by_level_json: { G: { '39.000': 2, '40.000': 1, '41.500': 3 } },
+        ages_by_level_json: { G: { '1': 39.000, '2': 40.000, '3': 41.500, '4': 39.999 } },
       },
     ]);
 
@@ -41,7 +42,7 @@ describe('GET /api/records/atage/wins (after behavior)', () => {
     expect((res as any).status).toBe(200);
     expect(Array.isArray(body)).toBe(true);
     const map = new Map(body.map((r: any) => [r.id, r.wins_at_age]));
-    // ages >= 40 => counts at 40.000 (1) + 41.500 (3) = 4
-    expect(map.get('p1')).toBe(4);
+    // ages >= 40 => two wins (entries with age 40.000 and 41.500)
+    expect(map.get('p1')).toBe(2);
   });
 });
