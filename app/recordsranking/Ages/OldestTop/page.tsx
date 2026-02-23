@@ -44,13 +44,13 @@ export default async function OldestAtTopX({ searchParams }: { searchParams?: Pr
 
   let rowsData: any[];
   if (top === 100) {
-    rowsData = await prisma.mv_ages_oldesttop_100.findMany({
+    rowsData = await (prisma as any).mv_ages_oldesttop_100.findMany({
       where: { rank: { lte: top } },
       take: limit,
       orderBy: { age_days: 'desc' },
     });
   } else if (top === 50) {
-    rowsData = await prisma.mv_ages_oldesttop_50.findMany({
+    rowsData = await (prisma as any).mv_ages_oldesttop_50.findMany({
       where: { rank: { lte: top } },
       take: limit,
       orderBy: { age_days: 'desc' },

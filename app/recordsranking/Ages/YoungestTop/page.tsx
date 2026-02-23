@@ -45,13 +45,13 @@ export default async function YoungestAtTopX({ searchParams }: { searchParams?: 
   // fetch from materialized view via Prisma models when available
   let rowsData: any[];
   if (top === 100) {
-    rowsData = await prisma.mv_ages_youngesttop_100.findMany({
+    rowsData = await (prisma as any).mv_ages_youngesttop_100.findMany({
       where: { rank: { lte: top } },
       take: limit,
       orderBy: { age_days: 'asc' },
     });
   } else if (top === 50) {
-    rowsData = await prisma.mv_ages_youngesttop_50.findMany({
+    rowsData = await (prisma as any).mv_ages_youngesttop_50.findMany({
       where: { rank: { lte: top } },
       take: limit,
       orderBy: { age_days: 'asc' },

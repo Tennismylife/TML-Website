@@ -33,13 +33,13 @@ export async function GET(req: Request) {
     // fetch rows either from materialized view or raw table
     let rows: any[];
     if (top === 100) {
-      rows = await prisma.mv_ages_youngesttop_100.findMany({
+      rows = await (prisma as any).mv_ages_youngesttop_100.findMany({
         where: { rank: { lte: top } },
         take: limit,
         orderBy: { age_days: 'asc' },
       });
     } else if (top === 50) {
-      rows = await prisma.mv_ages_youngesttop_50.findMany({
+      rows = await (prisma as any).mv_ages_youngesttop_50.findMany({
         where: { rank: { lte: top } },
         take: limit,
         orderBy: { age_days: 'asc' },

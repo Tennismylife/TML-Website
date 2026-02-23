@@ -33,13 +33,13 @@ export async function GET(req: Request) {
     // 1️⃣ Query ranking entries (use MV models when available)
     let rows: any[];
     if (top === 100) {
-      rows = await prisma.mv_ages_oldesttop_100.findMany({
+      rows = await (prisma as any).mv_ages_oldesttop_100.findMany({
         where: { rank: { lte: top } },
         take: limit,
         orderBy: { age_days: 'desc' },
       });
     } else if (top === 50) {
-      rows = await prisma.mv_ages_oldesttop_50.findMany({
+      rows = await (prisma as any).mv_ages_oldesttop_50.findMany({
         where: { rank: { lte: top } },
         take: limit,
         orderBy: { age_days: 'desc' },
