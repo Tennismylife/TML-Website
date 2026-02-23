@@ -48,17 +48,12 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
   const [after, setAfter] = useState<boolean>(() => {
     try { const a = String(searchParams?.get('after') ?? '').toLowerCase(); return a === '1' || a === 'true' || a === 'yes'; } catch (e) { return false; }
   });
+  const lastAfterRef = useRef<boolean>(after);
 
   useEffect(() => {
     try { const a = String(searchParams?.get('after') ?? '').toLowerCase(); setAfter(a === '1' || a === 'true' || a === 'yes'); } catch (e) {}
   }, [searchParams]);
 
-  useEffect(() => {
-    try {
-      const a = String(searchParams?.get('after') ?? '').toLowerCase();
-      setAfter(a === '1' || a === 'true' || a === 'yes');
-    } catch (e) {}
-  }, [searchParams]);
 
   const formatAge = (age: number) => {
     const years = Math.floor(age);
@@ -110,7 +105,7 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
       return;
     }
 
-    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal || (Array.isArray(initialData) && initialData.length > 0));
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal || (Array.isArray(initialData) && initialData.length > 0) || after !== lastAfterRef.current);
     if (!shouldFetch) {
       if (!hasFetched && Array.isArray(initialData)) {
         setData(initialData);
@@ -121,9 +116,10 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
     }
 
     if (fetchRequestId) lastRequestRef.current = fetchRequestId;
+    lastAfterRef.current = after;
     const forceFetch = showModal || (Array.isArray(initialData) && initialData.length > 0);
     fetchData(selectedAge, showModal ? 1000 : 100, forceFetch);
-  }, [enabled, fetchRequestId, showModal, selectedAge, selectedSurfaces, selectedLevels, selectedRound, initialData]);
+  }, [enabled, fetchRequestId, showModal, selectedAge, selectedSurfaces, selectedLevels, selectedRound, initialData, after]);
 
   const fetchData = async (age: number, limit: number, force = false, afterOverride?: boolean) => {
     if (!Number.isFinite(age)) {
@@ -161,6 +157,7 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
       try {
         const path = window.location.pathname;
         const newQuery = new URLSearchParams();
+        if (afterFlag) newQuery.set('after', '1');
         newQuery.set('age', age.toFixed(3));
         newQuery.set('round', selectedRound);
         selectedSurfaces.forEach(s => newQuery.append('surface', s));
@@ -179,9 +176,9 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
         const sameSurface = compareMulti(current, newQuery, 'surface');
         const sameLevel = compareMulti(current, newQuery, 'level');
         const sameRound = current.get('round') === newQuery.get('round');
+        const sameAfter = current.get('after') === newQuery.get('after');
 
-        if (afterFlag) newQuery.set('after','1');
-        if (!(sameAge && sameSurface && sameLevel && sameRound)) {
+        if (!(sameAge && sameSurface && sameLevel && sameRound && sameAfter)) {
           const newUrl = `${path}?${newQuery.toString()}`;
           if (typeof window !== 'undefined') {
             const current = window.location.pathname + window.location.search;

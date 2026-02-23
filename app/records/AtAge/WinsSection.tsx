@@ -51,14 +51,18 @@ export default function WinsSection({
   const [showModal, setShowModal] = useState(false);
   const [inputAge, setInputAge] = useState(safeInitialAge);
   const [selectedAge, setSelectedAge] = useState(safeInitialAge);
-  const [after, setAfter] = useState<boolean>(false);
   const lastRequestRef = useRef<string | null>(null);
 
   const searchParams = useSearchParams();
   const router = useRouter();
   const perPage = 20;
 
-  // Init `after` if present in URL
+  const [after, setAfter] = useState<boolean>(() => {
+    try { const a = String(searchParams?.get('after') ?? '').toLowerCase(); return a === '1' || a === 'true' || a === 'yes'; } catch (e) { return false; }
+  });
+  const lastAfterRef = useRef<boolean>(after);
+
+  // Sync `after` from URL params (also on initial render)
   useEffect(() => {
     try {
       const a = String(searchParams?.get('after') ?? '').toLowerCase();
@@ -104,7 +108,13 @@ export default function WinsSection({
     // - user opened View All (showModal)
     // - a new fetchRequestId arrives (controlled client refresh)
     // - SSR passed `initialData` (we must replace SSR top-10 with full limit=100)
-    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal || (Array.isArray(initialData) && initialData.length > 0));
+    // - the `after` flag changed (URL entry or user toggled)
+    const shouldFetch = (
+      (enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) ||
+      showModal ||
+      (Array.isArray(initialData) && initialData.length > 0) ||
+      after !== lastAfterRef.current
+    );
     if (!shouldFetch) {
       // only apply server-prefetched `initialData` when we haven't already fetched on the client
       if (!hasFetched && Array.isArray(initialData)) {
@@ -116,9 +126,10 @@ export default function WinsSection({
     }
 
     if (fetchRequestId) lastRequestRef.current = fetchRequestId;
+    lastAfterRef.current = after;
     const forceFetch = showModal || (Array.isArray(initialData) && initialData.length > 0);
     fetchData(selectedAge, showModal ? 1000 : 100, forceFetch);
-  }, [enabled, fetchRequestId, showModal, selectedAge, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, initialData, hasFetched]);
+  }, [enabled, fetchRequestId, showModal, selectedAge, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, initialData, hasFetched, after]);
 
   const fetchData = async (age: number, limit: number, force = false, afterOverride?: boolean) => {
     if (!Number.isFinite(age)) {
@@ -153,6 +164,7 @@ export default function WinsSection({
       try {
         const path = window.location.pathname;
         const newQuery = new URLSearchParams();
+        if (afterFlag) newQuery.set('after', '1');
         newQuery.set('age', age.toFixed(3));
         selectedSurfaces.forEach(s => newQuery.append('surface', s));
         selectedLevels.forEach(l => newQuery.append('level', l));
@@ -173,9 +185,8 @@ export default function WinsSection({
         const sameLevel = compareMulti(current, newQuery, 'level');
         const sameRound = current.get('round') === newQuery.get('round');
         const sameBestOf = current.get('best_of') === newQuery.get('best_of');
-
-        if (afterFlag) newQuery.set('after','1');
-        if (!(sameAge && sameSurface && sameLevel && sameRound && sameBestOf)) {
+        const sameAfter = current.get('after') === newQuery.get('after');
+        if (!(sameAge && sameSurface && sameLevel && sameRound && sameBestOf && sameAfter)) {
           const newUrl = `${path}?${newQuery.toString()}`;
           if (typeof window !== 'undefined') {
             const current = window.location.pathname + window.location.search;

@@ -60,6 +60,7 @@ export default function PlayedSection({
   };
 
   const [after, setAfter] = useState<boolean>(() => parseAfter(searchParams));
+  const lastAfterRef = useRef<boolean>(after);
 
   useEffect(() => {
     setAfter(parseAfter(searchParams));
@@ -98,7 +99,7 @@ export default function PlayedSection({
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
 
   useEffect(() => {
-    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal || (Array.isArray(initialData) && initialData.length > 0));
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal || (Array.isArray(initialData) && initialData.length > 0) || after !== lastAfterRef.current);
     if (!shouldFetch) {
       if (!hasFetched && Array.isArray(initialData)) {
         setData(initialData);
@@ -109,9 +110,10 @@ export default function PlayedSection({
     }
 
     if (fetchRequestId) lastRequestRef.current = fetchRequestId;
+    lastAfterRef.current = after;
     const forceFetch = showModal || (Array.isArray(initialData) && initialData.length > 0);
     fetchData(selectedAge, showModal ? 1000 : 100, forceFetch);
-  }, [enabled, fetchRequestId, showModal, selectedAge, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, initialData]);
+  }, [enabled, fetchRequestId, showModal, selectedAge, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, initialData, after]);
 
   const router = useRouter();
 
@@ -148,6 +150,7 @@ export default function PlayedSection({
       try {
         const path = window.location.pathname;
         const newQuery = new URLSearchParams();
+        if (afterFlag) newQuery.set('after', '1');
         newQuery.set('age', age.toFixed(3));
         selectedSurfaces.forEach(s => newQuery.append('surface', s));
         selectedLevels.forEach(l => newQuery.append('level', l));
@@ -168,9 +171,9 @@ export default function PlayedSection({
         const sameLevel = compareMulti(current, newQuery, 'level');
         const sameRound = current.get('round') === newQuery.get('round');
         const sameBestOf = current.get('bestOf') === newQuery.get('bestOf');
+        const sameAfter = current.get('after') === newQuery.get('after');
 
-        if (afterFlag) newQuery.set('after','1');
-        if (!(sameAge && sameSurface && sameLevel && sameRound && sameBestOf)) {
+        if (!(sameAge && sameSurface && sameLevel && sameRound && sameBestOf && sameAfter)) {
           const newUrl = `${path}?${newQuery.toString()}`;
           if (typeof window !== 'undefined') {
             const current = window.location.pathname + window.location.search;

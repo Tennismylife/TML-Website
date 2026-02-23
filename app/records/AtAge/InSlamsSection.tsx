@@ -37,10 +37,12 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
   const [showModal, setShowModal] = useState(false);
   const [inputAge, setInputAge] = useState(safeInitialAge);
   const [selectedAge, setSelectedAge] = useState(safeInitialAge);
-  const [after, setAfter] = useState<boolean>(false);
-
   const searchParams = useSearchParams();
   const perPage = 20;
+
+  const [after, setAfter] = useState<boolean>(() => {
+    try { const a = String(searchParams?.get('after') ?? '').toLowerCase(); return a === '1' || a === 'true' || a === 'yes'; } catch (e) { return false; }
+  });
 
   useEffect(() => {
     try {
@@ -126,6 +128,7 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
       try {
         const path = window.location.pathname;
         const newQuery = new URLSearchParams();
+        if (afterFlag) newQuery.set('after', '1');
         newQuery.set('age', age.toFixed(3));
         selectedSurfaces.forEach(s => newQuery.append('surface', s));
         if (selectedRounds) newQuery.set('round', selectedRounds);
@@ -144,9 +147,9 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
         const sameSurface = compareMulti(current, newQuery, 'surface');
         const sameRound = current.get('round') === newQuery.get('round');
         const sameBestOf = current.get('bestOf') === newQuery.get('bestOf');
+        const sameAfter = current.get('after') === newQuery.get('after');
 
-        if (afterFlag) newQuery.set('after','1');
-        if (!(sameAge && sameSurface && sameRound && sameBestOf)) {
+        if (!(sameAge && sameSurface && sameRound && sameBestOf && sameAfter)) {
           const newUrl = `${path}?${newQuery.toString()}`;
           if (typeof window !== 'undefined') {
             const current = window.location.pathname + window.location.search;

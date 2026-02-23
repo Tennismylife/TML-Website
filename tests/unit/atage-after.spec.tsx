@@ -5,9 +5,15 @@ import { vi } from 'vitest';
 
 /** @vitest-environment jsdom */
 
+let _searchParamAfter: string | null = null;
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ replace: vi.fn(), push: vi.fn() }),
-  useSearchParams: () => ({ get: () => null, getAll: () => [], forEach: () => {}, has: () => false }),
+  useSearchParams: () => ({
+    get: (k: string) => (k === 'after' ? _searchParamAfter : null),
+    getAll: () => [],
+    forEach: () => {},
+    has: () => false,
+  }),
 }));
 
 import WinsSection from '@/app/records/atage/WinsSection';
@@ -78,6 +84,23 @@ describe('AtAge After checkbox', () => {
     await waitFor(() => {
       const called = globalFetch.mock.calls.map(c => String(c[0]));
       expect(called.some(u => u.includes('atage/played') && u.includes('after=1'))).toBeTruthy();
+    });
+  });
+
+  it('fetches with after=1 when URL contains after=1 on load', async () => {
+    const results = [{ id: 'pX', name: 'X', ioc: 'ARG', wins_at_age: 1 }];
+    globalFetch.mockImplementation(async (url: any) => {
+      return { ok: true, json: async () => results } as any;
+    });
+
+    // simulate incoming URL parameter
+    _searchParamAfter = '1';
+
+    render(<WinsSection selectedSurfaces={[]} selectedLevels={[]} selectedRounds={''} selectedBestOf={null} fetchEnabled={true} fetchRequestId="rid" initialAge={25} />);
+
+    await waitFor(() => {
+      const called = globalFetch.mock.calls.map(c => String(c[0]));
+      expect(called.some(u => u.includes('atage/wins') && u.includes('after=1'))).toBeTruthy();
     });
   });
 });

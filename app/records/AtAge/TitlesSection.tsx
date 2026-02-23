@@ -47,6 +47,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
   const [after, setAfter] = useState<boolean>(() => {
     try { const a = String(searchParams?.get('after') ?? '').toLowerCase(); return a === '1' || a === 'true' || a === 'yes'; } catch (e) { return false; }
   });
+  const lastAfterRef = useRef<boolean>(after);
 
   useEffect(() => {
     try { const a = String(searchParams?.get('after') ?? '').toLowerCase(); setAfter(a === '1' || a === 'true' || a === 'yes'); } catch (e) {}
@@ -85,7 +86,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels]);
 
   useEffect(() => {
-    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal || (Array.isArray(initialData) && initialData.length > 0));
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal || (Array.isArray(initialData) && initialData.length > 0) || after !== lastAfterRef.current);
     if (!shouldFetch) {
       if (!hasFetched && Array.isArray(initialData)) {
         setData(initialData);
@@ -96,9 +97,10 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
     }
 
     if (fetchRequestId) lastRequestRef.current = fetchRequestId;
+    lastAfterRef.current = after;
     const forceFetch = showModal || (Array.isArray(initialData) && initialData.length > 0);
     fetchData(selectedAge, showModal ? 1000 : 100, forceFetch);
-  }, [enabled, fetchRequestId, showModal, selectedAge, selectedSurfaces, selectedLevels, initialData]);
+  }, [enabled, fetchRequestId, showModal, selectedAge, selectedSurfaces, selectedLevels, initialData, after]);
 
   const fetchData = async (age: number, limit: number, force = false, afterOverride?: boolean) => {
     if (!Number.isFinite(age)) {
@@ -132,6 +134,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
       try {
         const path = window.location.pathname;
         const newQuery = new URLSearchParams();
+        if (afterFlag) newQuery.set('after', '1');
         newQuery.set('age', age.toFixed(3));
         selectedSurfaces.forEach(s => newQuery.append('surface', s));
         selectedLevels.forEach(l => newQuery.append('level', l));
@@ -149,9 +152,8 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
         const sameAge = current.get('age') === newQuery.get('age');
         const sameSurface = compareMulti(current, newQuery, 'surface');
         const sameLevel = compareMulti(current, newQuery, 'level');
-
-        if (afterFlag) newQuery.set('after','1');
-        if (!(sameAge && sameSurface && sameLevel)) {
+        const sameAfter = current.get('after') === newQuery.get('after');
+        if (!(sameAge && sameSurface && sameLevel && sameAfter)) {
           const newUrl = `${path}?${newQuery.toString()}`;
           if (typeof window !== 'undefined') {
             const current = window.location.pathname + window.location.search;

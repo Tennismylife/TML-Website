@@ -47,6 +47,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
   const [after, setAfter] = useState<boolean>(() => {
     try { const a = String(searchParams?.get('after') ?? '').toLowerCase(); return a === '1' || a === 'true' || a === 'yes'; } catch (e) { return false; }
   });
+  const lastAfterRef = useRef<boolean>(after);
 
   useEffect(() => {
     try { const a = String(searchParams?.get('after') ?? '').toLowerCase(); setAfter(a === '1' || a === 'true' || a === 'yes'); } catch (e) {}
@@ -85,7 +86,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels]);
 
   useEffect(() => {
-    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal || (Array.isArray(initialData) && initialData.length > 0));
+    const shouldFetch = ((enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || showModal || (Array.isArray(initialData) && initialData.length > 0) || after !== lastAfterRef.current);
     if (!shouldFetch) {
       // only apply server-prefetched `initialData` when we haven't fetched on the client yet
       if (!hasFetched && Array.isArray(initialData)) {
@@ -97,9 +98,10 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
     }
 
     if (fetchRequestId) lastRequestRef.current = fetchRequestId;
+    lastAfterRef.current = after;
     const forceFetch = showModal || (Array.isArray(initialData) && initialData.length > 0);
     fetchData(selectedAge, showModal ? 1000 : 100, forceFetch);
-  }, [enabled, fetchRequestId, showModal, selectedAge, selectedSurfaces, selectedLevels, initialData, hasFetched]);
+  }, [enabled, fetchRequestId, showModal, selectedAge, selectedSurfaces, selectedLevels, initialData, hasFetched, after]);
 
   const fetchData = async (age: number, limit: number, force = false, afterOverride?: boolean) => {
     if (!Number.isFinite(age)) {
@@ -133,12 +135,10 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
       try {
         const path = window.location.pathname;
         const newQuery = new URLSearchParams();
+        if (afterFlag) newQuery.set('after', '1');
         newQuery.set('age', age.toFixed(3));
         selectedSurfaces.forEach(s => newQuery.append('surface', s));
         selectedLevels.forEach(l => newQuery.append('level', l));
-
-        // Ensure `after` is present in the candidate query before comparing
-        if (afterFlag) newQuery.set('after','1');
 
         // Compare current params semantically to avoid unnecessary replaces
         const current = (typeof window !== 'undefined') ? new URLSearchParams(window.location.search) : new URLSearchParams();
