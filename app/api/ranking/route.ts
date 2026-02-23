@@ -14,23 +14,30 @@ export async function GET(request: NextRequest) {
 
     const rankings = await prisma.ranking.findMany({
       where: whereClause,
-      include: { player: { select: { player: true, ioc: true } } },
       orderBy: { rank: "asc" },
       take: 200, // solo i primi 200 giocatori
     });
 
-    // Map player ids to slugs
+    // Map player ids to slugs and names
     const ids = Array.from(new Set(rankings.map(r => String(r.playerId))));
     const slugMap = await mapIdsToSlugs(ids);
+    const players = await prisma.player.findMany({
+      where: { id: { in: ids } },
+      select: { id: true, player: true, ioc: true },
+    });
+    const playerMap = new Map(players.map(p => [p.id, p]));
 
-    const result = rankings.map(r => ({
-      id: r.playerId,
-      slug: slugMap[String(r.playerId)] ?? null,
-      name: r.player?.player || "Unknown",
-      points: r.points,
-      ioc: r.player?.ioc || null,
-      rank: r.rank,
-    }));
+    const result = rankings.map(r => {
+      const p = playerMap.get(String(r.playerId));
+      return {
+        id: r.playerId,
+        slug: slugMap[String(r.playerId)] ?? null,
+        name: p?.player || "Unknown",
+        points: r.points,
+        ioc: p?.ioc || null,
+        rank: r.rank,
+      };
+    });
 
     return NextResponse.json({ rankings: result });
   } catch (err: any) {
