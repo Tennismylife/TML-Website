@@ -45,6 +45,7 @@ export default async function OldestAtTopX({ searchParams }: { searchParams?: Pr
     where: { rank: { lte: top } },
     select: { playerId: true, player: { select: { atpname: true, ioc: true, birthdate: true } }, rankingDate: { select: { date: true } } },
   });
+  console.log('oldesttop page: fetched rows', rowsData.length, 'top', top);
 
   const bestByPlayer = new Map<string, { name: string; ioc: string | null; date: Date; birth: Date; ageDays: number }>();
   const missingBirthIds: string[] = [];
@@ -64,7 +65,18 @@ export default async function OldestAtTopX({ searchParams }: { searchParams?: Pr
     }
   }
 
-  const data: OldestTopItem[] = Array.from(bestByPlayer.entries()).map(([id, v]) => { const { y,m,d } = diffYMD(v.birth, v.date); return { id, name: v.name, ioc: v.ioc, ageDays: v.ageDays, ageLabel: `${y}y ${m}m ${d}d`, date: v.date.toISOString().slice(0,10) }; }).sort((a,b) => b.ageDays - a.ageDays || a.name.localeCompare(b.name,'en',{sensitivity:'base'})).slice(0,limit);
+  let data: OldestTopItem[] = Array.from(bestByPlayer.entries()).map(([id, v]) => { const { y,m,d } = diffYMD(v.birth, v.date); return { id, name: v.name, ioc: v.ioc, ageDays: v.ageDays, ageLabel: `${y}y ${m}m ${d}d`, date: v.date.toISOString().slice(0,10) }; }).sort((a,b) => b.ageDays - a.ageDays || a.name.localeCompare(b.name,'en',{sensitivity:'base'})).slice(0,limit);
+
+  if (data.length === 0 && rowsData.length > 0) {
+    data = rowsData.slice(0, limit).map(r => ({
+      id: String(r.playerId),
+      name: r.player?.atpname ?? '',
+      ioc: r.player?.ioc ?? null,
+      ageDays: 0,
+      ageLabel: 'N/A',
+      date: r.rankingDate.date.toISOString().slice(0,10),
+    }));
+  }
 
   const perPage = 20;
   const page = Number((sp.page as string) ?? '1');

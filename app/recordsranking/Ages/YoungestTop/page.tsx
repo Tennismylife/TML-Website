@@ -41,7 +41,11 @@ export default async function YoungestAtTopX({ searchParams }: { searchParams?: 
   // keep at most 10 results client‑side as well
   const limit = Math.min(10, Math.max(1, Number((sp.limit as string) ?? 10)));
 
-  const rowsData = await prisma.ranking.findMany({ where: { rank: { lte: top } }, select: { playerId: true, player: { select: { atpname: true, ioc: true, birthdate: true } }, rankingDate: { select: { date: true } } } });
+  const rowsData = await prisma.ranking.findMany({
+    where: { rank: { lte: top } },
+    select: { playerId: true, player: { select: { atpname: true, ioc: true, birthdate: true } }, rankingDate: { select: { date: true } } }
+  });
+  console.log('youngesttop page: fetched rows', rowsData.length, 'top', top);
 
   const bestByPlayer = new Map<string, { name: string; ioc: string | null; date: Date; birth: Date; ageDays: number }>();
   for (const r of rowsData) {
@@ -59,7 +63,18 @@ export default async function YoungestAtTopX({ searchParams }: { searchParams?: 
     }
   }
 
-  const data: YoungestTopItem[] = Array.from(bestByPlayer.entries()).map(([id, v]) => { const { y, m, d } = diffYMD(v.birth, v.date); return { id, name: v.name, ioc: v.ioc, ageDays: v.ageDays, ageLabel: `${y}y ${m}m ${d}d`, date: v.date.toISOString().slice(0,10) }; }).sort((a, b) => a.ageDays - b.ageDays).slice(0, limit);
+  let data: YoungestTopItem[] = Array.from(bestByPlayer.entries()).map(([id, v]) => { const { y, m, d } = diffYMD(v.birth, v.date); return { id, name: v.name, ioc: v.ioc, ageDays: v.ageDays, ageLabel: `${y}y ${m}m ${d}d`, date: v.date.toISOString().slice(0,10) }; }).sort((a, b) => a.ageDays - b.ageDays).slice(0, limit);
+
+  if (data.length === 0 && rowsData.length > 0) {
+    data = rowsData.slice(0, limit).map(r => ({
+      id: String(r.playerId),
+      name: r.player?.atpname ?? '',
+      ioc: r.player?.ioc ?? null,
+      ageDays: 0,
+      ageLabel: 'N/A',
+      date: r.rankingDate.date.toISOString().slice(0,10),
+    }));
+  }
 
   const perPage = 20;
   const page = Number((sp.page as string) ?? '1');

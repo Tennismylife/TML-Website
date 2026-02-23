@@ -38,42 +38,19 @@ export async function GET(req: Request) {
       },
     });
 
-    // 🧱 Debug: mostra cosa contiene ogni record senza join
-    const missingPlayerRows = rows.filter((r) => !r.player);
-
-    if (missingPlayerRows.length > 0) {
-      console.log("🚫 Missing player join for these records:");
-      for (const r of missingPlayerRows) {
-        console.log({
-          playerId: r.playerId ?? "null",
-          rankingDate: r.rankingDate?.date?.toISOString?.().slice(0, 10) ?? "unknown",
-        });
-      }
-      console.log(`🧾 Total missing player joins: ${missingPlayerRows.length}`);
-    } else {
-      console.log("✅ No missing player joins found.");
-    }
-
+    // build same bestByPlayer logic as before
     const bestByPlayer = new Map<
       string,
       { name: string; ioc: string | null; date: Date; birth: Date; ageDays: number }
     >();
 
-    let missingBirthCount = 0;
-
     for (const r of rows) {
       if (!r.player || r.playerId == null) continue;
       const id = String(r.playerId);
       const birth = r.player.birthdate;
-
-      if (!birth) {
-        missingBirthCount++;
-        continue;
-      }
-
+      if (!birth) continue;
       const date = r.rankingDate.date;
       if (date < birth) continue;
-
       const ageDays = Math.floor((date.getTime() - birth.getTime()) / (1000 * 60 * 60 * 24));
       const prev = bestByPlayer.get(id);
       if (!prev || ageDays < prev.ageDays) {
@@ -81,7 +58,7 @@ export async function GET(req: Request) {
       }
     }
 
-    const data = Array.from(bestByPlayer.entries())
+    let data = Array.from(bestByPlayer.entries())
       .map(([id, v]) => {
         const { y, m, d } = diffYMD(v.birth, v.date);
         return {
@@ -95,6 +72,18 @@ export async function GET(req: Request) {
       })
       .sort((a, b) => a.ageDays - b.ageDays)
       .slice(0, limit);
+
+    // if no births produced results, fall back to first `limit` rows ignoring birthdate
+    if (data.length === 0 && rows.length > 0) {
+      data = rows.slice(0, limit).map((r) => ({
+        id: String(r.playerId),
+        name: r.player?.atpname ?? '',
+        ioc: r.player?.ioc ?? null,
+        ageDays: 0,
+        ageLabel: 'N/A',
+        date: r.rankingDate.date.toISOString().slice(0, 10),
+      }));
+    }
 
     return NextResponse.json(data);
   } catch (error) {

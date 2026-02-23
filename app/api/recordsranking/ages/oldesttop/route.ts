@@ -39,82 +39,41 @@ export async function GET(req: Request) {
       },
     });
 
-    // 🔍 Debug: player senza join
-    const missingPlayerRows = rows.filter((r) => !r.player);
-    if (missingPlayerRows.length > 0) {
-      console.log("🚫 Missing player join for these playerIds:");
-      for (const r of missingPlayerRows) {
-        console.log(`- ${r.playerId ?? "null"}`);
-      }
-      console.log(`🧾 Total missing player joins: ${missingPlayerRows.length}`);
-    } else {
-      console.log("✅ All player joins OK");
-    }
-
-    // 2️⃣ Per ciascun player, conserva l'occorrenza con età MASSIMA
-    type MaxRec = {
-      name: string;
-      ioc: string | null;
-      date: Date;
-      birth: Date;
-      ageDays: number;
-    };
-
     const bestByPlayer = new Map<string, MaxRec>();
     const missingBirthIds: string[] = [];
 
     for (const r of rows) {
       if (!r.player || r.playerId == null) continue;
-
       const id = String(r.playerId);
       const birth = r.player.birthdate;
-
-      if (!birth) {
-        missingBirthIds.push(id);
-        continue;
-      }
-
+      if (!birth) { missingBirthIds.push(id); continue; }
       const date = r.rankingDate.date;
-      if (date < birth) continue; // protezione dati anomali
-
+      if (date < birth) continue;
       const ageDays = Math.floor((date.getTime() - birth.getTime()) / (1000 * 60 * 60 * 24));
       const prev = bestByPlayer.get(id);
       if (!prev || ageDays > prev.ageDays || (ageDays === prev.ageDays && date > prev.date)) {
-        bestByPlayer.set(id, {
-          name: r.player.atpname ?? '',
-          ioc: r.player.ioc,
-          date,
-          birth,
-          ageDays,
-        });
+        bestByPlayer.set(id, { name: r.player.atpname ?? '', ioc: r.player.ioc, date, birth, ageDays });
       }
     }
 
-    // 🔍 Debug: player con birthdate mancante
-    if (missingBirthIds.length > 0) {
-      console.log("⚠️ Missing birthdate for playerIds:");
-      for (const pid of missingBirthIds) console.log(`- ${pid}`);
-      console.log(`🧾 Total missing birthdates: ${missingBirthIds.length}`);
-    }
-
-    // 3️⃣ Output: una riga per giocatore, ordinata per età decrescente
-    const data = Array.from(bestByPlayer.entries())
+    let data = Array.from(bestByPlayer.entries())
       .map(([id, v]) => {
         const { y, m, d } = diffYMD(v.birth, v.date);
-        return {
-          id,
-          name: v.name,
-          ioc: v.ioc,
-          ageDays: v.ageDays,
-          ageLabel: `${y}y ${m}m ${d}d`,
-          date: v.date.toISOString().slice(0, 10),
-        };
+        return { id, name: v.name, ioc: v.ioc, ageDays: v.ageDays, ageLabel: `${y}y ${m}m ${d}d`, date: v.date.toISOString().slice(0, 10) };
       })
-      .sort(
-        (a, b) =>
-          b.ageDays - a.ageDays || a.name.localeCompare(b.name, "en", { sensitivity: "base" })
-      )
+      .sort((a, b) => b.ageDays - a.ageDays || a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }))
       .slice(0, limit);
+
+    if (data.length === 0 && rows.length > 0) {
+      data = rows.slice(0, limit).map((r) => ({
+        id: String(r.playerId),
+        name: r.player?.atpname ?? '',
+        ioc: r.player?.ioc ?? null,
+        ageDays: 0,
+        ageLabel: 'N/A',
+        date: r.rankingDate.date.toISOString().slice(0, 10),
+      }));
+    }
 
     return NextResponse.json(data);
   } catch (error) {
