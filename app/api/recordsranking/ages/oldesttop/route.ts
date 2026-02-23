@@ -22,7 +22,8 @@ export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
     const top = Number(url.searchParams.get("top") ?? NaN);
-    const limit = Math.min(500, Math.max(1, Number(url.searchParams.get("limit") ?? 50)));
+    // limit for payload size
+    const limit = Math.min(100, Math.max(1, Number(url.searchParams.get("limit") ?? 100)));
 
     if (!Number.isInteger(top) || top < 1) {
       return NextResponse.json({ error: "Param 'top' non valido" }, { status: 400 });

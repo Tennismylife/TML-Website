@@ -38,7 +38,8 @@ function diffYMD(birth: Date, ref: Date) {
 export default async function OldestAtTopX({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
   const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
   const top = Number((sp.top as string) ?? (sp.rank as string) ?? 2);
-  const limit = Math.min(500, Math.max(1, Number((sp.limit as string) ?? 200)));
+  // cap results to 100 as well
+  const limit = Math.min(100, Math.max(1, Number((sp.limit as string) ?? 100)));
 
   const rowsData = await prisma.ranking.findMany({
     where: { rank: { lte: top } },
