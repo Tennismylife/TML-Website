@@ -31,6 +31,14 @@ export default async function WinsServer({ searchParams, ...serverProps }: { sea
   for (const l of Array.from(selectedLevels)) params.append('level', l)
   if (selectedRounds) params.set('round', selectedRounds)
   if (selectedBestOf) params.set('bestOf', String(selectedBestOf))
+  // propagate `after` boolean if provided in URL
+  const afterParam = getFirst('after');
+  if (afterParam) {
+    const a = String(afterParam).toLowerCase();
+    if (a === '1' || a === 'true' || a === 'yes') {
+      params.set('after', '1');
+    }
+  }
   // request a small perPage for SSR prefetch (only top 10)
   params.set('perPage', '10')
 
