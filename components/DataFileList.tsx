@@ -7,13 +7,15 @@ type DataFile = { name: string; url: string; size?: number; mtime?: string };
 export default function DataFileList({ full = false }: { full?: boolean }) {
   const [files, setFiles] = React.useState<DataFile[] | null>(null);
   const [err, setErr] = React.useState<string | null>(null);
-  const [visible, setVisible] = React.useState(20);
+  const [visible, setVisible] = React.useState(10); // show 10 items by default
+  const [visibleChallenger, setVisibleChallenger] = React.useState(10);
   const [copyStatus, setCopyStatus] = React.useState<string | null>(null);
   const cmdCmd = `mkdir tml-data & powershell -NoProfile -Command "Try { $files=(Invoke-RestMethod 'https://stats.tennismylife.org/api/data-files').files; New-Item -ItemType Directory -Path 'tml-data' -Force | Out-Null; foreach($f in $files){ Write-Host 'Downloading ' $f.name; Invoke-WebRequest -Uri $f.url -OutFile (Join-Path 'tml-data' $f.name) } } Catch { Write-Error $_.Exception.Message; exit 1 }"`;
   // Ensure pre blocks wrap long single-line commands visually (allow line breaks)
   const psCmd = `New-Item -ItemType Directory -Force -Path .\\tml-data | Out-Null; Invoke-RestMethod -Uri 'https://stats.tennismylife.org/api/data-files' | Select-Object -ExpandProperty files | ForEach-Object { Invoke-WebRequest -Uri $_.url -OutFile (Join-Path -Path '.\\tml-data' -ChildPath $_.name) }`;
   const bashCmd = `mkdir -p tml-data && curl -s 'https://stats.tennismylife.org/api/data-files' | jq -r '.files[] | "\\(.url)\\t\\(.name)"' | while IFS=$'\\t' read -r url name; do curl -sSL "$url" -o "tml-data/$name"; done`;
-  const showMore = () => setVisible((v) => v + 20);
+  const showMore = () => setVisible((v) => v + 10);
+  const showMoreChallenger = () => setVisibleChallenger((v) => v + 10);
 
   React.useEffect(() => {
     let mounted = true;
@@ -56,11 +58,37 @@ export default function DataFileList({ full = false }: { full?: boolean }) {
 
   const others = remainingFiles.filter((f) => !/^\d{4}\.csv$/i.test(f.name));
 
+  // Files for challenger tournaments between 1978 and 2026 inclusive
+  const challengerFiles = files
+    .filter((f) => {
+      const m = f.name.match(/^(\d{4})/);
+      if (!m) return false;
+      const year = parseInt(m[1], 10);
+      return year >= 1978 && year <= 2026 && /challenger/i.test(f.name);
+    })
+    .sort((a, b) => {
+      // sort newest first by year then name
+      const ya = parseInt((a.name.match(/^(\d{4})/) || [0, '0'])[1], 10);
+      const yb = parseInt((b.name.match(/^(\d{4})/) || [0, '0'])[1], 10);
+      if (ya !== yb) return yb - ya;
+      return a.name.localeCompare(b.name);
+    });
+
   // Prepare displayed list: put ongoing (if present) first, then historical years
   const displayedHistorical = ongoing ? [ongoing, ...historical] : historical;
 
   return (
     <div>
+      {/* prominent non-fixed notice */}
+      <div className="flex justify-center mb-6 mt-6">
+        <div className="bg-yellow-300 font-semibold text-3xl px-8 py-4 rounded-lg shadow-md changelog">
+          <span className="uppercase">🔔 New:</span> ATP Challenger Tour added!
+        </div>
+      </div>
+      <style jsx>{` 
+        .changelog { color: green !important; } 
+        .changelog .uppercase { color: green !important; } 
+      `}</style>
       <h3 className="text-2xl sm:text-3xl font-extrabold text-center text-gray-100" style={{ marginTop: 0, marginBottom: 12 }}>Historical Matches (1968–2026)</h3>
 
       <div style={{ marginBottom: 12 }}>
@@ -117,9 +145,11 @@ export default function DataFileList({ full = false }: { full?: boolean }) {
           <div className="text-sm text-gray-400 mt-2">Download all CSV files in a single ZIP file. This may take a few seconds.</div>
         </div>
       </div>
-      <div style={{ maxWidth: 960, marginLeft: 'auto', marginRight: 'auto' }}>
-        <div className="overflow-x-hidden rounded border border-white/30 bg-gray-900 shadow mt-0" style={{ marginBottom: 8 }}>
-          <table className="table-fixed w-full border-collapse" aria-label="Historical Matches">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full min-w-0">
+        <div className="w-full" style={{ minWidth: 0 }}>
+          <div className="text-center text-2xl sm:text-3xl font-extrabold !text-blue-400 mb-2">ATP Tour</div>
+          <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow mt-0" style={{ marginBottom: 8 }}>
+            <table className="table-fixed w-full border-collapse" aria-label="Historical Matches">
           <thead>
             <tr className="bg-black">
               <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200 w-24">Year</th>
@@ -173,14 +203,62 @@ export default function DataFileList({ full = false }: { full?: boolean }) {
             ) : null}
           </tbody>
         </table>
+        {historical.length > visible ? (
+          <div style={{ marginBottom: 12, textAlign: 'center' }}>
+            <button onClick={showMore} className="px-4 py-2 bg-gray-700 text-white rounded border border-white/20 hover:bg-gray-600">Load more</button>
+          </div>
+        ) : null}
+          </div>
+        </div>
+
+        {/* Right column: challenger files 1978–2026 */}
+        <div className="w-full" style={{ minWidth: 0 }}>
+          <div className="text-center text-2xl sm:text-3xl font-extrabold !text-green-400 mb-2">ATP Challenger Tour</div>
+          <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow mt-0" style={{ marginBottom: 8 }}>
+            <table className="table-fixed w/full border-collapse" aria-label="Challenger files">
+              <thead>
+                <tr className="bg-black">
+                  <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200 w-24">Year</th>
+                  <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200 w-auto">File</th>
+                  <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200 w-28">Size</th>
+                  <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200 w-48">Last modified</th>
+                  <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200 w-auto sm:w-80"> </th>
+                </tr>
+              </thead>
+              <tbody>
+                {challengerFiles.slice(0, visibleChallenger).map((f) => {
+                  const yearMatch = f.name.match(/^(\d{4})/);
+                  const yearLabel = yearMatch ? yearMatch[1] : '';
+                  return (
+                    <tr key={f.name} className="hover:bg-gray-800 border-b border-white/10">
+                      <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-24 whitespace-nowrap">{yearLabel}</td>
+                      <td className="border border-white/10 px-4 py-2 text-lg text-gray-200 whitespace-nowrap"><a href={f.url} download className="text-indigo-300 hover:underline whitespace-nowrap">{f.name}</a></td>
+                      <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-28 whitespace-nowrap">{f.size ? humanSize(f.size) : ''}</td>
+                      <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-48 whitespace-nowrap">{f.mtime ? new Date(f.mtime).toLocaleString('it-IT') : ''}</td>
+                      <td className="border border-white/10 px-4 py-2 whitespace-nowrap w-auto sm:w-80 flex items-center justify-center">
+                        <a href={f.url} download aria-label={`Download ${f.name}`} className="inline-flex items-center px-3 sm:px-4 py-1 text-sm sm:text-base bg-indigo-600 text-white rounded hover:bg-indigo-500 whitespace-nowrap">
+                          <svg className="w-4 h-4 sm:mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M12 3v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M5 11l7 7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M21 21H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                          <span className="hidden sm:inline">Download</span>
+                        </a>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          {challengerFiles.length > visibleChallenger ? (
+            <div style={{ marginTop: 12, textAlign: 'center' }}>
+              <button onClick={showMoreChallenger} className="px-4 py-2 bg-gray-700 text-white rounded border border-white/20 hover:bg-gray-600">Load more</button>
+            </div>
+          ) : null}
         </div>
       </div>
 
-      {historical.length > visible ? (
-        <div style={{ marginBottom: 12, textAlign: 'center' }}>
-          <button onClick={showMore} className="px-4 py-2 bg-gray-700 text-white rounded border border-white/20 hover:bg-gray-600">Load more</button>
-        </div>
-      ) : null}
 
 
     </div>
