@@ -28,13 +28,18 @@ export default function Page() {
 
   return (
     <main>
-      <div className="flex items-center justify-center mt-6 gap-4">
+      <div className="flex items-center justify-center mt-6 gap-4 relative">
         <h1 className="text-4xl sm:text-5xl font-bold !text-white text-center">
           Tennis Match Database
         </h1>
         <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-red-600 text-white font-bold animate-pulse shadow-lg">
           <span className="inline-block w-2 h-2 bg-white rounded-full animate-pulse" aria-hidden="true"></span>
           <span className="uppercase tracking-widest">LIVE</span>
+        </div>
+        {/* mailbox positioned to right of heading */}
+        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white rounded-lg px-6 py-3 text-base shadow-lg">
+          📬 <a href="mailto:infotennismylife@gmail.com" className="underline">infotennismylife@gmail.com</a><br/>
+          info, reports, debugging, sponsorship
         </div>
       </div>
 

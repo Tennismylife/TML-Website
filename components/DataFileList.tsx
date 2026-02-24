@@ -78,9 +78,9 @@ export default function DataFileList({ full = false }: { full?: boolean }) {
   const displayedHistorical = ongoing ? [ongoing, ...historical] : historical;
 
   return (
-    <div>
-      {/* prominent non-fixed notice */}
-      <div className="flex justify-center mb-6 mt-6">
+    <div className="relative">
+      {/* header row with notice; mailbox placed absolutely at top-right */}
+      <div className="flex justify-center mb-4 mt-4">
         <div className="bg-yellow-300 font-semibold text-3xl px-8 py-4 rounded-lg shadow-md changelog">
           <span className="uppercase">🔔 New:</span> ATP Challenger Tour added!
         </div>
