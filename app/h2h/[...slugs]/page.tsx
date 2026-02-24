@@ -2,6 +2,8 @@ import React from 'react';
 import type { Metadata } from 'next';
 import H2HClient from '../H2HClient';
 import H2HContentClient from '../H2HContentClient';
+import H2HPreviewServer from '../H2HPreviewServer';
+import H2HCareerOverviewServer from '../H2HCareerOverviewServer';
 import { prisma } from '@/lib/prisma';
 import { metadataBase } from '@/lib/site';
 import { getPlayerHrefWithTab, IOC_TO_ISO, createSlug } from '@/lib/utils';
@@ -61,18 +63,29 @@ export async function generateMetadata({ params }: { params?: Promise<{ slugs?: 
   };
 }
 
-export default async function Page({ params }: { params?: Promise<{ slugs?: string[] }> | { slugs?: string[] } }) {
+export default async function Page({ params, searchParams }: { params?: Promise<{ slugs?: string[] }> | { slugs?: string[] }, searchParams?: Record<string, string | string[]> }) {
   // Next.js 16+ params can be a Promise
   const resolvedParams = params instanceof Promise ? await params : params;
   const slugArr = resolvedParams?.slugs;
   const slug = Array.isArray(slugArr) ? slugArr.join('/') : slugArr?.[0] || '';
 
-  console.log('[H2H Page] Received slug:', slug, 'slugArr:', slugArr);
+  const qBestOf = (() => {
+    if (!searchParams) return undefined;
+    const v = (searchParams as any).best_of ?? (searchParams as any).bestOf;
+    if (!v) return undefined;
+    return Array.isArray(v) ? v[0] : v;
+  })();
+
+  console.log('[H2H Page] Received slug:', slug, 'slugArr:', slugArr, 'best_of:', qBestOf);
 
   let player1: any = null;
   let player2: any = null;
   let initialMatches: any[] = [];
   let availableOpponents: string[] = [];
+  let rank1: number | null = null;
+  let rank2: number | null = null;
+  let points1: number | null = null;
+  let points2: number | null = null;
 
   const match = slug.match(/^(.+)-vs-(.+)$/);
   if (match) {
@@ -99,14 +112,21 @@ export default async function Page({ params }: { params?: Promise<{ slugs?: stri
       // Fetch H2H matches server-side if both players found
       if (player1 && player2) {
         try {
+          const where: any = {
+            OR: [
+              { winner_id: player1.id, loser_id: player2.id },
+              { winner_id: player2.id, loser_id: player1.id },
+            ],
+          };
+
+          if (qBestOf && String(qBestOf).toLowerCase() !== 'all') {
+            const bof = Number(qBestOf);
+            if (!Number.isNaN(bof)) where.best_of = bof;
+          }
+
           const matches = await prisma.match.findMany({
-            where: {
-              OR: [
-                { winner_id: player1.id, loser_id: player2.id },
-                { winner_id: player2.id, loser_id: player1.id },
-              ],
-            },
-            orderBy: { tourney_date: 'desc' },
+            where,
+            orderBy: { tourney_date: 'asc' },
           });
 
           // Normalize date and then enrich matches with player slugs for reliable slug links
@@ -160,6 +180,29 @@ export default async function Page({ params }: { params?: Promise<{ slugs?: stri
 
       // Skip opponents fetch for now to avoid query complexity
       availableOpponents = [];
+
+      // Fetch ranking from the single latest ranking snapshot
+      // Both players must be in the same snapshot; if absent → null (empty)
+      const latestRankingDate = await prisma.rankingDate.findFirst({
+        orderBy: { date: 'desc' },
+        select: { id: true },
+      });
+      if (latestRankingDate) {
+        const [r1, r2] = await Promise.all([
+          player1 ? prisma.ranking.findFirst({
+            where: { playerId: String(player1.id), rankingDateId: latestRankingDate.id },
+            select: { rank: true, points: true },
+          }) : null,
+          player2 ? prisma.ranking.findFirst({
+            where: { playerId: String(player2.id), rankingDateId: latestRankingDate.id },
+            select: { rank: true, points: true },
+          }) : null,
+        ]);
+        rank1 = r1?.rank ?? null;
+        rank2 = r2?.rank ?? null;
+        points1 = r1?.points ?? null;
+        points2 = r2?.points ?? null;
+      }
     } catch (err) {
       console.error('Error in H2H page:', err);
       player1 = null;
@@ -297,6 +340,16 @@ export default async function Page({ params }: { params?: Promise<{ slugs?: stri
   }
 
   // Calculate H2H stats for server-side rendering
+  const heading = (() => {
+    if (player1 && player2) {
+      const s1 = createSlug(player1.atpname ?? player1.player ?? String(player1.id ?? ''));
+      const s2 = createSlug(player2.atpname ?? player2.player ?? String(player2.id ?? ''));
+      const [first, second] = s1 <= s2 ? [player1.atpname ?? '', player2.atpname ?? ''] : [player2.atpname ?? '', player1.atpname ?? ''];
+      return `${first} vs ${second} Head to Head Tennis Stats and Match Analysis`;
+    }
+    return 'Head-to-Head';
+  })();
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
@@ -304,14 +357,31 @@ export default async function Page({ params }: { params?: Promise<{ slugs?: stri
       {personJson1 && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJson1) }} />}
       {personJson2 && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJson2) }} />}
       {webpageJson && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webpageJson) }} />}
-      
-      {player1 && player2 && initialMatches.length > 0 ? (
+
+      <h1 className="page-title text-3xl font-bold mb-8 text-center">{heading}</h1>
+      {player1 && player2 ? (
         <div className="container mx-auto px-4 py-8">
           <H2HContentClient
             matches={initialMatches}
             player1={player1}
             player2={player2}
-          />
+            rank1={rank1}
+            rank2={rank2}
+            points1={points1}
+            points2={points2}
+            careerOverview={
+              <H2HCareerOverviewServer
+                player1={player1}
+                player2={player2}
+              />
+            }
+          >
+            <H2HPreviewServer
+              player1={player1}
+              player2={player2}
+              matches={initialMatches}
+            />
+          </H2HContentClient>
         </div>
       ) : (
         <H2HClient 

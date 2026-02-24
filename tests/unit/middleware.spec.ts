@@ -41,4 +41,19 @@ describe('legacy redirect middleware', () => {
     expect(res.status).toBe(301);
     expect(res.headers.get('location')).toContain('/players/novak-djokovic');
   });
+
+  it('redirects explicit legacy player C044 to canonical slug (jimmy-connors) with 301', async () => {
+    fetchSpy.mockImplementation(async (input: any) => {
+      const s = String(input);
+      if (s.includes('/api/slug-map')) {
+        return { ok: true, json: async () => ({ players: { C044: 'jimmy-connors' } }) } as any;
+      }
+      return { ok: false } as any;
+    });
+
+    const res: any = await middleware(makeReq('http://localhost/players/C044/matches'));
+    expect(res).toBeTruthy();
+    expect(res.status).toBe(301);
+    expect(res.headers.get('location')).toContain('/players/jimmy-connors/matches');
+  });
 });

@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const player1 = searchParams.get("player1");
   const player2 = searchParams.get("player2");
+  const qBestOf = searchParams.get("best_of") ?? searchParams.get('bestOf');
 
   if (!player1 || !player2) {
     return NextResponse.json(
@@ -22,6 +23,14 @@ export async function GET(request: NextRequest) {
     ],
     status: true, // include only valid matches
   };
+
+  // Apply best_of filter when provided (support 'All' or numeric values)
+  if (qBestOf && qBestOf.toLowerCase() !== 'all') {
+    const bof = Number(qBestOf);
+    if (!Number.isNaN(bof)) {
+      (where as any).best_of = bof;
+    }
+  }
 
   try {
     const matches = await prisma.match.findMany({

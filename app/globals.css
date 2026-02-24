@@ -29,6 +29,13 @@ p, span, a, li, div, h1, h2, h3, h4, h5, h6, label, button, input, select, texta
   text-decoration: none;
 }
 
+/* H2H static table: attribute-selector rules have specificity (0,1,0) which beats
+   the global element rule (0,0,1) even inside !important, so these definitively win. */
+[data-h2h-color="red"]  { color: #f87171 !important; -webkit-text-fill-color: #f87171 !important; }
+[data-h2h-color="green"] { color: #4ade80 !important; -webkit-text-fill-color: #4ade80 !important; }
+[data-h2h-color="blue"]  { color: #60a5fa !important; -webkit-text-fill-color: #60a5fa !important; }
+[data-h2h-color="yellow"] { color: #facc15 !important; -webkit-text-fill-color: #facc15 !important; }
+[data-h2h-name]          { color: #FFFFFF  !important; -webkit-text-fill-color: #FFFFFF  !important; }
 
 /* Essential headings */
 h1, h2, h3, h4, h5, h6 {

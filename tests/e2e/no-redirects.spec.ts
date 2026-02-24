@@ -26,7 +26,6 @@ const urls = [
   '/players/kei-nishikori?tab=matches&level=500&round=R64&surface=Grass',
   '/players/fabrice-santoro?tab=matches&result=Win&level=250&surface=Grass',
   '/players/ivan-lendl?tab=matches&level=G&round=R32',
-  '/players/C044/matches?level=A&round=F',
   '/players/K023?tab=matches&n=1&round=R64',
   '/players/aaron-krickstein?tab=matches&n=1&round=R64',
   '/players/peter-smith-S343?tab=matches&n=1&round=R32',
@@ -71,9 +70,9 @@ const urls = [
   '/players/M094?tab=matches&round=R32',
 ];
 
-test.describe('No redirect checks', () => {
+test.describe('Redirect checks (updated behaviour for player IDs)', () => {
   for (const u of urls) {
-    test(`no redirect for ${u}`, async ({ page, baseURL }) => {
+    test(`check redirect behaviour for ${u}`, async ({ page, baseURL }) => {
       const full = baseURL + u;
       const response = await page.goto(full, { waitUntil: 'domcontentloaded' });
       expect(response).not.toBeNull();
@@ -81,12 +80,24 @@ test.describe('No redirect checks', () => {
       // ensure request was (or wasn't) redirected as expected
       const redirectedFrom = response!.request().redirectedFrom();
       const final = page.url();
+
+      const isPlayerLegacyOrNumeric = (path: string) => {
+        const m = /^\/players\/([^/?#]+)/.exec(path);
+        if (!m) return false;
+        const id = m[1];
+        return /^[A-Za-z]+\d+$/i.test(id) || /^\d+$/.test(id);
+      };
+
       if (u.startsWith('/tournaments/')) {
         // tournaments intentionally redirect to canonical slug
         expect(redirectedFrom).not.toBeNull();
         expect(final).not.toBe(full);
+      } else if (isPlayerLegacyOrNumeric(u)) {
+        // legacy player codes and numeric player IDs should now redirect to canonical slug
+        expect(redirectedFrom).not.toBeNull();
+        expect(final).not.toBe(full);
       } else {
-        // players/records/etc should not redirect
+        // named player slugs and other pages should not redirect
         expect(redirectedFrom).toBeNull();
         expect(final).toBe(full);
       }

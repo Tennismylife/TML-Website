@@ -254,3 +254,13 @@ tr:hover td {
 .rankingtables .table-row-text a:hover {
   color: inherit !important;
 }
+
+/* H2H static table: allow component-local color utilities to work despite the global white !important */
+.h2h-static, .h2h-static * {
+  color: initial !important;
+}
+.h2h-static .text-green-400 { color: #4ade80 !important; }
+.h2h-static .text-red-400   { color: #f87171 !important; }
+.h2h-static .text-gray-400  { color: #9ca3af !important; }
+.h2h-static .text-gray-300  { color: #d1d5db !important; }
+.h2h-static a { color: inherit !important; }

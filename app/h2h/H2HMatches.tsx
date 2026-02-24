@@ -55,10 +55,23 @@ export default function H2HMatches({
 }: H2HMatchesProps) {
   const [showWinnerStats, setShowWinnerStats] = useState(true);
 
+  // Exclude non-counting matches (status === false or special scores) so table matches preview logic
+  const countedMatches = useMemo(() => {
+    if (!matches) return [];
+    return matches.filter((m) => {
+      if (m.status === false) return false;
+      const sc = (m.score ?? '').toUpperCase();
+      if (!sc) return true;
+      // exclude retired / walkover / defaulted / weak etc markers
+      if (sc.includes('DEF') || sc.includes('W/O') || sc.includes('WEA')) return false;
+      return true;
+    });
+  }, [matches]);
+
   // Sorting client-side (con gestione corretta della data!) — extended to handle stat columns
   const sortedMatches = useMemo(() => {
-    if (!matches?.length) return [];
-    if (sortKey === null) return [...matches];
+    if (!countedMatches?.length) return [];
+    if (sortKey === null) return [...countedMatches];
 
     const dir = sortDir === 'asc' ? 1 : -1;
 
@@ -92,7 +105,7 @@ export default function H2HMatches({
       }
     };
 
-    return [...matches].sort((a, b) => {
+    return [...countedMatches].sort((a, b) => {
       const aVal = getVal(a, sortKey as string);
       const bVal = getVal(b, sortKey as string);
 
@@ -103,7 +116,7 @@ export default function H2HMatches({
       if (typeof aVal === 'number' && typeof bVal === 'number') return (aVal - bVal) * dir;
       return String(aVal).localeCompare(String(bVal)) * dir;
     });
-  }, [matches, sortKey, sortDir]);
+  }, [countedMatches, sortKey, sortDir]);
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -210,7 +223,7 @@ export default function H2HMatches({
     { key: "minutes" as const, label: "Min", align: "center" },
   ];
 
-  if (!matches || matches.length === 0) {
+  if (!countedMatches || countedMatches.length === 0) {
     return <p className="text-gray-400 text-sm">No matches found.</p>;
   }
 
@@ -312,17 +325,17 @@ export default function H2HMatches({
                     <Flag ioc={m.winner_ioc ?? undefined} className="w-4 h-3 inline-block mr-1" />
                     <Link
                       href={getPlayerHrefWithTab((m as any).winner_slug ?? String(m.winner_id ?? ''), 'matches')}
-                      className={isPlayerWinner ? "font-bold text-green-400" : "text-gray-100 hover:text-white"}
+                      className={isPlayerWinner ? "text-green-400" : "text-gray-100 hover:text-white"}
                     >
                       {renderNameWithSeedEntry(m.winner_name ?? '', m.winner_seed, m.winner_entry)}
-                    </Link>
+                    </Link>    
                   </td>
                   <td className="px-3 py-2 text-center">{m.loser_rank ?? "-"}</td>
                   <td className="px-3 py-2">
                     <Flag ioc={m.loser_ioc ?? undefined} className="w-4 h-3 inline-block mr-1" />
                     <Link
                       href={getPlayerHrefWithTab((m as any).loser_slug ?? String(m.loser_id ?? ''), 'matches')}
-                      className={isPlayerLoser ? "font-bold text-red-400" : "text-gray-100 hover:text-white"}
+                      className={isPlayerLoser ? "text-red-400" : "text-gray-100 hover:text-white"}
                     >
                       {renderNameWithSeedEntry(m.loser_name ?? '', m.loser_seed, m.loser_entry)}
                     </Link>

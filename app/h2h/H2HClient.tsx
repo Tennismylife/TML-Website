@@ -4,11 +4,13 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import PlayerSearch from "./PlayerSearch";
 import H2HHeader from "./H2HHeader";
 import H2HBars from "./H2HBars";
+import H2HMatchFormatBars from "./H2HMatchFormatBars";
+import H2HComebackBars from "./H2HComebackBars";
 import H2HMatches from "./H2HMatches";
 import H2HPageFilters from "./H2HPageFilters";
 import { Player, Match, SortKey, SortDirection } from "@/types";
 import { useRouter, usePathname } from "next/navigation";
-import { createH2HUrl } from "@/lib/utils";
+import { createH2HUrl, createSlug } from "@/lib/utils";
 
 export default function H2HClient({ 
   initialPlayer1 = null, 
@@ -40,6 +42,7 @@ export default function H2HClient({
     surface: "All",
     round: "All",
     tourney_name: "All",
+    best_of: 'All' as string | 'All',
   });
 
   // --- Leggi URL params lato client ---
@@ -168,6 +171,7 @@ export default function H2HClient({
     const qSurface = searchParamsClient.get("surface");
     const qRound = searchParamsClient.get("round");
     const qTourney = searchParamsClient.get("tourney");
+    const qBestOf = searchParamsClient.get("bestOf") ?? searchParamsClient.get('best_of');
     const qSort = searchParamsClient.get("sort");
     const qSortDir = searchParamsClient.get("sortDir");
 
@@ -177,6 +181,7 @@ export default function H2HClient({
       surface: qSurface ?? prev.surface,
       round: qRound ?? prev.round,
       tourney_name: qTourney ?? prev.tourney_name,
+      best_of: qBestOf ?? (prev as any).best_of ?? 'All',
     }));
 
     if (qSort && !(qSort === 'tourney_date' && qSortDir === 'desc')) setSortKey(qSort as SortKey);
@@ -234,7 +239,11 @@ export default function H2HClient({
     }
 
     setLoading(true);
-    fetch(`/api/h2h?player1=${player1.id}&player2=${player2.id}`)
+    const pageParams = new URLSearchParams(window.location.search);
+    const qBestOf = pageParams.get('best_of') ?? pageParams.get('bestOf');
+    const bestOfParam = qBestOf && qBestOf.toLowerCase() !== 'all' ? `&best_of=${encodeURIComponent(qBestOf)}` : '';
+
+    fetch(`/api/h2h?player1=${player1.id}&player2=${player2.id}${bestOfParam}`)
       .then((res) => res.json())
       .then((data: Match[]) => setMatches(data))
       .catch(() => setMatches([]))
@@ -249,6 +258,20 @@ export default function H2HClient({
       if (filters.surface !== "All" && (m.surface ?? "Unknown") !== filters.surface) return false;
       if (filters.round !== "All" && (m.round ?? "Unknown") !== filters.round) return false;
       if (filters.tourney_name !== "All" && m.tourney_name !== filters.tourney_name) return false;
+
+      // Apply best_of filter (client-side)
+      if (filters.best_of !== "All") {
+        const bof = Number(filters.best_of);
+        if (!Number.isNaN(bof)) {
+          if (m.best_of !== bof) return false;
+        } else {
+          // support a possible 'Unknown' / 'null' option: keep only matches without best_of
+          if (filters.best_of === 'Unknown' || filters.best_of === 'null') {
+            if (m.best_of != null) return false;
+          }
+        }
+      }
+
       return true;
     });
   }, [matches, filters]);
@@ -261,7 +284,7 @@ export default function H2HClient({
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">
-      <h1 className="text-3xl font-bold mb-8 text-center">Head-to-Head</h1>
+      {/* Page title is rendered server-side for SEO */}
 
       <div className="flex flex-col md:flex-row justify-center gap-6 mb-8">
         <PlayerSearch label="Player 1" onSelect={setPlayer1} />
@@ -270,13 +293,64 @@ export default function H2HClient({
 
       {player1 && player2 && (
         <>
-          <H2HPageFilters
+          {matches.length > 0 && <H2HPageFilters
             allMatches={matches}
             loading={loading}
             error={null}
             filters={filters}
-            setFilters={(partial) => setFilters((prev) => ({ ...prev, ...partial }))}
-          />
+            setFilters={(partial) => {
+              // update state and sync immediately to URL using the user's partial values when present
+              setFilters((prev) => {
+                const next = { ...prev, ...partial } as typeof prev;
+
+                try {
+                  const params = new URLSearchParams(window.location.search);
+
+                  // Prefer reading visible control values from the DOM (more robust in tests and when UI updates are immediate)
+                  const container = document.querySelector('[data-testid="h2h-filters"]');
+                  const domYear = container?.querySelector('select[name="year"]') as HTMLSelectElement | null;
+                  const domLevel = container?.querySelector('select[name="level"]') as HTMLSelectElement | null;
+                  const domSurface = container?.querySelector('select[name="surface"]') as HTMLSelectElement | null;
+                  const domRound = container?.querySelector('select[name="round"]') as HTMLSelectElement | null;
+                  const domTourney = container?.querySelector('select[name="tourney"]') as HTMLSelectElement | null;
+                  const domBestOf = container?.querySelector('select[name="best_of"]') as HTMLSelectElement | null;
+
+                  const resolvedYear = domYear ? domYear.value : ((partial as any).year ?? next.year);
+                  const resolvedLevel = domLevel ? domLevel.value : ((partial as any).level ?? next.level);
+                  const resolvedSurface = domSurface ? domSurface.value : ((partial as any).surface ?? next.surface);
+                  const resolvedRound = domRound ? domRound.value : ((partial as any).round ?? next.round);
+                  const resolvedTourney = domTourney ? domTourney.value : ((partial as any).tourney_name ?? next.tourney_name);
+                  const resolvedBestOf = domBestOf ? domBestOf.value : ((partial as any).best_of ?? next.best_of);
+
+                  if (resolvedYear === 'All') params.delete('year'); else params.set('year', String(resolvedYear));
+                  if (resolvedLevel === 'All') params.delete('level'); else params.set('level', String(resolvedLevel));
+                  if (resolvedSurface === 'All') params.delete('surface'); else params.set('surface', String(resolvedSurface));
+                  if (resolvedRound === 'All') params.delete('round'); else params.set('round', String(resolvedRound));
+                  if (resolvedTourney === 'All') params.delete('tourney'); else params.set('tourney', String(resolvedTourney));
+                  if (resolvedBestOf === 'All') params.delete('best_of'); else params.set('best_of', String(resolvedBestOf));
+
+                  const qs = params.toString();
+                  const url = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
+
+                  // update Next router (mocked in tests) and browser history so URL is shareable immediately
+                  try {
+                    router.replace(url);
+                  } catch (err) {
+                    /* ignore */
+                  }
+                  try {
+                    window.history.replaceState({}, '', url);
+                  } catch (err) {
+                    /* ignore */
+                  }
+                } catch (err) {
+                  console.debug('[H2HClient] failed to sync filters to URL', err);
+                }
+
+                return next;
+              });
+            }}
+          />}
 
           <H2HHeader
             wins1={wins1}
@@ -288,7 +362,7 @@ export default function H2HClient({
             matches={filteredMatches}
           />
 
-          <div className="mt-8">
+          {matches.length > 0 && <div className="mt-8">
             {loading ? (
               <p className="text-center text-gray-400">Loading matches...</p>
             ) : (
@@ -301,23 +375,42 @@ export default function H2HClient({
                 playerId={player1.id}
               />
             )}
-          </div>
+          </div>}
 
-          <div className="grid md:grid-cols-3 gap-6 mt-10">
-            {['wins', 'sets', 'games'].map((category) => (
-              <div key={category} className="bg-gray-800 p-6 rounded-lg shadow-lg">
-                <h2 className="text-xl font-semibold mb-4 text-center">
-                  {category[0].toUpperCase() + category.slice(1)}
-                </h2>
-                <H2HBars
-                  matches={filteredMatches}
-                  player1={player1}
-                  player2={player2}
-                  category={category as 'wins' | 'sets' | 'games'}
-                />
+          {total > 0 && (
+          <div className="flex flex-col gap-10 mt-10">
+            {/* Wins + Match Format + Comebacks */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 className="text-xl font-semibold mb-4 text-center">Wins</h2>
+                <H2HBars matches={filteredMatches} player1={player1} player2={player2} category="wins" />
               </div>
-            ))}
+              <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 className="text-xl font-semibold mb-4 text-center">Sets Format</h2>
+                <H2HMatchFormatBars matches={filteredMatches} player1={player1} player2={player2} />
+              </div>
+              <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 className="text-xl font-semibold mb-4 text-center">Deciding</h2>
+                <H2HComebackBars matches={filteredMatches} player1={player1} player2={player2} />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {(['sets', 'games'] as const).map((category) => (
+                <div key={category} className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                  <h2 className="text-xl font-semibold mb-4 text-center">
+                    {category[0].toUpperCase() + category.slice(1)}
+                  </h2>
+                  <H2HBars
+                    matches={filteredMatches}
+                    player1={player1}
+                    player2={player2}
+                    category={category}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
+          )}
         </>
       )}
     </div>

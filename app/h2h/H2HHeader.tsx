@@ -3,6 +3,7 @@
 import Flag from '@/components/Flag';
 import Link from "next/link";
 import { getPlayerHrefWithTab } from '@/lib/utils';
+import { lastNMatches, playerResultsForMatches } from '@/lib/h2hUtils';
 
 interface Player {
   atpname: string | null;
@@ -13,6 +14,8 @@ interface Player {
 interface Match {
   winner_name: string | null;
   loser_name: string | null;
+  winner_id?: string | null;
+  loser_id?: string | null;
 }
 
 interface H2HHeaderProps {
@@ -34,14 +37,17 @@ export default function H2HHeader({
   player2,
   matches,
 }: H2HHeaderProps) {
-  const lastMatches = [...matches].slice(-5).reverse();
-
+  // Take last 5 matches in chronological order (oldest → newest)
   // Calcolo colori dinamici (identico al tuo)
   const getColor = (a: number, b: number) => {
     if (a > b) return "!text-green-400";
     if (a < b) return "!text-red-400";
     return "text-gray-300";
   };
+
+  // Usa funzioni centralizzate per ultime partite e sequenze W/L
+  // (filtraggio COUNTED, ordinamento, fallback id→name)
+  // Import a livello file: see lib/h2hUtils.ts
 
   const color1 = getColor(wins1, wins2);
   const color2 = getColor(wins2, wins1);
@@ -85,50 +91,32 @@ export default function H2HHeader({
           <span className={percColor2}>{perc2.toFixed(1)}%</span>
         </div>
 
-        {/* LAST 5 MATCHES */}
+        {/* LAST 5 MATCHES: per-player rows (oldest → newest on each row) */}
         <div className="flex justify-between mt-4">
-          {/* Player 1 */}
+          {/* Player 1: left */}
           <div className="flex gap-2 justify-start">
-            {lastMatches.map((m, i) => {
-              const isWin = m.winner_name === player1.atpname;
-              const isLoss = m.loser_name === player1.atpname;
-              return (
-                <span
-                  key={i}
-                  className={`font-bold text-2xl ${
-                    isWin
-                      ? "!text-green-400"
-                      : isLoss
-                      ? "!text-red-400"
-                      : "text-gray-500"
-                  }`}
-                >
-                  {isWin ? "W" : isLoss ? "L" : "-"}
+            {(() => {
+              const last = lastNMatches(matches, 5);
+              const p1 = playerResultsForMatches(player1.id, player1.atpname, last);
+              return p1.map((r, i) => (
+                <span key={i} className={`font-bold text-2xl ${r === 'W' ? "!text-green-400" : r === 'L' ? "!text-red-400" : "text-gray-500"}`}>
+                  {r}
                 </span>
-              );
-            })}
+              ));
+            })()}
           </div>
 
-          {/* Player 2 */}
+          {/* Player 2: right */}
           <div className="flex gap-2 justify-end">
-            {lastMatches.map((m, i) => {
-              const isWin = m.winner_name === player2.atpname;
-              const isLoss = m.loser_name === player2.atpname;
-              return (
-                <span
-                  key={i}
-                  className={`font-bold text-2xl ${
-                    isWin
-                      ? "!text-green-400"
-                      : isLoss
-                      ? "!text-red-400"
-                      : "text-gray-500"
-                  }`}
-                >
-                  {isWin ? "W" : isLoss ? "L" : "-"}
+            {(() => {
+              const last = lastNMatches(matches, 5);
+              const p2 = playerResultsForMatches(player2.id, player2.atpname, last);
+              return p2.map((r, i) => (
+                <span key={i} className={`font-bold text-2xl ${r === 'W' ? "!text-green-400" : r === 'L' ? "!text-red-400" : "text-gray-500"}`}>
+                  {r}
                 </span>
-              );
-            })}
+              ));
+            })()}
           </div>
         </div>
       </div>

@@ -4,11 +4,16 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import PlayerSearch from "./PlayerSearch";
 import H2HHeader from "./H2HHeader";
 import H2HBars from "./H2HBars";
+import H2HWinsChart from "./H2HWinsChart";
+import H2HMatchFormatBars from "./H2HMatchFormatBars";
+import H2HComebackBars from "./H2HComebackBars";
 import H2HMatches from "./H2HMatches";
 import H2HPageFilters from "./H2HPageFilters";
 import { Player, Match, SortKey, SortDirection } from "@/types";
 import { useRouter, usePathname } from "next/navigation";
 import { createH2HUrl } from "@/lib/utils";
+import H2HPreviewClient from "./H2HPreviewClient";
+import H2HStaticTable from "./H2HStaticTable";
 
 export default function H2HPage() {
   const router = useRouter();
@@ -31,6 +36,164 @@ export default function H2HPage() {
     round: "All",
     tourney_name: "All",
   });
+
+  // Preview (Sinner vs Alcaraz) state
+  const [previewPlayer1, setPreviewPlayer1] = useState<Player | null>(null);
+  const [previewPlayer2, setPreviewPlayer2] = useState<Player | null>(null);
+  const [previewMatches, setPreviewMatches] = useState<Match[]>([]);
+  const [previewLoading, setPreviewLoading] = useState(false);
+
+  // Preview (Federer vs Nadal) state
+  const [fnPlayer1, setFnPlayer1] = useState<Player | null>(null);
+  const [fnPlayer2, setFnPlayer2] = useState<Player | null>(null);
+  const [fnMatches, setFnMatches] = useState<Match[]>([]);
+  const [fnLoading, setFnLoading] = useState(false);
+
+  // Preview (Federer vs Djokovic) state
+  const [fdPlayer1, setFdPlayer1] = useState<Player | null>(null);
+  const [fdPlayer2, setFdPlayer2] = useState<Player | null>(null);
+  const [fdMatches, setFdMatches] = useState<Match[]>([]);
+  const [fdLoading, setFdLoading] = useState(false);
+
+  // Preview (Djokovic vs Nadal) state
+  const [dnPlayer1, setDnPlayer1] = useState<Player | null>(null);
+  const [dnPlayer2, setDnPlayer2] = useState<Player | null>(null);
+  const [dnMatches, setDnMatches] = useState<Match[]>([]);
+  const [dnLoading, setDnLoading] = useState(false);
+
+
+  useEffect(() => {
+    let mounted = true;
+    const loadPreview = async () => {
+      try {
+        setPreviewLoading(true);
+        const [p1Res, p2Res] = await Promise.all([
+          fetch(`/api/players/search?slug=jannik-sinner`),
+          fetch(`/api/players/search?slug=carlos-alcaraz`),
+        ]);
+
+        if (!mounted) return;
+        if (p1Res.ok && p2Res.ok) {
+          const p1json = await p1Res.json();
+          const p2json = await p2Res.json();
+          const p1 = p1json.player as Player;
+          const p2 = p2json.player as Player;
+          setPreviewPlayer1(p1);
+          setPreviewPlayer2(p2);
+
+          // fetch their H2H matches
+          const mRes = await fetch(`/api/h2h?player1=${encodeURIComponent(String(p1.id))}&player2=${encodeURIComponent(String(p2.id))}`);
+          if (!mounted) return;
+          if (mRes.ok) {
+            const mm = await mRes.json();
+            setPreviewMatches(mm as Match[]);
+          } else {
+            setPreviewMatches([]);
+          }
+        }
+      } catch (err) {
+        console.error('Preview load error', err);
+        if (mounted) setPreviewMatches([]);
+      } finally {
+        if (mounted) setPreviewLoading(false);
+      }
+    };
+
+    loadPreview();
+    return () => { mounted = false; };
+  }, []);
+
+  // Load Federer vs Nadal preview data
+  useEffect(() => {
+    let mounted = true;
+    const loadFN = async () => {
+      try {
+        setFnLoading(true);
+        const [p1Res, p2Res] = await Promise.all([
+          fetch(`/api/players/search?slug=roger-federer`),
+          fetch(`/api/players/search?slug=rafael-nadal`),
+        ]);
+        if (!mounted) return;
+        if (p1Res.ok && p2Res.ok) {
+          const p1json = await p1Res.json();
+          const p2json = await p2Res.json();
+          const p1 = p1json.player as Player;
+          const p2 = p2json.player as Player;
+          setFnPlayer1(p1);
+          setFnPlayer2(p2);
+          const mRes = await fetch(`/api/h2h?player1=${encodeURIComponent(String(p1.id))}&player2=${encodeURIComponent(String(p2.id))}`);
+          if (!mounted) return;
+          if (mRes.ok) {
+            const mm = await mRes.json();
+            setFnMatches(mm as Match[]);
+          } else {
+            setFnMatches([]);
+          }
+        }
+      } catch (err) {
+        console.error('Federer-Nadal preview load error', err);
+        if (mounted) setFnMatches([]);
+      } finally {
+        if (mounted) setFnLoading(false);
+      }
+    };
+    loadFN();
+    return () => { mounted = false; };
+  }, []);
+
+  // Load Federer vs Djokovic preview data
+  useEffect(() => {
+    let mounted = true;
+    const loadFD = async () => {
+      try {
+        setFdLoading(true);
+        const [p1Res, p2Res] = await Promise.all([
+          fetch(`/api/players/search?slug=novak-djokovic`),
+          fetch(`/api/players/search?slug=roger-federer`),
+        ]);
+        if (!mounted) return;
+        if (p1Res.ok && p2Res.ok) {
+          const p1 = (await p1Res.json()).player as Player;
+          const p2 = (await p2Res.json()).player as Player;
+          setFdPlayer1(p1);
+          setFdPlayer2(p2);
+          const mRes = await fetch(`/api/h2h?player1=${encodeURIComponent(String(p1.id))}&player2=${encodeURIComponent(String(p2.id))}`);
+          if (!mounted) return;
+          setFdMatches(mRes.ok ? (await mRes.json()) as Match[] : []);
+        }
+      } catch { if (mounted) setFdMatches([]); }
+      finally { if (mounted) setFdLoading(false); }
+    };
+    loadFD();
+    return () => { mounted = false; };
+  }, []);
+
+  // Load Djokovic vs Nadal preview data
+  useEffect(() => {
+    let mounted = true;
+    const loadDN = async () => {
+      try {
+        setDnLoading(true);
+        const [p1Res, p2Res] = await Promise.all([
+          fetch(`/api/players/search?slug=novak-djokovic`),
+          fetch(`/api/players/search?slug=rafael-nadal`),
+        ]);
+        if (!mounted) return;
+        if (p1Res.ok && p2Res.ok) {
+          const p1 = (await p1Res.json()).player as Player;
+          const p2 = (await p2Res.json()).player as Player;
+          setDnPlayer1(p1);
+          setDnPlayer2(p2);
+          const mRes = await fetch(`/api/h2h?player1=${encodeURIComponent(String(p1.id))}&player2=${encodeURIComponent(String(p2.id))}`);
+          if (!mounted) return;
+          setDnMatches(mRes.ok ? (await mRes.json()) as Match[] : []);
+        }
+      } catch { if (mounted) setDnMatches([]); }
+      finally { if (mounted) setDnLoading(false); }
+    };
+    loadDN();
+    return () => { mounted = false; };
+  }, []);
 
   // --- Leggi URL params lato client ---
   useEffect(() => setSearchParamsClient(new URLSearchParams(window.location.search)), []);
@@ -213,13 +376,13 @@ export default function H2HPage() {
 
       {player1 && player2 && (
         <>
-          <H2HPageFilters
+          {matches.length > 0 && <H2HPageFilters
             allMatches={matches}
             loading={loading}
             error={null}
             filters={filters}
             setFilters={(partial) => setFilters((prev) => ({ ...prev, ...partial }))}
-          />
+          />}
 
           <H2HHeader
             wins1={wins1}
@@ -231,7 +394,7 @@ export default function H2HPage() {
             matches={filteredMatches}
           />
 
-          <div className="mt-8">
+          {matches.length > 0 && <div className="mt-8">
             {loading ? (
               <p className="text-center text-gray-400">Loading matches...</p>
             ) : (
@@ -244,25 +407,77 @@ export default function H2HPage() {
                 playerId={player1.id}
               />
             )}
-          </div>
+          </div>}
 
-          <div className="grid md:grid-cols-3 gap-6 mt-10">
-            {["wins", "sets", "games"].map((category) => (
-              <div key={category} className="bg-gray-800 p-6 rounded-lg shadow-lg">
-                <h2 className="text-xl font-semibold mb-4 text-center">
-                  {category[0].toUpperCase() + category.slice(1)}
-                </h2>
-                <H2HBars
-                  matches={filteredMatches}
-                  player1={player1}
-                  player2={player2}
-                  category={category as "wins" | "sets" | "games"}
-                />
+          {(wins1 + wins2) > 0 && (
+          <div className="flex flex-col gap-10 mt-10">
+            {/* Wins - full width */}
+            <div className="bg-gray-800 p-6 rounded-xl shadow-lg">
+              <h2 className="text-xl font-semibold mb-6 text-center">Wins</h2>
+              <H2HWinsChart matches={filteredMatches} player1={player1} player2={player2} />
+            </div>
+            {/* Sets Format + Comebacks */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 className="text-xl font-semibold mb-4 text-center">Sets Format</h2>
+                <H2HMatchFormatBars matches={filteredMatches} player1={player1} player2={player2} />
               </div>
-            ))}
+              <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 className="text-xl font-semibold mb-4 text-center">Deciding</h2>
+                <H2HComebackBars matches={filteredMatches} player1={player1} player2={player2} />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {(["sets", "games"] as const).map((category) => (
+                <div key={category} className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                  <h2 className="text-xl font-semibold mb-4 text-center">
+                    {category[0].toUpperCase() + category.slice(1)}
+                  </h2>
+                  <H2HBars
+                    matches={filteredMatches}
+                    player1={player1}
+                    player2={player2}
+                    category={category}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
+          )}
         </>
       )}
+
+      {/* Static H2H preview boxes */}
+      <div className="mt-10 flex flex-wrap gap-6">
+        <div className="w-80 md:w-96">
+          <H2HStaticTable
+            player1={previewPlayer1 ?? { id: 'T0HA', atpname: 'Jannik Sinner', ioc: 'ITA', slug: 'jannik-sinner' }}
+            player2={previewPlayer2 ?? { id: 'A0E2', atpname: 'Carlos Alcaraz', ioc: 'ESP', slug: 'carlos-alcaraz' }}
+            matches={previewMatches}
+          />
+        </div>
+        <div className="w-80 md:w-96">
+          <H2HStaticTable
+            player1={fnPlayer1 ?? { id: 'F324', atpname: 'Roger Federer', ioc: 'SUI', slug: 'roger-federer' }}
+            player2={fnPlayer2 ?? { id: 'N409', atpname: 'Rafael Nadal', ioc: 'ESP', slug: 'rafael-nadal' }}
+            matches={fnMatches}
+          />
+        </div>
+        <div className="w-80 md:w-96">
+          <H2HStaticTable
+            player1={fdPlayer2 ?? { id: 'F324', atpname: 'Roger Federer', ioc: 'SUI', slug: 'roger-federer' }}
+            player2={fdPlayer1 ?? { id: 'D643', atpname: 'Novak Djokovic', ioc: 'SRB', slug: 'novak-djokovic' }}
+            matches={fdMatches}
+          />
+        </div>
+        <div className="w-80 md:w-96">
+          <H2HStaticTable
+            player1={dnPlayer2 ?? { id: 'N409', atpname: 'Rafael Nadal', ioc: 'ESP', slug: 'rafael-nadal' }}
+            player2={dnPlayer1 ?? { id: 'D643', atpname: 'Novak Djokovic', ioc: 'SRB', slug: 'novak-djokovic' }}
+            matches={dnMatches}
+          />
+        </div>
+      </div>
     </div>
   );
 }

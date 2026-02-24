@@ -2,8 +2,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 import { middleware } from '../../middleware';
 
-describe('middleware player redirect suppression', () => {
-  it('does not return 301 for players slug-map matches', async () => {
+describe('middleware player redirect -> canonical slug', () => {
+  it('returns 301 for players when slug-map resolves a legacy code', async () => {
     // Mock fetch for /api/slug-map used in middleware
     global.fetch = vi.fn().mockImplementation((url: string) => {
       if (url.includes('/api/slug-map')) {
@@ -20,9 +20,9 @@ describe('middleware player redirect suppression', () => {
     };
 
     const res = await middleware(req as any);
-    // middleware should not return a 301 Response for players
+    // middleware should now return a 301 Response for players when slug resolved
     expect(res).toBeTruthy();
-    // If it were a redirect Response, it would have status and headers; ensure it is not a 301 redirect
-    expect((res as any).status).not.toBe(301);
+    expect((res as any).status).toBe(301);
+    expect((res as any).headers.get('location')).toContain('/players/dominik-hrbaty?tab=matches');
   });
 });

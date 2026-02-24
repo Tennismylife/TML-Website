@@ -622,7 +622,9 @@ export function extractUniqueSurfaces(field: any): string[] {
 export function createH2HUrl(player1Name: string, player2Name: string): string {
   const slug1 = createSlug(player1Name);
   const slug2 = createSlug(player2Name);
-  return `/h2h/${slug1}-vs-${slug2}`;
+  // Ensure a canonical alphabetical ordering so URLs are consistent regardless of selection order
+  const [first, second] = slug1 <= slug2 ? [slug1, slug2] : [slug2, slug1];
+  return `/h2h/${first}-vs-${second}`;
 }
 
 // Parse H2H URL slugs back to player names (for display purposes)
