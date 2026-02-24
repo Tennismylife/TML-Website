@@ -13,6 +13,7 @@ export const metadata: Metadata = {
     type: 'website',
   },
   alternates: { canonical: `${site}/h2h` },
+  robots: { index: false, follow: false },
 };
 
 export default function H2HLayout({ children }: { children: React.ReactNode }) {
