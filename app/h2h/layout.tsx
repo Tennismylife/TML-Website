@@ -13,7 +13,8 @@ export const metadata: Metadata = {
     type: 'website',
   },
   alternates: { canonical: `${site}/h2h` },
-  robots: { index: false, follow: false },
+  // previously noindex; now we want H2H pages to be crawlable like players
+  robots: { index: true, follow: true },
 };
 
 export default function H2HLayout({ children }: { children: React.ReactNode }) {

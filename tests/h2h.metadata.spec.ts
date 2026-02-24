@@ -4,6 +4,10 @@ vi.mock('@/lib/site', () => ({ metadataBase: new URL('https://example.test') }))
 import { generateMetadata } from '../app/h2h/[...slugs]/page';
 
 describe('h2h generateMetadata', () => {
+  it('layout metadata allows indexing', () => {
+    const { metadata } = require('../app/h2h/layout');
+    expect(metadata.robots).toMatchObject({ index: true, follow: true });
+  });
   it('returns dynamic title and og image when players found', async () => {
     const { prisma } = require('@/lib/prisma');
     // When slug is alphabetical (rafael before roger), lookup should reflect that order
@@ -17,6 +21,8 @@ describe('h2h generateMetadata', () => {
     expect(meta.description).toBe('Rafael Nadal vs Roger Federer head-to-head: H2H record, match stats and analysis. Compare ATP players.');
     expect(meta.openGraph?.images?.[0]?.url).toContain('/og/site-preview.png');
     expect(meta.openGraph?.url).toBe('https://example.test/h2h/rafael-nadal-vs-roger-federer');
+    // robots should allow indexing
+    expect(meta.robots).toMatchObject({ index: true, follow: true });
   });
 
   it('falls back to generic metadata when players not found', async () => {
@@ -29,5 +35,6 @@ describe('h2h generateMetadata', () => {
     expect(meta.description).toBe('Head-to-head statistics between players.');
     expect(meta.openGraph?.images?.[0]?.url).toContain('/og/site-preview.png');
     expect(meta.openGraph?.url).toBe('https://example.test/h2h/invalid-slug');
+    expect(meta.robots).toMatchObject({ index: true, follow: true });
   });
 });

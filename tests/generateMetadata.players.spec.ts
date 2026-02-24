@@ -24,4 +24,5 @@ describe('generateMetadata for player tab page', () => {
     const meta = await generateMetadata({ params: { id: 'ivan-lendl', tab: 'matches' }, searchParams } as any);
     expect(meta.robots).toMatchObject({ index: true, follow: true });
   });
+
 });
