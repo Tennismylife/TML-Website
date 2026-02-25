@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import type { Match } from "@/types";
 
-const ROUND_ORDER = ["Q1","Q2","Q3","R128","R64","R32","R16","QF","SF","F","W","RR","BR","Unknown"];
+const ROUND_ORDER = ["Q1","Q2","Q3","R128","R64","R32","R16","RR","QF","SF","F","W","BR","Unknown"];
 
 function toDate(d: string | Date | null | undefined) {
   if (!d) return null;

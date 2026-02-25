@@ -52,7 +52,7 @@ export default function Seeds({ id, year, matches }: SeedsProps) {
         });
     }
 
-    const roundOrder = ["R128", "R64", "R32", "R16", "QF", "SF", "F"];
+    const roundOrder = ["R128", "R64", "R32", "R16", "RR", "QF", "SF", "F"];
 
     for (const [seed, data] of seedsMap) {
       const playerMatches = matches.filter(

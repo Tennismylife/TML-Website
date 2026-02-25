@@ -5,7 +5,7 @@ import type { Match } from "@/types";
 import { getLevelFullName } from "@/lib/utils";
 
 const LEVEL_ORDER = ["G", "M", "A", "O", "D", "Unknown"];
-const ROUND_ORDER = ["R128","R64","R32","R16","QF","SF","F","W","RR","BR","Unknown"];
+const ROUND_ORDER = ["R128","R64","R32","R16","RR","QF","SF","F","W","BR","Unknown"];
 const SURFACE_ORDER = ["Hard","Clay","Grass","Carpet","Unknown"];
 
 // Default filters to avoid runtime crash when parent doesn't pass filters

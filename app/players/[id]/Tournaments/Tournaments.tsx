@@ -7,7 +7,7 @@ import TournamentGrid from "../TournamentGrid";
 import TournamentSummary from "./TournamentSummary";
 import { getTourneyHref } from "@/lib/utils";
 
-const ROUND_ORDER = ["R256","R128","R64","R32","R16","QF","SF","BR","F","W"];
+const ROUND_ORDER = ["R256","R128","R64","R32","R16","RR","QF","SF","BR","F","W"];
 const LEVEL_ORDER = ["G","M","500","250","A","O","D","F"];
 const SURFACE_ORDER = ["Hard","Clay","Grass","Carpet"];
 

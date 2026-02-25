@@ -21,7 +21,7 @@ interface H2HPageFiltersProps {
 }
 
 const LEVEL_ORDER = ["G", "M", "A", "O", "D", "Unknown"];
-const ROUND_ORDER = ["R128","R64","R32","R16","QF","SF","F","W","RR","BR","Unknown"];
+const ROUND_ORDER = ["R128","R64","R32","R16","RR","QF","SF","F","W","BR","Unknown"];
 const SURFACE_ORDER = ["Hard","Clay","Grass","Carpet","Unknown"];
 
 export default function H2HPageFilters({ allMatches, loading, error, hideTourney, filters, setFilters }: H2HPageFiltersProps) {

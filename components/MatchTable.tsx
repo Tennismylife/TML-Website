@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Match, SortDirection, SortKey } from "@/types";
 import Flag from '@/components/Flag';
-import { getTourneyHref, extractUniqueSurfaces, getPlayerHref, getPlayerHrefWithTab, formatDateISO, createH2HUrl } from "@/lib/utils";
+import { getTourneyHref, extractUniqueSurfaces, getPlayerHref, getPlayerHrefWithTab, formatDateISO, createH2HUrl, getRoundIndex } from "@/lib/utils";
 import { useEffect, useState, useMemo, useRef } from "react";
 
 interface MatchTableProps {
@@ -99,31 +99,11 @@ export default function MatchTable({
       ], [showWinnerStats]);
 
 
-  // Round ordering priority: ensure within the same tournament rounds are always
-  // ordered R256, R128, R64, R32, R16, R8, QF, SF, F regardless of date sorting direction.
-  const roundOrder = ['R256','R128','R64','R32','R16','R8','QF','SF','F'];
-  function getRoundIndex(round?: string | null) {
-    if (!round) return Number.MAX_SAFE_INTEGER;
-    const r = String(round).toUpperCase().trim();
-    // direct match
-    const direct = roundOrder.indexOf(r);
-    if (direct >= 0) return direct;
-    // common patterns: R32, R16, QF, SF, F
-    const match = r.match(/R(\d+)/);
-    if (match) {
-      const n = Number(match[1]);
-      // map numeric rounds to approximate slots (smaller number -> later round)
-      // we'll try to map 256,128,64,32,16,8
-      const map = {
-        256: 0, 128: 1, 64: 2, 32: 3, 16: 4, 8: 5
-      } as Record<number, number>;
-      if (n in map) return map[n];
-    }
-    if (r.includes('QUARTER') || r === 'Q' || r === 'QF') return roundOrder.indexOf('QF');
-    if (r.includes('SEMI') || r === 'SF') return roundOrder.indexOf('SF');
-    if (r === 'F' || r.includes('FINAL')) return roundOrder.indexOf('F');
-    // fallback: put unknown rounds after known ones
-    return Number.MAX_SAFE_INTEGER - 1;
+  // For round-based ordering we now delegate to the shared utility.  That
+  // helper has the special ATP-Finals logic (RR before SF/F and QF pushed
+  // to the end) so tournament and player pages behave consistently.
+  function localRoundIndex(round?: string | null, tourneyLevel?: string | null) {
+    return getRoundIndex(round, tourneyLevel);
   }
 
   const sortedMatches = useMemo(() => {
@@ -140,8 +120,8 @@ export default function MatchTable({
       // Special handling when sorting by tourney_date: keep rounds ordering within same tournament
       if (sortKey === 'tourney_date') {
         if (a.tourney_id === b.tourney_id && a.year === b.year) {
-          const ai = getRoundIndex(a.round);
-          const bi = getRoundIndex(b.round);
+          const ai = localRoundIndex(a.round, a.tourney_level ?? null);
+          const bi = localRoundIndex(b.round, b.tourney_level ?? null);
           // Respect sort direction so rounds are reversed when date sort is descending
           return (ai - bi) * dir;
         }
@@ -152,8 +132,8 @@ export default function MatchTable({
 
       // If sorting by round directly, use explicit round order
       if (sortKey === 'round') {
-        const ai = getRoundIndex(a.round);
-        const bi = getRoundIndex(b.round);
+        const ai = localRoundIndex(a.round, a.tourney_level ?? null);
+        const bi = localRoundIndex(b.round, b.tourney_level ?? null);
         if (ai !== bi) return (ai - bi) * dir;
         // tie-break by date
         const ad = new Date(a.tourney_date as unknown as string).getTime();

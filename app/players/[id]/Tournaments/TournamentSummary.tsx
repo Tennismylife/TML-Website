@@ -52,9 +52,9 @@ type SummaryRow = {
 };
 
 const ROUND_ORDER = [
-  "W", "F", "SF", "QF", "R16", "R32", "R64", "R128",
+  "W", "F", "SF", "QF", "R16", "RR", "R32", "R64", "R128",
   "Q3", "Q2", "Q1",
-  "RR", "G",
+  "G",
   "BR",
   "R"
 ];

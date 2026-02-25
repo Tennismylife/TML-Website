@@ -86,4 +86,31 @@ describe('MatchTable sorting by date respects round order within same tournament
     // When sorting by date desc, rounds should be reversed so matches are consecutive by round
     expect(rounds).toEqual(['F', 'SF', 'R64']);
   });
+
+  describe('F-level tournament special ordering', () => {
+    const fMatches: Match[] = [
+      { id: 'a', year: 2026, tourney_id: 'F1', tourney_name: 'Finals', tourney_date: '2026-11-15', round: 'F', tourney_level: 'F', winner_id: 'x', loser_id: 'y' } as any,
+      { id: 'b', year: 2026, tourney_id: 'F1', tourney_name: 'Finals', tourney_date: '2026-11-10', round: 'RR', tourney_level: 'F', winner_id: 'u', loser_id: 'v' } as any,
+      { id: 'c', year: 2026, tourney_id: 'F1', tourney_name: 'Finals', tourney_date: '2026-11-12', round: 'SF', tourney_level: 'F', winner_id: 'm', loser_id: 'n' } as any,
+      // include a stray quarter final which should be pushed to the bottom
+      { id: 'd', year: 2026, tourney_id: 'F1', tourney_name: 'Finals', tourney_date: '2026-11-08', round: 'QF', tourney_level: 'F', winner_id: 'p', loser_id: 'q' } as any,
+    ];
+
+    it('sorts rounds RR, SF, F when tourney_level is F even if dates conflict', () => {
+      render(
+        <MatchTable
+          matches={fMatches}
+          sortKey={'round'}
+          sortDir={'asc'}
+          setSortKey={() => {}}
+          setSortDir={() => {}}
+          playerId={''}
+        />
+      );
+      const tbody = screen.getByRole('table').querySelector('tbody')!;
+      const rounds = Array.from(tbody.querySelectorAll('tr')).map(r => r.querySelector('td:nth-child(4)')?.textContent?.trim());
+      // QF should be last
+      expect(rounds).toEqual(['RR','SF','F','QF']);
+    });
+  });
 });

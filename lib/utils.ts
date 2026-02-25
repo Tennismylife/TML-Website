@@ -568,6 +568,39 @@ export const ROUND_ORDER = [
   "Unknown", "Q1", "Q2", "Q3", "R256", "R128", "R64", "R32", "R16", "RR", "QF", "SF", "F", "W", "BR"
 ];
 
+/**
+ * Compute an ordering index for a round name, with an optional
+ * special case for F-level (ATP Finals) tournaments.  Historically
+ * these events use a round-robin stage that should be shown before
+ * the semifinals and final; they also never have a QF so we treat
+ * any accidental QF results as coming after the final.
+ *
+ * @param round   round identifier (e.g. "SF", "RR")
+ * @param tourneyLevel optional tourney_level from match data
+ * @returns numeric index where smaller means an earlier round
+ */
+export function getRoundIndex(round?: string | null, tourneyLevel?: string | null): number {
+  if (!round) return Number.MAX_SAFE_INTEGER;
+  const r = round.toUpperCase();
+
+  // special ordering for Masters/ATP Finals (level 'F')
+  if (tourneyLevel === 'F') {
+    if (r === 'RR') return 0;
+    if (r === 'SF') return 1;
+    if (r === 'F') return 2;
+    if (r === 'W') return 3;
+    // push quarterfinals after final so they don't interfere
+    if (r === 'QF') return Number.MAX_SAFE_INTEGER - 1;
+    // fall back to global index + offset to keep remaining rounds later
+    const idx = ROUND_ORDER.indexOf(r);
+    return idx >= 0 ? idx + 4 : Number.MAX_SAFE_INTEGER;
+  }
+
+  // try case-insensitive lookup against the canonical list
+  const idx = ROUND_ORDER.findIndex(x => x.toUpperCase() === r);
+  return idx >= 0 ? idx : Number.MAX_SAFE_INTEGER;
+}
+
 export const getRoundColor = (round: string): string => {
   if (round === "W") return "#FBBF24"; // Yellow for Winner (same as in Seasons)
   const idx = ROUND_ORDER.indexOf(round);

@@ -6,6 +6,7 @@ import Flag from '@/components/Flag';
 import Modal from '@/components/Modal';
 import Pagination from '@/components/Pagination';
 import { playerMatchesUrl } from '../../../records/nav';
+import { getRoundIndex } from '@/lib/utils';
 
 export default function StreakSection({ id }: { id: string }) {
   const [streaks, setStreaks] = useState<any[]>([]);
@@ -162,7 +163,8 @@ export default function StreakSection({ id }: { id: string }) {
               <tbody>
                 {/* Group matches by edition (tourney name + date) and order each group by round */}
                 {(() => {
-                  const roundOrder: Record<string, number> = { R128: 0, R64: 1, R32: 2, R16: 3, QF: 4, SF: 5, F: 6, '1R': 0, '2R': 1, '3R': 2, '4R': 3, Q: 4, S: 5 };
+                  // fallback order used only when helper returns same value
+                  const roundOrder: Record<string, number> = { R128: 0, R64: 1, R32: 2, R16: 3, RR: 4, QF: 5, SF: 6, F: 7, '1R': 0, '2R': 1, '3R': 2, '4R': 3, Q: 4, S: 5 };
 
                   const groups: Record<string, { name: string; date: string; items: any[] }> = {};
                   for (const m of matches) {
@@ -182,8 +184,8 @@ export default function StreakSection({ id }: { id: string }) {
                   return groupEntries.map((g, gi) => {
                     // Sort matches in this group by round order
                     g.items.sort((a, b) => {
-                      const ra = a.round && roundOrder[a.round] !== undefined ? roundOrder[a.round] : 999;
-                      const rb = b.round && roundOrder[b.round] !== undefined ? roundOrder[b.round] : 999;
+                      const ra = getRoundIndex(a.round, a.tourney_level ?? null);
+                      const rb = getRoundIndex(b.round, b.tourney_level ?? null);
                       if (ra !== rb) return ra - rb;
                       // fallback to date then id
                       const da = a.tourney_date ? String(a.tourney_date) : '';

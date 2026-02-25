@@ -42,7 +42,7 @@ export default async function SeedsServer(props: any) {
       });
   }
 
-  const roundOrder = ["R128", "R64", "R32", "R16", "QF", "SF", "F"];
+  const roundOrder = ["R128", "R64", "R32", "R16", "RR", "QF", "SF", "F"];
 
   for (const [seed, data] of seedsMap) {
     const playerMatches = matches.filter(m => m.winner_seed === seed || m.loser_seed === seed);

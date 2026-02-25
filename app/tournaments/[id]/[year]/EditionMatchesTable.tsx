@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Match, SortKey, SortDirection } from "@/types";
 import Flag from '@/components/Flag';
 import { useState, useMemo } from "react";
-import { getPlayerHref } from '@/lib/utils';
+import { getPlayerHref, getRoundIndex, createH2HUrl } from '@/lib/utils';
 import { playerMatchesUrl } from '../../../records/nav';
 
 interface MatchTableProps {
@@ -64,16 +64,19 @@ export default function MatchTable({
     }
   };
 
-  // Priorità dei round
+  // Priorità dei round (used only for fallback when tourney_level is unavailable)
+  // 'RR' is included here so that round-robin matches appear before
+  // semifinals in Finals events.
   const roundOrder: Record<string, number> = {
     "R256": 0,
     "R128": 1,
     "R64":  2,
     "R32":  3,
     "R16":  4,
-    "QF":   5,
-    "SF":   6,
-    "F":    7,
+    "RR":   5,
+    "QF":   6,
+    "SF":   7,
+    "F":    8,
   };
 
   const statsColumns = useMemo(() => {
@@ -101,10 +104,8 @@ export default function MatchTable({
 
     return [...matches].sort((a, b) => {
       if (sortKey === "round") {
-        const aRoundKey = a.round ?? "";
-        const bRoundKey = b.round ?? "";
-        const aRank = roundOrder[aRoundKey] ?? Infinity;
-        const bRank = roundOrder[bRoundKey] ?? Infinity;
+        const aRank = getRoundIndex(a.round, a.tourney_level ?? null);
+        const bRank = getRoundIndex(b.round, b.tourney_level ?? null);
         return sortDir === "asc" ? aRank - bRank : bRank - aRank;
       }
 
@@ -184,6 +185,8 @@ export default function MatchTable({
               { id: "loser_rank", label: "Lrk", title: "Loser Rank", key: "loser_rank" as SortKey },
               { id: "loser_name", label: "Loser", title: "Loser", key: "loser_name" as SortKey },
               { id: "score", label: "Score", title: "Score", key: "score" as SortKey },
+              // added H2H link column after score
+              { id: "h2h", label: "H2H", title: "Head-to-Head", key: null as unknown as SortKey },
               { id: "best_of", label: "BoF", title: "Best of", key: "best_of" as SortKey },
               { id: "minutes", label: "Min", title: "Minutes", key: "minutes" as SortKey },
               ...statsColumns,
@@ -240,6 +243,18 @@ export default function MatchTable({
                   </Link>
                 </td>
                 <td className="px-4 py-2 text-center font-mono text-sm">{m.score}</td>
+                {/* moved H2H link cell after score */}
+                <td className="px-4 py-2 text-center text-sm">
+                  {m.winner_name && m.loser_name && (
+                    <Link
+                      href={createH2HUrl(m.winner_name, m.loser_name)}
+                      className="text-yellow-400 hover:underline text-xs font-semibold"
+                      title={`${m.winner_name} vs ${m.loser_name} H2H`}
+                    >
+                      H2H
+                    </Link>
+                  )}
+                </td>
                 <td className="px-4 py-2 text-center text-sm">{m.best_of ?? "-"}</td>
                 <td className="px-4 py-2 text-center text-sm">{m.minutes ?? "-"}</td>
 
