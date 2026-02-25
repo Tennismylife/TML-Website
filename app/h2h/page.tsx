@@ -37,11 +37,23 @@ export default function H2HPage() {
     tourney_name: "All",
   });
 
-  // Preview (Sinner vs Alcaraz) state
+  // Preview (Alcaraz vs Sinner) state
   const [previewPlayer1, setPreviewPlayer1] = useState<Player | null>(null);
   const [previewPlayer2, setPreviewPlayer2] = useState<Player | null>(null);
   const [previewMatches, setPreviewMatches] = useState<Match[]>([]);
   const [previewLoading, setPreviewLoading] = useState(false);
+
+  // Preview (Alcaraz vs Djokovic) state
+  const [adPlayer1, setAdPlayer1] = useState<Player | null>(null);
+  const [adPlayer2, setAdPlayer2] = useState<Player | null>(null);
+  const [adMatches, setAdMatches] = useState<Match[]>([]);
+  const [adLoading, setAdLoading] = useState(false);
+
+  // Preview (Sinner vs Djokovic) state
+  const [sdPlayer1, setSdPlayer1] = useState<Player | null>(null);
+  const [sdPlayer2, setSdPlayer2] = useState<Player | null>(null);
+  const [sdMatches, setSdMatches] = useState<Match[]>([]);
+  const [sdLoading, setSdLoading] = useState(false);
 
   // Preview (Federer vs Nadal) state
   const [fnPlayer1, setFnPlayer1] = useState<Player | null>(null);
@@ -62,34 +74,25 @@ export default function H2HPage() {
   const [dnLoading, setDnLoading] = useState(false);
 
 
+  // load preview for Alcaraz vs Sinner
   useEffect(() => {
     let mounted = true;
     const loadPreview = async () => {
       try {
         setPreviewLoading(true);
         const [p1Res, p2Res] = await Promise.all([
-          fetch(`/api/players/search?slug=jannik-sinner`),
           fetch(`/api/players/search?slug=carlos-alcaraz`),
+          fetch(`/api/players/search?slug=jannik-sinner`),
         ]);
-
         if (!mounted) return;
         if (p1Res.ok && p2Res.ok) {
-          const p1json = await p1Res.json();
-          const p2json = await p2Res.json();
-          const p1 = p1json.player as Player;
-          const p2 = p2json.player as Player;
+          const p1 = (await p1Res.json()).player as Player;
+          const p2 = (await p2Res.json()).player as Player;
           setPreviewPlayer1(p1);
           setPreviewPlayer2(p2);
-
-          // fetch their H2H matches
           const mRes = await fetch(`/api/h2h?player1=${encodeURIComponent(String(p1.id))}&player2=${encodeURIComponent(String(p2.id))}`);
           if (!mounted) return;
-          if (mRes.ok) {
-            const mm = await mRes.json();
-            setPreviewMatches(mm as Match[]);
-          } else {
-            setPreviewMatches([]);
-          }
+          setPreviewMatches(mRes.ok ? (await mRes.json()) as Match[] : []);
         }
       } catch (err) {
         console.error('Preview load error', err);
@@ -98,8 +101,69 @@ export default function H2HPage() {
         if (mounted) setPreviewLoading(false);
       }
     };
-
     loadPreview();
+    return () => { mounted = false; };
+  }, []);
+
+  // load preview for Alcaraz vs Djokovic
+  useEffect(() => {
+    let mounted = true;
+    const loadAD = async () => {
+      try {
+        setAdLoading(true);
+        const [p1Res, p2Res] = await Promise.all([
+          fetch(`/api/players/search?slug=carlos-alcaraz`),
+          fetch(`/api/players/search?slug=novak-djokovic`),
+        ]);
+        if (!mounted) return;
+        if (p1Res.ok && p2Res.ok) {
+          const p1 = (await p1Res.json()).player as Player;
+          const p2 = (await p2Res.json()).player as Player;
+          setAdPlayer1(p1);
+          setAdPlayer2(p2);
+          const mRes = await fetch(`/api/h2h?player1=${encodeURIComponent(String(p1.id))}&player2=${encodeURIComponent(String(p2.id))}`);
+          if (!mounted) return;
+          setAdMatches(mRes.ok ? (await mRes.json()) as Match[] : []);
+        }
+      } catch (err) {
+        console.error('AD preview load error', err);
+        if (mounted) setAdMatches([]);
+      } finally {
+        if (mounted) setAdLoading(false);
+      }
+    };
+    loadAD();
+    return () => { mounted = false; };
+  }, []);
+
+  // load preview for Sinner vs Djokovic
+  useEffect(() => {
+    let mounted = true;
+    const loadSD = async () => {
+      try {
+        setSdLoading(true);
+        const [p1Res, p2Res] = await Promise.all([
+          fetch(`/api/players/search?slug=jannik-sinner`),
+          fetch(`/api/players/search?slug=novak-djokovic`),
+        ]);
+        if (!mounted) return;
+        if (p1Res.ok && p2Res.ok) {
+          const p1 = (await p1Res.json()).player as Player;
+          const p2 = (await p2Res.json()).player as Player;
+          setSdPlayer1(p1);
+          setSdPlayer2(p2);
+          const mRes = await fetch(`/api/h2h?player1=${encodeURIComponent(String(p1.id))}&player2=${encodeURIComponent(String(p2.id))}`);
+          if (!mounted) return;
+          setSdMatches(mRes.ok ? (await mRes.json()) as Match[] : []);
+        }
+      } catch (err) {
+        console.error('SD preview load error', err);
+        if (mounted) setSdMatches([]);
+      } finally {
+        if (mounted) setSdLoading(false);
+      }
+    };
+    loadSD();
     return () => { mounted = false; };
   }, []);
 
@@ -447,17 +511,56 @@ export default function H2HPage() {
         </>
       )}
 
-      {/* Static H2H preview boxes */}
-      <div className="mt-10 flex flex-wrap gap-6">
+      {/* Static H2H preview rows */}
+      <div className="mt-10 flex flex-wrap justify-center gap-6">
+        {/* first row: Alcaraz vs Sinner, Alcaraz vs Djokovic, Sinner vs Djokovic */}
         <div className="w-80 md:w-96">
-          <H2HStaticTable
-            player1={previewPlayer1 ?? { id: 'T0HA', atpname: 'Jannik Sinner', ioc: 'ITA', slug: 'jannik-sinner' }}
-            player2={previewPlayer2 ?? { id: 'A0E2', atpname: 'Carlos Alcaraz', ioc: 'ESP', slug: 'carlos-alcaraz' }}
-            matches={previewMatches}
-          />
+          {/** derive explicit objects so orientation is unambiguous **/}
+          {(() => {
+            const alc = previewPlayer1 ?? { id: 'A0E2', atpname: 'Carlos Alcaraz', ioc: 'ESP', slug: 'carlos-alcaraz' };
+            const sin = previewPlayer2 ?? { id: 'T0HA', atpname: 'Jannik Sinner', ioc: 'ITA', slug: 'jannik-sinner' };
+            return (
+              <H2HStaticTable
+                // alc left, sin right
+                player1={sin}
+                player2={alc}
+                matches={previewMatches}
+              />
+            );
+          })()}
         </div>
         <div className="w-80 md:w-96">
+          {(() => {
+            const alc = adPlayer1 ?? { id: 'A0E2', atpname: 'Carlos Alcaraz', ioc: 'ESP', slug: 'carlos-alcaraz' };
+            const dj = adPlayer2 ?? { id: 'D643', atpname: 'Novak Djokovic', ioc: 'SRB', slug: 'novak-djokovic' };
+            return (
+              <H2HStaticTable
+                player1={dj}
+                player2={alc}
+                matches={adMatches}
+              />
+            );
+          })()}
+        </div>
+        <div className="w-80 md:w-96">
+          {(() => {
+            const sin = sdPlayer1 ?? { id: 'T0HA', atpname: 'Jannik Sinner', ioc: 'ITA', slug: 'jannik-sinner' };
+            const dj = sdPlayer2 ?? { id: 'D643', atpname: 'Novak Djokovic', ioc: 'SRB', slug: 'novak-djokovic' };
+            return (
+              <H2HStaticTable
+                player1={dj}
+                player2={sin}
+                matches={sdMatches}
+              />
+            );
+          })()}
+        </div>
+      </div>
+      <div className="mt-8 flex flex-wrap justify-center gap-6">
+        {/* second row: Big 3 rivalries */}
+        <div className="w-80 md:w-96">
           <H2HStaticTable
+            // Nadal vs Federer (Nadal left, Federer right)
             player1={fnPlayer1 ?? { id: 'F324', atpname: 'Roger Federer', ioc: 'SUI', slug: 'roger-federer' }}
             player2={fnPlayer2 ?? { id: 'N409', atpname: 'Rafael Nadal', ioc: 'ESP', slug: 'rafael-nadal' }}
             matches={fnMatches}
@@ -465,6 +568,7 @@ export default function H2HPage() {
         </div>
         <div className="w-80 md:w-96">
           <H2HStaticTable
+            // Djokovic vs Federer (Djokovic left, Federer right)
             player1={fdPlayer2 ?? { id: 'F324', atpname: 'Roger Federer', ioc: 'SUI', slug: 'roger-federer' }}
             player2={fdPlayer1 ?? { id: 'D643', atpname: 'Novak Djokovic', ioc: 'SRB', slug: 'novak-djokovic' }}
             matches={fdMatches}
@@ -472,6 +576,7 @@ export default function H2HPage() {
         </div>
         <div className="w-80 md:w-96">
           <H2HStaticTable
+            // Djokovic vs Nadal (Djokovic left, Nadal right)
             player1={dnPlayer2 ?? { id: 'N409', atpname: 'Rafael Nadal', ioc: 'ESP', slug: 'rafael-nadal' }}
             player2={dnPlayer1 ?? { id: 'D643', atpname: 'Novak Djokovic', ioc: 'SRB', slug: 'novak-djokovic' }}
             matches={dnMatches}
