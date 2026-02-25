@@ -329,13 +329,6 @@ export default async function Page({ params, searchParams }: { params?: Promise<
       about: aboutArr,
       keywords,
       dateModified: new Date().toISOString(),
-      mainEntity: {
-        "@type": "Dataset",
-        name: `${player1.atpname} vs ${player2.atpname} Head to Head Statistics`,
-        description: 'Comprehensive statistical comparison including match history, pressure points analysis, and performance metrics',
-        creator: { "@type": "Organization", name: 'TennisMyLife' },
-        keywords: 'tennis h2h, head to head stats, player comparison',
-      },
     };
   }
 

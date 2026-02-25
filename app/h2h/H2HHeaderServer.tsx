@@ -17,6 +17,9 @@ interface Match {
   loser_name: string | null;
   winner_id?: string | null;
   loser_id?: string | null;
+  // additional fields used by header calculations
+  surface?: string | null;
+  tourney_level?: string | null;
 }
 
 interface H2HHeaderServerProps {
