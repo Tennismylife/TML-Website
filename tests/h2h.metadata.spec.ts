@@ -21,8 +21,12 @@ describe('h2h generateMetadata', () => {
     expect(meta.description).toBe('Rafael Nadal vs Roger Federer head-to-head: H2H record, match stats and analysis. Compare ATP players.');
     expect(meta.openGraph?.images?.[0]?.url).toContain('/og/site-preview.png');
     expect(meta.openGraph?.url).toBe('https://example.test/h2h/rafael-nadal-vs-roger-federer');
-    // robots should allow indexing
+    // robots should allow indexing when no query
     expect(meta.robots).toMatchObject({ index: true, follow: true });
+
+    // querystring should trigger noindex
+    const metaFiltered = await generateMetadata({ params: { slug: ['rafael-nadal-vs-roger-federer'] } as any, searchParams: { level: '500' } } as any);
+    expect(metaFiltered.robots).toMatchObject({ index: false, follow: true });
   });
 
   it('falls back to generic metadata when players not found', async () => {
@@ -36,5 +40,8 @@ describe('h2h generateMetadata', () => {
     expect(meta.openGraph?.images?.[0]?.url).toContain('/og/site-preview.png');
     expect(meta.openGraph?.url).toBe('https://example.test/h2h/invalid-slug');
     expect(meta.robots).toMatchObject({ index: true, follow: true });
+
+    const metaFiltered2 = await generateMetadata({ params: { slug: ['invalid-slug'] } as any, searchParams: { surface: 'Clay' } } as any);
+    expect(metaFiltered2.robots).toMatchObject({ index: false, follow: true });
   });
 });

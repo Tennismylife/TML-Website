@@ -13,7 +13,7 @@ import enLocale from 'i18n-iso-countries/langs/en.json';
 
 const canonicalOrigin = new URL(process.env.NEXT_PUBLIC_SITE_ORIGIN ?? 'https://stats.tennismylife.org');
 
-export async function generateMetadata({ params }: { params?: Promise<{ slugs?: string[] }> | { slugs?: string[] } }): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: { params?: Promise<{ slugs?: string[] }> | { slugs?: string[] }, searchParams?: Record<string, string | string[]> }): Promise<Metadata> {
   // Next.js 16+ params can be a Promise
   const resolvedParams = params instanceof Promise ? await params : params;
   const slugArr = resolvedParams?.slugs;
@@ -46,11 +46,14 @@ export async function generateMetadata({ params }: { params?: Promise<{ slugs?: 
   // Use canonical with trailing '?' for H2H slugs to match requested format
   const canonical = slug ? `${canonicalBase}?` : canonicalBase;
 
+  const hasQuery = searchParams && Object.keys(searchParams).length > 0;
+
   return {
     title: siteTitle,
     description,
     authors: [{ name: 'TennisMyLife' }],
-    robots: { index: true, follow: true },
+    // prevent pages with query strings from being indexed (filters applied)
+    robots: hasQuery ? { index: false, follow: true } : { index: true, follow: true },
     openGraph: {
       title: siteTitle,
       description,
