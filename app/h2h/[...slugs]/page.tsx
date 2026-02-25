@@ -238,12 +238,28 @@ export default async function Page({ params, searchParams }: { params?: Promise<
     });
   }
 
+  // Additional metadata fields used in structured data when both players exist
+  let aboutArr: any[] = [];
+  let keywords: string | undefined;
+  if (player1 && player2) {
+    aboutArr = [
+      { "@id": (new URL(getPlayerHrefWithTab(player1.slug ?? (player1.id ? String(player1.id) : String(player1.atpname)), 'matches'), canonicalOrigin).toString()) },
+      { "@id": (new URL(getPlayerHrefWithTab(player2.slug ?? (player2.id ? String(player2.id) : String(player2.atpname)), 'matches'), canonicalOrigin).toString()) },
+    ];
+    keywords = `${player1.atpname} vs ${player2.atpname}, ${player1.atpname} ${player2.atpname} h2h, ${player1.atpname} ${player2.atpname} head to head, tennis h2h stats, ${player1.atpname} ${player2.atpname} matches, ${player1.atpname} ${player2.atpname} comparison, ATP h2h`;
+  }
+
   const jsonLd: any = {
     "@context": "https://schema.org",
     "@type": "WebPage",
     name: pageTitle,
     description: pageDescription,
     url: canonical,
+    inLanguage: 'en-US',
+    isPartOf: { "@type": "WebSite", name: 'TennisMyLife', url: canonicalOrigin.toString() },
+    ...(aboutArr.length ? { about: aboutArr } : {}),
+    ...(keywords ? { keywords } : {}),
+    dateModified: new Date().toISOString(),
   };
 
   if (playersAsPersons.length) {
@@ -305,36 +321,6 @@ export default async function Page({ params, searchParams }: { params?: Promise<
   const personJson1 = buildPersonJson(player1);
   const personJson2 = buildPersonJson(player2);
 
-  // Build WebPage JSON-LD for the H2H comparison (if both players present)
-  let webpageJson: any = null;
-  if (player1 && player2) {
-    const slug1 = createSlug(player1.atpname ?? player1.player ?? String(player1.id ?? ''));
-    const slug2 = createSlug(player2.atpname ?? player2.player ?? String(player2.id ?? ''));
-    // Use canonical URL for the WebPage JSON-LD
-    const pageUrl = canonical;
-
-    const aboutArr = [
-      { "@id": (new URL(getPlayerHrefWithTab(player1.slug ?? (player1.id ? String(player1.id) : String(player1.atpname)), 'matches'), canonicalOrigin).toString()) },
-      { "@id": (new URL(getPlayerHrefWithTab(player2.slug ?? (player2.id ? String(player2.id) : String(player2.atpname)), 'matches'), canonicalOrigin).toString()) },
-    ];
-
-    const keywords = `${player1.atpname} vs ${player2.atpname}, ${player1.atpname} ${player2.atpname} h2h, ${player1.atpname} ${player2.atpname} head to head, tennis h2h stats, ${player1.atpname} ${player2.atpname} matches, ${player1.atpname} ${player2.atpname} comparison, ATP h2h`;
-
-    webpageJson = {
-      "@context": "https://schema.org",
-      "@type": "WebPage",
-      name: `${player1.atpname} vs ${player2.atpname} Head to Head Tennis Statistics`,
-      description: `${player1.atpname} vs ${player2.atpname} head-to-head: H2H record, match stats analysis. Compare ATP players.`,
-      url: pageUrl,
-      inLanguage: 'en-US',
-      isPartOf: { "@type": "WebSite", name: 'TennisMyLife', url: canonicalOrigin.toString() },
-
-      about: aboutArr,
-      keywords,
-      dateModified: new Date().toISOString(),
-    };
-  }
-
   // Calculate H2H stats for server-side rendering
   const heading = (() => {
     if (player1 && player2) {
@@ -352,7 +338,6 @@ export default async function Page({ params, searchParams }: { params?: Promise<
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJson) }} />
       {personJson1 && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJson1) }} />}
       {personJson2 && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJson2) }} />}
-      {webpageJson && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webpageJson) }} />}
 
       <h1 className="page-title text-3xl font-bold mb-8 text-center">{heading}</h1>
       {player1 && player2 ? (
