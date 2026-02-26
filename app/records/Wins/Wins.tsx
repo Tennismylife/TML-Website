@@ -18,10 +18,17 @@ interface Winner {
   slug?: string | null;
 }
 
-interface WinsProps { topWinners?: Winner[]; fetchEnabled?: boolean; description?: string }
+interface WinsProps {
+  topWinners?: Winner[];
+  fetchEnabled?: boolean;
+  description?: string;
+  selectedSurfaces?: Set<string>;
+  selectedLevels?: Set<string>;
+  selectedRounds?: string;
+  selectedBestOf?: number | null;
+}
 
-export default function Wins({ topWinners, fetchEnabled, description }: WinsProps) {
-  const enabled = !!fetchEnabled; // explicit boolean flag (default false) 
+export default function Wins({ topWinners, fetchEnabled, description, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf }: WinsProps) {
   const [allWinners, setAllWinners] = useState<Winner[]>(topWinners || []);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -36,45 +43,35 @@ export default function Wins({ topWinners, fetchEnabled, description }: WinsProp
   }, []);
 
   // Reset page when filters change
-  useEffect(() => setPage(1), [searchParams]);
+  useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
 
-  // Keep client state in sync with server-provided `topWinners` so SSR + client filters work
+  // Always fetch from client when filters change (same pattern as OldestMainDraw)
   useEffect(() => {
-    if (!showModal) {
-      // If server passed prefetched results, use them immediately
-      if (topWinners && topWinners.length) setAllWinners(topWinners);
-      else setAllWinners([]);
-    }
-  }, [topWinners, showModal]);
-
-  // Fetch winners (skip fetch if parent provided data via `topWinners` prop, but allow 'View All' to fetch)
-  useEffect(() => {
+    const controller = new AbortController();
     const fetchWinners = async () => {
-      if (!enabled && !showModal) return;
       setLoading(true);
       try {
-        const params = new URLSearchParams(Array.from(searchParams?.entries() ?? []));
-        // If parent provided topWinners and we are not in 'View All' modal, use it
-        if (!showModal && topWinners && topWinners.length) {
-          setAllWinners(topWinners);
-          setLoading(false);
-          return;
-        }
-        params.set("perPage", showModal ? "1000" : "100"); // fetch more on View All
-        params.delete("page");
+        const params = new URLSearchParams();
+        if (selectedSurfaces) selectedSurfaces.forEach(s => params.append('surface', s));
+        if (selectedLevels) selectedLevels.forEach(l => params.append('level', l));
+        if (selectedRounds) params.set('round', selectedRounds);
+        if (selectedBestOf != null) params.set('bestOf', String(selectedBestOf));
+        params.set('perPage', showModal ? '1000' : '100');
+        params.delete('page');
 
-        const res = await fetch(`/api/records/wins?${params.toString()}`);
+        const res = await fetch(`/api/records/wins?${params.toString()}`, { signal: controller.signal });
         const data = await res.json();
-        setAllWinners(data.topWinners || []);
-      } catch (err) {
-        console.error(err);
-        setAllWinners([]);
+        if (!controller.signal.aborted) setAllWinners(data.topWinners || []);
+      } catch (err: any) {
+        if (err?.name !== 'AbortError') console.error(err);
+        if (!controller.signal.aborted) setAllWinners([]);
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       }
     };
     fetchWinners();
-  }, [searchParams, topWinners, enabled, showModal]);
+    return () => controller.abort();
+  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, showModal]);
 
   if (loading)
     return <div className="text-center py-8 text-gray-300">Loading...</div>;

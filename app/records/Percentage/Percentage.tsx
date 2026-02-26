@@ -27,7 +27,6 @@ interface PlayerPercentage {
 }
 
 const Percentage = ({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, topWinPercentages, fetchEnabled, description }: PercentageProps) => {
-  const enabled = !!fetchEnabled;
   const [data, setData] = useState<PlayerPercentage[]>(topWinPercentages || []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -40,58 +39,40 @@ const Percentage = ({ selectedSurfaces, selectedLevels, selectedRounds, selected
   // Reset page when filters change
   useEffect(() => setPage(1), [searchParams]);
 
+  // Always fetch from client when filters change (same pattern as OldestMainDraw)
   useEffect(() => {
+    const controller = new AbortController();
     const fetchData = async () => {
-      if (!enabled && !showModal) {
-        if (topWinPercentages && topWinPercentages.length) {
-          setData(topWinPercentages);
-        } else {
-          setData([]);
-        }
-        setLoading(false);
-        return;
-      }
-
       setLoading(true);
       try {
         const query = new URLSearchParams();
-
         if (selectedSurfaces !== undefined) Array.from(selectedSurfaces).forEach((s) => query.append('surface', s));
-        else Array.from(searchParams?.entries() ?? []).forEach(([k, v]) => { if (k === 'surface') query.append(k, v); });
-
         if (selectedLevels !== undefined) Array.from(selectedLevels).forEach((l) => query.append('level', l));
-        else Array.from(searchParams?.entries() ?? []).forEach(([k, v]) => { if (k === 'level') query.append(k, v); });
-
-        if (selectedRounds !== undefined) { if (selectedRounds) query.append('round', selectedRounds); }
-        else (searchParams?.getAll('round') ?? []).forEach(r => query.append('round', r));
-
-        if (selectedBestOf !== undefined) { if (selectedBestOf !== null) query.append('best_of', selectedBestOf.toString()); }
-        else (searchParams?.getAll('best_of') ?? []).forEach(b => query.append('best_of', b));
-
+        if (selectedRounds) query.append('round', selectedRounds);
+        if (selectedBestOf != null) query.append('best_of', selectedBestOf.toString());
         query.set('perPage', showModal ? '1000' : '100');
         query.delete('page');
 
-        if (!showModal && topWinPercentages && topWinPercentages.length) {
-          setData(topWinPercentages);
-          setError(null);
-        } else {
-          const url = `/api/records/percentage${query.toString() ? '?' + query.toString() : ''}`;
-          const res = await fetch(url);
-          if (!res.ok) throw new Error('Failed to fetch percentage data');
-          const result = await res.json();
+        const url = `/api/records/percentage${query.toString() ? '?' + query.toString() : ''}`;
+        const res = await fetch(url, { signal: controller.signal });
+        if (!res.ok) throw new Error('Failed to fetch percentage data');
+        const result = await res.json();
+        if (!controller.signal.aborted) {
           setData(result.topWinPercentages || []);
           setError(null);
         }
       } catch (err: any) {
-        console.error(err);
-        setData([]);
-        setError(err);
+        if (err?.name !== 'AbortError') {
+          console.error(err);
+          if (!controller.signal.aborted) { setData([]); setError(err); }
+        }
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       }
     };
     fetchData();
-  }, [searchParams, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, enabled, showModal, topWinPercentages]);
+    return () => controller.abort();
+  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, showModal]);
 
   const filteredData = data.filter(p => p.matchesPlayed >= minMatches);
 

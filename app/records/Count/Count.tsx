@@ -28,7 +28,6 @@ interface CountProps {
 }
 
 export default function Count({ selectedRounds, selectedSurfaces, selectedLevels, selectedBestOf, topCount, fetchEnabled, description }: CountProps) {
-  const enabled = !!fetchEnabled;
   const [allPlayers, setAllPlayers] = useState<PlayerData[]>(Array.isArray(topCount) ? topCount : []);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -45,56 +44,34 @@ export default function Count({ selectedRounds, selectedSurfaces, selectedLevels
   // Reset page when filters change
   useEffect(() => setPage(1), [searchParams]);
 
+  // Always fetch from client when filters change (same pattern as OldestMainDraw)
   useEffect(() => {
+    const controller = new AbortController();
     const fetchData = async () => {
-      if (!enabled && !showModal) {
-        if (Array.isArray(topCount) && topCount.length) {
-          setAllPlayers(topCount);
-        } else {
-          setAllPlayers([]);
-        }
-        setLoading(false);
-        return;
-      }
-
       setLoading(true);
       try {
         const params = new URLSearchParams();
-
-        // Prefer explicit props, fallback to URL search params
         if (selectedSurfaces !== undefined) Array.from(selectedSurfaces).forEach(s => params.append('surface', s));
-else Array.from(searchParams?.entries() ?? []).forEach(([k, v]) => { if (k === 'surface') params.append(k, v); });
-
         if (selectedLevels !== undefined) Array.from(selectedLevels).forEach(l => params.append('level', l));
-else Array.from(searchParams?.entries() ?? []).forEach(([k, v]) => { if (k === 'level') params.append(k, v); });
-
-        if (selectedRounds !== undefined) { if (selectedRounds) params.set('round', selectedRounds); }
-        else { const r = searchParams?.get('round'); if (r) params.set('round', r); }
-
-        if (selectedBestOf !== undefined) { if (selectedBestOf !== null) params.set('bestOf', String(selectedBestOf)); }
-        else { const b = searchParams?.get('bestOf'); if (b) params.set('bestOf', b); }
-
+        if (selectedRounds) params.set('round', selectedRounds);
+        if (selectedBestOf != null) params.set('bestOf', String(selectedBestOf));
         params.set('perPage', showModal ? '1000' : '100');
         params.delete('page');
 
-        if (!showModal && Array.isArray(topCount) && topCount.length) {
-          setAllPlayers(topCount);
-        } else {
-          const res = await fetch(`/api/records/count?${params.toString()}`);
-          const data = await res.json();
-          const rows = Array.isArray(data.top) ? data.top : [];
-          setAllPlayers(rows);
-        }
-      } catch (err) {
-        console.error(err);
-        setAllPlayers([]);
+        const res = await fetch(`/api/records/count?${params.toString()}`, { signal: controller.signal });
+        const data = await res.json();
+        const rows = Array.isArray(data.top) ? data.top : [];
+        if (!controller.signal.aborted) setAllPlayers(rows);
+      } catch (err: any) {
+        if (err?.name !== 'AbortError') console.error(err);
+        if (!controller.signal.aborted) setAllPlayers([]);
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       }
     };
-
     fetchData();
-  }, [searchParams, enabled, showModal, topCount, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
+    return () => controller.abort();
+  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, showModal]);
 
   if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
   if (!allPlayers.length) return <div className="text-center py-8 text-gray-300">No data available.</div>;

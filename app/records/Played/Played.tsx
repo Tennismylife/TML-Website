@@ -18,7 +18,6 @@ interface Player {
 }
 
 export default function Played({ topPlayed, fetchEnabled, description, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf }: { topPlayed?: any[]; fetchEnabled?: boolean; description?: string; selectedSurfaces?: Set<string>; selectedLevels?: Set<string>; selectedRounds?: string; selectedBestOf?: number | null }) {
-  const enabled = !!fetchEnabled;
   const [allPlayers, setAllPlayers] = useState<Player[]>(topPlayed || []);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -35,52 +34,33 @@ export default function Played({ topPlayed, fetchEnabled, description, selectedS
   // Reset page when filters change
   useEffect(() => setPage(1), [searchParams]);
 
-  // Fetch players
+  // Always fetch from client when filters change (same pattern as OldestMainDraw)
   useEffect(() => {
+    const controller = new AbortController();
     const fetchPlayers = async () => {
-      if (!enabled && !showModal && !(topPlayed && topPlayed.length)) {
-        setAllPlayers([]);
-        setLoading(false);
-        return;
-      }
-
       setLoading(true);
       try {
-        // prefer explicit props for filters
         const params = new URLSearchParams();
         if (selectedSurfaces !== undefined) Array.from(selectedSurfaces).forEach(s => params.append('surface', s));
-        else Array.from(searchParams?.entries() ?? []).forEach(([k,v]) => { if (k === 'surface') params.append(k, v); });
-
         if (selectedLevels !== undefined) Array.from(selectedLevels).forEach(l => params.append('level', l));
-        else Array.from(searchParams?.entries() ?? []).forEach(([k,v]) => { if (k === 'level') params.append(k, v); });
+        if (selectedRounds) params.set('round', selectedRounds);
+        if (selectedBestOf != null) params.set('bestOf', String(selectedBestOf));
+        params.set('perPage', showModal ? '1000' : '100');
+        params.delete('page');
 
-        if (selectedRounds !== undefined) { if (selectedRounds) params.set('round', selectedRounds); }
-        else { const r = searchParams?.get('round'); if (r) params.set('round', r); }
-
-        if (selectedBestOf !== undefined) { if (selectedBestOf !== null) params.set('bestOf', String(selectedBestOf)); }
-        else { const b = searchParams?.get('bestOf'); if (b) params.set('bestOf', b); }
-
-        params.set("perPage", showModal ? "1000" : "100");
-        params.delete("page"); // remove page param
-
-        // If topPlayed is provided by the server and we're not in 'View All' mode, use it
-        // Otherwise perform a client fetch so the UI shows data even if server prefetch failed.
-        if (!showModal && topPlayed && topPlayed.length) {
-          setAllPlayers(topPlayed || []);
-        } else {
-          const res = await fetch(`/api/records/played?${params.toString()}`);
-          const data = await res.json();
-          setAllPlayers(data.players || []);
-        }
-      } catch (err) {
-        console.error(err);
-        setAllPlayers([]);
+        const res = await fetch(`/api/records/played?${params.toString()}`, { signal: controller.signal });
+        const data = await res.json();
+        if (!controller.signal.aborted) setAllPlayers(data.players || []);
+      } catch (err: any) {
+        if (err?.name !== 'AbortError') console.error(err);
+        if (!controller.signal.aborted) setAllPlayers([]);
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       }
     };
     fetchPlayers();
-  }, [searchParams, enabled, showModal, topPlayed, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
+    return () => controller.abort();
+  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, showModal]);
 
   if (loading)
     return <div className="text-center py-8 text-gray-300">Loading...</div>;

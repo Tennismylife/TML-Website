@@ -32,44 +32,32 @@ export default function Entries({ fetchEnabled, description, topEntries, selecte
     return () => window.removeEventListener('records:reset', handler as EventListener);
   }, []);
 
+  // Always fetch from client when filters change (same pattern as OldestMainDraw)
   useEffect(() => {
+    const controller = new AbortController();
     const fetchEntries = async () => {
-      if (!enabled && !showModal) {
-        if (Array.isArray(topEntries) && topEntries.length) setAllEntries(topEntries);
-        else setAllEntries([]);
-        setLoading(false);
-        return;
-      }
       setLoading(true);
       try {
         const params = new URLSearchParams();
-
         if (selectedSurfaces !== undefined) Array.from(selectedSurfaces).forEach(s => params.append('surface', s));
-else Array.from(searchParams?.entries() ?? []).forEach(([k,v]) => { if (k === 'surface') params.append(k, v); });
-
         if (selectedLevels !== undefined) Array.from(selectedLevels).forEach(l => params.append('level', l));
-        else Array.from(searchParams?.entries() ?? []).forEach(([k,v]) => { if (k === 'level') params.append(k, v); });
+        params.set('perPage', showModal ? '1000' : '100');
+        params.delete('page');
 
-        params.set("perPage", showModal ? "1000" : "100");
-        params.delete("page");
-
-        if (!showModal && Array.isArray(topEntries) && topEntries.length) {
-          setAllEntries(topEntries);
-        } else {
-          const res = await fetch(`/api/records/entries?${params.toString()}`);
-          const data = await res.json();
-          const rows = Array.isArray(data.topEntries) ? data.topEntries : [];
-          setAllEntries(rows);
-        }
-      } catch (err) {
-        console.error(err);
-        setAllEntries([]);
+        const res = await fetch(`/api/records/entries?${params.toString()}`, { signal: controller.signal });
+        const data = await res.json();
+        const rows = Array.isArray(data.topEntries) ? data.topEntries : [];
+        if (!controller.signal.aborted) setAllEntries(rows);
+      } catch (err: any) {
+        if (err?.name !== 'AbortError') console.error(err);
+        if (!controller.signal.aborted) setAllEntries([]);
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       }
     };
     fetchEntries();
-  }, [searchParams, enabled, showModal, topEntries, selectedSurfaces, selectedLevels]);
+    return () => controller.abort();
+  }, [selectedSurfaces, selectedLevels, showModal]);
 
   if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
   if (!allEntries.length) return <div className="text-center py-8 text-gray-300">No data available.</div>;
