@@ -66,8 +66,8 @@ export default function Titles({
         setLoading(false);
       }
     };
-    if (!showModal && topTitles && topTitles.length && !enabled) {
-      setAllPlayers(topTitles || []);
+    if (!showModal && Array.isArray(initialData) && initialData.length && !enabled) {
+      setData(initialData || []);
     } else {
       fetchData();
     }
