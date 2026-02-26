@@ -63,10 +63,9 @@ export default function Played({ topPlayed, fetchEnabled, description, selectedS
         params.set("perPage", showModal ? "1000" : "100");
         params.delete("page"); // remove page param
 
-        // Use server-provided topPlayed only when the client is not explicitly
-        // requesting updated data (i.e. !enabled). Otherwise perform the fetch
-        // so filters are applied.
-        if (!showModal && topPlayed && topPlayed.length && !enabled) {
+        // If topPlayed is provided by the server and we're not in 'View All' mode, use it
+        // Otherwise perform a client fetch so the UI shows data even if server prefetch failed.
+        if (!showModal && topPlayed && topPlayed.length) {
           setAllPlayers(topPlayed || []);
         } else {
           const res = await fetch(`/api/records/played?${params.toString()}`);

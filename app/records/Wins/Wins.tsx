@@ -54,17 +54,12 @@ export default function Wins({ topWinners, fetchEnabled, description }: WinsProp
       setLoading(true);
       try {
         const params = new URLSearchParams(Array.from(searchParams?.entries() ?? []));
-
-        // If parent provided topWinners and we are not in 'View All' modal and
-        // the client is not explicitly requesting fresh data, use the prefetched
-        // server results. When `enabled` is true we MUST fetch fresh results so
-        // filters applied by the user are respected.
-        if (!showModal && topWinners && topWinners.length && !enabled) {
+        // If parent provided topWinners and we are not in 'View All' modal, use it
+        if (!showModal && topWinners && topWinners.length) {
           setAllWinners(topWinners);
           setLoading(false);
           return;
         }
-
         params.set("perPage", showModal ? "1000" : "100"); // fetch more on View All
         params.delete("page");
 

@@ -66,11 +66,7 @@ export default function Titles({
         setLoading(false);
       }
     };
-    if (!showModal && Array.isArray(initialData) && initialData.length && !enabled) {
-      setData(initialData || []);
-    } else {
-      fetchData();
-    }
+    fetchData();
   }, [selectedSurfaces, selectedLevels, enabled, showModal, initialData]);
 
   if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;

@@ -102,12 +102,17 @@ function buildCacheKey(req, type) {
   const params = new URLSearchParams(url.search);
 
   // Normalizza: rimuovi parametri di controllo e ORDINA le chiavi per stabilità
-  const keys = [...params.keys()]
+  // Usa getAll per gestire correttamente i parametri multi-valore (es. surface=Clay&surface=Hard)
+  const keys = [...new Set([...params.keys()])]
     .filter((k) => !CONTROL_PARAMS.has(k))
     .sort();
 
   const normalized = new URLSearchParams();
-  for (const k of keys) normalized.append(k, params.get(k));
+  for (const k of keys) {
+    // getAll restituisce tutti i valori per la chiave; ordiniamo per stabilità della cache key
+    const vals = params.getAll(k).slice().sort();
+    for (const v of vals) normalized.append(k, v);
+  }
 
   const qs = normalized.toString();
   return `tennismylife:${type}:${req.path}${qs ? `?${qs}` : ''}`;

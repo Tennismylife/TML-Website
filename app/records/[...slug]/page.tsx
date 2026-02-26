@@ -53,6 +53,11 @@ function kebabToKey(s?: string) {
   return s;
 }
 
+// Forza il rendering dinamico su ogni richiesta: i searchParams (surface, level, round, bestOf)
+// devono essere sempre freschi; senza questo Next.js potrebbe servire l'HTML pre-renderizzato
+// al build-time anche per URL con filtri, ignorando i query params.
+export const dynamic = 'force-dynamic';
+
 export async function generateStaticParams() {
   const tabs = [
     'wins','played','count','titles','entries','ages','timespan','percentage',

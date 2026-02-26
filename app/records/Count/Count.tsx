@@ -77,8 +77,8 @@ else Array.from(searchParams?.entries() ?? []).forEach(([k, v]) => { if (k === '
         params.set('perPage', showModal ? '1000' : '100');
         params.delete('page');
 
-        if (!showModal && Array.isArray(topCount) && topCount.length && !enabled) {
-          setAllPlayers(topCount || []);
+        if (!showModal && Array.isArray(topCount) && topCount.length) {
+          setAllPlayers(topCount);
         } else {
           const res = await fetch(`/api/records/count?${params.toString()}`);
           const data = await res.json();
