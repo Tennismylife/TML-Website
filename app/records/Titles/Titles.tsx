@@ -67,8 +67,8 @@ export default function Titles({ selectedSurfaces, selectedLevels, topTitles, fe
         params.set('perPage', showModal ? '1000' : '100');
         params.delete('page');
 
-        if (!showModal && Array.isArray(topTitles) && topTitles.length) {
-          setAllTitles(topTitles);
+        if (!showModal && topTitles && topTitles.length && !enabled) {
+          setAllTitles(topTitles || []);
         } else {
           const res = await fetch(`/api/records/titles?${params.toString()}`);
           const data = await res.json();

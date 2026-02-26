@@ -66,7 +66,11 @@ export default function Titles({
         setLoading(false);
       }
     };
-    fetchData();
+    if (!showModal && topTitles && topTitles.length && !enabled) {
+      setAllPlayers(topTitles || []);
+    } else {
+      fetchData();
+    }
   }, [selectedSurfaces, selectedLevels, enabled, showModal, initialData]);
 
   if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;

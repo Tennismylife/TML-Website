@@ -43,8 +43,8 @@ const Percentage = ({ selectedSurfaces, selectedLevels, selectedRounds, selected
   useEffect(() => {
     const fetchData = async () => {
       if (!enabled && !showModal) {
-        if (topWinPercentages && topWinPercentages.length) {
-          setData(topWinPercentages);
+          if (topWinPercentages && topWinPercentages.length) {
+            setData(topWinPercentages);
         } else {
           setData([]);
         }
@@ -71,7 +71,7 @@ const Percentage = ({ selectedSurfaces, selectedLevels, selectedRounds, selected
         query.set('perPage', showModal ? '1000' : '100');
         query.delete('page');
 
-        if (!showModal && topWinPercentages && topWinPercentages.length) {
+          if (!showModal && topWinPercentages && topWinPercentages.length && !enabled) {
           setData(topWinPercentages);
           setError(null);
         } else {

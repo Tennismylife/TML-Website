@@ -53,8 +53,8 @@ else Array.from(searchParams?.entries() ?? []).forEach(([k,v]) => { if (k === 's
         params.set("perPage", showModal ? "1000" : "100");
         params.delete("page");
 
-        if (!showModal && Array.isArray(topEntries) && topEntries.length) {
-          setAllEntries(topEntries);
+        if (!showModal && Array.isArray(topEntries) && topEntries.length && !enabled) {
+          setAllEntries(topEntries || []);
         } else {
           const res = await fetch(`/api/records/entries?${params.toString()}`);
           const data = await res.json();
