@@ -26,7 +26,6 @@ interface TitlesProps {
 }
 
 export default function Titles({ selectedSurfaces, selectedLevels, topTitles, fetchEnabled, description }: TitlesProps) {
-  const enabled = !!fetchEnabled;
   const [allTitles, setAllTitles] = useState<PlayerData[]>(Array.isArray(topTitles) ? topTitles : []);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
@@ -43,48 +42,34 @@ export default function Titles({ selectedSurfaces, selectedLevels, topTitles, fe
     return () => window.removeEventListener('records:reset', handler as EventListener);
   }, []);
 
-  useEffect(() => setPage(1), [searchParams]);
+  useEffect(() => setPage(1), [selectedSurfaces, selectedLevels]);
 
+  // Always fetch from client when filters change (same pattern as OldestMainDraw)
   useEffect(() => {
+    const controller = new AbortController();
     const fetchData = async () => {
-      if (!enabled && !showModal) {
-        if (Array.isArray(topTitles) && topTitles.length) setAllTitles(topTitles);
-        else setAllTitles([]);
-        setLoading(false);
-        return;
-      }
-
       setLoading(true);
       try {
         const params = new URLSearchParams();
-
         if (selectedSurfaces !== undefined) Array.from(selectedSurfaces).forEach(s => params.append('surface', s));
-        else Array.from(searchParams?.entries() ?? []).forEach(([k, v]) => { if (k === 'surface') params.append(k, v); });
-
         if (selectedLevels !== undefined) Array.from(selectedLevels).forEach(l => params.append('level', l));
-        else Array.from(searchParams?.entries() ?? []).forEach(([k, v]) => { if (k === 'level') params.append(k, v); });
-
         params.set('perPage', showModal ? '1000' : '100');
         params.delete('page');
 
-        if (!showModal && Array.isArray(topTitles) && topTitles.length) {
-          setAllTitles(topTitles);
-        } else {
-          const res = await fetch(`/api/records/titles?${params.toString()}`);
-          const data = await res.json();
-          const rows = Array.isArray(data.topTitles) ? data.topTitles : [];
-          setAllTitles(rows);
-        }
-      } catch (err) {
-        console.error(err);
-        setAllTitles([]);
+        const res = await fetch(`/api/records/titles?${params.toString()}`, { signal: controller.signal });
+        const data = await res.json();
+        const rows = Array.isArray(data.topTitles) ? data.topTitles : [];
+        if (!controller.signal.aborted) setAllTitles(rows);
+      } catch (err: any) {
+        if (err?.name !== 'AbortError') console.error(err);
+        if (!controller.signal.aborted) setAllTitles([]);
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       }
     };
-
     fetchData();
-  }, [searchParams, enabled, showModal, topTitles, selectedSurfaces, selectedLevels]);
+    return () => controller.abort();
+  }, [selectedSurfaces, selectedLevels, showModal]);
 
   if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
   if (!allTitles.length) return <div className="text-center py-8 text-gray-300">No data available.</div>;
