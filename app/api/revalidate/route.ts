@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { revalidateTag } from 'next/cache';
+import { revalidateTag, revalidatePath } from 'next/cache';
 
 export async function POST(request: NextRequest) {
   const secret = request.headers.get('x-revalidate-secret');
@@ -10,9 +10,15 @@ export async function POST(request: NextRequest) {
   }
 
   const { searchParams } = new URL(request.url);
-  const tag = searchParams.get('tag') ?? 'records';
+  const path = searchParams.get('path');
+  const tag = searchParams.get('tag');
 
-  // revalidateTag requires a second options argument; passing empty object
-  revalidateTag(tag, {});
-  return NextResponse.json({ revalidated: true, tag });
+  if (path) {
+    revalidatePath(path);
+    return NextResponse.json({ revalidated: true, path });
+  }
+
+  const resolvedTag = tag ?? 'records';
+  revalidateTag(resolvedTag, {});
+  return NextResponse.json({ revalidated: true, tag: resolvedTag });
 }
