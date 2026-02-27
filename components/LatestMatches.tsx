@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Flag from '@/components/Flag';
-import { getTourneyHref, getPlayerHref, getPlayerHrefWithTab, formatDateISO } from "@/lib/utils";
+import { getTourneyHref, getPlayerHref, getPlayerHrefWithTab, formatDateISO, createH2HUrl } from "@/lib/utils";
 
 interface Match {
   id: string | number;
@@ -105,19 +105,22 @@ export default function LatestMatches() {
           <table className="min-w-full border-collapse text-sm">
             <thead>
               <tr className="bg-black">
-                <th className="border border-white/30 px-3 py-1.5 text-left text-gray-200">
+                <th className="border border-white/30 px-3 py-1.5 text-center text-gray-200">
                   Date
                 </th>
-                <th className="border border-white/30 px-3 py-1.5 text-left text-gray-200">
+                <th className="border border-white/30 px-3 py-1.5 text-center text-gray-200">
                   Tournament
                 </th>
                 <th className="border border-white/30 px-3 py-1.5 text-center text-gray-200">
                   Round
                 </th>
-                <th className="border border-white/30 px-3 py-1.5 text-left text-gray-200">
+                <th className="border border-white/30 px-3 py-1.5 text-center text-gray-200">
+                  H2H
+                </th>
+                <th className="border border-white/30 px-3 py-1.5 text-center text-gray-200">
                   Winner
                 </th>
-                <th className="border border-white/30 px-3 py-1.5 text-left text-gray-200">
+                <th className="border border-white/30 px-3 py-1.5 text-center text-gray-200">
                   Loser
                 </th>
                 <th className="border border-white/30 px-3 py-1.5 text-center text-gray-200">
@@ -130,7 +133,7 @@ export default function LatestMatches() {
               {recentMatches.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={6}
+                    colSpan={7}
                     className="py-4 text-center text-sm text-gray-400"
                   >
                     No recent matches available
@@ -139,7 +142,25 @@ export default function LatestMatches() {
               ) : (
                 recentMatches.map((m) => {
                   const tourneyId = m.tourney_id ?? null;
-
+                  const wSlug = (m as any).winner_slug as string | null;
+                  const lSlug = (m as any).loser_slug as string | null;
+                  // Build H2H href: prefer DB slugs, then name-based slugs, then ID-based fallback
+                  const h2hHref = (() => {
+                    if (wSlug && lSlug) {
+                      const [a, b] = wSlug <= lSlug ? [wSlug, lSlug] : [lSlug, wSlug];
+                      return `/h2h/${a}-vs-${b}`;
+                    }
+                    if (m.winner_name && m.loser_name) {
+                      return createH2HUrl(m.winner_name, m.loser_name);
+                    }
+                    const wId = m.winner_id ? String(m.winner_id) : null;
+                    const lId = m.loser_id ? String(m.loser_id) : null;
+                    if (wId && lId) {
+                      const [a, b] = wId <= lId ? [wId, lId] : [lId, wId];
+                      return `/h2h/${a}-vs-${b}`;
+                    }
+                    return null;
+                  })();
 
                   return (
                     <tr
@@ -150,7 +171,7 @@ export default function LatestMatches() {
                         {m.tourney_date ? formatDateISO(m.tourney_date) : "-"}
                       </td>
 
-                      <td className="border border-white/10 px-3 py-1.5 text-gray-200">
+                      <td className="border border-white/10 px-3 py-1.5 text-center text-gray-200">
                         {m.tourney_name ? (
                           tourneyId ? (
                             <Link
@@ -175,9 +196,22 @@ export default function LatestMatches() {
                         {m.round || "-"}
                       </td>
 
-                      <td className="border border-white/10 px-3 py-1.5 text-gray-200">
-                        <div className="flex items-center gap-2">
-                                  {m.winner_ioc && (
+                      <td className="border border-white/10 px-3 py-1.5 text-center">
+                        {h2hHref ? (
+                          <Link
+                            href={h2hHref}
+                            className="inline-block rounded px-1.5 py-0.5 text-[11px] font-bold bg-yellow-500/15 border border-yellow-500/40 text-yellow-400 hover:bg-yellow-500/30 transition-colors whitespace-nowrap"
+                          >
+                            H2H
+                          </Link>
+                        ) : (
+                          <span className="text-gray-600">—</span>
+                        )}
+                      </td>
+
+                      <td className="border border-white/10 px-3 py-1.5 text-center text-gray-200">
+                        <div className="flex items-center justify-center gap-2">
+                          {m.winner_ioc && (
                             <Flag ioc={m.winner_ioc} className="w-4 h-3" />
                           )}
                           {m.winner_name ? (
@@ -193,8 +227,8 @@ export default function LatestMatches() {
                         </div>
                       </td>
 
-                      <td className="border border-white/10 px-3 py-1.5 text-gray-200">
-                        <div className="flex items-center gap-2">
+                      <td className="border border-white/10 px-3 py-1.5 text-center text-gray-200">
+                        <div className="flex items-center justify-center gap-2">
                           {m.loser_ioc && (
                             <Flag ioc={m.loser_ioc} className="w-4 h-3" />
                           )}
