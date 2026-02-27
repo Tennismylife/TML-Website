@@ -88,14 +88,15 @@ export default async function H2HPreviewServer({ player1, player2, matches }: Pr
     const idStr = String(playerId);
 
     // retrieve all matches for career stats; keep those with status=false since titles query handles them explicitly
-    // careerMatches should only exclude rows explicitly marked status=false;
-    // no score-based filtering here, victories and titles count every match except those disabled
     const careerMatches = await prisma.match.findMany({
       where: {
         OR: [{ winner_id: idStr }, { loser_id: idStr }],
         NOT: {
           OR: [
-            { status: false },
+            { score: { contains: "DEF", mode: "insensitive" } },
+            { score: { contains: "W/O", mode: "insensitive" } },
+            { score: { contains: "WEA", mode: "insensitive" } },
+            // do NOT exclude status=false here (included in title count as requested)
           ],
         },
       },
@@ -125,9 +126,13 @@ export default async function H2HPreviewServer({ player1, player2, matches }: Pr
     const titleRows = await prisma.match.findMany({
       where: {
         winner_id: idStr,
-        round: { in: ['F', 'Final', 'FINAL'] },
+        round: 'F',
         team_event: false,
-        tourney_name: { not: { contains: 'Next Gen' } },
+        AND: [
+          { tourney_name: { not: { contains: 'Next Gen' } } },
+          { tourney_name: { not: { contains: 'WEA' } } },
+          { score: { not: { contains: 'WEA' } } },
+        ],
       },
       select: { surface: true },
     });
