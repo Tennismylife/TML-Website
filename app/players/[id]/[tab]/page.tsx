@@ -5,7 +5,7 @@ import SEOBreadcrumb from '../SEOBreadcrumb';
 import AllMatchesServer from '../Matches/AllMatchesServer';
 import { prisma } from '../../../../lib/prisma';
 import { redirect } from 'next/navigation';
-import { getPlayerHref } from '@/lib/utils';
+import { getPlayerHref, createSlug } from '@/lib/utils';
 import type { Metadata } from 'next';
 
 function normalizeTourneyKey(name: string) {
@@ -135,9 +135,12 @@ export async function generateMetadata(
     }
   }
 
-  const parts = tab === 'matches'
-    ? ['Stats', 'Matches', 'Results', 'Records & Rankings']
-    : ['Stats', 'Overview', 'Records & Rankings'];
+  // determine the series of comma-separated parts used for SEO titles
+  const partsBase = tab === 'matches' ? ['Stats', 'Matches', 'Results'] : ['Stats', 'Overview'];
+  const parts: string[] = [...partsBase, 'Records & Rankings'];
+  if (tab === 'ranking') {
+    parts.push('Rank History');
+  }
 
   // If on matches tab, build a title that mirrors the H1 (player name + heading)
   let title = `${name} – ${parts.join(', ')} | TennisMyLife`;
@@ -216,6 +219,7 @@ export async function generateMetadata(
     }
   }
 
+  // include a generic description; rank-history content is still statistical
   metaDescription = `Complete statistics for ${name}: ATP results, ${tab === 'matches' ? '2026 matches, ' : ''}career record, rankings, titles, head-to-head records, and surface performance. Updated as of 2026.`;
   const imageUrl = `${base}/og/${encodeURIComponent(slug)}.png`;
 
@@ -531,7 +535,7 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
         }
       }
 
-      // Enrich with slugs
+      // Enrich with slugs (players + tournaments) so client links can prefer slugs
       if (allMatchesForSSR && allMatchesForSSR.length) {
         const playerIds = Array.from(
           new Set(
@@ -541,10 +545,34 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
         try {
           const { mapIdsToSlugs } = await import('@/lib/player-slugs');
           const slugMap = await mapIdsToSlugs(playerIds as string[]);
+
+          // Best-effort: resolve tournament slugs (fallback to synthetic slug from name)
+          let tourneyMap: Record<string, string | null> = {};
+          try {
+            const tourneyIdParts = Array.from(new Set(allMatchesForSSR.map((m: any) => {
+              const s = String(m.tourney_id || '').trim();
+              const parts = s.split('-').filter(Boolean);
+              return parts.length === 2 ? parts[1] : s;
+            }).filter(Boolean)));
+
+            if (tourneyIdParts.length) {
+              const tours = await prisma.tournament.findMany({ where: { id: { in: tourneyIdParts.map(v => Number(v)) } }, select: { id: true, slug: true, name: true } });
+              tourneyMap = tours.reduce((acc: Record<string, string | null>, t: any) => { acc[String(t.id)] = t.slug ?? createSlug(t.name ?? String(t.id)); return acc; }, {});
+            }
+          } catch (e) {
+            tourneyMap = {};
+          }
+
           allMatchesForSSR = allMatchesForSSR.map((m: any) => ({
             ...m,
             winner_slug: m.winner_id ? slugMap[String(m.winner_id)] ?? null : null,
             loser_slug: m.loser_id ? slugMap[String(m.loser_id)] ?? null : null,
+            tourney_slug: (() => {
+              const s = String(m.tourney_id || '').trim();
+              const parts = s.split('-').filter(Boolean);
+              const idPart = parts.length === 2 ? parts[1] : s;
+              return idPart ? (tourneyMap[String(idPart)] ?? null) : null;
+            })(),
           }));
         } catch (e) {
           // ignore slug enrichment errors
@@ -593,12 +621,41 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
         ]);
 
         // Serialize for server→client: convert Date→ISO string, IDs→string
-        const serialized = raw.map((m: any) => ({
+        let serialized = raw.map((m: any) => ({
           ...m,
           tourney_date: m.tourney_date instanceof Date ? m.tourney_date.toISOString() : (m.tourney_date ?? null),
           winner_id: m.winner_id != null ? String(m.winner_id) : null,
           loser_id:  m.loser_id  != null ? String(m.loser_id)  : null,
         }));
+
+        // Enrich serialized matches with `tourney_slug` when possible so
+        // client components (TournamentGrid / TourneyCard) can prefer slug
+        // links instead of falling back to numeric/composite ids.
+        try {
+          const tourneyIdParts = Array.from(new Set(serialized.map((m: any) => {
+            const s = String(m.tourney_id || '').trim();
+            const parts = s.split('-').filter(Boolean);
+            return parts.length === 2 ? parts[1] : s;
+          }).filter(Boolean)));
+
+          if (tourneyIdParts.length) {
+            const tours = await prisma.tournament.findMany({ where: { id: { in: tourneyIdParts.map(v => Number(v)) } }, select: { id: true, slug: true, name: true } });
+            const tourneyMap: Record<string, string | null> = tours.reduce((acc: Record<string, string | null>, t: any) => { acc[String(t.id)] = t.slug ?? createSlug(t.name ?? String(t.id)); return acc; }, {});
+
+            serialized = serialized.map((m: any) => {
+              const s = String(m.tourney_id || '').trim();
+              const parts = s.split('-').filter(Boolean);
+              const idPart = parts.length === 2 ? parts[1] : s;
+              return { ...m, tourney_slug: idPart ? (tourneyMap[String(idPart)] ?? null) : null };
+            });
+          } else {
+            serialized = serialized.map((m: any) => ({ ...m, tourney_slug: null }));
+          }
+        } catch (e) {
+          // Best-effort: if enrichment fails, ensure field exists to avoid runtime errors
+          serialized = serialized.map((m: any) => ({ ...m, tourney_slug: null }));
+        }
+
         initialSeasonMatches = serialized;
         initialSeasonYears = (yearsGroupBy || [])
           .map((r: any) => r.year as number)
