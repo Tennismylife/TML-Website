@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import LatestMatchesClient from '@/components/LatestMatchesClient'
+import LatestMatchesServer from '@/components/LatestMatchesServer'
 import SearchPlayerLoaderClient from '@/components/SearchPlayerLoaderClient'
 
 import type { ReactNode } from 'react';
@@ -205,7 +205,7 @@ export default async function HomePage() {
         </Card>
       </div>
 
-      <LatestMatchesClient />
+      <LatestMatchesServer />
 
 
 
