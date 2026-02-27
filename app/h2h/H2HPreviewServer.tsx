@@ -87,15 +87,14 @@ export default async function H2HPreviewServer({ player1, player2, matches }: Pr
     if (!playerId) return null;
     const idStr = String(playerId);
 
+    // retrieve all matches for career stats; keep those with status=false since titles query handles them explicitly
+    // careerMatches should only exclude rows explicitly marked status=false;
+    // no score-based filtering here, victories and titles count every match except those disabled
     const careerMatches = await prisma.match.findMany({
       where: {
         OR: [{ winner_id: idStr }, { loser_id: idStr }],
         NOT: {
           OR: [
-            { score: { contains: "DEF", mode: "insensitive" } },
-            { score: { contains: "W/O", mode: "insensitive" } },
-            { score: { contains: "WEA", mode: "insensitive" } },
-            // Exclude matches explicitly marked as not counting (status === false)
             { status: false },
           ],
         },
@@ -122,6 +121,22 @@ export default async function H2HPreviewServer({ player1, player2, matches }: Pr
     let top10Wins = 0;
     let top10Losses = 0;
 
+    // separate query for titles; this will count even matches where status=false
+    const titleRows = await prisma.match.findMany({
+      where: {
+        winner_id: idStr,
+        round: { in: ['F', 'Final', 'FINAL'] },
+        team_event: false,
+        tourney_name: { not: { contains: 'Next Gen' } },
+      },
+      select: { surface: true },
+    });
+    titlesAll = titleRows.length;
+    titlesHard = titleRows.filter(m => m.surface === 'Hard').length;
+    titlesClay = titleRows.filter(m => m.surface === 'Clay').length;
+    titlesGrass = titleRows.filter(m => m.surface === 'Grass').length;
+    titlesCarpet = titleRows.filter(m => m.surface === 'Carpet').length;
+
     careerMatches.forEach((m) => {
       totalAll += 1;
       if (m.winner_id === idStr) {
@@ -130,14 +145,6 @@ export default async function H2HPreviewServer({ player1, player2, matches }: Pr
         if (m.surface === 'Clay') winsClay += 1;
         if (m.surface === 'Grass') winsGrass += 1;
         if (m.surface === 'Carpet') winsCarpet += 1;
-        // Titles: finals won (exclude team events and Next Gen Finals)
-        if (m.round === 'F' && m.team_event !== true && !m.tourney_name?.includes('Next Gen')) {
-          titlesAll += 1;
-          if (m.surface === 'Hard') titlesHard += 1;
-          if (m.surface === 'Clay') titlesClay += 1;
-          if (m.surface === 'Grass') titlesGrass += 1;
-          if (m.surface === 'Carpet') titlesCarpet += 1;
-        }
         // Top 10 win: opponent (loser) was ranked <= 10
         if (m.loser_rank != null && m.loser_rank <= 10) top10Wins += 1;
       } else {
