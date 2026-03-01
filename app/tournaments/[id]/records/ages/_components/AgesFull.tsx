@@ -187,13 +187,15 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
         <div className="overflow-x-auto">
           <table className="w-full text-lg md:text-xl border-collapse table-fixed text-center">
             <colgroup>
-              <col style={{ width: '70%' }} />
-              <col style={{ width: '30%' }} />
+              <col style={{ width: '60%' }} />
+              <col style={{ width: '20%' }} />
+              <col style={{ width: '20%' }} />
             </colgroup>
             <thead className="bg-gray-800">
               <tr>
                 <th className="text-center py-2 text-gray-300">Player</th>
                 <th className="text-center py-2 text-gray-300">Age</th>
+                <th className="text-center py-2 text-gray-300">Year</th>
               </tr>
             </thead>
             <tbody>
@@ -206,6 +208,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
                     </div>
                   </td>
                   <td className="py-2 text-center text-lg md:text-xl text-white">{formatAge(r.age)}</td>
+                  <td className="py-2 text-center text-lg md:text-xl text-white"><Link href={`/tournaments/${slugId}/${r.year}`} className="text-blue-400 hover:underline">{r.year}</Link></td>
                 </tr>
               ))}
             </tbody>

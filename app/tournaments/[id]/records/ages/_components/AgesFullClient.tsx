@@ -132,7 +132,7 @@ export default function AgesFullClient({
   const [error, setError] = React.useState<string | null>(null);
 
   const fallbackId = `ages-full-static-${section}-${encodeURIComponent(String(title ?? (which ?? '')))}`;
-  const showYear = section === 'titles' ? false : true;
+  const showYear = true;
 
   useEffect(() => {
     setMounted(true);
