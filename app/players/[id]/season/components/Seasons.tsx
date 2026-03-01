@@ -9,6 +9,8 @@ import { getSurfaceColor, palette } from "@/lib/colors";
 // SummarySeasons is a server component; import it dynamically since this file is a client component
 const SummarySeasons = dynamic(() => import('./SummarySeasons'), { ssr: true });
 import TournamentGrid from "../../TournamentGrid";
+import PlayerServiceSpider from './PlayerServiceSpider';
+import PlayerReturnSpider from './PlayerReturnSpider';
 import { useYearStatsAsync } from "./useYearStatsAsync";
 import type { YearStatsResult } from "./computeYearStats";
 import { useRouter, usePathname, useSearchParams } from "next/navigation"; // <--- added
@@ -16,6 +18,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation"; // <-
 interface SeasonsProps {
   playerId: string;
   playerSlug?: string | null;
+  playerName?: string | null;
   initialYears?: number[];
   initialAllMatches?: Match[];
   initialSelectedYear?: number | null;
@@ -106,7 +109,7 @@ const WLStatTable: React.FC<WLStatTableProps> = ({ title, rows }) => {
 };
 
 // ===================== Seasons Component =====================
-export default function Seasons({ playerId, playerSlug, initialYears, initialAllMatches, initialSelectedYear, initialSeasonStats, initialSeasonYear }: SeasonsProps) {
+export default function Seasons({ playerId, playerSlug, playerName, initialYears, initialAllMatches, initialSelectedYear, initialSeasonStats, initialSeasonYear }: SeasonsProps) {
   const router = useRouter(); // <--- added
   const pathname = usePathname(); // <--- added
   const searchParams = useSearchParams(); // <--- added
@@ -306,8 +309,8 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
     tiebreakAgg,
   } = stats;
 
-  // 5 sections total; on mobile reveal one at a time via requestIdleCallback
-  const SECTION_COUNT = 5;
+  // 6 sections total; on mobile reveal one at a time via requestIdleCallback
+  const SECTION_COUNT = 6;
   const { isMobile: isMobileCards, visibleCount, sentinelRef } = useIncrementalCards(
     selectedYear && !computing ? SECTION_COUNT : 0,
     { initialVisible: 1, debounceMs: 800 }
@@ -544,6 +547,26 @@ export default function Seasons({ playerId, playerSlug, initialYears, initialAll
           {/* Section 5: Summary table */}
           {(!isMobileCards || visibleCount >= 5) && (
             <SummarySeasons years={years} allMatches={allMatches} playerId={playerId} playerSlug={resolvedPlayerSlug ?? playerSlug} selectedYear={selectedYear!} />
+          )}
+
+          {/* Section 6+7: Service & Return Statistics side by side */}
+          {(!isMobileCards || visibleCount >= 6) && (
+            <div className="flex flex-wrap gap-8 mt-10">
+              <div style={{ flex: 1, minWidth: 320 }}>
+                <PlayerServiceSpider
+                  matches={allMatches}
+                  playerId={playerId}
+                  playerName={playerName || playerId}
+                />
+              </div>
+              <div style={{ flex: 1, minWidth: 320 }}>
+                <PlayerReturnSpider
+                  matches={allMatches}
+                  playerId={playerId}
+                  playerName={playerName || playerId}
+                />
+              </div>
+            </div>
           )}
         </div>
       )}

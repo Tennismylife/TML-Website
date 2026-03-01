@@ -199,31 +199,31 @@ export default function SummarySeasons({ years, allMatches, playerId, playerSlug
       <table className="min-w-full border-collapse text-gray-200 text-sm">
         <thead>
           <tr className="bg-black">
-            <th className="border border-white/30 px-3 py-1 text-center text-sm text-gray-200">Year</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">M</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">W</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">L</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Win%</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Set W-L</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Set%</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Game W-L</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Game%</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">TB W-L</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">TB%</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">MS</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Hld%</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Brk%</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">A%</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">DF%</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">1stIn</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">1st%</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">2nd%</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">SPW</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">RPW</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">TPW</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">DR</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Best</th>
-            <th className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200">Matches</th>
+            <th title="Year" className="border border-white/30 px-3 py-1 text-center text-sm text-gray-200 cursor-help">Year</th>
+            <th title="Matches played" className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">M</th>
+            <th title="Wins" className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">W</th>
+            <th title="Losses" className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">L</th>
+            <th title="Win percentage" className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">Win%</th>
+            <th title="Sets won – Sets lost" className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">Set W-L</th>
+            <th title="Sets win percentage" className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">Set%</th>
+            <th title="Games won – Games lost" className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">Game W-L</th>
+            <th title="Games win percentage" className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">Game%</th>
+            <th title="Tiebreaks won – Tiebreaks lost" className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">TB W-L</th>
+            <th title="Tiebreaks win percentage" className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">TB%</th>
+            <th title="Matches with serve stats available" className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">MS</th>
+            <th title="Hold percentage – service games held" className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">Hld%</th>
+            <th title="Break percentage – opponent service games broken" className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">Brk%</th>
+            <th title="Ace percentage (aces / serve points)" className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">A%</th>
+            <th title="Double fault percentage (double faults / serve points)" className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">DF%</th>
+            <th title="1st serve in percentage" className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">1stIn</th>
+            <th title="1st serve points won percentage" className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">1st%</th>
+            <th title="2nd serve points won percentage" className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">2nd%</th>
+            <th title="Serve points won percentage (all serve points)" className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">SPW</th>
+            <th title="Return points won percentage (all return points)" className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">RPW</th>
+            <th title="Total points won percentage (serve + return)" className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">TPW</th>
+            <th title="Dominance Ratio – RPW / (1 − SPW). Values > 1 indicate the player dominated overall." className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">DR</th>
+            <th title="Best round reached (most frequent)" className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">Best</th>
+            <th title="Link to all matches for this season" className="border border-white/30 px-3 py-2 text-center text-sm text-gray-200 cursor-help">Matches</th>
           </tr>
         </thead>
         <tbody>
