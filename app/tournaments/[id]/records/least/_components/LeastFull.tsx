@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
-import { getTournamentName } from '@/lib/getTournamentName';
+import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
 import { makeLeastLabel } from '@/lib/recordMetadata';
 import { playerMatchesUrl } from '../../../../../records/nav';
 
@@ -19,6 +19,7 @@ async function fetchData(id: string, title?: string) {
 export default async function LeastFull({ id, title }: { id: string; title?: string }) {
   const data = await fetchData(id, title);
   const tourneyName = await getTournamentName(id);
+  const slugId = await getTournamentSlug(id);
 
   let items: any[] = [];
   if (title) {
@@ -64,7 +65,7 @@ export default async function LeastFull({ id, title }: { id: string; title?: str
                         </div>
                       </td>
                       <td className="py-2 text-center text-lg md:text-xl text-white">{r.minGamesLost ?? r.games ?? r.value}</td>
-                      <td className="py-2 text-center text-lg md:text-xl text-white"><Link href={`/tournaments/${r.tourney_id ?? id}/${r.year}`} className="text-blue-400 hover:underline">{r.year}</Link></td>
+                      <td className="py-2 text-center text-lg md:text-xl text-white"><Link href={`/tournaments/${slugId}/${r.year}`} className="text-blue-400 hover:underline">{r.year}</Link></td>
                     </tr>
                   ))}
                 </tbody>
@@ -108,7 +109,7 @@ export default async function LeastFull({ id, title }: { id: string; title?: str
                     </div>
                   </td>
                   <td className="py-2 text-center text-lg md:text-xl text-white">{r.minGamesLost ?? r.games ?? r.value}</td>
-                  <td className="py-2 text-center text-lg md:text-xl text-white"><Link href={`/tournaments/${r.tourney_id ?? id}/${r.year}`} className="text-blue-400 hover:underline">{r.year}</Link></td>
+                  <td className="py-2 text-center text-lg md:text-xl text-white"><Link href={`/tournaments/${slugId}/${r.year}`} className="text-blue-400 hover:underline">{r.year}</Link></td>
                 </tr>
               ))}
             </tbody>

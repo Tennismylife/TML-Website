@@ -36,7 +36,7 @@ interface TimespanData {
   allRoundItems: RoundItem[];
 }
 
-export default function TimespanSection({ id }: { id: string }) {
+export default function TimespanSection({ id, pathId }: { id: string; pathId?: string | number }) {
   const [timespanData, setTimespanData] = useState<TimespanData | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingViewAll, setLoadingViewAll] = useState<string | null>(null);
@@ -111,7 +111,7 @@ export default function TimespanSection({ id }: { id: string }) {
   const handleViewAll = async (roundTitle: string) => {
     try {
       const section = 'timespan';
-      const newPath = `/tournaments/${id}/records/timespan/rounds/${encodeURIComponent(String(roundTitle))}`;
+      const newPath = `/tournaments/${pathId ?? id}/records/timespan/rounds/${encodeURIComponent(String(roundTitle))}`;
       const state = { modal: true, background: window.location.pathname, section, title: roundTitle };
 
       try { console.debug('[TimespanSection] handleViewAll start', { newPath, state }); } catch (e) {}

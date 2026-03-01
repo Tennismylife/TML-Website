@@ -4,7 +4,7 @@ import Flag from '@/components/Flag';
 import { playerMatchesUrl } from '../../../../../records/nav';
 
 import { metadataBase } from '@/lib/site';
-import { getTournamentName } from '@/lib/getTournamentName';
+import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
 import { getRoundFullName } from '@/lib/utils';
 import AgesFullClient from './AgesFullClient';
 
@@ -44,6 +44,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
   const seg = section ?? 'titles';
 
   try {
+    const slugId = await getTournamentSlug(id);
     if (seg === 'main') {
       // server fallback: fetch only top lists (no full) for quicker render
       const data = await fetchAgesApi(id, 'main', false);
@@ -82,7 +83,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
                     </div>
                   </td>
                   <td className="py-2 text-center text-lg md:text-xl text-white">{formatAge(r.age)}</td>
-                  {showYear && <td className="py-2 text-center text-lg md:text-xl text-white"><Link href={`/tournaments/${r.tourney_id ?? id}/${r.year}`} className="text-blue-400 hover:underline">{r.year}</Link></td>}
+                  {showYear && <td className="py-2 text-center text-lg md:text-xl text-white"><Link href={`/tournaments/${slugId}/${r.year}`} className="text-blue-400 hover:underline">{r.year}</Link></td>}
                 </tr>
               ))}
             </tbody>
@@ -109,7 +110,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
 
             {/* client replaces with full virtualized list */}
             {/* @ts-ignore - client component */}
-            <AgesFullClient id={id} section={'main'} which={'youngest'} initialRows={topYoungest} />
+            <AgesFullClient id={slugId} section={'main'} which={'youngest'} initialRows={topYoungest} />
           </div>
         );
       }
@@ -132,7 +133,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
 
             {/* client replaces with full virtualized list */}
             {/* @ts-ignore - client component */}
-            <AgesFullClient id={id} section={'main'} which={'oldest'} initialRows={topOldest} />
+            <AgesFullClient id={slugId} section={'main'} which={'oldest'} initialRows={topOldest} />
           </div>
         );
       }
@@ -162,7 +163,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
 
           {/* client fetches both full lists and replaces the server fallback */}
           {/* @ts-ignore - client component */}
-          <AgesFullClient id={id} section={'main'} initialRows={[...topYoungest, ...topOldest]} />
+          <AgesFullClient id={slugId} section={'main'} initialRows={[...topYoungest, ...topOldest]} />
         </div>
       );
     }
@@ -229,7 +230,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
 
             {/* client replaces with full virtualized list */}
             {/* @ts-ignore - client component */}
-            <AgesFullClient id={id} section={'titles'} which={'youngest'} initialRows={topYoungest} />
+            <AgesFullClient id={slugId} section={'titles'} which={'youngest'} initialRows={topYoungest} />
           </div>
         );
       }
@@ -250,7 +251,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
 
             {/* client replaces with full virtualized list */}
             {/* @ts-ignore - client component */}
-            <AgesFullClient id={id} section={'titles'} which={'oldest'} initialRows={topOldest} />
+            <AgesFullClient id={slugId} section={'titles'} which={'oldest'} initialRows={topOldest} />
           </div>
         );
       }
@@ -319,7 +320,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
                     </div>
                   </td>
                   <td className="py-2 text-center text-lg md:text-xl text-white">{formatAge(r.age)}</td>
-                  <td className="py-2 text-center text-lg md:text-xl text-white"><Link href={`/tournaments/${r.tourney_id ?? id}/${r.year}`} className="text-blue-400 hover:underline">{r.year}</Link></td>
+                  <td className="py-2 text-center text-lg md:text-xl text-white"><Link href={`/tournaments/${slugId}/${r.year}`} className="text-blue-400 hover:underline">{r.year}</Link></td>
                 </tr>
               ))}
             </tbody>
@@ -354,7 +355,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
 
             {/* Client-side: fetch full list and replace server fallback with virtualized table */}
             {/* @ts-ignore - client component */}
-            <AgesFullClient id={id} section={safeSection} title={String(title)} initialRows={rows} />
+            <AgesFullClient id={slugId} section={safeSection} title={String(title)} initialRows={rows} />
           </div>
         );
       }
@@ -373,7 +374,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
                   <h4 className="text-white font-medium mb-2">{getRoundFullName(String(item.title))}</h4>
                   {renderTable(item.list ?? [])}
                   <div className="mt-2">
-                    <a href={`/tournaments/${id}/records/ages/${safeSection}/${encodeURIComponent(String(item.title))}`} className="mt-2 inline-block px-4 py-2 bg-blue-500 text-white rounded">View All</a>
+                    <a href={`/tournaments/${slugId}/records/ages/${safeSection}/${encodeURIComponent(String(item.title))}`} className="mt-2 inline-block px-4 py-2 bg-blue-500 text-white rounded">View All</a>
                   </div>
                 </div>
               </div>

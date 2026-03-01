@@ -2,7 +2,7 @@ import LeastFull from '@/app/tournaments/[id]/records/least/_components/LeastFul
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import TournamentHeader from '../../../../TournamentHeader';
-import { getTournamentName } from '@/lib/getTournamentName';
+import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
 import { makeTitle, makeLeastLabel } from '@/lib/recordMetadata';
 import { prisma } from '@/lib/prisma';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
@@ -49,10 +49,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 export default async function Page({ params }: any) {
   const p = await params;
   const { id, title } = p;
+  const slugId = await getTournamentSlug(id);
   return (
     <div className="w-full mx-auto text-white relative">
       <Link
-        href={`/tournaments/${id}/records`}
+        href={`/tournaments/${slugId}/records`}
         className="group relative inline-flex items-center gap-3 px-5 py-2 bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-black text-sm md:text-base rounded-full shadow-2xl hover:shadow-yellow-500/50 transform hover:scale-105 transition-all duration-300 overflow-hidden absolute top-4 left-4"
         title="View Records of the Tournament"
         aria-label="View Records of the Tournament"

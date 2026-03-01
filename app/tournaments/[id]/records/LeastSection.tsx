@@ -30,7 +30,7 @@ interface LeastData {
   roundItems: RoundItem[];
 }
 
-export default function LeastSection({ id, linkId }: { id: string; linkId?: string | number }) {
+export default function LeastSection({ id, linkId, pathId }: { id: string; linkId?: string | number; pathId?: string | number }) {
   const [leastData, setLeastData] = useState<LeastData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -116,9 +116,25 @@ export default function LeastSection({ id, linkId }: { id: string; linkId?: stri
             {/* ✅ usa minGamesLost per compatibilità con l'endpoint */}
             <td className="py-1 text-white text-right whitespace-nowrap">{item.minGamesLost}</td>
             <td className="py-1 text-white text-right whitespace-nowrap">
-              <Link href={`/tournaments/${item.tourney_id ?? linkId ?? id}/${item.year}`} className="text-blue-400 hover:underline">
-                {item.year}
-              </Link>
+              {
+                (() => {
+                  let seg: string | number;
+                  if (item.tourney_id) {
+                    if (linkId && String(item.tourney_id) === String(linkId)) {
+                      seg = pathId ?? id;
+                    } else {
+                      seg = item.tourney_id;
+                    }
+                  } else {
+                    seg = pathId ?? id;
+                  }
+                  return (
+                    <Link href={`/tournaments/${seg}/${item.year}`} className="text-blue-400 hover:underline">
+                      {item.year}
+                    </Link>
+                  );
+                })()
+              }
             </td>
           </tr>
         ))}
@@ -127,12 +143,13 @@ export default function LeastSection({ id, linkId }: { id: string; linkId?: stri
   );
 
   const handleViewAll = async (round: string) => {
+    const baseId = pathId ?? id;
     try {
       // store a last-open fallback so outlets that mount after the click still open
       try { (window as any).__lastOpenModalPayload = { section: 'least', title: round }; } catch (e) { /* ignore */ }
 
       // open modal via shared outlet and push history state so direct links work
-      try { window.history.pushState({ modal: true, background: `/tournaments/${id}/records`, section: 'least', title: round }, '', `/tournaments/${id}/records/least/rounds/${encodeURIComponent(String(round))}`); } catch (e) {}
+      try { window.history.pushState({ modal: true, background: `/tournaments/${baseId}/records`, section: 'least', title: round }, '', `/tournaments/${baseId}/records/least/rounds/${encodeURIComponent(String(round))}`); } catch (e) {}
       try { window.dispatchEvent(new CustomEvent('open-modal', { detail: { section: 'least', title: round } })); } catch (e) { /* lastOpenModalPayload is already set */ }
     } finally {
       setModalLoadingRound(null);

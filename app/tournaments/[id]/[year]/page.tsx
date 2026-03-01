@@ -5,6 +5,7 @@ import EditionMatchesServer from './EditionMatchesServer';
 import SeedsServer from './SeedsServer';
 import EditionNavigatorServer from '@/components/EditionNavigatorServer';
 import { prisma } from '@/lib/prisma';
+import { redirect } from 'next/navigation';
 
 // Local helpers
 function humanizeName(name: string) {
@@ -37,6 +38,20 @@ export default async function Page(props: any) {
   const resolvedParams = props?.params instanceof Promise ? await props.params : props?.params;
   const id = resolvedParams?.id ?? '';
   const year = resolvedParams?.year ?? '';
+
+  // when using a numeric id, fetch header to determine canonical slug and
+  // redirect to it before doing any other work. this keeps URLs consistent
+  // and matches the behaviour in other tournament pages.
+  if (/^\d+$/.test(id)) {
+    try {
+      const header = await import('@/lib/tournamentHeaderCache').then(m => m.fetchTournamentHeaderCached(id));
+      if (header?.slug && header.slug !== id) {
+        redirect(`/tournaments/${header.slug}/${year}`);
+      }
+    } catch {
+      // ignore failures; we'll continue with whatever id we have
+    }
+  }
 
   // Centralized existence check: call shared helper and render a friendly
   // server-side fallback instead of throwing a 404. This prevents the "ghost
@@ -237,7 +252,7 @@ export default async function Page(props: any) {
   const items = [
     { name: 'Home', href: '/' },
     { name: 'Tournaments', href: '/tournaments' },
-    { name: tournamentName, href: `/tournaments/${id}` },
+    { name: tournamentName, href: `/tournaments/${slug}` },
     { name: String(year), current: true },
   ];
 
@@ -249,8 +264,8 @@ export default async function Page(props: any) {
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
       { '@type': 'ListItem', position: 2, name: 'Tournaments', item: `${SITE}/tournaments` },
-      { '@type': 'ListItem', position: 3, name: tournamentName, item: `${SITE}/tournaments/${id}` },
-      { '@type': 'ListItem', position: 4, name: String(year), item: `${SITE}/tournaments/${id}/${year}` },
+      { '@type': 'ListItem', position: 3, name: tournamentName, item: `${SITE}/tournaments/${slug}` },
+      { '@type': 'ListItem', position: 4, name: String(year), item: `${SITE}/tournaments/${slug}/${year}` },
     ],
   };
 
@@ -268,7 +283,7 @@ export default async function Page(props: any) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbListJson) }} />
 
       {/* SEO-only link: visually hidden for users, present in the DOM for crawlers */}
-      <a href={`/tournaments/${id}/${year}/records`} className="sr-only">View Records of the Tournament</a>
+      <a href={`/tournaments/${slug}/${year}/records`} className="sr-only">View Records of the Tournament</a>
 
       {/* Top server-side navigator (sticky on desktop) — provides identical nav above server-rendered matches when client isn't active */}
       <EditionNavigatorServer id={id} slug={slug} editions={serverEditions} currentYear={year} idSuffix="top" sticky />

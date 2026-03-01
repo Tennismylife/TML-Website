@@ -64,3 +64,27 @@ export async function getTournamentName(id: string): Promise<string> {
   }
   return tournamentName;
 }
+
+/**
+ * Resolves the slug string for a tournament given either its numeric id or slug.
+ * If `id` is already non-numeric it is returned as-is.
+ */
+export async function getTournamentSlug(id: string): Promise<string> {
+  if (!id) return id;
+  // Already a slug (not purely numeric)
+  if (!/^\d+$/.test(id)) return id;
+  try {
+    const canonical = await resolveCanonicalTourneyId(id);
+    const numId = parseInt(canonical ?? id, 10);
+    const tournament = await prisma.tournament.findUnique({
+      where: { id: numId },
+      select: { slug: true },
+    });
+    if (tournament?.slug && !/^\d+$/.test(String(tournament.slug))) {
+      return String(tournament.slug);
+    }
+  } catch (e) {
+    // ignore – return original id as fallback
+  }
+  return id;
+}

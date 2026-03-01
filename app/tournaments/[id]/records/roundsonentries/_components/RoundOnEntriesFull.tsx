@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { getTournamentName } from '@/lib/getTournamentName';
+import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
 import { getRoundFullName } from '@/lib/utils';
 import HydrationDebugClient from '@/components/HydrationDebugClient';
 import Flag from '@/components/Flag';
@@ -26,6 +26,7 @@ export default async function RoundOnEntriesFull({ params }: Props) {
 
   // use getTournamentName to ensure humanized fallback for slug ids (e.g., 'australian-open')
   const tourneyName = await getTournamentName(id);
+  const slugId = await getTournamentSlug(id);
 
   if (title) {
     const found = rounds.find((r: any) => String(r.title) === String(title) || decodeURIComponent(String(r.title)) === String(title));
@@ -86,7 +87,7 @@ export default async function RoundOnEntriesFull({ params }: Props) {
           <div key={r.title} className="bg-white rounded shadow p-4">
             <h3 className="text-lg font-semibold">{r.title}</h3>
             <p className="text-sm text-gray-600">Top: {r.list?.slice(0,3).map((it:any)=>it.name).join(', ')}</p>
-            <div className="mt-3"><Link href={`/tournaments/${id}/records/roundsonentries/rounds/${encodeURIComponent(String(r.title))}`} className="text-blue-600 hover:underline">View All</Link></div>
+            <div className="mt-3"><Link href={`/tournaments/${slugId}/records/roundsonentries/rounds/${encodeURIComponent(String(r.title))}`} className="text-blue-600 hover:underline">View All</Link></div>
           </div>
         ))}
       </div>

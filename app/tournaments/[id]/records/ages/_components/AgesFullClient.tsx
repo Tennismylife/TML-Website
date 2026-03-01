@@ -14,7 +14,7 @@ function formatAge(age: number) {
   return `${years}y ${days}d`;
 }
 
-function StaticTable({ rows, heading, showYear = true }: any) {
+function StaticTable({ rows, heading, showYear = true, id }: any) {
   return (
     <div className="rounded-2xl bg-gray-900/80 p-4 text-center">
       {heading ? <h3 className="text-2xl font-semibold mb-3">{heading}</h3> : null}
@@ -47,7 +47,10 @@ function StaticTable({ rows, heading, showYear = true }: any) {
                       <td className="py-2 text-center text-lg md:text-xl text-white">{formatAge(r.age)}</td>
                       {showYear && (
                         <td className="py-2 text-center text-lg md:text-xl text-white">
-                          <a href={`/tournaments/${r.tourney_id ?? ''}/${r.year}`} className="text-blue-400 hover:underline">{r.year}</a>
+                          {/* always link to the current route id (slug when available); the
+                              server data sometimes returns the numeric tourney_id which can
+                              slip in before the slug is known. */}
+                          <a href={`/tournaments/${id}/${r.year}`} className="text-blue-400 hover:underline">{r.year}</a>
                         </td>
                       )}
                     </tr>
@@ -62,9 +65,9 @@ function StaticTable({ rows, heading, showYear = true }: any) {
   );
 }
 
-function InnerContent({ rows, loading, error, heading, mode = 'interactive', showYear = true }: any) {
+function InnerContent({ rows, loading, error, heading, mode = 'interactive', showYear = true, id }: any) {
   if (mode === 'static') {
-    return <StaticTable rows={rows} heading={heading} showYear={showYear} />;
+    return <StaticTable rows={rows} heading={heading} showYear={showYear} id={id} />;
   }
 
   return (
@@ -94,7 +97,8 @@ function InnerContent({ rows, loading, error, heading, mode = 'interactive', sho
               <td className="py-2 text-center text-lg md:text-xl">{formatAge(item.age)}</td>
               {showYear && (
                 <td className="py-2 text-center text-lg md:text-xl">
-                  <a href={`/tournaments/${item.tourney_id ?? ''}/${item.year}`} className="text-blue-400 hover:underline">{item.year ?? ''}</a>
+                  {/* use the current route id (slug) rather than the raw tourney_id */}
+                  <a href={`/tournaments/${id}/${item.year}`} className="text-blue-400 hover:underline">{item.year ?? ''}</a>
                 </td>
               )}
             </>
@@ -203,7 +207,7 @@ export default function AgesFullClient({
     <>
       <style>{`#${fallbackId}{display:none}`}</style>
       <div className="max-w-4xl mx-auto text-white p-4">
-        <InnerContent rows={rows} loading={loading} error={error} heading={heading} mode={mode} showYear={showYear} />
+        <InnerContent rows={rows} loading={loading} error={error} heading={heading} mode={mode} showYear={showYear} id={id} />
       </div>
     </>
   );

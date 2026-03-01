@@ -33,10 +33,11 @@ interface AgesData {
 interface AgesSectionProps {
   id: string;
   linkId?: string | number;
+  pathId?: string | number;   // slug or fallback id for building URLs
   activeSubTab: 'main' | 'winners' | 'titles' | 'youngestrounds' | 'oldestrounds';
 }
 
-export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionProps) {
+export default function AgesSection({ id, linkId, pathId, activeSubTab }: AgesSectionProps) {
   const [agesData, setAgesData] = useState<AgesData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -166,9 +167,10 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
         }).catch(() => setClientModal({ open: true, section: sectionKey, title: titleParam ?? null, list: [], loading: false }));
     }
 
+    const baseId = pathId ?? id;
     const target = sectionKey === 'main' || sectionKey === 'titles'
-      ? `/tournaments/${id}/records/ages/${sectionKey}/${whichParam ?? ''}`
-      : `/tournaments/${id}/records/ages/${sectionKey}/${titleParam ? encodeURIComponent(String(titleParam)) : ''}`;
+      ? `/tournaments/${baseId}/records/ages/${sectionKey}/${whichParam ?? ''}`
+      : `/tournaments/${baseId}/records/ages/${sectionKey}/${titleParam ? encodeURIComponent(String(titleParam)) : ''}`;
 
     const background = typeof window !== 'undefined' ? window.location.pathname + window.location.search : undefined;
 
@@ -185,7 +187,9 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
 
 
 
-  const renderTable = (data: PlayerStatAge[], showYear = true) => (    <table className="w-full text-sm border-collapse table-fixed">
+  const renderTable = (data: PlayerStatAge[], showYear = true) => {
+    const baseTourney = pathId ?? id;
+    return (<table className="w-full text-sm border-collapse table-fixed">
       <colgroup>
         <col style={{ width: 'var(--col-1)' }} />
         <col style={{ width: showYear ? 'var(--col-2)' : 'var(--col-2-alt)' }} />
@@ -209,13 +213,14 @@ export default function AgesSection({ id, linkId, activeSubTab }: AgesSectionPro
             </td>
             <td className="py-1 text-white text-right whitespace-nowrap">{formatAge(p.age)}</td>
             {showYear && <td className="py-1 text-white text-right whitespace-nowrap">
-              <Link href={`/tournaments/${p.tourney_id ?? linkId ?? id}/${p.year}`} className="text-blue-400 hover:underline">{p.year}</Link>
+                <Link href={`/tournaments/${baseTourney}/${p.year}`} className="text-blue-400 hover:underline">{p.year}</Link>
             </td>}
           </tr>
         ))}
       </tbody>
     </table>
   );
+  };
 
   const cardStyle = {
     backgroundColor: 'rgba(31,41,55,0.95)',

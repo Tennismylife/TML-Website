@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
 import { metadataBase } from '@/lib/site';
-import { getTournamentName } from '@/lib/getTournamentName';
+import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
 import { playerMatchesUrl } from '../../../../../records/nav';
 import { getRoundFullName } from '@/lib/utils';
 
@@ -70,6 +70,7 @@ export default async function TimespanFull({ id, title, section = 'rounds' }: Pr
     }
 
     const tourneyName = await getTournamentName(id);
+    const slugId = await getTournamentSlug(id);
     return (
       <div className="text-white">
         <div className="mb-3 text-center"><h3 className="text-2xl font-semibold">Timespans per Round at {tourneyName}</h3></div>
@@ -86,7 +87,7 @@ export default async function TimespanFull({ id, title, section = 'rounds' }: Pr
                   </tbody>
                 </table>
               </div>
-              <div className="mt-2"><a href={`/tournaments/${id}/records/timespan/rounds/${encodeURIComponent(String(item.title))}`} className="mt-2 inline-block px-4 py-2 bg-blue-500 text-white rounded">View All</a></div>
+              <div className="mt-2"><a href={`/tournaments/${slugId}/records/timespan/rounds/${encodeURIComponent(String(item.title))}`} className="mt-2 inline-block px-4 py-2 bg-blue-500 text-white rounded">View All</a></div>
             </div></div>
           ))}
         </div>

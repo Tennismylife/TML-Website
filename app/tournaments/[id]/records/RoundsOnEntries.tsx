@@ -26,7 +26,7 @@ interface RoundsOnEntriesData {
   allRoundItems: RoundItem[];
 }
 
-export default function RoundsOnEntries({ id }: { id: string }) {
+export default function RoundsOnEntries({ id, pathId }: { id: string; pathId?: string | number }) {
   const [roundsData, setRoundsData] = useState<RoundsOnEntriesData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -86,7 +86,7 @@ export default function RoundsOnEntries({ id }: { id: string }) {
     try {
       setLoadingViewAll(roundTitle);
       const section = 'roundsonentries';
-      const newPath = `/tournaments/${id}/records/roundsonentries/rounds/${encodeURIComponent(String(roundTitle))}`;
+      const newPath = `/tournaments/${pathId ?? id}/records/roundsonentries/rounds/${encodeURIComponent(String(roundTitle))}`;
       const state = { modal: true, background: window.location.pathname, section, title: roundTitle } as any;
       try { console.debug('[RoundsOnEntries] handleViewAll start', { newPath, state }); } catch (e) {}
 

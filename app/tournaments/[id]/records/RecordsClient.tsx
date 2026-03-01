@@ -90,6 +90,13 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
 
   // linkId: prefer DB numeric id when available (used for edition links to ensure numeric URLs)
   const linkId = headerId ?? id;
+  // When constructing top‑level *paths* (tabs) we want the human
+  // slug if one has been fetched, otherwise fall back to whatever the
+  // route originally contained. `linkId` is intentionally kept numeric
+  // because it is still used by the section components for season/year
+  // links where stability matters.
+  const pathId = (tournament && typeof tournament.slug === 'string' && tournament.slug)
+    || id;
 
   // Fetch tournament header (contains slug) and redirect numeric IDs to slug-preserving paths
   useEffect(() => {
@@ -147,7 +154,10 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
     }
 
     // if path is exactly /tournaments/{id}/records, do a single replace to /records/count
-    const expectedBase = `/tournaments/${linkId}/records`;
+    // use slug when available here as well so that we don't redirect
+    // to a numeric URL after the initial replaceState above has already
+    // switched the location to the slug.
+    const expectedBase = `/tournaments/${pathId}/records`;
     const currentPath = (typeof window !== 'undefined' ? window.location.pathname : pathname).replace(/\/$/, '');
     if (currentPath === expectedBase && !didReplaceRef.current) {
       didReplaceRef.current = true;
@@ -185,7 +195,9 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
   // Navigation handler: naviga a /records/:tab or /records/:tab/:sub
   const navigateToTab = (tab: string, sub?: string) => {
     const subSegment = sub ? `/${encodeURIComponent(sub)}` : '';
-    const newPath = `/tournaments/${linkId}/records/${encodeURIComponent(tab)}${subSegment}`;
+    // prefer slug for the navigation path when it's been loaded
+    const chosenId = pathId;
+    const newPath = `/tournaments/${chosenId}/records/${encodeURIComponent(tab)}${subSegment}`;
     if (typeof window !== 'undefined' && newPath !== window.location.pathname) {
       router.push(newPath);
     } else {
@@ -284,6 +296,7 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
           <AgesSection
             id={id}
             linkId={linkId}
+            pathId={pathId}
             activeSubTab={activeAgeSubTab}
           />
         )}
@@ -293,10 +306,10 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
             activeSubTab={percentageActiveSubTab}
           />
         )}
-        {activeTab === 'timespan' && <TimespanSection id={id} />}
-        {activeTab === 'rounds-on-entries' && <RoundsOnEntries id={id} />}
+        {activeTab === 'timespan' && <TimespanSection id={id} pathId={pathId} />}
+        {activeTab === 'rounds-on-entries' && <RoundsOnEntries id={id} pathId={pathId} />}
         {activeTab === 'streak' && <StreakSection id={id} />}
-        {activeTab === 'least' && <LeastSection id={id} linkId={linkId} />}
+        {activeTab === 'least' && <LeastSection id={id} linkId={linkId} pathId={pathId} />}
         {activeTab === 'average-age' && <AverageAgeSection id={id} />}
       </div>
     </>

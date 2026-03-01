@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import RecordsPage from "../page";
-import { getTournamentName } from '@/lib/getTournamentName';
+import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
 
 function humanize(s: string) {
   return String(s || '').replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
@@ -115,11 +115,13 @@ export default async function RecordsCatchAllPage({
 
   // Redirect disallowed tournament-specific path /records/ages/winners to the parent ages page
   if (segments && segments.length >= 2 && segments[0] === 'ages' && segments[1] === 'winners') {
-    redirect(`/tournaments/${id}/records/ages`);
+    const slugId = await getTournamentSlug(id);
+    redirect(`/tournaments/${slugId}/records/ages`);
   }
 
   // Compute a server-side H1 for deeper record routes (percentage/overall, percentage/per-round, ages per-round overviews, etc.)
   let tournamentName = await getTournamentName(id);
+  const slugId = await getTournamentSlug(id);
 
   const humanTournament = humanize(tournamentName);
 
@@ -150,7 +152,7 @@ export default async function RecordsCatchAllPage({
       <main className={`w-full mx-auto ${showViewRecords ? 'pt-24 md:pt-32' : 'pt-16 md:pt-20'} py-8 px-0 text-white relative`} style={{ backgroundColor: 'rgba(17,24,39,0.95)', backdropFilter: 'blur(6px)', minHeight: '100vh' }}>
           {showViewRecords && (
           <Link
-            href={`/tournaments/${id}/records`}
+            href={`/tournaments/${slugId}/records`}
             className="group relative inline-flex items-center gap-3 px-5 py-2 bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-black text-sm md:text-base rounded-full shadow-2xl hover:shadow-yellow-500/50 transform hover:scale-105 transition-all duration-300 overflow-hidden absolute top-6 left-6 z-50"
             title="View Records of the Tournament"
             aria-label="View Records of the Tournament"

@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
 import { metadataBase } from '@/lib/site';
-import { getTournamentName } from '@/lib/getTournamentName';
+import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
 import { playerMatchesUrl } from '../../../../../records/nav';
 import { getRoundFullName } from '@/lib/utils';
 
@@ -70,6 +70,7 @@ export default async function PercentageFull({ id, section = 'wins', title }: Pr
       const data = await fetchPercApi(id, 'rounds', true);
       const items = data.allRoundItems ?? [];
       const tournamentName = await getTournamentName(id);
+      const slugId = await getTournamentSlug(id);
 
       const renderTable = (rows: any[]) => (
         <div className="overflow-x-auto">
@@ -123,7 +124,7 @@ export default async function PercentageFull({ id, section = 'wins', title }: Pr
           <div className="mb-3 text-center"><h3 className="text-2xl font-semibold">Best winning percentage per Round at {tournamentName}</h3></div>
           <div className="grid md:grid-cols-2 gap-4">
             {items.map((item: any) => (
-              <div key={item.title} className="p-1 border border-gray-700 bg-gray-800 rounded"><div className="p-3"><h4 className="text-white font-medium mb-2">{item.title}</h4>{renderTable(item.list ?? [])}<div className="mt-2"><a href={`/tournaments/${id}/records/percentage/rounds/${encodeURIComponent(String(item.title))}`} className="mt-2 inline-block px-4 py-2 bg-blue-500 text-white rounded">View All</a></div></div></div>
+              <div key={item.title} className="p-1 border border-gray-700 bg-gray-800 rounded"><div className="p-3"><h4 className="text-white font-medium mb-2">{item.title}</h4>{renderTable(item.list ?? [])}<div className="mt-2"><a href={`/tournaments/${slugId}/records/percentage/rounds/${encodeURIComponent(String(item.title))}`} className="mt-2 inline-block px-4 py-2 bg-blue-500 text-white rounded">View All</a></div></div></div>
             ))}
           </div>
         </div>
