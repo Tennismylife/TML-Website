@@ -9,7 +9,7 @@
  * It reads INDEXNOW_KEY and INDEXNOW_KEY_LOCATION from env.
  */
 
-import { notifyIndexNow } from '../lib/indexnow.ts';
+import { notifyIndexNow } from '../lib/indexnow';
 
 async function main() {
   const key = process.env.INDEXNOW_KEY;
@@ -64,7 +64,7 @@ async function main() {
       // fallback to computing from scratch (slow) if no file
       console.warn('no existing sitemap file found, falling back to live generation');
       try {
-        const { getSitemapEntries } = await import('../lib/sitemap.ts');
+        const { getSitemapEntries } = await import('../lib/sitemap');
         const entries = await getSitemapEntries();
         const base = siteUrl.replace(/\/+$/, '');
         for (const e of entries) {
