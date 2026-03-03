@@ -116,6 +116,17 @@ posts a list passed via command line.  It can operate in two modes:
 The script uses `lib/getSitemapEntries()` internally.  You can also combine both modes by
 passing `--sitemap` plus additional URLs on the command line.
 
+* **h2h‑top100 sitemap** – generate a dedicated sitemap listing every possible
+  head‑to‑head matchup between the current top‑100 players.  Pairings are
+  alphabetized (A vs B, not B vs A) and slugs are used in the URL.
+
+  ```bash
+  node scripts/sitemap/generate-sitemap-h2h-top100.js
+  ```
+
+  The output is written to `public/sitemaps/sitemap-h2h-top100.xml` (and `.gz`),
+  and the sitemap index is updated automatically.
+
 ---
 
 ## 🔁 Data import & scripts
