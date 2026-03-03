@@ -81,7 +81,8 @@ npx prisma generate
 - The project includes a lightweight helper in `lib/indexnow.ts` you can use to notify Bing, Yandex or other
   IndexNow‑compatible crawlers when pages change.
 - Typical workflow: export `INDEXNOW_KEY` and `INDEXNOW_KEY_LOCATION` (URL of the public key file in `public/`)
-  and call `notifyIndexNow([...urls], key, keyLocation)` from your build/deploy script or a webhook.
+  and call `notifyIndexNow([...urls], key, keyLocation)` from your build/deploy script or a webhook.  The helper now uses a JSON body (`{host,key,keyLocation,urlList}`) to satisfy the
+  latest IndexNow API requirements and avoid 400 errors.
 - Example snippet:
   ```ts
   import { notifyIndexNow } from './lib/indexnow';

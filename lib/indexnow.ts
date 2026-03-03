@@ -28,14 +28,21 @@ export async function notifyIndexNow(
     return 'no urls provided';
   }
 
-  const params = new URLSearchParams();
-  for (const u of urls) params.append('url', u);
-  params.append('key', key);
-  params.append('keyLocation', keyLocation);
+  // According to the current IndexNow API the recommended request is a JSON
+  // payload containing an array of urls in the `urlList` field.  The older
+  // form-encoded version sometimes returns 400 errors ('urlList field is
+  // required'), so we always send JSON.
+  const payload = {
+    host: new URL(urls[0]).hostname,
+    key,
+    keyLocation,
+    urlList: urls,
+  };
 
   const res = await fetch('https://api.indexnow.org/indexnow', {
     method: 'POST',
-    body: params,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
   });
 
   if (!res.ok) {
