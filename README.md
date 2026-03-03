@@ -77,12 +77,56 @@ npx prisma generate
 - There are two routes: `app/sitemap.xml/route.ts` and `app/api/sitemap/route.ts` that call `lib/sitemap.ts`.
 - To avoid long builds, `SKIP_SITEMAP_BUILD=1` returns a minimal sitemap during build time; the full sitemap can be generated at runtime or via CLI scripts.
 
+## 🔍 SEO – IndexNow support
+- The project includes a lightweight helper in `lib/indexnow.ts` you can use to notify Bing, Yandex or other
+  IndexNow‑compatible crawlers when pages change.
+- Typical workflow: export `INDEXNOW_KEY` and `INDEXNOW_KEY_LOCATION` (URL of the public key file in `public/`)
+  and call `notifyIndexNow([...urls], key, keyLocation)` from your build/deploy script or a webhook.
+- Example snippet:
+  ```ts
+  import { notifyIndexNow } from './lib/indexnow';
+
+  const key = process.env.INDEXNOW_KEY!; // e.g. "2fba6905fae..."
+  const keyLocation = process.env.INDEXNOW_KEY_LOCATION!; // https://example.com/2fba6905fae24d74a6e4294729e371a8.txt
+
+  // after publishing a new article or regenerating sitemap
+  await notifyIndexNow([
+    'https://example.com/new-post',
+    'https://example.com/another-page',
+  ], key, keyLocation);
+  ```
+
+For simpler invocation there’s also `scripts/notify-indexnow.ts` that reads the env vars and
+posts a list passed via command line.  It can operate in two modes:
+
+* **explicit URLs** – supply them directly:
+
+  ```bash
+  npm run notify:indexnow -- https://example.com/foo https://example.com/bar
+  ```
+
+* **sitemap-derived** – generate the URL list automatically from your sitemap.  (Requires
+  `NEXT_PUBLIC_SITE_URL` or `SITE_URL` env var to be set so the full host can be prepended.)
+
+  ```bash
+  npm run notify:indexnow -- --sitemap
+  ```
+
+The script uses `lib/getSitemapEntries()` internally.  You can also combine both modes by
+passing `--sitemap` plus additional URLs on the command line.
+
 ---
 
 ## 🔁 Data import & scripts
 - Data import scripts and utilities live in `/scripts` and `/Import Database/`. Use them for populating the DB.
 - Example scripts: `generate-sitemap.js`, `print-sitemap.mjs`, import scripts for matches/players.
-
+> ⚠️ **Performance note:** the full sitemap generator hits the database heavily (players,
+> tournaments, records, season aggregations) and can take several minutes on large datasets.
+> For builds on constrained machines use `SKIP_SITEMAP_BUILD=1` or run the slower generators
+> offline (`node scripts/sitemap/generate-sitemap.js` or
+> `scripts/sitemap/regenerate-all-sitemaps.js`) once and cache the result in `public/`.
+> The `notify-indexnow` helper will automatically read any existing sitemap XML in `public/`
+> if available, avoiding the cost of regenerating it from scratch.
 ---
 
 ## 🧪 Testing
