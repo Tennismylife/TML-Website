@@ -237,12 +237,6 @@ tr:hover td {
   pointer-events: none;
 }
 
-/* Sovrascrive il color bianco globale solo per le celle della tabella */
-.table-row-text {
-  color: inherit !important; /* usa il colore inline passato da React */
-  text-shadow: none;
-}
-
 /* Override LOCALIZZATO ai ranking tables: applica l'ereditarietà del colore solo dentro il componente */
 .rankingtables .table-row-text,
 .rankingtables .table-row-text a,

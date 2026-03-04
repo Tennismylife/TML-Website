@@ -38,8 +38,8 @@ export default function Card({
   useEffect(() => {
     if (!accentColor) return;
     if (iconRef.current) iconRef.current.style.setProperty("color", accentColor, "important");
-    // Non forzare il colore sul titleRef, così gli span custom funzionano
-  }, [accentColor]);
+    if (titleRef.current && typeof title === 'string') titleRef.current.style.setProperty("color", accentColor, "important");
+  }, [accentColor, title]);
 
   // Force subnote styling when needed: use a simple solid color to avoid rendering artifacts
   useEffect(() => {
@@ -69,9 +69,11 @@ export default function Card({
     <>
       <span ref={iconRef} className={`${colorClass ?? "text-yellow-400 group-hover:text-yellow-300"} ${large ? "mb-3 text-4xl" : ""}`}>{children}</span>
       <span className={`flex flex-col items-center`}>
-        <span ref={titleRef} className={`font-extrabold ${large ? "text-3xl sm:text-4xl" : "text-lg"} text-center ${baseColorClass}`}>
-          {title}
-        </span>
+        {typeof title === 'string' ? (
+          <span ref={titleRef} className={`font-extrabold ${large ? "text-3xl sm:text-4xl" : "text-lg"} text-center ${baseColorClass}`}>{title}</span>
+        ) : (
+          <span ref={titleRef} className={`font-extrabold ${large ? "text-3xl sm:text-4xl" : "text-lg"} text-center`}>{title}</span>
+        )}
         {subtitle && (
           <span className={`${large ? "text-base mt-2 text-gray-300" : "text-xs text-gray-400 mt-1"} text-center`}>
             {subtitle}

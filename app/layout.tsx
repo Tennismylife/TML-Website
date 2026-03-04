@@ -5,7 +5,6 @@ import Header from '../components/Header'
 import GAListener from './analytics/GAListener' // importa il listener
 import TrackPageClient from './TrackPageClient' // client-side visit tracking (fires on route changes)
 import MatomoClient from '../components/MatomoClient' // client-side Matomo tracker (migrated from pages/_app.tsx) 
-import RumCollector from './components/RumCollector.client';
 import { Montserrat } from 'next/font/google'
 
 const montserrat = Montserrat({
@@ -85,13 +84,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <TrackPageClient />
         {/* Matomo tracker (migrated from pages/_app.tsx) */}
         <MatomoClient />
-        {/* RUM collector: collects CLS (layout shifts) from real users and posts to /api/rum/cls */}
-        {/* Only active in the browser (client component) */}
-        {/* eslint-disable-next-line @next/next/no-before-interactive-script-outside-document */}
-        <script dangerouslySetInnerHTML={{__html: ""}} />
         <Header />
-        {/* Client-only: RUM collector */}
-        <RumCollector />
         <main className="w-full px-0 py-6">
           {(() => {
             try {
