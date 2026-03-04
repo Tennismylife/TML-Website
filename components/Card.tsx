@@ -17,7 +17,7 @@ export default function Card({
   subnote,
 }: {
   href: string;
-  title: string;
+  title: React.ReactNode;
   subtitle?: string;
   children: React.ReactNode;
   large?: boolean;
@@ -38,7 +38,7 @@ export default function Card({
   useEffect(() => {
     if (!accentColor) return;
     if (iconRef.current) iconRef.current.style.setProperty("color", accentColor, "important");
-    if (titleRef.current) titleRef.current.style.setProperty("color", accentColor, "important");
+    // Non forzare il colore sul titleRef, così gli span custom funzionano
   }, [accentColor]);
 
   // Force subnote styling when needed: use a simple solid color to avoid rendering artifacts

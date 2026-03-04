@@ -74,7 +74,7 @@ export default function Page() {
   <div className="mx-auto max-w-3xl">
     <h2 className="text-3xl sm:text-4xl font-bold mb-3 bg-gradient-to-r from-sky-400 via-emerald-400 to-yellow-300 text-transparent bg-clip-text">Live Tournaments</h2>
     <p className="text-lg sm:text-xl font-medium text-gray-100">
-      <span className="!text-sky-400 font-semibold">Dubai</span>, <span className="!text-pink-400 font-semibold">Acapulco</span>, and <span className="!text-amber-400 font-semibold">Santiago</span> are currently in progress — live results and stats are being updated in real-time.
+      <span className="!text-green-400 font-semibold">Indian Wells</span> is currently in progress — live results and stats are being updated in real-time.
     </p>
   </div>
 </section>
