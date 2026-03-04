@@ -81,6 +81,19 @@ export default async function H2HPreviewServer({ player1, player2, matches }: Pr
     const p2 = countedMatches.filter((m) => m.tourney_level === 'G' && String(m.winner_id) === String(player2.id)).length;
     return `${p1}–${p2}`;
   })();
+  const slamLeader = (() => {
+    const p1 = countedMatches.filter((m) => m.tourney_level === 'G' && String(m.winner_id) === String(player1.id)).length;
+    const p2 = countedMatches.filter((m) => m.tourney_level === 'G' && String(m.winner_id) === String(player2.id)).length;
+    if (p1 > p2) return player1;
+    if (p2 > p1) return player2;
+    return null; // tied
+  })();
+  const slamScoreFromLeader = (() => {
+    const p1 = countedMatches.filter((m) => m.tourney_level === 'G' && String(m.winner_id) === String(player1.id)).length;
+    const p2 = countedMatches.filter((m) => m.tourney_level === 'G' && String(m.winner_id) === String(player2.id)).length;
+    if (p1 >= p2) return `${p1}–${p2}`;
+    return `${p2}–${p1}`;
+  })();
 
   // Fetch career stats from DB for each player (server-side)
   const fetchCareerStats = async (playerId?: string | number) => {
@@ -230,7 +243,7 @@ export default async function H2HPreviewServer({ player1, player2, matches }: Pr
           {leader ? (
             <>
               <strong>{leader}</strong> currently holds the upper hand, leading the series{' '}
-              <strong className={valueClass(wins1, wins2)}>{wins1}</strong>–<strong className={valueClass(wins2, wins1)}>{wins2}</strong>.
+              <strong className={valueClass(wins1, wins2)}>{wins1 >= wins2 ? wins1 : wins2}</strong>–<strong className={valueClass(wins2, wins1)}>{wins1 >= wins2 ? wins2 : wins1}</strong>.
             </>
           ) : (
             <>
@@ -347,9 +360,14 @@ export default async function H2HPreviewServer({ player1, player2, matches }: Pr
           )}
           {(hardClay.p1 + hardClay.p2) > 0 && (
             <>
-              The clay record between them sits at <strong className="text-blue-400">{hardClay.p1}–{hardClay.p2}</strong>{' '}
-              (<strong className="text-yellow-400">{hardClay.p1 + hardClay.p2 > 0 ? ((hardClay.p1 / (hardClay.p1 + hardClay.p2)) * 100).toFixed(2) : '0.00'}%</strong> for{' '}
-              <strong>{player1.atpname}</strong>){' '}
+              The clay record between them sits at{' '}
+              {hardClay.p1 >= hardClay.p2 ? (
+                <><strong className="text-blue-400">{hardClay.p1}–{hardClay.p2}</strong>{' '}
+                (<strong className="text-yellow-400">{((hardClay.p1 / (hardClay.p1 + hardClay.p2)) * 100).toFixed(2)}%</strong> for <strong>{player1.atpname}</strong>)</>
+              ) : (
+                <><strong className="text-blue-400">{hardClay.p2}–{hardClay.p1}</strong>{' '}
+                (<strong className="text-yellow-400">{((hardClay.p2 / (hardClay.p1 + hardClay.p2)) * 100).toFixed(2)}%</strong> for <strong>{player2.atpname}</strong>)</>
+              )}{' '}
               across <strong className="text-yellow-400">{hardClay.p1 + hardClay.p2}</strong> matches.{' '}
             </>
           )}
@@ -357,8 +375,13 @@ export default async function H2HPreviewServer({ player1, player2, matches }: Pr
             <>
               On grass, their <strong className="text-yellow-400">{hardGrass.p1 + hardGrass.p2}</strong>{' '}
               encounter{hardGrass.p1 + hardGrass.p2 !== 1 ? 's have' : ' has'} yielded a record of{' '}
-              <strong className="text-blue-400">{hardGrass.p1}–{hardGrass.p2}</strong>{' '}
-              (<strong className="text-yellow-400">{hardGrass.p1 + hardGrass.p2 > 0 ? ((hardGrass.p1 / (hardGrass.p1 + hardGrass.p2)) * 100).toFixed(2) : '0.00'}%</strong>).
+              {hardGrass.p1 >= hardGrass.p2 ? (
+                <><strong className="text-blue-400">{hardGrass.p1}–{hardGrass.p2}</strong>{' '}
+                (<strong className="text-yellow-400">{((hardGrass.p1 / (hardGrass.p1 + hardGrass.p2)) * 100).toFixed(2)}%</strong> for <strong>{player1.atpname}</strong>)</>
+              ) : (
+                <><strong className="text-blue-400">{hardGrass.p2}–{hardGrass.p1}</strong>{' '}
+                (<strong className="text-yellow-400">{((hardGrass.p2 / (hardGrass.p1 + hardGrass.p2)) * 100).toFixed(2)}%</strong> for <strong>{player2.atpname}</strong>)</>
+              )}.
             </>
           )}
         </p>
@@ -370,8 +393,8 @@ export default async function H2HPreviewServer({ player1, player2, matches }: Pr
             At the Grand Slam level — where the best-of-five format adds an extra layer of physical and mental endurance —{' '}
             the two have crossed paths <strong className="text-yellow-400">{slamMatches}</strong>{' '}
             {slamMatches === 1 ? 'time' : 'times'}, producing a Slam record of{' '}
-            <strong className="text-blue-400">{slamScore}</strong> in favour of{' '}
-            <strong>{player1.atpname}</strong>.{' '}
+            <strong className="text-blue-400">{slamScoreFromLeader}</strong>{' '}
+            {slamLeader ? <>in favour of <strong>{slamLeader.atpname}</strong></> : <>with the two players perfectly even</>}.{' '}
             These matches, often played in front of the largest tennis audiences, frequently prove decisive in shaping the broader narrative of a rivalry.
           </p>
         )}
