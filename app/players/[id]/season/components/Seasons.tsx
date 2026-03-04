@@ -1,13 +1,11 @@
 "use client";
 
 import React, { useEffect, useState, useMemo, useRef } from "react";
-import dynamic from 'next/dynamic';
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import type { Match } from "@/types";
 import { getLevelColors, getLevelFullName, getTourneyHref, getPlayerHref } from "@/lib/utils";
 import { getSurfaceColor, palette } from "@/lib/colors";
-// SummarySeasons is a server component; import it dynamically since this file is a client component
-const SummarySeasons = dynamic(() => import('./SummarySeasons'), { ssr: true });
+import SummarySeasons from './SummarySeasons';
 import TournamentGrid from "../../TournamentGrid";
 import PlayerServiceSpider from './PlayerServiceSpider';
 import PlayerReturnSpider from './PlayerReturnSpider';
@@ -169,14 +167,6 @@ export default function Seasons({ playerId, playerSlug, playerName, initialYears
     return [];
   });
   const [openDropdown, setOpenDropdown] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const handler = () => setIsMobile(window.innerWidth < 640);
-    handler();
-    window.addEventListener('resize', handler);
-    return () => window.removeEventListener('resize', handler);
-  }, []);
 
   // Fetch years list once if not provided by SSR
   useEffect(() => {
@@ -412,11 +402,10 @@ export default function Seasons({ playerId, playerSlug, playerName, initialYears
         <div className="text-gray-400 text-xl">Select a season</div>
       ) : (
         <div style={{ opacity: computing ? 0.6 : 1, transition: "opacity 0.3s" }}>
-          {isMobile && (
-            <div className="text-gray-200 mb-4">
-              Wins: {seasonAgg.wins}–{seasonAgg.losses} ({((seasonAgg.wins/(seasonAgg.wins+seasonAgg.losses))*100).toFixed(1)}%)
-            </div>
-          )}
+          {/* Always render on mobile via CSS (sm:hidden) — avoids post-hydration layout shift */}
+          <div className="text-gray-200 mb-4 sm:hidden">
+            Wins: {seasonAgg.wins}–{seasonAgg.losses} ({((seasonAgg.wins/(seasonAgg.wins+seasonAgg.losses))*100).toFixed(1)}%)
+          </div>
 
           {/* Section 1: Tournament Grid */}
           {(!isMobileCards || visibleCount >= 1) && (

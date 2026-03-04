@@ -68,6 +68,10 @@ export default function H2HContentClient({ matches, player1, player2, children, 
 
   // If the user lands on a slug URL that includes query params (SSR path), read them once on mount
   // and initialize the client-side filters so the UI reflects the shared URL state.
+  // IMPORTANT: only call setFilters when a param is actually present — calling setFilters
+  // unconditionally (even with identical values) creates a new object reference, invalidates
+  // every useMemo that depends on `filters`, and forces all chart children to re-render,
+  // which is the root cause of CLS = 0.29 on clean (no query param) H2H slug URLs.
   useEffect(() => {
     try {
       const params = new URLSearchParams(window.location.search);
@@ -77,6 +81,10 @@ export default function H2HContentClient({ matches, player1, player2, children, 
       const qRound = params.get('round');
       const qTourney = params.get('tourney') ?? params.get('tourney_name');
       const qBestOf = params.get('best_of') ?? params.get('bestOf');
+
+      // Skip entirely when no filter params are present (the common case for clean slug URLs).
+      // This avoids an unnecessary re-render + memo invalidation cascade on first paint.
+      if (!qYear && !qLevel && !qSurface && !qRound && !qTourney && !qBestOf) return;
 
       setFilters((prev) => ({
         year: qYear ? (isNaN(Number(qYear)) ? 'All' : Number(qYear)) : prev.year,

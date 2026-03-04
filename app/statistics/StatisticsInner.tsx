@@ -164,6 +164,10 @@ export default function StatisticsInner({ initialData = [], initialStat: propIni
   const resultsHeadingRef = useRef<HTMLHeadingElement | null>(null);
   const prevLoadingRef = useRef<boolean>(isLoading);
   const abortRef = useRef<AbortController | null>(null);
+  // Skip the very first loadData() call when SSR already provided initialData.
+  // This prevents the table from disappearing (→ ResultsSkeleton) and reappearing
+  // after hydration, which is the root cause of CLS = 0.29 on this page.
+  const skipFirstLoad = useRef(initialData.length > 0);
 
   useEffect(() => {
     if (prevLoadingRef.current && !isLoading) {
@@ -279,6 +283,12 @@ export default function StatisticsInner({ initialData = [], initialStat: propIni
   };
 
   useEffect(() => {
+    if (skipFirstLoad.current) {
+      // First render: initialData from SSR already populates the table.
+      // Skipping fetch avoids the table vanishing into a skeleton on hydration.
+      skipFirstLoad.current = false;
+      return;
+    }
     loadData();
     return () => { abortRef.current?.abort(); };
   }, [stat, surface, year, tourneyLevel]);
