@@ -37,6 +37,14 @@ p, span, a, li, div, h1, h2, h3, h4, h5, h6, label, button, input, select, texta
 [data-h2h-color="yellow"] { color: #facc15 !important; -webkit-text-fill-color: #facc15 !important; }
 [data-h2h-name]          { color: #FFFFFF  !important; -webkit-text-fill-color: #FFFFFF  !important; }
 
+/* Ranking History Narrative: semantic color highlights */
+.narrative-rank   { font-weight: 600; color: #fde047 !important; -webkit-text-fill-color: #fde047 !important; } /* yellow  – ranking numbers  */
+.narrative-tier   { font-weight: 600; color: #fcd34d !important; -webkit-text-fill-color: #fcd34d !important; } /* amber   – tier labels      */
+.narrative-date   { font-weight: 600; color: #7dd3fc !important; -webkit-text-fill-color: #7dd3fc !important; } /* sky     – dates            */
+.narrative-points { font-weight: 600; color: #6ee7b7 !important; -webkit-text-fill-color: #6ee7b7 !important; } /* emerald – ATP points       */
+.narrative-age    { font-weight: 600; color: #fdba74 !important; -webkit-text-fill-color: #fdba74 !important; } /* orange  – age              */
+.narrative-weeks  { font-weight: 600; color: #c4b5fd !important; -webkit-text-fill-color: #c4b5fd !important; } /* violet  – weeks / counts   */
+
 /* Essential headings */
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Poppins', 'Inter', sans-serif;
@@ -231,11 +239,6 @@ tr:hover td {
   transform: translateY(-0.25rem);
 }
 
-/* Make badge text black (overrides global white) */
-.badge-text-black {
-  color: #000000 !important;
-}
-
 /* ----------------------
    WLStatTable Progress Bars
 ----------------------- */
@@ -263,17 +266,6 @@ tr:hover td {
   font-size: 0.875rem;
   font-weight: 500;
   pointer-events: none;
-}
-
-/* Sovrascrive il color bianco globale solo per le celle della tabella */
-.table-row-text {
-  color: inherit !important; /* usa il colore inline passato da React */
-  text-shadow: none;
-}
-
-/* Force white for bar labels when necessary */
-.bar-label--white {
-  fill: #ffffff !important;
 }
 
 /* ----------------------
