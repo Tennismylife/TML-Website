@@ -2,6 +2,7 @@ import Flag from '@/components/Flag';
 import Link from "next/link";
 import { getPlayerHrefWithTab } from "@/lib/utils";
 import { lastNMatches, playerResultsForMatches } from '@/lib/h2hUtils';
+import H2HHypotheticalMatchup from './H2HHypotheticalMatchup';
 
 interface Player {
   atpname: string | null;
@@ -258,6 +259,20 @@ export default function H2HHeaderServer({
             })()}
           </div>
         </div>
+      </div>
+
+      {/* Hypothetical Match-Up Prediction */}
+      <div className="mt-5 border-t border-gray-600/50 pt-4">
+        <H2HHypotheticalMatchup
+          player1={player1 as any}
+          player2={player2 as any}
+          rank1={rank1}
+          rank2={rank2}
+          points1={points1}
+          points2={points2}
+          h2hWins1={wins1}
+          h2hWins2={wins2}
+        />
       </div>
     </div>
   );

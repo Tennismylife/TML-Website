@@ -13,6 +13,7 @@ import H2HServiceSpider from "./H2HServiceSpider";
 import H2HReturnSpider from "./H2HReturnSpider";
 import H2HAdvancedMetrics from "./H2HAdvancedMetrics";
 import H2HCareerBarsClient from "./H2HCareerBarsClient";
+import H2HHypotheticalMatchup from "./H2HHypotheticalMatchup";
 import PlayerSearch from "./PlayerSearch";
 import { useRouter } from "next/navigation";
 import { createH2HUrl } from "@/lib/utils";
@@ -192,6 +193,26 @@ export default function H2HContentClient({ matches, player1, player2, children, 
       return true;
     });
   }, [statsBaseMatches, statsFilters]);
+
+  // All-time H2H wins (unfiltered) – used by the prediction model
+  const allCountedMatches = useMemo(() => {
+    return matches.filter((m: any) => {
+      if (m.status === false) return false;
+      const sc = (m.score ?? '').toUpperCase();
+      if (sc.includes('DEF') || sc.includes('W/O') || sc.includes('WEA')) return false;
+      return true;
+    });
+  }, [matches]);
+
+  const allTimeH2HWins = useMemo(() => {
+    let wins1 = 0;
+    let wins2 = 0;
+    allCountedMatches.forEach((m: any) => {
+      if (m.winner_name === player1.atpname) wins1++;
+      if (m.winner_name === player2.atpname) wins2++;
+    });
+    return { wins1, wins2 };
+  }, [allCountedMatches, player1.atpname, player2.atpname]);
 
   // Calcola statistiche dai match filtrati (usando quelli conteggiati)
   const stats = useMemo(() => {
