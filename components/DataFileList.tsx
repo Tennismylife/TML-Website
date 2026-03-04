@@ -4,8 +4,8 @@ import React from 'react';
 // DataFileList: fetches /api/data-files and renders per-file download links
 type DataFile = { name: string; url: string; size?: number; mtime?: string };
 
-export default function DataFileList({ full = false }: { full?: boolean }) {
-  const [files, setFiles] = React.useState<DataFile[] | null>(null);
+export default function DataFileList({ full = false, initialFiles }: { full?: boolean; initialFiles?: DataFile[] }) {
+  const [files, setFiles] = React.useState<DataFile[] | null>(initialFiles ?? null);
   const [err, setErr] = React.useState<string | null>(null);
   const [visible, setVisible] = React.useState(10); // show 10 items by default
   const [visibleChallenger, setVisibleChallenger] = React.useState(10);
@@ -18,6 +18,10 @@ export default function DataFileList({ full = false }: { full?: boolean }) {
   const showMoreChallenger = () => setVisibleChallenger((v) => v + 10);
 
   React.useEffect(() => {
+    // If files were pre-populated from SSR (initialFiles prop), skip the API fetch entirely.
+    // This avoids the SSR→empty→full list layout shift that causes CLS.
+    if (initialFiles && initialFiles.length > 0) return;
+
     let mounted = true;
     (async () => {
       try {

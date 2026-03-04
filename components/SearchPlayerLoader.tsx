@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 
-const SearchPlayerClient = dynamic(() => import('./SearchPlayerClient'), { ssr: false, loading: () => <div /> });
+const SearchPlayerClient = dynamic(() => import('./SearchPlayerClient'), { ssr: false, loading: () => <div className="h-12" /> });
 
 export default function SearchPlayerLoader() {
   const [ready, setReady] = useState(false);

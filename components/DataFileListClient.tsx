@@ -1,7 +1,9 @@
 'use client';
 import DataFileList from './DataFileList';
 
-export default function DataFileListClient({ full = true }: { full?: boolean }) {
-  // Simple client wrapper to render the client-only DataFileList from server components
-  return <DataFileList full={full} />;
+type DataFile = { name: string; url: string; size?: number; mtime?: string };
+
+export default function DataFileListClient({ full = true, initialFiles }: { full?: boolean; initialFiles?: DataFile[] }) {
+  // Passes SSR-pre-populated file list to DataFileList to avoid client-fetch CLS
+  return <DataFileList full={full} initialFiles={initialFiles} />;
 }

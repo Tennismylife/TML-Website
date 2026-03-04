@@ -1,18 +1,30 @@
 import TennisMatchDatabaseClient from '@/components/TennisMatchDatabaseClient';
-import DataFileListClientWrapper from './DataFileListClientWrapper';
+import DataFileListClient from '@/components/DataFileListClient';
 
 import fs from 'fs';
 import path from 'path';
+
+type DataFile = { name: string; url: string; size?: number; mtime?: string };
 
 export default function Page() {
   const dataDir = path.join(process.cwd(), 'data');
   let minYear = 1968;
   let maxYear = 2026;
+  let initialFiles: DataFile[] = [];
 
   try {
     if (fs.existsSync(dataDir)) {
-      const files = fs.readdirSync(dataDir).filter(f => /\d{4}/.test(f));
+      const files = fs.readdirSync(dataDir).filter(f => /\.csv$/i.test(f));
       const years: number[] = [];
+      initialFiles = files.map((name) => {
+        const st = fs.statSync(path.join(dataDir, name));
+        return {
+          name,
+          url: `https://stats.tennismylife.org/data/${encodeURIComponent(name)}`,
+          size: st.size,
+          mtime: st.mtime.toISOString(),
+        };
+      });
       files.forEach(f => {
         const m = f.match(/(\d{4})/g);
         if (m) m.forEach(y => years.push(parseInt(y, 10)));
@@ -68,9 +80,9 @@ export default function Page() {
 </section>
 
 
-      {/* Show full file list (client, non-SSR) so it's immediately visible */}
+      {/* Show full file list — pre-populated from server-side filesystem read (no client fetch = no CLS) */}
       <div style={{ marginTop: 18 }}>
-        <DataFileListClientWrapper full={true} />
+        <DataFileListClient full={true} initialFiles={initialFiles} />
       </div>
 
       {/* Documentation section (full-width background, content centered) */}
