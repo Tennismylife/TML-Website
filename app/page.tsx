@@ -198,7 +198,7 @@ export default async function HomePage() {
 
       {/* Indian Wells Masters LIVE Card — featured */}
       <a
-        href="http://localhost:3000/tournaments/indian-wells-masters/records"
+        href="/tournaments/indian-wells-masters/records"
         className="group relative w-full mb-8 flex overflow-hidden rounded-2xl border border-yellow-500/30 shadow-2xl hover:shadow-yellow-500/20 transition-all duration-300 hover:scale-[1.01]"
         style={{ background: 'linear-gradient(135deg, #0f1720 0%, #1a2a10 40%, #2a1a05 100%)' }}
       >
