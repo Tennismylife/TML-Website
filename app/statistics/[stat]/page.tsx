@@ -579,7 +579,7 @@ interface PlayerStat {
   output: number;
 }
 
-// Funzione per recuperare i primi 10 elementi server-side
+// Funzione per recuperare i primi 100 elementi server-side (200 per le stats percentuali)
 async function fetchInitialStats(
   stat: string,
   searchParams?: { [key: string]: string | string[] | undefined }
@@ -589,11 +589,18 @@ async function fetchInitialStats(
     const year = searchParams?.year ?? 'all';
     const tourneyLevel = searchParams?.tourneyLevel ?? 'all';
     
+    const percentStats = [
+      "1stserve","1stservewon","2ndservewon","servicewon","bpsaved",
+      "1streturnwon","2ndreturnwon","returnwon","bpwon",
+      "totalpointswonpct","gameswonpct","tiebreakswonpct","setswonpct"
+    ];
+    const topValue = percentStats.includes(stat) ? '200' : '100';
+
     const params = new URLSearchParams({
       surface: String(surface),
       year: String(year),
       tourneyLevel: String(tourneyLevel),
-      top: '10', // Recupera solo i primi 10
+      top: topValue,
     });
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
@@ -634,7 +641,7 @@ export default async function StatPage({
   const safe = typeof stat === 'string' ? stat.trim() : '';
   const statKey = safe || 'aces';
 
-  // Recupera i primi 10 elementi server-side per SSR
+  // Recupera i dati server-side per SSR (top 100, o 200 per le percentuali)
   const initialData = await fetchInitialStats(statKey, resolvedSearchParams);
   
   // Genera il page title
