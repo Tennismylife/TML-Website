@@ -247,8 +247,7 @@ export default async function H2HPreviewServer({ player1, player2, matches }: Pr
             </>
           ) : (
             <>
-              Their series is perfectly balanced at{' '}
-              <strong className="text-gray-300">{wins1}–{wins2}</strong>, making every encounter between them impossible to call.
+              The series is tied <strong className="text-gray-300">{wins1}–{wins2}</strong>.
             </>
           )}
         </p>
