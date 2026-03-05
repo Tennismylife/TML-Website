@@ -348,7 +348,10 @@ export default async function H2HPreviewServer({ player1, player2, matches }: Pr
           {(hardHard.p1 + hardHard.p2) > 0 && (
             <>
               On hard courts they have met <strong className="text-yellow-400">{hardHard.p1 + hardHard.p2}</strong> times,{' '}
-              {hardHard.p1 >= hardHard.p2 ? (
+              {hardHard.p1 === hardHard.p2 ? (
+                <>the record is tied <strong className="text-blue-400">{hardHard.p1}–{hardHard.p2}</strong>{' '}
+                (<strong className="text-yellow-400">50.00%</strong> each).</>
+              ) : hardHard.p1 > hardHard.p2 ? (
                 <>with <strong>{player1.atpname}</strong> leading <strong className="text-blue-400">{hardHard.p1}–{hardHard.p2}</strong>{' '}
                 (<strong className="text-yellow-400">{((hardHard.p1 / (hardHard.p1 + hardHard.p2)) * 100).toFixed(2)}%</strong>).</>
               ) : (
@@ -360,7 +363,10 @@ export default async function H2HPreviewServer({ player1, player2, matches }: Pr
           {(hardClay.p1 + hardClay.p2) > 0 && (
             <>
               The clay record between them sits at{' '}
-              {hardClay.p1 >= hardClay.p2 ? (
+              {hardClay.p1 === hardClay.p2 ? (
+                <><strong className="text-blue-400">{hardClay.p1}–{hardClay.p2}</strong>{' '}
+                (<strong className="text-yellow-400">50.00%</strong> each)</>
+              ) : hardClay.p1 > hardClay.p2 ? (
                 <><strong className="text-blue-400">{hardClay.p1}–{hardClay.p2}</strong>{' '}
                 (<strong className="text-yellow-400">{((hardClay.p1 / (hardClay.p1 + hardClay.p2)) * 100).toFixed(2)}%</strong> for <strong>{player1.atpname}</strong>)</>
               ) : (
@@ -374,7 +380,10 @@ export default async function H2HPreviewServer({ player1, player2, matches }: Pr
             <>
               On grass, their <strong className="text-yellow-400">{hardGrass.p1 + hardGrass.p2}</strong>{' '}
               encounter{hardGrass.p1 + hardGrass.p2 !== 1 ? 's have' : ' has'} yielded a record of{' '}
-              {hardGrass.p1 >= hardGrass.p2 ? (
+              {hardGrass.p1 === hardGrass.p2 ? (
+                <><strong className="text-blue-400">{hardGrass.p1}–{hardGrass.p2}</strong>{' '}
+                (<strong className="text-yellow-400">50.00%</strong> each)</>
+              ) : hardGrass.p1 > hardGrass.p2 ? (
                 <><strong className="text-blue-400">{hardGrass.p1}–{hardGrass.p2}</strong>{' '}
                 (<strong className="text-yellow-400">{((hardGrass.p1 / (hardGrass.p1 + hardGrass.p2)) * 100).toFixed(2)}%</strong> for <strong>{player1.atpname}</strong>)</>
               ) : (
