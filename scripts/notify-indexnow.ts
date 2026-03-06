@@ -21,11 +21,38 @@ async function main() {
     process.exit(1);
   }
 
+  // support --file <path> flag to grab entries from any sitemap XML file
+  const fileIdx = args.indexOf('--file');
+  let customFile: string | undefined;
+  if (fileIdx !== -1) {
+    customFile = args[fileIdx + 1];
+    args = args.filter((_, i) => i !== fileIdx && i !== fileIdx + 1);
+  }
+
   // support --sitemap flag to grab entries from the generated sitemap
   const useSitemap = args.includes('--sitemap');
   args = args.filter(a => a !== '--sitemap');
 
   const urls: string[] = [];
+
+  if (customFile) {
+    const fs = await import('fs');
+    const path = await import('path');
+    const absPath = path.isAbsolute(customFile)
+      ? customFile
+      : path.join(process.cwd(), customFile);
+    if (!fs.existsSync(absPath)) {
+      console.error('File not found:', absPath);
+      process.exit(1);
+    }
+    const xml = fs.readFileSync(absPath, 'utf8').replace(/^\uFEFF/, '');
+    const locs = Array.from(xml.matchAll(/<loc>([\s\S]*?)<\/loc>/g))
+      .map(m => m[1].trim())
+      .filter(u => /^https?:\/\//.test(u));
+    urls.push(...locs);
+    console.log(`collected ${urls.length} urls from ${absPath}`);
+  }
+
   if (useSitemap) {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL;
     if (!siteUrl) {
@@ -83,7 +110,7 @@ async function main() {
   urls.push(...args);
 
   if (urls.length === 0) {
-    console.error('Usage: notify-indexnow.ts [--sitemap] <url> [more urls]');
+    console.error('Usage: notify-indexnow.ts [--file <path.xml>] [--sitemap] <url> [more urls]');
     process.exit(1);
   }
 
