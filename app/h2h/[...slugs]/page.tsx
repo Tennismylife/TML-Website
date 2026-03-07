@@ -42,9 +42,7 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
   const description = player1Name && player2Name ? `${player1Name} vs ${player2Name} head-to-head: H2H record, match stats and analysis. Compare ATP players.` : 'Head-to-head statistics between players.'; 
   const path = `/h2h/${slug}`;
   const ogImage = new URL('/og/site-preview.png', canonicalOrigin).toString();
-  const canonicalBase = new URL(path, canonicalOrigin).toString();
-  // Use canonical with trailing '?' for H2H slugs to match requested format
-  const canonical = slug ? `${canonicalBase}?` : canonicalBase;
+  const canonical = new URL(path, canonicalOrigin).toString();
 
   const hasQuery = searchParams && Object.keys(searchParams).length > 0;
 
