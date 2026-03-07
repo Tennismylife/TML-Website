@@ -103,7 +103,7 @@ export default function H2HStaticTable({ player1, player2, matches }: Props) {
       .replace(/\s+/g, '-');
 
   return (
-    <div className="w-full">
+    <div className="w-full overflow-x-auto">
       <table
         ref={tableRef}
         className="h2h-static w-full bg-gray-800 text-left rounded-lg overflow-hidden border border-white/10"
@@ -146,7 +146,7 @@ export default function H2HStaticTable({ player1, player2, matches }: Props) {
         <tbody>
           <tr>
             <td colSpan={2} className="p-4 text-center">
-              <div className="text-5xl md:text-6xl font-bold mb-1">
+              <div className="text-4xl md:text-5xl md:text-6xl font-bold mb-1">
                 <span
                   data-h2h-color="green"
                   className="text-green-400 mr-3"

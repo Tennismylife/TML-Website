@@ -55,37 +55,37 @@ export default function H2HHeader({
   const percColor2 = getColor(perc2, perc1);
 
   return (
-    <div className="mb-4 p-6 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg shadow">
+    <div className="mb-4 p-4 md:p-6 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg shadow">
 
       {/* NUOVO: Nomi + bandierine in alto */}
-      <div className="flex justify-between items-center mb-6 -mt-2">
+      <div className="flex justify-between items-center mb-6 -mt-2 gap-2">
         {/* Player 1 - sinistra */}
-        <div className="flex items-center gap-3">
-          <Flag ioc={player1.ioc ?? undefined} className="w-6 h-4 inline-block" />
-          <Link href={getPlayerHrefWithTab((player1 as any).slug ?? String(player1.id ?? ''), 'matches')} className="text-xl font-bold text-gray-100 hover:underline">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <Flag ioc={player1.ioc ?? undefined} className="w-6 h-4 inline-block shrink-0" />
+          <Link href={getPlayerHrefWithTab((player1 as any).slug ?? String(player1.id ?? ''), 'matches')} className="text-base md:text-xl font-bold text-gray-100 hover:underline min-w-0 truncate">
             {player1.atpname ?? ''}
           </Link>
         </div>
 
         {/* Player 2 - destra */}
-        <div className="flex items-center gap-3">
-          <Link href={getPlayerHrefWithTab((player2 as any).slug ?? String(player2.id ?? ''), 'matches')} className="text-xl font-bold text-gray-100 text-right hover:underline">
+        <div className="flex items-center gap-2 min-w-0 flex-1 justify-end">
+          <Link href={getPlayerHrefWithTab((player2 as any).slug ?? String(player2.id ?? ''), 'matches')} className="text-base md:text-xl font-bold text-gray-100 text-right hover:underline min-w-0 truncate">
             {player2.atpname ?? ''}
           </Link>
-          <Flag ioc={player2.ioc ?? undefined} className="w-6 h-4 inline-block" />
+          <Flag ioc={player2.ioc ?? undefined} className="w-6 h-4 inline-block shrink-0" />
         </div>
       </div>
 
       {/* Tutto il resto è IDENTICO al tuo codice originale */}
       <div className="text-center">
         {/* SCORE SUMMARY */}
-        <div className="text-6xl font-bold mb-2">
+        <div className="text-4xl md:text-6xl font-bold mb-2">
           <span className={color1}>{wins1}</span>{" "}
           <span className="text-gray-400">-</span>{" "}
           <span className={color2}>{wins2}</span>
         </div>
 
-        <div className="text-xl font-semibold mb-4">
+        <div className="text-base md:text-xl font-semibold mb-4">
           <span className={percColor1}>Wins: {perc1.toFixed(1)}%</span>{" "}
           <span className="text-gray-400"> - </span>
           <span className={percColor2}>{perc2.toFixed(1)}%</span>

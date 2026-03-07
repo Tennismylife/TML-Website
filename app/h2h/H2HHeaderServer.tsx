@@ -102,33 +102,25 @@ export default function H2HHeaderServer({
   const percColor2 = getColor(perc2, perc1);
 
   return (
-    <div className="mb-4 p-6 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg shadow">
+    <div className="mb-4 p-4 md:p-6 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg shadow">
       {/* Nomi + bandierine in alto */}
-      <div className="flex justify-between items-center mb-6 -mt-2">
+      <div className="flex justify-between items-start mb-6 -mt-2 gap-2">
         {/* Player 1 - sinistra */}
-        <div className="flex flex-col">
-          <div className="flex items-center gap-3">
-            <Flag ioc={player1.ioc ?? undefined} className="w-6 h-4 inline-block" />
-            <Link href={getPlayerHrefWithTab((player1 as any).slug ?? String(player1.id ?? ''), 'matches')} className="text-2xl font-bold text-gray-100 hover:underline">
+        <div className="flex flex-col min-w-0 flex-1">
+          <div className="flex items-center gap-2 min-w-0">
+            <Flag ioc={player1.ioc ?? undefined} className="w-6 h-4 inline-block shrink-0" />
+            <Link href={getPlayerHrefWithTab((player1 as any).slug ?? String(player1.id ?? ''), 'matches')} className="text-lg md:text-2xl font-bold text-gray-100 hover:underline min-w-0 break-words">
               {player1.atpname ?? ''}
             </Link>
           </div>
-          <div className="text-xs text-gray-400 mt-1 ml-9 space-y-0.5">
+          <div className="text-xs text-gray-400 mt-1 ml-7 md:ml-9 space-y-0.5">
             {rank1 != null && (
               <div className="relative inline-flex flex-col mt-1 mb-2">
-                {/* glow ring */}
                 <div className="absolute -inset-[1px] rounded-lg bg-gradient-to-br from-yellow-400 via-yellow-600 to-transparent opacity-60" />
                 <div className="relative flex items-center gap-3 bg-gray-900/90 rounded-lg px-3 py-2 shadow-lg shadow-yellow-900/20">
-                  {/* ATP pill */}
-                  <div className="flex flex-col items-center justify-center bg-yellow-500/15 border border-yellow-500/30 rounded px-1.5 py-0.5 min-w-[32px]">
-                    <span className="text-[9px] font-black text-yellow-400 tracking-[0.2em] uppercase leading-none">ATP</span>
-                  </div>
-                  {/* rank + label */}
                   <div className="flex flex-col">
-                    <span className="text-xl font-black text-yellow-300 leading-none tracking-tight">#{rank1}</span>
-                    <span className="text-[9px] text-gray-500 uppercase tracking-widest leading-tight mt-0.5">Ranking</span>
+                    <span className="text-base md:text-xl font-black text-yellow-300 leading-none tracking-tight">#{rank1}</span>
                   </div>
-                  {/* points */}
                   {points1 != null && (
                     <div className="ml-1 flex flex-col items-end border-l border-gray-700 pl-2.5">
                       <span className="text-xs font-semibold text-gray-300 leading-none">{points1.toLocaleString()}</span>
@@ -145,34 +137,26 @@ export default function H2HHeaderServer({
         </div>
 
         {/* Player 2 - destra */}
-        <div className="flex flex-col items-end">
-          <div className="flex items-center gap-3">
-            <Link href={getPlayerHrefWithTab((player2 as any).slug ?? String(player2.id ?? ''), 'matches')} className="text-2xl font-bold text-gray-100 text-right hover:underline">
+        <div className="flex flex-col items-end min-w-0 flex-1">
+          <div className="flex items-center gap-2 min-w-0 justify-end">
+            <Link href={getPlayerHrefWithTab((player2 as any).slug ?? String(player2.id ?? ''), 'matches')} className="text-lg md:text-2xl font-bold text-gray-100 text-right hover:underline min-w-0 break-words">
               {player2.atpname ?? ''}
             </Link>
-            <Flag ioc={player2.ioc ?? undefined} className="w-6 h-4 inline-block" />
+            <Flag ioc={player2.ioc ?? undefined} className="w-6 h-4 inline-block shrink-0" />
           </div>
-          <div className="text-xs text-gray-400 mt-1 mr-9 space-y-0.5 text-right">
+          <div className="text-xs text-gray-400 mt-1 mr-7 md:mr-9 space-y-0.5 text-right">
             {rank2 != null && (
               <div className="relative inline-flex flex-col mt-1 mb-2">
-                {/* glow ring */}
                 <div className="absolute -inset-[1px] rounded-lg bg-gradient-to-bl from-yellow-400 via-yellow-600 to-transparent opacity-60" />
                 <div className="relative flex items-center gap-3 bg-gray-900/90 rounded-lg px-3 py-2 shadow-lg shadow-yellow-900/20">
-                  {/* points */}
                   {points2 != null && (
                     <div className="mr-1 flex flex-col items-start border-r border-gray-700 pr-2.5">
                       <span className="text-xs font-semibold text-gray-300 leading-none">{points2.toLocaleString()}</span>
                       <span className="text-[9px] text-gray-600 uppercase tracking-wide leading-tight mt-0.5">pts</span>
                     </div>
                   )}
-                  {/* rank + label */}
                   <div className="flex flex-col items-end">
-                    <span className="text-xl font-black text-yellow-300 leading-none tracking-tight">#{rank2}</span>
-                    <span className="text-[9px] text-gray-500 uppercase tracking-widest leading-tight mt-0.5">Ranking</span>
-                  </div>
-                  {/* ATP pill */}
-                  <div className="flex flex-col items-center justify-center bg-yellow-500/15 border border-yellow-500/30 rounded px-1.5 py-0.5 min-w-[32px]">
-                    <span className="text-[9px] font-black text-yellow-400 tracking-[0.2em] uppercase leading-none">ATP</span>
+                    <span className="text-base md:text-xl font-black text-yellow-300 leading-none tracking-tight">#{rank2}</span>
                   </div>
                 </div>
               </div>
@@ -186,13 +170,13 @@ export default function H2HHeaderServer({
 
       <div className="text-center">
         {/* SCORE SUMMARY */}
-        <div className="text-7xl font-bold mb-2">
+        <div className="text-5xl md:text-7xl font-bold mb-2">
           <span className={color1}>{wins1}</span>{" "}
           <span className="text-gray-400">-</span>{" "}
           <span className={color2}>{wins2}</span>
         </div>
 
-        <div className="text-2xl font-semibold mb-4">
+        <div className="text-xl md:text-2xl font-semibold mb-4">
           <span className={percColor1}>Wins: {perc1.toFixed(1)}%</span>{" "}
           <span className="text-gray-400"> - </span>
           <span className={percColor2}>{perc2.toFixed(1)}%</span>

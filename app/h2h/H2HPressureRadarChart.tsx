@@ -37,12 +37,12 @@ export default function H2HPressureRadarChart({ p1Stats, p2Stats, p1Name, p2Name
 
   return (
     <div className="w-full">
-      <ResponsiveContainer width="100%" height={260}>
-        <BarChart data={data} margin={{ top: 10, right: 16, left: 0, bottom: 0 }} barCategoryGap="30%" barGap={3}>
+      <ResponsiveContainer width="100%" height={300}>
+        <BarChart data={data} margin={{ top: 24, right: 16, left: 0, bottom: 0 }} barCategoryGap="30%" barGap={3}>
           <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} />
           <XAxis
             dataKey="label"
-            tick={{ fill: "#9ca3af", fontSize: 11 }}
+            tick={{ fill: "#9ca3af", fontSize: 13 }}
             axisLine={false}
             tickLine={false}
           />
@@ -71,13 +71,13 @@ export default function H2HPressureRadarChart({ p1Stats, p2Stats, p1Name, p2Name
             }}
           />
           <Bar dataKey="p1" name={p1Name} fill="#3b82f6" radius={[3, 3, 0, 0]}>
-            <LabelList dataKey="p1" position="insideTop" style={{ fill: "#fff", fontSize: 10, fontWeight: 600 }} formatter={(v: number | null) => v != null ? `${v}%` : ""} />
+            <LabelList dataKey="p1" position="top" style={{ fill: "#60a5fa", fontSize: 12, fontWeight: 700 }} formatter={(v: number | null) => v != null ? `${v}%` : ""} />
           </Bar>
           <Bar dataKey="p2" name={p2Name} fill="#ef4444" radius={[3, 3, 0, 0]}>
-            <LabelList dataKey="p2" position="insideTop" style={{ fill: "#fff", fontSize: 10, fontWeight: 600 }} formatter={(v: number | null) => v != null ? `${v}%` : ""} />
+            <LabelList dataKey="p2" position="top" style={{ fill: "#f87171", fontSize: 12, fontWeight: 700 }} formatter={(v: number | null) => v != null ? `${v}%` : ""} />
           </Bar>
           <Legend
-            formatter={(value) => <span style={{ color: value === p1Name ? "#60a5fa" : "#f87171", fontSize: 12 }}>{value}</span>}
+            formatter={(value) => <span style={{ color: value === p1Name ? "#60a5fa" : "#f87171", fontSize: 14 }}>{value}</span>}
           />
         </BarChart>
       </ResponsiveContainer>
