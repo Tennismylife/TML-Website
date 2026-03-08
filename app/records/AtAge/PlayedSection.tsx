@@ -307,7 +307,7 @@ export default function PlayedSection({
       {error && <div className="text-red-600 text-center py-2">{error}</div>}
       {!loading && !error && data.length === 0 && (
         <div>
-          {!hasFetched ? (
+          {(!hasFetched && (!initialData || initialData.length === 0)) ? (
             <div className="text-center py-8 text-gray-300">Select data</div>
           ) : (
             <div className="text-center py-8 text-gray-300">No data found.</div>

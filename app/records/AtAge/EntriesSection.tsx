@@ -286,8 +286,15 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
       {/* Loading / Error / No data */}
       {loading && <div className="text-center py-8 text-gray-300">Loading...</div>}
       {error && <div className="text-red-600 text-center py-2">{error}</div>}
-      {!loading && !error && data.length === 0 && !hasFetched && <div className="text-center py-8 text-gray-300">Select data</div>}
-      {!loading && !error && data.length === 0 && hasFetched && <div className="text-center py-8 text-gray-300">No data found.</div>}
+      {!loading && !error && data.length === 0 && (
+        <div>
+          {(!hasFetched && (!initialData || initialData.length === 0)) ? (
+            <div className="text-center py-8 text-gray-300">Select data</div>
+          ) : (
+            <div className="text-center py-8 text-gray-300">No data found.</div>
+          )}
+        </div>
+      )}
 
       {/* Table */}
       {!loading && data.length > 0 && renderTable(currentPlayers, start)}
