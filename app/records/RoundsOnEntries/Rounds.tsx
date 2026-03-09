@@ -95,7 +95,7 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
         <thead>
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Player</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Reaches</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Entries</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Percentage</th>
@@ -108,8 +108,8 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
             return (
               <tr key={p.id} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{rank}</td>
-                <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
-                  <div className="flex items-center gap-2">
+                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
+                  <div className="flex items-center justify-center gap-2">
                     {p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" />}
                     <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.id), 'matches')} className="text-indigo-300 hover:underline">
                       {p.name}

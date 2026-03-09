@@ -88,7 +88,7 @@ export default function RecordsFilteredClient({ record, sub, filters = {}, canon
   return (
     <section className="bg-gray-800/40 rounded-2xl p-4 shadow-lg">
       {data && data.length > 0 ? (
-        <table className="w-full table-auto text-left text-sm">
+        <table className="w-full table-auto text-center text-sm">
           <thead>
             <tr className="text-gray-300">
               {Object.keys(data[0]).map((k) => (

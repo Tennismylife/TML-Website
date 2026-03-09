@@ -81,14 +81,14 @@ export default function TimespanSection({ selectedSurfaces, selectedLevels, sele
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr className="border-b">
-            <th className="py-1 text-left">Player 1</th>
-            <th className="py-1 text-left">Player 2</th>
-            <th className="py-1 text-left">First Match</th>
-            <th className="py-1 text-left">First Tournament</th>
-            <th className="py-1 text-left">Last Match</th>
-            <th className="py-1 text-left">Last Tournament</th>
-            <th className="py-1 text-left">Timespan (Days)</th>
-            <th className="py-1 text-left">Matches</th>
+            <th className="py-1 text-center">Player 1</th>
+            <th className="py-1 text-center">Player 2</th>
+            <th className="py-1 text-center">First Match</th>
+            <th className="py-1 text-center">First Tournament</th>
+            <th className="py-1 text-center">Last Match</th>
+            <th className="py-1 text-center">Last Tournament</th>
+            <th className="py-1 text-center">Timespan (Days)</th>
+            <th className="py-1 text-center">Matches</th>
           </tr>
         </thead>
         <tbody>

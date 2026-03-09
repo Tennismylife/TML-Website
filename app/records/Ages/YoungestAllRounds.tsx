@@ -159,9 +159,9 @@ export default function YoungestAllRounds({ selectedSurfaces, selectedLevels, fe
             <table className="min-w-full border-collapse text-sm text-gray-200">
               <thead>
                 <tr className="bg-gray-800 text-gray-100">
-                  <th className="border border-gray-700 px-4 py-2 text-left">Player</th>
+                  <th className="border border-gray-700 px-4 py-2 text-center">Player</th>
                   <th className="border border-gray-700 px-4 py-2 text-center">Age</th>
-                  <th className="border border-gray-700 px-4 py-2 text-left">Tournament</th>
+                  <th className="border border-gray-700 px-4 py-2 text-center">Tournament</th>
                 </tr>
               </thead>
               <tbody>
@@ -170,7 +170,7 @@ export default function YoungestAllRounds({ selectedSurfaces, selectedLevels, fe
                   return (
                     <tr key={`${p.id}-${p.tourney_id}-${idx}`} className="hover:bg-gray-800">
                       <td className="border border-gray-700 px-4 py-2">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center justify-center gap-2">
                           <Flag ioc={p.ioc} className="w-4 h-3" />
                           <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.id), 'matches')} className="text-blue-400 hover:underline">
                             {p.name}

@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from "next/link";
 import Flag from '@/components/Flag';
 import { getPlayerHrefWithTab } from "@/lib/utils";
 import { playerMatchesUrl } from '../nav';
-import { useSearchParams } from "next/navigation";
 import Pagination from "../../../components/Pagination";
 import Modal from "@/components/Modal";
 import { playerUrl } from "../nav";
@@ -26,15 +26,18 @@ interface WinsProps {
   selectedLevels?: Set<string>;
   selectedRounds?: string;
   selectedBestOf?: number | null;
+  selectedTopN?: number | null;
 }
 
-export default function Wins({ topWinners, fetchEnabled, description, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf }: WinsProps) {
+export default function Wins({ topWinners, fetchEnabled, description, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, selectedTopN: initialTopN }: WinsProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [allWinners, setAllWinners] = useState<Winner[]>(topWinners || []);
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!(topWinners && topWinners.length > 0));
   const [showModal, setShowModal] = useState(false);
-  const searchParams = useSearchParams();
-  const perPage = 20;
+  const [selectedTopN, setSelectedTopN] = useState<number | null>(initialTopN ?? null);
+  const perPage = 20;    
 
   useEffect(() => {
     const handler = (e: Event) => { if ((e as CustomEvent)?.detail?.resetPage) setPage(1); };
@@ -43,7 +46,7 @@ export default function Wins({ topWinners, fetchEnabled, description, selectedSu
   }, []);
 
   // Reset page when filters change
-  useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
+  useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, selectedTopN]);
 
   // Always fetch from client when filters change (same pattern as OldestMainDraw)
   useEffect(() => {
@@ -56,6 +59,7 @@ export default function Wins({ topWinners, fetchEnabled, description, selectedSu
         if (selectedLevels) selectedLevels.forEach(l => params.append('level', l));
         if (selectedRounds) params.set('round', selectedRounds);
         if (selectedBestOf != null) params.set('bestOf', String(selectedBestOf));
+        if (selectedTopN != null) params.set('top', String(selectedTopN));
         params.set('perPage', showModal ? '1000' : '100');
         params.delete('page');
 
@@ -71,21 +75,22 @@ export default function Wins({ topWinners, fetchEnabled, description, selectedSu
     };
     fetchWinners();
     return () => controller.abort();
-  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, showModal]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, selectedTopN, showModal]);
 
   if (loading)
     return <div className="text-center py-8 text-gray-300">Loading...</div>;
-  if (!allWinners.length)
-    return <div className="text-center py-8 text-gray-300">No data available.</div>;
+  if (!allWinners.length) {
+    const msg = selectedTopN != null
+      ? `No career wins against top ${selectedTopN} opponents.`
+      : 'No data available.';
+    return <div className="text-center py-8 text-gray-300">{msg}</div>;
+  }
 
   const totalCount = allWinners.length;
   const totalPages = Math.ceil(totalCount / perPage);
   const start = (page - 1) * perPage;
   const end = start + perPage;
   const winners = allWinners.slice(start, end);
-
-  // Generate player link with filters
-
 
   // Render table of winners
   const renderTable = (winnersList: Winner[], startIndex = 0) => (
@@ -94,7 +99,7 @@ export default function Wins({ topWinners, fetchEnabled, description, selectedSu
         <thead>
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Player</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Wins</th>
           </tr>
         </thead>
@@ -105,8 +110,8 @@ export default function Wins({ topWinners, fetchEnabled, description, selectedSu
             return (
               <tr key={p.id} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
-                <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
-                  <div className="flex items-center gap-2">
+                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
+                  <div className="flex items-center justify-center gap-2">
                     <Flag ioc={p.ioc} className="w-4 h-3" />
                     <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.id), 'matches')} className="text-indigo-300 hover:underline">
                       {p.name}
@@ -133,7 +138,32 @@ export default function Wins({ topWinners, fetchEnabled, description, selectedSu
           {description}
         </h2>
       )}
-      <div className="flex justify-end mb-0">
+      <div className="flex justify-between mb-4">
+        <div className="flex items-center justify-center gap-2">
+          <label htmlFor="topn" className="text-gray-300">Wins against Top X:</label>
+          <select
+            id="topn"
+            className="bg-gray-800 text-white rounded px-2 py-1"
+            value={selectedTopN ?? ''}
+            onChange={(e) => {
+              const v = e.target.value;
+              const n = v === '' ? null : Number(v);
+              setSelectedTopN(n);
+              // sync URL
+              const newParams = new URLSearchParams(searchParams?.toString() ?? '');
+              if (n === null) newParams.delete('top');
+              else newParams.set('top', String(n));
+              router.replace(`${window.location.pathname}?${newParams.toString()}`);
+            }}
+          >
+            <option value="">All opponents</option>
+            <option value="10">Top 10</option>
+            <option value="5">Top 5</option>
+            <option value="3">Top 3</option>
+            <option value="2">Top 2</option>
+            <option value="1">Top 1</option>
+          </select>
+        </div>
         <button
           onClick={() => setShowModal(true)}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"

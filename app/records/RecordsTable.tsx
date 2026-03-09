@@ -5,7 +5,7 @@ export default function RecordsTable({ data }: { data: RecordRow[] }) {
   if (!data || data.length === 0) return <div className="text-center text-gray-400">No data available</div>;
   const keys = Object.keys(data[0]);
   return (
-    <table className="w-full table-auto text-left text-sm">
+    <table className="w-full table-auto text-center text-sm">
       <thead>
         <tr className="text-gray-300">
           {keys.map(k => (

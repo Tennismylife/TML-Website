@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -92,7 +92,7 @@ const Percentage = ({ selectedSurfaces, selectedLevels, selectedRounds, selected
         <thead>
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">#</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Player</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Wins</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Losses</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Percentage</th>
@@ -106,7 +106,7 @@ const Percentage = ({ selectedSurfaces, selectedLevels, selectedRounds, selected
             return (
               <tr key={`${p.id}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalIdx}</td>
-                <td className="border border-white/10 px-4 py-2 text-lg text-gray-200 flex items-center gap-2">
+                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 flex items-center justify-center gap-2">
                   <Flag ioc={p.ioc} className="w-4 h-3" />
                   <Link href={playerMatchesUrl((p as any).slug ?? String(p.id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="text-gray-200 hover:underline">{p.name}</Link>
                 </td>

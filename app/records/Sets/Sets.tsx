@@ -106,11 +106,11 @@ export default function Sets({ selectedSurfaces, selectedLevels, selectedRounds,
     <table className="w-full text-sm border-collapse">
       <thead>
         <tr className="border-b">
-          <th className="text-left py-1">Player</th>
-          <th className="text-left py-1">Wins</th>
-          <th className="text-left py-1">Losses</th>
-          <th className="text-left py-1">Total Matches</th>
-          <th className="text-left py-1">Win %</th>
+          <th className="text-center py-1">Player</th>
+          <th className="text-center py-1">Wins</th>
+          <th className="text-center py-1">Losses</th>
+          <th className="text-center py-1">Total Matches</th>
+          <th className="text-center py-1">Win %</th>
         </tr>
       </thead>
       <tbody>

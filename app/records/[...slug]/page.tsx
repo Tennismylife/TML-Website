@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Metadata } from 'next';
 import { metadataBase } from '../../../lib/site';
 import { generateRecordDescription } from '../../../lib/generateRecordDescription';
@@ -15,7 +15,6 @@ import TimespanServer from '../Timespan/Timespan.server';
 import SeasonsServer from '../Seasons/Seasons.server';
 import SameServer from '../Same/Same.server';
 import RoundsOnEntriesServer from '../RoundsOnEntries/RoundsOnEntries.server';
-import SetsServer from '../Sets/Sets.server';
 import WinsServer from '../Wins/Wins.server';
 import TitlesServer from '../Titles/Titles.server';
 import CounterSeasonsServer from '../CounterSeasons/CounterSeasons.server';
@@ -176,6 +175,12 @@ export async function generateMetadata(
   const selectedRounds = typeof sp.round === 'string' ? sp.round : '';
   const selectedBestOf = sp.bestOf ? Number(sp.bestOf) : null;
 
+  const topParam = (() => {
+    const v = sp.top;
+    const parsed = v !== undefined ? Number(Array.isArray(v) ? v[0] : v) : undefined;
+    return Number.isFinite(parsed) ? parsed : undefined;
+  })();
+
   const activeSubTabsDefault: Record<string,string> = {
     ages: 'oldest',
     timespan: 'entries',
@@ -209,7 +214,7 @@ export async function generateMetadata(
     selectedLevels,
     selectedRounds,
     selectedBestOf,
-    { n: nParam }
+    { n: nParam, top: topParam }
   );
 
   const canonicalPath = record
@@ -217,7 +222,7 @@ export async function generateMetadata(
     : '/records';
 
   const canonicalParams: Record<string, any> = {};
-  ['surface','level','round','bestOf'].forEach(k => {
+  ['surface','level','round','bestOf','top'].forEach(k => {
     const v = sp[k] ?? sp[`${k}[]`];
     if (v !== undefined) canonicalParams[k] = v;
   });
@@ -296,7 +301,7 @@ export default async function SlugPage({ params, searchParams }: Props) {
 
           <section className="bg-gray-800/40 rounded-2xl p-4 shadow-lg">
             {data && data.length > 0 ? (
-              <table className="w-full table-auto text-left text-sm">
+              <table className="w-full table-auto text-center text-sm">
                 <thead>
                   <tr className="text-gray-300">
                     {Object.keys(data[0]).map(k => (
@@ -332,7 +337,6 @@ export default async function SlugPage({ params, searchParams }: Props) {
     seasons: SeasonsServer,
     same: SameServer,
     roundsonentries: RoundsOnEntriesServer,
-    sets: SetsServer,
     wins: WinsServer,
     titles: TitlesServer,
     counterseasons: CounterSeasonsServer,
@@ -365,6 +369,12 @@ export default async function SlugPage({ params, searchParams }: Props) {
       return Number.isFinite(parsed) ? parsed : undefined;
     })();
 
+    const topParam = (() => {
+      const v = sp.top;
+      const parsed = v !== undefined ? Number(Array.isArray(v) ? v[0] : v) : undefined;
+      return Number.isFinite(parsed) ? parsed : undefined;
+    })();
+
     const description = generateRecordDescription(
       record,
       { ...activeSubTabsDefault, [record || '']: activeSubResolved || activeSubTabsDefault[record || ''] },
@@ -372,7 +382,7 @@ export default async function SlugPage({ params, searchParams }: Props) {
       selectedLevels,
       selectedRoundsForDesc,
       selectedBestOf,
-      { n: nParam }
+      { n: nParam, top: topParam }
     );
 
     const canonicalUrl = resolveUrl(`/records/${record}${sub ? `/${sub}` : ''}`);

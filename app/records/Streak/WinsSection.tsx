@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
@@ -159,7 +159,7 @@ export default function WinsSection({
         <thead>
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Player</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Wins</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Matches</th>
           </tr>
@@ -176,8 +176,8 @@ export default function WinsSection({
               return (
                 <tr key={`${s.player_id}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
                   <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
-                  <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
-                    <div className="flex items-center gap-2">
+                  <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
+                    <div className="flex items-center justify-center gap-2">
                       <Flag ioc={s.player_ioc ?? undefined} className="w-4 h-3 inline-block" />
                       <Link href={playerMatchesUrl((s as any).slug ?? String(s.player_id), linkParams as any)} className="text-indigo-300 hover:underline">
                         {s.player_name || `Player ${s.player_id}`}
@@ -246,9 +246,9 @@ export default function WinsSection({
               <thead>
                 <tr className="bg-black">
                   <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Date</th>
-                  <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Tournament</th>
-                  <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Round</th>
-                  <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Opponent</th>
+                  <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Tournament</th>
+                  <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Round</th>
+                  <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Opponent</th>
                   <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Score</th>
                 </tr>
               </thead>
@@ -259,7 +259,7 @@ export default function WinsSection({
                       <td className="border border-white/10 px-4 py-2 text-center text-gray-200">{m.tourney_date}</td>
                       <td className="border border-white/10 px-4 py-2 text-gray-200">{m.tourney_name}</td>
                       <td className="border border-white/10 px-4 py-2 text-gray-200">{m.round}</td>
-                      <td className="border border-white/10 px-4 py-2 text-gray-200 flex items-center gap-2">
+                      <td className="border border-white/10 px-4 py-2 text-gray-200 flex items-center justify-center gap-2">
                         <Flag ioc={m.loser_ioc ?? undefined} className="w-4 h-3 inline-block" />
                         {m.opponent_name}
                       </td>

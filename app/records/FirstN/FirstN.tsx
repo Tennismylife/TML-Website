@@ -119,9 +119,9 @@ export default function FirstN({ selectedSurfaces, selectedLevels, selectedRound
       <table className="w-full text-sm border-collapse">
         <thead>
           <tr className="border-b">
-            <th className="text-left py-1">Player</th>
-            <th className="text-left py-1">Wins in First {n}</th>
-            <th className="text-left py-1">Win Percentage</th>
+            <th className="text-center py-1">Player</th>
+            <th className="text-center py-1">Wins in First {n}</th>
+            <th className="text-center py-1">Win Percentage</th>
           </tr>
         </thead>
         <tbody>

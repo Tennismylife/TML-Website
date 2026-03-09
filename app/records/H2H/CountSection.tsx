@@ -118,9 +118,9 @@ export default function CountSection({
         <thead>
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player 1</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Player 1</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Wins</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player 2</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Player 2</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Wins</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Total H2H</th>
           </tr>
@@ -139,8 +139,8 @@ export default function CountSection({
               return (
                 <tr key={`${p.player_1.id}-${p.player_2.id}-${idx}`} className="border-b border-white/10 hover:bg-gray-800">
                   <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
-                  <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
-                    <div className="flex items-center gap-2">
+                  <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
+                    <div className="flex items-center justify-center gap-2">
                       <Flag ioc={p.player_1.ioc} className="w-4 h-3" />
                       <Link href={playerMatchesUrl((p.player_1 as any).slug ?? String(p.player_1.id), linkParams as any)} className="text-indigo-300 hover:underline">
                         {p.player_1.name}
@@ -148,8 +148,8 @@ export default function CountSection({
                     </div>
                   </td>
                   <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.wins_player1}</td>
-                  <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
-                    <div className="flex items-center gap-2">
+                  <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
+                    <div className="flex items-center justify-center gap-2">
                       <Flag ioc={p.player_2.ioc} className="w-4 h-3" />
                       <Link href={playerMatchesUrl((p.player_2 as any).slug ?? String(p.player_2.id), linkParams as any)} className="text-indigo-300 hover:underline">
                         {p.player_2.name}

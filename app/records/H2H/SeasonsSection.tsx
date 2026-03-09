@@ -87,10 +87,10 @@ export default function SeasonsSection({
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr className="border-b">
-            <th className="py-1 text-left">Player 1</th>
-            <th className="py-1 text-left">Player 2</th>
-            <th className="py-1 text-left">Year</th>
-            <th className="py-1 text-left">Matches</th>
+            <th className="py-1 text-center">Player 1</th>
+            <th className="py-1 text-center">Player 2</th>
+            <th className="py-1 text-center">Year</th>
+            <th className="py-1 text-center">Matches</th>
           </tr>
         </thead>
         <tbody>

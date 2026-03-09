@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
@@ -100,7 +100,7 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
         <thead>
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Player</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Reaches</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Year</th>
           </tr>
@@ -111,7 +111,7 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
             return (
               <tr key={`${p.player_id}-${p.year}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-400 font-semibold">{rank}</td>
-                <td className="border border-white/10 px-4 py-2 flex items-center gap-2 text-lg text-gray-200">
+                <td className="border border-white/10 px-4 py-2 flex items-center justify-center gap-2 text-lg text-gray-200">
                   <Flag ioc={p.ioc ?? undefined} className="w-4 h-3" />
                   <Link href={playerMatchesUrl((p as any).slug ?? String(p.player_id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="hover:underline">{p.player_name}</Link>
                 </td>

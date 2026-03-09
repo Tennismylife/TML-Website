@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -7,6 +7,12 @@ import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
 import { playerMatchesUrl } from "../nav";
+
+function formatDays(days: number): string {
+  const years = Math.floor(days / 365);
+  const rem = days % 365;
+  return years > 0 ? `${years}y ${rem}d` : `${rem}d`;
+}
 
 interface TitlesProps {
   selectedSurfaces: Set<string> | string[];
@@ -104,10 +110,10 @@ export default function Titles({
         <thead>
           <tr className="bg-gray-800">
             <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">#</th>
-            <th className="border border-gray-800 px-4 py-2 text-left text-lg text-gray-300">Player</th>
-            <th className="border border-gray-800 px-4 py-2 text-left text-lg text-gray-300">First Tournament</th>
+            <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">Player</th>
+            <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">First Tournament</th>
             <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">First Date</th>
-            <th className="border border-gray-800 px-4 py-2 text-left text-lg text-gray-300">Last Tournament</th>
+            <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">Last Tournament</th>
             <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">Last Date</th>
             <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">Timespan</th>
           </tr>
@@ -118,15 +124,15 @@ export default function Titles({
             return (
               <tr key={`${p.id}-${idx}`} className="hover:bg-gray-800 border-b border-gray-800">
                 <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300 font-medium">{globalIdx}</td>
-                <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200 flex items-center gap-2">
+                <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-200 flex items-center justify-center gap-2">
                   <Flag ioc={p.ioc} className="w-4 h-3" />
                   <Link href={playerMatchesUrl((p as any).slug ?? String(p.id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="text-gray-300 hover:underline">{p.name}</Link>
                 </td>
-                <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200">{p.firstTourney}</td>
+                <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-200">{p.firstTourney}</td>
                 <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">{p.firstDate}</td>
-                <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200">{p.lastTourney}</td>
+                <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-200">{p.lastTourney}</td>
                 <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">{p.lastDate}</td>
-                <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300 font-medium">{p.spanDays}</td>
+                <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300 font-medium">{p.spanDays}d <span className="text-base font-normal" style={{color:'#facc15'}}>({formatDays(p.spanDays)})</span></td>
               </tr>
             );
           })}

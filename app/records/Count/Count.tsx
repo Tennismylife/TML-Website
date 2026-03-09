@@ -90,7 +90,7 @@ export default function Count({ selectedRounds, selectedSurfaces, selectedLevels
         <thead>
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Player</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Appearances</th>
           </tr>
         </thead>
@@ -101,8 +101,8 @@ export default function Count({ selectedRounds, selectedSurfaces, selectedLevels
             return (
               <tr key={p.id} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
-                <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
-                  <div className="flex items-center gap-2">
+                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
+                  <div className="flex items-center justify-center gap-2">
                     <Flag ioc={p.ioc} className="w-4 h-3 inline-block" />
                     <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.id), 'matches')} className="text-indigo-300 hover:underline">
                       {p.name}

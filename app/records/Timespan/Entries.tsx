@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -9,6 +9,12 @@ import { playerMatchesUrl } from "../nav";
 import { useSearchParams } from 'next/navigation';
 import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
+
+function formatDays(days: number): string {
+  const years = Math.floor(days / 365);
+  const rem = days % 365;
+  return years > 0 ? `${years}y ${rem}d` : `${rem}d`;
+}
 
 interface TimespanEntry {
   player_id: string;
@@ -92,10 +98,10 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
         <thead>
           <tr className="bg-gray-800">
             <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">#</th>
-            <th className="border border-gray-800 px-4 py-2 text-left text-lg text-gray-300">Player</th>
-            <th className="border border-gray-800 px-4 py-2 text-left text-lg text-gray-300">First Tournament</th>
+            <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">Player</th>
+            <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">First Tournament</th>
             <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">First Date</th>
-            <th className="border border-gray-800 px-4 py-2 text-left text-lg text-gray-300">Last Tournament</th>
+            <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">Last Tournament</th>
             <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">Last Date</th>
             <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">Timespan</th>
           </tr>
@@ -110,17 +116,17 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
                 {tsIdx === 0 && (
                   <>
                     <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300 font-medium" rowSpan={timespans.length}>{globalRank}</td>
-                    <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200 flex items-center gap-2 font-medium" rowSpan={timespans.length}>
+                    <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-200 flex items-center justify-center gap-2 font-medium" rowSpan={timespans.length}>
                       <Flag ioc={entry.ioc ?? undefined} className="w-4 h-3 inline-block" />
                       <Link href={playerMatchesUrl((entry as any).slug ?? String(entry.player_id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="text-gray-300 hover:underline">{entry.player_name}</Link>
                     </td>
                   </>
                 )}
-                <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200">{ts.first_tourney_name}</td>
+                <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-200">{ts.first_tourney_name}</td>
                 <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-200">{formatDate(ts.first_tourney_date)}</td>
-                <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200">{ts.last_tourney_name}</td>
+                <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-200">{ts.last_tourney_name}</td>
                 <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-200">{formatDate(ts.last_tourney_date)}</td>
-                <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300 font-medium">{ts.days_between}</td>
+                <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300 font-medium">{ts.days_between}d <span className="text-base font-normal" style={{color:'#facc15'}}>({formatDays(ts.days_between)})</span></td>
               </tr>
             ));
           })}

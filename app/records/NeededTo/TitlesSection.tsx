@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
@@ -163,7 +163,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
         <thead>
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Player</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Title N</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Tournaments Played</th>
           </tr>
@@ -174,7 +174,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
             return (
               <tr key={p.player_id} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
-                <td className="border border-white/10 px-4 py-2 flex items-center gap-2 text-lg text-gray-200">
+                <td className="border border-white/10 px-4 py-2 flex items-center justify-center gap-2 text-lg text-gray-200">
                   {p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" />}
                   <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.player_id), 'matches')} className="text-indigo-300 hover:underline">{p.player_name}</Link>
                 </td>

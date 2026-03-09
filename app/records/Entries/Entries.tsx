@@ -75,7 +75,7 @@ export default function Entries({ fetchEnabled, description, topEntries, selecte
         <thead>
           <tr className="bg-gray-800">
             <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">Rank</th>
-            <th className="border border-gray-800 px-4 py-2 text-left text-lg text-gray-300">Player</th>
+            <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">Player</th>
             <th className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300">Entries</th>
           </tr>
         </thead>
@@ -86,8 +86,8 @@ export default function Entries({ fetchEnabled, description, topEntries, selecte
             return (
               <tr key={p.id} className="hover:bg-gray-800 border-b border-gray-800">
                 <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
-                <td className="border border-gray-800 px-4 py-2 text-lg text-gray-200">
-                  <div className="flex items-center gap-2">
+                <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-200">
+                  <div className="flex items-center justify-center gap-2">
                     {p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" />}
                     <Link href={playerMatchesUrl(p.slug ?? String(p.id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="text-indigo-300 hover:underline">{p.name}</Link>
                   </div>

@@ -22,6 +22,10 @@ export default async function WinsServer({ searchParams, ...serverProps }: { sea
     const v = getFirst('bestOf')
     return v ? Number(v) : null
   })()
+  const selectedTopN = (() => {
+    const v = getFirst('top');
+    return v ? Number(v) : null;
+  })()
   const activeSubTab = serverProps.sub ?? getFirst('subtab') ?? undefined
 
   const prefetchEnabled = isRecordsSsrPrefetchEnabled()
@@ -31,6 +35,7 @@ export default async function WinsServer({ searchParams, ...serverProps }: { sea
   for (const l of Array.from(selectedLevels)) params.append('level', l)
   if (selectedRounds) params.set('round', selectedRounds)
   if (selectedBestOf) params.set('bestOf', String(selectedBestOf))
+  if (selectedTopN) params.set('top', String(selectedTopN))
   // propagate `after` boolean if provided in URL
   const afterParam = getFirst('after');
   if (afterParam) {
@@ -67,7 +72,7 @@ export default async function WinsServer({ searchParams, ...serverProps }: { sea
     <ServerWrapper
       Component={Wins}
       searchParams={sp}
-      serverProps={{ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeSubTab, fetchEnabled, topWinners, ...(serverProps as any) } as any}
+      serverProps={{ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, selectedTopN, activeSubTab, fetchEnabled, topWinners, ...(serverProps as any) } as any}
     />
   )
 }

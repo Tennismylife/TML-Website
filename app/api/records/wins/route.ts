@@ -16,41 +16,66 @@ export async function GET(request: NextRequest) {
       .getAll("bestOf")
       .map(Number)
       .filter((n) => !isNaN(n));
+    const maxLoserRankParam = url.searchParams.get("top");
+    const maxLoserRank = maxLoserRankParam ? Number(maxLoserRankParam) : null;
 
     const hasFilters =
       selectedSurfaces.length ||
       selectedLevels.length ||
       selectedRounds.length ||
-      selectedBestOf.length;
+      selectedBestOf.length ||
+      maxLoserRank !== null;
 
     let topWinners: Array<{ id: any; name: string; ioc?: string | null; wins: number; slug?: string | null }> = [];
     let totalCount = 0;
 
     if (hasFilters) {
-      const filters: any = {
-        status: true,
-        ...(selectedSurfaces.length ? { surface: { in: selectedSurfaces } } : {}),
-        ...(selectedLevels.length ? { tourney_level: { in: selectedLevels } } : {}),
-        ...(selectedRounds.length ? { round: { in: selectedRounds } } : {}),
-        ...(selectedBestOf.length ? { best_of: { in: selectedBestOf } } : {}),
-      };
+      // Build base WHERE conditions
+      const conditions: string[] = ['m.status = true'];
+      const params: any[] = [];
 
-      const filtered = await prisma.match.groupBy({
-        by: ["winner_id", "winner_name", "winner_ioc"],
-        where: filters,
-        _count: { winner_id: true },   // ✔ CONTEGGIO CORRETTO
-        orderBy: { _count: { winner_id: "desc" } },
-        take: 100,
-      });
+      if (selectedSurfaces.length) {
+        params.push(selectedSurfaces);
+        conditions.push(`m.surface = ANY($${params.length})`);
+      }
+      if (selectedLevels.length) {
+        params.push(selectedLevels);
+        conditions.push(`m.tourney_level = ANY($${params.length})`);
+      }
+      if (selectedRounds.length) {
+        params.push(selectedRounds);
+        conditions.push(`m.round = ANY($${params.length})`);
+      }
+      if (selectedBestOf.length) {
+        params.push(selectedBestOf);
+        conditions.push(`m.best_of = ANY($${params.length})`);
+      }
+      if (maxLoserRank !== null) {
+        // loser_rank is stored as float8 in the DB; cast the literal to avoid
+        // operator type mismatch when Prisma sends $N as int4
+        params.push(maxLoserRank);
+        conditions.push(`m.loser_rank <= $${params.length}::float8`);
+      }
 
-      totalCount = filtered.length;
+      const whereClause = conditions.join(' AND ');
+      const sql = `
+        SELECT m.winner_id, m.winner_name, m.winner_ioc, COUNT(*) AS wins
+        FROM "Match" m
+        WHERE ${whereClause}
+        GROUP BY m.winner_id, m.winner_name, m.winner_ioc
+        ORDER BY wins DESC
+        LIMIT 100
+      `;
 
-      topWinners = filtered.map((w) => ({
+      const rows: any[] = await prisma.$queryRawUnsafe(sql, ...params);
+
+      topWinners = rows.map((w) => ({
         id: w.winner_id,
         name: w.winner_name,
         ioc: w.winner_ioc,
-        wins: w._count.winner_id,     // ✔ CONTEGGIO PRECISO
+        wins: Number(w.wins),
       }));
+      totalCount = topWinners.length;
 
       // Fetch slugs for returned players to provide canonical URLs
       try {

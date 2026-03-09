@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -120,14 +120,14 @@ export default function CountSection({ selectedSurfaces, selectedLevels }: Count
     <table className="w-full text-sm border-collapse">
       <thead>
         <tr className="border-b">
-          <th className="text-left py-1 w-1/2">Player</th>
-          <th className="text-left py-1 w-1/2">{label}</th>
+          <th className="text-center py-1 w-1/2">Player</th>
+          <th className="text-center py-1 w-1/2">{label}</th>
         </tr>
       </thead>
       <tbody>
         {data.map(p => (
           <tr key={p.id} className="border-b">
-            <td className="py-1 flex items-center gap-2 w-1/2">
+            <td className="py-1 flex items-center justify-center gap-2 w-1/2">
               <Flag ioc={p.ioc ?? undefined} className="w-4 h-3 inline-block" />
               <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.id), 'matches')} className="text-blue-700 hover:underline">
                 {p.name}
