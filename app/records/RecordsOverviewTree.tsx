@@ -16,7 +16,6 @@ const treeData: Node[] = [
       { key: 'youngest', label: 'Youngest Main Draw', href: '/records/ages/youngest' },
       { key: 'oldest-winners', label: 'Oldest Title Winners', href: '/records/ages/oldest-winners' },
       { key: 'youngest-winners', label: 'Youngest Title Winners', href: '/records/ages/youngest-winners' },
-      { key: 'allrounds', label: 'All Rounds (Top lists)', href: '/records/ages/allrounds' },
     ],
   },
   {
@@ -79,8 +78,6 @@ const treeData: Node[] = [
     label: 'H2H',
     children: [
       { key: 'count', label: 'Count', href: '/records/h2h/count' },
-      { key: 'seasons', label: 'Seasons', href: '/records/h2h/seasons' },
-      { key: 'same', label: 'Same tournament', href: '/records/h2h/same' },
     ],
   },
   { key: 'streak', label: 'Streak', children: [{ key: 'wins', label: 'Wins', href: '/records/streak/wins' }, { key: 'round', label: 'Round', href: '/records/streak/round' }] },

@@ -62,12 +62,6 @@ export default async function H2HServer({ searchParams, ...serverProps }: { sear
     if (activeSubTab === 'count') {
       prefetchedData.count = await fetchArray(`/api/records/h2h/count${params.toString() ? '?' + params.toString() : ''}`, 'h2h')
     }
-    if (activeSubTab === 'seasons') {
-      prefetchedData.seasons = await fetchArray(`/api/records/h2h/seasons${params.toString() ? '?' + params.toString() : ''}`, 'h2h_season')
-    }
-    if (activeSubTab === 'tournament') {
-      prefetchedData.tournament = await fetchArray(`/api/records/h2h/sametournament${params.toString() ? '?' + params.toString() : ''}`, 'h2h_tourney')
-    }
       if (activeSubTab === 'timespan') {
         prefetchedData.timespan = await fetchArray(`/api/records/h2h/timespan${params.toString() ? '?' + params.toString() : ''}`, 'h2hTimespans')
       }

@@ -3,8 +3,6 @@
 import React from 'react';
 import Modal from '@/components/Modal';
 import CountSection from './CountSection';
-import SeasonsSection from './SeasonsSection';
-import SameTournamentSection from './SameTournamentSection';
 import TimespanSection from './TimespanSection';
 
 interface H2HSectionProps {
@@ -74,20 +72,6 @@ export default function H2HSection({
           parentShowModal={showModal}
         />
       )}
-      {activeSubTab === 'seasons' && (
-        <SeasonsSection
-          {...commonProps}
-          initialData={prefetchedData?.seasons as any[] | undefined}
-          parentShowModal={showModal}
-        />
-      )}
-      {activeSubTab === 'tournament' && (
-        <SameTournamentSection
-          {...commonProps}
-          initialData={prefetchedData?.tournament as any[] | undefined}
-          parentShowModal={showModal}
-        />
-      )}
       {activeSubTab === 'timespan' && (
         <TimespanSection
           {...commonProps}
@@ -102,22 +86,6 @@ export default function H2HSection({
             {...commonProps}
             fetchEnabled
             initialData={prefetchedData?.count as any[] | undefined}
-            parentShowModal
-          />
-        )}
-        {activeSubTab === 'seasons' && (
-          <SeasonsSection
-            {...commonProps}
-            fetchEnabled
-            initialData={prefetchedData?.seasons as any[] | undefined}
-            parentShowModal
-          />
-        )}
-        {activeSubTab === 'tournament' && (
-          <SameTournamentSection
-            {...commonProps}
-            fetchEnabled
-            initialData={prefetchedData?.tournament as any[] | undefined}
             parentShowModal
           />
         )}

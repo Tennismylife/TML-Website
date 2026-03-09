@@ -49,7 +49,10 @@ export default async function AgesServer({ searchParams, ...serverProps }: { sea
     }
   }
 
-  const fetchEnabled = serverProps.fetchEnabled ?? !prefetchEnabled
+  // If SSR prefetch was enabled but returned no data for the active subtab,
+  // fall back to client-side fetch so the table is never left empty.
+  const prefetchSucceeded = Array.isArray(prefetchedData[activeSubTab]) && (prefetchedData[activeSubTab]?.length ?? 0) > 0
+  const fetchEnabled = serverProps.fetchEnabled ?? (!prefetchEnabled || !prefetchSucceeded)
   const fetchRequestId = serverProps.fetchRequestId ?? (fetchEnabled ? String(Date.now()) : null)
 
   return (
