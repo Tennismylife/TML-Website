@@ -427,6 +427,10 @@ export default function MatchesFilterPanel({ playerId, matches, allMatches, disp
   // Notify parent about current filters so UI such as headings can update immediately
   useEffect(() => {
     if (!onFiltersChange) return;
+    // Do NOT fire before the filter panel has been initialized from URL/allMatches.
+    // Without this guard, the panel fires with all-"All" on first render, overwriting
+    // the URL-derived filters in the parent (AllMatches) and causing a spurious reset.
+    if (!initializedRef.current) return;
     const payload: Record<string,string> = {
       year: selectedYear,
       level: tourneyLevelFilter,

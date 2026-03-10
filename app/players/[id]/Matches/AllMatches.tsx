@@ -774,7 +774,11 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
               currentTab={'matches'}
             />
             {/* table may overflow the viewport so all rows remain visible */}
-            {!showAll && (sortedMatches.length >= DEFAULT_INITIAL_COUNT || (initialMatches && initialMatches.length === DEFAULT_INITIAL_COUNT)) && (
+            {/* Show the button when: page not yet in "show all" mode AND either
+                - we have at least DEFAULT_INITIAL_COUNT visible rows (likely more exist), OR
+                - SSR provided exactly a preview slice of DEFAULT_INITIAL_COUNT, OR
+                - filters are active (there may be more pages of filtered results not yet loaded) */}
+            {!showAll && (sortedMatches.length >= DEFAULT_INITIAL_COUNT || (initialMatches && initialMatches.length === DEFAULT_INITIAL_COUNT) || Object.keys(sanitizedFilters).length > 0) && (
               <div className="w-full flex justify-center mt-2">
                 <button
                   className="px-3 py-1 bg-gray-800 border border-gray-700 text-sm text-white rounded hover:bg-gray-700 disabled:opacity-50"

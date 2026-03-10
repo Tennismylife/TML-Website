@@ -205,7 +205,7 @@ export default function MatchTable({
         <ellipse cx="93" cy="68" rx="1.5" ry="2" fill="#444"/>
         <path d="M88 74q2 2 4 0" stroke="#444" strokeWidth="1.5" fill="none"/>
       </svg>
-      <span className="text-amber-400 font-bold text-xl drop-shadow text-center">Nessun match trovato!<br/>Prova a cambiare i filtri o torna più tardi.</span>
+      <span className="text-amber-400 font-bold text-xl drop-shadow text-center">No matches found!<br/>Try changing the filters or check back later.</span>
     </div>
   );
 
