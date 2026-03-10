@@ -285,7 +285,7 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
   // URL contains filters (e.g., ?year=2026 or ?surface=Hard), fetch the filtered matches on the
   // client and replace the displayed `matches` so external links work as expected.
   useEffect(() => {
-    if (!initialMatches) return; // only relevant when SSR provided a slice
+    // RIMOSSO: if (!initialMatches) return; // only relevant when SSR provided a slice
 
     // Prefer the sanitizedFilters (UI state). If none present (race on mount),
     // sniff window.location.search directly to detect external links.
@@ -358,39 +358,7 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
 
   }, [initialMatches, sanitizedFilters, playerId]);
 
-  // Auto-load all matches silently in background right after mount (TennisAbstract-like UX).
-  // The 10 SSR matches remain visible while the full career list is fetched; once ready,
-  // all matches are shown without any user interaction.
-  const autoFetchedRef = useRef(false);
-  useEffect(() => {
-    // Only auto-fetch when SSR provided a preview slice, no filters are active, and we
-    // haven't already fetched or started fetching the full list.
-    if (!initialMatches || autoFetchedRef.current || allMatchesFetched || fetchingAllRef.current) return;
-    const hasFiltersOnMount = typeof window !== 'undefined'
-      ? [...new URLSearchParams(window.location.search).keys()].some(k => k !== 'tab')
-      : false;
-    if (hasFiltersOnMount) return;
-
-    autoFetchedRef.current = true;
-    fetchingAllRef.current = true;
-    const controller = new AbortController();
-    (async () => {
-      try {
-        const res = await fetch(`/api/players/allmatches?id=${playerId}`, { signal: controller.signal, cache: 'no-store' });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data: Match[] = await res.json();
-        setAllMatches(data);
-        setMatches(data);
-        setAllMatchesFetched(true);
-        setShowAll(true);
-      } catch (err: any) {
-        if (!controller.signal.aborted) console.error('[AllMatches] auto background fetch failed', err);
-      } finally {
-        fetchingAllRef.current = false;
-      }
-    })();
-    return () => controller.abort();
-  }, [initialMatches, playerId]); // eslint-disable-line react-hooks/exhaustive-deps
+  // RIMOSSO: auto-fetch di tutti i match in background. Ora il caricamento completo avviene solo su richiesta esplicita (Show All Matches).
 
   // NOTE: endpoint and initial fetch logic have been moved earlier to include optional `limit` support.
   // The active `endpoint` const and its useEffect live higher in this file to allow a `limit` param

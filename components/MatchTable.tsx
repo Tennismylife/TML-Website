@@ -180,8 +180,34 @@ export default function MatchTable({
     return arr;
   }, [matches, sortKey, sortDir]);
 
-  if (loading) return <p className="m-0 p-0 text-gray-400">Loading...</p>;
-  if (!sortedMatches || sortedMatches.length === 0) return <p className="m-0 p-0 text-gray-400">No matches found.</p>;
+  if (loading) return (
+    <div className="flex flex-col items-center justify-center py-10">
+      {/* Tennis ball animation */}
+      <svg className="animate-bounce h-16 w-16 mb-4" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="28" fill="#F7E06E" stroke="#E2C044" strokeWidth="4" />
+        <path d="M16 32c0-8.837 7.163-16 16-16" stroke="#fff" strokeWidth="3" strokeLinecap="round"/>
+        <path d="M48 32c0 8.837-7.163 16-16 16" stroke="#fff" strokeWidth="3" strokeLinecap="round"/>
+      </svg>
+      <span className="text-green-500 font-bold text-xl drop-shadow">Rimbalza la pallina...<br/>Caricamento in corso!</span>
+    </div>
+  );
+  if (!sortedMatches || sortedMatches.length === 0) return (
+    <div className="flex flex-col items-center justify-center py-10">
+      {/* Cartoon tennis court with sad face */}
+      <svg className="h-24 w-36 mb-4" viewBox="0 0 180 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="30" width="160" height="80" rx="12" fill="#4ade80" stroke="#166534" strokeWidth="4"/>
+        <rect x="30" y="50" width="120" height="40" rx="6" fill="#22d3ee" stroke="#0e7490" strokeWidth="3"/>
+        <line x1="90" y1="50" x2="90" y2="90" stroke="#fff" strokeWidth="2"/>
+        <line x1="30" y1="70" x2="150" y2="70" stroke="#fff" strokeWidth="2"/>
+        <circle cx="90" cy="70" r="10" fill="#fbbf24" stroke="#f59e42" strokeWidth="2"/>
+        {/* Sad face on the ball */}
+        <ellipse cx="87" cy="68" rx="1.5" ry="2" fill="#444"/>
+        <ellipse cx="93" cy="68" rx="1.5" ry="2" fill="#444"/>
+        <path d="M88 74q2 2 4 0" stroke="#444" strokeWidth="1.5" fill="none"/>
+      </svg>
+      <span className="text-amber-400 font-bold text-xl drop-shadow text-center">Nessun match trovato!<br/>Prova a cambiare i filtri o torna più tardi.</span>
+    </div>
+  );
 
   const thBase = "first:pl-0 px-1 py-0.5 text-gray-200 text-[10px] text-center whitespace-nowrap sm:first:pl-0 sm:px-2 sm:py-1 sm:text-sm";
   const tdBase = "first:pl-0 px-1 py-0.5 text-[10px] text-center whitespace-nowrap sm:first:pl-0 sm:px-2 sm:py-1 sm:text-sm";
