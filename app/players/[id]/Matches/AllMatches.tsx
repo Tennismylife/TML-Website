@@ -358,13 +358,39 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
 
   }, [initialMatches, sanitizedFilters, playerId]);
 
-  // Background full-fetch removed: to respect the user's request we do NOT fetch the
-  // entire match history automatically on page load. The full list will only be requested
-  // when the user clicks "Show All matches".
-  // (previous background fetch removed to avoid unnecessary network and DB load)
+  // Auto-load all matches silently in background right after mount (TennisAbstract-like UX).
+  // The 10 SSR matches remain visible while the full career list is fetched; once ready,
+  // all matches are shown without any user interaction.
+  const autoFetchedRef = useRef(false);
+  useEffect(() => {
+    // Only auto-fetch when SSR provided a preview slice, no filters are active, and we
+    // haven't already fetched or started fetching the full list.
+    if (!initialMatches || autoFetchedRef.current || allMatchesFetched || fetchingAllRef.current) return;
+    const hasFiltersOnMount = typeof window !== 'undefined'
+      ? [...new URLSearchParams(window.location.search).keys()].some(k => k !== 'tab')
+      : false;
+    if (hasFiltersOnMount) return;
 
-  // Removed: do not fetch the full matches list in the background when SSR provided a limited initial set.
-  // This avoids loading all matches silently on page load; the full set is loaded only when requested.
+    autoFetchedRef.current = true;
+    fetchingAllRef.current = true;
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const res = await fetch(`/api/players/allmatches?id=${playerId}`, { signal: controller.signal, cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data: Match[] = await res.json();
+        setAllMatches(data);
+        setMatches(data);
+        setAllMatchesFetched(true);
+        setShowAll(true);
+      } catch (err: any) {
+        if (!controller.signal.aborted) console.error('[AllMatches] auto background fetch failed', err);
+      } finally {
+        fetchingAllRef.current = false;
+      }
+    })();
+    return () => controller.abort();
+  }, [initialMatches, playerId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // NOTE: endpoint and initial fetch logic have been moved earlier to include optional `limit` support.
   // The active `endpoint` const and its useEffect live higher in this file to allow a `limit` param
@@ -379,10 +405,14 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
 
     // If user requested Show All, ensure we display the full set
     if (showAll) {
+      // If we already have the full list in memory, just restore it without a network roundtrip
+      if (allMatchesFetched && allMatches.length > 0) {
+        setMatches(allMatches);
+        return;
+      }
       const controller = new AbortController();
       (async () => {
         try {
-          // Always refetch the full, unfiltered list when filters are cleared
           const res = await fetch(`/api/players/allmatches?id=${playerId}`, { signal: controller.signal, cache: "no-store" });
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const data: Match[] = await res.json();
@@ -726,7 +756,7 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
 
   return (
     <div className="w-full h-full">
-      <div className="w-full bg-gray-900/80 rounded-md p-0 flex gap-0 min-h-0 overflow-visible">
+      <div className="w-full bg-gray-900/80 rounded-md p-0 flex gap-0 min-h-0 overflow-x-hidden overflow-y-visible">
 
         {/* Filtri: left panel always visible inside unified container */}
         <aside className="flex-shrink-0 overflow-visible p-0 pr-0 w-[160px]" style={{ marginTop: (wlHeight + tableHeaderHeight) ? (wlHeight + tableHeaderHeight + extraOffsetPx) + 'px' : undefined }}>

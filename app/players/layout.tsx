@@ -1,5 +1,9 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import React from 'react';
+
+export const viewport: Viewport = {
+  width: 1100,
+};
 
 export const metadata: Metadata = {
   title: { absolute: 'Players - TennisMyLife' },
