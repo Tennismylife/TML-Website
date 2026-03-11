@@ -331,3 +331,10 @@ code, .prose code {
 /* Make pre container positionable for badges */
 pre.shiki { position: relative; }
 
+/* Badge number text color override */
+.badge-text-black {
+  color: #000 !important;
+  -webkit-text-fill-color: #000 !important;
+  text-shadow: none !important;
+}
+

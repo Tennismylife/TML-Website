@@ -228,26 +228,23 @@ export function calculateStats(matches: Match[], playerId: string): PlayerStats 
     points: [
       { label: "Total Points Played", value: totalPointsPlayed },
       { label: "Total Points Won", value: totalPointsWon },
-      { label: "Total Points Won %", value: fmtPct(totalPointsWonPct * 100) },
-      // Ora con 2 decimali fissi come stringa
       { label: "Points per Game", value: fmtTwoDecimals(pointsPerGame) },
       { label: "Points per Set", value: fmtTwoDecimals(pointsPerSet) },
       { label: "Points per Match", value: fmtTwoDecimals(pointsPerMatch) },
+      { label: "Total Points Won %", value: fmtPct(totalPointsWonPct * 100) },
     ],
     games: [
       { label: "Total Games Played", value: totalGames },
       { label: "Total Games Won", value: myGamesWon },
-      { label: "Games Won %", value: fmtPct(gamesWonPct * 100) },
-      // Ora con 2 decimali fissi come stringa
       { label: "Games per Set", value: fmtTwoDecimals(gamesPerSet) },
       { label: "Games per Match", value: fmtTwoDecimals(gamesPerMatch) },
+      { label: "Games Won %", value: fmtPct(gamesWonPct * 100) },
     ],
     sets: [
       { label: "Sets Played", value: totalSets },
       { label: "Sets Won", value: mySetsWon },
-      { label: "Sets Won %", value: fmtPct(setsWonPct * 100) },
-      // Ora con 2 decimali fissi come stringa
       { label: "Sets per Match", value: fmtTwoDecimals(setsPerMatch) },
+      { label: "Sets Won %", value: fmtPct(setsWonPct * 100) },
     ],
   };
 }

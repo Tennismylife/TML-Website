@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect, useMemo, useState } from "react";
 import type { Match } from "@/types";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import PerformanceFilter from "./StatisticsFilters";
 import { calculateStats } from "./StatisticsCalculator";
 
@@ -11,63 +11,86 @@ interface StatisticsProps {
   playerId: string;
 }
 
-// --- Utility per formattare valori ---
+// --- Utility ---
 function safeFormat(label: string, value?: number) {
   if (value == null || !Number.isFinite(value)) return "-";
   const isPercentage = label.includes("%");
   return isPercentage ? `${value.toFixed(1)}%` : Math.round(value).toString();
 }
 
+function pctColor(v: number): { bar: string; glow: string; text: string } {
+  if (v >= 65) return { bar: "#22c55e", glow: "#22c55e40", text: "#86efac" };
+  if (v >= 45) return { bar: "#eab308", glow: "#eab30840", text: "#fde047" };
+  return { bar: "#ef4444", glow: "#ef444440", text: "#fca5a5" };
+}
+
+function getContrastColor(hex: string) {
+  try {
+    let h = hex.replace("#", "");
+    if (h.length === 3) h = h.split("").map((c) => c + c).join("");
+    const r = parseInt(h.slice(0, 2), 16);
+    const g = parseInt(h.slice(2, 4), 16);
+    const b = parseInt(h.slice(4, 6), 16);
+    return 0.299 * r + 0.587 * g + 0.114 * b > 150 ? "#000" : "#fff";
+  } catch {
+    return "#fff";
+  }
+}
+
 // --- STAT ROW ---
 function StatRow({ label, value }: { label: string; value: number | string }) {
-  let bgColor = "bg-gray-200"; // sfondo default
-  let numericValue: number | null = null;
-  let isPercentage = false;
+  const isPercentage = typeof value === "string" && value.endsWith("%");
+  const numericValue = isPercentage ? parseFloat(value as string) : null;
 
-  if (typeof value === "string" && value.endsWith("%")) {
-    const parsed = parseFloat(value);
-    if (!isNaN(parsed)) {
-      numericValue = parsed;
-      isPercentage = true;
-    }
-  } else if (typeof value === "number") {
-    numericValue = value;
-  }
-
-  if (numericValue !== null) {
-    if (isPercentage) {
-      if (numericValue >= 70) bgColor = "bg-green-200";
-      else if (numericValue >= 50) bgColor = "bg-yellow-200";
-      else bgColor = "bg-red-200";
-    } else {
-      if (numericValue >= 10) bgColor = "bg-green-200";
-      else if (numericValue >= 5) bgColor = "bg-yellow-200";
-      else bgColor = "bg-red-200";
-    }
+  if (isPercentage && numericValue !== null && !isNaN(numericValue)) {
+    const { bar, glow, text } = pctColor(numericValue);
+    return (
+      <li className="py-2">
+        <div className="flex justify-between items-center mb-1.5">
+          <span className="text-lg font-semibold text-gray-300">{label}</span>
+          <span className="text-lg font-extrabold tabular-nums" style={{ color: text }}>{value}</span>
+        </div>
+        <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
+          <div
+            className="h-full rounded-full transition-all duration-700"
+            style={{ width: `${Math.min(numericValue, 100)}%`, background: bar, boxShadow: `0 0 6px ${glow}` }}
+          />
+        </div>
+      </li>
+    );
   }
 
   return (
-    <li className="flex justify-between items-center py-1">
-      <span className="text-gray-700">{label}</span>
-      <span
-        className={`px-2 py-1 rounded-full font-semibold text-sm ${bgColor} badge-text-black`}
-      >
+    <li className="flex justify-between items-center py-2 border-b border-white/5 last:border-0">
+      <span className="text-lg font-semibold text-gray-300">{label}</span>
+      <span className="px-2.5 py-0.5 rounded-full text-lg font-extrabold tabular-nums bg-white/10 text-white border border-white/10">
         {value}
       </span>
     </li>
   );
 }
 
-// --- STATS BLOCK (card uniforme come Performance) ---
+// --- STATS BLOCK ---
 interface StatsBlockProps {
   title: string;
   stats: { label: string; value: number | string }[];
+  accent?: string;
 }
-function StatsBlock({ title, stats }: StatsBlockProps) {
+function StatsBlock({ title, stats, accent = "#60a5fa" }: StatsBlockProps) {
   return (
-    <div className="border rounded p-4">
-      <h3 className="font-bold text-lg mb-3 text-center">{title}</h3>
-      <ul className="space-y-1">
+    <div
+      className="rounded-xl overflow-hidden"
+      style={{ background: "rgba(15,20,35,0.7)", border: "1px solid rgba(255,255,255,0.07)", backdropFilter: "blur(8px)" }}
+    >
+      <div
+        className="px-4 py-2.5"
+        style={{ background: `linear-gradient(90deg, ${accent}22 0%, transparent 100%)`, borderBottom: `1px solid ${accent}33` }}
+      >
+        <h3 className="font-bold text-sm tracking-wide uppercase" style={{ color: accent }}>
+          {title}
+        </h3>
+      </div>
+      <ul className="px-4 py-1">
         {stats.map((s) => (
           <StatRow
             key={s.label}
@@ -80,7 +103,69 @@ function StatsBlock({ title, stats }: StatsBlockProps) {
   );
 }
 
-// --- COMPONENTE PRINCIPALE ---
+// --- SECTION HEADER ---
+function SectionHeader({ title, color }: { title: string; color: string }) {
+  return (
+    <div className="flex items-center gap-3 mb-5">
+      <div className="w-1 h-6 rounded-full flex-shrink-0" style={{ background: color }} />
+      <h3 className="text-base font-extrabold tracking-wider uppercase" style={{ color }}>{title}</h3>
+    </div>
+  );
+}
+
+// --- CHART CARD ---
+function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div
+      className="rounded-xl p-4"
+      style={{ background: "rgba(15,20,35,0.6)", border: "1px solid rgba(255,255,255,0.07)" }}
+    >
+      <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">{title}</p>
+      {children}
+    </div>
+  );
+}
+
+// --- BAR LABELS ---
+const renderBarLabel = (props: any) => {
+  const { x, y, width, height, value, fill } = props;
+  if (!value || height < 18) return null;
+  const display = typeof value === "number" ? Math.round(value).toString() : String(value);
+  return (
+    <text x={x + width / 2} y={y + height / 2} fill="#fff"
+      textAnchor="middle" dominantBaseline="middle" fontSize={13} fontWeight="bold">
+      {display}
+    </text>
+  );
+};
+
+const renderBarLabelPct = (props: any) => {
+  const { x, y, width, height, value } = props;
+  if (!value || height < 18) return null;
+  const display = typeof value === "number" ? `${value.toFixed(1)}%` : String(value);
+  return (
+    <text x={x + width / 2} y={y + height / 2} fill="#fff"
+      textAnchor="middle" dominantBaseline="middle" fontSize={13} fontWeight="bold">
+      {display}
+    </text>
+  );
+};
+
+const tooltipStyle = {
+  contentStyle: {
+    backgroundColor: "rgba(9,14,27,0.97)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: 10,
+    color: "#fff",
+  },
+  itemStyle: { color: "#93c5fd" },
+  labelStyle: { color: "#e2e8f0", fontWeight: 700 },
+  cursor: { fill: "rgba(255,255,255,0.03)" },
+};
+
+const axisTick = { fontSize: 13, fontWeight: 700, fill: "#94a3b8" } as const;
+
+// --- MAIN ---
 export default function Statistics({ playerId }: StatisticsProps) {
   const [matches, setMatches] = useState<Match[]>([]);
   const [filtered, setFiltered] = useState<Match[]>([]);
@@ -108,284 +193,154 @@ export default function Statistics({ playerId }: StatisticsProps) {
 
   const stats = useMemo(() => calculateStats(filtered, playerId), [filtered, playerId]);
 
-  // --- Filtri per i grafici ---
-  const serveAcesDF = stats.serve.filter(s => ["Aces", "Double Faults"].includes(s.label));
-  const servePercentages = stats.serve.filter(s =>
+  const serveAcesDF = stats.serve.filter((s) => ["Aces", "Double Faults"].includes(s.label));
+  const servePercentages = stats.serve.filter((s) =>
     ["1st Serve %", "1st Serve Won %", "Break Points Saved %", "Service Games Won %"].includes(s.label)
   );
-  const retAcesDF = stats.ret.filter(s => ["Aces against", "DF against"].includes(s.label));
-  const retPercentages = stats.ret.filter(s =>
+  const retAcesDF = stats.ret.filter((s) => ["Aces against", "DF against"].includes(s.label));
+  const retPercentages = stats.ret.filter((s) =>
     ["1st Srv. Return Won %", "2nd Srv. Return Won %", "Break Points Won %", "Return Games Won %"].includes(s.label)
   );
 
-  // Add explicit flag to force white text inside certain percent bars (reliable source)
-  // Include both 'serve' and 'ret' percent labels to ensure consistent appearance
-  const whiteLabelSet = new Set([
-    // serve percent labels
-    '1st Serve %',
-    '1st Serve Won %',
-    'Break Points Saved %',
-    'Service Games Won %',
-    // ret percent labels
-    '1st Srv. Return Won %',
-    '2nd Srv. Return Won %',
-    'Break Points Won %',
-    'Return Games Won %'
-  ]);
-
-  // Attach explicit textColor to ensure renderer receives a reliable override
-  const servePercentagesData = servePercentages.map(s => ({
-    ...s,
-    forceWhiteText: whiteLabelSet.has(s.label),
-    textColor: whiteLabelSet.has(s.label) ? '#FFFFFF' : undefined,
-  }));
-  const retPercentagesData = retPercentages.map(s => ({
-    ...s,
-    forceWhiteText: whiteLabelSet.has(s.label),
-    textColor: whiteLabelSet.has(s.label) ? '#FFFFFF' : undefined,
-  }));
-
-  // Axis tick style for chart labels (more prominent)
-  const axisTick = { fontSize: 12, fontWeight: 700, fill: '#FFFFFF' } as const;
-
-  // --- Helper: contrast color from hex ---
-function getContrastColor(hex: string) {
-  try {
-    let h = hex.replace('#', '');
-    if (h.length === 3) h = h.split('').map(c => c + c).join('');
-    const r = parseInt(h.slice(0, 2), 16);
-    const g = parseInt(h.slice(2, 4), 16);
-    const b = parseInt(h.slice(4, 6), 16);
-    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
-    // threshold tuned for good contrast on site palette
-    return luminance > 160 ? '#000000' : '#FFFFFF';
-  } catch (e) {
-    return '#FFFFFF';
-  }
-}
-
-// --- Funzione per stampare valori dentro la barra (factory con colore) ---
-const renderBarLabelForColor = (barFill: string) => (props: any) => {
-  const { x, y, width, height, value } = props;
-
-  // Estrai la label dai vari possibili punti di Recharts (payload, payload.payload, array payload)
-  let labelStr = '';
-  const p = props.payload;
-  if (p) {
-    if (typeof p.label === 'string') labelStr = p.label;
-    else if (p.payload && typeof p.payload.label === 'string') labelStr = p.payload.label;
-    else if (Array.isArray(p) && p[0] && p[0].payload && typeof p[0].payload.label === 'string') labelStr = p[0].payload.label;
-  }
-
-  const showPercent = typeof labelStr === 'string' && labelStr.includes('%');
-
-  let display: string;
-  if (typeof value === 'number') {
-    display = showPercent ? `${value.toFixed(1)}%` : Math.round(value).toString();
-  } else {
-    display = String(value ?? '');
-    if (showPercent && display !== '' && !display.trim().endsWith('%')) display = `${display}%`;
-  }
-
-  const fillColor = getContrastColor(barFill);
+  const serveAcesDFColors = ["#3b82f6", "#ef4444"];
+  const retAcesDFColors = ["#ef4444", "#f59e0b"];
 
   return (
-    <text
-      x={x + width / 2}
-      y={y + height / 2}
-      fill={fillColor}
-      textAnchor="middle"
-      dominantBaseline="middle"
-      fontSize={18}
-      fontWeight="bold"
-    >
-      {display}
-    </text>
-  );
-};
+    <section className="p-4 space-y-8">
+      <PerformanceFilter allMatches={matches} loading={loading} error={error} onFilteredChange={setFiltered} />
 
-// --- Percent-specific label: forza il % sempre (usato nelle chart con dominio 0-100) ---
-const renderBarLabelPercentForColor = (barFill: string) => (props: any) => {
-  const { x, y, width, height, value } = props;
-
-  // Estrai la label per decidere se forzare il colore bianco
-  let labelStr = '';
-  const p = props.payload;
-  if (p) {
-    if (typeof p.label === 'string') labelStr = p.label;
-    else if (p.payload && typeof p.payload.label === 'string') labelStr = p.payload.label;
-    else if (Array.isArray(p) && p[0] && p[0].payload && typeof p[0].payload.label === 'string') labelStr = p[0].payload.label;
-  }
-
-  let display: string;
-  if (typeof value === 'number') {
-    display = `${value.toFixed(1)}%`;
-  } else {
-    display = String(value ?? '');
-    // assicurati ci sia il %
-    if (!display.trim().endsWith('%')) display = `${display}%`;
-  }
-
-  // Etichette che vogliono testo bianco dentro la barra: usa normalizzazione per match preciso
-  const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '');
-  const whiteLabels = [
-    '1st serve%', '1st serve won%', 'break points saved%', 'service games won%',
-    '1st srv return won%', '2nd srv return won%', 'break points won%', 'return games won%'
-  ].map(normalize);
-
-  const labelNorm = normalize(labelStr || '');
-  const wantsWhitePattern = whiteLabels.includes(labelNorm);
-
-  // Prefer explicit flag if present (more reliable), fallback to pattern match
-  let wantsWhiteFinal = wantsWhitePattern;
-  if (p) {
-    if (p.forceWhiteText === true) wantsWhiteFinal = true;
-    else if (Array.isArray(p) && p[0] && p[0].payload && p[0].payload.forceWhiteText === true) wantsWhiteFinal = true;
-  }
-
-  // Also read explicit textColor if provided on the data point
-  let explicitTextColor: string | undefined = undefined;
-  try {
-    if (p && typeof p.textColor === 'string') explicitTextColor = p.textColor;
-    else if (p && p.payload && typeof p.payload.textColor === 'string') explicitTextColor = p.payload.textColor;
-    else if (Array.isArray(p) && p[0] && p[0].payload && typeof p[0].payload.textColor === 'string') explicitTextColor = p[0].payload.textColor;
-  } catch (err) {
-    explicitTextColor = undefined;
-  }
-
-  // Force white for all percent bars to make serve and return identical
-  const fillColor = explicitTextColor ? explicitTextColor : '#FFFFFF';
-
-  // Debug temporaneo: logga condizioni per le label sospette
-  try {
-    if (labelNorm.includes('return') || wantsWhiteFinal || explicitTextColor) {
-      // eslint-disable-next-line no-console
-      console.debug('[BAR-LABEL-DEBUG]', { labelStr, labelNorm, wantsWhitePattern, wantsWhiteFinal, explicitTextColor, p, barFill, value, fillColor });
-    }
-  } catch (err) {
-    // ignore
-  }
-
-  return (
-    <text
-      x={x + width / 2}
-      y={y + height / 2}
-      fill={fillColor}
-      style={{ fill: fillColor }}
-      className={'bar-label bar-label--white'}
-      textAnchor="middle"
-      dominantBaseline="middle"
-      fontSize={18}
-      fontWeight="bold"
-    >
-      {display}
-    </text>
-  );
-};
-
-  return (
-    <section className="p-4">
-      <PerformanceFilter
-        allMatches={matches}
-        loading={loading}
-        error={error}
-        onFilteredChange={setFiltered}
-      />
-
-      {loading && <div className="text-gray-500">Loading...</div>}
-      {error && <div className="text-red-600">{error}</div>}
+      {loading && (
+        <div className="flex items-center justify-center py-16">
+          <div className="animate-spin rounded-full h-9 w-9 border-2 border-blue-400 border-t-transparent" />
+        </div>
+      )}
+      {error && <div className="text-red-400 text-center py-6">{error}</div>}
       {!loading && !error && filtered.length === 0 && (
-        <div className="text-center text-gray-500 mt-6">No matches found.</div>
+        <div className="text-center text-gray-500 py-12">No matches found.</div>
       )}
 
       {!loading && !error && filtered.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* SERVE */}
+        <div className="space-y-10">
+
+          {/* SERVE + RETURN */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+            {/* SERVE */}
+            <div className="space-y-4">
+              <SectionHeader title="Serve Stats" color="#60a5fa" />
+
+              <ChartCard title="Aces & Double Faults">
+                <ResponsiveContainer width="100%" height={210}>
+                  <BarChart data={serveAcesDF} barCategoryGap="40%">
+                    <XAxis dataKey="label" tick={axisTick} axisLine={false} tickLine={false} />
+                    <YAxis tick={axisTick} axisLine={false} tickLine={false} />
+                    <Tooltip {...tooltipStyle} />
+                    <Bar dataKey="value" radius={[6, 6, 0, 0]} label={renderBarLabel}>
+                      {serveAcesDF.map((_, i) => <Cell key={i} fill={serveAcesDFColors[i % 2]} />)}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+                <div className="mt-3 flex gap-4">
+                  {serveAcesDF.map((s, i) => (
+                    <div key={s.label} className="flex-1 rounded-lg px-3 py-2 text-center"
+                      style={{ background: `${serveAcesDFColors[i % 2]}18`, border: `1px solid ${serveAcesDFColors[i % 2]}30` }}>
+                      <div className="text-3xl font-black" style={{ color: serveAcesDFColors[i % 2] }}>
+                        {typeof s.value === "number" ? Math.round(s.value) : s.value}
+                      </div>
+                      <div className="text-base font-bold text-gray-300 mt-0.5">{s.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </ChartCard>
+
+              <ChartCard title="Key Percentages">
+                <ResponsiveContainer width="100%" height={210}>
+                  <BarChart data={servePercentages} barCategoryGap="30%">
+                    <XAxis dataKey="label" tick={axisTick} axisLine={false} tickLine={false} />
+                    <YAxis domain={[0, 100]} tick={axisTick} axisLine={false} tickLine={false} />
+                    <Tooltip {...tooltipStyle} formatter={(v: number) => `${v.toFixed(1)}%`} />
+                    <Bar dataKey="value" radius={[6, 6, 0, 0]} label={renderBarLabelPct}>
+                      {servePercentages.map((s) => {
+                        const v = typeof s.value === "number" ? s.value : parseFloat(s.value as string);
+                        return <Cell key={s.label} fill={pctColor(v).bar} />;
+                      })}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+                <ul className="mt-2">
+                  {servePercentages.map((s) => (
+                    <StatRow key={s.label} label={s.label}
+                      value={typeof s.value === "number" ? safeFormat(s.label, s.value) : s.value} />
+                  ))}
+                </ul>
+              </ChartCard>
+            </div>
+
+            {/* RETURN */}
+            <div className="space-y-4">
+              <SectionHeader title="Return Stats" color="#f87171" />
+
+              <ChartCard title="Aces & Double Faults Against">
+                <ResponsiveContainer width="100%" height={210}>
+                  <BarChart data={retAcesDF} barCategoryGap="40%">
+                    <XAxis dataKey="label" tick={axisTick} axisLine={false} tickLine={false} />
+                    <YAxis tick={axisTick} axisLine={false} tickLine={false} />
+                    <Tooltip {...tooltipStyle} />
+                    <Bar dataKey="value" radius={[6, 6, 0, 0]} label={renderBarLabel}>
+                      {retAcesDF.map((_, i) => <Cell key={i} fill={retAcesDFColors[i % 2]} />)}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+                <div className="mt-3 flex gap-4">
+                  {retAcesDF.map((s, i) => (
+                    <div key={s.label} className="flex-1 rounded-lg px-3 py-2 text-center"
+                      style={{ background: `${retAcesDFColors[i % 2]}18`, border: `1px solid ${retAcesDFColors[i % 2]}30` }}>
+                      <div className="text-3xl font-black" style={{ color: retAcesDFColors[i % 2] }}>
+                        {typeof s.value === "number" ? Math.round(s.value) : s.value}
+                      </div>
+                      <div className="text-base font-bold text-gray-300 mt-0.5">{s.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </ChartCard>
+
+              <ChartCard title="Key Percentages">
+                <ResponsiveContainer width="100%" height={210}>
+                  <BarChart data={retPercentages} barCategoryGap="30%">
+                    <XAxis dataKey="label" tick={axisTick} axisLine={false} tickLine={false} />
+                    <YAxis domain={[0, 100]} tick={axisTick} axisLine={false} tickLine={false} />
+                    <Tooltip {...tooltipStyle} formatter={(v: number) => `${v.toFixed(1)}%`} />
+                    <Bar dataKey="value" radius={[6, 6, 0, 0]} label={renderBarLabelPct}>
+                      {retPercentages.map((s) => {
+                        const v = typeof s.value === "number" ? s.value : parseFloat(s.value as string);
+                        return <Cell key={s.label} fill={pctColor(v).bar} />;
+                      })}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+                <ul className="mt-2">
+                  {retPercentages.map((s) => (
+                    <StatRow key={s.label} label={s.label}
+                      value={typeof s.value === "number" ? safeFormat(s.label, s.value) : s.value} />
+                  ))}
+                </ul>
+              </ChartCard>
+            </div>
+          </div>
+
+          {/* MATCH TOTALS */}
           <div>
-            <h3 className="text-xl font-bold mb-4 text-center">Serve Stats</h3>
-            <div className="mb-6 border rounded p-4">
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={serveAcesDF}>
-                  <XAxis dataKey="label" tick={axisTick} />
-                  <YAxis />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: 'rgba(17,24,39,0.95)', border: '1px solid rgba(255,255,255,0.06)', color: '#FFFFFF' }}
-                    itemStyle={{ color: '#FFFFFF' }}
-                    labelStyle={{ color: '#FFFFFF' }}
-                    cursor={{ fill: 'rgba(255,255,255,0.04)' }}
-                  />
-                  <Bar dataKey="value" fill="#1D4ED8" label={renderBarLabelForColor("#1D4ED8")} />
-                </BarChart>
-              </ResponsiveContainer>
-              <StatsBlock title="Aces and Double Faults" stats={serveAcesDF} />
-            </div>
-
-            <div className="border rounded p-4">
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={servePercentagesData}>
-                  <XAxis dataKey="label" tick={axisTick} />
-                  <YAxis domain={[0, 100]} />
-                  <Tooltip
-                    formatter={(v: number) => `${v.toFixed(1)}%`}
-                    contentStyle={{ backgroundColor: 'rgba(17,24,39,0.95)', border: '1px solid rgba(255,255,255,0.06)', color: '#FFFFFF' }}
-                    itemStyle={{ color: '#FFFFFF' }}
-                    labelStyle={{ color: '#FFFFFF' }}
-                    cursor={{ fill: 'rgba(255,255,255,0.04)' }}
-                  />
-                  <Bar dataKey="value" fill="#60A5FA" label={renderBarLabelPercentForColor("#60A5FA")} />
-                </BarChart>
-              </ResponsiveContainer>
-              <StatsBlock title="Key Percentages" stats={servePercentages} />
+            <SectionHeader title="Match Totals" color="#a78bfa" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <StatsBlock title="Points" stats={stats.points} accent="#818cf8" />
+              <StatsBlock title="Games" stats={stats.games} accent="#34d399" />
+              <StatsBlock title="Sets" stats={stats.sets} accent="#f472b6" />
             </div>
           </div>
 
-          {/* RETURN */}
-          <div>
-            <h3 className="text-xl font-bold mb-4 text-center">Return Stats</h3>
-            <div className="mb-6 border rounded p-4">
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={retAcesDF}>
-                  <XAxis dataKey="label" tick={axisTick} />
-                  <YAxis />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: 'rgba(17,24,39,0.95)', border: '1px solid rgba(255,255,255,0.06)', color: '#FFFFFF' }}
-                    itemStyle={{ color: '#FFFFFF' }}
-                    labelStyle={{ color: '#FFFFFF' }}
-                    cursor={{ fill: 'rgba(255,255,255,0.04)' }}
-                  />
-                  <Bar dataKey="value" fill="#B91C1C" label={renderBarLabelForColor("#B91C1C")} />
-                </BarChart>
-              </ResponsiveContainer>
-              <StatsBlock title="Aces and Double Faults" stats={retAcesDF} />
-            </div>
-
-            <div className="border rounded p-4">
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={retPercentagesData}>
-                  <XAxis dataKey="label" tick={axisTick} />
-                  <YAxis domain={[0, 100]} />
-                  <Tooltip
-                    formatter={(v: number) => `${v.toFixed(1)}%`}
-                    contentStyle={{ backgroundColor: 'rgba(17,24,39,0.95)', border: '1px solid rgba(255,255,255,0.06)', color: '#FFFFFF' }}
-                    itemStyle={{ color: '#FFFFFF' }}
-                    labelStyle={{ color: '#FFFFFF' }}
-                    cursor={{ fill: 'rgba(255,255,255,0.04)' }}
-                  />
-                  <Bar dataKey="value" fill="#FCA5A5" label={renderBarLabelPercentForColor("#FCA5A5")} />
-                </BarChart>
-              </ResponsiveContainer>
-              <StatsBlock title="Key Percentages" stats={retPercentages} />
-            </div>
-          </div>
-
-          {/* POINTS / GAMES / SETS */}
-          <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <StatsBlock title="Points" stats={stats.points} />
-            <StatsBlock title="Games" stats={stats.games} />
-            <StatsBlock title="Sets" stats={stats.sets} />
-          </div>
         </div>
       )}
     </section>
   );
 }
+
