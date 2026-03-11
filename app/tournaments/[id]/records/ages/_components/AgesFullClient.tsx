@@ -170,7 +170,9 @@ export default function AgesFullClient({
         } else if (section === 'titles') {
           const whichYoung = data.youngestWinners ?? data.topYoungestWinners ?? [];
           const whichOld = data.oldestWinners ?? data.topOldestWinners ?? [];
-          if ((initialRows ?? []).length && (initialRows ?? [])[0]?.age && (whichYoung.length >= (initialRows ?? []).length)) {
+          if (which === 'youngest') foundRows = whichYoung;
+          else if (which === 'oldest') foundRows = whichOld;
+          else if ((initialRows ?? []).length && (initialRows ?? [])[0]?.age && (whichYoung.length >= (initialRows ?? []).length)) {
             foundRows = whichYoung;
           } else {
             foundRows = whichOld.length ? whichOld : whichYoung;
