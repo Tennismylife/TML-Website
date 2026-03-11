@@ -6,6 +6,7 @@ import Pagination from "../../../components/Pagination";
 import Modal from "@/components/Modal";
 import Flag from '@/components/Flag';
 import { playerMatchesUrl } from "../nav";
+import { createH2HUrl } from "@/lib/utils";
 
 interface Player {
   id: string;
@@ -123,12 +124,13 @@ export default function CountSection({
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Player 2</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Wins</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Total H2H</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">H2H</th>
           </tr>
         </thead>
         <tbody>
           {data.length === 0 ? (
             <tr>
-              <td colSpan={6} className="py-8 text-center text-gray-300">
+              <td colSpan={7} className="py-8 text-center text-gray-300">
                 {!hasFetched ? "Select data" : "No data found."}
               </td>
             </tr>
@@ -158,6 +160,14 @@ export default function CountSection({
                   </td>
                   <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.wins_player2}</td>
                   <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.total_h2h}</td>
+                  <td className="border border-white/10 px-4 py-2 text-center text-lg">
+                    <Link
+                      href={createH2HUrl(p.player_1.name, p.player_2.name)}
+                      className="text-yellow-400 hover:text-yellow-300 hover:underline font-semibold whitespace-nowrap"
+                    >
+                      {p.player_1.name.split(' ').pop()} vs {p.player_2.name.split(' ').pop()} →
+                    </Link>
+                  </td>
                 </tr>
               );
             })
