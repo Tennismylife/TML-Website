@@ -344,7 +344,7 @@ export default async function H2HPreviewServer({ player1, player2, matches }: Pr
         {/* ── Paragraph 4: H2H surface breakdown ── */}
         {total > 0 && (
         <p>
-          When it comes to their head-to-head meetings, the surface breakdown reveals some interesting contrasts.{' '}
+          When it comes to their head-to-head meetings, the surface breakdown reveals this contrast.{' '}
           {(hardHard.p1 + hardHard.p2) > 0 && (
             <>
               On hard courts they have met <strong className="text-yellow-400">{hardHard.p1 + hardHard.p2}</strong> times,{' '}
