@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   BarChart, Bar, LabelList, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
@@ -25,6 +26,14 @@ const pct = (w: number, l: number) =>
   w + l > 0 ? +((w / (w + l)) * 100).toFixed(1) : null;
 
 export default function H2HPressureRadarChart({ p1Stats, p2Stats, p1Name, p2Name }: Props) {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   const data = [
     { label: "Deciding Set",   p1: pct(p1Stats.winsDecidingSet,     p1Stats.lossesDecidingSet),     p2: pct(p2Stats.winsDecidingSet,     p2Stats.lossesDecidingSet),     p1W: p1Stats.winsDecidingSet,     p1L: p1Stats.lossesDecidingSet,     p2W: p2Stats.winsDecidingSet,     p2L: p2Stats.lossesDecidingSet },
     { label: "5th Set",        p1: pct(p1Stats.winsFifthSet,        p1Stats.lossesFifthSet),        p2: pct(p2Stats.winsFifthSet,        p2Stats.lossesFifthSet),        p1W: p1Stats.winsFifthSet,        p1L: p1Stats.lossesFifthSet,        p2W: p2Stats.winsFifthSet,        p2L: p2Stats.lossesFifthSet },
@@ -37,14 +46,18 @@ export default function H2HPressureRadarChart({ p1Stats, p2Stats, p1Name, p2Name
 
   return (
     <div className="w-full">
-      <ResponsiveContainer width="100%" height={320}>
-        <BarChart data={data} margin={{ top: 40, right: 16, left: 0, bottom: 0 }} barCategoryGap="30%" barGap={3}>
+      <ResponsiveContainer width="100%" height={isMobile ? 340 : 420}>
+        <BarChart data={data} margin={{ top: isMobile ? 22 : 60, right: 16, left: 0, bottom: isMobile ? 56 : 0 }} barCategoryGap="30%" barGap={4}>
           <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} />
           <XAxis
             dataKey="label"
-            tick={{ fill: "#9ca3af", fontSize: 13 }}
+            tick={{ fill: "#9ca3af", fontSize: isMobile ? 10 : 13 }}
             axisLine={false}
             tickLine={false}
+            angle={isMobile ? -40 : 0}
+            textAnchor={isMobile ? "end" : "middle"}
+            interval={0}
+            height={isMobile ? 64 : 30}
           />
           <YAxis
             domain={[0, 100]}
@@ -77,11 +90,18 @@ export default function H2HPressureRadarChart({ p1Stats, p2Stats, p1Name, p2Name
               if (value == null) return null;
               const cx = (x ?? 0) + (width ?? 0) / 2;
               const cy = y ?? 0;
+              if (isMobile) {
+                return (
+                  <text x={cx} y={cy - 3} textAnchor="middle" fill="#60a5fa" fontSize={9} fontWeight={700}>{`${value}%`}</text>
+                );
+              }
+              const wl = entry && entry.p1W + entry.p1L > 0 ? `${entry.p1W}-${entry.p1L}` : null;
               return (
                 <g>
-                  <text x={cx} y={cy - 18} textAnchor="middle" fill="#60a5fa" fontSize={11} fontWeight={700}>{`${value}%`}</text>
-                  {entry && entry.p1W + entry.p1L > 0 && (
-                    <text x={cx} y={cy - 5} textAnchor="middle" fill="#9ca3af" fontSize={12} fontWeight={600}>{`${entry.p1W}-${entry.p1L}`}</text>
+                  <rect x={cx - 22} y={cy - 44} width={44} height={wl ? 38 : 20} rx={3} fill="rgba(17,24,39,0.75)" />
+                  <text x={cx} y={cy - 28} textAnchor="middle" fill="#60a5fa" fontSize={11} fontWeight={700}>{`${value}%`}</text>
+                  {wl && (
+                    <text x={cx} y={cy - 13} textAnchor="middle" fill="#9ca3af" fontSize={10} fontWeight={500}>{wl}</text>
                   )}
                 </g>
               );
@@ -94,11 +114,18 @@ export default function H2HPressureRadarChart({ p1Stats, p2Stats, p1Name, p2Name
               if (value == null) return null;
               const cx = (x ?? 0) + (width ?? 0) / 2;
               const cy = y ?? 0;
+              if (isMobile) {
+                return (
+                  <text x={cx} y={cy - 3} textAnchor="middle" fill="#f87171" fontSize={9} fontWeight={700}>{`${value}%`}</text>
+                );
+              }
+              const wl = entry && entry.p2W + entry.p2L > 0 ? `${entry.p2W}-${entry.p2L}` : null;
               return (
                 <g>
-                  <text x={cx} y={cy - 18} textAnchor="middle" fill="#f87171" fontSize={11} fontWeight={700}>{`${value}%`}</text>
-                  {entry && entry.p2W + entry.p2L > 0 && (
-                    <text x={cx} y={cy - 5} textAnchor="middle" fill="#9ca3af" fontSize={12} fontWeight={600}>{`${entry.p2W}-${entry.p2L}`}</text>
+                  <rect x={cx - 22} y={cy - 44} width={44} height={wl ? 38 : 20} rx={3} fill="rgba(17,24,39,0.75)" />
+                  <text x={cx} y={cy - 28} textAnchor="middle" fill="#f87171" fontSize={11} fontWeight={700}>{`${value}%`}</text>
+                  {wl && (
+                    <text x={cx} y={cy - 13} textAnchor="middle" fill="#9ca3af" fontSize={10} fontWeight={500}>{wl}</text>
                   )}
                 </g>
               );

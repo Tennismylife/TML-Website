@@ -106,7 +106,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.total_entries}</td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-300">
-                  <Link href={`/seasons/${p.year}`} className="hover:underline">{p.year}</Link>
+                  <Link href={`/players/${encodeURIComponent((p as any).slug ?? String(p.id))}/season/${p.year}`} className="hover:underline">{p.year}</Link>
                 </td>
               </tr>
             );

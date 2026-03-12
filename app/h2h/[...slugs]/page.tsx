@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import type { Metadata } from 'next';
 import H2HClient from '../H2HClient';
 import H2HContentClient from '../H2HContentClient';
@@ -213,6 +214,34 @@ export default async function Page({ params, searchParams }: { params?: Promise<
     }
   }
 
+  // Fetch the 5 most recent seasons for each player (crawlable internal links)
+  let seasons1: number[] = [];
+  let seasons2: number[] = [];
+  if (player1 && player2) {
+    try {
+      const [raw1, raw2] = await Promise.all([
+        prisma.match.findMany({
+          where: { OR: [{ winner_id: player1.id }, { loser_id: player1.id }], status: true },
+          select: { year: true },
+          distinct: ['year'],
+          orderBy: { year: 'desc' },
+          take: 5,
+        }),
+        prisma.match.findMany({
+          where: { OR: [{ winner_id: player2.id }, { loser_id: player2.id }], status: true },
+          select: { year: true },
+          distinct: ['year'],
+          orderBy: { year: 'desc' },
+          take: 5,
+        }),
+      ]);
+      seasons1 = raw1.map((r: any) => r.year).filter(Boolean);
+      seasons2 = raw2.map((r: any) => r.year).filter(Boolean);
+    } catch (e) {
+      // best-effort
+    }
+  }
+
   // Build JSON-LD structured data for the page
   const pageTitle = player1 && player2 ? `${player1.atpname} vs ${player2.atpname} H2H - Tennis  Head to Head, Matches, Stats` : 'Head-to-Head - Tennis  Head to Head, Matches, Stats';
   const pageDescription = player1 && player2 ? `${player1.atpname} vs ${player2.atpname} head-to-head: H2H record, match stats and analysis. Compare ATP players.` : 'Head-to-head statistics between players.';
@@ -338,6 +367,38 @@ export default async function Page({ params, searchParams }: { params?: Promise<
       {personJson2 && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJson2) }} />}
 
       <h1 className="page-title text-3xl font-bold mb-8 text-center">{heading}</h1>
+      {player1 && player2 && (seasons1.length > 0 || seasons2.length > 0) && (
+        <div className="container mx-auto px-4 mb-6 flex flex-wrap justify-center gap-8 text-sm">
+          {seasons1.length > 0 && (
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-semibold text-gray-300">{player1.atpname} seasons:</span>
+              {seasons1.map((y) => (
+                <Link
+                  key={y}
+                  href={`/players/${encodeURIComponent(player1.slug ?? String(player1.id))}/season/${y}`}
+                  className="px-2 py-0.5 rounded bg-gray-700 hover:bg-yellow-400 hover:text-black transition-colors"
+                >
+                  {y}
+                </Link>
+              ))}
+            </div>
+          )}
+          {seasons2.length > 0 && (
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-semibold text-gray-300">{player2.atpname} seasons:</span>
+              {seasons2.map((y) => (
+                <Link
+                  key={y}
+                  href={`/players/${encodeURIComponent(player2.slug ?? String(player2.id))}/season/${y}`}
+                  className="px-2 py-0.5 rounded bg-gray-700 hover:bg-yellow-400 hover:text-black transition-colors"
+                >
+                  {y}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
       {player1 && player2 ? (
         <div className="container mx-auto px-4 py-8">
           <H2HContentClient

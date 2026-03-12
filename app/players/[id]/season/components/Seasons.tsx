@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useMemo, useRef } from "react";
+import Link from "next/link";
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import type { Match } from "@/types";
 import { getLevelColors, getLevelFullName, getTourneyHref, getPlayerHref } from "@/lib/utils";
@@ -357,16 +358,17 @@ export default function Seasons({ playerId, playerSlug, playerName, initialYears
             {openDropdown && (
               <ul className="absolute mt-2 w-60 bg-gray-800 text-white rounded-xl shadow-2xl z-50 max-h-72 overflow-auto">
                 {years.map((y) => (
-                  <li
-                    key={y}
-                    className="px-8 py-3 hover:bg-yellow-400 hover:text-black cursor-pointer transition-all duration-200"
-                    onClick={() => {
-                      setSelectedYear(y);
-                      setOpenDropdown(false);
-                      updateUrlYear(y); // <--- update the URL when year is selected
-                    }}
-                  >
-                    {y}
+                  <li key={y}>
+                    <Link
+                      href={`/players/${encodeURIComponent(resolvedPlayerSlug ?? playerSlug ?? playerId)}/season/${y}`}
+                      className="block px-8 py-3 hover:bg-yellow-400 hover:text-black cursor-pointer transition-all duration-200"
+                      onClick={() => {
+                        setSelectedYear(y);
+                        setOpenDropdown(false);
+                      }}
+                    >
+                      {y}
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -376,19 +378,18 @@ export default function Seasons({ playerId, playerSlug, playerName, initialYears
 
         {/* Big button that links to player's matches filtered by the selected year */}
         <div>
-          <button
-            onClick={() => {
-              if (!selectedYear) return;
-              const href = `${getPlayerHref(resolvedPlayerSlug ?? playerSlug ?? playerId)}/matches?year=${selectedYear}`;
-              router.push(href);
-            }}
-            disabled={!selectedYear}
-            className={`${
-              selectedYear ? "bg-blue-600 hover:bg-blue-700 shadow-lg" : "bg-blue-600/50 cursor-not-allowed opacity-60"
-            } text-white font-bold text-2xl py-3 px-8 rounded-full transition-all duration-200`}
-          >
-            View All Matches
-          </button>
+          {selectedYear ? (
+            <Link
+              href={`${getPlayerHref(resolvedPlayerSlug ?? playerSlug ?? playerId)}/matches?year=${selectedYear}`}
+              className="inline-block bg-blue-600 hover:bg-blue-700 shadow-lg text-white font-bold text-2xl py-3 px-8 rounded-full transition-all duration-200"
+            >
+              View All Matches
+            </Link>
+          ) : (
+            <span className="inline-block bg-blue-600/50 cursor-not-allowed opacity-60 text-white font-bold text-2xl py-3 px-8 rounded-full">
+              View All Matches
+            </span>
+          )}
         </div>
       </div>
 

@@ -139,7 +139,7 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{player.Wins}</td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{player.Total}</td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-300">
-                  <Link href={`/seasons/${player.Year}`} className="hover:underline">{player.Year}</Link>
+                  <Link href={`/players/${encodeURIComponent((player as any).slug ?? String(player.PlayerId))}/season/${player.Year}`} className="hover:underline">{player.Year}</Link>
                 </td>
               </tr>
             );
