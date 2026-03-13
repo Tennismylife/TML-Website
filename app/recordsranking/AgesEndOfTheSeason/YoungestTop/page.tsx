@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Flag from '@/components/Flag';
+import Link from 'next/link';
 import React from 'react';
 import RecordsTopControls from '../../Top/RecordsTopControls';
 import ServerPagination from '@/components/ServerPagination';
@@ -11,6 +12,7 @@ interface YoungestEoyTopItem {
   ageDays: number;
   ageLabel: string; // "19y 9m 2d"
   year: number;     // solo anno
+  slug?: string | null;
 }
 
 function diffYMD(birth: Date, ref: Date) {
@@ -74,10 +76,10 @@ export default async function YoungestEoyTop({ searchParams }: { searchParams?: 
 
   const rowsData = await prisma.ranking.findMany({
     where: { rank: { lte: top }, rankingDateId: { in: eoyIds } },
-    select: { playerId: true, player: { select: { atpname: true, ioc: true, birthdate: true } }, rankingDateId: true, rankingDate: { select: { date: true } } },
+    select: { playerId: true, player: { select: { atpname: true, ioc: true, birthdate: true, slug: true } }, rankingDateId: true, rankingDate: { select: { date: true } } },
   });
 
-  const bestByPlayer = new Map<string, { name: string; ioc: string | null; year: number; date: Date; birth: Date; ageDays: number }>();
+  const bestByPlayer = new Map<string, { name: string; ioc: string | null; year: number; date: Date; birth: Date; ageDays: number; slug: string | null }>();
   for (const r of rowsData) {
     const id = String(r.playerId);
     const birth = r.player?.birthdate;
@@ -90,13 +92,13 @@ export default async function YoungestEoyTop({ searchParams }: { searchParams?: 
 
     const prev = bestByPlayer.get(id);
     if (!prev || ageDays < prev.ageDays || (ageDays === prev.ageDays && ref < prev.date)) {
-      bestByPlayer.set(id, { name: r.player?.atpname ?? '', ioc: r.player?.ioc ?? null, year: recYear, date: ref, birth, ageDays });
+      bestByPlayer.set(id, { name: r.player?.atpname ?? '', ioc: r.player?.ioc ?? null, year: recYear, date: ref, birth, ageDays, slug: r.player?.slug ?? null });
     }
   }
 
   const data: YoungestEoyTopItem[] = Array.from(bestByPlayer.entries()).map(([id, v]) => {
     const { y, m, d } = diffYMD(v.birth, v.date);
-    return { id, name: v.name, ioc: v.ioc, ageDays: v.ageDays, ageLabel: `${y}y ${m}m ${d}d`, year: v.year };
+    return { id, name: v.name, ioc: v.ioc, ageDays: v.ageDays, ageLabel: `${y}y ${m}m ${d}d`, year: v.year, slug: v.slug };
   }).sort((a, b) => a.ageDays - b.ageDays).slice(0, limit);
 
   const perPage = 20;
@@ -111,18 +113,18 @@ export default async function YoungestEoyTop({ searchParams }: { searchParams?: 
         <thead>
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Top</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Player</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Age at EOY Top {top}</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Year</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Year</th>
           </tr>
         </thead>
         <tbody>
           {list.map((r, idx) => (
             <tr key={`${r.id}-${r.year}`} className="hover:bg-gray-800 border-b border-white/10">
               <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{startIndex + idx + 1}</td>
-              <td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{r.ioc && <Flag ioc={r.ioc} className="w-4 h-3" />}<span>{r.name}</span></div></td>
+              <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200"><div className="flex items-center justify-center gap-2">{r.ioc && <Flag ioc={r.ioc} className="w-4 h-3" />}{r.slug ? <Link href={`/players/${r.slug}/ranking`} className="hover:underline">{r.name}</Link> : <span>{r.name}</span>}</div></td>
               <td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">{r.ageLabel}</td>
-              <td className="border border-white/10 px-4 py-2 text-gray-300">{r.year}</td>
+              <td className="border border-white/10 px-4 py-2 text-center text-gray-300">{r.year}</td>
             </tr>
           ))}
         </tbody>

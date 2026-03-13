@@ -158,7 +158,7 @@ export default async function SeasonYearPage({ params, searchParams }: any) {
     // ignore DB errors and fall back to zeros
   }
 
-  const pct = (w: number, m: number) => (m ? `${((w / m) * 100).toFixed(1)}%` : 'N/A');
+  const pct = (w: number, m: number) => (m ? `${((w / m) * 100).toFixed(1)}%` : '0%');
   const hardPct = pct(hardWins, hardMatches);
   const clayPct = pct(clayWins, clayMatches);
   const grassPct = pct(grassWins, grassMatches);

@@ -95,18 +95,18 @@ export default async function EoyRankStreaks({ searchParams }: { searchParams?: 
         <thead>
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Player</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Longest Streak at No. {rank}</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Years</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Years</th>
           </tr>
         </thead>
         <tbody>
           {list.map((p, idx) => (
             <tr key={`${p.id}-${idx}`} className="hover:bg-gray-800 border-b border-white/10">
               <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{startIndex + idx + 1}</td>
-              <td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" />}<span>{p.name}</span></div></td>
+              <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200"><div className="flex items-center justify-center gap-2">{p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" />}<span>{p.name}</span></div></td>
               <td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">{p.longestStreak}</td>
-              <td className="border border-white/10 px-4 py-2 text-gray-300">{p.seasons?.length ? p.seasons.join(", ") : "—"}</td>
+              <td className="border border-white/10 px-4 py-2 text-center text-gray-300">{p.seasons?.length ? p.seasons.join(", ") : "—"}</td>
             </tr>
           ))}
         </tbody>

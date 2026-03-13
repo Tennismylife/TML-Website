@@ -133,7 +133,7 @@ async function StreakCountMain({ searchParams, showHeading = true }: { searchPar
         <thead>
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Player</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Weeks</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Start Date</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">End Date</th>
@@ -146,11 +146,11 @@ async function StreakCountMain({ searchParams, showHeading = true }: { searchPar
             return (
               <tr key={`${p.id ?? p.name}-${start + idx}`} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
-                <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
-                  <div className="flex items-center gap-2">
+                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
+                  <div className="flex items-center justify-center gap-2">
                     {flagEl}
                     {p.id ? (
-                      <Link href={getPlayerHrefWithTab(slugMap.get(String(p.id)) ?? String(p.id), 'matches')} className="hover:underline">{p.name}</Link>
+                      <Link href={getPlayerHrefWithTab(slugMap.get(String(p.id)) ?? String(p.id), 'ranking')} className="hover:underline">{p.name}</Link>
                     ) : (
                       <span>{p.name}</span>
                     )}

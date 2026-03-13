@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef, useMemo } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, usePathname } from "next/navigation";
 import FilterBar from "./FilterBar";
 import { Match } from "@/types";
 import FilteredMatchesCalculation from "./FilteredMatchesCalculation";
@@ -106,6 +106,14 @@ export default function MatchesFilterPanel({ playerId, matches, allMatches, disp
   const urlTourney = searchParams?.get("tourney");
   const urlLevel = searchParams?.get("level");
   const urlSurface = searchParams?.get("surface");
+  const pathname = usePathname();
+  const pathSurface = (() => {
+    const seg = pathname?.split('/')?.[3]?.toLowerCase();
+    if (seg === 'clay') return 'Clay';
+    if (seg === 'hard') return 'Hard';
+    if (seg === 'grass') return 'Grass';
+    return null;
+  })();
 
   // --- Filtri selezionati ---
   const [selectedYear, setSelectedYear] = useState<string>("All");
@@ -312,9 +320,9 @@ export default function MatchesFilterPanel({ playerId, matches, allMatches, disp
       // Use state-derived `tourneyLevels` rather than the block-scoped `availableLevels` which may be undefined when facets are used
       setTourneyLevelFilter(prev => (prev && prev !== 'All' && tourneyLevels.includes(prev)) ? prev : (urlLevel ?? prev ?? 'All'));
 
-      // seed surface from URL if present (respect existing user selection if any)
-      setSurfaceFilter(prev => (prev && prev !== 'All') ? prev : (urlSurface ?? prev ?? 'All'));
-      console.debug('[MatchesFilterPanel] seeded surface ->', urlSurface, 'currentSurface->', (urlSurface ?? 'All'));
+      // seed surface from URL query param or path segment (e.g. /players/slug/clay)
+      setSurfaceFilter(prev => (prev && prev !== 'All') ? prev : (urlSurface ?? pathSurface ?? 'All'));
+      console.debug('[MatchesFilterPanel] seeded surface ->', urlSurface ?? pathSurface, 'currentSurface->', (urlSurface ?? pathSurface ?? 'All'));
 
       // Use the same seed-or-keep logic for other filters so that explicit user choices are preserved
       setVsRankFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('vsRank') ?? prev ?? 'All'));

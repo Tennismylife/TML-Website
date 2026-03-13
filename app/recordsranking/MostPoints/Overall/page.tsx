@@ -2,6 +2,7 @@ import React from 'react';
 import type { Metadata } from 'next';
 import { prisma } from "@/lib/prisma";
 import Flag from '@/components/Flag';
+import Link from 'next/link';
 import LastUpdateBanner from '@/components/LastUpdateBanner';
 
 export const metadata: Metadata = { title: 'Most ATP Points | ATP Ranking Records' };
@@ -11,6 +12,7 @@ interface No1MaxPointsItem {
   country: string; // IOC code
   points: number;
   date: string;
+  slug?: string | null;
 }
 
 
@@ -19,8 +21,9 @@ export default async function No1MaxPointsRanking({ searchParams }: { searchPara
   // replicate API logic server-side
   const grouped = await prisma.ranking.groupBy({ by: ["playerId"], _max: { points: true }, orderBy: [{ _max: { points: 'desc' } }], take: 100 });
   const playerIds = grouped.map(g => g.playerId);
-  const playersRaw = await prisma.player.findMany({ where: { id: { in: playerIds } }, select: { id: true, atpname: true, ioc: true } });
+  const playersRaw = await prisma.player.findMany({ where: { id: { in: playerIds } }, select: { id: true, atpname: true, ioc: true, slug: true } });
   const playersMap = new Map(playersRaw.map(p => [p.id, p]));
+  const slugMap = new Map(playersRaw.map(p => [p.id, p.slug]));
 
   const candidates = await prisma.ranking.findMany({ where: { OR: grouped.map(g => ({ playerId: g.playerId, points: g._max.points! })) }, select: { playerId: true, points: true, rankingDate: { select: { date: true } }, player: { select: { atpname: true, ioc: true } } } });
 
@@ -36,6 +39,7 @@ export default async function No1MaxPointsRanking({ searchParams }: { searchPara
       country: row?.player?.ioc ?? playersMap.get(g.playerId)?.ioc ?? 'UNK',
       points: Number(g._max.points ?? 0),
       date: row?.rankingDate?.date ? row.rankingDate.date.toISOString().slice(0,10) : 'N/A',
+      slug: slugMap.get(g.playerId) ?? null,
     };
   });
 
@@ -47,9 +51,9 @@ export default async function No1MaxPointsRanking({ searchParams }: { searchPara
         <thead>
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Player</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Points</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Date</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Date</th>
           </tr>
         </thead>
         <tbody>
@@ -60,7 +64,7 @@ export default async function No1MaxPointsRanking({ searchParams }: { searchPara
             >
               <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{startIndex + idx + 1}</td>
               <td className={`border border-white/10 px-4 py-2 text-lg ${startIndex + idx + 1 === 3 && String(r.name).toLowerCase().includes('alcaraz') ? 'text-yellow-300 font-bold' : 'text-gray-200'}`}>
-                <div className="flex items-center gap-2">{r.country && <Flag ioc={r.country} className="w-4 h-3" />}<span>{r.name}</span></div>
+                <div className="flex items-center justify-center gap-2">{r.country && <Flag ioc={r.country} className="w-4 h-3" />}{r.slug ? <Link href={`/players/${r.slug}/ranking`} className="hover:underline">{r.name}</Link> : <span>{r.name}</span>}</div>
               </td>
               <td className={`border border-white/10 px-4 py-2 text-center text-lg ${startIndex + idx + 1 === 3 && String(r.name).toLowerCase().includes('alcaraz') ? 'text-yellow-200 font-semibold' : 'text-indigo-300'}`}>{r.points.toLocaleString()}</td>
               <td className={`border border-white/10 px-4 py-2 ${startIndex + idx + 1 === 3 && String(r.name).toLowerCase().includes('alcaraz') ? 'text-yellow-200' : 'text-gray-300'}`}>{r.date}</td>

@@ -10,6 +10,10 @@ import { getPlayerHref } from '@/lib/utils';
 export default function PlayerClient(props: any) {
   const params = props.params ?? {};
   const playerId = params?.id ?? props.params?.id;
+  // server-rendered banner passed in from page.tsx
+  const serverBanner: React.ReactNode | null = props.serverBanner ?? null;
+  // server-rendered ranking narrative passed in from page.tsx
+  const rankingNarrative: React.ReactNode | null = props.rankingNarrative ?? null;
   const initialMatches = props.initialMatches;
   const initialHeading = props.initialHeading;
   const initialTotals = props.initialTotals;
@@ -30,12 +34,12 @@ export default function PlayerClient(props: any) {
   // Lifted UI state for child tabs (filters)
   const [activeTab, setActiveTab] = useState<string>(() => {
     try {
-      if (typeof window === 'undefined') return 'matches';
+      if (typeof window === 'undefined') return params?.tab || 'matches';
       const parts = window.location.pathname.split('/');
       const pathTab = parts[3] || null; // /players/<slug>/<tab>
-      return pathTab || (new URLSearchParams(window.location.search).get('tab')) || 'matches';
+      return pathTab || (new URLSearchParams(window.location.search).get('tab')) || params?.tab || 'matches';
     } catch {
-      return 'matches';
+      return params?.tab || 'matches';
     }
   });
 
@@ -69,6 +73,35 @@ export default function PlayerClient(props: any) {
 
 
   useEffect(() => {
+    // ── Fast path: SSR already provided a complete player with slug ──
+    // Skip the network fetch entirely; just normalise the URL and return.
+    // This eliminates 3 unnecessary re-renders (setLoading×2 + setPlayer)
+    // that cannot produce any visual change but contribute to CLS measurement.
+    if (initialPlayer?.slug) {
+      const slug = (initialPlayer.atpname || initialPlayer.player || (initialPlayer as any).id || '')
+        .toString()
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, "-");
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const explicitTab = params.get('tab');
+        if (explicitTab) params.delete('tab');
+        const pathParts = window.location.pathname.split('/');
+        const tabFromPath = pathParts[3];
+        const finalTab = explicitTab || tabFromPath || 'matches';
+        const search = params.toString();
+        const pathYearSegment = (pathParts[4] && /^[0-9]{4}$/.test(pathParts[4])) ? `/${pathParts[4]}` : '';
+        const desired = `${getPlayerHref(slug)}/${encodeURIComponent(finalTab)}${pathYearSegment}${search ? `?${search}` : ''}`;
+        if (window.location.pathname + (search ? `?${search}` : '') !== desired) {
+          window.history.replaceState(null, "", desired);
+        }
+      } catch (err) {
+        // ignore URL normalisation errors
+      }
+      return;
+    }
+
     const controller = new AbortController();
 
     (async () => {
@@ -239,6 +272,13 @@ export default function PlayerClient(props: any) {
       const newQs = params.toString();
       const newUrl = `${pathParts.join('/')}${newQs ? `?${newQs}` : ''}`;
 
+      // Skip router.replace() when URL hasn't changed — prevents spurious re-renders on initial mount
+      const currentFullUrl = window.location.pathname + (window.location.search || '');
+      if (newUrl === currentFullUrl) {
+        lastAppliedRef.current = newUrl;
+        return;
+      }
+
       if (lastAppliedRef.current === newUrl) return;
       lastAppliedRef.current = newUrl;
       if (replaceTimerRef.current) clearTimeout(replaceTimerRef.current);
@@ -282,6 +322,8 @@ export default function PlayerClient(props: any) {
     { id: "h2h", label: "H2H" },
     { id: "performance", label: "Performance" },
     { id: "statistics", label: "Statistics" },
+    { id: "ranking", label: "Ranking" },
+    // { id: "surfaces", label: "Surface Stats" }, // temporarily hidden
   ];
 
   return (
@@ -313,7 +355,11 @@ export default function PlayerClient(props: any) {
         initialSeasonYear={initialSeasonYear}
         initialSeasonMatches={initialSeasonMatches}
         initialSeasonYears={initialSeasonYears}
+        banner={serverBanner}
+        rankingNarrative={rankingNarrative}
       />
+
+      {/* Content */}
 
       {/* Content */}
       <section className="py-6 px-6">

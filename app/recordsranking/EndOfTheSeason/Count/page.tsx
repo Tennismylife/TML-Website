@@ -1,6 +1,7 @@
 import React from 'react';
 import { prisma } from "@/lib/prisma";
 import Flag from '@/components/Flag';
+import Link from 'next/link';
 import EndSeasonCountControls from "./EndSeasonCountControls";
 import ServerPagination from '@/components/ServerPagination';
 import type { Metadata } from 'next';
@@ -16,7 +17,8 @@ interface Player {
   name: string;
   ioc?: string | null;
   endYearCount: number;
-  seasons: number[]; // elenco anni
+  seasons: number[];
+  slug?: string | null;
 }
 
 export default async function RecordsCount({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
@@ -48,24 +50,24 @@ export default async function RecordsCount({ searchParams }: { searchParams?: Pr
 
   const rows = await prisma.ranking.findMany({
     where: { rank, rankingDateId: { in: lastDateIds } },
-    select: { playerId: true, player: { select: { atpname: true, ioc: true } }, rankingDate: { select: { date: true } } }
+    select: { playerId: true, player: { select: { atpname: true, ioc: true, slug: true } }, rankingDate: { select: { date: true } } }
   });
 
-  const agg = new Map<string, { name: string; ioc: string | null; endYearCount: number; seasons: Set<number> }>();
+  const agg = new Map<string, { name: string; ioc: string | null; endYearCount: number; seasons: Set<number>; slug: string | null }>();
   for (const r of rows) {
     if (!r.player) continue;
     const id = String(r.playerId);
     const year = r.rankingDate.date.getUTCFullYear();
     let a = agg.get(id);
     if (!a) {
-      a = { name: r.player.atpname ?? '', ioc: r.player.ioc ?? null, endYearCount: 0, seasons: new Set<number>() };
+      a = { name: r.player.atpname ?? '', ioc: r.player.ioc ?? null, endYearCount: 0, seasons: new Set<number>(), slug: r.player.slug ?? null };
       agg.set(id, a);
     }
     a.endYearCount += 1;
     a.seasons.add(year);
   }
 
-  const data = Array.from(agg.entries()).map(([id, v]) => ({ id, name: v.name, ioc: v.ioc, endYearCount: v.endYearCount, seasons: Array.from(v.seasons).sort((a,b)=>a-b) }))
+  const data = Array.from(agg.entries()).map(([id, v]) => ({ id, name: v.name, ioc: v.ioc, endYearCount: v.endYearCount, seasons: Array.from(v.seasons).sort((a,b)=>a-b), slug: v.slug }))
     .sort((a,b) => (b.endYearCount - a.endYearCount) || a.name.localeCompare(b.name));
 
   const totalCount = data.length;
@@ -79,20 +81,20 @@ export default async function RecordsCount({ searchParams }: { searchParams?: Pr
         <thead>
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Player</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Seasons at No. {rank}</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Years</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Years</th>
           </tr>
         </thead>
         <tbody>
           {list.map((p, idx) => (
             <tr key={p.id} className="hover:bg-gray-800 border-b border-white/10">
               <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{startIndex + idx + 1}</td>
-              <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
-                <div className="flex items-center gap-2">{p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" />}<span>{p.name}</span></div>
+              <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
+                <div className="flex items-center justify-center gap-2">{p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" />}{p.slug ? <Link href={`/players/${p.slug}/ranking`} className="hover:underline">{p.name}</Link> : <span>{p.name}</span>}</div>
               </td>
               <td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">{p.endYearCount}</td>
-              <td className="border border-white/10 px-4 py-2 text-gray-300">{p.seasons && p.seasons.length > 0 ? p.seasons.join(", ") : "—"}</td>
+              <td className="border border-white/10 px-4 py-2 text-center text-gray-300">{p.seasons && p.seasons.length > 0 ? p.seasons.join(", ") : "—"}</td>
             </tr>
           ))}
         </tbody>

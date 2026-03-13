@@ -1,6 +1,7 @@
 import React from 'react';
 import { prisma } from '@/lib/prisma';
 import Flag from '@/components/Flag';
+import Link from 'next/link';
 import EndSeasonCountControls from '../../EndOfTheSeason/Count/EndSeasonCountControls';
 
 function diffYMD(birth: Date, ref: Date) {
@@ -47,9 +48,9 @@ export default async function OldestEoyAtRank({ searchParams }: { searchParams?:
   const lastIds = last.map(x=>x.id);
   const yearById = new Map<number, number>(last.map(x=>[x.id, x.year]));
 
-  const rows = await prisma.ranking.findMany({ where: { rank, rankingDateId: { in: lastIds } }, select: { playerId: true, player: { select: { atpname: true, ioc: true, birthdate: true } }, rankingDateId: true, rankingDate: { select: { date: true } } } });
+  const rows = await prisma.ranking.findMany({ where: { rank, rankingDateId: { in: lastIds } }, select: { playerId: true, player: { select: { atpname: true, ioc: true, birthdate: true, slug: true } }, rankingDateId: true, rankingDate: { select: { date: true } } } });
 
-  type MaxRec = { name:string; ioc:string|null; year:number; date:Date; birth:Date; ageDays:number };
+  type MaxRec = { name:string; ioc:string|null; year:number; date:Date; birth:Date; ageDays:number; slug:string|null };
   const bestByPlayer = new Map<string, MaxRec>();
 
   for (const r of rows) {
@@ -63,18 +64,18 @@ export default async function OldestEoyAtRank({ searchParams }: { searchParams?:
     const recYear = yearById.get(r.rankingDateId)!;
     const prev = bestByPlayer.get(id);
     if (!prev || ageDays > prev.ageDays || (ageDays === prev.ageDays && ref > prev.date)) {
-      bestByPlayer.set(id, { name: r.player.atpname ?? '', ioc: r.player.ioc, year: recYear, date: ref, birth, ageDays });
+      bestByPlayer.set(id, { name: r.player.atpname ?? '', ioc: r.player.ioc, year: recYear, date: ref, birth, ageDays, slug: r.player.slug ?? null });
     }
   }
 
-  const data = Array.from(bestByPlayer.entries()).map(([id, v]) => { const { y,m,d } = diffYMD(v.birth, v.date); return { id, name: v.name, ioc: v.ioc, ageDays: v.ageDays, ageLabel: `${y}y ${m}m ${d}d`, year: v.year }; }).sort((a,b)=> b.ageDays - a.ageDays || a.name.localeCompare(b.name, 'en', { sensitivity: 'base' })).slice(0, limit);
+  const data = Array.from(bestByPlayer.entries()).map(([id, v]) => { const { y,m,d } = diffYMD(v.birth, v.date); return { id, name: v.name, ioc: v.ioc, ageDays: v.ageDays, ageLabel: `${y}y ${m}m ${d}d`, year: v.year, slug: v.slug }; }).sort((a,b)=> b.ageDays - a.ageDays || a.name.localeCompare(b.name, 'en', { sensitivity: 'base' })).slice(0, limit);
 
   const totalPages = Math.ceil(data.length / perPage);
   const start = (page-1)*perPage;
   const pageRows = data.slice(start, start + perPage);
 
   const renderTable = (list: typeof pageRows, startIndex = 0) => (
-    <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow"><table className="min-w-full border-collapse"><thead><tr className="bg-black"><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th><th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Age at EOY</th><th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Year</th></tr></thead><tbody>{list.map((r,idx)=>(<tr key={`${r.id}-${r.year}`} className="hover:bg-gray-800 border-b border-white/10"><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{startIndex+idx+1}</td><td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{r.ioc && <Flag ioc={r.ioc} className="w-4 h-3" />}<span>{r.name}</span></div></td><td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">{r.ageLabel}</td><td className="border border-white/10 px-4 py-2 text-gray-300">{r.year}</td></tr>))}</tbody></table></div>
+    <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow"><table className="min-w-full border-collapse"><thead><tr className="bg-black"><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Player</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Age at EOY</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Year</th></tr></thead><tbody>{list.map((r,idx)=>(<tr key={`${r.id}-${r.year}`} className="hover:bg-gray-800 border-b border-white/10"><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{startIndex+idx+1}</td><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200"><div className="flex items-center justify-center gap-2">{r.ioc && <Flag ioc={r.ioc} className="w-4 h-3" />}{r.slug ? <Link href={`/players/${r.slug}/ranking`} className="hover:underline">{r.name}</Link> : <span>{r.name}</span>}</div></td><td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">{r.ageLabel}</td><td className="border border-white/10 px-4 py-2 text-center text-gray-300">{r.year}</td></tr>))}</tbody></table></div>
   );
 
   return (

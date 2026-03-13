@@ -30,14 +30,22 @@ export default function EditionMatchesServer({ matches }: { matches: any[] }) {
           {matches.map((m, idx) => (
             <tr key={idx} className="hover:bg-white/5 transition">
               <td className="px-4 py-2 text-center text-sm">{m.round}</td>
-              <td className="px-4 py-2 text-center text-sm">{m.winner_rank ?? '-'}</td>
+              <td className="px-4 py-2 text-center text-sm">
+                {m.winner_rank != null && m.winner_slug
+                  ? <Link href={`/players/${m.winner_slug}/ranking`} className="hover:underline">{m.winner_rank}</Link>
+                  : m.winner_rank ?? '-'}
+              </td>
               <td className="px-4 py-2 flex items-center justify-center gap-2 text-sm">
                 {m.winner_ioc && <Flag ioc={m.winner_ioc} className="w-6 h-4" />}
                 <Link href={getPlayerHrefWithTab(m.winner_slug ?? String(m.winner_id), 'matches')} className="text-gray-200 hover:text-yellow-400">
                   {m.winner_name ?? ''}
                 </Link>
               </td>
-              <td className="px-4 py-2 text-center text-sm">{m.loser_rank ?? '-'}</td>
+              <td className="px-4 py-2 text-center text-sm">
+                {m.loser_rank != null && m.loser_slug
+                  ? <Link href={`/players/${m.loser_slug}/ranking`} className="hover:underline">{m.loser_rank}</Link>
+                  : m.loser_rank ?? '-'}
+              </td>
               <td className="px-4 py-2 flex items-center justify-center gap-2 text-sm">
                 {m.loser_ioc && <Flag ioc={m.loser_ioc} className="w-6 h-4" />}
                 <Link href={getPlayerHrefWithTab(m.loser_slug ?? String(m.loser_id), 'matches')} className="text-gray-400 hover:text-gray-200">

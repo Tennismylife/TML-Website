@@ -33,15 +33,6 @@ export default function TournamentGrid({ tourneys, getTourneyLink }: TournamentG
         const surfaceColor = getSurfaceColor(t.surface || "Unknown");
         const levelColor = getLevelColor(t.level || "Unknown");
 
-        // Ensure we have a valid Date object before calling toLocaleDateString
-        const dateObj =
-          t.date instanceof Date
-            ? t.date
-            : typeof t.date === "number"
-            ? new Date(t.date)
-            : new Date(String(t.date));
-        const dateStr = Number.isFinite(dateObj.getTime()) ? dateObj.toLocaleDateString("it-IT") : String(t.date ?? "-");
-
         // Render as a link when either slug or id is present; prefer slug but fallback to id for clickability
         if (t.tourney_slug || t.tourney_id) {
           return (
@@ -51,38 +42,38 @@ export default function TournamentGrid({ tourneys, getTourneyLink }: TournamentG
               className="relative block w-full h-full card p-4 flex flex-col cursor-pointer hover:-translate-y-1 hover:shadow-xl transition-all duration-300 bg-gray-700/90 rounded-lg"
               style={{ cursor: 'pointer' }}
             >
-              {/* Titolo e bestRound */}
-              <div className="flex justify-between items-start gap-2">
-                <span className="font-semibold truncate">{t.name}</span>
-
+              {/* Titolo, anno e bestRound */}
+              <div className="flex justify-between items-start gap-2 mb-4">
+                <div className="flex items-baseline gap-2 min-w-0">
+                  <span className="font-semibold truncate">{t.name}</span>
+                  <span className="font-semibold text-gray-400 shrink-0">{t.year}</span>
+                </div>
                 <span
-                  className="px-3 py-1 rounded-full text-sm md:text-base font-semibold truncate"
+                  className="px-3 py-1 rounded-full text-sm md:text-base font-semibold shrink-0"
                   style={{ backgroundColor: roundColor, color: roundTextColor }}
                 >
                   {t.bestRound}
                 </span>
               </div>
 
-              {/* Data */}
-              <div className="mt-2 text-sm text-gray-300">{dateStr}</div>
-
               {/* Statistiche e badge in basso */}
-              <div className="mt-auto flex justify-between items-center text-sm">
+              <div className="mt-auto flex justify-between items-center gap-x-2 gap-y-1 flex-wrap text-sm">
                 {/* Wins-Losses */}
-                <div className="flex items-center gap-3">
-                  <span className="font-medium">W - L :</span> <span className="font-semibold"> {t.wins}-{t.losses}</span>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="font-medium">W - L :</span>
+                  <span className="font-semibold">{t.wins}-{t.losses}</span>
                 </div>
 
                 {/* Categoria e superficie */}
-                <div className="flex gap-1 items-center">
+                <div className="flex gap-1.5 items-center justify-end flex-wrap">
                   <span
-                    className="px-2 py-0.5 rounded-full text-xs font-semibold truncate"
+                    className="px-2 py-0.5 rounded-full text-xs font-semibold shrink-0"
                     style={{ backgroundColor: levelColor, color: "#fff" }}
                   >
                     {getLevelFullName(t.level)}
                   </span>
                   <span
-                    className="px-2 py-0.5 rounded-full text-xs font-semibold truncate"
+                    className="px-2 py-0.5 rounded-full text-xs font-semibold shrink-0"
                     style={{ backgroundColor: surfaceColor, color: "#000" }}
                   >
                     {t.surface || "Unknown"}
@@ -106,33 +97,34 @@ export default function TournamentGrid({ tourneys, getTourneyLink }: TournamentG
             className="relative block w-full h-full card p-4 flex flex-col bg-gray-700/60 rounded-lg opacity-80 cursor-default"
             title="Slug torneo non disponibile"
           >
-            <div className="flex justify-between items-start gap-2">
-              <span className="font-semibold truncate">{t.name}</span>
-
+            <div className="flex justify-between items-start gap-2 mb-4">
+              <div className="flex items-baseline gap-2 min-w-0">
+                <span className="font-semibold truncate">{t.name}</span>
+                <span className="font-semibold text-gray-400 shrink-0">{t.year}</span>
+              </div>
               <span
-                className="px-3 py-1 rounded-full text-sm md:text-base font-semibold truncate"
+                className="px-3 py-1 rounded-full text-sm md:text-base font-semibold shrink-0"
                 style={{ backgroundColor: roundColor, color: roundTextColor }}
               >
                 {t.bestRound}
               </span>
             </div>
 
-            <div className="mt-2 text-sm text-gray-300">{dateStr}</div>
-
-            <div className="mt-auto flex justify-between items-center text-sm">
-              <div className="flex items-center gap-3">
-                <span className="font-medium">W - L :</span> <span className="font-semibold"> {t.wins}-{t.losses}</span>
+            <div className="mt-auto flex justify-between items-center gap-x-2 gap-y-1 flex-wrap text-sm">
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="font-medium">W - L :</span>
+                <span className="font-semibold">{t.wins}-{t.losses}</span>
               </div>
 
-              <div className="flex gap-1 items-center">
+              <div className="flex gap-1.5 items-center justify-end flex-wrap">
                 <span
-                  className="px-2 py-0.5 rounded-full text-xs font-semibold truncate"
+                  className="px-2 py-0.5 rounded-full text-xs font-semibold shrink-0"
                   style={{ backgroundColor: levelColor, color: "#fff" }}
                 >
                   {getLevelFullName(t.level)}
                 </span>
                 <span
-                  className="px-2 py-0.5 rounded-full text-xs font-semibold truncate"
+                  className="px-2 py-0.5 rounded-full text-xs font-semibold shrink-0"
                   style={{ backgroundColor: surfaceColor, color: "#000" }}
                 >
                   {t.surface || "Unknown"}

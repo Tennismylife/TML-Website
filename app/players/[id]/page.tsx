@@ -3,6 +3,7 @@ import PlayerClient from './PlayerClient';
 import { prisma } from '../../../lib/prisma';
 import { redirect } from 'next/navigation';
 import { getPlayerHref } from '@/lib/utils';
+import RankingNarrativeServer from './Ranking/RankingNarrativeServer';
 
 export const dynamic = 'force-dynamic';
 
@@ -227,7 +228,18 @@ export default async function PlayerPage({ params, searchParams }: any) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
 
-      <PlayerClient params={{ id: player.id, tab: tabValue }} initialPlayer={player} />
+      <PlayerClient
+        params={{ id: player.id, tab: tabValue }}
+        initialPlayer={player}
+        rankingNarrative={
+          <RankingNarrativeServer
+            playerId={player.id}
+            birthdate={player.birthdate ? String(player.birthdate) : null}
+            playerName={player.atpname || player.player}
+            className="mb-8"
+          />
+        }
+      />
     </>
   );
 }

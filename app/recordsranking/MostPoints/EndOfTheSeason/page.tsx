@@ -2,6 +2,7 @@ import React from 'react';
 import type { Metadata } from 'next';
 import { prisma } from "@/lib/prisma";
 import Flag from '@/components/Flag';
+import Link from 'next/link';
 
 export const metadata: Metadata = { title: 'Most ATP Points at the End of The Season | ATP Ranking Records' };
 
@@ -10,6 +11,7 @@ interface YearEndMaxPointsItem {
   country: string; // IOC code
   points: number;
   year: number | string;
+  slug?: string | null;
 }
 
 async function No1YearEndMaxPointsRankingMain({ searchParams, showHeading = true }: { searchParams?: Promise<Record<string, string | string[]>>, showHeading?: boolean }) {
@@ -31,7 +33,7 @@ async function No1YearEndMaxPointsRankingMain({ searchParams, showHeading = true
 
   const grouped = await prisma.ranking.groupBy({ by: ["playerId"], where: { rankingDateId: { in: lastDateIds } }, _max: { points: true }, orderBy: [{ _max: { points: 'desc' } }], take: 100 });
 
-  const candidates = await prisma.ranking.findMany({ where: { OR: grouped.map(g => ({ playerId: g.playerId, points: g._max.points!, rankingDateId: { in: lastDateIds } })) }, select: { playerId: true, points: true, rankingDate: { select: { date: true } }, player: { select: { atpname: true, ioc: true } } } });
+  const candidates = await prisma.ranking.findMany({ where: { OR: grouped.map(g => ({ playerId: g.playerId, points: g._max.points!, rankingDateId: { in: lastDateIds } })) }, select: { playerId: true, points: true, rankingDate: { select: { date: true } }, player: { select: { atpname: true, ioc: true, slug: true } } } });
 
   const candidateMap = new Map<string, typeof candidates[number]>();
   for (const row of candidates) { if (!candidateMap.has(row.playerId)) candidateMap.set(row.playerId, row); }
@@ -39,7 +41,7 @@ async function No1YearEndMaxPointsRankingMain({ searchParams, showHeading = true
   const result: YearEndMaxPointsItem[] = grouped.map(g => {
     const row = candidateMap.get(g.playerId);
     const year = row?.rankingDate?.date ? row.rankingDate.date.getUTCFullYear() : null;
-    return { name: row?.player?.atpname ?? 'Unknown', country: row?.player?.ioc ?? 'UNK', points: Number(g._max.points ?? 0), year: year ?? 'N/A' };
+    return { name: row?.player?.atpname ?? 'Unknown', country: row?.player?.ioc ?? 'UNK', points: Number(g._max.points ?? 0), year: year ?? 'N/A', slug: row?.player?.slug ?? null };
   });
 
   const rows = result.slice(0, 20);
@@ -48,10 +50,10 @@ async function No1YearEndMaxPointsRankingMain({ searchParams, showHeading = true
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
       <table className="min-w-full border-collapse">
         <thead>
-          <tr className="bg-black"><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th><th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Points</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Year</th></tr>
+          <tr className="bg-black"><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Player</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Points</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Year</th></tr>
         </thead>
         <tbody>
-          {list.map((r, idx) => (<tr key={`${r.name}-${r.year}-${idx}`} className="hover:bg-gray-800 border-b border-white/10"><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{startIndex + idx + 1}</td><td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{r.country && <Flag ioc={r.country} className="w-4 h-3" />}<span>{r.name}</span></div></td><td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">{r.points.toLocaleString()}</td><td className="border border-white/10 px-4 py-2 text-center text-gray-300">{r.year}</td></tr>))}
+          {list.map((r, idx) => (<tr key={`${r.name}-${r.year}-${idx}`} className="hover:bg-gray-800 border-b border-white/10"><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{startIndex + idx + 1}</td><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200"><div className="flex items-center justify-center gap-2">{r.country && <Flag ioc={r.country} className="w-4 h-3" />}{r.slug ? <Link href={`/players/${r.slug}/ranking`} className="hover:underline">{r.name}</Link> : <span>{r.name}</span>}</div></td><td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">{r.points.toLocaleString()}</td><td className="border border-white/10 px-4 py-2 text-center text-gray-300">{r.year}</td></tr>))}
         </tbody>
       </table>
     </div>

@@ -47,11 +47,15 @@ export default function RankingTable({ rankings, perPage = 20 }: RankingTablePro
             const globalRank = startIndex + idx + 1;
             return (
               <tr key={p.id} className="hover:bg-gray-800 border-b border-white/10">
-                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
+                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
+                  {p.slug
+                    ? <Link href={`/players/${p.slug}/ranking`} className="hover:underline">{globalRank}</Link>
+                    : globalRank}
+                </td>
                 <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
                   <div className="flex items-center gap-2">
                     {p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" />}
-                    <Link href={getPlayerHrefWithTab(p.slug ?? String(p.id), 'matches')} className="text-indigo-300 hover:underline">
+                    <Link href={p.slug ? `/players/${p.slug}/ranking` : getPlayerHrefWithTab(String(p.id), 'ranking')} className="text-indigo-300 hover:underline">
                       {p.name}
                     </Link>
                   </div>

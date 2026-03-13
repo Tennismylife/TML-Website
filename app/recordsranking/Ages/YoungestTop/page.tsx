@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Flag from '@/components/Flag';
+import Link from 'next/link';
 import DropdownNavSelect from '../../../../components/DropdownNavSelect';
 import ServerPagination from '@/components/ServerPagination';
 import type { Metadata } from 'next';
@@ -17,6 +18,7 @@ interface YoungestTopItem {
   ageDays: number;
   ageLabel: string; // "17y 2m 14d"
   date: string;     // "YYYY-MM-DD"
+  slug?: string | null;
 }
 
 function diffYMD(birth: Date, ref: Date) {
@@ -109,15 +111,23 @@ export default async function YoungestAtTopX({ searchParams }: { searchParams?: 
   const start = (page - 1) * perPage;
   const paginatedRows = data.slice(start, start + perPage);
 
+  // Lookup slugs for rendered rows
+  const slugMap = new Map<string, string | null>();
+  const idsForSlug = paginatedRows.map(r => r.id).filter(Boolean);
+  if (idsForSlug.length > 0) {
+    const slugRows = await prisma.player.findMany({ where: { id: { in: idsForSlug } }, select: { id: true, slug: true } });
+    slugRows.forEach(r => slugMap.set(r.id, r.slug));
+  }
+
   const renderTable = (list: YoungestTopItem[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
       <table className="min-w-full border-collapse">
         <thead>
-          <tr className="bg-black"><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Top</th><th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Age at Top {top}</th><th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Date</th></tr>
+          <tr className="bg-black"><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Top</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Player</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Age at Top {top}</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Date</th></tr>
         </thead>
         <tbody>
           {list.map((r, idx) => (
-            <tr key={`${r.id}-${r.date}`} className="hover:bg-gray-800 border-b border-white/10"><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{startIndex + idx + 1}</td><td className="border border-white/10 px-4 py-2 text-lg text-gray-200"><div className="flex items-center gap-2">{r.ioc && <Flag ioc={r.ioc} className="w-4 h-3" />}<span>{r.name}</span></div></td><td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">{r.ageLabel}</td><td className="border border-white/10 px-4 py-2 text-gray-300">{r.date}</td></tr>
+            <tr key={`${r.id}-${r.date}`} className="hover:bg-gray-800 border-b border-white/10"><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{startIndex + idx + 1}</td><td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200"><div className="flex items-center justify-center gap-2">{r.ioc && <Flag ioc={r.ioc} className="w-4 h-3" />}{(r.slug ?? slugMap.get(r.id)) ? <Link href={`/players/${r.slug ?? slugMap.get(r.id)}/ranking`} className="hover:underline">{r.name}</Link> : <span>{r.name}</span>}</div></td><td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">{r.ageLabel}</td><td className="border border-white/10 px-4 py-2 text-center text-gray-300">{r.date}</td></tr>
           ))}
         </tbody>
       </table>

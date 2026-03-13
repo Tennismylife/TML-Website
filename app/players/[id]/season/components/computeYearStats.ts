@@ -101,6 +101,7 @@ export function computeYearStats(
   // ── tourneysForYear ──
   const groups = new Map<string, Match[]>();
   for (const m of yearMatches) {
+    if (m.team_event) continue;
     const key = `${m.tourney_name ?? "Unknown"}__${m.year ?? "noyear"}`;
     const arr = groups.get(key);
     if (arr) arr.push(m);

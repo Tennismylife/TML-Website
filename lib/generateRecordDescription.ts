@@ -276,6 +276,9 @@ export function generateRecordDescription(
   } else {
     // Default case
     description = `Most ${recordLabels[selectedRecord] || selectedRecord}`;
+    if (selectedRecord === 'wins' && appliedParams?.top) {
+      description += ` against Top ${appliedParams.top}`;
+    }
   }
 
   // Add filters

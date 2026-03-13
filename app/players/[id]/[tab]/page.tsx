@@ -1,12 +1,28 @@
 import React from 'react';
+import fs from 'fs';
+import path from 'path';
 import PlayerClient from '../PlayerClient';
 import SEOPlayer from '../SEOPlayer';
 import SEOBreadcrumb from '../SEOBreadcrumb';
+import CurrentRankingBanner from '../Ranking/CurrentRankingBanner';
+import RankingNarrativeServer from '../Ranking/RankingNarrativeServer';
 import AllMatchesServer from '../Matches/AllMatchesServer';
 import { prisma } from '../../../../lib/prisma';
 import { redirect } from 'next/navigation';
 import { getPlayerHref, createSlug } from '@/lib/utils';
 import type { Metadata } from 'next';
+
+function getRankingAllowlist(): Set<string> {
+  try {
+    const filePath = path.join(process.cwd(), 'public', 'ranking to index.txt');
+    const content = fs.readFileSync(filePath, 'utf-8');
+    return new Set(
+      content.split('\n').map(l => l.trim()).filter(Boolean)
+    );
+  } catch {
+    return new Set();
+  }
+}
 
 function normalizeTourneyKey(name: string) {
   return name
@@ -143,7 +159,7 @@ export async function generateMetadata(
   }
 
   // If on matches tab, build a title that mirrors the H1 (player name + heading)
-  let title = `${name} – ${parts.join(', ')} | TennisMyLife`;
+  let title = `${name} – Stats, Matches, Results, Records & Rankings | TennisMyLife`;
   // Description is built later, declare it early so branches can assign it safely
   let metaDescription: string = "";
 
@@ -199,6 +215,11 @@ export async function generateMetadata(
     if (hasFilters) title = `${name} — ${heading}`;
   }
 
+  // If on ranking tab, use a dedicated title
+  if (tab === 'ranking') {
+    title = `${name} ATP Ranking History & Stats | TennisMyLife`;
+  }
+
   // If on season tab, prefer a season-specific title (use year if available)
   if (tab === 'season') {
     const resolvedSearchParams = await searchParams;
@@ -219,8 +240,12 @@ export async function generateMetadata(
     }
   }
 
-  // include a generic description; rank-history content is still statistical
-  metaDescription = `Complete statistics for ${name}: ATP results, ${tab === 'matches' ? '2026 matches, ' : ''}career record, rankings, titles, head-to-head records, and surface performance. Updated as of 2026.`;
+  // Tab-specific or generic description
+  if (tab === 'ranking') {
+    metaDescription = `${name} ATP ranking history: week-by-week ranking chart, career peak ranking, weeks at top, and full career ranking progression. Updated as of 2026 on TennisMyLife.`;
+  } else {
+    metaDescription = `Complete statistics for ${name}: ATP results, ${tab === 'matches' ? '2026 matches, ' : ''}career record, rankings, titles, head-to-head records, and surface performance. Updated as of 2026.`;
+  }
   const imageUrl = `${base}/og/${encodeURIComponent(slug)}.png`;
 
   // Derive profile fields for Open Graph profile (if available)
@@ -254,7 +279,13 @@ export async function generateMetadata(
     },
     // If the page has 4 or more active query filters, mark it as noindex to avoid indexing
     // combinations of filters that create thin/duplicate pages.
+    // For ranking tab: only index players in the allowlist.
     robots: ((): { index: boolean; follow: boolean } => {
+      if (tab === 'ranking') {
+        const allowlist = getRankingAllowlist();
+        const inList = allowlist.has(name);
+        return { index: inList, follow: true };
+      }
       const resolvedSearchParamsForRobots = spForCanonical ?? {} as Record<string, any>;
       const isActive = (v: any) => v != null && String(v).trim() !== '' && String(v) !== 'All';
       const activeCount = Object.entries(resolvedSearchParamsForRobots).filter(([k, v]) => k !== 'tab' && isActive(v)).length;
@@ -680,8 +711,62 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
   }
 
   // Render SEO script BEFORE the client component (must be server-rendered)
+  const playerName = player.atpname || player.player;
+  const rankingFaqJsonLd = tab === 'ranking' ? {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: `What is ${playerName}'s career peak ATP ranking?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `You can find ${playerName}'s career peak ATP ranking in the ranking history chart and stats on this page, which tracks every week-by-week position since the start of their professional career.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `How many weeks has ${playerName} spent at No. 1 in the ATP rankings?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `The total number of weeks ${playerName} has held the No. 1 ATP ranking is shown in the ranking statistics section on this page, along with a breakdown of consecutive and non-consecutive weeks.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `When did ${playerName} first enter the ATP Top 10?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `The date when ${playerName} first broke into the ATP Top 10 is visible on the ranking history chart available on this page, showing the full career trajectory from debut to peak.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `How many weeks has ${playerName} spent inside the ATP Top 10?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `The total weeks ${playerName} has ranked inside the ATP Top 10 are summarised in the ranking stats on this page, which also breaks down time spent at every ranking tier.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `What is ${playerName}'s current ATP ranking?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `${playerName}'s current ATP ranking is displayed at the top of this page and updated weekly. The full week-by-week history is shown in the interactive chart below.`,
+        },
+      },
+    ],
+  } : null;
+
   return (
     <>
+      {rankingFaqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(rankingFaqJsonLd) }}
+        />
+      )}
       <SEOPlayer
         playerId={player.id}
         slug={player.slug}
@@ -705,7 +790,37 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
         <AllMatchesServer playerId={player.id} matches={allMatchesForSSR} heading={matchesHeading} />
       ) : null}
 
-      <PlayerClient params={{ id: player.id, tab: tabParam ?? 'matches' }} initialPlayer={player} initialMatches={allMatchesForSSR ?? undefined} initialFacets={serverFacets ?? undefined} initialHeading={matchesHeading ?? 'Matches'} initialTotals={{ totalWins: careerWins, totalLosses: careerLosses }} initialSeasonStats={initialSeasonStats ?? undefined} initialSeasonYear={initialSeasonYear ?? undefined} initialSeasonMatches={initialSeasonMatches ?? undefined} initialSeasonYears={initialSeasonYears ?? undefined} />
+
+      <PlayerClient
+        params={{ id: player.id, tab: tabParam ?? 'matches' }}
+        initialPlayer={player}
+        initialMatches={allMatchesForSSR ?? undefined}
+        initialFacets={serverFacets ?? undefined}
+        initialHeading={matchesHeading ?? 'Matches'}
+        initialTotals={{ totalWins: careerWins, totalLosses: careerLosses }}
+        initialSeasonStats={initialSeasonStats ?? undefined}
+        initialSeasonYear={initialSeasonYear ?? undefined}
+        initialSeasonMatches={initialSeasonMatches ?? undefined}
+        initialSeasonYears={initialSeasonYears ?? undefined}
+        rankingNarrative={
+          tab === 'ranking' ? (
+            <RankingNarrativeServer
+              playerId={player.id}
+              birthdate={player.birthdate ? (player.birthdate instanceof Date ? player.birthdate.toISOString() : String(player.birthdate)) : null}
+              playerName={player.atpname || player.player}
+              className="mb-8"
+            />
+          ) : undefined
+        }
+        serverBanner={
+          <div className="flex items-center justify-between">
+            <h1 className="text-3xl font-bold text-center w-full">
+              {player.atpname || player.player} ATP Ranking
+            </h1>
+            <CurrentRankingBanner playerId={player.id} />
+          </div>
+        }
+      />
     </>
   );
 }

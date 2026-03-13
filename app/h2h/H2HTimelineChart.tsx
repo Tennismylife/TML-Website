@@ -44,10 +44,15 @@ const SURFACE_COLORS: Record<string, string> = {
   Carpet: "#c084fc",
 };
 
-const CustomDot = (props: any) => {
-  const { cx, cy, payload } = props;
-  const color = SURFACE_COLORS[payload.surface] ?? "#9ca3af";
-  return <circle cx={cx} cy={cy} r={5} fill={color} stroke="#1f2937" strokeWidth={1.5} />;
+// Custom dot is defined as a component so that recharts can render it
+// for each data point and assign unique keys internally. Passing a
+// React element (`<CustomDot />`) would cause the `Dots` container to
+// clone the same node repeatedly without a key, triggering the warning
+// seen in the console.
+const CustomDot = (props: any): React.ReactElement<SVGElement> => {
+  const { cx, cy, payload, index } = props;
+  const color = SURFACE_COLORS[payload?.surface] ?? "#9ca3af";
+  return <circle key={`dot-${index}`} cx={cx} cy={cy} r={5} fill={color} stroke="#1f2937" strokeWidth={1.5} />;
 };
 
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -139,7 +144,7 @@ export default function H2HTimelineChart({ matches, player1, player2 }: Props) {
             dataKey={p1Name}
             stroke="#60a5fa"
             strokeWidth={2.5}
-            dot={<CustomDot />}
+            dot={CustomDot}
             activeDot={{ r: 7, fill: "#60a5fa" }}
           />
           <Line
@@ -147,7 +152,7 @@ export default function H2HTimelineChart({ matches, player1, player2 }: Props) {
             dataKey={p2Name}
             stroke="#f87171"
             strokeWidth={2.5}
-            dot={<CustomDot />}
+            dot={CustomDot}
             activeDot={{ r: 7, fill: "#f87171" }}
           />
         </LineChart>

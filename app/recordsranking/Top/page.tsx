@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Flag from '@/components/Flag';
+import Link from 'next/link';
 import { prisma } from "@/lib/prisma";
 import RecordsTopControls from "./RecordsTopControls";
 import ServerPagination from '@/components/ServerPagination';
@@ -16,6 +17,7 @@ interface TopXPlayer {
   name: string;
   ioc?: string | null;
   weeks: number;
+  slug?: string | null;
 }
 
 export default async function RecordsTopX({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
@@ -37,11 +39,12 @@ export default async function RecordsTopX({ searchParams }: { searchParams?: Pro
 
   const playersRaw = await prisma.player.findMany({
     where: { id: { in: playerIds } },
-    select: { id: true, atpname: true, ioc: true },
+    select: { id: true, atpname: true, ioc: true, slug: true },
   });
 
   const nameMap = Object.fromEntries(playersRaw.map(p => [p.id, p.atpname]));
   const iocMap = Object.fromEntries(playersRaw.map(p => [p.id, p.ioc]));
+  const slugMap = Object.fromEntries(playersRaw.map(p => [p.id, p.slug]));
 
   const result: TopXPlayer[] = weeksInTopX
     .map(r => ({
@@ -49,6 +52,7 @@ export default async function RecordsTopX({ searchParams }: { searchParams?: Pro
       name: nameMap[r.playerId] ?? "Unknown",
       ioc: iocMap[r.playerId] ?? null,
       weeks: r._count.rankingDateId,
+      slug: slugMap[r.playerId] ?? null,
     }))
     .sort((a, b) => b.weeks - a.weeks);
 
@@ -65,7 +69,7 @@ export default async function RecordsTopX({ searchParams }: { searchParams?: Pro
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">
               Rank
             </th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">
               Player
             </th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">
@@ -79,10 +83,10 @@ export default async function RecordsTopX({ searchParams }: { searchParams?: Pro
               <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
                 {startIndex + idx + 1}
               </td>
-              <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
-                <div className="flex items-center gap-2">
+              <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
+                <div className="flex items-center justify-center gap-2">
                   {p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" />}
-                  <span>{p.name}</span>
+                  {p.slug ? <Link href={`/players/${p.slug}/ranking`} className="hover:underline">{p.name}</Link> : <span>{p.name}</span>}
                 </div>
               </td>
               <td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">

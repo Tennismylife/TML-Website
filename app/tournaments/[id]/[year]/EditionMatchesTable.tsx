@@ -222,7 +222,11 @@ export default function MatchTable({
                 }`}
               >
                 <td className="px-4 py-2 text-center text-sm">{m.round}</td>
-                <td className="px-4 py-2 text-center text-sm">{m.winner_rank ?? "-"}</td>
+                <td className="px-4 py-2 text-center text-sm">
+                  {m.winner_rank != null && ((m as any).winner_slug)
+                    ? <Link href={`/players/${(m as any).winner_slug}/ranking`} className="hover:underline">{m.winner_rank}</Link>
+                    : m.winner_rank ?? "-"}
+                </td>
                 <td className="px-4 py-2 flex items-center justify-center gap-2 text-sm">
                   {m.winner_ioc && <Flag ioc={m.winner_ioc} className="w-6 h-4" />}
                   <Link
@@ -232,7 +236,11 @@ export default function MatchTable({
                     {renderNameWithSeedEntry(m.winner_name ?? "", m.winner_seed, m.winner_entry)}
                   </Link>
                 </td>
-                <td className="px-4 py-2 text-center text-sm">{m.loser_rank ?? "-"}</td>
+                <td className="px-4 py-2 text-center text-sm">
+                  {m.loser_rank != null && ((m as any).loser_slug)
+                    ? <Link href={`/players/${(m as any).loser_slug}/ranking`} className="hover:underline">{m.loser_rank}</Link>
+                    : m.loser_rank ?? "-"}
+                </td>
                 <td className="px-4 py-2 flex items-center justify-center gap-2 text-sm">
                   {m.loser_ioc && <Flag ioc={m.loser_ioc} className="w-6 h-4" />}
                   <Link
