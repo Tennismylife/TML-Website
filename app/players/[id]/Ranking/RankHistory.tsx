@@ -372,7 +372,7 @@ export default function RankHistory({ playerId, birthdate, narrativeSlot }: Rank
       <h2 className="text-xl font-semibold mb-2 text-center w-full">ATP Ranking week-by-week</h2>
       {yearSelector('chart')}
 
-      <div className="mb-6 h-[64rem] rounded-2xl border border-gray-600 bg-gray-800/90 p-4">
+      <div className="mb-6 h-[36rem] rounded-2xl border border-gray-600 bg-gray-800/90 p-4">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData} margin={{ top: 240, right: 30, left: 20, bottom: 20 }}>
             <CartesianGrid stroke="#374151" strokeDasharray="5 5" />
