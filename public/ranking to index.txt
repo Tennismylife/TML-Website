@@ -10,16 +10,16 @@ Ben Shelton
 Alexander Bublik
 Daniil Medvedev
 Casper Ruud
-Jakub Menšík
+Jakub Mensik
 Flavio Cobolli
 Karen Khachanov
 Andrey Rublev
 Alejandro Davidovich Fokina
 Luciano Darderi
-Francisco Cerúndolo
+Francisco Cerundolo
 Frances Tiafoe
 Learner Tien
-Jirí Lehecka
+Jiri Lehecka
 Tommy Paul
 Cameron Norrie
 Valentin Vacherot
@@ -29,34 +29,34 @@ Holger Rune
 Tallon Griekspoor
 Brandon Nakashima
 Arthur Fils
-Tomás Martín Etcheverry
+Tomas Martin Etcheverry
 Corentin Moutet
 Ugo Humbert
 Jaume Munar
 Sebastian Korda
 Gabriel Diallo
 Denis Shapovalov
-João Fonseca
+Joao Fonseca
 Alex Michelsen
 Alejandro Tabilo
 Jenson Brooksby
 Adrian Mannarino
 Grigor Dimitrov
 Zizou Bergs
-Fábián Marozsán
+Fabian Marozsan
 Alexei Popyrin
-Tomáš Machác
+Tomas Machac
 Marin Cilic
 Nuno Borges
 Stefanos Tsitsipas
-Sebastián Báez
-Térence Atmane
-Márton Fucsovics
+Sebastian Baez
+Terence Atmane
+Marton Fucsovics
 Daniel Altmaier
 Kamil Majchrzak
 Miomir Kecmanovic
 Giovanni Mpetshi Perricard
-Vít Kopriva
+Vit Kopriva
 Lorenzo Sonego
 Ignacio Buse
 Yannick Hanfmann
@@ -65,23 +65,23 @@ Reilly Opelka
 Matteo Berrettini
 Valentin Royer
 Camilo Ugo Carabelli
-Juan Manuel Cerúndolo
-Raphaël Collignon
+Juan Manuel Cerundolo
+Raphael Collignon
 Ethan Quinn
 Arthur Cazaux
 Emilio Nava
 Hubert Hurkacz
 Eliot Spizzirri
 Marcos Giron
-Damir Džumhur
+Damir Dzumhur
 Jan Lennard Struff
 Mariano Navone
 James Duckworth
-Thiago Agustín Tirante
-Francisco Comesaña
+Thiago Agustin Tirante
+Francisco Comesana
 Jacob Fearnley
 Alexander Shevchenko
-Alexandre Müller
+Alexandre Muller
 Sebastian Ofner
 Filip Misolic
 Roberto Bautista Agut
@@ -91,7 +91,7 @@ Aleksandar Vukic
 Mattia Bellucci
 Adam Walton
 Stan Wawrinka
-Cristian Garín
+Cristian Garin
 Zachary Svajda
 Alexander Blockx
 Patrick Kypson
@@ -99,31 +99,31 @@ Rinky Hijikata
 Adolfo Daniel Vallejo
 Dalibor Svrcina
 Matteo Arnaldi
-Román Andrés Burruchaga
+Roman Andres Burruchaga
 Benjamin Bonzi
 Carlos Taberner
 Vilius Gaubas
 Luca Van Assche
 Hugo Gaston
-Dino Prižmic
-Rafael Jódar
+Dino Prizmic
+Rafael Jodar
 Sho Shimabukuro
 Quentin Halys
 Francesco Maestrelli
-Pedro Martínez
+Pedro Martinez
 Tristan Schoolkate
 Hamad Medjedovic
-Pablo Carreño Busta
+Pablo Carreno Busta
 Yibing Wu
-Tomás Barrios Vera
+Tomas Barrios Vera
 Coleman Wong
 Jordan Thompson
-Elmer Møller
+Elmer Moller
 Jan Choinski
 Titouan Droguet
 Mackenzie McDonald
 Otto Virtanen
-Dušan Lajovic
+Dusan Lajovic
 Andrea Pellegrino
 Shintaro Mochizuki
 Christopher O'Connell
@@ -131,7 +131,7 @@ Marco Trungelliti
 Dane Sweeny
 Martin Damm
 Nikoloz Basilashvili
-Daniel Mérida
+Daniel Merida
 Jack Pinnington Jones
 Nicolai Budkov Kjaer
 Henrique Rocha
@@ -141,7 +141,7 @@ Moez Echargui
 Chris Rodesch
 Francesco Passaro
 Billy Harris
-Arthur Géa
+Arthur Gea
 Michael Zheng
 Kyrian Jacquet
 Liam Draxl
@@ -149,10 +149,10 @@ Zsombor Piros
 Lloyd Harris
 Yunchaokete Bu
 Martin Landaluce
-Nicolás Jarry
-Gaël Monfils
+Nicolas Jarry
+Gael Monfils
 Ugo Blanchet
-Lukáš Klein
+Lukas Klein
 David Goffin
 Jaime Faria
 Mark Lajal
@@ -162,30 +162,30 @@ Stefano Travaglia
 Colton Smith
 Alex Bolt
 Rei Sakamoto
-Roberto Carballés Baena
+Roberto Carballes Baena
 Yoshihito Nishioka
 Luka Mikrut
 Leandro Riedi
 Elias Ymer
-Jérôme Kym
+Jerome Kym
 Harold Mayot
 Alex Barrena
 Arthur Fery
 Guy Den Ouden
-Joel Schwärzler
+Joel Schwarzler
 Borna Coric
 Jay Clarke
-Clément Chidekh
+Clement Chidekh
 Borna Gojo
 Federico Agustin Gomez
-Zdenek Kolár
+Zdenek Kolar
 Jurij Rodionov
 Daniil Glinka
-Nicolás Mejía
+Nicolas Mejia
 Vitaliy Sachko
 Bernard Tomic
 Pierre Hugues Herbert
-Clément Tabur
+Clement Tabur
 Toby Samuel
 Justin Engel
 Pablo Llamas Ruiz
