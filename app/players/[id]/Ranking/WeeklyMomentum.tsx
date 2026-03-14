@@ -116,7 +116,7 @@ export default function WeeklyMomentum({ data, selectedYear = "all" }: Props) {
   const outOfRangeCount = chartData.filter((d) => d.isOutOfRange).length;
 
   return (
-    <div className="rounded-2xl border border-gray-800 bg-gray-900/80 p-4 h-[750px]">
+    <div className="rounded-2xl border border-gray-600 bg-gray-800/90 p-4 h-[750px]">
       {/* Header row */}
       <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
         <p className="text-base text-gray-400 font-semibold">

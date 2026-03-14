@@ -57,7 +57,7 @@ function ageAt(birthdate: string, eventDate: string): string {
 /* ── greedy lane layout ────────────────────────────────────────── */
 // Milestones are always rendered in the top margin area (never over the chart).
 // We only need to assign non-overlapping horizontal levels (rows).
-const CALLOUT_ROW_H = 54;  // px per row (boxH=40 + gap=14)
+const CALLOUT_ROW_H = 82;  // px per row (boxH=68 + gap=14)
 const CALLOUT_TOP   = 4;  // y offset of first row inside the SVG
 
 function computeLayout(
@@ -65,8 +65,8 @@ function computeLayout(
   dataLen: number,
   dataDates: string[],
 ): Map<string, { level: number }> {
-  const LEFT_PAD = 70, PLOT_W = 680;
-  const BOX_W = 120, MARGIN = 8;
+  const LEFT_PAD = 80, PLOT_W = 800;
+  const BOX_W = 170, MARGIN = 20;
 
   const placed: { xL: number; xR: number; level: number }[] = [];
   const result = new Map<string, { level: number }>();
@@ -108,11 +108,16 @@ function MilestoneDot(props: any): React.ReactElement<SVGElement> {
     if (!milestone) return baseDot;
 
     const { label, color, age, level } = milestone;
-    const line1 = `1st ${label}`;
+    const line1 = label === '#1' ? '1st No. 1' : `1st ${label}`;
     const line2 = age;
-    const charW = 7.5;
-    const boxW = Math.max(100, Math.max(line1.length, line2.length) * charW + 18);
-    const boxH = 40;
+    const line3 = (() => {
+      try {
+        return new Date(payload.iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+      } catch { return ''; }
+    })();
+    const charW = 9;
+    const boxW = Math.max(130, Math.max(line1.length, line2.length, line3.length) * charW + 22);
+    const boxH = 68;
     const arrowH = 8;
 
     // Always in top margin: level 0 starts at CALLOUT_TOP
@@ -137,15 +142,22 @@ function MilestoneDot(props: any): React.ReactElement<SVGElement> {
         <path d={`M ${cx - 7} ${boxTop + boxH} L ${cx} ${boxTop + boxH + arrowH} L ${cx + 7} ${boxTop + boxH}`}
           fill="none" stroke={color} strokeWidth={1.4} strokeLinejoin="round" />
         {/* text line 1 */}
-        <text x={cx} y={boxTop + 17} textAnchor="middle"
-          fontSize={12} fontWeight={700} fill={color}>
+        <text x={cx} y={boxTop + 20} textAnchor="middle"
+          fontSize={15} fontWeight={700} fill={color}>
           {line1}
         </text>
         {/* text line 2 – age */}
         {line2 && (
-          <text x={cx} y={boxTop + 32} textAnchor="middle"
-            fontSize={11} fontWeight={500} fill="#cbd5e1">
+          <text x={cx} y={boxTop + 39} textAnchor="middle"
+            fontSize={13} fontWeight={500} fill="#cbd5e1">
             Age {line2}
+          </text>
+        )}
+        {/* text line 3 – date */}
+        {line3 && (
+          <text x={cx} y={boxTop + 57} textAnchor="middle"
+            fontSize={12} fontWeight={400} fill="#94a3b8">
+            {line3}
           </text>
         )}
         {baseDot}
@@ -360,7 +372,7 @@ export default function RankHistory({ playerId, birthdate, narrativeSlot }: Rank
       <h2 className="text-xl font-semibold mb-2 text-center w-full">ATP Ranking week-by-week</h2>
       {yearSelector('chart')}
 
-      <div className="mb-6 h-[56rem] rounded-2xl border border-gray-800 bg-gray-900/80 p-4">
+      <div className="mb-6 h-[64rem] rounded-2xl border border-gray-600 bg-gray-800/90 p-4">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData} margin={{ top: 240, right: 30, left: 20, bottom: 20 }}>
             <CartesianGrid stroke="#374151" strokeDasharray="5 5" />
@@ -402,8 +414,8 @@ export default function RankHistory({ playerId, birthdate, narrativeSlot }: Rank
             <Line
               type="monotone"
               dataKey="rank"
-              stroke="#8b5cf6"
-              strokeWidth={0.5}
+              stroke="#a78bfa"
+              strokeWidth={2}
               dot={<MilestoneDot milestoneMap={milestoneMap} />}
               isAnimationActive={false}
             />
