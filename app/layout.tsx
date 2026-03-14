@@ -30,6 +30,9 @@ export const metadata: Metadata = {
     template: '%s - TennisMyLife',
   },
   description: 'Tennis data, rankings, stats and records.',
+  openGraph: {
+    siteName: 'TennisMyLife',
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
