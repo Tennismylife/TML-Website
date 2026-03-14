@@ -17,6 +17,7 @@ WITH ordered_wins AS (
   FROM "Match" m
   WHERE m.status = TRUE
     AND m.winner_age IS NOT NULL
+    AND m.winner_id IS NOT NULL
 ),
 
 -- JSON totale

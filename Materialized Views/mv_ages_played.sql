@@ -11,7 +11,7 @@ WITH base AS (
     COALESCE(m.round, 'Unknown') AS round,
     COALESCE(m.best_of::text, 'Unknown') AS best_of
   FROM "Match" m
-  WHERE m.status = TRUE AND m.winner_age IS NOT NULL
+  WHERE m.status = TRUE AND m.winner_age IS NOT NULL AND m.winner_id IS NOT NULL
 
   UNION ALL
 
@@ -24,7 +24,7 @@ WITH base AS (
     COALESCE(m.round, 'Unknown') AS round,
     COALESCE(m.best_of::text, 'Unknown') AS best_of
   FROM "Match" m
-  WHERE m.status = TRUE AND m.loser_age IS NOT NULL
+  WHERE m.status = TRUE AND m.loser_age IS NOT NULL AND m.loser_id IS NOT NULL
 ),
 
 ordered AS (

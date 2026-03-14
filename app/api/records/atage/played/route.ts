@@ -45,60 +45,68 @@ export async function GET(request: NextRequest) {
     // =====================================================
     // CASE 1 → 0 o 1 filtro → usa la materialized view
     // =====================================================
+    let mvFailed = false;
     if (filtersCount <= 1) {
-      const data = await prisma.mVPlayedAges.findMany({
-        select: {
-          player_id: true,
-          ages_json: true,
-          ages_by_surface_json: true,
-          ages_by_level_json: true,
-          ages_by_round_json: true,
-          ages_by_best_of_json: true,
-        },
-      });
+      try {
+        const data = await prisma.mVPlayedAges.findMany({
+          select: {
+            player_id: true,
+            ages_json: true,
+            ages_by_surface_json: true,
+            ages_by_level_json: true,
+            ages_by_round_json: true,
+            ages_by_best_of_json: true,
+          },
+        });
 
-      const players = await prisma.player.findMany({
-        where: { id: { in: data.map(d => d.player_id) } },
-        select: { id: true, player: true, ioc: true },
-      });
+        const players = await prisma.player.findMany({
+          where: { id: { in: data.map(d => d.player_id) } },
+          select: { id: true, player: true, ioc: true },
+        });
 
-      playersData = players.map(p => {
-        const d = data.find(x => x.player_id === p.id);
-        if (!d) return null;
+        playersData = players.map(p => {
+          const d = data.find(x => x.player_id === p.id);
+          if (!d) return null;
 
-        // selezione età corretta
-        let selectedAges: Record<string, number> = (d.ages_json as any) ?? {};
+          // selezione età corretta
+          let selectedAges: Record<string, number> = (d.ages_json as any) ?? {};
 
-        if (selectedSurfaces.length === 1)
-          selectedAges = (d.ages_by_surface_json as any)?.[selectedSurfaces[0]] ?? {};
+          if (selectedSurfaces.length === 1)
+            selectedAges = (d.ages_by_surface_json as any)?.[selectedSurfaces[0]] ?? {};
 
-        else if (selectedLevels.length === 1)
-          selectedAges = (d.ages_by_level_json as any)?.[selectedLevels[0]] ?? {};
+          else if (selectedLevels.length === 1)
+            selectedAges = (d.ages_by_level_json as any)?.[selectedLevels[0]] ?? {};
 
-        else if (selectedRounds.length === 1)
-          selectedAges = (d.ages_by_round_json as any)?.[selectedRounds[0]] ?? {};
+          else if (selectedRounds.length === 1)
+            selectedAges = (d.ages_by_round_json as any)?.[selectedRounds[0]] ?? {};
 
-        else if (selectedBestOf.length === 1)
-          selectedAges = (d.ages_by_best_of_json as any)?.[String(selectedBestOf[0])] ?? {};
+          else if (selectedBestOf.length === 1)
+            selectedAges = (d.ages_by_best_of_json as any)?.[String(selectedBestOf[0])] ?? {};
 
-        // count matches with age in the requested range
-        // ages_json maps match index -> age, so values are ages
-        const playedAtAge = Object.values(selectedAges).filter(age => after ? (Number(age) >= targetAge) : (Number(age) <= targetAge)).length;
-        if (playedAtAge === 0) return null;
+          // count matches with age in the requested range
+          // ages_json maps match index -> age, so values are ages
+          const playedAtAge = Object.values(selectedAges).filter(age => after ? (Number(age) >= targetAge) : (Number(age) <= targetAge)).length;
+          if (playedAtAge === 0) return null;
 
-        return {
-          id: p.id,
-          name: p.player,
-          ioc: p.ioc || '',
-          played_at_age: playedAtAge,
-        };
-      }).filter(Boolean) as typeof playersData;
+          return {
+            id: p.id,
+            name: p.player,
+            ioc: p.ioc || '',
+            played_at_age: playedAtAge,
+          };
+        }).filter(Boolean) as typeof playersData;
+      } catch (mvError) {
+        // Materialized view unavailable – fall back to direct match query
+        console.error('[atage/played] MV query failed, falling back to direct query:', mvError);
+        mvFailed = true;
+      }
     }
 
     // =====================================================
     // CASE 2 → 2+ filtri → fetch dinamico (winner + loser)
+    // Also used as fallback when the MV is unavailable
     // =====================================================
-    else {
+    if (filtersCount > 1 || mvFailed) {
       const where: any = {
         ...(selectedSurfaces.length > 0 && { surface: { in: selectedSurfaces } }),
         ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),

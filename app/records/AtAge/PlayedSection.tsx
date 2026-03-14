@@ -139,7 +139,12 @@ export default function PlayedSection({
       query.set('limit', String(limit));
 
       const res = await fetch(`/api/records/atage/played?${query.toString()}`);
-      if (!res.ok) throw new Error(`Failed to fetch: ${res.statusText}`);
+      if (!res.ok) {
+        const errText = await res.text().catch(() => '');
+        let errDetail = '';
+        try { const j = JSON.parse(errText); errDetail = j?.error ?? errText; } catch { errDetail = errText; }
+        throw new Error(`Failed to fetch (${res.status})${errDetail ? ': ' + errDetail.slice(0, 120) : ''}`);
+      }
       const fetchedData: Player[] = await res.json();
       setData(Array.isArray(fetchedData) ? fetchedData : []);
       setPage(1);
