@@ -813,11 +813,11 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
           ) : undefined
         }
         serverBanner={
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col w-full">
+            <CurrentRankingBanner playerId={player.id} />
             <h1 className="text-3xl font-bold text-center w-full">
               {player.atpname || player.player} ATP Ranking
             </h1>
-            <CurrentRankingBanner playerId={player.id} />
           </div>
         }
       />

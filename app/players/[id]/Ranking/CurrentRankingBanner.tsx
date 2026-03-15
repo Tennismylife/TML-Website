@@ -32,7 +32,7 @@ export default async function CurrentRankingBanner({ playerId }: Props) {
     : null;
 
   return (
-    <div className="mb-5 flex flex-wrap items-center justify-end gap-4">
+    <div className="mb-5 flex flex-wrap items-center justify-start gap-4">
       <div className="flex items-center gap-2 bg-gray-900/90 border border-gray-700 rounded-lg px-4 py-2 shadow">
         <div className="flex flex-col items-center justify-center bg-yellow-500/15 border border-yellow-500/30 rounded px-1.5 py-0.5 min-w-[32px]">
           <span className="text-[9px] font-black text-yellow-400 tracking-[0.2em] uppercase leading-none">ATP</span>
