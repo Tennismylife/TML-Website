@@ -85,8 +85,37 @@ export default function Page() {
         <DataFileListClient full={true} initialFiles={initialFiles} />
       </div>
 
+      {/* Sponsored banner */}
+      <div className="mt-12 mb-2 mx-6">
+        <a
+          href="https://app.brckt.io"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex flex-col sm:flex-row items-center gap-4 w-full bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border border-yellow-500/40 rounded-xl px-6 py-4 shadow-lg hover:border-yellow-400 transition-colors group"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/Brckt.png"
+            alt="Brckt – Tournament bracket software"
+            className="h-14 w-auto object-contain flex-shrink-0"
+          />
+          <div className="flex-1 text-center sm:text-left">
+            <p className="text-xs font-semibold uppercase tracking-widest text-yellow-400 mb-0.5">Sponsored</p>
+            <p className="text-base font-bold text-white group-hover:text-yellow-300 transition-colors">
+              Brckt — Predict ATP & WTA tournament brackets
+            </p>
+            <p className="text-sm text-gray-400 mt-0.5">
+              Pick your winners round by round and compete against friends. Who will lift the trophy? Make your predictions on ATP and WTA draws and find out!
+            </p>
+          </div>
+          <span className="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-yellow-400 group-hover:text-yellow-300 flex-shrink-0">
+            Try it free →
+          </span>
+        </a>
+      </div>
+
       {/* Documentation section (full-width background, content centered) */}
-      <section className="mt-12 w-full bg-gray-800/40 py-10">
+      <section className="mt-4 w-full bg-gray-800/40 py-10">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-xl font-semibold text-gray-100 mb-3 text-center">Documentation</h2>
         </div>
