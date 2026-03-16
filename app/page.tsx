@@ -55,7 +55,7 @@ export const metadata = {
   twitter: { card: 'summary_large_image', images: [new URL('/og/site-preview.png', METADATA_BASE).toString()] },
   alternates: { canonical: '/' }
 } as const; 
-    )}, 
+  } as const;
     { href: "/blog", title: "Blog", subtitle: "Articles & Analysis", description: "In-depth articles and commentary on tennis statistics, methods and insights.", colorClass: "text-indigo-400 group-hover:text-indigo-300", accentColor: "#818cf8", icon: (
       <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 20h9" />
