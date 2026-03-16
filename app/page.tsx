@@ -55,56 +55,6 @@ export const metadata = {
   twitter: { card: 'summary_large_image', images: [new URL('/og/site-preview.png', METADATA_BASE).toString()] },
   alternates: { canonical: '/' }
 } as const; 
-
-export default async function HomePage() {
-
-  const navItems: NavItem[] = [
-    { href: "/tournaments", title: "Tournaments", subtitle: "Calendar & Results", description: "Browse upcoming and past tournaments with full draws, schedules, surfaces, and final results. Filter by level (Grand Slam, ATP 1000/500/250) and view match-by-match details.", colorClass: "text-rose-400 group-hover:text-rose-300", accentColor: "#fb7185", icon: (
-      <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M8 21h8M12 17v4m7-14V5H5v2a5 5 0 0 0 5 5h4a5 5 0 0 0 5-5Z" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M5 7H4a3 3 0 0 0 3 3M19 7h1a3 3 0 0 1-3 3" />
-      </svg>
-    )},
-    { href: "/seasons", title: "Seasons", subtitle: "Season Summaries", description: "Explore season-by-season summaries with player form, title lists, key statistics, and notable streaks to understand performance trends over time.", colorClass: "text-emerald-400 group-hover:text-emerald-300", accentColor: "#34d399", icon: (
-      <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3M3 8h18M5 8h14v13H5z" />
-      </svg>
-    )},
-    { href: "/statistics", title: "Statistics", subtitle: "Advanced Metrics", description: "Dive into advanced metrics such as serve and return stats, break/conversion rates, and other analytics with sortable tables and visualizations.", colorClass: "text-cyan-400 group-hover:text-cyan-300", accentColor: "#22d3ee", icon: (
-      <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 3v18h18M7 15v3m5-8v8m5-12v12" />
-      </svg>
-    )},
-    { href: "/h2h", title: "H2H", subtitle: "Head-to-Head", description: "Lookup head-to-head histories between two players with match results, dates, tournaments, and surface breakdowns to see how rivals match up.", colorClass: "text-indigo-400 group-hover:text-indigo-300", accentColor: "#818cf8", icon: (
-      <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h12m0 0-3-3m3 3-3 3M21 17H9m0 0 3 3m-3-3 3-3" />
-      </svg>
-    )},
-    { href: "/player-vs-player", title: "Player vs Player", subtitle: "Player Comparison", description: "Compare two players side-by-side across multiple metrics: wins, surface records, ranking history, head-to-head, and recent form to spot strengths and weaknesses.", colorClass: "text-pink-400 group-hover:text-pink-300", accentColor: "#f472b6", icon: (
-      <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 0 1-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8Z" />
-      </svg>
-    )},
-    { href: "/recordsranking", title: "Ranking Records", subtitle: "ATP Ranking Records", description: "Discover who leads the records for most weeks at No. x, wins at No. x, and best ranking at No. x.. Top x, streaks, end of the season rankings", colorClass: "text-yellow-400 group-hover:text-yellow-300", accentColor: "#facc15", icon: (
-      <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 0 1-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8Z" />
-      </svg>
-    )},
-    { href: "/ranking", title: "Rankings", subtitle: "All ATP Rankings Reconstructed Week-by-Week", description: "Explore ATP rankings with date selector, point breakdowns, and quick filters to view weekly", subnote: { text: "This website supports the campaign to have Guillermo Vilas declared world number one", link: "/ranking", color: "#ff77b2" }, colorClass: "text-lime-400 group-hover:text-lime-300", accentColor: "#a3e635", icon: (
-      <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18M6 7v11M18 7v11M6 18h12" />
-      </svg>
-    )},
-
-    { href: "/rankingtables", title: "Rankings Tables", subtitle: "Historical Systems", description: "Browse ranking tables for different historical systems (1973, 1974–75, 1976–78, etc.)", badge: { emoji: "🌟", text: "EXCLUSIVE", style: "street", textColor: "#ff77b2" }, colorClass: "text-amber-400 group-hover:text-amber-300", accentColor: "#f59e0b", icon: (
-      <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18M6 7v11M18 7v11M6 18h12" />
-      </svg>
-    )},
-    { href: "/tennis-match-database", title: "TML Database", subtitle: "Official Match DB", description: "Official TennisMyLife match database page with CSV downloads, documentation, and dataset access.", colorClass: "text-slate-400 group-hover:text-slate-300", accentColor: "#94a3b8", icon: (
-      <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor" stroke="none">
-        <path d="M12 .297c-6.6 0-12 5.4-12 12 0 5.3 3.4 9.8 8.2 11.4.6.1.8-.3.8-.6v-2c-3.3.7-4-1.4-4-1.4-.6-1.5-1.4-1.9-1.4-1.9-1.1-.8.1-.8.1-.8 1.2.1 1.9 1.3 1.9 1.3 1.1 1.9 2.9 1.4 3.6 1 .1-.8.4-1.4.8-1.7-2.7-.3-5.6-1.4-5.6-6 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2.9-.3 1.8-.4 2.8-.4s1.9.1 2.8.4c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.8 1.2 3.1 0 4.6-2.9 5.7-5.6 6 .5.4.9 1.1.9 2.3v3.5c0 .3.2.7.8.6 4.8-1.6 8.2-6.2 8.2-11.4 0-6.6-5.4-12-12-12z" />
-      </svg>
     )}, 
     { href: "/blog", title: "Blog", subtitle: "Articles & Analysis", description: "In-depth articles and commentary on tennis statistics, methods and insights.", colorClass: "text-indigo-400 group-hover:text-indigo-300", accentColor: "#818cf8", icon: (
       <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
