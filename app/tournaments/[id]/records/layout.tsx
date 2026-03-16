@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import React from 'react';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
+import { shouldIndexRecords } from '@/lib/getTournamentName';
 import CountModalOutlet from '@/components/CountModalOutlet';
 import AgesModalOutlet from '@/components/AgesModalOutlet';
 import PercentageModalOutlet from '@/components/PercentageModalOutlet';
@@ -243,6 +244,13 @@ export async function generateMetadata({ params, searchParams }: any): Promise<M
     },
     alternates: { canonical: canonicalFull },
   };
+
+  // Noindex all records pages for minor tournaments.
+  // Uses Tournament.category and Tournament.years from the DB:
+  // - G/M/F/O always indexed; 250/500 only indexed if years contains >= 2020.
+  if (!shouldIndexRecords(tournament?.category, tournament?.years)) {
+    baseMeta.robots = { index: false, follow: true };
+  }
 
   return baseMeta;
 }

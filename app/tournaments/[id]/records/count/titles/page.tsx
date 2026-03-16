@@ -5,7 +5,7 @@ import Link from 'next/link';
 import ViewRecordsCTA from '../../ViewRecordsCTA';
 import CountFull from '../_components/CountFull';
 import TournamentHeader from '../../../TournamentHeader';
-import { getTournamentName } from '@/lib/getTournamentName';
+import { getTournamentName, shouldIndexRecords } from '@/lib/getTournamentName';
 import { getCountSection } from '@/lib/records/count';
 import Script from 'next/script';
 import { prisma } from '@/lib/prisma';
@@ -24,17 +24,23 @@ export async function generateMetadata({ params }: PageParams) {
   const description = `ATP men's singles record: most ${tournamentName} titles in the Open Era. Interactive table with counts and years won.`;
   const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
 
-  // Resolve canonical tournament slug (prefer slug for URLs)
+  // Resolve canonical tournament slug (prefer slug for URLs) and fetch category for robots
   let canonicalSlug = String(id);
+  let tournamentCategory: any = null;
+  let tournamentYears: any = null;
   if (/^\d+$/.test(String(id))) {
     const canonicalId = await resolveCanonicalTourneyId(String(id));
     if (canonicalId) {
-      const t = await prisma.tournament.findUnique({ where: { id: parseInt(canonicalId, 10) }, select: { slug: true } });
+      const t = await prisma.tournament.findUnique({ where: { id: parseInt(canonicalId, 10) }, select: { slug: true, category: true, years: true } });
       canonicalSlug = t?.slug ?? canonicalId;
+      tournamentCategory = t?.category;
+      tournamentYears = t?.years ?? null;
     }
   } else {
-    const t = await prisma.tournament.findUnique({ where: { slug: String(id) }, select: { slug: true } });
+    const t = await prisma.tournament.findUnique({ where: { slug: String(id) }, select: { slug: true, category: true, years: true } });
     canonicalSlug = t?.slug ?? String(id);
+    tournamentCategory = t?.category;
+    tournamentYears = t?.years ?? null;
   }
 
   const ogUrl = `${site}/tournaments/${canonicalSlug}/records/count/titles`;
@@ -68,7 +74,7 @@ export async function generateMetadata({ params }: PageParams) {
     twitter: { card: 'summary_large_image', title, description, images: [ogImage] },
     alternates: { canonical: ogUrl },
     robots: {
-      index: true,
+      index: shouldIndexRecords(tournamentCategory, tournamentYears),
       follow: true,
       maxSnippet: -1,
       maxImagePreview: 'large',

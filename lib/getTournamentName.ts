@@ -69,6 +69,55 @@ export async function getTournamentName(id: string): Promise<string> {
  * Resolves the slug string for a tournament given either its numeric id or slug.
  * If `id` is already non-numeric it is returned as-is.
  */
+/**
+ * Extracts all category string values from a Json? field (string | array | object).
+ */
+function collectCategoryVals(category: any): string[] {
+  const vals: string[] = [];
+  function collect(v: any) {
+    if (typeof v === 'string') vals.push(v.toUpperCase().trim());
+    else if (Array.isArray(v)) v.forEach(collect);
+    else if (v && typeof v === 'object') Object.values(v).forEach(collect);
+  }
+  collect(category);
+  return vals;
+}
+
+/**
+ * Returns true if the tournament should have its records pages indexed.
+ * - Grand Slam, Masters 1000, Finals, Olympics → always indexed.
+ * - ATP 500, ATP 250 → indexed only if the Tournament.years field in the DB
+ *   contains at least one year >= 2020 (i.e. the tournament still runs recently).
+ * - Everything else (category "A", Davis Cup, WCT, etc.) → noindex.
+ *
+ * @param category  Tournament.category (Json?) from the DB
+ * @param years     Tournament.years (Json?) from the DB — array of edition-year strings
+ */
+export function shouldIndexRecords(category: any, years?: any): boolean {
+  const vals = collectCategoryVals(category);
+  const ALWAYS = new Set(['G', 'M', 'F', 'O', 'GRAND_SLAM', 'MASTERS_1000', 'FINALS', 'OLYMPICS']);
+  if (vals.some(v => ALWAYS.has(v))) return true;
+  const RECENT = new Set(['500', '250', 'ATP500', 'ATP250']);
+  if (vals.some(v => RECENT.has(v))) {
+    // years is a Json array of strings like ["1997","2024"]
+    const yearsList: string[] = Array.isArray(years) ? years : [];
+    const maxYear = yearsList.reduce((max, y) => {
+      const n = parseInt(String(y), 10);
+      return isNaN(n) ? max : Math.max(max, n);
+    }, 0);
+    return maxYear >= 2020;
+  }
+  return false;
+}
+
+/**
+ * @deprecated Use shouldIndexRecords() instead.
+ * Kept for backwards compatibility.
+ */
+export function isMajorCategory(category: any): boolean {
+  return shouldIndexRecords(category, [String(new Date().getFullYear())]);
+}
+
 export async function getTournamentSlug(id: string): Promise<string> {
   if (!id) return id;
   // Already a slug (not purely numeric)
