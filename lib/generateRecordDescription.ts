@@ -263,7 +263,8 @@ export function generateRecordDescription(
         description = `Longest Streaks of Consecutive Rounds (select a round)`;
       }
     } else {
-      description = `Longest winning ${subTabLabels.streak[sub] || sub} streak`;
+      const streakLabel = sub === 'wins' ? '' : (subTabLabels.streak[sub] || sub);
+      description = streakLabel ? `Longest winning ${streakLabel} streak` : `Longest winning streak`;
     }
   } else if (selectedRecord === 'h2h') {
     const sub = activeSubTabs.h2h;

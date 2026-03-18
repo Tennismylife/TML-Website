@@ -1,11 +1,21 @@
 import React from 'react';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { Metadata } from 'next';
 import { metadataBase } from '../../../lib/site';
+import {
+  evaluateRecordsPolicy,
+  getRecordsPageTitle,
+  getRecordsRobotsMeta,
+  buildCanonicalQueryString,
+  type RecordFilters,
+} from '../../../lib/seo/records-policy';
 import { generateRecordDescription } from '../../../lib/generateRecordDescription';
 import RecordsFilteredClient from './RecordsFilteredClient';
 import SyncUrlClient from '../../../components/SyncUrlClient';
 import RecordsTabs from '../RecordsTabs';
 import RecordsFilters from '../RecordsFilters.server';
+import RelatedRecordsLinks from '../RelatedRecordsLinks';
 
 import AgesServer from '../Ages/Ages.server';
 import AtAgeServer from '../AtAge/AtAge.server';
@@ -25,6 +35,50 @@ import PercentageServer from '../Percentage/Percentage.server';
 import NeededToServer from '../NeededTo/NeededTo.server';
 import FirstNServer from '../FirstN/FirstN.server';
 import StreakServer from '../Streak/Streak.server';
+
+// ─── Label maps for breadcrumbs ─────────────────────────────────────────────
+const RECORD_LABELS: Record<string, string> = {
+  wins: 'Wins',
+  played: 'Played',
+  titles: 'Titles',
+  entries: 'Entries',
+  count: 'Count',
+  percentage: 'Win Percentage',
+  ages: 'Ages',
+  streak: 'Streak',
+  timespan: 'Timespan',
+  atage: 'At Age',
+  ageofnth: 'Age at Nth',
+  roundsonentries: 'Rounds on Entries',
+  same: 'Same Tournament',
+  seasons: 'Seasons',
+  neededto: 'Needed To',
+  counterseasons: 'Counter Seasons',
+  h2h: 'Head-to-Head',
+  firstn: 'First N',
+  sets: 'Sets',
+};
+
+const SUB_LABELS: Record<string, Record<string, string>> = {
+  ages: {
+    oldest: 'Oldest Main Draw',
+    youngest: 'Youngest Main Draw',
+    'oldest-winners': 'Oldest Title Winners',
+    oldestWinners: 'Oldest Title Winners',
+    'youngest-winners': 'Youngest Title Winners',
+    youngestWinners: 'Youngest Title Winners',
+  },
+  timespan: { entries: 'Between Entries', titles: 'Between Titles', rounds: 'Between Rounds' },
+  roundsonentries: { titles: 'Titles per Entry', round: 'Round per Entry' },
+  same: { wins: 'Wins', played: 'Played', entries: 'Entries', titles: 'Titles', round: 'Round' },
+  seasons: { wins: 'Wins per Season', titles: 'Titles per Season', percentage: 'Win % per Season', round: 'Rounds per Season' },
+  atage: { wins: 'Wins', titles: 'Titles', entries: 'Entries', round: 'Round', slams: 'Slams' },
+  ageofnth: { wins: 'Nth Win Age', titles: 'Nth Title Age', slams: 'Nth Slam Age' },
+  neededto: { titles: 'Titles' },
+  counterseasons: { round: 'Rounds', wins: 'Wins', titles: 'Titles' },
+  streak: { wins: 'Win Streak', round: 'Round Streak' },
+  h2h: { count: 'H2H Count' },
+};
 
 type Props = {
   params: { slug?: string[] } | Promise<{ slug?: string[] }>;
@@ -217,47 +271,35 @@ export async function generateMetadata(
     { n: nParam, top: topParam }
   );
 
-  const canonicalPath = record
-    ? `/records/${encodeURIComponent(record)}${sub ? '/' + encodeURIComponent(sub) : ''}`
-    : '/records';
-
-  const canonicalParams: Record<string, any> = {};
-  ['surface','level','round','bestOf','top'].forEach(k => {
-    const v = sp[k] ?? sp[`${k}[]`];
-    if (v !== undefined) canonicalParams[k] = v;
-  });
-
-  const query = canonicalizeParamsObj(canonicalParams);
-  const canonicalFull = resolveUrl(canonicalPath) + (query ? `?${query}` : '');
-
-  const isPrincipalCombination =
-    selectedSurfaces.size === 1 &&
-    selectedSurfaces.has('Hard') &&
-    selectedLevels.size === 0 &&
-    !selectedRounds &&
-    selectedBestOf === null;
-
-  // All records pages are indexable regardless of filters.
+  // ── SEO policy ────────────────────────────────────────────────────────────
+  const filtersMeta: RecordFilters = {
+    ...(selectedLevels.size ? { level: Array.from(selectedLevels) } : {}),
+    ...(selectedSurfaces.size ? { surface: Array.from(selectedSurfaces) } : {}),
+    ...(selectedRounds ? { round: selectedRounds } : {}),
+    ...(selectedBestOf != null ? { bestOf: selectedBestOf } : {}),
+  };
+  const policySlug = record ? (sub ? [record, sub] : [record]) : [];
+  const policy = evaluateRecordsPolicy(metadataBase.origin, policySlug, filtersMeta);
+  const pageTitle = getRecordsPageTitle(policySlug, filtersMeta, desc);
+  const robotsMeta = getRecordsRobotsMeta(policy);
 
   return {
-    title: {
-      absolute: `${desc || record || 'Records'} | Tennis Records`,
-    },
+    title: { absolute: pageTitle },
     description: desc || 'TML records and statistics',
     openGraph: {
-      title: `${desc || record || 'Records'} | Tennis Records`,
+      title: pageTitle,
       description: desc || 'TML records and statistics',
       images: [new URL('/og/site-preview.png', metadataBase).toString()],
-      url: canonicalFull,
+      url: policy.canonical,
       siteName: 'TennisMyLife',
     },
     twitter: {
-      title: `${desc || record || 'Records'} | Tennis Records`,
+      title: pageTitle,
       description: desc || 'TML records and statistics',
       images: [new URL('/og/site-preview.png', metadataBase).toString()],
     },
-    alternates: { canonical: canonicalFull },
-    robots: { index: true, follow: true },
+    alternates: { canonical: policy.canonical },
+    robots: robotsMeta,
   };                                        
 }
 
@@ -269,6 +311,16 @@ export default async function SlugPage({ params, searchParams }: Props) {
   const sub = slug[1] ? kebabToKey(slug[1]) : null;
 
   const hasQueryParams = Object.keys(sp || {}).length > 0;
+
+  // Redirect streak/round to default round=F if no round param is set
+  if (record === 'streak' && (sub === 'round') && !sp.round) {
+    const otherParams = Object.entries(sp)
+      .filter(([k]) => k !== 'round')
+      .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`)
+      .join('&');
+    const qs = otherParams ? `round=F&${otherParams}` : 'round=F';
+    redirect(`/records/streak/round?${qs}`);
+  }
 
   const activeSubTabsDefault: Record<string,string> = {
     ages: 'oldest',
@@ -360,8 +412,11 @@ export default async function SlugPage({ params, searchParams }: Props) {
     const selectedBestOf = sp.bestOf ? Number(sp.bestOf) : null;
     const activeSubResolved = sub ?? (typeof sp.subtab === 'string' ? kebabToKey(sp.subtab) : undefined);
 
-    // Default the displayed round to Finals (F) when visiting CounterSeasons → round without explicit round param
-    const selectedRoundsForDesc = (record === 'counterseasons' && (activeSubResolved === 'round' || sub === 'round')) ? (selectedRounds || 'F') : selectedRounds;
+    // Default the displayed round to Finals (F) when visiting CounterSeasons → round or Streak → round without explicit round param
+    const selectedRoundsForDesc =
+      ((record === 'counterseasons' || record === 'streak') && (activeSubResolved === 'round' || sub === 'round'))
+        ? (selectedRounds || 'F')
+        : selectedRounds;
 
     const nParam = (() => {
       const v = (sp.n ?? sp.seasons);
@@ -385,24 +440,86 @@ export default async function SlugPage({ params, searchParams }: Props) {
       { n: nParam, top: topParam }
     );
 
-    const canonicalUrl = resolveUrl(`/records/${record}${sub ? `/${sub}` : ''}`);
-    const query = canonicalizeParamsObj(sp);
-    const canonicalFull = canonicalUrl + (query ? `?${query}` : '');
+    // ── SEO policy (render path) ──────────────────────────────────────────
+    const filtersForPolicy: RecordFilters = {
+      ...(selectedLevels.size ? { level: Array.from(selectedLevels) } : {}),
+      ...(selectedSurfaces.size ? { surface: Array.from(selectedSurfaces) } : {}),
+      ...(selectedRounds ? { round: selectedRounds } : {}),
+      ...(selectedBestOf != null ? { bestOf: selectedBestOf } : {}),
+    };
+    const policySlugRender = sub ? [record, sub] : [record];
+    const renderPolicy = evaluateRecordsPolicy(metadataBase.origin, policySlugRender, filtersForPolicy);
+    const canonicalFull = renderPolicy.canonical;
+
+    const subLabelResolved = record && activeSubResolved
+      ? (SUB_LABELS[record]?.[activeSubResolved] ?? SUB_LABELS[record]?.[kebabToKey(activeSubResolved) ?? ''] ?? activeSubResolved)
+      : null;
+
+    const breadcrumbJsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', metadataBase).toString() },
+        { '@type': 'ListItem', position: 2, name: 'Records', item: new URL('/records', metadataBase).toString() },
+        ...(record ? [{ '@type': 'ListItem', position: 3, name: RECORD_LABELS[record] ?? record, item: new URL(`/records/${record}`, metadataBase).toString() }] : []),
+        ...(record && activeSubResolved ? [{ '@type': 'ListItem', position: 4, name: subLabelResolved ?? activeSubResolved, item: new URL(`/records/${record}/${activeSubResolved}`, metadataBase).toString() }] : []),
+      ],
+    };
 
     return (
-      <main className="w-full min-h-screen p-4 bg-gray-900 text-white">
-        <React.Suspense fallback={<div className="text-gray-300">Loading…</div>}>
-          <SyncUrlClient url={canonicalFull} />
-          {description && (
-            <h1 className="mb-10 text-center text-3xl sm:text-4xl font-semibold text-white">
-              {description}
-            </h1>
-          )}
-          <RecordsTabs activeTab={record} activeSubTab={activeSubResolved || null} />
-          <RecordsFilters activeTab={record} activeSubTab={activeSubResolved || null} searchParams={sp} />
-          <ServerComponent searchParams={sp} record={record} sub={activeSubResolved} canonicalUrl={canonicalFull} description={description} />
-        </React.Suspense>
-      </main>
+      <>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+        <main className="w-full min-h-screen p-4 bg-gray-900 text-white">
+          <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1 text-sm text-gray-400 mb-4">
+            <Link href="/" className="hover:text-white transition-colors">Home</Link>
+            <span aria-hidden="true" className="mx-1 text-gray-600">/</span>
+            <Link href="/records" className="hover:text-white transition-colors">Records</Link>
+            {record && (
+              <>
+                <span aria-hidden="true" className="mx-1 text-gray-600">/</span>
+                {activeSubResolved
+                  ? <Link href={`/records/${record}`} className="hover:text-white transition-colors">{RECORD_LABELS[record] ?? record}</Link>
+                  : <span className="text-white" aria-current="page">{RECORD_LABELS[record] ?? record}</span>
+                }
+              </>
+            )}
+            {record && activeSubResolved && (
+              <>
+                <span aria-hidden="true" className="mx-1 text-gray-600">/</span>
+                <span className="text-white" aria-current="page">{subLabelResolved}</span>
+              </>
+            )}
+          </nav>
+          <React.Suspense fallback={<div className="text-gray-300">Loading…</div>}>
+            <SyncUrlClient url={canonicalFull} />
+            {(() => {
+              const h1 = getRecordsPageTitle(
+                policySlugRender,
+                filtersForPolicy,
+                description,
+              ).replace(/ \| TennisMyLife$/, '').replace(/ \| Tennis Records$/, '');
+              return h1 ? (
+                <h1 className="mb-10 text-center text-3xl sm:text-4xl font-semibold text-white">
+                  {h1}
+                </h1>
+              ) : null;
+            })()}
+            <RecordsTabs activeTab={record} activeSubTab={activeSubResolved || null} />
+            <RecordsFilters activeTab={record} activeSubTab={activeSubResolved || null} searchParams={sp} />
+            <ServerComponent searchParams={sp} record={record} sub={activeSubResolved} canonicalUrl={canonicalFull} description={description} />
+            <RelatedRecordsLinks
+              currentTab={record}
+              currentSub={activeSubResolved || null}
+              filters={{
+                level: selectedLevels.size ? Array.from(selectedLevels) : undefined,
+                surface: selectedSurfaces.size ? Array.from(selectedSurfaces) : undefined,
+                round: selectedRounds || undefined,
+                bestOf: selectedBestOf,
+              }}
+            />
+          </React.Suspense>
+        </main>
+      </>
     );
   }
 

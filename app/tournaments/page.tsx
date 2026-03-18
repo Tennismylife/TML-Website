@@ -117,6 +117,16 @@ export default function TournamentsPage() {
           <p className="mt-2 text-xs text-gray-500">
             (Individual tournaments are identified by the IDs used by the official ATP website)
           </p>
+          <p className="mt-4 text-sm text-gray-400">
+            Explore records by tournament level:{' '}
+            <a href="/records/wins?level=G" className="text-cyan-400 hover:text-cyan-200 underline">Grand Slam</a>
+            {' · '}
+            <a href="/records/wins?level=M" className="text-cyan-400 hover:text-cyan-200 underline">Masters 1000</a>
+            {' · '}
+            <a href="/records/wins?level=F" className="text-cyan-400 hover:text-cyan-200 underline">ATP Finals</a>
+            {' · '}
+            <a href="/records" className="text-cyan-400 hover:text-cyan-200 underline">All Records →</a>
+          </p>
         </motion.div>
       </div>
 

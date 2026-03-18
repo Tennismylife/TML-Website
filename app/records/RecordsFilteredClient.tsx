@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import { RECORDS_NOINDEX_ENABLED } from '@/lib/seo/records-policy';
 
 interface Props {
   record: string | null;
@@ -21,11 +22,13 @@ export default function RecordsFilteredClient({ record, sub, filters = {}, canon
       document.title = baseTitle ? `${baseTitle} — Filters applied` : 'Filters applied';
     } catch (err) {}
 
-    // set meta robots noindex,follow
-    const metaRobots = document.querySelector('meta[name="robots"]') || document.createElement('meta');
-    metaRobots.setAttribute('name', 'robots');
-    metaRobots.setAttribute('content', 'noindex, follow');
-    if (!document.querySelector('meta[name="robots"]')) document.head.appendChild(metaRobots);
+    // set meta robots noindex,follow (only when the master switch is on)
+    if (RECORDS_NOINDEX_ENABLED) {
+      const metaRobots = document.querySelector('meta[name="robots"]') || document.createElement('meta');
+      metaRobots.setAttribute('name', 'robots');
+      metaRobots.setAttribute('content', 'noindex, follow');
+      if (!document.querySelector('meta[name="robots"]')) document.head.appendChild(metaRobots);
+    }
 
     // set canonical link to main page
     if (canonicalUrl) {

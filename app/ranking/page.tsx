@@ -237,6 +237,12 @@ export default function RankingPage() {
         All ATP Rankings Reconstructed<br />
         Week-by-Week
       </h1>
+      <p className="text-center text-sm text-gray-400 -mt-4 mb-6">
+        Looking for all-time records by ranking?{' '}
+        <a href="/recordsranking" className="text-yellow-400 hover:text-yellow-200 underline">Ranking Records →</a>
+        {' '}·{' '}
+        <a href="/records" className="text-yellow-400 hover:text-yellow-200 underline">All Match Records →</a>
+      </p>
 
       {/* DISCLAIMER */}
       <div className="w-full mb-6 p-4 bg-gray-800 rounded-lg border border-gray-700">

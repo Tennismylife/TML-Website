@@ -215,9 +215,48 @@ const categories: Category[] = [
   },
 ];
 
+// ─── Filtered quick-links ─────────────────────────────────────────────────────
+
+type FilteredLink = { label: string; href: string };
+type FilterGroup = { title: string; color: string; links: FilteredLink[] };
+
+const CORE_RECORDS: { tab: string; sub: string | null; label: string }[] = [
+  { tab: 'wins',           sub: null,         label: 'Wins' },
+  { tab: 'titles',         sub: null,         label: 'Titles' },
+  { tab: 'entries',        sub: null,         label: 'Entries' },
+  { tab: 'percentage',     sub: null,         label: 'Win %' },
+  { tab: 'streak',         sub: 'wins',       label: 'Win Streak' },
+  { tab: 'streak',         sub: 'round',      label: 'Round Streak' },
+  { tab: 'ages',           sub: 'oldest',     label: 'Oldest in Draw' },
+  { tab: 'ages',           sub: 'youngest',   label: 'Youngest in Draw' },
+  { tab: 'ages',           sub: 'oldest-winners', label: 'Oldest Winner' },
+  { tab: 'ages',           sub: 'youngest-winners', label: 'Youngest Winner' },
+  { tab: 'counterseasons', sub: 'round',      label: 'Counter Seasons' },
+  { tab: 'timespan',       sub: 'titles',     label: 'Timespan Titles' },
+];
+
+function makeFilteredLinks(paramKey: string, paramValue: string) {
+  return CORE_RECORDS.map(r => ({
+    label: r.label,
+    href: `/records/${r.tab}${r.sub ? `/${r.sub}` : ''}?${paramKey}=${encodeURIComponent(paramValue)}`,
+  }));
+}
+
+const filteredGroups: FilterGroup[] = [
+  { title: 'Grand Slam Records',    color: 'from-yellow-600 to-amber-500',   links: makeFilteredLinks('level', 'G') },
+  { title: 'Masters 1000 Records',  color: 'from-blue-600 to-cyan-500',      links: makeFilteredLinks('level', 'M') },
+  { title: 'ATP Finals Records',    color: 'from-rose-600 to-pink-500',      links: makeFilteredLinks('level', 'F') },
+  { title: 'ATP 500 Records',       color: 'from-green-600 to-emerald-500',  links: makeFilteredLinks('level', '500') },
+  { title: 'ATP 250 Records',       color: 'from-purple-600 to-violet-500',  links: makeFilteredLinks('level', '250') },
+  { title: 'Clay Court Records',    color: 'from-orange-700 to-red-600',     links: makeFilteredLinks('surface', 'Clay') },
+  { title: 'Hard Court Records',    color: 'from-sky-700 to-blue-600',       links: makeFilteredLinks('surface', 'Hard') },
+  { title: 'Grass Court Records',   color: 'from-lime-700 to-green-600',     links: makeFilteredLinks('surface', 'Grass') },
+];
+
 // ─── FAQ data ─────────────────────────────────────────────────────────────────
 
-const faqs: { q: string; a: string }[] = [
+// Plain-text version — used only for JSON-LD structured data
+const faqsForSchema: { q: string; a: string }[] = [
   {
     q: 'Who holds the all-time ATP wins record?',
     a: "Jimmy Connors holds the record for most ATP match wins with 1,274 victories. You can explore the full ranking in the Wins Records section, filterable by surface, level and round.",
@@ -245,6 +284,42 @@ const faqs: { q: string; a: string }[] = [
   {
     q: 'How are these tennis records calculated?',
     a: "All records are computed in real-time from TennisMyLife's match database, which contains ATP match data from 1968 onwards. Records can be filtered by surface, tournament level and round.",
+  },
+  {
+    q: 'How far back does the data go?',
+    a: 'The TennisMyLife database covers the Open Era starting from 1968, including all ATP-sanctioned tournaments.',
+  },
+];
+
+// Rich version with internal links — used for page rendering
+const faqs: { q: string; a: React.ReactNode }[] = [
+  {
+    q: 'Who holds the all-time ATP wins record?',
+    a: <>Jimmy Connors holds the record for most ATP match wins with 1,274 victories. Explore the full ranking in the{' '}<Link href="/records/wins" className="text-indigo-400 hover:text-indigo-200 underline">Wins Records</Link>{' '}section, filterable by surface, level and round.</>,
+  },
+  {
+    q: 'Who played the most ATP matches in career?',
+    a: <>Jimmy Connors also leads the &lsquo;matches played&rsquo; ranking with over 1,500 career matches. The{' '}<Link href="/records/played" className="text-indigo-400 hover:text-indigo-200 underline">Played Records</Link>{' '}section lists the complete ranking with filters for surface and tournament level.</>,
+  },
+  {
+    q: 'Who is the youngest ATP title winner ever?',
+    a: <>The{' '}<Link href="/records/ages/youngest-winners" className="text-indigo-400 hover:text-indigo-200 underline">Youngest Title Winners</Link>{' '}section shows the complete all-time ranking of players who won a title at the youngest age, filterable by surface and tournament level.</>,
+  },
+  {
+    q: 'Who is the oldest player in an ATP main draw?',
+    a: <>The{' '}<Link href="/records/ages/oldest" className="text-indigo-400 hover:text-indigo-200 underline">Ages Records</Link>{' '}section tracks both the oldest and youngest players to appear in ATP main draws, covering every level from Grand Slams to 250-level events.</>,
+  },
+  {
+    q: 'What is the longest winning streak in ATP history?',
+    a: <>Guillermo Vilas holds one of the longest winning streaks in ATP history. The{' '}<Link href="/records/streak/wins" className="text-indigo-400 hover:text-indigo-200 underline">Streak Records</Link>{' '}section covers both{' '}<Link href="/records/streak/wins" className="text-indigo-400 hover:text-indigo-200 underline">win streaks</Link>{' '}and{' '}<Link href="/records/streak/round" className="text-indigo-400 hover:text-indigo-200 underline">round-specific streaks</Link>.</>,
+  },
+  {
+    q: 'Can I filter records by surface or tournament level?',
+    a: <>Yes. Every record page includes filters for surface (Hard, Clay, Grass, Carpet), tournament level (Grand Slam, Masters 1000, ATP 500, ATP 250) and round &mdash; try them on the{' '}<Link href="/records/wins" className="text-indigo-400 hover:text-indigo-200 underline">Wins</Link>{' '}or{' '}<Link href="/records/titles" className="text-indigo-400 hover:text-indigo-200 underline">Titles</Link>{' '}page.</>,
+  },
+  {
+    q: 'How are these tennis records calculated?',
+    a: <>All records are computed in real-time from TennisMyLife&apos;s match database, which contains ATP match data from 1968 onwards. Start exploring from the{' '}<Link href="/records/wins" className="text-indigo-400 hover:text-indigo-200 underline">Wins</Link>{' '}or{' '}<Link href="/records/percentage" className="text-indigo-400 hover:text-indigo-200 underline">Win Percentage</Link>{' '}pages.</>,
   },
   {
     q: 'How far back does the data go?',
@@ -282,10 +357,24 @@ const webPageSchema = {
 const faqSchema = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
-  mainEntity: faqs.map(({ q, a }) => ({
+  mainEntity: faqsForSchema.map(({ q, a }) => ({
     '@type': 'Question',
     name: q,
     acceptedAnswer: { '@type': 'Answer', text: a },
+  })),
+};
+
+const itemListSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'ATP Tennis Record Categories',
+  description: 'All record categories available on TennisMyLife: wins, titles, ages, streaks, H2H and more.',
+  url: CANONICAL,
+  itemListElement: categories.map((cat, idx) => ({
+    '@type': 'ListItem',
+    position: idx + 1,
+    name: cat.label,
+    url: new URL(cat.href, 'https://stats.tennismylife.org').toString(),
   })),
 };
 
@@ -302,6 +391,10 @@ export default function RecordsPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
       />
 
       <main className="w-full min-h-screen bg-gray-900 text-white">
@@ -397,6 +490,34 @@ export default function RecordsPage() {
                   </ul>
                 )}
               </article>
+            ))}
+          </div>
+        </section>
+
+        {/* ── Records by Level / Surface ───────────────────────────────────── */}
+        <section className="px-4 pb-12 max-w-7xl mx-auto">
+          <h2 className="text-2xl font-bold mb-6 text-white border-b border-white/10 pb-3">
+            Explore Records by Level &amp; Surface
+          </h2>
+          <div className="flex flex-col gap-8">
+            {filteredGroups.map(group => (
+              <div key={group.title}>
+                <h3 className={`inline-block text-sm font-bold px-3 py-1 rounded-full mb-3 text-white bg-gradient-to-r ${group.color}`}>
+                  {group.title}
+                </h3>
+                <ul className="flex flex-wrap gap-2">
+                  {group.links.map(link => (
+                    <li key={link.href}>
+                      <a
+                        href={link.href}
+                        className="px-3 py-1 rounded-full text-sm bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors border border-white/10"
+                      >
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
           </div>
         </section>

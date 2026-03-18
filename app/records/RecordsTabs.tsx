@@ -247,7 +247,7 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
           onMouseLeave={() => setHoveredTab(null)}
         >
           <Link
-            href={firstSub ? `/records/${encodeURIComponent(tab.key)}?subtab=${encodeURIComponent(firstSub)}` : `/records/${encodeURIComponent(tab.key)}`}
+            href={firstSub ? `/records/${encodeURIComponent(tab.key)}/${encodeURIComponent(firstSub)}` : `/records/${encodeURIComponent(tab.key)}`}
             onClick={(e) => {
               setHoveredTab(null);
               if (firstSub) {
@@ -278,7 +278,7 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
                   {subTabs[tab.key].map(st => (
                     <Link
                       key={st.key}
-                      href={`/records/${encodeURIComponent(tab.key)}?subtab=${encodeURIComponent(st.key)}`}
+                      href={`/records/${encodeURIComponent(tab.key)}/${encodeURIComponent(st.key)}`}
                       onClick={() => { setActiveTab(null); setHoveredTab(null); handleSubtabClick(tab.key, st.key); }}
                       className={subTabClass(st.key)}
                     >

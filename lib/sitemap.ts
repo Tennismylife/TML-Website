@@ -1,4 +1,5 @@
 ﻿import { prisma } from './prisma';
+import { getWhitelistedSitemapPaths } from './seo/records-policy';
 
 export type SitemapEntry = {
   path: string;
@@ -59,9 +60,22 @@ export async function getSitemapEntries(opts?: { excludePlayers?: boolean; exclu
     entries = entries.filter(e => !e.path.startsWith('/records'));
   }
 
-  // global latest match date (used for records pages lastmod)
+  // global latest match date (used for records pages lastmod and whitelist entries)
   const globalMax = await prisma.match.aggregate({ _max: { tourney_date: true } });
   const globalMaxDate = globalMax._max.tourney_date ? new Date(globalMax._max.tourney_date).toISOString().split('T')[0] : undefined;
+
+  // --- RECORDS SEO WHITELIST (filtered /records pages) ---
+  // These are the only filtered /records/* URLs that belong in the sitemap.
+  // They are defined centrally in lib/seo/records-policy.ts.
+  if (!opts?.excludeRecords) {
+    const origin = process.env.NEXT_PUBLIC_SITE_ORIGIN ?? 'https://stats.tennismylife.org';
+    const wlPaths = getWhitelistedSitemapPaths(origin);
+    for (const p of wlPaths) {
+      if (!entries.some(e => e.path === p)) {
+        entries.push({ path: p, lastmod: globalMaxDate });
+      }
+    }
+  }
 
   // --- PLAYERS ---
   // Player profile pages are normally included here; they can be excluded when generating

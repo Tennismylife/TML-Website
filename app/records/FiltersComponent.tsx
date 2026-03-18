@@ -194,6 +194,12 @@ export default function FiltersComponent({
   const filteredLevelList = levelList.filter(l => {
     if (isAtAgeLike && activeSubTab === "wins") return true;
     if (["count","entries","titles","timespan","roundsonentries","round","same"].includes(activeTab) && l === "D") return false;
+    if (activeTab === 'ages' && l === 'D') return false;
+    if (activeTab === "seasons" && ["entries","titles","round"].includes(activeSubTab || "") && l === "D") return false;
+    if (isAtAgeLike && ["entries","titles","round"].includes(activeSubTab || "") && l === "D") return false;
+    if (activeTab === "neededto" && activeSubTab === "titles" && l === "D") return false;
+    if (activeTab === "counterseasons" && ["round","titles"].includes(activeSubTab || "") && l === "D") return false;
+    if (activeTab === "streak" && activeSubTab === "round" && l === "D") return false;
     return true;
   });
 

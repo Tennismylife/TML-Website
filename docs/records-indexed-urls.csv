@@ -1,0 +1,114 @@
+url,tipo,filtri,index,in_sitemap,titolo_seo
+/records,hub,0,true,true,ATP Tennis Records – TennisMyLife
+/records/wins,base,0,true,true,Most wins | Tennis Records
+/records/played,base,0,true,true,Most matches played | Tennis Records
+/records/count,base,0,true,true,Most matches | Tennis Records
+/records/titles,base,0,true,true,Most titles | Tennis Records
+/records/entries,base,0,true,true,Most entries | Tennis Records
+/records/percentage,base,0,true,true,Best percentage | Tennis Records
+/records/ages,base,0,true,true,Ages | Tennis Records
+/records/ages/oldest,base,0,true,true,Oldest player in main draw | Tennis Records
+/records/ages/youngest,base,0,true,true,Youngest player in main draw | Tennis Records
+/records/ages/oldest-winners,base,0,true,true,Oldest Title Winners | Tennis Records
+/records/ages/youngest-winners,base,0,true,true,Youngest Title Winners | Tennis Records
+/records/timespan,base,0,true,true,Biggest timespan between 2 entries | Tennis Records
+/records/timespan/entries,base,0,true,true,Biggest timespan between 2 entries | Tennis Records
+/records/timespan/titles,base,0,true,true,Biggest timespan between 2 titles | Tennis Records
+/records/timespan/rounds,base,0,true,true,Biggest timespan between 2 rounds | Tennis Records
+/records/roundsonentries,base,0,true,true,Most titles on entries | Tennis Records
+/records/roundsonentries/titles,base,0,true,true,Most titles on entries | Tennis Records
+/records/roundsonentries/round,base,0,true,true,Most round on entries | Tennis Records
+/records/same,base,0,true,true,Most wins in same tournament | Tennis Records
+/records/same/wins,base,0,true,true,Most wins in same tournament | Tennis Records
+/records/same/played,base,0,true,true,Most matches played in same tournament | Tennis Records
+/records/same/entries,base,0,true,true,Most entries in same tournament | Tennis Records
+/records/same/titles,base,0,true,true,Most titles in same tournament | Tennis Records
+/records/same/round,base,0,true,true,Most round in same tournament | Tennis Records
+/records/seasons,base,0,true,true,Most wins in same season | Tennis Records
+/records/seasons/wins,base,0,true,true,Most wins in same season | Tennis Records
+/records/seasons/played,base,0,true,true,Most matches played in same season | Tennis Records
+/records/seasons/entries,base,0,true,true,Most entries in same season | Tennis Records
+/records/seasons/titles,base,0,true,true,Most titles in same season | Tennis Records
+/records/seasons/round,base,0,true,true,Most round in same season | Tennis Records
+/records/seasons/percentage,base,0,true,true,Best percentage in a season | Tennis Records
+/records/atage,base,0,true,true,Most wins at (select age) | Tennis Records
+/records/atage/wins,base,0,true,true,Most wins at (select age) | Tennis Records
+/records/atage/played,base,0,true,true,Most matches played at (select age) | Tennis Records
+/records/atage/entries,base,0,true,true,Most entries at (select age) | Tennis Records
+/records/atage/titles,base,0,true,true,Most titles at (select age) | Tennis Records
+/records/atage/slams,base,0,true,true,Most wins in slams at (select age) | Tennis Records
+/records/atage/round,base,0,true,true,Most round at (select age) | Tennis Records
+/records/ageofnth,base,0,true,true,Age of nth win | Tennis Records
+/records/ageofnth/wins,base,0,true,true,Age of nth win | Tennis Records
+/records/ageofnth/played,base,0,true,true,Age of nth match | Tennis Records
+/records/ageofnth/entries,base,0,true,true,Age of nth Entry | Tennis Records
+/records/ageofnth/titles,base,0,true,true,Age of nth Title | Tennis Records
+/records/ageofnth/slams,base,0,true,true,Age of nth slams | Tennis Records
+/records/ageofnth/round,base,0,true,true,Age of nth Round | Tennis Records
+/records/neededto,base,0,true,true,Least tournaments played to win N titles | Tennis Records
+/records/neededto/titles,base,0,true,true,Least tournaments played to win N titles | Tennis Records
+/records/counterseasons,base,0,true,true,Seasons with at least 1 round | Tennis Records
+/records/counterseasons/round,base,0,true,true,Seasons with at least 1 round | Tennis Records
+/records/counterseasons/wins,base,0,true,true,Seasons with at least 1 win | Tennis Records
+/records/counterseasons/titles,base,0,true,true,Seasons with at least 1 title | Tennis Records
+/records/h2h,base,0,true,true,Most H2Hs | Tennis Records
+/records/h2h/count,base,0,true,true,Most H2Hs | Tennis Records
+/records/streak,base,0,true,true,Longest winning wins streak | Tennis Records
+/records/streak/wins,base,0,true,true,Longest winning wins streak | Tennis Records
+/records/streak/round,base,0,true,true,Longest Streaks of Consecutive Rounds | Tennis Records
+/records/ages/oldest-winners?level=F,whitelist,1,true,true,Oldest ATP Finals Title Winners of All Time | Tennis Records
+/records/played?level=M,whitelist,1,true,true,Most Matches Played at Masters 1000 – All-Time Records | Tennis Records
+/records/played?level=F,whitelist,1,true,true,Most Matches Played at ATP Finals – All-Time Records | Tennis Records
+/records/played?round=F,whitelist,1,true,true,Most Finals Played – ATP All-Time Records | Tennis Records
+/records/ages/youngest-winners?level=M,whitelist,1,true,true,Youngest Masters 1000 Title Winners of All Time | Tennis Records
+/records/count?level=M&round=QF,whitelist,2,true,true,Most Masters 1000 Quarterfinals – All-Time ATP Records | Tennis Records
+/records/wins?level=M&round=QF,whitelist,2,true,true,Most Wins in Masters 1000 Quarterfinals – All-Time ATP Records | Tennis Records
+/records/titles?level=G,whitelist,1,true,true,Most Grand Slam Titles – All-Time ATP Records | Tennis Records
+/records/wins?level=G,whitelist,1,true,true,Most Grand Slam Match Wins – All-Time ATP Records | Tennis Records
+/records/played?level=G,whitelist,1,true,true,Most Matches Played at Grand Slams – All-Time ATP Records | Tennis Records
+/records/ages/youngest-winners?level=G,whitelist,1,true,true,Youngest Grand Slam Title Winners – All-Time ATP Records | Tennis Records
+/records/ages/oldest-winners?level=G,whitelist,1,true,true,Oldest Grand Slam Title Winners – All-Time ATP Records | Tennis Records
+/records/titles?level=M,whitelist,1,true,true,Most Masters 1000 Titles – All-Time ATP Records | Tennis Records
+/records/wins?level=M,whitelist,1,true,true,Most Masters 1000 Match Wins – All-Time ATP Records | Tennis Records
+/records/titles?level=F,whitelist,1,true,true,Most ATP Finals Titles – All-Time Records | Tennis Records
+/records/wins?surface=Clay,whitelist,1,true,true,Most Wins on Clay – All-Time ATP Records | Tennis Records
+/records/wins?surface=Grass,whitelist,1,true,true,Most Wins on Grass – All-Time ATP Records | Tennis Records
+/records/wins?surface=Hard,whitelist,1,true,true,Most Wins on Hard Court – All-Time ATP Records | Tennis Records
+/records/titles?surface=Clay,whitelist,1,true,true,Most Titles Won on Clay – All-Time ATP Records | Tennis Records
+/records/titles?surface=Grass,whitelist,1,true,true,Most Titles Won on Grass – All-Time ATP Records | Tennis Records
+/records/streak/wins?surface=Clay,whitelist,1,true,true,Longest Winning Streak on Clay – All-Time ATP Records | Tennis Records
+/records/streak/wins?surface=Grass,whitelist,1,true,true,Longest Winning Streak on Grass – All-Time ATP Records | Tennis Records
+/records/wins?level=G&round=F,whitelist,2,true,true,Most Grand Slam Finals Won – All-Time ATP Records | Tennis Records
+/records/wins?level=G&round=SF,whitelist,2,true,true,Most Grand Slam Semifinals Won – All-Time ATP Records | Tennis Records
+/records/count?level=G&round=QF,whitelist,2,true,true,Most Grand Slam Quarterfinals – All-Time ATP Records | Tennis Records
+/records/wins?level=G&round=QF,whitelist,2,true,true,Most Wins in Grand Slam Quarterfinals – All-Time ATP Records | Tennis Records
+/records/wins?level=M&round=F,whitelist,2,true,true,Most Masters 1000 Finals Won – All-Time ATP Records | Tennis Records
+/records/count?level=G&round=SF,whitelist,2,true,true,Most Grand Slam Semifinal Appearances – All-Time ATP Records | Tennis Records
+/records/ages/youngest-winners?surface=Clay,whitelist,1,true,true,Youngest Clay Court Title Winners – All-Time ATP Records | Tennis Records
+/records/ages/youngest-winners?surface=Grass,whitelist,1,true,true,Youngest Grass Court Title Winners – All-Time ATP Records | Tennis Records
+/records/percentage?level=G,whitelist,1,true,true,Best Win Percentage at Grand Slams – All-Time ATP Records | Tennis Records
+/records/percentage?level=M,whitelist,1,true,true,Best Win Percentage at Masters 1000 – All-Time ATP Records | Tennis Records
+/records/percentage?surface=Clay,whitelist,1,true,true,Best Win Percentage on Clay – All-Time ATP Records | Tennis Records
+/records/percentage?surface=Grass,whitelist,1,true,true,Best Win Percentage on Grass – All-Time ATP Records | Tennis Records
+/records/percentage?surface=Hard,whitelist,1,true,true,Best Win Percentage on Hard Court – All-Time ATP Records | Tennis Records
+/records/titles?surface=Hard,whitelist,1,true,true,Most Titles Won on Hard Court – All-Time ATP Records | Tennis Records
+/records/entries?level=G,whitelist,1,true,true,Most Grand Slam Appearances – All-Time ATP Records | Tennis Records
+/records/entries?level=M,whitelist,1,true,true,Most Masters 1000 Appearances – All-Time ATP Records | Tennis Records
+/records/wins?round=SF,whitelist,1,true,true,Most Semifinals Won – All-Time ATP Records | Tennis Records
+/records/wins?round=QF,whitelist,1,true,true,Most Quarterfinals Won – All-Time ATP Records | Tennis Records
+/records/count?level=G&round=F,whitelist,2,true,true,Most Grand Slam Final Appearances – All-Time ATP Records | Tennis Records
+/records/streak/wins?surface=Hard,whitelist,1,true,true,Longest Winning Streak on Hard Court – All-Time ATP Records | Tennis Records
+/records/streak/wins?level=G,whitelist,1,true,true,Longest Winning Streak at Grand Slams – All-Time ATP Records | Tennis Records
+/records/streak/wins?level=M,whitelist,1,true,true,Longest Winning Streak at Masters 1000 – All-Time ATP Records | Tennis Records
+/records/titles?level=G&surface=Clay,whitelist,2,true,true,Most Roland Garros Titles – All-Time ATP Records | Tennis Records
+/records/titles?level=G&surface=Grass,whitelist,2,true,true,Most Wimbledon Titles – All-Time ATP Records | Tennis Records
+/records/titles?level=G&surface=Hard,whitelist,2,true,true,Most Hard Court Grand Slam Titles – All-Time ATP Records | Tennis Records
+/records/wins?level=G&surface=Clay,whitelist,2,true,true,Most Match Wins at Roland Garros – All-Time ATP Records | Tennis Records
+/records/wins?level=G&surface=Grass,whitelist,2,true,true,Most Match Wins at Wimbledon – All-Time ATP Records | Tennis Records
+/records/wins?level=G&surface=Hard,whitelist,2,true,true,Most Match Wins at Hard Court Grand Slams – All-Time ATP Records | Tennis Records
+/records/percentage?level=G&surface=Clay,whitelist,2,true,true,Best Win Percentage at Roland Garros – All-Time ATP Records | Tennis Records
+/records/percentage?level=G&surface=Grass,whitelist,2,true,true,Best Win Percentage at Wimbledon – All-Time ATP Records | Tennis Records
+/records/count?level=M&round=F,whitelist,2,true,true,Most Masters 1000 Final Appearances – All-Time ATP Records | Tennis Records
+/records/timespan/titles?level=G,whitelist,1,true,true,Longest Gap Between Two Grand Slam Titles – All-Time ATP Records | Tennis Records
+/records/seasons/titles?level=G,whitelist,1,true,true,Most Grand Slam Titles in a Single Season – All-Time ATP Records | Tennis Records
+/records/seasons/wins?level=G,whitelist,1,true,true,Most Grand Slam Match Wins in a Single Season – All-Time ATP Records | Tennis Records

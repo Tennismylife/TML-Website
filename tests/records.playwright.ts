@@ -17,6 +17,13 @@ test('records: single fetch after filter change', async ({ page }) => {
     if (req.url().includes('/api/records/wins')) requests.push(req.url());
   });
 
+  // Verify Top‑N dropdown exists and choose Top 5
+  await expect(page.locator('label:has-text("Wins against") + select')).toHaveCount(1);
+  await page.selectOption('select#topn', '5');
+
+  // Wait for fetch triggered by top‑N filter change
+  await page.waitForResponse(r => r.url().includes('/api/records/wins') && r.url().includes('maxLoserRank=5') && r.status() === 200, { timeout: 10000 });
+
   // Click a surface filter (Hard)
   await page.click('fieldset:has(legend:has-text("Surface")) button:has-text("Hard")');
 

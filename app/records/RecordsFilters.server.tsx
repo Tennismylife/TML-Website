@@ -14,7 +14,8 @@ const BEST_OF_LIST = [3, 5, 1];
 
 // small helpers ported from the client version so the server component renders
 // identical link URLs and visibility rules.
-function buildCanonicalPath(tab: string | null | undefined) {
+function buildCanonicalPath(tab: string | null | undefined, sub?: string | null | undefined) {
+  if (sub) return `/records/${encodeURIComponent(tab || '')}/${encodeURIComponent(sub)}`;
   return `/records/${encodeURIComponent(tab || '')}`;
 }
 
@@ -34,15 +35,13 @@ function canonicalizeParams(params: URLSearchParams) {
 }
 
 function buildSearch(selectedSurfaces: string[], selectedLevels: string[], selectedRounds?: string, selectedBestOf?: number | null) {
-  const params = new URLSearchParams();
-  // Surface param in Title Case to match UI labels (e.g. 'Hard')
-  selectedSurfaces.forEach(s => params.append('surface', String(s).charAt(0).toUpperCase() + String(s).slice(1).toLowerCase()));
-  // Use single-letter level code (e.g. 'G') in the URL
-  selectedLevels.forEach(l => params.append('level', String(l).toUpperCase()));
-  if (selectedRounds) params.set('round', String(selectedRounds).toUpperCase());
-  if (selectedBestOf !== null && selectedBestOf !== undefined) params.set('bestOf', String(selectedBestOf));
-  const canon = canonicalizeParams(params);
-  return canon;
+  // Canonical param order: level → surface → round → bestOf
+  const parts: string[] = [];
+  selectedLevels.forEach(l => parts.push(`level=${encodeURIComponent(String(l).toUpperCase())}`))
+  selectedSurfaces.forEach(s => parts.push(`surface=${encodeURIComponent(String(s).charAt(0).toUpperCase() + String(s).slice(1).toLowerCase())}`));
+  if (selectedRounds) parts.push(`round=${encodeURIComponent(String(selectedRounds).toUpperCase())}`);
+  if (selectedBestOf !== null && selectedBestOf !== undefined) parts.push(`bestOf=${encodeURIComponent(String(selectedBestOf))}`);
+  return parts.join('&');
 }
 
 export default function RecordsFilters({ activeTab, activeSubTab, searchParams = {} }: Props) {
@@ -72,7 +71,7 @@ export default function RecordsFilters({ activeTab, activeSubTab, searchParams =
   const selectedBestOf = searchParams.bestOf ? Number(searchParams.bestOf as string) : null;
 
   // When activeTab is counterseasons and effectiveSub is 'round', default round for display to 'F' (Finals)
-  const effectiveRoundForDisplay = selectedRounds || ((activeTab === 'counterseasons' && effectiveSub === 'round') ? 'F' : '');
+  const effectiveRoundForDisplay = selectedRounds || ((activeTab === 'counterseasons' || activeTab === 'streak') && effectiveSub === 'round' ? 'F' : '');
 
   const surfaceEmojis: Record<string, string> = {
     Hard: "🟦",
@@ -208,6 +207,12 @@ export default function RecordsFilters({ activeTab, activeSubTab, searchParams =
   const filteredLevelList = levelList.filter(l => {
     if (isAtAgeLike && activeSubTab === 'wins') return true;
     if (['count','entries','titles','timespan','roundsonentries','round','same'].includes(activeTab || '') && l === 'D') return false;
+    if (activeTab === 'ages' && l === 'D') return false;
+    if (activeTab === 'seasons' && ['entries','titles','round'].includes(effectiveSub || '') && l === 'D') return false;
+    if (isAtAgeLike && ['entries','titles','round'].includes(effectiveSub || '') && l === 'D') return false;
+    if (activeTab === 'neededto' && effectiveSub === 'titles' && l === 'D') return false;
+    if (activeTab === 'counterseasons' && ['round','titles'].includes(effectiveSub || '') && l === 'D') return false;
+    if (activeTab === 'streak' && effectiveSub === 'round' && l === 'D') return false;
     return true;
   });
 
@@ -219,24 +224,14 @@ export default function RecordsFilters({ activeTab, activeSubTab, searchParams =
           <legend className="text-lg font-semibold mb-3 text-white px-2">Surface</legend>
           <div className="flex flex-wrap gap-3">
             <a
-              href={(() => {
-                const params = buildSearch([], []);
-                const subParam = effectiveSub ? `subtab=${encodeURIComponent(effectiveSub)}` : '';
-                const qs = [subParam, params].filter(Boolean).join('&');
-                return buildCanonicalPath(activeTab) + (qs ? `?${qs}` : '');
-              })()}
+              href={(() => { const qs = buildSearch([], Array.from(selectedLevels), selectedRounds, selectedBestOf); return buildCanonicalPath(activeTab, effectiveSub) + (qs ? `?${qs}` : ''); })()}
               className={`px-5 py-2 rounded-full font-medium ${selectedSurfaces.size === 0 ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
               All
             </a>
             {SURFACE_LIST.map(surface => (
               <a
                 key={surface}
-                href={(() => {
-                  const params = buildSearch([surface], Array.from(selectedLevels));
-                  const subParam = effectiveSub ? `subtab=${encodeURIComponent(effectiveSub)}` : '';
-                  const qs = [subParam, params].filter(Boolean).join('&');
-                  return buildCanonicalPath(activeTab) + (qs ? `?${qs}` : '');
-                })()}
+                href={(() => { const qs = buildSearch([surface], Array.from(selectedLevels), selectedRounds, selectedBestOf); return buildCanonicalPath(activeTab, effectiveSub) + (qs ? `?${qs}` : ''); })()}
                 className={`px-5 py-2 rounded-full font-medium ${selectedSurfaces.has(surface) ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
                 {surfaceEmojis[surface]} {surface}
               </a>
@@ -251,24 +246,14 @@ export default function RecordsFilters({ activeTab, activeSubTab, searchParams =
           <legend className="text-lg font-semibold mb-3 text-white px-2">Level</legend>
           <div className="flex flex-wrap gap-3">
             <a
-              href={(() => {
-                const params = buildSearch([], []);
-                const subParam = effectiveSub ? `subtab=${encodeURIComponent(effectiveSub)}` : '';
-                const qs = [subParam, params].filter(Boolean).join('&');
-                return buildCanonicalPath(activeTab) + (qs ? `?${qs}` : '');
-              })()}
+              href={(() => { const qs = buildSearch(Array.from(selectedSurfaces), [], selectedRounds, selectedBestOf); return buildCanonicalPath(activeTab, effectiveSub) + (qs ? `?${qs}` : ''); })()}
               className={`px-5 py-2 rounded-full font-medium ${selectedLevels.size === 0 ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
               All
             </a>
             {filteredLevelList.map(level => (
               <a
                 key={level}
-                href={(() => {
-                  const params = buildSearch(Array.from(selectedSurfaces), [level]);
-                  const subParam = effectiveSub ? `subtab=${encodeURIComponent(effectiveSub)}` : '';
-                  const qs = [subParam, params].filter(Boolean).join('&');
-                  return buildCanonicalPath(activeTab) + (qs ? `?${qs}` : '');
-                })()}
+                href={(() => { const qs = buildSearch(Array.from(selectedSurfaces), [level], selectedRounds, selectedBestOf); return buildCanonicalPath(activeTab, effectiveSub) + (qs ? `?${qs}` : ''); })()}
                 className={`px-5 py-2 rounded-full font-medium ${selectedLevels.has(level) ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
                 {levelNames[level] || level}
               </a>
@@ -284,12 +269,7 @@ export default function RecordsFilters({ activeTab, activeSubTab, searchParams =
           <div className="flex flex-wrap gap-3">
             {!(activeTab === 'counterseasons' && effectiveSub === 'round') && (
               <a
-                href={(() => {
-                  const params = buildSearch(Array.from(selectedSurfaces), Array.from(selectedLevels));
-                  const subParam = effectiveSub ? `subtab=${encodeURIComponent(effectiveSub)}` : '';
-                  const qs = [subParam, params].filter(Boolean).join('&');
-                  return buildCanonicalPath(activeTab) + (qs ? `?${qs}` : '');
-                })()}
+                href={(() => { const qs = buildSearch(Array.from(selectedSurfaces), Array.from(selectedLevels), undefined, selectedBestOf); return buildCanonicalPath(activeTab, effectiveSub) + (qs ? `?${qs}` : ''); })()}
                 className={`px-5 py-2 rounded-full font-medium ${selectedRounds === '' ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
                 All
               </a>
@@ -297,12 +277,7 @@ export default function RecordsFilters({ activeTab, activeSubTab, searchParams =
             {ROUND_LIST.map(r => (
               <a
                 key={r}
-                href={(() => {
-                  const params = buildSearch(Array.from(selectedSurfaces), Array.from(selectedLevels), r);
-                  const subParam = effectiveSub ? `subtab=${encodeURIComponent(effectiveSub)}` : '';
-                  const qs = [subParam, params].filter(Boolean).join('&');
-                  return buildCanonicalPath(activeTab) + (qs ? `?${qs}` : '');
-                })()}
+                href={(() => { const qs = buildSearch(Array.from(selectedSurfaces), Array.from(selectedLevels), r, selectedBestOf); return buildCanonicalPath(activeTab, effectiveSub) + (qs ? `?${qs}` : ''); })()}
                 className={`px-5 py-2 rounded-full font-medium ${effectiveRoundForDisplay === r ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
                 {r}
               </a>
@@ -317,24 +292,14 @@ export default function RecordsFilters({ activeTab, activeSubTab, searchParams =
           <legend className="text-lg font-semibold mb-3 text-white px-2">Best Of</legend>
           <div className="flex flex-wrap gap-3">
             <a
-              href={(() => {
-                const params = buildSearch(Array.from(selectedSurfaces), Array.from(selectedLevels));
-                const subParam = effectiveSub ? `subtab=${encodeURIComponent(effectiveSub)}` : '';
-                const qs = [subParam, params].filter(Boolean).join('&');
-                return buildCanonicalPath(activeTab) + (qs ? `?${qs}` : '');
-              })()}
+              href={(() => { const qs = buildSearch(Array.from(selectedSurfaces), Array.from(selectedLevels), selectedRounds, null); return buildCanonicalPath(activeTab, effectiveSub) + (qs ? `?${qs}` : ''); })()}
               className={`px-5 py-2 rounded-full font-medium ${selectedBestOf === null ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
               All
             </a>
             {BEST_OF_LIST.map(b => (
               <a
                 key={b}
-                href={(() => {
-                  const params = buildSearch(Array.from(selectedSurfaces), Array.from(selectedLevels), selectedRounds, b);
-                  const subParam = effectiveSub ? `subtab=${encodeURIComponent(effectiveSub)}` : '';
-                  const qs = [subParam, params].filter(Boolean).join('&');
-                  return buildCanonicalPath(activeTab) + (qs ? `?${qs}` : '');
-                })()}
+                href={(() => { const qs = buildSearch(Array.from(selectedSurfaces), Array.from(selectedLevels), selectedRounds, b); return buildCanonicalPath(activeTab, effectiveSub) + (qs ? `?${qs}` : ''); })()}
                 className={`px-5 py-2 rounded-full font-medium ${selectedBestOf === b ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
                 {b}
               </a>

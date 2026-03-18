@@ -1,12 +1,18 @@
 import { test, expect } from '@playwright/test';
 
-const tabs = ['profile','matches','season','tournaments','h2h','performance','statistics'];
+const tabs = ['profile','matches','season','tournaments','h2h','performance','statistics','ranking'];
 
 test('player tabs navigate to path-based segments', async ({ page }) => {
   // Log client console messages to test output for debugging
   page.on('console', msg => console.log('PAGE LOG:', msg.type(), msg.text()));
 
-  // Start on season with sub=events
+  // verify direct nav to ranking works (not blank)
+  await page.goto('/players/roger-federer/ranking');
+  await page.waitForLoadState('networkidle');
+  // ranking tab should render table header even when no data
+  await page.waitForSelector('th:has-text("Date")');
+
+  // then start on season with sub=events for the usual tab loop
   await page.goto('/players/novak-djokovic/season?sub=events');
   await page.waitForLoadState('networkidle');
   // ensure initial state has sub
@@ -27,6 +33,10 @@ test('player tabs navigate to path-based segments', async ({ page }) => {
       expect(search).toContain('sub=events');
     } else {
       expect(search).not.toContain('sub=events');
+    }
+    // if we navigated to ranking, table header should eventually appear (even if no data)
+    if (tab === 'ranking') {
+      await page.waitForSelector('th:has-text("Date")');
     }
   }
 });

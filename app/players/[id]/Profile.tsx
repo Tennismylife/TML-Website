@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Player } from "@/types";
 import { calculateAge } from "@/lib/utils";
 import { FaTrophy } from "react-icons/fa";
@@ -193,11 +194,20 @@ export default function PlayerTabsClient({ player }: PlayerTabsClientProps) {
           const surfaceLosses = stats.surfaces[surface].l;
           const total = surfaceWins + surfaceLosses;
           const percent = total > 0 ? (surfaceWins / total) * 100 : 0;
+          const surfacePath = ["Hard", "Clay", "Grass"].includes(surface)
+            ? `/players/${player.slug}/${surface.toLowerCase()}`
+            : null;
 
           return (
             <div key={surface} className="mb-3">
               {/* Nome superficie più grande */}
-              <p className="text-base md:text-lg text-gray-400 mb-1 font-semibold">{surface}</p>
+              {surfacePath ? (
+                <Link href={surfacePath} className="text-base md:text-lg text-gray-400 mb-1 font-semibold hover:text-yellow-400 transition-colors inline-flex items-center gap-1">
+                  {surface} <span className="text-xs text-gray-500">↗</span>
+                </Link>
+              ) : (
+                <p className="text-base md:text-lg text-gray-400 mb-1 font-semibold">{surface}</p>
+              )}
               <div className="w-full bg-gray-700 rounded-full h-8 relative">
                 <div
                   className={`h-8 rounded-full transition-all duration-1000 flex items-center justify-center ${surfaceColors[surface]}`}
@@ -223,12 +233,21 @@ export default function PlayerTabsClient({ player }: PlayerTabsClientProps) {
 
         <h3 className="text-lg font-semibold text-gray-300 text-center mb-2">Titles by Surface</h3>
 
-        {["Hard", "Clay", "Grass", "Carpet"].map((surface) => (
-          <div key={surface} className="flex justify-between items-center px-2 py-1 border-b border-gray-700 last:border-b-0">
-            <span className={`px-3 py-1 rounded-full text-white text-sm ${surfaceColors[surface]}`}>{surface}</span>
-            <span className="font-bold">{loading ? "..." : stats.surfaces[surface].titles}</span>
-          </div>
-        ))}
+        {["Hard", "Clay", "Grass", "Carpet"].map((surface) => {
+          const surfacePath = ["Hard", "Clay", "Grass"].includes(surface)
+            ? `/players/${player.slug}/${surface.toLowerCase()}`
+            : null;
+          return (
+            <div key={surface} className="flex justify-between items-center px-2 py-1 border-b border-gray-700 last:border-b-0">
+              {surfacePath ? (
+                <Link href={surfacePath} className={`px-3 py-1 rounded-full text-white text-sm ${surfaceColors[surface]} hover:opacity-80 transition-opacity`}>{surface}</Link>
+              ) : (
+                <span className={`px-3 py-1 rounded-full text-white text-sm ${surfaceColors[surface]}`}>{surface}</span>
+              )}
+              <span className="font-bold">{loading ? "..." : stats.surfaces[surface].titles}</span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
