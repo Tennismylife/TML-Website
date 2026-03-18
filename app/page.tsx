@@ -196,16 +196,6 @@ export default async function HomePage() {
       {/* Client Components */}
       <SearchPlayerLoader />
 
-      {/* Featured Records Card */}
-      <div className="w-full mb-8">
-        <Card href="/records" title="Records" subtitle="All-Time Achievements & Milestones" large colorClass="text-yellow-400 group-hover:text-yellow-300" accentColor="#facc15">
-          <svg viewBox="0 0 24 24" className="w-16 h-16" fill="none" stroke="currentColor" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M8 3h8l-2 4H10L8 3z" />
-            <circle cx="12" cy="15" r="4" />
-          </svg>
-        </Card>
-      </div>
-
       {/* Miami Open LIVE Card — featured */}
       <a
         href="/tournaments/miami-open/records"
@@ -256,6 +246,16 @@ export default async function HomePage() {
           </div>
         </div>
       </a>
+
+      {/* Featured Records Card */}
+      <div className="w-full mb-8">
+        <Card href="/records" title="Records" subtitle="All-Time Achievements & Milestones" large colorClass="text-yellow-400 group-hover:text-yellow-300" accentColor="#facc15">
+          <svg viewBox="0 0 24 24" className="w-16 h-16" fill="none" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8 3h8l-2 4H10L8 3z" />
+            <circle cx="12" cy="15" r="4" />
+          </svg>
+        </Card>
+      </div>
 
       <Suspense fallback={
         <div className="w-full mb-8">
