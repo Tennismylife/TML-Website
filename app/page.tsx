@@ -198,7 +198,7 @@ export default async function HomePage() {
 
       {/* Miami Open LIVE Card — featured */}
       <a
-        href="/tournaments/miami-open/records"
+        href="/tournaments/miami-masters/records"
         className="group relative w-full mb-8 flex overflow-hidden rounded-2xl border border-cyan-500/30 shadow-2xl hover:shadow-cyan-500/20 transition-all duration-300 hover:scale-[1.01]"
         style={{ background: 'linear-gradient(135deg, #0f1720 0%, #0a2028 40%, #051a20 100%)' }}
       >
