@@ -1,7 +1,7 @@
 import React from 'react';
 import PlayerClient from './PlayerClient';
 import { prisma } from '../../../lib/prisma';
-import { redirect } from 'next/navigation';
+import { redirect, permanentRedirect } from 'next/navigation';
 import { getPlayerHref } from '@/lib/utils';
 import RankingNarrativeServer from './Ranking/RankingNarrativeServer';
 
@@ -48,10 +48,15 @@ export async function generateMetadata({ params, searchParams }: any) {
     if (entries.length) canonical = `${canonical}?${entries.join('&')}`;
   }
 
+  // If accessed via ?tab= query param, tell Google not to index this URL
+  // (the canonical clean URL /players/slug/tab is the one that should be indexed)
+  const hasTabQueryParam = Boolean(resolvedQuery?.tab);
+
   return {
     title: `${name} | Tennis Statistics, Match Results & Rankings`,
     openGraph: { url: canonical },
     alternates: { canonical },
+    ...(hasTabQueryParam && { robots: { index: false, follow: true } }),
   };
 }
 
@@ -96,10 +101,22 @@ export default async function PlayerPage({ params, searchParams }: any) {
 
   if (!player) return <div>Player not found: {slugParam}</div>;
 
-  // NOTE: Previously we redirected when ?tab was present or the page had no tab segment.
-  // To avoid redirects for URLs like `/players/:id?tab=matches` or numeric IDs, we now render
-  // the requested tab inline and do not perform any redirects here.
-  // The PlayerClient below will be rendered with the chosen tab (default 'matches').
+  // If ?tab= is present, permanently redirect (308) to the clean path-based URL.
+  // This ensures ?tab= is never visible to users or Google, and Google updates its index.
+  if (hasTab && tabValue) {
+    const remainingParams = new URLSearchParams();
+    const resolvedQuery: Record<string, any> = resolvedSearchParams instanceof URLSearchParams
+      ? Object.fromEntries(resolvedSearchParams.entries())
+      : resolvedSearchParams || {};
+    for (const [k, v] of Object.entries(resolvedQuery)) {
+      if (k !== 'tab' && v != null && String(v) !== '') {
+        remainingParams.set(k, String(v));
+      }
+    }
+    const qs = remainingParams.toString();
+    const cleanUrl = `/players/${player.slug}/${tabValue}${qs ? `?${qs}` : ''}`;
+    permanentRedirect(cleanUrl);
+  }
 
   const name = player.atpname || player.player;
 
