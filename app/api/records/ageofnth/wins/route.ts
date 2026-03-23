@@ -147,6 +147,7 @@ export async function GET(request: NextRequest) {
     console.time("Use dynamic filtered algorithm");
 
     const where: any = {
+      status: true,
       ...(selectedSurfaces.length > 0 && { surface: { in: selectedSurfaces } }),
       ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),
       ...(selectedRounds.length > 0 && { round: { in: selectedRounds } }),
