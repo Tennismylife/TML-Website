@@ -313,10 +313,11 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
 
   // PLAYER
   let player: any = null;
+  const playerSelect = { id: true, player: true, atpname: true, slug: true, birthdate: true, ioc: true, birthplace: true, hand: true, backhand: true, height: true, weight: true, turnedpro: true, coaches: true } as const;
   if (!isSlug) {
-    player = await prisma.player.findUnique({ where: { id: String(slugParam) }, select: { id: true, player: true, atpname: true, slug: true, birthdate: true, ioc: true, birthplace: true } });
+    player = await prisma.player.findUnique({ where: { id: String(slugParam) }, select: playerSelect });
   } else {
-    player = await prisma.player.findUnique({ where: { slug: String(slugParam).toLowerCase() }, select: { id: true, player: true, atpname: true, slug: true, birthdate: true, ioc: true, birthplace: true } });
+    player = await prisma.player.findUnique({ where: { slug: String(slugParam).toLowerCase() }, select: playerSelect });
     // Fallback: legacy codes (e.g. C274, H377) → resolve via slug-map
     if (!player) {
       try {
@@ -326,7 +327,7 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
           const maps = await apiResp.json();
           const mapped = maps?.players?.[String(slugParam).toUpperCase()];
           if (mapped) {
-            player = await prisma.player.findUnique({ where: { slug: mapped }, select: { id: true, player: true, atpname: true, slug: true, birthdate: true, ioc: true, birthplace: true } });
+            player = await prisma.player.findUnique({ where: { slug: mapped }, select: playerSelect });
           }
         }
       } catch (e) {

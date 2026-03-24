@@ -83,7 +83,13 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
     // Keep only the first 4 segments: ['', 'players', ':slug', ':tab'] to avoid preserving trailing year or other segments
     const baseParts = parts.slice(0, 4);
     baseParts[3] = tabId;
-    const newPathname = baseParts.join('/');
+    let newPathname = baseParts.join('/');
+
+    // For season tab: always navigate directly to /season/YYYY to avoid the intermediate redirect
+    if (tabId === 'season') {
+      const defaultYear = initialSeasonYears?.[0] ?? new Date().getFullYear();
+      newPathname = `${newPathname}/${defaultYear}`;
+    }
 
     // Avoid triggering navigation if nothing actually changed (both pathname and qs)
     if (newQs === currentQs && newPathname === window.location.pathname) {

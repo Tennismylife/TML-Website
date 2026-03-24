@@ -32,6 +32,7 @@ export async function GET(request: NextRequest) {
         tourney_level: true,
         surface: true,
         round: true,
+        team_event: true,
         tourney_name: true,
         score: true,
       },
@@ -88,11 +89,16 @@ export async function GET(request: NextRequest) {
         if (surfRaw === 'Grass') winsGrass += 1;
         if (surfRaw === 'Clay') winsClay += 1;
         if (surfRaw === 'Carpet') winsCarpet += 1;
+        // Titoli: solo vittorie in finale (round='F') che non siano eventi a squadre
+        if (m.round === 'F' && m.team_event !== true) {
+          titlesAll += 1;
+          if (m.tourney_level === 'G') titlesGrandSlam += 1;
           if (m.tourney_level === 'M') titlesMasters1000 += 1;
           if (m.surface === 'Hard') titlesHard += 1;
           if (m.surface === 'Grass') titlesGrass += 1;
           if (m.surface === 'Clay') titlesClay += 1;
           if (m.surface === 'Carpet') titlesCarpet += 1;
+        }
       } else {
         // player lost this match
         lossesAll += 1;

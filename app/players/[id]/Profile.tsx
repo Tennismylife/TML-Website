@@ -43,68 +43,22 @@ export default function PlayerTabsClient({ player }: PlayerTabsClientProps) {
     const fetchStats = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`/api/matches?player_id=${player.id}`);
-        const matchesBody = res.ok ? await res.json() : [];
-        // Support both plain-array responses and paginated shapes { count, results }
-        const matches = Array.isArray(matchesBody)
-          ? matchesBody
-          : Array.isArray(matchesBody?.results)
-          ? matchesBody.results
-          : Array.isArray(matchesBody?.data)
-          ? matchesBody.data
-          : [];
-
-        if (!Array.isArray(matches) && process.env.NODE_ENV !== 'production') {
-          // defensive log for debugging in dev
-          // eslint-disable-next-line no-console
-          console.debug('[Profile] unexpected matches response shape', matchesBody);
-        }
+        const res = await fetch(`/api/players/stats?id=${player.id}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
 
         const newStats: Stats = {
-          titles: 0,
+          titles: data.titlesAll ?? 0,
           finals: 0,
-          wins: 0,
-          losses: 0,
+          wins: data.winsAll ?? 0,
+          losses: data.lossesAll ?? 0,
           surfaces: {
-            Hard: { w: 0, l: 0, titles: 0 },
-            Clay: { w: 0, l: 0, titles: 0 },
-            Grass: { w: 0, l: 0, titles: 0 },
-            Carpet: { w: 0, l: 0, titles: 0 },
+            Hard:   { w: data.winsHard   ?? 0, l: data.lossesHard   ?? 0, titles: data.titlesHard   ?? 0 },
+            Clay:   { w: data.winsClay   ?? 0, l: data.lossesClay   ?? 0, titles: data.titlesClay   ?? 0 },
+            Grass:  { w: data.winsGrass  ?? 0, l: data.lossesGrass  ?? 0, titles: data.titlesGrass  ?? 0 },
+            Carpet: { w: data.winsCarpet ?? 0, l: data.lossesCarpet ?? 0, titles: data.titlesCarpet ?? 0 },
           },
         };
-
-        matches.forEach((m: any) => {
-          const isWinner = m.winner_id === player.id;
-          const isFinal = m.round === "F";
-          const surface = m.surface;
-          // Matches with status === false should not count towards wins/losses and surface W-L.
-          // They still count for titles in case of a final where the player is the winner.
-          const isNonCounting = m.status === false;
-
-          // Do NOT count matches with status === false in wins/losses totals or surface W-L counts
-          if (!isNonCounting) {
-            if (isWinner) newStats.wins++;
-            else newStats.losses++;
-          }
-
-          // LOGICA TITOLI AGGIORNATA
-          if (isFinal) {
-            newStats.finals++;
-            // Count finals as titles when the player is the winner, even if status === false
-            const wonFinal = m.winner_id === player.id;
-            if (wonFinal && m.team_event !== true) {
-              newStats.titles++;
-              if (surface && newStats.surfaces[surface]) newStats.surfaces[surface].titles++;
-            }
-          }
-
-          if (surface && newStats.surfaces[surface]) {
-            if (!isNonCounting) {
-              if (isWinner) newStats.surfaces[surface].w++;
-              else newStats.surfaces[surface].l++;
-            }
-          }
-        });
 
         setStats(newStats);
 
