@@ -29,7 +29,8 @@ interface EntryRecord {
 export default function EntriesSection({ selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, fetchRequestId, description, initialData }: EntriesSectionProps & { fetchRequestId?: string | null; initialData?: EntryRecord[] }) {
   const enabled = !!fetchEnabled;
   const [allEntries, setAllEntries] = useState<EntryRecord[]>(Array.isArray(initialData) ? initialData : []);
-  const [loading, setLoading] = useState(initialData === undefined);
+  // Show loading immediately when SSR didn't provide any data (prefetch failed or returned empty)
+  const [loading, setLoading] = useState(!initialData?.length);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const perPage = 20;
@@ -41,7 +42,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
   useEffect(() => {
     // Trigger client fetch on mount when SSR provided `initialData` so the
     // client replaces the SSR top‑10 with the full `limit=100` result set.
-    const shouldFetch = showModal || (enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || (Array.isArray(initialData) && initialData.length > 0) || initialData === undefined;
+    const shouldFetch = showModal || (enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || (Array.isArray(initialData) && initialData.length > 0) || !initialData?.length;
     if (!shouldFetch) {
       if (Array.isArray(initialData)) setAllEntries(initialData);
       setLoading(false);

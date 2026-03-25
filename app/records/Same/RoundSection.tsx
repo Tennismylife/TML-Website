@@ -31,7 +31,8 @@ export default function SameRoundSection({ selectedSurfaces, selectedLevels, sel
   const enabled = !!fetchEnabled;
   const [entries, setEntries] = useState<RoundEntryRecord[]>(Array.isArray(initialData) ? initialData : []);
   // Show loading immediately when SSR didn't provide any data (prefetch failed or was skipped)
-  const [loading, setLoading] = useState(initialData === undefined && !!selectedRound);
+  // Show loading immediately when SSR didn't provide any data (prefetch failed or returned empty)
+  const [loading, setLoading] = useState(!initialData?.length && !!selectedRound);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const perPage = 20;
@@ -50,7 +51,7 @@ export default function SameRoundSection({ selectedSurfaces, selectedLevels, sel
     // Trigger client fetch on mount when SSR provided `initialData` so the
     // client replaces the SSR top‑10 with the full `limit=100` result set.
     // Also trigger when initialData is undefined (SSR prefetch failed or was skipped).
-    const shouldFetch = showModal || (enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || (Array.isArray(initialData) && initialData.length > 0) || initialData === undefined;
+    const shouldFetch = showModal || (enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || (Array.isArray(initialData) && initialData.length > 0) || !initialData?.length;
     if (!shouldFetch) {
       if (Array.isArray(initialData)) setEntries(initialData);
       setLoading(false);

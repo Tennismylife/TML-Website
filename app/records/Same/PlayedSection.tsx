@@ -31,7 +31,8 @@ interface PlayedRecord {
 export default function PlayedSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId, description, initialData }: PlayedSectionProps & { fetchRequestId?: string | null; initialData?: PlayedRecord[] }) {
   const enabled = !!fetchEnabled;
   const [allPlayed, setAllPlayed] = useState<PlayedRecord[]>(Array.isArray(initialData) ? initialData : []);
-  const [loading, setLoading] = useState(initialData === undefined);
+  // Show loading immediately when SSR didn't provide any data (prefetch failed or returned empty)
+  const [loading, setLoading] = useState(!initialData?.length);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
@@ -43,7 +44,7 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
   useEffect(() => {
     // Trigger client fetch on mount when SSR provided `initialData` so the
     // client replaces the SSR top‑10 with the full `limit=100` result set.
-    const shouldFetch = showModal || (enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || (Array.isArray(initialData) && initialData.length > 0) || initialData === undefined;
+    const shouldFetch = showModal || (enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || (Array.isArray(initialData) && initialData.length > 0) || !initialData?.length;
     if (!shouldFetch) {
       if (Array.isArray(initialData)) setAllPlayed(initialData);
       setLoading(false);
