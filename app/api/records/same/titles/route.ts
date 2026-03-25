@@ -49,7 +49,70 @@ export async function GET(request: NextRequest) {
         orderBy: { total_titles: 'desc' },
         take: limit,
       });
-      if (!titles.length) return jsonResponse([]);
+
+      // MV vuota (non ancora popolata) → fallback diretto su PlayerTournament
+      if (!titles.length) {
+        type RawTitle = { tourney_id: string; tourney_name: string; player_id: string; total_titles: bigint };
+        const rawRows = await prisma.$queryRaw<RawTitle[]>`
+          SELECT
+            CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END AS tourney_id,
+            MAX(tourney_name) AS tourney_name,
+            player_id,
+            COUNT(DISTINCT event_id)::bigint AS total_titles
+          FROM "PlayerTournament"
+          WHERE round = 'W'
+          GROUP BY CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END, player_id
+          ORDER BY total_titles DESC
+          LIMIT ${limit}
+        `;
+        if (!rawRows.length) return jsonResponse([]);
+
+        const fbPlayerIds = rawRows.map(r => r.player_id);
+        const fbPlayers = await prisma.player.findMany({
+          where: { id: { in: fbPlayerIds } },
+          select: { id: true, atpname: true, ioc: true },
+        });
+        const fbPlayerMap = Object.fromEntries(
+          fbPlayers.map(p => [String(p.id), { player_name: p.atpname ?? 'Unknown', ioc: p.ioc ?? null }])
+        );
+        const fbTitles: TitleRecord[] = rawRows.map(r => {
+          const entry = fbPlayerMap[String(r.player_id)];
+          return {
+            tourney_id: r.tourney_id,
+            tourney_name: r.tourney_name ?? '',
+            player_id: r.player_id,
+            player_name: entry?.player_name ?? 'Unknown',
+            ioc: entry?.ioc ?? null,
+            total_titles: Number(r.total_titles),
+            surface: null,
+            tourney_level: null,
+          };
+        });
+        finalTitles.push(...fbTitles);
+        // skip normal MV processing below and go directly to slug attachment
+        finalTitles.sort((a, b) => b.total_titles - a.total_titles);
+        const fbIds = Array.from(new Set(finalTitles.map(p => String(p.player_id))));
+        if (fbIds.length > 0) {
+          const fbSlugs = await prisma.player.findMany({ where: { id: { in: fbIds } }, select: { id: true, slug: true } });
+          const fbSlugMap = new Map(fbSlugs.map(r => [r.id, r.slug] as [string, string | null]));
+          finalTitles = finalTitles.map(p => ({ ...p, slug: fbSlugMap.get(String(p.player_id)) ?? null }));
+        }
+        const fbTourneyIdParts = finalTitles.map(p => {
+          const tid = String(p.tourney_id ?? '');
+          return tid.includes('-') ? tid.split('-')[0] : tid;
+        }).filter(Boolean);
+        const fbUniqueTourneyIds = Array.from(new Set(fbTourneyIdParts.map(t => Number(t)).filter(n => Number.isFinite(n))));
+        if (fbUniqueTourneyIds.length > 0) {
+          const fbTourneyRows = await prisma.tournament.findMany({ where: { id: { in: fbUniqueTourneyIds } }, select: { id: true, slug: true } });
+          const fbTourneySlugMap = new Map(fbTourneyRows.map(r => [String(r.id), r.slug] as [string, string | null]));
+          finalTitles = finalTitles.map(p => {
+            const tid = String(p.tourney_id ?? '');
+            const tidPart = tid.includes('-') ? tid.split('-')[0] : tid;
+            return { ...p, tourney_slug: fbTourneySlugMap.get(tidPart) ?? null };
+          });
+        }
+        return jsonResponse(finalTitles.slice(0, limit));
+      }
 
       const playerIds = titles.map(e => e.player_id);
       const players = await prisma.player.findMany({

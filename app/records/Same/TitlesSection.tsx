@@ -29,7 +29,8 @@ interface TitleRecord {
 export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchEnabled, setFetchEnabled, fetchRequestId, description, initialData }: TitlesSectionProps & { fetchRequestId?: string | null; initialData?: TitleRecord[] }) {
   const enabled = !!fetchEnabled;
   const [allTitles, setAllTitles] = useState<TitleRecord[]>(Array.isArray(initialData) ? initialData : []);
-  const [loading, setLoading] = useState(false);
+  // Show loading immediately when SSR didn't provide any data (prefetch failed or was skipped)
+  const [loading, setLoading] = useState(initialData === undefined);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const perPage = 20;
@@ -41,7 +42,8 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
   useEffect(() => {
     // Trigger client fetch on mount when SSR provided `initialData` so the
     // client replaces the SSR top‑10 with the full `limit=100` result set.
-    const shouldFetch = showModal || (enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || (Array.isArray(initialData) && initialData.length > 0);
+    // Also trigger when initialData is undefined (SSR prefetch failed or was skipped).
+    const shouldFetch = showModal || (enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || (Array.isArray(initialData) && initialData.length > 0) || initialData === undefined;
     if (!shouldFetch) {
       if (Array.isArray(initialData)) setAllTitles(initialData);
       setLoading(false);
