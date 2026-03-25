@@ -56,7 +56,117 @@ export async function GET(request: NextRequest) {
         }
       });
 
-      if (!rounds.length) return jsonResponse([]);
+      // MV vuota (non ancora popolata) → fallback diretto su Match
+      if (!rounds.length) {
+        type RawRound = { tourney_id: string; tourney_name: string; player_id: string; total_rounds: bigint };
+        let rawRows: RawRound[] = [];
+
+        if (selectedRounds.length === 1) {
+          const roundVal = selectedRounds[0];
+          rawRows = await prisma.$queryRaw<RawRound[]>`
+            SELECT
+              CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END AS tourney_id,
+              MAX(tourney_name) AS tourney_name,
+              player_id,
+              COUNT(*)::bigint AS total_rounds
+            FROM (
+              SELECT tourney_id, tourney_name, winner_id::text AS player_id
+              FROM "Match" WHERE status = true AND round = ${roundVal}
+              UNION ALL
+              SELECT tourney_id, tourney_name, loser_id::text
+              FROM "Match" WHERE status = true AND round = ${roundVal}
+            ) u
+            GROUP BY CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END, player_id
+            ORDER BY total_rounds DESC
+            LIMIT ${limit}
+          `;
+        } else if (selectedSurfaces.length === 1) {
+          const surfaceVal = selectedSurfaces[0];
+          rawRows = await prisma.$queryRaw<RawRound[]>`
+            SELECT
+              CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END AS tourney_id,
+              MAX(tourney_name) AS tourney_name,
+              player_id,
+              COUNT(*)::bigint AS total_rounds
+            FROM (
+              SELECT tourney_id, tourney_name, winner_id::text AS player_id
+              FROM "Match" WHERE status = true AND surface = ${surfaceVal}
+              UNION ALL
+              SELECT tourney_id, tourney_name, loser_id::text
+              FROM "Match" WHERE status = true AND surface = ${surfaceVal}
+            ) u
+            GROUP BY CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END, player_id
+            ORDER BY total_rounds DESC
+            LIMIT ${limit}
+          `;
+        } else if (selectedLevels.length === 1) {
+          const levelVal = selectedLevels[0];
+          rawRows = await prisma.$queryRaw<RawRound[]>`
+            SELECT
+              CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END AS tourney_id,
+              MAX(tourney_name) AS tourney_name,
+              player_id,
+              COUNT(*)::bigint AS total_rounds
+            FROM (
+              SELECT tourney_id, tourney_name, winner_id::text AS player_id
+              FROM "Match" WHERE status = true AND tourney_level = ${levelVal}
+              UNION ALL
+              SELECT tourney_id, tourney_name, loser_id::text
+              FROM "Match" WHERE status = true AND tourney_level = ${levelVal}
+            ) u
+            GROUP BY CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END, player_id
+            ORDER BY total_rounds DESC
+            LIMIT ${limit}
+          `;
+        } else {
+          rawRows = await prisma.$queryRaw<RawRound[]>`
+            SELECT
+              CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END AS tourney_id,
+              MAX(tourney_name) AS tourney_name,
+              player_id,
+              COUNT(*)::bigint AS total_rounds
+            FROM (
+              SELECT tourney_id, tourney_name, winner_id::text AS player_id
+              FROM "Match" WHERE status = true
+              UNION ALL
+              SELECT tourney_id, tourney_name, loser_id::text
+              FROM "Match" WHERE status = true
+            ) u
+            GROUP BY CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END, player_id
+            ORDER BY total_rounds DESC
+            LIMIT ${limit}
+          `;
+        }
+
+        if (!rawRows.length) return jsonResponse([]);
+
+        const fbPlayerIds = rawRows.map(r => r.player_id);
+        const fbPlayers = await prisma.player.findMany({
+          where: { id: { in: fbPlayerIds } },
+          select: { id: true, atpname: true, ioc: true },
+        });
+        const fbPlayerMap = Object.fromEntries(
+          fbPlayers.map(p => [String(p.id), { player_name: p.atpname ?? 'Unknown', ioc: p.ioc ?? null }])
+        );
+        let fbRounds: TournamentRoundRecord[] = rawRows.map(r => {
+          const entry = fbPlayerMap[String(r.player_id)];
+          return {
+            tourney_name: r.tourney_name ?? '',
+            player_id: r.player_id,
+            player_name: entry?.player_name ?? 'Unknown',
+            ioc: entry?.ioc ?? null,
+            total_rounds: Number(r.total_rounds),
+          };
+        });
+        fbRounds.sort((a, b) => b.total_rounds - a.total_rounds);
+        const fbIds = Array.from(new Set(fbRounds.map(p => String(p.player_id))));
+        if (fbIds.length > 0) {
+          const fbSlugs = await prisma.player.findMany({ where: { id: { in: fbIds } }, select: { id: true, slug: true } });
+          const fbSlugMap = new Map(fbSlugs.map(r => [r.id, r.slug] as [string, string | null]));
+          fbRounds = fbRounds.map(p => ({ ...p, slug: fbSlugMap.get(String(p.player_id)) ?? null }));
+        }
+        return jsonResponse(fbRounds.slice(0, limit));
+      }
 
       const playerIds = rounds.map(e => e.player_id);
       const players = await prisma.player.findMany({
