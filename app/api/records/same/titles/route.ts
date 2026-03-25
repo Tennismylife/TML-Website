@@ -45,12 +45,18 @@ export async function GET(request: NextRequest) {
 
     // --- Caso 1: zero o un solo filtro (usa MV) ---
     if (selectedSurfaces.length + selectedLevels.length <= 1) {
-      const titles = await prisma.mVSameTournamentTitles.findMany({
-        orderBy: { total_titles: 'desc' },
-        take: limit,
-      });
+      // Wrap in local try-catch: if the MV doesn't exist yet it throws, treat as empty
+      let titles: Awaited<ReturnType<typeof prisma.mVSameTournamentTitles.findMany>> = [];
+      try {
+        titles = await prisma.mVSameTournamentTitles.findMany({
+          orderBy: { total_titles: 'desc' },
+          take: limit,
+        });
+      } catch {
+        titles = [];
+      }
 
-      // MV vuota (non ancora popolata) → fallback diretto su PlayerTournament
+      // MV vuota o non esistente → fallback diretto su PlayerTournament
       if (!titles.length) {
         type RawTitle = { tourney_id: string; tourney_name: string; player_id: string; total_titles: bigint };
         const rawRows = await prisma.$queryRaw<RawTitle[]>`

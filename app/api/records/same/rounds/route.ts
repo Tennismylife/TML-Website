@@ -43,20 +43,27 @@ export async function GET(request: NextRequest) {
 
     // --- Caso 1: 0 o 1 filtro → usa MV ---
     if (selectedSurfaces.length + selectedLevels.length + selectedRounds.length <= 1) {
-      const rounds = await prisma.mVSameTournamentRounds.findMany({
-        orderBy: { total_rounds: 'desc' },
-        take: limit,
-        select: {
-          tourney_name: true,
-          player_id: true,
-          total_rounds: true,
-          surface_totals: true,
-          level_totals: true,
-          round_totals: true,
-        }
-      });
+      // Wrap in local try-catch: if the MV doesn't exist yet it throws, treat as empty
+      let rounds: Awaited<ReturnType<typeof prisma.mVSameTournamentRounds.findMany>> = [];
+      try {
+        rounds = await prisma.mVSameTournamentRounds.findMany({
+          orderBy: { total_rounds: 'desc' },
+          take: limit,
+          select: {
+            tourney_id: true,
+            tourney_name: true,
+            player_id: true,
+            total_rounds: true,
+            surface_totals: true,
+            level_totals: true,
+            round_totals: true,
+          }
+        });
+      } catch {
+        rounds = [];
+      }
 
-      // MV vuota (non ancora popolata) → fallback diretto su Match
+      // MV vuota o non esistente → fallback diretto su Match
       if (!rounds.length) {
         type RawRound = { tourney_id: string; tourney_name: string; player_id: string; total_rounds: bigint };
         let rawRows: RawRound[] = [];
