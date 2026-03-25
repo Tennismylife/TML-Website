@@ -31,7 +31,7 @@ interface Winner {
 export default function WinsSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId, description, initialData }: WinsSectionProps & { fetchRequestId?: string | null; initialData?: Winner[] }) {
   const enabled = !!fetchEnabled;
   const [allWinners, setAllWinners] = useState<Winner[]>(Array.isArray(initialData) ? initialData : []);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(initialData === undefined);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const perPage = 20;
@@ -43,7 +43,7 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
   useEffect(() => {
     // Trigger client fetch on mount when SSR provided `initialData` so the
     // client replaces the SSR top‑10 with the full `limit=100` result set.
-    const shouldFetch = showModal || (enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || (Array.isArray(initialData) && initialData.length > 0);
+    const shouldFetch = showModal || (enabled && fetchRequestId && lastRequestRef.current !== fetchRequestId) || (Array.isArray(initialData) && initialData.length > 0) || initialData === undefined;
     if (!shouldFetch) {
       if (Array.isArray(initialData)) setAllWinners(initialData);
       setLoading(false);

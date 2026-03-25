@@ -45,11 +45,50 @@ export async function GET(request: NextRequest) {
 
     // --- Caso 1: zero o un solo filtro (usa MV) ---
     if (selectedSurfaces.length + selectedLevels.length <= 1) {
-      const matches = await prisma.mVSameTournamentEntries.findMany({
-        orderBy: { total_entries: 'desc' },
-        take: limit,
-      });
-      if (!matches.length) return jsonResponse([]);
+      let matches: Awaited<ReturnType<typeof prisma.mVSameTournamentEntries.findMany>> = [];
+      try {
+        matches = await prisma.mVSameTournamentEntries.findMany({
+          orderBy: { total_entries: 'desc' },
+          take: limit,
+        });
+      } catch {
+        matches = [];
+      }
+      if (!matches.length) {
+        type RawEntry = { tourney_id: string; tourney_name: string; player_id: string; total_entries: bigint };
+        let rawRows: RawEntry[] = [];
+        try {
+          rawRows = await prisma.$queryRaw<RawEntry[]>`
+            SELECT
+              CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END AS tourney_id,
+              MAX(tourney_name) AS tourney_name,
+              player_id,
+              COUNT(DISTINCT event_id)::bigint AS total_entries
+            FROM "PlayerTournament"
+            GROUP BY CASE WHEN tourney_id::text IN ('580','581') THEN '580' ELSE tourney_id::text END, player_id
+            ORDER BY total_entries DESC
+            LIMIT ${limit}
+          `;
+        } catch { rawRows = []; }
+        if (!rawRows.length) return jsonResponse([]);
+        const fbPlayerIds = rawRows.map(r => r.player_id);
+        const fbPlayers = await prisma.player.findMany({ where: { id: { in: fbPlayerIds } }, select: { id: true, atpname: true, ioc: true } });
+        const fbPlayerMap = Object.fromEntries(fbPlayers.map(p => [String(p.id), { name: p.atpname ?? 'Unknown', ioc: p.ioc ?? null }]));
+        let fbEntries: EntryRecord[] = rawRows.map(r => ({
+          tourney_id: r.tourney_id, tourney_name: r.tourney_name ?? '',
+          player_id: r.player_id, player_name: fbPlayerMap[r.player_id]?.name ?? 'Unknown',
+          ioc: fbPlayerMap[r.player_id]?.ioc ?? null,
+          total_entries: Number(r.total_entries), surface: null, tourney_level: null,
+        }));
+        fbEntries.sort((a, b) => b.total_entries - a.total_entries);
+        const fbIds = Array.from(new Set(fbEntries.map(e => String(e.player_id))));
+        if (fbIds.length) {
+          const slugRows = await prisma.player.findMany({ where: { id: { in: fbIds } }, select: { id: true, slug: true } });
+          const slugMap = new Map(slugRows.map(r => [String(r.id), r.slug] as [string, string | null]));
+          fbEntries = fbEntries.map(e => ({ ...e, slug: slugMap.get(String(e.player_id)) ?? null }));
+        }
+        return jsonResponse(fbEntries.slice(0, limit));
+      }
 
       const playerIds = matches.map(e => e.player_id);
       const players = await prisma.player.findMany({
