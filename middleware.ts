@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { shouldShowRecordFilter, type FilterName } from './lib/records/allowed-filters';
 
 /**
  * Local fallback mapping for player and tournament legacy codes -> slug.
@@ -19,9 +20,95 @@ const slugMapTournaments: Record<string, string> = {
 /** Detect legacy codes like W367, P123 (letters followed by digits). */
 const legacyCodeRegex = /^[A-Za-z]+\d+$/i;
 
+function kebabToKey(s?: string | null) {
+  if (!s) return undefined;
+  if (s.includes('-')) {
+    return s
+      .split('-')
+      .map((part, idx) => (idx === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1)))
+      .join('');
+  }
+  return s;
+}
+
+function hasAnyParam(searchParams: URLSearchParams, names: string[]) {
+  for (const name of names) {
+    const values = searchParams.getAll(name).filter(v => v !== '');
+    if (values.length > 0) return true;
+  }
+  return false;
+}
+
+function resolveApiRecordAndSub(pathname: string, searchParams: URLSearchParams) {
+  const seg = pathname.split('/').filter(Boolean);
+  // /api/records/:record/:sub?
+  if (seg.length < 3 || seg[0] !== 'api' || seg[1] !== 'records') return { record: null as string | null, sub: undefined as string | undefined };
+
+  const record = seg[2] || null;
+  const rawSub = seg[3];
+
+  if (!record) return { record: null as string | null, sub: undefined as string | undefined };
+
+  // Normalize plural path segments used by some API endpoints.
+  const subMap: Record<string, string> = {
+    rounds: 'round',
+    winners: 'winners',
+  };
+
+  let sub = rawSub ? (subMap[rawSub] || rawSub) : undefined;
+
+  // Dynamic subtype for ages winners/maindraw endpoints.
+  if (record === 'ages' && (sub === 'winners' || sub === 'maindraw')) {
+    const typeParam = (searchParams.get('type') || 'oldest').toLowerCase();
+    if (sub === 'winners') sub = typeParam === 'youngest' ? 'youngestWinners' : 'oldestWinners';
+    if (sub === 'maindraw') sub = typeParam === 'youngest' ? 'youngest' : 'oldest';
+  }
+
+  return { record, sub: kebabToKey(sub) };
+}
+
+function resolvePageRecordAndSub(pathname: string) {
+  const seg = pathname.split('/').filter(Boolean);
+  // /records/:record/:sub?
+  if (seg.length < 2 || seg[0] !== 'records') return { record: null as string | null, sub: undefined as string | undefined };
+  const record = seg[1] || null;
+  const sub = kebabToKey(seg[2]);
+  return { record, sub };
+}
+
+function hasInvalidRecordFilter(record: string, sub: string | undefined, searchParams: URLSearchParams) {
+  const checks: Array<{ present: boolean; filter: FilterName }> = [
+    { present: hasAnyParam(searchParams, ['level', 'level[]']), filter: 'levels' },
+    { present: hasAnyParam(searchParams, ['surface', 'surface[]']), filter: 'surfaces' },
+    { present: hasAnyParam(searchParams, ['round', 'round[]']), filter: 'rounds' },
+    { present: hasAnyParam(searchParams, ['bestOf', 'bestOf[]']), filter: 'bestOf' },
+  ];
+
+  return checks.some(({ present, filter }) => present && !shouldShowRecordFilter(filter, record, sub));
+}
+
 export async function middleware(req: NextRequest) {
   try {
     // Debugging disabled: verbose middleware request logging removed
+
+    const requestPath = req.nextUrl.pathname;
+    const query = req.nextUrl.searchParams;
+
+    // Strict 404 for invalid records filter combinations.
+    if (requestPath.startsWith('/records/')) {
+      const { record, sub } = resolvePageRecordAndSub(requestPath);
+      if (record && hasInvalidRecordFilter(record, sub, query)) {
+        return new NextResponse('Not Found', { status: 404 });
+      }
+    }
+
+    // Mirror the same rule for direct API calls.
+    if (requestPath.startsWith('/api/records/')) {
+      const { record, sub } = resolveApiRecordAndSub(requestPath, query);
+      if (record && hasInvalidRecordFilter(record, sub, query)) {
+        return NextResponse.json({ error: 'Not Found' }, { status: 404 });
+      }
+    }
 
     // Server-side visit tracking: derive a readable pageTitle, filter bots, and call API route fire-and-forget
     try {
@@ -273,7 +360,7 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/players/:path*', '/tournaments/:path*', '/records/:path*', '/recordsranking/:path*'],
+  matcher: ['/players/:path*', '/tournaments/:path*', '/records/:path*', '/recordsranking/:path*', '/api/records/:path*'],
 };
 
 // Note: don't re-export server-side DB helpers here to avoid pulling Prisma into the Edge middleware runtime.
