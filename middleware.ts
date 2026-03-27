@@ -94,11 +94,11 @@ export async function middleware(req: NextRequest) {
     const requestPath = req.nextUrl.pathname;
     const query = req.nextUrl.searchParams;
 
-    // Strict 404 for invalid records filter combinations.
+    // Strict 410 for invalid records filter combinations.
     if (requestPath.startsWith('/records/')) {
       const { record, sub } = resolvePageRecordAndSub(requestPath);
       if (record && hasInvalidRecordFilter(record, sub, query)) {
-        return new NextResponse('Not Found', { status: 404 });
+        return new NextResponse('Gone', { status: 410 });
       }
     }
 
@@ -106,7 +106,7 @@ export async function middleware(req: NextRequest) {
     if (requestPath.startsWith('/api/records/')) {
       const { record, sub } = resolveApiRecordAndSub(requestPath, query);
       if (record && hasInvalidRecordFilter(record, sub, query)) {
-        return NextResponse.json({ error: 'Not Found' }, { status: 404 });
+        return NextResponse.json({ error: 'Gone' }, { status: 410 });
       }
     }
 

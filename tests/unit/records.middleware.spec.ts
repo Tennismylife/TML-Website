@@ -39,4 +39,14 @@ describe('records middleware redirecting legacy queries', () => {
     expect(loc).toContain('/records/ages/youngest-winners');
     expect(loc).toContain('foo=bar');
   });
+
+  it('returns 410 for invalid records page filter combinations', async () => {
+    const res: any = await middleware(makeReq('http://localhost/records/ages/youngest-winners?level=G&surface=Hard&round=R32'));
+    expect(res.status).toBe(410);
+  });
+
+  it('returns 410 for invalid records API filter combinations', async () => {
+    const res: any = await middleware(makeReq('http://localhost/api/records/ages/winners?type=youngest&round=R32'));
+    expect(res.status).toBe(410);
+  });
 });
