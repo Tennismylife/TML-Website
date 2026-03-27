@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
+import { redirect, notFound } from 'next/navigation';
+import { shouldShowRecordFilter } from '../../../lib/records/allowed-filters';
 import { Metadata } from 'next';
 import { metadataBase } from '../../../lib/site';
 import {
@@ -335,6 +336,33 @@ export default async function SlugPage({ params, searchParams }: Props) {
     streak: 'wins',
     h2h: 'count',
   };
+
+  // Records that have subtabs must not be navigable at the root level — redirect to the default subtab
+  if (record && record in activeSubTabsDefault && !sub && typeof sp.subtab !== 'string') {
+    redirect(`/records/${record}/${activeSubTabsDefault[record]}`);
+  }
+
+  // ── Invalid filter combination → 404 ─────────────────────────────────────
+  // If a filter param is present in the URL but that filter doesn't apply to
+  // this record/sub, the combination doesn't exist → return 404.
+  if (record) {
+    const toArr = (v?: string | string[]) => v === undefined ? [] : Array.isArray(v) ? v : [v];
+    const effectiveSubForValidation = sub ?? (typeof sp.subtab === 'string' ? kebabToKey(sp.subtab) : undefined);
+
+    const hasLevel   = toArr(sp.level   ?? sp['level[]']).filter(Boolean).length > 0;
+    const hasSurface = toArr(sp.surface ?? sp['surface[]']).filter(Boolean).length > 0;
+    const hasRound   = typeof sp.round  === 'string' && sp.round  !== '';
+    const hasBestOf  = typeof sp.bestOf === 'string' && sp.bestOf !== '';
+
+    if (
+      (hasLevel   && !shouldShowRecordFilter('levels',   record, effectiveSubForValidation)) ||
+      (hasSurface && !shouldShowRecordFilter('surfaces', record, effectiveSubForValidation)) ||
+      (hasRound   && !shouldShowRecordFilter('rounds',   record, effectiveSubForValidation)) ||
+      (hasBestOf  && !shouldShowRecordFilter('bestOf',   record, effectiveSubForValidation))
+    ) {
+      notFound();
+    }
+  }
 
   if (!hasQueryParams && !record) {
     const data = await fetchRecordData(record, sub);
