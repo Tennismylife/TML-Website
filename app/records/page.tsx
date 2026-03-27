@@ -381,12 +381,17 @@ const itemListSchema = {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function RecordsPage() {
+  const webPageSchemaWithDate = {
+    ...webPageSchema,
+    dateModified: new Date().toISOString(),
+  };
+
   return (
     <>
       {/* JSON-LD structured data */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchemaWithDate) }}
       />
       <script
         type="application/ld+json"

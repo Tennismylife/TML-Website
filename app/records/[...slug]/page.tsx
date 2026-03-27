@@ -494,8 +494,24 @@ export default async function SlugPage({ params, searchParams }: Props) {
       ],
     };
 
+    const webPageJsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: getRecordsPageTitle(policySlugRender, filtersForPolicy, description),
+      description: description || 'TML records and statistics',
+      url: canonicalFull,
+      inLanguage: 'en-US',
+      isPartOf: {
+        '@type': 'WebSite',
+        name: 'TennisMyLife',
+        url: metadataBase.toString(),
+      },
+      dateModified: new Date().toISOString(),
+    };
+
     return (
       <>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
         <main className="w-full min-h-screen p-4 bg-gray-900 text-white">
           <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1 text-sm text-gray-400 mb-4">
