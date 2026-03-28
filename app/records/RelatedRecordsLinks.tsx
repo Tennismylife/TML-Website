@@ -3,6 +3,8 @@
 //    + links to all OTHER filters on the SAME record type (cross-filter navigation)
 // 2. When no filters: links to the most important single-filter variants of this record type
 
+import { shouldShowRecordFilter } from '../../lib/records/allowed-filters';
+
 type Filters = {
   level?: string[];
   surface?: string[];
@@ -79,6 +81,33 @@ function buildFilterQs(filters: Filters): string {
   if (filters.bestOf != null)
     parts.push(`bestOf=${encodeURIComponent(String(filters.bestOf))}`);
   return parts.join('&');
+}
+
+function subToPolicyKey(sub?: string | null) {
+  if (!sub) return undefined;
+  return sub.includes('-')
+    ? sub.split('-').map((part, index) => (index === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1))).join('')
+    : sub;
+}
+
+function buildFilterQsForTarget(filters: Filters, tab: string, sub: string | null): string {
+  const policySub = subToPolicyKey(sub);
+  const filtered: Filters = {};
+
+  if (filters.level?.length && shouldShowRecordFilter('levels', tab, policySub)) {
+    filtered.level = filters.level;
+  }
+  if (filters.surface?.length && shouldShowRecordFilter('surfaces', tab, policySub)) {
+    filtered.surface = filters.surface;
+  }
+  if (filters.round && shouldShowRecordFilter('rounds', tab, policySub)) {
+    filtered.round = filters.round;
+  }
+  if (filters.bestOf != null && shouldShowRecordFilter('bestOf', tab, policySub)) {
+    filtered.bestOf = filters.bestOf;
+  }
+
+  return buildFilterQs(filtered);
 }
 
 function basePath(tab: string | null, sub: string | null): string {
@@ -203,7 +232,8 @@ export default function RelatedRecordsLinks({
         </h2>
         <ul className="flex flex-wrap gap-2">
           {otherPages.map(page => {
-            const href = `/records/${page.tab}${page.sub ? `/${page.sub}` : ''}${qs ? `?${qs}` : ''}`;
+            const targetQs = buildFilterQsForTarget(filters, page.tab, page.sub);
+            const href = `/records/${page.tab}${page.sub ? `/${page.sub}` : ''}${targetQs ? `?${targetQs}` : ''}`;
             return (
               <li key={`${page.tab}-${page.sub}`}>
                 <a
