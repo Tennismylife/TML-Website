@@ -22,6 +22,12 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 // Archiver to stream ZIPs on-the-fly for bulk download endpoint
 const archiver = require('archiver');
+const {
+  hasRecordsFilterParams,
+  resolvePageRecordAndSub,
+  resolveRecordApiRequest,
+  hasEmptyRecordData,
+} = require('./lib/records/empty-record-pages.cjs');
 
 const dev = false; // produzione
 const nextApp = next({ dev, dir: '.', conf: { distDir: '.next' } });
@@ -171,6 +177,44 @@ function strongETag(buffer) {
       env: process.env.NODE_ENV || null,
       time: new Date().toISOString(),
     }));
+  });
+
+  /* 4.5) Records pages with valid filters but empty data -> 410 */
+  server.use(async (req, res, next) => {
+    if (req.method !== 'GET') return next();
+    if (!req.path.startsWith('/records/')) return next();
+    if (shouldBypassCache(req)) return next();
+
+    const proto = req.headers['x-forwarded-proto'] || req.protocol;
+    const pageUrl = new URL(`${proto}://${req.headers.host}${req.originalUrl}`);
+    if (!hasRecordsFilterParams(pageUrl.searchParams)) return next();
+
+    const { record, sub } = resolvePageRecordAndSub(req.path);
+    if (!record) return next();
+
+    try {
+      const apiRequest = resolveRecordApiRequest(record, sub, pageUrl.searchParams);
+      const apiUrl = new URL(apiRequest.pathname, `${proto}://${req.headers.host}`);
+      apiRequest.searchParams.forEach((value, key) => {
+        apiUrl.searchParams.append(key, value);
+      });
+
+      const apiResp = await fetch(apiUrl.toString(), {
+        headers: { 'x-refresh': '1', accept: 'application/json' },
+      });
+
+      if (!apiResp.ok) return next();
+
+      const payload = await apiResp.json();
+      if (!hasEmptyRecordData(payload)) return next();
+
+      res.setHeader('Cache-Control', 'private, max-age=0');
+      res.setHeader('X-SSR-COMPLETE', '1');
+      return res.status(410).send('Gone');
+    } catch (error) {
+      console.error('[RECORDS EMPTY CHECK ERROR]', error);
+      return next();
+    }
   });
 
   /* 5) CACHE READ */
