@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { shouldShowRecordFilter, type FilterName } from './lib/records/allowed-filters';
 
 /**
  * Local fallback mapping for player and tournament legacy codes -> slug.
@@ -30,6 +31,42 @@ function kebabToKey(s?: string | null) {
   return s;
 }
 
+function hasAnyParam(searchParams: URLSearchParams, names: string[]) {
+  for (const name of names) {
+    const values = searchParams.getAll(name).filter(v => v !== '');
+    if (values.length > 0) return true;
+  }
+  return false;
+}
+
+function resolveApiRecordAndSub(pathname: string, searchParams: URLSearchParams) {
+  const seg = pathname.split('/').filter(Boolean);
+  // /api/records/:record/:sub?
+  if (seg.length < 3 || seg[0] !== 'api' || seg[1] !== 'records') return { record: null as string | null, sub: undefined as string | undefined };
+
+  const record = seg[2] || null;
+  const rawSub = seg[3];
+
+  if (!record) return { record: null as string | null, sub: undefined as string | undefined };
+
+  // Normalize plural path segments used by some API endpoints.
+  const subMap: Record<string, string> = {
+    rounds: 'round',
+    winners: 'winners',
+  };
+
+  let sub = rawSub ? (subMap[rawSub] || rawSub) : undefined;
+
+  // Dynamic subtype for ages winners/maindraw endpoints.
+  if (record === 'ages' && (sub === 'winners' || sub === 'maindraw')) {
+    const typeParam = (searchParams.get('type') || 'oldest').toLowerCase();
+    if (sub === 'winners') sub = typeParam === 'youngest' ? 'youngestWinners' : 'oldestWinners';
+    if (sub === 'maindraw') sub = typeParam === 'youngest' ? 'youngest' : 'oldest';
+  }
+
+  return { record, sub: kebabToKey(sub) };
+}
+
 function resolvePageRecordAndSub(pathname: string) {
   const seg = pathname.split('/').filter(Boolean);
   // /records/:record/:sub?
@@ -39,59 +76,15 @@ function resolvePageRecordAndSub(pathname: string) {
   return { record, sub };
 }
 
-/** Filter query-string keys that trigger an empty-data check. */
-const RECORD_FILTER_PARAMS = new Set([
-  'level', 'level[]', 'surface', 'surface[]', 'round', 'round[]', 'bestOf', 'bestOf[]',
-]);
+function hasInvalidRecordFilter(record: string, sub: string | undefined, searchParams: URLSearchParams) {
+  const checks: Array<{ present: boolean; filter: FilterName }> = [
+    { present: hasAnyParam(searchParams, ['level', 'level[]']), filter: 'levels' },
+    { present: hasAnyParam(searchParams, ['surface', 'surface[]']), filter: 'surfaces' },
+    { present: hasAnyParam(searchParams, ['round', 'round[]']), filter: 'rounds' },
+    { present: hasAnyParam(searchParams, ['bestOf', 'bestOf[]']), filter: 'bestOf' },
+  ];
 
-/** True for Next.js RSC / prefetch requests (client-side navigation) — skip data check. */
-function isRscRequest(req: NextRequest): boolean {
-  const accept = req.headers.get('accept') || '';
-  return (
-    req.headers.get('rsc') === '1' ||
-    req.headers.get('next-router-state-tree') !== null ||
-    req.headers.get('next-router-prefetch') !== null ||
-    req.headers.get('next-router-segment-prefetch') !== null ||
-    accept.includes('text/x-component')
-  );
-}
-
-/**
- * Call the records API with the current filter params and return true when
- * the response contains zero rows (any known array-valued key is empty).
- * Returns false (fail-open) on timeout, network error or unknown response shape.
- */
-async function checkRecordDataEmpty(
-  origin: string,
-  record: string,
-  sub: string | undefined,
-  query: URLSearchParams,
-): Promise<boolean> {
-  const apiPath = `/api/records/${encodeURIComponent(record)}${sub ? '/' + encodeURIComponent(sub) : ''}`;
-  const apiUrl = new URL(apiPath, origin);
-  for (const [k, v] of query.entries()) {
-    apiUrl.searchParams.append(k, v);
-  }
-  try {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 3000);
-    const res = await fetch(apiUrl.toString(), { signal: ctrl.signal });
-    clearTimeout(timer);
-    if (!res.ok) return false;
-    const data = await res.json();
-    if (Array.isArray(data)) return data.length === 0;
-    if (data && typeof data === 'object') {
-      const KNOWN = ['topWinners', 'topPlayed', 'top', 'topTitles', 'topEntries', 'topRoundOnEntries', 'rows', 'data', 'results'];
-      for (const k of KNOWN) {
-        if (Array.isArray((data as any)[k])) return (data as any)[k].length === 0;
-      }
-      const firstArr = (Object.values(data as any) as unknown[]).find(Array.isArray);
-      if (firstArr) return (firstArr as unknown[]).length === 0;
-    }
-    return false;
-  } catch {
-    return false;
-  }
+  return checks.some(({ present, filter }) => present && !shouldShowRecordFilter(filter, record, sub));
 }
 
 export async function middleware(req: NextRequest) {
@@ -101,17 +94,19 @@ export async function middleware(req: NextRequest) {
     const requestPath = req.nextUrl.pathname;
     const query = req.nextUrl.searchParams;
 
-    // 410 for records pages whose filter combination returns no data.
-    if (requestPath.startsWith('/records/') && !isRscRequest(req)) {
-      const hasFilters = [...query.keys()].some(k => RECORD_FILTER_PARAMS.has(k));
-      if (hasFilters) {
-        const { record, sub } = resolvePageRecordAndSub(requestPath);
-        if (record) {
-          const empty = await checkRecordDataEmpty(req.nextUrl.origin, record, sub, query);
-          if (empty) {
-            return new NextResponse('Gone', { status: 410 });
-          }
-        }
+    // Strict 410 for invalid records filter combinations.
+    if (requestPath.startsWith('/records/')) {
+      const { record, sub } = resolvePageRecordAndSub(requestPath);
+      if (record && hasInvalidRecordFilter(record, sub, query)) {
+        return new NextResponse('Gone', { status: 410 });
+      }
+    }
+
+    // Mirror the same rule for direct API calls.
+    if (requestPath.startsWith('/api/records/')) {
+      const { record, sub } = resolveApiRecordAndSub(requestPath, query);
+      if (record && hasInvalidRecordFilter(record, sub, query)) {
+        return NextResponse.json({ error: 'Gone' }, { status: 410 });
       }
     }
 

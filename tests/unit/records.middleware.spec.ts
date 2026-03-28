@@ -1,14 +1,10 @@
 /** @vitest-environment node */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { middleware } from '../../middleware';
 import { NextResponse } from 'next/server';
 
-function makeReq(url: string, headers: Record<string, string> = {}) {
-  return {
-    nextUrl: new URL(url),
-    url,
-    headers: { get: (name: string) => headers[name.toLowerCase()] ?? null },
-  } as any;
+function makeReq(url: string) {
+  return { nextUrl: new URL(url), url } as any;
 }
 
 describe('records middleware redirecting legacy queries', () => {
@@ -22,7 +18,9 @@ describe('records middleware redirecting legacy queries', () => {
 
   it('does not redirect when already on canonical path without legacy params', async () => {
     const res: any = await middleware(makeReq('http://localhost/records/wins'));
+    // Non-redirect response should be NextResponse (middleware proceeds)
     expect(res).toBeTruthy();
+    // Should NOT be a 301 redirect
     expect(res.status).not.toBe(301);
   });
 
@@ -41,60 +39,14 @@ describe('records middleware redirecting legacy queries', () => {
     expect(loc).toContain('/records/ages/youngest-winners');
     expect(loc).toContain('foo=bar');
   });
-});
 
-describe('records middleware 410 for empty-data pages', () => {
-  beforeEach(() => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve([]),
-    }));
-  });
-
-  afterEach(() => {
-    vi.unstubAllGlobals();
-  });
-
-  it('returns 410 when API returns empty array for filtered records page', async () => {
-    const res: any = await middleware(makeReq('http://localhost/records/wins?surface=Grass'));
+  it('returns 410 for invalid records page filter combinations', async () => {
+    const res: any = await middleware(makeReq('http://localhost/records/ages/youngest-winners?level=G&surface=Hard&round=R32'));
     expect(res.status).toBe(410);
   });
 
-  it('returns 410 when API returns object with empty topWinners', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ topWinners: [] }),
-    }));
-    const res: any = await middleware(makeReq('http://localhost/records/wins?surface=Grass'));
+  it('returns 410 for invalid records API filter combinations', async () => {
+    const res: any = await middleware(makeReq('http://localhost/api/records/ages/winners?type=youngest&round=R32'));
     expect(res.status).toBe(410);
-  });
-
-  it('passes through (no 410) when API returns non-empty data', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve([{ rank: 1, player: 'Federer' }]),
-    }));
-    const res: any = await middleware(makeReq('http://localhost/records/wins?surface=Grass'));
-    expect(res?.status).not.toBe(410);
-  });
-
-  it('does not check data and does not return 410 when no filter params are present', async () => {
-    const res: any = await middleware(makeReq('http://localhost/records/wins'));
-    expect(res?.status).not.toBe(410);
-    expect(vi.mocked(fetch)).not.toHaveBeenCalled();
-  });
-
-  it('skips empty-data check for RSC requests (client-side navigation)', async () => {
-    const res: any = await middleware(
-      makeReq('http://localhost/records/wins?surface=Grass', { rsc: '1' })
-    );
-    expect(res?.status).not.toBe(410);
-    expect(vi.mocked(fetch)).not.toHaveBeenCalled();
-  });
-
-  it('fails open (no 410) when API call throws', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network error')));
-    const res: any = await middleware(makeReq('http://localhost/records/wins?surface=Grass'));
-    expect(res?.status).not.toBe(410);
   });
 });
