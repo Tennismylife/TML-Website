@@ -87,6 +87,76 @@ function hasInvalidRecordFilter(record: string, sub: string | undefined, searchP
   return checks.some(({ present, filter }) => present && !shouldShowRecordFilter(filter, record, sub));
 }
 
+const RECORD_FILTER_PARAMS = ['level', 'level[]', 'surface', 'surface[]', 'round', 'round[]', 'bestOf', 'bestOf[]'];
+
+function hasRecordsFilterParams(searchParams: URLSearchParams) {
+  return hasAnyParam(searchParams, RECORD_FILTER_PARAMS);
+}
+
+function getHeader(req: NextRequest, name: string) {
+  return req.headers?.get ? req.headers.get(name) : null;
+}
+
+function isRscRequest(req: NextRequest) {
+  const purpose = getHeader(req, 'purpose');
+  const prefetch = getHeader(req, 'next-router-prefetch');
+  const rsc = getHeader(req, 'rsc');
+  return purpose === 'prefetch' || prefetch === '1' || rsc === '1';
+}
+
+function resolveRecordApiRequest(record: string, sub: string | undefined, searchParams: URLSearchParams) {
+  const params = new URLSearchParams(searchParams);
+  let apiSub = sub;
+
+  if (record === 'ages') {
+    if (sub === 'oldest' || sub === 'youngest') {
+      apiSub = 'maindraw';
+      params.set('type', sub);
+    } else if (sub === 'oldestWinners' || sub === 'youngestWinners') {
+      apiSub = 'winners';
+      params.set('type', sub === 'youngestWinners' ? 'youngest' : 'oldest');
+    }
+  }
+
+  const subMap: Record<string, string> = {
+    round: 'rounds',
+    slam: 'inslams',
+    slams: 'inslams',
+  };
+
+  if (apiSub) apiSub = subMap[apiSub] || apiSub;
+
+  return {
+    pathname: `/api/records/${record}${apiSub ? `/${apiSub}` : ''}`,
+    searchParams: params,
+  };
+}
+
+function hasEmptyRecordData(payload: unknown) {
+  if (Array.isArray(payload)) return payload.length === 0;
+  if (!payload || typeof payload !== 'object') return false;
+
+  const arrayValues = Object.values(payload).filter(Array.isArray) as unknown[][];
+  if (arrayValues.length === 0) return false;
+
+  return arrayValues.every(value => value.length === 0);
+}
+
+async function isEmptyRecordPage(origin: string, record: string, sub: string | undefined, searchParams: URLSearchParams) {
+  const apiRequest = resolveRecordApiRequest(record, sub, searchParams);
+  const apiUrl = new URL(apiRequest.pathname, origin);
+
+  apiRequest.searchParams.forEach((value, key) => {
+    apiUrl.searchParams.append(key, value);
+  });
+
+  const response = await fetch(apiUrl.toString(), { cache: 'no-store' });
+  if (!response.ok) return null;
+
+  const payload = await response.json();
+  return hasEmptyRecordData(payload);
+}
+
 export async function middleware(req: NextRequest) {
   try {
     // Debugging disabled: verbose middleware request logging removed
@@ -99,6 +169,15 @@ export async function middleware(req: NextRequest) {
       const { record, sub } = resolvePageRecordAndSub(requestPath);
       if (record && hasInvalidRecordFilter(record, sub, query)) {
         return new NextResponse('Gone', { status: 410 });
+      }
+
+      if (record && hasRecordsFilterParams(query) && !isRscRequest(req)) {
+        try {
+          const isEmpty = await isEmptyRecordPage(req.nextUrl.origin, record, sub, query);
+          if (isEmpty) {
+            return new NextResponse('Gone', { status: 410 });
+          }
+        } catch {}
       }
     }
 
