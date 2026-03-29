@@ -186,6 +186,32 @@ function getUserAgent(req: NextRequest) {
   }
 }
 
+function hasMissingRequiredRecordsApiParams(record: string, sub: string | undefined, searchParams: URLSearchParams) {
+  if (record === 'atage') {
+    const hasAge = searchParams.get('age') !== null && String(searchParams.get('age')).trim() !== '';
+    if (sub === 'round') {
+      const hasRound = searchParams.get('round') !== null && String(searchParams.get('round')).trim() !== '';
+      return !hasAge || !hasRound;
+    }
+    if (['wins', 'played', 'entries', 'titles', 'inslams'].includes(sub || '')) {
+      return !hasAge;
+    }
+  }
+
+  if (record === 'ageofnth') {
+    const hasN = searchParams.get('n') !== null && String(searchParams.get('n')).trim() !== '';
+    if (sub === 'round') {
+      const hasRound = searchParams.get('round') !== null && String(searchParams.get('round')).trim() !== '';
+      return !hasN || !hasRound;
+    }
+    if (['wins', 'played', 'entries', 'titles', 'slams'].includes(sub || '')) {
+      return !hasN;
+    }
+  }
+
+  return false;
+}
+
 export async function middleware(req: NextRequest) {
   try {
     // Debugging disabled: verbose middleware request logging removed
@@ -232,6 +258,11 @@ export async function middleware(req: NextRequest) {
       // Canonicalize those API URLs instead of returning 410 to keep server-side scans clean.
       const ua = getUserAgent(req).toLowerCase();
       if (record && ua.includes('node')) {
+        // If required parameters are missing, return a proper client error.
+        if (hasMissingRequiredRecordsApiParams(record, sub, query)) {
+          return NextResponse.json({ error: 'Missing required params' }, { status: 400 });
+        }
+
         const { cleaned, changed } = stripDisallowedRecordFilters(record, sub, query);
         if (changed) {
           const dest = new URL(req.url);

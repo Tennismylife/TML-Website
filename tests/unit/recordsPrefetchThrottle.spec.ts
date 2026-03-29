@@ -38,4 +38,18 @@ describe('records prefetch throttle', () => {
     expect(res.status).toBe(200);
     expect(body).toEqual([{ id: 1 }]);
   });
+
+  it('skips prefetch when required parameters are missing', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response('[]', { status: 200, headers: { 'content-type': 'application/json' } })
+    );
+
+    const res = await rateLimitedFetch('http://localhost/api/records/atage/entries?level=250&surface=Grass');
+    const body = await res.json();
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(res.status).toBe(200);
+    expect(res.headers.get('x-records-prefetch-skipped')).toBe('known-410');
+    expect(body).toEqual([]);
+  });
 });

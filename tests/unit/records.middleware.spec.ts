@@ -68,6 +68,13 @@ describe('records middleware redirecting legacy queries', () => {
     expect(loc).not.toContain('round=R32');
   });
 
+  it('returns 400 for node records API requests when required params are missing', async () => {
+    const res: any = await middleware(
+      makeReq('http://localhost/api/records/atage/entries?level=250&round=F&surface=Grass', 'node')
+    );
+    expect(res.status).toBe(400);
+  });
+
   it('sanitizes malformed records API filters and redirects to cleaned query', async () => {
     const res: any = await middleware(makeReq('http://localhost/api/records/percentage?level=G%5C%5C&round=F%5C&surface=Grass%5C%5C&bestOf=NaN'));
     expect(res.status).toBe(307);

@@ -66,6 +66,32 @@ function hasInvalidRecordFilter(record: string, sub: string | undefined, searchP
   return checks.some(({ present, filter }) => present && !shouldShowRecordFilter(filter, record, sub));
 }
 
+function hasMissingRequiredRecordsApiParams(record: string, sub: string | undefined, searchParams: URLSearchParams) {
+  if (record === 'atage') {
+    const hasAge = searchParams.get('age') !== null && String(searchParams.get('age')).trim() !== '';
+    if (sub === 'round') {
+      const hasRound = searchParams.get('round') !== null && String(searchParams.get('round')).trim() !== '';
+      return !hasAge || !hasRound;
+    }
+    if (['wins', 'played', 'entries', 'titles', 'inslams'].includes(sub || '')) {
+      return !hasAge;
+    }
+  }
+
+  if (record === 'ageofnth') {
+    const hasN = searchParams.get('n') !== null && String(searchParams.get('n')).trim() !== '';
+    if (sub === 'round') {
+      const hasRound = searchParams.get('round') !== null && String(searchParams.get('round')).trim() !== '';
+      return !hasN || !hasRound;
+    }
+    if (['wins', 'played', 'entries', 'titles', 'slams'].includes(sub || '')) {
+      return !hasN;
+    }
+  }
+
+  return false;
+}
+
 function parseInputUrl(input: RequestInfo | URL): URL | null {
   try {
     if (input instanceof URL) return input;
@@ -89,6 +115,7 @@ function shouldSkipKnownGoneRecordsPrefetch(input: RequestInfo | URL): boolean {
 
   const { record, sub } = resolveApiRecordAndSub(url.pathname, url.searchParams);
   if (!record) return false;
+  if (hasMissingRequiredRecordsApiParams(record, sub, url.searchParams)) return true;
   return hasInvalidRecordFilter(record, sub, url.searchParams);
 }
 
