@@ -24,7 +24,7 @@ const METADATA_BASE = process.env.NEXT_PUBLIC_SITE_ORIGIN ?? 'https://stats.tenn
 const METADATA_BASE_URL = new URL(METADATA_BASE);
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://stats.tennismylife.org'),
+  metadataBase: METADATA_BASE_URL,
   title: {
     default: 'Tennis Rankings, Matches & Records - TennisMyLife',
     template: '%s - TennisMyLife',
@@ -71,12 +71,34 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               '@context': 'https://schema.org',
               '@type': 'WebSite',
               url: 'https://stats.tennismylife.org',
-              name: 'TennisMyLife — Tennis Rankings, Matches & Records',
-              potentialAction: {
-                '@type': 'SearchAction',
-                target: 'https://stats.tennismylife.org/search?q={search_term_string}',
-                'query-input': 'required name=search_term_string'
+              name: 'TennisMyLife',
+              alternateName: 'Tennis My Life',
+              inLanguage: 'en',
+              publisher: {
+                '@type': 'Organization',
+                name: 'TennisMyLife',
+                url: 'https://stats.tennismylife.org',
+                logo: {
+                  '@type': 'ImageObject',
+                  url: 'https://stats.tennismylife.org/logo.png'
+                }
               }
+            }),
+          }}
+        />
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'TennisMyLife',
+              url: 'https://stats.tennismylife.org',
+              logo: 'https://stats.tennismylife.org/logo.png',
+              sameAs: [
+                'https://x.com/TennisMyLife68'
+              ]
             }),
           }}
         />

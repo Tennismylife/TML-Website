@@ -76,6 +76,21 @@ function resolvePageRecordAndSub(pathname: string) {
   return { record, sub };
 }
 
+function resolveTournamentRecordsPageRecordAndSub(pathname: string) {
+  const seg = pathname.split('/').filter(Boolean);
+  // /tournaments/:id/records/:record?/:sub?
+  if (seg.length < 3 || seg[0] !== 'tournaments' || seg[2] !== 'records') {
+    return { record: null as string | null, sub: undefined as string | undefined };
+  }
+  const record = seg[3] || null;
+  const sub = kebabToKey(seg[4]);
+  return { record, sub };
+}
+
+function hasAnyRecordsFilter(searchParams: URLSearchParams) {
+  return hasAnyParam(searchParams, ['level', 'level[]', 'surface', 'surface[]', 'round', 'round[]', 'bestOf', 'bestOf[]']);
+}
+
 function hasInvalidRecordFilter(record: string, sub: string | undefined, searchParams: URLSearchParams) {
   const checks: Array<{ present: boolean; filter: FilterName }> = [
     { present: hasAnyParam(searchParams, ['level', 'level[]']), filter: 'levels' },
@@ -98,6 +113,14 @@ export async function middleware(req: NextRequest) {
     if (requestPath.startsWith('/records/')) {
       const { record, sub } = resolvePageRecordAndSub(requestPath);
       if (record && hasInvalidRecordFilter(record, sub, query)) {
+        return new NextResponse('Gone', { status: 410 });
+      }
+    }
+
+    // Enforce the same guard on tournament records pages so invalid URLs never SSR.
+    if (requestPath.startsWith('/tournaments/')) {
+      const { record, sub } = resolveTournamentRecordsPageRecordAndSub(requestPath);
+      if ((record && hasInvalidRecordFilter(record, sub, query)) || (!record && hasAnyRecordsFilter(query))) {
         return new NextResponse('Gone', { status: 410 });
       }
     }
