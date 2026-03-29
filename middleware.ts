@@ -39,6 +39,54 @@ function hasAnyParam(searchParams: URLSearchParams, names: string[]) {
   return false;
 }
 
+function isTournamentRecordsPath(pathname: string) {
+  const seg = pathname.split('/').filter(Boolean);
+  return seg.length >= 3 && seg[0] === 'tournaments' && seg[2] === 'records';
+}
+
+const RECORD_FILTER_QUERY_KEYS = new Set([
+  'level', 'level[]',
+  'surface', 'surface[]',
+  'round', 'round[]',
+  'bestOf', 'bestOf[]',
+  'best_of', 'best_of[]',
+]);
+
+function sanitizeRecordsFilterQuery(searchParams: URLSearchParams) {
+  const cleaned = new URLSearchParams();
+  let changed = false;
+
+  for (const [key, raw] of searchParams.entries()) {
+    if (!RECORD_FILTER_QUERY_KEYS.has(key)) {
+      cleaned.append(key, raw);
+      continue;
+    }
+
+    const stripped = String(raw ?? '').replace(/\\+/g, '').trim();
+    if (stripped !== raw) changed = true;
+
+    if (!stripped) {
+      changed = true;
+      continue;
+    }
+
+    if (key === 'bestOf' || key === 'bestOf[]' || key === 'best_of' || key === 'best_of[]') {
+      const n = Number(stripped);
+      if (!Number.isFinite(n) || !Number.isInteger(n) || n <= 0) {
+        changed = true;
+        continue;
+      }
+      cleaned.append(key, String(n));
+      if (String(n) !== stripped) changed = true;
+      continue;
+    }
+
+    cleaned.append(key, stripped);
+  }
+
+  return { cleaned, changed };
+}
+
 function resolveApiRecordAndSub(pathname: string, searchParams: URLSearchParams) {
   const seg = pathname.split('/').filter(Boolean);
   // /api/records/:record/:sub?
@@ -108,6 +156,21 @@ export async function middleware(req: NextRequest) {
 
     const requestPath = req.nextUrl.pathname;
     const query = req.nextUrl.searchParams;
+
+    // Normalize malformed records filters (e.g. trailing backslashes, bestOf=NaN)
+    // before enforcing validity rules.
+    if (
+      requestPath.startsWith('/records/') ||
+      requestPath.startsWith('/api/records/') ||
+      isTournamentRecordsPath(requestPath)
+    ) {
+      const { cleaned, changed } = sanitizeRecordsFilterQuery(query);
+      if (changed) {
+        const dest = new URL(req.url);
+        dest.search = cleaned.toString();
+        return new Response(null, { status: 307, headers: { Location: dest.toString() } });
+      }
+    }
 
     // Strict 410 for invalid records filter combinations.
     if (requestPath.startsWith('/records/')) {

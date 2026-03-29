@@ -49,4 +49,16 @@ describe('records middleware redirecting legacy queries', () => {
     const res: any = await middleware(makeReq('http://localhost/api/records/ages/winners?type=youngest&round=R32'));
     expect(res.status).toBe(410);
   });
+
+  it('sanitizes malformed records API filters and redirects to cleaned query', async () => {
+    const res: any = await middleware(makeReq('http://localhost/api/records/percentage?level=G%5C%5C&round=F%5C&surface=Grass%5C%5C&bestOf=NaN'));
+    expect(res.status).toBe(307);
+    const loc = res.headers.get('location');
+    expect(loc).toContain('/api/records/percentage');
+    expect(loc).toContain('level=G');
+    expect(loc).toContain('round=F');
+    expect(loc).toContain('surface=Grass');
+    expect(loc).not.toContain('NaN');
+    expect(loc).not.toContain('%5C');
+  });
 });
