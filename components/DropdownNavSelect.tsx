@@ -7,15 +7,29 @@ export default function DropdownNavSelect({
   options,
   className = '',
   resetPage = true,
+  pathMode = false,
 }: {
   name: string;
   value?: string | number | null;
   options: Array<{ value: string; label: string }>;
   className?: string;
   resetPage?: boolean;
+  /** When true, navigates to path/<value> instead of ?name=value */
+  pathMode?: boolean;
 }) {
   const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const v = e.target.value;
+    if (pathMode) {
+      const parts = window.location.pathname.split('/');
+      const lastPart = parts[parts.length - 1];
+      if (/^\d+$/.test(lastPart)) {
+        parts[parts.length - 1] = v;
+      } else {
+        parts.push(v);
+      }
+      window.location.assign(parts.join('/'));
+      return;
+    }
     const params = new URLSearchParams(window.location.search);
     if (!v) params.delete(name);
     else params.set(name, v);

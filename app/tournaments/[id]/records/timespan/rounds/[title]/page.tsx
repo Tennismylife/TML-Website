@@ -5,6 +5,7 @@ import { getRoundFullName } from '@/lib/utils';
 import ViewRecordsCTA from '../../../ViewRecordsCTA';
 import { prisma } from '@/lib/prisma';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
+import RecordsWebPageJsonLd from '../../../RecordsWebPageJsonLd';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string; title: string }> }) {
   const p = await params;
@@ -38,8 +39,19 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function RoundPage({ params }: { params: Promise<{ id: string; title: string }> }) {
   const { id, title } = await params;
+  const tournamentName = await getTournamentName(id);
+  const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
+  const label = `Biggest timespan between 2 ${getRoundFullName(String(title))}`;
+  const pageTitle = makeTitle(label, tournamentName);
+  const canonical = `${site}/tournaments/${id}/records/timespan/rounds/${encodeURIComponent(String(title))}`;
   return (
     <div className="w-full mx-auto text-white relative">
+      <RecordsWebPageJsonLd
+        pageTitle={pageTitle}
+        pageDescription={`${label} at ${tournamentName}`}
+        canonical={canonical}
+        keywords={`${tournamentName}, timespan records, ${label}, tennis records`}
+      />
       <ViewRecordsCTA id={id} className="absolute top-4 left-4 z-50" />
       <TimespanFull id={id} title={title} section="rounds" />
     </div>

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import React from 'react';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
-import { shouldIndexRecords } from '@/lib/getTournamentName';
+import { shouldIndexRecords, getTournamentSlug, getTournamentName } from '@/lib/getTournamentName';
 import CountModalOutlet from '@/components/CountModalOutlet';
 import AgesModalOutlet from '@/components/AgesModalOutlet';
 import PercentageModalOutlet from '@/components/PercentageModalOutlet';
@@ -99,7 +99,7 @@ export async function generateMetadata({ params, searchParams }: any): Promise<M
 
   const displayFromParam = resolvedDisplayName;
   const tabLabels: Record<string, string> = {
-    count: 'Counts',
+    count: 'Overview',
     rounds: 'Rounds',
     ages: 'Ages',
     percentage: 'Percentages',
@@ -113,6 +113,12 @@ export async function generateMetadata({ params, searchParams }: any): Promise<M
   const subLabel = sub ? ` — ${humanizeName(sub)}` : '';
 
   let titleFromParam = `${displayFromParam} | ${typeLabelFromParam}${subLabel}`;
+  let fallbackDescription = `A curated collection of records at ${displayFromParam}. Explore Titles, Wins, Matches Played and Appearances, and discover historical trends in tournament history.`;
+
+  if (!tab) {
+    titleFromParam = `${displayFromParam} Records: wins, titles, matches, ages, streak, stats`;
+    fallbackDescription = `Comprehensive Open Era tennis records and statistics for ${displayFromParam}. Discover the players with the most titles, match wins, longest streaks, and youngest champions.`;
+  }
   // Prefer /count/* for count tab root and subpages; otherwise use /records/*
   let ogUrlFromParam = tab === 'count'
     ? `${site}/tournaments/${canonicalTournamentSlug}/records/count${sub ? `/${sub}` : ''}`
@@ -120,7 +126,7 @@ export async function generateMetadata({ params, searchParams }: any): Promise<M
       ? `${site}/tournaments/${canonicalTournamentSlug}/records/ages${sub ? `/${sub}` : ''}`
       : `${site}/tournaments/${canonicalTournamentSlug}/records${tab ? `/${tab}` : ''}${sub ? `/${sub}` : ''}`;
   const ogImageFromParam = `${site}/og/site-preview.png`;
-  const fallbackDescription = `A curated collection of records at ${displayFromParam}. Explore Titles, Wins, Matches Played and Appearances, and discover historical trends in tournament history.`;
+  
   const keywords = generateKeywords(displayFromParam, tab, sub);
 
   // Build canonical query string from common filters so filtered variants can be canonicalized when necessary
@@ -264,9 +270,37 @@ export default async function RecordsLayout({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+
+  // Resolve the canonical slug for structured data URLs
+  const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
+  const slugId = await getTournamentSlug(id).catch(() => id);
+  const tournamentDisplayName = await getTournamentName(id).catch(() => id);
+  const hubUrl = `${site}/tournaments/${slugId}/records`;
+
+  // BreadcrumbList: Home → Tournaments → [Tournament] → Records
+  // Helps Google understand this page is the records hub, not a leaf page
+  const breadcrumbJson = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site}/` },
+      { '@type': 'ListItem', position: 2, name: 'Tournaments', item: `${site}/tournaments` },
+      { '@type': 'ListItem', position: 3, name: tournamentDisplayName, item: `${site}/tournaments/${slugId}` },
+      { '@type': 'ListItem', position: 4, name: 'Records', item: hubUrl },
+    ],
+  });
+
   return (
     <>
       {children}
+
+      {/* BreadcrumbList structured data — injected at layout level so every records sub-page
+          inherits a breadcrumb that anchors back to the hub URL */}
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{ __html: breadcrumbJson }}
+      />
 
       {/* Global client-side modal outlets */}
       <CountModalOutlet id={id} />

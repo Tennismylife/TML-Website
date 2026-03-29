@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
 import CountSection from "./CountSection";
@@ -86,8 +86,6 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
   // Map local state ('overall' | 'per-round') to the prop expected by PercentageSection ('overall' | 'rounds')
   const percentageActiveSubTab: PercentageSectionProp = activePercentageSubTab === 'per-round' ? 'rounds' : 'overall';
 
-  const didReplaceRef = useRef(false); // evita replace infinito a /records/count
-
   // linkId: prefer DB numeric id when available (used for edition links to ensure numeric URLs)
   const linkId = headerId ?? id;
   // When constructing top‑level *paths* (tabs) we want the human
@@ -138,6 +136,14 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
     const subFromPath = recordsIndex >= 0 && parts.length > recordsIndex + 2 ? parts[recordsIndex + 2] : null;
 
     if (tabFromPath) {
+      // /records/count is not a valid standalone URL — redirect to the hub /records
+      if (tabFromPath === 'count' && !subFromPath) {
+        const basePath = `/tournaments/${pathId}/records`;
+        router.replace(basePath);
+        setActiveTab('count');
+        return;
+      }
+
       setActiveTab(tabFromPath);
 
       // sync subtabs for specific tabs
@@ -153,15 +159,12 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
       return;
     }
 
-    // if path is exactly /tournaments/{id}/records, do a single replace to /records/count
-    // use slug when available here as well so that we don't redirect
-    // to a numeric URL after the initial replaceState above has already
-    // switched the location to the slug.
+    // if path is exactly /tournaments/{id}/records, show the count tab without changing the URL
+    // (keeping the canonical /records URL intact for SEO — avoids pushing to the noindex [tab] catch-all)
     const expectedBase = `/tournaments/${pathId}/records`;
     const currentPath = (typeof window !== 'undefined' ? window.location.pathname : pathname).replace(/\/$/, '');
-    if (currentPath === expectedBase && !didReplaceRef.current) {
-      didReplaceRef.current = true;
-      router.replace(`${expectedBase}/count`);
+    if (currentPath === expectedBase) {
+      setActiveTab('count');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
@@ -197,7 +200,10 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
     const subSegment = sub ? `/${encodeURIComponent(sub)}` : '';
     // prefer slug for the navigation path when it's been loaded
     const chosenId = pathId;
-    const newPath = `/tournaments/${chosenId}/records/${encodeURIComponent(tab)}${subSegment}`;
+    // 'count' is the default/hub tab — its canonical URL is /records (no extra segment)
+    const newPath = tab === 'count'
+      ? `/tournaments/${chosenId}/records`
+      : `/tournaments/${chosenId}/records/${encodeURIComponent(tab)}${subSegment}`;
     if (typeof window !== 'undefined' && newPath !== window.location.pathname) {
       router.push(newPath);
     } else {
@@ -225,6 +231,8 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
   // Compute a display name for the H1: prefer DB name when available, otherwise humanize the route id
   const displayName = safeTournamentName(tournament?.name, String(id).replace(/-/g, ' '));
   const humanizedDisplayName = String(displayName).replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  const normalizedPathname = pathname ? pathname.replace(/\/$/, '') : '';
+  const isRecordsHome = normalizedPathname === `/tournaments/${pathId}/records`;
 
 
 
@@ -239,7 +247,7 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
     if (activeTab === 'average-age') return `${humanizedDisplayName} Average Age Records`;
     if (activeTab === 'timespan') return `${humanizedDisplayName} Timespan Records`;
     const tabLabels: Record<string, string> = {
-      count: 'Open Era Records',
+      count: 'Overview',
       rounds: 'Records by Round',
       ages: 'Ages',
       percentage: 'Percentages',
@@ -257,16 +265,34 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
     <>
       <TournamentHeader id={headerId} />
 
-      {/* Intro description (client-rendered under the header) */}
-      <h3 className="text-base text-gray-300 w-full leading-relaxed mb-6">
-        {(() => {
-          const base = 'Explore match-level data, historical trends, and the players who left their mark on this tournament.';
-          if (activeTab === 'least') return `A curated collection of least games lost to reach a round at ${humanizedDisplayName}. ${base}`;
-          if (activeTab === 'rounds') return `A curated collection of records by round at ${humanizedDisplayName}. ${base}`;
-          if (activeTab === 'count') return `A curated collection of records at ${humanizedDisplayName}. Titles, Wins Matches Played and Appearances. ${base}`;
-          return `A curated collection of ${activeTab ? activeTab.replace(/[-_]+/g, ' ') : 'records'} at ${humanizedDisplayName}. ${base}`;
-        })()}
-      </h3>
+      {isRecordsHome && (
+        <section className="mb-8 p-6 md:p-8 bg-gray-900/40 rounded-2xl border border-gray-800/80 shadow-lg">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-100 mb-4">{humanizedDisplayName} Tennis Records & Statistics</h1>
+          <div className="space-y-4 text-gray-300 text-sm md:text-base leading-relaxed">
+            <p>
+              Welcome to the ultimate hub for <strong>{humanizedDisplayName} records</strong>. This extensive database aggregates Open Era statistics, match details, and historical achievements for one of tennis's most prestigious events. Navigate through our curated data to discover which players have left their mark on the tournament.
+            </p>
+            <p>
+              Our tables are continually updated to reflect the latest editions, providing deep insights into men's singles performances. You can explore everything from the players claiming the most championship <strong>titles and match wins</strong>, to specialized metrics like <strong>winning percentages</strong>, the <strong>youngest and oldest champions</strong>, and the longest consecutive <strong>winning streaks</strong>.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-8">
+            <div className="bg-gray-800/40 p-5 rounded-xl border border-gray-700/30">
+              <h3 className="text-blue-400 font-semibold mb-2 flex items-center gap-2">🏆 Titles & Wins</h3>
+              <p className="text-xs text-gray-400 leading-relaxed">Discover the ultimate champions. See who has lifted the trophy the most times and who holds the record for the most match wins and appearances in the main draw.</p>
+            </div>
+            <div className="bg-gray-800/40 p-5 rounded-xl border border-gray-700/30">
+              <h3 className="text-blue-400 font-semibold mb-2 flex items-center gap-2">⏳ Age Records</h3>
+              <p className="text-xs text-gray-400 leading-relaxed">Tennis spans generations. Investigate the youngest prodigies to break through and the oldest veterans to sustain success across different rounds.</p>
+            </div>
+            <div className="bg-gray-800/40 p-5 rounded-xl border border-gray-700/30">
+              <h3 className="text-blue-400 font-semibold mb-2 flex items-center gap-2">📈 Streaks & Stats</h3>
+              <p className="text-xs text-gray-400 leading-relaxed">Analyze dominance over time. Explore the longest uninterrupted winning streaks and the highest winning percentages among the sport's elite.</p>
+            </div>
+          </div>
+        </section>
+      )}
 
       <TournamentTabs
         activeTab={activeTab}

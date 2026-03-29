@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import RecordsPage from "../page";
 import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
+import RecordsWebPageJsonLd from '../RecordsWebPageJsonLd';
 
 function humanize(s: string) {
   return String(s || '').replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
@@ -144,12 +145,53 @@ export default async function RecordsCatchAllPage({
   }
 
   const idPromise = Promise.resolve({ id });
+  const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
+  const normalizedSegments = Array.isArray(segments) ? segments.filter(Boolean) : [];
+  const canonical = `${site}/tournaments/${slugId}/records${normalizedSegments.length ? `/${normalizedSegments.join('/')}` : ''}`;
+  const pageTitle = (() => {
+    if (segments && segments.length >= 3 && segments[0] === 'ages' && segments[1] === 'titles' && segments[2] === 'youngest') {
+      return `Youngest Title Winners at ${tournamentName} | Tennis Records`;
+    }
+    if (segments && segments.length >= 3 && segments[0] === 'ages' && segments[1] === 'titles' && segments[2] === 'oldest') {
+      return `Oldest Title Winners at ${tournamentName} | Tennis Records`;
+    }
+    if (segments && segments.length >= 3 && segments[0] === 'ages' && segments[1] === 'youngestrounds' && segments[2]) {
+      return `Youngest Players in ${segments[2]} at ${tournamentName} | Tennis Records`;
+    }
+    if (segments && segments.length >= 3 && segments[0] === 'ages' && segments[1] === 'oldestrounds' && segments[2]) {
+      return `Oldest Players in ${segments[2]} at ${tournamentName} | Tennis Records`;
+    }
+    if (segments && segments.length >= 2 && segments[0] === 'percentage' && segments[1] === 'overall') {
+      return `${tournamentName} Percentage Records | Tennis Statistics`;
+    }
+    if (segments && segments.length >= 2 && segments[0] === 'percentage' && (segments[1] === 'per-round' || segments[1] === 'rounds')) {
+      return `${tournamentName} Percentage Records by Round | Tennis Statistics`;
+    }
+    return `${humanTournament} | ${recordTitle}`;
+  })();
+  const pageDescription = (() => {
+    if (segments && segments[0] === 'streak') return `Longest winning streak records for ${tournamentName} in the Open Era men's singles main draw.`;
+    if (segments && segments[0] === 'least') return `Least games lost records for ${tournamentName}, including dominant runs to specific rounds and title matches.`;
+    if (segments && segments[0] === 'rounds') return `Round-specific appearance records for ${tournamentName}, with player leaderboards for each stage of the draw.`;
+    if (segments && segments[0] === 'ages') return `Age records for ${tournamentName}, covering youngest and oldest players, champions, and round achievers.`;
+    if (segments && segments[0] === 'percentage') return `Winning percentage records for ${tournamentName}, including overall and round-by-round performance metrics.`;
+    if (segments && segments[0] === 'timespan') return `Timespan records for ${tournamentName}, measuring long gaps between appearances, match wins, and titles.`;
+    if (segments && segments[0] === 'rounds-on-entries') return `Rounds-on-entries records for ${tournamentName}, highlighting efficiency across tournament appearances.`;
+    return `Tournament records and statistics for ${tournamentName}.`;
+  })();
+  const keywords = `${tournamentName}, tennis records, ${recordTitle}, ${normalizedSegments.join(' ')}`.trim();
 
   const showViewRecords = !(segments && segments[0] === 'percentage');
 
   return (
     <div>
       <main className={`w-full mx-auto ${showViewRecords ? 'pt-24 md:pt-32' : 'pt-16 md:pt-20'} py-8 px-0 text-white relative`} style={{ backgroundColor: 'rgba(17,24,39,0.95)', backdropFilter: 'blur(6px)', minHeight: '100vh' }}>
+          <RecordsWebPageJsonLd
+            pageTitle={pageTitle}
+            pageDescription={pageDescription}
+            canonical={canonical}
+            keywords={keywords}
+          />
           {showViewRecords && (
           <Link
             href={`/tournaments/${slugId}/records`}

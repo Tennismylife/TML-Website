@@ -6,6 +6,7 @@ import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
 import { makeTitle, makeLeastLabel } from '@/lib/recordMetadata';
 import { prisma } from '@/lib/prisma';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
+import RecordsWebPageJsonLd from '../../../RecordsWebPageJsonLd';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string; title: string }> }) {
   const p = await params;
@@ -50,8 +51,19 @@ export default async function Page({ params }: any) {
   const p = await params;
   const { id, title } = p;
   const slugId = await getTournamentSlug(id);
+  const tournamentName = await getTournamentName(id);
+  const label = makeLeastLabel(String(title));
+  const pageTitle = makeTitle(label, tournamentName);
+  const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
+  const canonical = `${site}/tournaments/${slugId}/records/least/rounds/${encodeURIComponent(String(title))}`;
   return (
     <div className="w-full mx-auto text-white relative">
+      <RecordsWebPageJsonLd
+        pageTitle={pageTitle}
+        pageDescription={`${label} at ${tournamentName}`}
+        canonical={canonical}
+        keywords={`${tournamentName}, least games lost, ${label}, tennis records`}
+      />
       <Link
         href={`/tournaments/${slugId}/records`}
         className="group relative inline-flex items-center gap-3 px-5 py-2 bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-black text-sm md:text-base rounded-full shadow-2xl hover:shadow-yellow-500/50 transform hover:scale-105 transition-all duration-300 overflow-hidden absolute top-4 left-4"

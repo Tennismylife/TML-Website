@@ -1,7 +1,8 @@
 import React from 'react';
 import RecordsPage from "../page";
-import { getTournamentName } from '@/lib/getTournamentName';
+import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
 import type { Metadata } from 'next';
+import RecordsWebPageJsonLd from '../RecordsWebPageJsonLd';
 
 function humanizeName(name: any) {
   const s = String(name || '');
@@ -146,6 +147,7 @@ export default async function RecordsTabPage({ params }: { params: Promise<{ id:
   const { id, tab } = await params;
   // server-rendered tournament name for authoritative H1
   const tournamentName = await getTournamentName(id);
+  const slugId = await getTournamentSlug(id).catch(() => id);
   // DEBUG: log server invocation in tests to help diagnose missing H1s
   if (process.env.NODE_ENV === 'test') {
     // eslint-disable-next-line no-console
@@ -168,6 +170,36 @@ export default async function RecordsTabPage({ params }: { params: Promise<{ id:
   }
 
   const recordTitle = tab ? (tabLabels[tab] ?? humanizeName(tab)) : 'Records';
+  const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
+  const canonical = tab === 'count'
+    ? `${site}/tournaments/${slugId}/records/count`
+    : tab === 'ages'
+      ? `${site}/tournaments/${slugId}/records/ages`
+      : `${site}/tournaments/${slugId}/records${tab ? `/${tab}` : ''}`;
+  const pageTitle = (() => {
+    if (tab === 'rounds') return `${tournamentName} Records by Round | Tennis Records`;
+    if (tab === 'count') return `${tournamentName} Open Era Records | Tennis My Life`;
+    if (tab === 'rounds-on-entries' || tab === 'roundsonentries') return `${tournamentName} Rounds on Entries | Tennis Records`;
+    if (tab === 'least') return `${tournamentName} Least Games Lost to Reach a Round | Tennis Records`;
+    if (tab === 'average-age') return `${tournamentName} Average Age Records | Tennis Statistics`;
+    if (tab === 'percentage') return `${tournamentName} Percentages | Tennis Records`;
+    if (tab === 'streak') return `${tournamentName} Longest Winning Streaks | Tennis Records`;
+    if (tab === 'timespan') return `${tournamentName} Timespans | Tennis Records`;
+    return tab ? `${tournamentName} | ${recordTitle}` : `${tournamentName} Records`;
+  })();
+  const pageDescription = (() => {
+    if (tab === 'count') return `Open Era records and statistics for ${tournamentName}. Explore titles, wins, matches played, and entries.`;
+    if (tab === 'rounds') return `Round-by-round records for ${tournamentName}, including the players with the most appearances in each stage of the tournament.`;
+    if (tab === 'ages') return `Youngest and oldest player records for ${tournamentName} across the Open Era men's singles main draw.`;
+    if (tab === 'percentage') return `Winning percentage records for ${tournamentName}, with overall efficiency and round-based performance statistics.`;
+    if (tab === 'streak') return `Longest winning streak records for ${tournamentName} in the Open Era men's singles main draw.`;
+    if (tab === 'least') return `Least games lost records at ${tournamentName}, highlighting the most dominant runs through the tournament draw.`;
+    if (tab === 'timespan') return `Timespan records for ${tournamentName}, including long gaps between appearances, wins, and titles.`;
+    if (tab === 'rounds-on-entries' || tab === 'roundsonentries') return `Round efficiency records for ${tournamentName}, comparing how far players advanced relative to their entries.`;
+    if (tab === 'average-age') return `Average age records for ${tournamentName}, tracking long-term generational trends across the Open Era.`;
+    return `Tournament records and statistics for ${tournamentName}.`;
+  })();
+  const keywords = `${tournamentName}, tennis records, ${recordTitle}, open era stats`;
 
   // H1 should be: "{tournamentName} | {recordTitle}" (server-rendered)
 
@@ -190,6 +222,12 @@ export default async function RecordsTabPage({ params }: { params: Promise<{ id:
   return (
     <div>
       <main className="w-full mx-auto py-8 px-0 text-white" style={{ backgroundColor: 'rgba(17,24,39,0.95)', backdropFilter: 'blur(6px)', minHeight: '100vh' }}>
+          <RecordsWebPageJsonLd
+            pageTitle={pageTitle}
+            pageDescription={pageDescription}
+            canonical={canonical}
+            keywords={keywords}
+          />
           <h1 className="text-4xl md:text-5xl font-extrabold mb-6 text-center">{headerTitle}</h1>
 
 

@@ -1,10 +1,11 @@
 import RoundOnEntriesFull from '@/app/tournaments/[id]/records/roundsonentries/_components/RoundOnEntriesFull';
-import { getTournamentName } from '@/lib/getTournamentName';
+import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
 import { makeTitle } from '@/lib/recordMetadata';
 import { getRoundFullName } from '@/lib/utils';
 import ViewRecordsCTA from '../../../ViewRecordsCTA';
 import { prisma } from '@/lib/prisma';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
+import RecordsWebPageJsonLd from '../../../RecordsWebPageJsonLd';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string; title: string }> }) {
   const p = await params;
@@ -39,8 +40,20 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function RoundPage({ params }: { params: Promise<{ id: string; title: string }> }) {
   const { id, title } = await params;
+  const tournamentName = await getTournamentName(id);
+  const slugId = await getTournamentSlug(id).catch(() => id);
+  const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
+  const label = String(title).toLowerCase() === 'winner' ? 'Most Titles on Entries' : `Most ${getRoundFullName(String(title))} on Entries`;
+  const pageTitle = makeTitle(label, tournamentName);
+  const canonical = `${site}/tournaments/${slugId}/records/rounds-on-entries/${encodeURIComponent(String(title))}`;
   return (
     <div className="w-full mx-auto text-white relative">
+      <RecordsWebPageJsonLd
+        pageTitle={pageTitle}
+        pageDescription={`${label} at ${tournamentName}`}
+        canonical={canonical}
+        keywords={`${tournamentName}, rounds on entries, ${label}, tennis records`}
+      />
       <ViewRecordsCTA id={id} className="absolute top-4 left-4 z-50" />
       <RoundOnEntriesFull params={{ id, title }} />
     </div>

@@ -1,10 +1,11 @@
 import PercentageFull from '@/app/tournaments/[id]/records/percentage/_components/PercentageFull';
-import { getTournamentName } from '@/lib/getTournamentName';
+import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
 import { makeTitle } from '@/lib/recordMetadata';
 import { getRoundFullName } from '@/lib/utils';
 import ViewRecordsCTA from '../../../ViewRecordsCTA';
 import { prisma } from '@/lib/prisma';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
+import RecordsWebPageJsonLd from '../../../RecordsWebPageJsonLd';
 
 export async function generateMetadata({ params }: { params: { id: string; title: string } }) {
   const p = await params;
@@ -46,8 +47,20 @@ export async function generateMetadata({ params }: { params: { id: string; title
 export default async function Page({ params }: any) {
   const p = await params;
   const { id, title } = p;
+  const tournamentName = await getTournamentName(id);
+  const slugId = await getTournamentSlug(id).catch(() => id);
+  const label = `Best winning percentage in ${getRoundFullName(String(title))}`;
+  const pageTitle = makeTitle(label, tournamentName);
+  const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
+  const canonical = `${site}/tournaments/${slugId}/records/percentage/rounds/${encodeURIComponent(String(title))}`;
   return (
     <div className="w-full mx-auto text-white relative">
+      <RecordsWebPageJsonLd
+        pageTitle={pageTitle}
+        pageDescription={`${label} at ${tournamentName}`}
+        canonical={canonical}
+        keywords={`${tournamentName}, winning percentage, ${label}, tennis records`}
+      />
       <ViewRecordsCTA id={id} className="absolute top-4 left-4 z-50" />
       <PercentageFull id={id} section="rounds" title={title} />
     </div>

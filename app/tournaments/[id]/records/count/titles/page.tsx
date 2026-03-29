@@ -5,11 +5,12 @@ import Link from 'next/link';
 import ViewRecordsCTA from '../../ViewRecordsCTA';
 import CountFull from '../_components/CountFull';
 import TournamentHeader from '../../../TournamentHeader';
-import { getTournamentName, shouldIndexRecords } from '@/lib/getTournamentName';
+import { getTournamentName, getTournamentSlug, shouldIndexRecords } from '@/lib/getTournamentName';
 import { getCountSection } from '@/lib/records/count';
 import Script from 'next/script';
 import { prisma } from '@/lib/prisma';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
+import RecordsWebPageJsonLd from '../../RecordsWebPageJsonLd';
 
 export const dynamic = 'force-dynamic';
 
@@ -90,8 +91,12 @@ export async function generateMetadata({ params }: PageParams) {
 export default async function TitlesPage({ params }: PageParams) {
   const { id } = await params;
   const tournamentName = await getTournamentName(id);
+  const slugId = await getTournamentSlug(id).catch(() => id);
 
   const list = await getCountSection(id, 'titles');
+  const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
+  const canonical = `${site}/tournaments/${slugId}/records/count/titles`;
+  const pageDescription = `ATP men's singles record: most ${tournamentName} titles in the Open Era. Interactive table with counts and years won.`;
 
   // FAQ JSON-LD (iniezione corretta come <script type="application/ld+json">)
   const faq = {
@@ -152,6 +157,12 @@ export default async function TitlesPage({ params }: PageParams) {
   return (
     <div className="w-full mx-auto text-white relative">
       <ViewRecordsCTA id={id} className="gap-4 px-6 py-3 text-base md:text-lg rounded-full" />
+      <RecordsWebPageJsonLd
+        pageTitle={`Most Titles at ${tournamentName} | Tennis Records`}
+        pageDescription={pageDescription}
+        canonical={canonical}
+        keywords={`${tournamentName}, most titles, tennis records, open era, men's singles`}
+      />
       {/* JSON-LD FAQ injection */}
       <Script
         id="faq-jsonld"

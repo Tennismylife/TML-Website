@@ -38,7 +38,7 @@ export default function TournamentTabs({
   }, []);
 
   const tabs = [
-    { key: "count", label: "Counts" },
+    { key: "count", label: "Overview" },
     { key: "rounds", label: "Rounds" },
     { key: "ages", label: "Ages", hasSubTabs: true },
     { key: "percentage", label: "Percentages", hasSubTabs: true },

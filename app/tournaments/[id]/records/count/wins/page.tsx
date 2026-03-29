@@ -7,6 +7,8 @@ import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
 import { getCountSection } from '@/lib/records/count';
 import { prisma } from '@/lib/prisma';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
+import { shouldIndexRecords } from '@/lib/getTournamentName';
+import RecordsWebPageJsonLd from '../../RecordsWebPageJsonLd';
 
 export const dynamic = 'force-dynamic';
 
@@ -48,39 +50,45 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   // Use the exact phrasing requested for SEO title (include brand suffix)
   const title = `Most Wins At ${tournamentName} | Tennis Records`;
   const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
+  const description = `Discover the players with the most wins in the men's singles main draw at ${tournamentName}. This page lists historical records from the Open Era, updated after each tournament edition.`;
 
   // Resolve canonical tournament slug (prefer slug for URLs)
   let canonicalSlug = String(id);
   if (/^\d+$/.test(String(id))) {
     const canonicalId = await resolveCanonicalTourneyId(String(id));
     if (canonicalId) {
-      const t = await prisma.tournament.findUnique({ where: { id: parseInt(canonicalId, 10) }, select: { slug: true } });
+      const t = await prisma.tournament.findUnique({ where: { id: parseInt(canonicalId, 10) }, select: { slug: true, category: true, years: true } });
       canonicalSlug = t?.slug ?? canonicalId;
+      const canonical = `${site}/tournaments/${canonicalSlug}/records/wins`;
+      return {
+        title,
+        description,
+        openGraph: { title, description, url: canonical, images: [{ url: `${site}/og/site-preview.png`, alt: `${tournamentName} - Most wins`, width: 1200, height: 630 }] },
+        alternates: { canonical },
+        robots: { index: shouldIndexRecords(t?.category, t?.years ?? null), follow: true },
+        other: { 'script[type="application/ld+json"]': undefined as any },
+      };
     }
   } else {
-    const t = await prisma.tournament.findUnique({ where: { slug: String(id) }, select: { slug: true } });
+    const t = await prisma.tournament.findUnique({ where: { slug: String(id) }, select: { slug: true, category: true, years: true } });
     canonicalSlug = t?.slug ?? String(id);
+    const canonical = `${site}/tournaments/${canonicalSlug}/records/wins`;
+    return {
+      title,
+      description,
+      openGraph: { title, description, url: canonical, images: [{ url: `${site}/og/site-preview.png`, alt: `${tournamentName} - Most wins`, width: 1200, height: 630 }] },
+      alternates: { canonical },
+      robots: { index: shouldIndexRecords(t?.category, t?.years ?? null), follow: true },
+      other: { 'script[type="application/ld+json"]': undefined as any },
+    };
   }
 
-  const canonical = `${site}/tournaments/${canonicalSlug}/records/wins`;
-
-  const description = `Discover the players with the most wins in the men's singles main draw at ${tournamentName}. This page lists historical records from the Open Era, updated after each tournament edition.`;
-
-  // Explicitly avoid injecting parent 'script[type="application/ld+json"]' as a meta entry
-  // (we include proper <script type="application/ld+json"> JSON-LD tags in the page body)
   return {
     title,
     description,
-    openGraph: {
-      title,
-      description,
-      url: canonical,
-      images: [{ url: `${site}/og/site-preview.png`, alt: `${tournamentName} - Most wins`, width: 1200, height: 630 }],
-    },
-    alternates: { canonical },
-    other: {
-      'script[type="application/ld+json"]': undefined as any,
-    },
+    openGraph: { title, description, url: `${site}/tournaments/${canonicalSlug}/records/wins`, images: [{ url: `${site}/og/site-preview.png`, alt: `${tournamentName} - Most wins`, width: 1200, height: 630 }] },
+    alternates: { canonical: `${site}/tournaments/${canonicalSlug}/records/wins` },
+    other: { 'script[type="application/ld+json"]': undefined as any },
   };
 }
 
@@ -113,10 +121,8 @@ export default async function WinsPage({ params }: { params: Promise<{ id: strin
 
   const description = `Discover the players with the most wins in the men's singles main draw at ${tournamentName}. This page lists historical records from the Open Era, updated after each tournament edition.`;
 
-  const webPageJson = { '@context': 'https://schema.org', '@type': 'WebPage', name: `Most wins at ${tournamentName}`, description: description, url: canonical };
-
   const faqJson = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
-    { '@type': 'Question', name: 'What does "Most wins" at the Australian Open mean?', acceptedAnswer: { '@type': 'Answer', text: 'It indicates the total number of match wins by each player in the men\'s singles main draw at the Australian Open, summed across all editions they participated in.' } },
+    { '@type': 'Question', name: `What does "Most wins" at ${tournamentName} mean?`, acceptedAnswer: { '@type': 'Answer', text: `It indicates the total number of match wins by each player in the men's singles main draw at ${tournamentName}, summed across all editions they participated in.` } },
     { '@type': 'Question', name: 'Does the list cover the Open Era?', acceptedAnswer: { '@type': 'Answer', text: 'Yes — the list covers the Open Era; any pre‑Open inclusions (if present) will be noted on the tournament\'s page.' } },
     { '@type': 'Question', name: 'How do you handle ties (same number of wins)?', acceptedAnswer: { '@type': 'Answer', text: 'In case of a tie we show players with the same count at the same rank, then order by name or by most recent year played (consistent with the table behavior).' } },
     { '@type': 'Question', name: 'Does the page include qualifying matches or only the main draw?', acceptedAnswer: { '@type': 'Answer', text: 'It includes only the men\'s singles main draw, not qualifying matches.' } },
@@ -145,7 +151,12 @@ export default async function WinsPage({ params }: { params: Promise<{ id: strin
       </div>
 
       {/* Server-rendered JSON-LD scripts (WebPage, FAQPage, BreadcrumbList) */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJson) }} />
+      <RecordsWebPageJsonLd
+        pageTitle={`Most Wins At ${tournamentName} | Tennis Records`}
+        pageDescription={description}
+        canonical={canonical}
+        keywords={`${tournamentName}, most wins, tennis records, open era, men's singles`}
+      />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJson) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
 
