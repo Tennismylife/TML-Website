@@ -5,6 +5,7 @@ const {
   hasRecordsFilterParams,
   resolvePageRecordAndSub,
   resolveRecordApiRequest,
+  hasMissingRequiredRecordParams,
   hasEmptyRecordData,
 } = require('../../lib/records/empty-record-pages.cjs');
 
@@ -35,6 +36,21 @@ describe('empty record page helpers', () => {
     const req = resolveRecordApiRequest('roundsonentries', 'round', new URLSearchParams('surface=Clay'));
     expect(req.pathname).toBe('/api/records/roundsonentries/rounds');
     expect(req.searchParams.get('surface')).toBe('Clay');
+  });
+
+  it('uses legacy subtab query to build canonical API path and strips routing params', () => {
+    const req = resolveRecordApiRequest('streak', undefined, new URLSearchParams('subtab=wins&level=D&surface=Carpet'));
+    expect(req.pathname).toBe('/api/records/streak/wins');
+    expect(req.searchParams.get('subtab')).toBeNull();
+    expect(req.searchParams.get('level')).toBe('D');
+    expect(req.searchParams.get('surface')).toBe('Carpet');
+  });
+
+  it('detects missing required params for atage and ageofnth endpoints', () => {
+    expect(hasMissingRequiredRecordParams('atage', 'wins', new URLSearchParams('level=F'))).toBe(true);
+    expect(hasMissingRequiredRecordParams('atage', 'wins', new URLSearchParams('age=30&level=F'))).toBe(false);
+    expect(hasMissingRequiredRecordParams('ageofnth', 'round', new URLSearchParams('n=3'))).toBe(true);
+    expect(hasMissingRequiredRecordParams('ageofnth', 'round', new URLSearchParams('n=3&round=F'))).toBe(false);
   });
 
   it('detects empty arrays in object payloads', () => {
