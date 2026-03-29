@@ -228,8 +228,12 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
     );
   }
 
-  // Compute a display name for the H1: prefer DB name when available, otherwise humanize the route id
-  const displayName = safeTournamentName(tournament?.name, String(id).replace(/-/g, ' '));
+  // For slug routes, trust the slug-derived name to avoid historical alias mismatches.
+  // Example: /tournaments/miami-masters should always render "Miami Masters".
+  const slugDisplayName = String(pathId || id).replace(/[-_]+/g, ' ');
+  const displayName = /^\d+$/.test(String(id))
+    ? safeTournamentName(tournament?.name, slugDisplayName)
+    : slugDisplayName;
   const humanizedDisplayName = String(displayName).replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
   const normalizedPathname = pathname ? pathname.replace(/\/$/, '') : '';
   const isRecordsHome = normalizedPathname === `/tournaments/${pathId}/records`;
