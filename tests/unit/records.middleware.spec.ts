@@ -75,6 +75,13 @@ describe('records middleware redirecting legacy queries', () => {
     expect(res.status).toBe(400);
   });
 
+  it('returns 400 for node neededto titles API requests missing maxTitles', async () => {
+    const res: any = await middleware(
+      makeReq('http://localhost/api/records/neededto/titles?surface=Grass', 'node')
+    );
+    expect(res.status).toBe(400);
+  });
+
   it('sanitizes malformed records API filters and redirects to cleaned query', async () => {
     const res: any = await middleware(makeReq('http://localhost/api/records/percentage?level=G%5C%5C&round=F%5C&surface=Grass%5C%5C&bestOf=NaN'));
     expect(res.status).toBe(307);
@@ -85,5 +92,16 @@ describe('records middleware redirecting legacy queries', () => {
     expect(loc).toContain('surface=Grass');
     expect(loc).not.toContain('NaN');
     expect(loc).not.toContain('%5C');
+  });
+
+  it('rewrites malformed records API filters for node user-agent without external redirect', async () => {
+    const res: any = await middleware(
+      makeReq('http://localhost/api/records/streak/rounds?level=500&round=SF%5C%5C%5C%5C&surface=Grass', 'node')
+    );
+    expect(res.status).toBe(200);
+    const rewritten = res.headers.get('x-middleware-rewrite');
+    expect(rewritten).toContain('/api/records/streak/rounds');
+    expect(rewritten).toContain('round=SF');
+    expect(rewritten).not.toContain('%5C');
   });
 });

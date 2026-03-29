@@ -72,6 +72,28 @@ describe('empty record page helpers', () => {
     expect(hasMissingRequiredRecordParams('timespan', 'rounds', new URLSearchParams('round=QF&level=M&surface=Clay'))).toBe(false);
   });
 
+  it('normalizes NeededTo aliases and validates required params', () => {
+    const req = resolveRecordApiRequest('neededto', 'titles', new URLSearchParams('n=4&surface=Grass'));
+    expect(req.pathname).toBe('/api/records/neededto/titles');
+    expect(req.searchParams.get('maxTitles')).toBe('4');
+    expect(hasMissingRequiredRecordParams('neededto', 'titles', new URLSearchParams('surface=Grass'))).toBe(true);
+    expect(hasMissingRequiredRecordParams('neededto', 'titles', new URLSearchParams('n=4&surface=Grass'))).toBe(false);
+  });
+
+  it('prunes query filters not allowed by page filter policy', () => {
+    const req = resolveRecordApiRequest(
+      'neededto',
+      'titles',
+      new URLSearchParams('n=4&surface=Grass&round=QF&bestOf=3&level=M')
+    );
+    expect(req.pathname).toBe('/api/records/neededto/titles');
+    expect(req.searchParams.get('maxTitles')).toBe('4');
+    expect(req.searchParams.get('surface')).toBe('Grass');
+    expect(req.searchParams.get('level')).toBe('M');
+    expect(req.searchParams.get('round')).toBeNull();
+    expect(req.searchParams.get('bestOf')).toBeNull();
+  });
+
   it('validates that API records pathname exists before internal prefetch', () => {
     expect(isExistingRecordApiPath('/api/records/streak/wins')).toBe(true);
     expect(isExistingRecordApiPath('/api/records/streak')).toBe(false);

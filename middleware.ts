@@ -209,6 +209,26 @@ function hasMissingRequiredRecordsApiParams(record: string, sub: string | undefi
     }
   }
 
+  if (record === 'timespan' && sub === 'round') {
+    const hasRound = searchParams.get('round') !== null && String(searchParams.get('round')).trim() !== '';
+    return !hasRound;
+  }
+
+  if (record === 'neededto') {
+    if (sub === 'titles') {
+      const val = String(searchParams.get('maxTitles') || searchParams.get('n') || searchParams.get('seasons') || '').trim();
+      if (!val) return true;
+      const n = Number(val);
+      return !Number.isFinite(n) || n <= 0;
+    }
+    if (sub === 'rounds' || sub === 'round') {
+      const val = String(searchParams.get('round_number') || searchParams.get('n') || searchParams.get('seasons') || '').trim();
+      if (!val) return true;
+      const n = Number(val);
+      return !Number.isFinite(n) || n <= 0;
+    }
+  }
+
   return false;
 }
 
@@ -218,6 +238,7 @@ export async function middleware(req: NextRequest) {
 
     const requestPath = req.nextUrl.pathname;
     const query = req.nextUrl.searchParams;
+    const ua = getUserAgent(req).toLowerCase();
 
     // Normalize malformed records filters (e.g. trailing backslashes, bestOf=NaN)
     // before enforcing validity rules.
@@ -230,6 +251,13 @@ export async function middleware(req: NextRequest) {
       if (changed) {
         const dest = new URL(req.url);
         dest.search = cleaned.toString();
+
+        // For internal node callers, avoid external redirect hops and serve
+        // the cleaned target in a single request.
+        if (requestPath.startsWith('/api/records/') && ua.includes('node')) {
+          return NextResponse.rewrite(dest);
+        }
+
         return new Response(null, { status: 307, headers: { Location: dest.toString() } });
       }
     }
@@ -256,7 +284,6 @@ export async function middleware(req: NextRequest) {
 
       // Internal node-based warmers/crawlers can hit disallowed filter combos.
       // Canonicalize those API URLs instead of returning 410 to keep server-side scans clean.
-      const ua = getUserAgent(req).toLowerCase();
       if (record && ua.includes('node')) {
         // If required parameters are missing, return a proper client error.
         if (hasMissingRequiredRecordsApiParams(record, sub, query)) {

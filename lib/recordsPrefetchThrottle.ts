@@ -123,6 +123,26 @@ function hasMissingRequiredRecordsApiParams(record: string, sub: string | undefi
     }
   }
 
+  if (record === 'timespan' && sub === 'round') {
+    const hasRound = searchParams.get('round') !== null && String(searchParams.get('round')).trim() !== '';
+    return !hasRound;
+  }
+
+  if (record === 'neededto') {
+    if (sub === 'titles') {
+      const val = String(searchParams.get('maxTitles') || searchParams.get('n') || searchParams.get('seasons') || '').trim();
+      if (!val) return true;
+      const n = Number(val);
+      return !Number.isFinite(n) || n <= 0;
+    }
+    if (sub === 'rounds' || sub === 'round') {
+      const val = String(searchParams.get('round_number') || searchParams.get('n') || searchParams.get('seasons') || '').trim();
+      if (!val) return true;
+      const n = Number(val);
+      return !Number.isFinite(n) || n <= 0;
+    }
+  }
+
   return false;
 }
 
