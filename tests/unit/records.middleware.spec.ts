@@ -3,8 +3,14 @@ import { describe, it, expect } from 'vitest';
 import { middleware } from '../../middleware';
 import { NextResponse } from 'next/server';
 
-function makeReq(url: string) {
-  return { nextUrl: new URL(url), url } as any;
+function makeReq(url: string, userAgent?: string) {
+  return {
+    nextUrl: new URL(url),
+    url,
+    headers: {
+      get: (name: string) => (name.toLowerCase() === 'user-agent' ? (userAgent ?? null) : null),
+    },
+  } as any;
 }
 
 describe('records middleware redirecting legacy queries', () => {
@@ -48,6 +54,18 @@ describe('records middleware redirecting legacy queries', () => {
   it('returns 410 for invalid records API filter combinations', async () => {
     const res: any = await middleware(makeReq('http://localhost/api/records/ages/winners?type=youngest&round=R32'));
     expect(res.status).toBe(410);
+  });
+
+  it('canonicalizes invalid records API filters for node user-agent requests', async () => {
+    const res: any = await middleware(
+      makeReq('http://localhost/api/records/ages/winners?type=youngest&round=R32&surface=Hard', 'node')
+    );
+    expect(res.status).toBe(307);
+    const loc = res.headers.get('location');
+    expect(loc).toContain('/api/records/ages/winners');
+    expect(loc).toContain('type=youngest');
+    expect(loc).toContain('surface=Hard');
+    expect(loc).not.toContain('round=R32');
   });
 
   it('sanitizes malformed records API filters and redirects to cleaned query', async () => {

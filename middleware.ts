@@ -150,6 +150,42 @@ function hasInvalidRecordFilter(record: string, sub: string | undefined, searchP
   return checks.some(({ present, filter }) => present && !shouldShowRecordFilter(filter, record, sub));
 }
 
+function stripDisallowedRecordFilters(record: string, sub: string | undefined, searchParams: URLSearchParams) {
+  const filterGroups: Array<{ keys: string[]; filter: FilterName }> = [
+    { keys: ['level', 'level[]'], filter: 'levels' },
+    { keys: ['surface', 'surface[]'], filter: 'surfaces' },
+    { keys: ['round', 'round[]'], filter: 'rounds' },
+    { keys: ['bestOf', 'bestOf[]', 'best_of', 'best_of[]'], filter: 'bestOf' },
+  ];
+
+  const disallowedKeys = new Set<string>();
+  for (const group of filterGroups) {
+    const hasValues = group.keys.some((k) => searchParams.getAll(k).some((v) => v !== ''));
+    if (!hasValues) continue;
+    if (!shouldShowRecordFilter(group.filter, record, sub)) {
+      for (const k of group.keys) disallowedKeys.add(k);
+    }
+  }
+
+  if (disallowedKeys.size === 0) return { cleaned: searchParams, changed: false };
+
+  const cleaned = new URLSearchParams();
+  for (const [k, v] of searchParams.entries()) {
+    if (disallowedKeys.has(k)) continue;
+    cleaned.append(k, v);
+  }
+
+  return { cleaned, changed: true };
+}
+
+function getUserAgent(req: NextRequest) {
+  try {
+    return String(req.headers?.get('user-agent') || '');
+  } catch {
+    return '';
+  }
+}
+
 export async function middleware(req: NextRequest) {
   try {
     // Debugging disabled: verbose middleware request logging removed
@@ -191,6 +227,19 @@ export async function middleware(req: NextRequest) {
     // Mirror the same rule for direct API calls.
     if (requestPath.startsWith('/api/records/')) {
       const { record, sub } = resolveApiRecordAndSub(requestPath, query);
+
+      // Internal node-based warmers/crawlers can hit disallowed filter combos.
+      // Canonicalize those API URLs instead of returning 410 to keep server-side scans clean.
+      const ua = getUserAgent(req).toLowerCase();
+      if (record && ua.includes('node')) {
+        const { cleaned, changed } = stripDisallowedRecordFilters(record, sub, query);
+        if (changed) {
+          const dest = new URL(req.url);
+          dest.search = cleaned.toString();
+          return new Response(null, { status: 307, headers: { Location: dest.toString() } });
+        }
+      }
+
       if (record && hasInvalidRecordFilter(record, sub, query)) {
         return NextResponse.json({ error: 'Gone' }, { status: 410 });
       }
