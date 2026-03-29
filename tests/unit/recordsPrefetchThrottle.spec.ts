@@ -49,7 +49,21 @@ describe('records prefetch throttle', () => {
 
     expect(fetchSpy).not.toHaveBeenCalled();
     expect(res.status).toBe(200);
-    expect(res.headers.get('x-records-prefetch-skipped')).toBe('known-410');
+    expect(res.headers.get('x-records-prefetch-skipped')).toBe('missing-required-params');
+    expect(body).toEqual([]);
+  });
+
+  it('skips prefetch for non-existing/non-prefetchable records API paths', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response('[]', { status: 200, headers: { 'content-type': 'application/json' } })
+    );
+
+    const res = await rateLimitedFetch('http://localhost/api/records/streak?subtab=wins&level=D&surface=Carpet');
+    const body = await res.json();
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(res.status).toBe(200);
+    expect(res.headers.get('x-records-prefetch-skipped')).toBe('unknown-route');
     expect(body).toEqual([]);
   });
 });

@@ -26,6 +26,7 @@ const {
   hasRecordsFilterParams,
   resolvePageRecordAndSub,
   resolveRecordApiRequest,
+  isExistingRecordApiPath,
   hasMissingRequiredRecordParams,
   hasEmptyRecordData,
 } = require('./lib/records/empty-record-pages.cjs');
@@ -195,6 +196,7 @@ function strongETag(buffer) {
 
     try {
       const apiRequest = resolveRecordApiRequest(record, sub, pageUrl.searchParams);
+      if (!isExistingRecordApiPath(apiRequest.pathname)) return next();
       if (hasMissingRequiredRecordParams(record, sub, apiRequest.searchParams)) return next();
       const apiUrl = new URL(apiRequest.pathname, `${proto}://${req.headers.host}`);
       apiRequest.searchParams.forEach((value, key) => {

@@ -10,6 +10,40 @@ const DEFAULT_DEV_DELAY_MS = 250;
 let _lastPromise: Promise<any> = Promise.resolve();
 let _lastTime = 0;
 
+const PREFETCHABLE_RECORDS_API_BASE = new Set([
+  'wins', 'played', 'titles', 'entries', 'count', 'percentage',
+]);
+
+const PREFETCHABLE_RECORDS_API_SUBPATHS: Record<string, Set<string>> = {
+  ages: new Set(['winners', 'allrounds', 'maindraw']),
+  atage: new Set(['wins', 'played', 'entries', 'titles', 'inslams', 'rounds', 'count']),
+  ageofnth: new Set(['wins', 'played', 'entries', 'titles', 'inslams', 'rounds']),
+  counterseasons: new Set(['wins', 'titles', 'rounds']),
+  firstn: new Set(['count']),
+  h2h: new Set(['count', 'timespan', 'seasons', 'sametournament']),
+  least: new Set(['sets', 'minutes', 'gameslost', 'breaks', 'breakpoints']),
+  neededto: new Set(['titles', 'rounds']),
+  roundsonentries: new Set(['titles', 'rounds']),
+  same: new Set(['wins', 'played', 'entries', 'titles', 'rounds', 'count']),
+  seasons: new Set(['wins', 'played', 'entries', 'titles', 'rounds', 'percentage']),
+  sets: new Set(['count', 'deciders', 'down2to1', 'lost1st', 'lost1st2nd', 'matches', 'split1st2nd', 'straights', 'up2to1', 'won1st', 'won1st2nd']),
+  streak: new Set(['wins', 'rounds', 'streakwins', 'streaktournaments']),
+  timespan: new Set(['entries', 'titles', 'rounds']),
+};
+
+function isExistingPrefetchableRecordsApiPath(pathname: string) {
+  const seg = pathname.split('/').filter(Boolean);
+  if (seg.length < 3 || seg.length > 4) return false;
+  if (seg[0] !== 'api' || seg[1] !== 'records') return false;
+
+  const record = seg[2];
+  const sub = seg[3];
+
+  if (!sub) return PREFETCHABLE_RECORDS_API_BASE.has(record);
+
+  return !!PREFETCHABLE_RECORDS_API_SUBPATHS[record]?.has(sub);
+}
+
 function kebabToKey(s?: string | null) {
   if (!s) return undefined;
   if (s.includes('-')) {
@@ -108,15 +142,18 @@ function parseInputUrl(input: RequestInfo | URL): URL | null {
   }
 }
 
-function shouldSkipKnownGoneRecordsPrefetch(input: RequestInfo | URL): boolean {
+function getRecordsPrefetchSkipReason(input: RequestInfo | URL): string | null {
   const url = parseInputUrl(input);
-  if (!url) return false;
-  if (!url.pathname.startsWith('/api/records/')) return false;
+  if (!url) return null;
+  if (!url.pathname.startsWith('/api/records/')) return null;
+
+  if (!isExistingPrefetchableRecordsApiPath(url.pathname)) return 'unknown-route';
 
   const { record, sub } = resolveApiRecordAndSub(url.pathname, url.searchParams);
-  if (!record) return false;
-  if (hasMissingRequiredRecordsApiParams(record, sub, url.searchParams)) return true;
-  return hasInvalidRecordFilter(record, sub, url.searchParams);
+  if (!record) return 'unknown-route';
+  if (hasMissingRequiredRecordsApiParams(record, sub, url.searchParams)) return 'missing-required-params';
+  if (hasInvalidRecordFilter(record, sub, url.searchParams)) return 'known-410';
+  return null;
 }
 
 function sleep(ms: number) {
@@ -124,13 +161,14 @@ function sleep(ms: number) {
 }
 
 export async function rateLimitedFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
-  // Keep SSR prefetch enabled, but avoid fetching combinations we already know are 410.
-  if (shouldSkipKnownGoneRecordsPrefetch(input)) {
+  // Fixed rule: prefetch only known existing API records routes, and only valid parameter combinations.
+  const skipReason = getRecordsPrefetchSkipReason(input);
+  if (skipReason) {
     return new Response('[]', {
       status: 200,
       headers: {
         'content-type': 'application/json; charset=utf-8',
-        'x-records-prefetch-skipped': 'known-410',
+        'x-records-prefetch-skipped': skipReason,
       },
     });
   }

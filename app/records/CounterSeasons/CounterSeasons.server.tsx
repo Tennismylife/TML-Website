@@ -63,13 +63,13 @@ export default async function CounterSeasonsServer({ searchParams, ...serverProp
     params.set('limit', '10')
     for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
     for (const l of Array.from(selectedLevels)) params.append('level', l)
-    if (selectedBestOf !== null) params.set('best_of', String(selectedBestOf))
 
     if (activeSubTab === 'titles') {
       params.set('minTitlesPerSeason', initialSeasons.toString())
       prefetchedData.titles = await fetchJson(`/api/records/counterseasons/titles${params.toString() ? '?' + params.toString() : ''}`)
     }
     if (activeSubTab === 'round') {
+      // bestOf is not a valid filter for counterseasons/rounds
       params.set('round', selectedRounds || 'F')
       params.set('min', initialSeasons.toString())
       prefetchedData.rounds = await fetchJson(`/api/records/counterseasons/rounds${params.toString() ? '?' + params.toString() : ''}`)
