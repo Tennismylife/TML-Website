@@ -277,8 +277,9 @@ export async function generateMetadata(
       site: '@TennisMyLife68',
       creator: '@TennisMyLife68',
     },
-    // If the page has 4 or more active query filters, mark it as noindex to avoid indexing
-    // combinations of filters that create thin/duplicate pages.
+    // Noindex rules for matches tab:
+    // 1. Any "statistical/opponent" filter (thin content, no search intent) → always noindex.
+    // 2. 3 or more active filters on the remaining "meaningful" filters → noindex.
     // For ranking tab: only index players in the allowlist.
     robots: ((): { index: boolean; follow: boolean } => {
       if (tab === 'ranking') {
@@ -288,9 +289,19 @@ export async function generateMetadata(
       }
       const resolvedSearchParamsForRobots = spForCanonical ?? {} as Record<string, any>;
       const isActive = (v: any) => v != null && String(v).trim() !== '' && String(v) !== 'All';
-      const activeCount = Object.entries(resolvedSearchParamsForRobots).filter(([k, v]) => k !== 'tab' && isActive(v)).length;
-      // noindex when 4 or more active filters
-      return activeCount >= 4 ? { index: false, follow: true } : { index: true, follow: true };
+      // Filters that always produce thin/niche pages with no real search intent.
+      const ALWAYS_NOINDEX_KEYS = new Set([
+        'vsRank', 'vsAge', 'vsHand', 'vsBackhand', 'vsEntry',
+        'asRank', 'asEntry',
+        'set', 'firstSet', 'score',
+      ]);
+      const activeEntries = Object.entries(resolvedSearchParamsForRobots).filter(([k, v]) => k !== 'tab' && isActive(v));
+      // If any always-noindex filter is present, block immediately.
+      if (activeEntries.some(([k]) => ALWAYS_NOINDEX_KEYS.has(k))) {
+        return { index: false, follow: true };
+      }
+      // noindex when 3 or more of the remaining "meaningful" filters are active.
+      return activeEntries.length >= 3 ? { index: false, follow: true } : { index: true, follow: true };
     })(),
     alternates: { canonical },
   } as Metadata;

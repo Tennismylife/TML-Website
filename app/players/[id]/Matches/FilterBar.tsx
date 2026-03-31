@@ -123,11 +123,9 @@ function Category({ category, onExplicitChange }: { category: CategoryNode, onEx
                   };
                   const key = labelToKey[category.label] || category.label.toLowerCase().replace(/\s+/g, '');
                   const explicitValue = filter.value === 'All' ? '' : filter.value!;
-                  console.debug('[FilterBar] onChange', { category: category.label, key, filterValue: filter.value, explicitValue });
                   onExplicitChange?.(key, explicitValue);
                   // then update local selection
                   filter.setter?.(filter.value!);
-                  console.debug('[FilterBar] setter called for', { category: category.label, newValue: filter.value });
                 }}
                 className="mr-2"
               />

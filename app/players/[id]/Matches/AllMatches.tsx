@@ -183,7 +183,7 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
       u.searchParams.forEach((_, k) => { if (k !== 'tab') s.add(k); });
       initialQueryKeysRef.current = s;
       initialKeysReadyRef.current = true;
-      console.debug('[AllMatches] initial query keys (client):', Array.from(s));
+      
 
       // Seed currentFilters from URL for supported keys (if no current filters yet)
       const seeds: Record<string,string> = {};
@@ -193,13 +193,13 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
       });
 
       if (Object.keys(currentFilters || {}).length === 0 && Object.keys(seeds).length > 0) {
-        console.debug('[AllMatches] seeding currentFilters from URL', seeds);
+      
         setCurrentFilters(seeds);
       }
 
       // If there was a queued payload during hydration, apply it now
       if (queuedPayloadRef.current) {
-        console.debug('[AllMatches] applying queued payload on initialKeysReady', queuedPayloadRef.current);
+        
         // call updateUrl with the queued payload (it will not re-queue because keysReady is true)
         updateUrl(queuedPayloadRef.current as Record<string,string>);
         queuedPayloadRef.current = null;
@@ -256,7 +256,7 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
     (async () => {
       try {
         setLoadingMatches(true);
-        console.debug('[AllMatches] fetching endpoint:', endpoint, { initialMatches: !!initialMatches, showAll, sanitizedFilters });
+        
         const res = await fetch(endpoint, { signal: controller.signal, cache: "no-store" });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data: Match[] = await res.json();
@@ -274,11 +274,11 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
 
   // Debug when `matches` or `allMatches` change so we can see unexpected replacements
   useEffect(() => {
-    console.debug('[AllMatches] matches changed', { length: (matches || []).length, showAll, initialMatches: !!initialMatches });
+    
   }, [matches, showAll, initialMatches]);
 
   useEffect(() => {
-    console.debug('[AllMatches] allMatches changed', { length: (allMatches || []).length, allMatchesFetched });
+    
   }, [allMatches, allMatchesFetched]);
 
   // If the page was SSR-rendered with an initial slice (initialMatches) but the
@@ -309,7 +309,7 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
     (async () => {
       try {
         setLoadingMatches(true);
-        console.debug('[AllMatches] applying initial URL filters on SSR slice', JSON.stringify(filtersToApply));
+        
         const params = new URLSearchParams(filtersToApply);
         const url = `/api/players/allmatches?id=${playerId}${params.toString() ? '&' + params.toString() : ''}`;
         const res = await fetch(url, { signal: controller.signal, cache: 'no-store' });
@@ -318,7 +318,7 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
         if (!aborted) {
           // Log quick diagnostics: number of matches and unique surfaces
           const surfaces = Array.from(new Set((data || []).flatMap(m => Array.isArray(m.surface) ? m.surface : [m.surface]).map(s => (s||'').trim()).filter(Boolean)));
-          console.debug('[AllMatches] fetched filtered matches', { count: (data||[]).length, surfaces });
+          
 
           setMatches(data);
           // Also seed `allMatches` with the filtered payload so filters populate when
@@ -333,7 +333,7 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
             fetchingAllRef.current = true;
             (async () => {
               try {
-                console.debug('[AllMatches] background fetching lightweight facets after filtered seed');
+                
                 const resFacets = await fetch(`/api/players/match-facets?id=${playerId}`, { cache: 'force-cache' });
                 if (resFacets.ok) {
                   const j = await resFacets.json();
@@ -513,7 +513,7 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
     // If initial keys haven't been captured yet (race on refresh/hydration), queue the payload
     if (!initialKeysReadyRef.current) {
       queuedPayloadRef.current = Object.fromEntries(Object.entries(filters).map(([k,v]) => [k, String(v)]));
-      console.debug('[AllMatches] initial keys not ready, queued updateUrl payload', queuedPayloadRef.current);
+      
       return;
     }
 
@@ -521,7 +521,7 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
     if (typeof window !== 'undefined') {
       const currentTab = window.location.pathname.split('/')[3];
       if (currentTab !== 'matches') {
-        console.debug('[AllMatches] updateUrl aborted: not on matches tab (currentTab=', currentTab, ')');
+        
         return;
       }
     }
@@ -533,22 +533,22 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
       const currentHas = typeof window !== 'undefined' ? new URL(window.location.href).searchParams.has(key) : false;
       const explicitDeleted = explicitDeletedRef.current.has(key);
       const initialHas = initialKeysReadyRef.current ? initialQueryKeysRef.current.has(key) : false;
-      console.debug('[AllMatches] updateUrl handling', { key, value, currentHas, initialHas, explicitDeleted, initialKeysReady: initialKeysReadyRef.current });
+      
 
       if (!value || value === "All" || value === "") {
         // Respect explicit deletions performed by the user immediately
         if (explicitDeleted) {
-          console.debug('[AllMatches] deleting key (explicit):', key);
+          
           url.searchParams.delete(key);
           explicitDeletedRef.current.delete(key);
           initialQueryKeysRef.current.delete(key);
         } else {
           // Since initial keys are ready, we can safely decide whether to remove keys
           if (!currentHas && !initialHas) {
-            console.debug('[AllMatches] deleting key (automatic):', key);
+            
             url.searchParams.delete(key);
           } else {
-            console.debug('[AllMatches] preserving key (automatic):', key);
+            
           }
         }
       } else {
@@ -558,7 +558,7 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
     // Build a relative path and use history.replaceState to avoid a full page reload
     const searchString = url.searchParams.toString();
     const newPath = url.pathname + (searchString ? '?' + searchString : '');
-    console.debug('[AllMatches] replace ->', newPath, '(using history.replaceState)');
+    
     if (typeof window !== 'undefined' && window.history && typeof window.history.replaceState === 'function') {
       window.history.replaceState(null, '', newPath);
     } else {
@@ -573,7 +573,7 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
     if (typeof window !== 'undefined') {
       const currentTab = window.location.pathname.split('/')[3];
       if (currentTab !== 'matches') {
-        console.debug('[AllMatches] updateUrlExplicit aborted: not on matches tab (currentTab=', currentTab, ')');
+        
         return;
       }
     }
@@ -581,14 +581,14 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
     const searchParams = new URLSearchParams(window.location.search);
 
     if (!value || value === "All" || value === "") {
-      console.debug('[AllMatches] explicit delete:', key);
+      
       searchParams.delete(key);
       // If user explicitly removed a filter, mark it so automatic updates respect it
       explicitDeletedRef.current.add(key);
       // also remove it from the initial-key set so subsequent updateUrl calls can delete it as well.
       initialQueryKeysRef.current.delete(key);
     } else {
-      console.debug('[AllMatches] explicit set:', key, String(value));
+      
       searchParams.set(key, String(value));
       // ensure the key is considered present going forward
       initialQueryKeysRef.current.add(key);
@@ -672,7 +672,7 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
           fetchingAllRef.current = true;
           (async () => {
             try {
-              console.debug('[AllMatches] fetching full match list post-ShowAll to populate filters');
+              
               const resFull = await fetch(`/api/players/allmatches?id=${playerId}`, { cache: 'no-store' });
               if (!resFull.ok) throw new Error(`HTTP ${resFull.status}`);
               const fullData: Match[] = await resFull.json();

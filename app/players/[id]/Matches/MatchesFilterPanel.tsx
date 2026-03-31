@@ -201,7 +201,6 @@ export default function MatchesFilterPanel({ playerId, matches, allMatches, disp
     // If we've already populated full options from the complete dataset, and
     // `allMatchesFetched` is true, do not overwrite available options anymore.
     if (fullOptionsPopulatedRef.current && allMatchesFetched) {
-      console.debug('[MatchesFilterPanel] full options already populated; skipping recompute');
       return;
     }
 
@@ -211,7 +210,6 @@ export default function MatchesFilterPanel({ playerId, matches, allMatches, disp
     // This prevents deriving options from the SSR preview slice (10 matches) before
     // the server/client facets arrive.
     if (!allMatchesFetched && !facetsLoaded) {
-      console.debug('[MatchesFilterPanel] skipping derive-from-allMatches: no full matches and no facets loaded');
       return;
     }
 
@@ -322,7 +320,6 @@ export default function MatchesFilterPanel({ playerId, matches, allMatches, disp
 
       // seed surface from URL query param or path segment (e.g. /players/slug/clay)
       setSurfaceFilter(prev => (prev && prev !== 'All') ? prev : (urlSurface ?? pathSurface ?? 'All'));
-      console.debug('[MatchesFilterPanel] seeded surface ->', urlSurface ?? pathSurface, 'currentSurface->', (urlSurface ?? pathSurface ?? 'All'));
 
       // Use the same seed-or-keep logic for other filters so that explicit user choices are preserved
       setVsRankFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('vsRank') ?? prev ?? 'All'));
@@ -345,7 +342,6 @@ export default function MatchesFilterPanel({ playerId, matches, allMatches, disp
     // subsequent partial/seeding updates won't override the lists.
     if (allMatchesFetched) {
       fullOptionsPopulatedRef.current = true;
-      console.debug('[MatchesFilterPanel] marked full options populated (allMatchesFetched=true)');
     }
 
   }, [allMatches, urlYear, urlTourney, urlLevel, searchParams, allMatchesFetched]);
