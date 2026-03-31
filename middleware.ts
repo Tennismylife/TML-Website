@@ -265,7 +265,10 @@ export async function middleware(req: NextRequest) {
     // Strict 410 for invalid records filter combinations.
     if (requestPath.startsWith('/records/')) {
       const { record, sub } = resolvePageRecordAndSub(requestPath);
-      if (record && hasInvalidRecordFilter(record, sub, query)) {
+      // When subtab is in the query string instead of the path (e.g. ?subtab=wins),
+      // use it as the effective sub so filter validation is accurate for that subtab.
+      const effectiveSub = sub ?? (query.get('subtab') ? kebabToKey(query.get('subtab')!) : undefined);
+      if (record && hasInvalidRecordFilter(record, effectiveSub, query)) {
         return new NextResponse('Gone', { status: 410 });
       }
     }

@@ -279,7 +279,7 @@ export async function generateMetadata(
     ...(selectedRounds ? { round: selectedRounds } : {}),
     ...(selectedBestOf != null ? { bestOf: selectedBestOf } : {}),
   };
-  const policySlug = record ? (sub ? [record, sub] : [record]) : [];
+  const policySlug = record ? ((sub ?? activeSubResolved) ? [record, (sub ?? activeSubResolved)!] : [record]) : [];
   const policy = evaluateRecordsPolicy(metadataBase.origin, policySlug, filtersMeta);
   const pageTitle = getRecordsPageTitle(policySlug, filtersMeta, desc);
   const robotsMeta = getRecordsRobotsMeta(policy);
@@ -475,7 +475,7 @@ export default async function SlugPage({ params, searchParams }: Props) {
       ...(selectedRounds ? { round: selectedRounds } : {}),
       ...(selectedBestOf != null ? { bestOf: selectedBestOf } : {}),
     };
-    const policySlugRender = sub ? [record, sub] : [record];
+    const policySlugRender = (sub ?? activeSubResolved) ? [record, (sub ?? activeSubResolved)!] : [record];
     const renderPolicy = evaluateRecordsPolicy(metadataBase.origin, policySlugRender, filtersForPolicy);
     const canonicalFull = renderPolicy.canonical;
 
