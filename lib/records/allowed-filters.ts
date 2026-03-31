@@ -76,7 +76,7 @@ export function shouldShowRecordFilter(
   // Timespan
   if (activeTab === 'timespan') {
     if (['entries', 'titles'].includes(activeSubTab || '')) return ['levels', 'surfaces'].includes(filter);
-    if (activeSubTab === 'rounds') return ['levels', 'surfaces', 'rounds'].includes(filter);
+    if (activeSubTab === 'rounds' || activeSubTab === 'round') return ['levels', 'surfaces', 'rounds'].includes(filter);
   }
 
   // Roundsonentries
