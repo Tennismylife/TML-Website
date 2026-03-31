@@ -205,13 +205,6 @@ const WHITELIST_RAW: WhitelistEntry[] = [
   { slug: ['played'], filters: { bestOf: 3, level: ['M'], surface: ['Hard'] } },
   { slug: ['played'], filters: { bestOf: 3, level: ['M'], surface: ['Carpet'] } },
 
-  // ─── count (level) ─────────────────────────────────────────────────────────
-  { slug: ['count'], filters: { level: ['G'] } },
-  { slug: ['count'], filters: { level: ['M'] } },
-  { slug: ['count'], filters: { level: ['F'] } },
-  { slug: ['count'], filters: { level: ['250'] } },
-  { slug: ['count'], filters: { level: ['500'] } },
-
   // ─── count (round) ─────────────────────────────────────────────────────────
   { slug: ['count'], filters: { round: 'QF' } },
   { slug: ['count'], filters: { round: 'SF' } },
@@ -407,13 +400,6 @@ const WHITELIST_RAW: WhitelistEntry[] = [
   { slug: ['roundsonentries', 'titles'], filters: { surface: ['Grass'] } },
   { slug: ['roundsonentries', 'titles'], filters: { surface: ['Carpet'] } },
 
-  // ─── roundsonentries/round (level) ────────────────────────────────────────
-  { slug: ['roundsonentries', 'round'], filters: { level: ['G'] } },
-  { slug: ['roundsonentries', 'round'], filters: { level: ['M'] } },
-  { slug: ['roundsonentries', 'round'], filters: { level: ['F'] } },
-  { slug: ['roundsonentries', 'round'], filters: { level: ['250'] } },
-  { slug: ['roundsonentries', 'round'], filters: { level: ['500'] } },
-
   // ─── roundsonentries/round (round) ────────────────────────────────────────
   { slug: ['roundsonentries', 'round'], filters: { round: 'QF' } },
   { slug: ['roundsonentries', 'round'], filters: { round: 'SF' } },
@@ -468,11 +454,6 @@ const WHITELIST_RAW: WhitelistEntry[] = [
   { slug: ['same', 'titles'], filters: { surface: ['Carpet'] } },
 
   // ─── same/round ────────────────────────────────────────────────────────────
-  { slug: ['same', 'round'], filters: { level: ['G'] } },
-  { slug: ['same', 'round'], filters: { level: ['M'] } },
-  { slug: ['same', 'round'], filters: { level: ['F'] } },
-  { slug: ['same', 'round'], filters: { level: ['250'] } },
-  { slug: ['same', 'round'], filters: { level: ['500'] } },
   { slug: ['same', 'round'], filters: { round: 'QF' } },
   { slug: ['same', 'round'], filters: { round: 'SF' } },
   { slug: ['same', 'round'], filters: { round: 'F' } },
@@ -741,6 +722,21 @@ export function evaluateRecordsPolicy(
   const lookupKey = makeWlKey(slug, filters);
   const wlEntry = WHITELIST_MAP.get(lookupKey);
   const isWhitelisted = wlEntry !== undefined;
+
+  // Special rule: if the sub-tab segment is 'round'/'rounds' but no ?round= filter
+  // is active the page shows all rounds with no specific focus → always noindex.
+  const subSeg = slug[slug.length - 1];
+  const subIsRound = slug.length > 1 && (subSeg === 'round' || subSeg === 'rounds');
+  if (RECORDS_NOINDEX_ENABLED && subIsRound && !filters.round) {
+    return {
+      index: false,
+      follow: true,
+      isWhitelisted: false,
+      canonical,
+      filterCount,
+      inSitemap: false,
+    };
+  }
 
   // Index rule:
   //  · RECORDS_NOINDEX_ENABLED = false → index everything
