@@ -40,16 +40,18 @@ export default function Page() {
 
   return (
     <main>
-      <div className="flex items-center justify-center mt-6 gap-4 relative">
-        <h1 className="text-4xl sm:text-5xl font-bold !text-white text-center">
-          Tennis Match Database
-        </h1>
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-red-600 text-white font-bold animate-pulse shadow-lg">
-          <span className="inline-block w-2 h-2 bg-white rounded-full animate-pulse" aria-hidden="true"></span>
-          <span className="uppercase tracking-widest">LIVE</span>
+      <div className="flex flex-col items-center mt-6 gap-4 px-4">
+        <div className="flex items-center justify-center gap-4">
+          <h1 className="text-4xl sm:text-5xl font-bold !text-white text-center">
+            Tennis Match Database
+          </h1>
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-red-600 text-white font-bold animate-pulse shadow-lg">
+            <span className="inline-block w-2 h-2 bg-white rounded-full animate-pulse" aria-hidden="true"></span>
+            <span className="uppercase tracking-widest">LIVE</span>
+          </div>
         </div>
-        {/* mailbox positioned to right of heading */}
-        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white rounded-lg px-6 py-3 text-base shadow-lg">
+        {/* mailbox below heading on all screens */}
+        <div className="bg-blue-600 text-white rounded-lg px-6 py-3 text-base shadow-lg text-center">
           📬 <a href="mailto:infotennismylife@gmail.com" className="underline">infotennismylife@gmail.com</a><br/>
           info, reports, debugging, sponsorship
         </div>
@@ -74,7 +76,7 @@ export default function Page() {
   <div className="mx-auto max-w-3xl">
     <h2 className="text-3xl sm:text-4xl font-bold mb-3 bg-gradient-to-r from-sky-400 via-emerald-400 to-yellow-300 text-transparent bg-clip-text">Live Tournaments</h2>
     <p className="text-lg sm:text-xl font-medium text-gray-100">
-      <span className="!text-green-400 font-semibold">Miami</span> is currently in progress — live results and stats are being updated in real-time.
+      <span className="!text-green-400 font-semibold">Houston, Marrakech, Bucharest</span> are currently in progress — live results and stats are being updated in real-time.
     </p>
   </div>
 </section>
