@@ -271,7 +271,7 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
 
       {isRecordsHome && (
         <section className="mb-8 p-6 md:p-8 bg-gray-900/40 rounded-2xl border border-gray-800/80 shadow-lg">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-100 mb-4">{humanizedDisplayName} Tennis Records & Statistics</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-100 mb-4">{humanizedDisplayName} Records & Statistics</h1>
           <div className="space-y-4 text-gray-300 text-sm md:text-base leading-relaxed">
             <p>
               Welcome to the ultimate hub for <strong>{humanizedDisplayName} records</strong>. This extensive database aggregates Open Era statistics, match details, and historical achievements for one of tennis's most prestigious events. Navigate through our curated data to discover which players have left their mark on the tournament.
