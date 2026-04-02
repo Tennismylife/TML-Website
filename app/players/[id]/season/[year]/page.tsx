@@ -26,6 +26,20 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   const description = `${name} ${y} season: match results, win-loss record, titles & surface breakdown (hard, clay, grass). Full season stats on TennisMyLife.`;
   const canonical = `https://stats.tennismylife.org/players/${encodeURIComponent(player?.slug || String(id))}/season/${encodeURIComponent(y)}`;
   const imageUrl = `https://stats.tennismylife.org/og/${encodeURIComponent(player?.slug || String(id))}.png`;
+
+  // noindex if no matches exist for this player/year
+  let hasMatches = false;
+  if (player?.id) {
+    try {
+      const cnt = await prisma.match.count({
+        where: { year: Number(y), OR: [{ winner_id: player.id }, { loser_id: player.id }] },
+      });
+      hasMatches = cnt > 0;
+    } catch (e) {
+      hasMatches = true; // fail open
+    }
+  }
+
   return {
     title,
     description,
@@ -39,7 +53,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
       images: [{ url: imageUrl, width: 1200, height: 630, alt: `${name} ${y} season` }]
     },
     twitter: { card: 'summary_large_image', title, description, images: [{ url: imageUrl, alt: `${name} ${y} season` }] },
-    robots: { index: true, follow: true },
+    robots: { index: hasMatches, follow: true },
   } as Metadata;
 }
 

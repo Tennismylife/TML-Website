@@ -45,6 +45,21 @@ p, span, a, li, div, h1, h2, h3, h4, h5, h6, label, button, input, select, texta
 .narrative-age    { font-weight: 600; color: #fdba74 !important; -webkit-text-fill-color: #fdba74 !important; } /* orange  – age              */
 .narrative-weeks  { font-weight: 600; color: #c4b5fd !important; -webkit-text-fill-color: #c4b5fd !important; } /* violet  – weeks / counts   */
 
+/* Monte Carlo Records: link colours */
+.mc-records-content h2 { color: #34d399 !important; -webkit-text-fill-color: #34d399 !important; }
+.mc-records-content a[href*="/players/"] { color: #7dd3fc !important; -webkit-text-fill-color: #7dd3fc !important; text-decoration: none !important; }
+.mc-records-content h2 a[href*="/records/"] { color: #34d399 !important; -webkit-text-fill-color: #34d399 !important; text-decoration: none !important; }
+.mc-records-content p  a[href*="/records/"] { color: #facc15 !important; -webkit-text-fill-color: #facc15 !important; text-decoration: none !important; }
+.mc-records-content a[href*="/tournaments/monte-carlo-masters/1"],
+.mc-records-content a[href*="/tournaments/monte-carlo-masters/2"] { color: #c084fc !important; -webkit-text-fill-color: #c084fc !important; text-decoration: none !important; }
+
+/* Monte Carlo Records: inline highlight classes */
+.mc-gold    { color: #facc15 !important; -webkit-text-fill-color: #facc15 !important; }
+.mc-bold    { font-weight: 700 !important; }
+.mc-emerald { color: #34d399 !important; -webkit-text-fill-color: #34d399 !important; }
+.mc-blue    { color: #60a5fa !important; -webkit-text-fill-color: #60a5fa !important; }
+.mc-orange  { color: #f97316 !important; -webkit-text-fill-color: #f97316 !important; }
+
 /* Essential headings */
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Poppins', 'Inter', sans-serif;

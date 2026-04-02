@@ -91,13 +91,29 @@ const SectionCard = React.memo(function SectionCard({
 const countsCache = new Map<string, Record<string, SectionData>>();
 const countsFetchInFlight = new Map<string, Promise<Record<string, SectionData>>>();
 
-export default function CountSection({ tournamentId }: { tournamentId: string }) {
-  const [sections, setSections] = useState<Record<string, SectionData>>({
-    titles: { list: [] },
-    wins: { list: [] },
-    played: { list: [] },
-    entries: { list: [] },
-  });
+interface InitialData {
+  titles: PlayerItem[];
+  wins: PlayerItem[];
+  played: PlayerItem[];
+  entries: PlayerItem[];
+}
+
+export default function CountSection({ tournamentId, initialData }: { tournamentId: string; initialData?: InitialData }) {
+  const [sections, setSections] = useState<Record<string, SectionData>>(
+    initialData
+      ? {
+          titles: { list: initialData.titles },
+          wins:   { list: initialData.wins },
+          played: { list: initialData.played },
+          entries: { list: initialData.entries },
+        }
+      : {
+          titles: { list: [] },
+          wins: { list: [] },
+          played: { list: [] },
+          entries: { list: [] },
+        }
+  );
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

@@ -117,7 +117,7 @@ export async function generateMetadata({ params, searchParams }: any): Promise<M
 
   if (!tab) {
     titleFromParam = `${displayFromParam} Records: wins, titles, matches, ages, streak, stats`;
-    fallbackDescription = `Comprehensive Open Era tennis records and statistics for ${displayFromParam}. Discover the players with the most titles, match wins, longest streaks, and youngest champions.`;
+    fallbackDescription = `Open Era men's singles records for ${displayFromParam}: most titles, match wins, longest winning streaks, age statistics, win percentages, and more. Updated after every edition.`;
   }
   // Prefer /count/* for count tab root and subpages; otherwise use /records/*
   let ogUrlFromParam = tab === 'count'

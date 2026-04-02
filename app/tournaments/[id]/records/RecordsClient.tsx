@@ -39,7 +39,15 @@ function safeTournamentName(name: any, fallback: string): string {
   return fallback;
 }
 
-export default function RecordsPageClient({ params }: { params: Promise<{ id: string }> } ) {
+interface CountItem { id: string | number; name: string; ioc: string; count: number; }
+interface InitialCountData {
+  titles: CountItem[];
+  wins: CountItem[];
+  played: CountItem[];
+  entries: CountItem[];
+}
+
+export default function RecordsPageClient({ params, initialCountData, markdownHtml }: { params: Promise<{ id: string }>; initialCountData?: InitialCountData; markdownHtml?: string }) {
   // Accept both a Promise (Next's server use(params)) or a plain object (useful in tests)
   // Resolve params into a stable `id` state so hooks and effects run predictably
   const [id, setId] = useState<string>('');
@@ -74,7 +82,7 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
   // headerId: use numeric id from fetched header when available, otherwise fall back to numeric route id if valid
   const headerId = tournament?.id ?? (isNaN(Number(id)) ? undefined : Number(id));
 
-  // default tab is 'count'
+  // default tab is 'count' — initial data is passed from the server component for SSR
   const [activeTab, setActiveTab] = useState('count');
   const [activeAgeSubTab, setActiveAgeSubTab] = useState<'main' | 'winners' | 'titles' | 'youngestrounds' | 'oldestrounds'>('main');
   type PercentageSubTabState = 'overall' | 'per-round';
@@ -295,6 +303,15 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
               <p className="text-xs text-gray-400 leading-relaxed">Analyze dominance over time. Explore the longest uninterrupted winning streaks and the highest winning percentages among the sport's elite.</p>
             </div>
           </div>
+
+          {markdownHtml && (
+            <div className="mt-8 pt-6 border-t border-gray-700/60">
+              <div
+                className="mc-records-content bg-gray-800/60 border border-gray-700/50 rounded-xl p-6 prose prose-invert max-w-none [&_h2]:text-[0.8rem] [&_h2]:uppercase [&_h2]:tracking-widest [&_h2]:font-bold [&_h2]:mt-8 [&_h2]:mb-1 [&_h2]:pb-1 [&_h2]:border-b [&_h2]:border-gray-700/50 [&_p]:text-sm [&_p]:leading-relaxed [&_p]:text-gray-200 [&_p]:mt-0 [&_p]:mb-2"
+                dangerouslySetInnerHTML={{ __html: markdownHtml }}
+              />
+            </div>
+          )}
         </section>
       )}
 
@@ -320,7 +337,7 @@ export default function RecordsPageClient({ params }: { params: Promise<{ id: st
           ['--pcol-4' as any]: '80px'
         }}
       >
-        {activeTab === 'count' && <CountSection tournamentId={id} />}
+        {activeTab === 'count' && <CountSection tournamentId={id} initialData={initialCountData} />}
         {activeTab === 'rounds' && <RoundsSection tournamentId={id} />}
         {activeTab === 'ages' && (
           <AgesSection
