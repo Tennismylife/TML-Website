@@ -6,6 +6,7 @@ import ViewRecordsCTA from '../../../ViewRecordsCTA';
 import { prisma } from '@/lib/prisma';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
 import RecordsWebPageJsonLd from '../../../RecordsWebPageJsonLd';
+import RecordsBreadcrumb from '../../../RecordsBreadcrumb';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string; title: string }> }) {
   const p = await params;
@@ -55,6 +56,10 @@ export default async function RoundPage({ params }: { params: Promise<{ id: stri
         keywords={`${tournamentName}, rounds on entries, ${label}, tennis records`}
       />
       <ViewRecordsCTA id={id} className="absolute top-4 left-4 z-50" />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: `${site}/` }, { '@type': 'ListItem', position: 2, name: 'Tournaments', item: `${site}/tournaments` }, { '@type': 'ListItem', position: 3, name: tournamentName, item: `${site}/tournaments/${slugId}` }, { '@type': 'ListItem', position: 4, name: 'Records', item: `${site}/tournaments/${slugId}/records` }, { '@type': 'ListItem', position: 5, name: 'Rounds on Entries', item: `${site}/tournaments/${slugId}/records/rounds-on-entries` }, { '@type': 'ListItem', position: 6, name: label, item: canonical }] }) }} />
+      <div className="pt-14 px-2">
+        <RecordsBreadcrumb slugId={slugId} tournamentName={tournamentName} crumbs={[{ label: 'Rounds on Entries', href: `/tournaments/${slugId}/records/rounds-on-entries` }, { label: label }]} />
+      </div>
       <RoundOnEntriesFull params={{ id, title }} />
     </div>
   );

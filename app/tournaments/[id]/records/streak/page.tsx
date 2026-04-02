@@ -3,6 +3,7 @@ import { getTournamentName, getTournamentSlug, shouldIndexRecords } from '@/lib/
 import { prisma } from '@/lib/prisma';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
 import RecordsWebPageJsonLd from '../RecordsWebPageJsonLd';
+import RecordsBreadcrumb from '../RecordsBreadcrumb';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const p = await params;
@@ -77,6 +78,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         canonical={canonical}
         keywords={`${tournamentName}, winning streaks, longest streak, tennis records`}
       />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: `${site}/` }, { '@type': 'ListItem', position: 2, name: 'Tournaments', item: `${site}/tournaments` }, { '@type': 'ListItem', position: 3, name: tournamentName, item: `${site}/tournaments/${slugId}` }, { '@type': 'ListItem', position: 4, name: 'Records', item: `${site}/tournaments/${slugId}/records` }, { '@type': 'ListItem', position: 5, name: 'Winning Streaks', item: canonical }] }) }} />
+      <RecordsBreadcrumb slugId={slugId} tournamentName={tournamentName} crumbs={[{ label: 'Winning Streaks' }]} className="px-6" />
       <h1 className="relative z-50 mt-0 text-4xl md:text-5xl font-extrabold mb-6 text-center text-white">{`${tournamentName} Longest Winning Streaks`}</h1>
       <TournamentPage params={Promise.resolve({ id, tab: 'streak' })} />
     </main>

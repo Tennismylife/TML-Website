@@ -5,6 +5,7 @@ import { shouldIndexRecords } from '@/lib/getTournamentName';
 import { prisma } from '@/lib/prisma';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
 import RecordsWebPageJsonLd from '../../RecordsWebPageJsonLd';
+import RecordsBreadcrumb from '../../RecordsBreadcrumb';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const p = await params;
@@ -55,6 +56,8 @@ export default function Page({ params }: any) {
           canonical={`${site}/tournaments/${slugId}/records/percentage/rounds`}
           keywords={`${tournamentName}, win percentage per round, tennis records, open era stats`}
         />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: `${site}/` }, { '@type': 'ListItem', position: 2, name: 'Tournaments', item: `${site}/tournaments` }, { '@type': 'ListItem', position: 3, name: tournamentName, item: `${site}/tournaments/${slugId}` }, { '@type': 'ListItem', position: 4, name: 'Records', item: `${site}/tournaments/${slugId}/records` }, { '@type': 'ListItem', position: 5, name: 'Win % by Round', item: `${site}/tournaments/${slugId}/records/percentage/rounds` }] }) }} />
+        <RecordsBreadcrumb slugId={slugId} tournamentName={tournamentName} crumbs={[{ label: 'Win % by Round' }]} className="px-2" />
         <TournamentPage params={Promise.resolve({ id, tab: 'percentage' })} />
       </>
     );

@@ -10,6 +10,7 @@ import { prisma } from '@/lib/prisma';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
 import { shouldIndexRecords } from '@/lib/getTournamentName';
 import RecordsWebPageJsonLd from '../../RecordsWebPageJsonLd';
+import RecordsBreadcrumb from '../../RecordsBreadcrumb';
 
 export const dynamic = 'force-dynamic';
 
@@ -96,8 +97,7 @@ export default async function EntriesPage({ params }: { params: Promise<{ id: st
       { '@type': 'ListItem', position: 2, name: 'Tournaments', item: site + '/tournaments' },
       { '@type': 'ListItem', position: 3, name: tournamentName, item: site + `/tournaments/${id}` },
       { '@type': 'ListItem', position: 4, name: 'Records', item: site + `/tournaments/${id}/records` },
-      { '@type': 'ListItem', position: 5, name: 'Counts', item: site + `/tournaments/${id}/records/count` },
-      { '@type': 'ListItem', position: 6, name: 'Most entries', item: canonical },
+      { '@type': 'ListItem', position: 5, name: 'Most entries', item: canonical },
     ],
   };
 
@@ -120,6 +120,7 @@ export default async function EntriesPage({ params }: { params: Promise<{ id: st
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
 
       <main>
+        <RecordsBreadcrumb slugId={slugId} tournamentName={tournamentName} crumbs={[{ label: 'Entries' }]} />
         <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">{`Most Entries at ${tournamentName}`}</h1>
         <CountFull id={id} section="entries" list={list} tourneyName={tournamentName} />
       </main>

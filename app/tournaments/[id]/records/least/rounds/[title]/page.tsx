@@ -7,6 +7,7 @@ import { makeTitle, makeLeastLabel } from '@/lib/recordMetadata';
 import { prisma } from '@/lib/prisma';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
 import RecordsWebPageJsonLd from '../../../RecordsWebPageJsonLd';
+import RecordsBreadcrumb from '../../../RecordsBreadcrumb';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string; title: string }> }) {
   const p = await params;
@@ -64,6 +65,7 @@ export default async function Page({ params }: any) {
         canonical={canonical}
         keywords={`${tournamentName}, least games lost, ${label}, tennis records`}
       />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: `${site}/` }, { '@type': 'ListItem', position: 2, name: 'Tournaments', item: `${site}/tournaments` }, { '@type': 'ListItem', position: 3, name: tournamentName, item: `${site}/tournaments/${slugId}` }, { '@type': 'ListItem', position: 4, name: 'Records', item: `${site}/tournaments/${slugId}/records` }, { '@type': 'ListItem', position: 5, name: 'Fewest Games Lost', item: `${site}/tournaments/${slugId}/records/least` }, { '@type': 'ListItem', position: 6, name: label, item: canonical }] }) }} />
       <Link
         href={`/tournaments/${slugId}/records`}
         className="group relative inline-flex items-center gap-3 px-5 py-2 bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-black text-sm md:text-base rounded-full shadow-2xl hover:shadow-yellow-500/50 transform hover:scale-105 transition-all duration-300 overflow-hidden absolute top-4 left-4"
@@ -80,6 +82,7 @@ export default async function Page({ params }: any) {
       </div>
 
       <main>
+        <RecordsBreadcrumb slugId={slugId} tournamentName={tournamentName} crumbs={[{ label: 'Fewest Games Lost', href: `/tournaments/${slugId}/records/least` }, { label: label }]} />
         <LeastFull id={id} title={title} />
       </main>
     </div>

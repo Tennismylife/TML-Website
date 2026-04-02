@@ -9,6 +9,7 @@ import { prisma } from '@/lib/prisma';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
 import { shouldIndexRecords } from '@/lib/getTournamentName';
 import RecordsWebPageJsonLd from '../../RecordsWebPageJsonLd';
+import RecordsBreadcrumb from '../../RecordsBreadcrumb';
 
 export const dynamic = 'force-dynamic';
 
@@ -131,10 +132,7 @@ export default async function PlayedPage({ params }: { params: Promise<{ id: str
       { '@type': 'ListItem', position: 2, name: 'Tournaments', item: site + '/tournaments' },
       { '@type': 'ListItem', position: 3, name: tournamentName, item: site + `/tournaments/${id}` },
       { '@type': 'ListItem', position: 4, name: 'Records', item: site + `/tournaments/${id}/records` },
-      { '@type': 'ListItem', position: 5, name: 'Counts', item: site + `/tournaments/${id}/records/count` },
-
-
-      { '@type': 'ListItem', position: 6, name: 'Most matches played', item: canonical },
+      { '@type': 'ListItem', position: 5, name: 'Most matches played', item: canonical },
     ],
   };
 
@@ -157,6 +155,7 @@ export default async function PlayedPage({ params }: { params: Promise<{ id: str
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
 
       <main>
+        <RecordsBreadcrumb slugId={String(id)} tournamentName={tournamentName} crumbs={[{ label: 'Matches Played' }]} />
         <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">{`Most matches played at ${tournamentName}`}</h1>
         <CountFull id={id} section="played" list={list} tourneyName={tournamentName} />
       </main>

@@ -3,6 +3,8 @@ import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
 import ViewRecordsCTA from '../../../ViewRecordsCTA';
 import { prisma } from '@/lib/prisma';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
+import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
+import RecordsBreadcrumb from '../../../RecordsBreadcrumb';
 
 function extractName(nameField: any): string {
   if (!nameField) return '';
@@ -69,9 +71,16 @@ export async function generateMetadata({ params }: any) {
 export default async function Page({ params }: any) {
   const p = await params;
   const { id } = p;
+  const tournamentName = await getTournamentName(id);
+  const slugId = await getTournamentSlug(id).catch(() => id);
+  const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
   return (
     <div className="w-full mx-auto text-white relative">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: `${site}/` }, { '@type': 'ListItem', position: 2, name: 'Tournaments', item: `${site}/tournaments` }, { '@type': 'ListItem', position: 3, name: tournamentName, item: `${site}/tournaments/${slugId}` }, { '@type': 'ListItem', position: 4, name: 'Records', item: `${site}/tournaments/${slugId}/records` }, { '@type': 'ListItem', position: 5, name: 'Ages', item: `${site}/tournaments/${slugId}/records/ages` }, { '@type': 'ListItem', position: 6, name: 'Title Ages', item: `${site}/tournaments/${slugId}/records/ages/titles` }, { '@type': 'ListItem', position: 7, name: 'Oldest Champions', item: `${site}/tournaments/${slugId}/records/ages/titles/oldest` }] }) }} />
       <ViewRecordsCTA id={id} className="absolute top-4 left-4 z-50" />
+      <div className="pt-14 px-2">
+        <RecordsBreadcrumb slugId={slugId} tournamentName={tournamentName} crumbs={[{ label: 'Ages', href: `/tournaments/${slugId}/records/ages` }, { label: 'Title Ages', href: `/tournaments/${slugId}/records/ages/titles` }, { label: 'Oldest Champions' }]} />
+      </div>
       <AgesFull id={id} section="titles" which="oldest" />
     </div>
   );
