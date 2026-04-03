@@ -347,14 +347,6 @@ export default function TournamentH2HLinks({ tournamentId, year }: Props) {
     })),
   } : null;
 
-  // ── Deduplicated list of all unique H2H pairs (for sr-only flat link list) ──
-  const allUniquePairs: [string, string][] = [];
-  const seenPairs = new Set<string>();
-  for (const { player1, player2 } of pairs) {
-    const key = [player1, player2].sort().join('|||');
-    if (!seenPairs.has(key)) { seenPairs.add(key); allUniquePairs.push([player1, player2]); }
-  }
-
   const sectionAriaLabel = hasData
     ? `Head-to-head matchup analysis for Monte Carlo Masters ${year}. ${stats.playerCount} players, ${stats.totalPairs} possible matchups across ${stats.rounds.map((r) => ROUND_LABELS[r] ?? r).join(', ')}.`
     : `Head-to-head analysis for Monte Carlo Masters ${year}`;
@@ -657,30 +649,6 @@ export default function TournamentH2HLinks({ tournamentId, year }: Props) {
         </>
       )}
 
-      {/* SEO: flat always-rendered list of every unique H2H pair — full crawl weight, not inside <details> */}
-      <ul
-        aria-label="All head-to-head matchups in the tournament"
-        style={{
-          position: 'absolute',
-          width: '1px',
-          height: '1px',
-          overflow: 'hidden',
-          clip: 'rect(0,0,0,0)',
-          whiteSpace: 'nowrap',
-          border: 0,
-          margin: 0,
-          padding: 0,
-          listStyle: 'none',
-        }}
-      >
-        {allUniquePairs.map(([p1, p2]) => (
-          <li key={`${p1}|||${p2}`}>
-            <a href={createH2HUrl(p1, p2)} title={`${p1} vs ${p2} head-to-head record and statistics`}>
-              {p1} vs {p2} head-to-head record and statistics
-            </a>
-          </li>
-        ))}
-      </ul>
     </section>
   );
 }
