@@ -30,7 +30,7 @@ export default function EditionNavigatorServer({
   if (!years || years.length === 0) return null;
 
   return (
-    <nav id={`server-edition-navigator-${idSuffix}`} aria-label="Editions navigation" className={`w-full mb-6 z-0 ${sticky ? 'md:sticky md:top-24 z-30' : ''}`}>
+    <nav id={`server-edition-navigator-${idSuffix}`} aria-label="Editions navigation" className={`w-full mb-6 z-0 ${sticky ? 'md:sticky md:top-24 z-30 bg-[#1F2937]/95 backdrop-blur-sm' : ''}`}>
       <div className="relative flex items-center gap-3">
         <button
           type="button"

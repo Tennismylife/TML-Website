@@ -160,12 +160,12 @@ export default async function TournamentServer({ id }: TournamentServerProps) {
 
       {/* Top server-side navigator (sticky) */}
       <div className="max-w-[84rem] mx-auto px-6 pb-6">
-        <EditionNavigatorServer id={String(id)} slug={canonicalSlug} editions={serverEditions} currentYear={editions.length > 0 ? String(editions[0].year) : ''} idSuffix="top" sticky />
+        <EditionNavigatorServer id={String(id)} slug={canonicalSlug} editions={serverEditions} currentYear={null} idSuffix="top" sticky />
       </div>
 
       {/* Editions navigator (client) */}
       <div className="max-w-[84rem] mx-auto px-6 pb-6">
-        <EditionNavigator id={String(id)} slug={canonicalSlug} editions={editions.map(e => ({ year: e.year, tourney_id: e.tourney_id }))} currentYear={editions.length > 0 ? String(editions[0].year) : ''} sticky />
+        <EditionNavigator id={String(id)} slug={canonicalSlug} editions={editions.map(e => ({ year: e.year, tourney_id: e.tourney_id }))} currentYear={null} sticky />
       </div>
 
       {/* Table of finals */}
@@ -236,7 +236,7 @@ export default async function TournamentServer({ id }: TournamentServerProps) {
 
       {/* Bottom server-side navigator (compact) */}
       <div className="max-w-[84rem] mx-auto px-6 pt-6">
-        <EditionNavigatorServer id={String(id)} slug={canonicalSlug} editions={serverEditions} currentYear={editions.length > 0 ? String(editions[0].year) : ''} idSuffix="bottom" compact />
+        <EditionNavigatorServer id={String(id)} slug={canonicalSlug} editions={serverEditions} currentYear={null} idSuffix="bottom" compact />
       </div>
     </main>
   );

@@ -67,7 +67,7 @@ export default function EditionNavigator({
   const maxHeightPx = MAX_ROWS * rowHeight + (MAX_ROWS - 1) * gapPx + paddingVertical; // altezza del container (limite)
 
   return (
-    <nav aria-label="Editions navigation" className={`w-full mb-6 z-0 ${sticky ? 'md:sticky md:top-24 z-30' : ''}`}>
+    <nav aria-label="Editions navigation" className={`w-full mb-6 z-0 ${sticky ? 'md:sticky md:top-24 z-30 bg-[#1F2937]/95 backdrop-blur-sm' : ''}`}>
       <div className="relative flex items-center gap-3">
         <button
           onClick={() => scroll("left")}

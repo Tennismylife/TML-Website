@@ -135,9 +135,9 @@ export default async function SeedsServer(props: any) {
         </div>
       </div>
 
-      {/* Server-side sticky navigator under Seeds table */}
+      {/* Server-side navigator under Seeds table */}
       <div className="mt-4">
-        <EditionNavigatorServer id={id} slug={null} editions={serverEditions} currentYear={year} idSuffix="seeds-top" sticky />
+        <EditionNavigatorServer id={id} slug={null} editions={serverEditions} currentYear={year} idSuffix="seeds-top" />
       </div>
     </div>
   );

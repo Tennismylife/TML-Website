@@ -69,6 +69,8 @@ export default function TournamentEditionClient(props: any) {
   // Fetch header to obtain the list of editions and show the navigator
   const [editionsList, setEditionsList] = useState<any[]>([]);
   const [slug, setSlug] = useState<string | null>(null);
+  // Fallback tournament info when there are no matches yet
+  const [headerInfo, setHeaderInfo] = useState<{ name?: string; surfaces?: string[]; category?: string[] } | null>(null);
   useEffect(() => {
     let cancelled = false;
     async function loadHeader() {
@@ -83,6 +85,7 @@ export default function TournamentEditionClient(props: any) {
           const normalized = Array.isArray(raw) ? raw.map((x: any) => (typeof x === 'number' ? { year: x } : (x && x.year ? x : { year: x }))) : [];
           setEditionsList(normalized);
           setSlug(d.slug || null);
+          setHeaderInfo({ name: d.name, surfaces: d.surfaces, category: d.category });
         }
       } catch (e) {
         // ignore
@@ -139,9 +142,8 @@ export default function TournamentEditionClient(props: any) {
           signal: controller.signal,
         });
         if (res.status === 404) {
-          // No matches found for this edition
+          // No matches found for this edition — render layout with empty table
           setMatches([]);
-          setError(`No matches found for ${year}.`);
           return;
         }
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -160,16 +162,31 @@ export default function TournamentEditionClient(props: any) {
 
   if (!resolvedParams) return <div>Loading parameters...</div>;
   if (loading) return <div>Loading data...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (matches.length === 0) return <div>No matches found for {year}.</div>;
 
-  const first = matches[0];
+  const first = matches.length > 0 ? matches[0] : null;
+
+  // Determine display values: prefer live match data, fall back to header API info
+  const displayName = first?.tourney_name ?? headerInfo?.name ?? '';
+  const displayLevel = first?.tourney_level ?? (headerInfo?.category?.[0] ?? '');
+  const displaySurface = first?.surface ?? (headerInfo?.surfaces?.[0] ?? '');
+  const displayDate = first?.tourney_date ? new Date(first.tourney_date).toISOString() : '';
+  const displayDrawSize = first?.draw_size ?? 0;
+  const recordsHref = slug
+    ? `${getTourneyHref({ slug })}/records`
+    : first
+      ? `${getTourneyHref({ id: String(first.tourney_id ?? id) })}/records`
+      : `/tournaments/${id}/records`;
+  const backHref = slug
+    ? getTourneyHref({ slug })
+    : first
+      ? getTourneyHref({ id: String(first.tourney_id ?? id) })
+      : `/tournaments/${id}`;
 
   return (
     <main className="flex flex-col w-full min-h-screen p-4 gap-4">
       <div className="w-full flex justify-start">
         <Link
-          href={slug ? getTourneyHref({ slug }) : getTourneyHref({ id: String(first.tourney_id ?? id) })}
+          href={backHref}
           title="Back to tournament"
           aria-label="Back to tournament"
           className="inline-flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-bold rounded-full shadow-lg hover:scale-105 transition-transform"
@@ -179,21 +196,19 @@ export default function TournamentEditionClient(props: any) {
         </Link>
       </div>
 
-      {/* EditionNavigator moved below the 'View Records' CTA */}
-
       <EditionHeader
-        tourney_name={first.tourney_name ?? ''}
-        year={first.year?.toString() ?? year}
-        tourney_level={first.tourney_level ?? ''}
-        surface={first.surface ?? ''}
-        tourney_date={first.tourney_date ? new Date(first.tourney_date).toISOString() : ''}
-        draw_size={first.draw_size ?? 0}
+        tourney_name={displayName}
+        year={first?.year?.toString() ?? year}
+        tourney_level={displayLevel}
+        surface={displaySurface}
+        tourney_date={displayDate}
+        draw_size={displayDrawSize}
       />
 
       {/* Centered CTA: View Records */}
       <div className="w-full flex justify-center my-6">
         <Link
-          href={slug ? `${getTourneyHref({ slug })}/records` : `${getTourneyHref({ id: String(first.tourney_id ?? id) })}/records`}
+          href={recordsHref}
           className="group relative inline-flex items-center gap-4 px-10 py-5 bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-black text-xl rounded-full shadow-2xl hover:shadow-yellow-500/50 transform hover:scale-110 transition-all duration-500 overflow-hidden"
           title="View Records of the Tournament"
           aria-label="View Records of the Tournament"
@@ -206,12 +221,13 @@ export default function TournamentEditionClient(props: any) {
       </div>
 
       <div className="w-full max-w-7xl mx-auto px-0 mt-4">
-        <EditionNavigator id={id} slug={slug} editions={editionsList} currentYear={year} sticky />
+        <EditionNavigator id={id} slug={slug} editions={editionsList} currentYear={year} />
       </div>
 
       <div className="w-full">
-        {/* Render client table only after we've removed any server-side table to avoid duplicates */}
-        {mounted ? (
+        {matches.length === 0 ? (
+          <p className="text-center text-gray-400 py-8">No matches recorded yet for {year}.</p>
+        ) : mounted ? (
           <MatchTable
             matches={matches}
             sortKey={sortKey}
@@ -223,9 +239,11 @@ export default function TournamentEditionClient(props: any) {
         ) : null}
       </div>
 
-      <div className="w-full">
-        <Seeds id={id} year={year} matches={matches} />
-      </div>
+      {matches.length > 0 && (
+        <div className="w-full">
+          <Seeds id={id} year={year} matches={matches} />
+        </div>
+      )}
     </main>
   );
 }

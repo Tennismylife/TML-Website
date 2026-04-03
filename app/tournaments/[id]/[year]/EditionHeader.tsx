@@ -25,6 +25,35 @@ export default function EditionHeader({
   const levels = Array.isArray(tourney_level) ? tourney_level : [tourney_level];
   const surfaces = Array.isArray(surface) ? surface : [surface];
 
+  // Strip the year from the end of tourney_name if it is already embedded
+  // e.g. "Monte Carlo Masters 2026" + year "2026" → show "Monte Carlo Masters 2026" not "...2026 2026"
+  // tourney_name may arrive as a JSONB array — extract the last unique non-empty string value
+  const extractSingleName = (val: any): string => {
+    if (!val) return '';
+    if (typeof val === 'string') return val;
+    if (Array.isArray(val)) {
+      // Iterate in reverse to get the most recent (last) unique name
+      const seen = new Set<string>();
+      for (let i = val.length - 1; i >= 0; i--) {
+        const s = typeof val[i] === 'string' ? val[i].trim() : String(val[i] ?? '').trim();
+        if (s && !seen.has(s)) { seen.add(s); return s; }
+      }
+      return '';
+    }
+    if (typeof val === 'object') {
+      const entries = Object.entries(val as Record<string, unknown>);
+      for (let i = entries.length - 1; i >= 0; i--) {
+        const s = String(entries[i][1] ?? '').trim();
+        if (s) return s;
+      }
+    }
+    return String(val).trim();
+  };
+  const nameStr = extractSingleName(tourney_name);
+  const cleanName = year
+    ? nameStr.replace(new RegExp(`\\s*${year}\\s*$`), '').trim()
+    : nameStr;
+
   // Normalizziamo la data in formato YYYY-MM-DD
   const formattedDate = (() => {
     const date = new Date(tourney_date);
@@ -58,7 +87,7 @@ export default function EditionHeader({
       {/* Nome torneo */}
       <div className="flex flex-col items-center justify-center text-center">
         <h1 className="text-4xl md:text-5xl font-extrabold drop-shadow-lg break-words whitespace-normal">
-          {tourney_name || "Unknown Tournament"} {year || ""}
+          {cleanName || "Unknown Tournament"} {year || ""}
         </h1>
         <p className="mt-3 text-lg md:text-xl font-medium text-white/90">
           Date: {formattedDate} | Draw: {draw_size}

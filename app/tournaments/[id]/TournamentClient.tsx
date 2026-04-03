@@ -275,7 +275,7 @@ export default function TournamentClient({ id }: { id: number | string }) {
 
       {/* Editions navigator (sticky on desktop) */}
       <div className="max-w-[84rem] mx-auto px-6 pb-6">
-        <EditionNavigator id={tournamentId} slug={slug} editions={editions} currentYear={editions.length > 0 ? String(editions[0].year) : ''} sticky />
+        <EditionNavigator id={tournamentId} slug={slug} editions={editions} currentYear={null} sticky />
       </div>
 
       {/* Table of finals */}
@@ -332,7 +332,7 @@ export default function TournamentClient({ id }: { id: number | string }) {
 
       {/* Bottom duplicate navigator for convenience */}
       <div className="max-w-[84rem] mx-auto px-6 pt-6">
-        <EditionNavigator id={tournamentId} slug={slug} editions={editions} currentYear={editions.length > 0 ? String(editions[0].year) : ''} compact />
+        <EditionNavigator id={tournamentId} slug={slug} editions={editions} currentYear={null} compact />
       </div>
 
       {/* Debug JSON dump when ?debug=1 */}

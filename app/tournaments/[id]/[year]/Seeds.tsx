@@ -196,9 +196,9 @@ export default function Seeds({ id, year, matches }: SeedsProps) {
         </div>
       </div>
 
-      {/* Sticky navigator under Seeds table (desktop) */}
+      {/* Navigator under Seeds table (desktop) */}
       <div className="mt-4">
-        <EditionNavigator id={id} slug={null} editions={editionsList} currentYear={year} sticky />
+        <EditionNavigator id={id} slug={null} editions={editionsList} currentYear={year} />
       </div>
     </div>
   );
