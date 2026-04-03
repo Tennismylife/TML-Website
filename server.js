@@ -241,7 +241,7 @@ function strongETag(buffer) {
         const etag = strongETag(body);
         if (etag) res.setHeader('ETag', etag);
       } catch {}
-      res.setHeader('Cache-Control', 'private, max-age=0');
+      res.setHeader('Cache-Control', type === 'page' ? 'public, max-age=0, s-maxage=900, stale-while-revalidate=86400' : 'private, max-age=0');
       res.setHeader('X-Cache', `${type.toUpperCase()}-HIT`);
       res.setHeader('X-SSR-COMPLETE', '1');
 
@@ -306,7 +306,7 @@ function strongETag(buffer) {
               res.setHeader('X-Cache', `${type.toUpperCase()}-STORED`);
             }
             res.setHeader('X-SSR-COMPLETE', '1');
-            res.setHeader('Cache-Control', 'private, max-age=0');
+            res.setHeader('Cache-Control', type === 'page' ? 'public, max-age=0, s-maxage=900, stale-while-revalidate=86400' : 'private, max-age=0');
 
             if (process.env.VERBOSE_LOGS === '1') console.log('[CACHE STORED]', key, bodyBuffer.length, 'bytes');
           }

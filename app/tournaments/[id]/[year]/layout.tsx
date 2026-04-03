@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 import React from 'react';
 import { prisma } from '@/lib/prisma';
-
-export const revalidate = 86400; // ISR: revalidate every 24 h — emits Cache-Control: public for Googlebot
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
 import { IOC_TO_ISO } from '@/lib/utils';
 import countries from 'i18n-iso-countries';
