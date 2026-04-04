@@ -180,6 +180,76 @@ function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+// ---------------------------------------------------------------------------
+// In-process response cache — avoids HTTP round-trips for repeated SSR renders
+// of the same records API URL within the same Node.js process.
+// TTL defaults to 1 hour; override with RECORDS_IN_PROCESS_CACHE_TTL_MS.
+// ---------------------------------------------------------------------------
+interface _InProcessCacheEntry {
+  body: string;
+  expiresAt: number;
+}
+const _inProcessCache = new Map<string, _InProcessCacheEntry>();
+// In-flight map de-duplicates concurrent requests for the same URL (thundering-herd guard).
+const _inProcessInflight = new Map<string, Promise<string>>();
+
+function _getInProcessCacheTtlMs(): number {
+  const env = process.env.RECORDS_IN_PROCESS_CACHE_TTL_MS;
+  if (env === undefined) return Infinity; // never expire by time; cleared on explicit revalidation
+  const parsed = Number(env);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : Infinity;
+}
+
+/** Called by /api/revalidate when the records tag is invalidated (DB update). */
+export function clearInProcessRecordsCache(): void {
+  _inProcessCache.clear();
+}
+
+async function _fetchWithInProcessCache(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+  const url = parseInputUrl(input);
+  // Only cache API records requests; fall back for anything else.
+  if (!url || !url.pathname.startsWith('/api/records/')) {
+    return fetch(input as any, init);
+  }
+
+  const key = url.pathname + url.search;
+  const ttlMs = _getInProcessCacheTtlMs();
+
+  // Return cached body if fresh.
+  if (ttlMs > 0) {
+    const cached = _inProcessCache.get(key);
+    if (cached && cached.expiresAt > Date.now()) {
+      return new Response(cached.body, {
+        status: 200,
+        headers: { 'content-type': 'application/json; charset=utf-8' },
+      });
+    }
+  }
+
+  // De-duplicate concurrent in-flight requests for the same key.
+  let inflight = _inProcessInflight.get(key);
+  if (!inflight) {
+    inflight = fetch(input as any, init)
+      .then(async (res) => {
+        const body = await res.text();
+        if (res.ok && ttlMs > 0) {
+          _inProcessCache.set(key, { body, expiresAt: Date.now() + ttlMs });
+        }
+        return body;
+      })
+      .finally(() => {
+        _inProcessInflight.delete(key);
+      });
+    _inProcessInflight.set(key, inflight);
+  }
+
+  const body = await inflight;
+  return new Response(body, {
+    status: 200,
+    headers: { 'content-type': 'application/json; charset=utf-8' },
+  });
+}
+
 export async function rateLimitedFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
   // Fixed rule: prefetch only known existing API records routes, and only valid parameter combinations.
   const skipReason = getRecordsPrefetchSkipReason(input);
@@ -197,8 +267,8 @@ export async function rateLimitedFetch(input: RequestInfo | URL, init?: RequestI
   const defaultDelay = process.env.NODE_ENV === 'development' ? DEFAULT_DEV_DELAY_MS : 0;
   const delayMs = Number(envVal ?? defaultDelay) || 0;
 
-  // no-op if throttling disabled
-  if (delayMs <= 0) return fetch(input as any, init);
+  // no-op if throttling disabled — use in-process cache directly
+  if (delayMs <= 0) return _fetchWithInProcessCache(input, init);
 
   // chain requests so they're spaced by at least `delayMs`
   const p = _lastPromise.then(async () => {
@@ -206,7 +276,7 @@ export async function rateLimitedFetch(input: RequestInfo | URL, init?: RequestI
     const elapsed = now - _lastTime;
     if (elapsed < delayMs) await sleep(delayMs - elapsed);
     _lastTime = Date.now();
-    return fetch(input as any, init);
+    return _fetchWithInProcessCache(input, init);
   });
 
   // keep chain alive even if a call fails

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidateTag, revalidatePath } from 'next/cache';
+import { clearInProcessRecordsCache } from '@/lib/recordsPrefetchThrottle';
 
 export async function POST(request: NextRequest) {
   const secret = request.headers.get('x-revalidate-secret');
@@ -19,6 +20,7 @@ export async function POST(request: NextRequest) {
   }
 
   const resolvedTag = tag ?? 'records';
+  if (resolvedTag === 'records') clearInProcessRecordsCache();
   revalidateTag(resolvedTag, {});
   return NextResponse.json({ revalidated: true, tag: resolvedTag });
 }
