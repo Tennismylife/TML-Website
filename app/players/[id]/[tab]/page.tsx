@@ -281,7 +281,11 @@ export async function generateMetadata(
     // 1. Any "statistical/opponent" filter (thin content, no search intent) → always noindex.
     // 2. 3 or more active filters on the remaining "meaningful" filters → noindex.
     // For ranking tab: only index players in the allowlist.
+    // For tournaments tab: always noindex.
     robots: ((): { index: boolean; follow: boolean } => {
+      if (tab === 'tournaments' || tab === 'statistics' || tab === 'performance') {
+        return { index: false, follow: true };
+      }
       if (tab === 'ranking') {
         const allowlist = getRankingAllowlist();
         const inList = allowlist.has(name);
