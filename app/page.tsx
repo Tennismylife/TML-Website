@@ -196,6 +196,57 @@ export default async function HomePage() {
       {/* Client Components */}
       <SearchPlayerLoader />
 
+      {/* Monte Carlo Masters LIVE Card — featured */}
+      <a
+        href="/tournaments/monte-carlo-masters/records"
+        className="group relative w-full mb-8 flex overflow-hidden rounded-2xl border border-red-500/30 shadow-2xl hover:shadow-red-500/20 transition-all duration-300 hover:scale-[1.01]"
+        style={{ background: 'linear-gradient(135deg, #0f1720 0%, #1a0a10 40%, #2a0505 100%)' }}
+      >
+        {/* Glow background */}
+        <div className="pointer-events-none absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity duration-500"
+          style={{ background: 'radial-gradient(ellipse at 70% 50%, #ef4444 0%, transparent 70%)' }} />
+
+        {/* Left accent bar */}
+        <div className="w-1.5 flex-shrink-0" style={{ background: 'linear-gradient(to bottom, #ef4444, #b91c1c)' }} />
+
+        <div className="flex flex-col sm:flex-row items-center gap-6 w-full px-6 py-8 sm:px-10">
+          {/* Icon */}
+          <div className="flex-shrink-0 flex items-center justify-center w-20 h-20 rounded-full border-2 border-red-400/40 bg-red-400/10 shadow-lg shadow-red-500/20 shadow-red-500/20 text-4xl leading-none select-none">
+            {'\u{1F3B2}'}
+          </div>
+
+          {/* Text */}
+          <div className="flex-1 text-center sm:text-left">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight"
+                style={{ color: '#ef4444', WebkitTextFillColor: '#ef4444' }}>
+                Monte Carlo Masters
+                <span className="ml-2" style={{ color: '#f97316', WebkitTextFillColor: '#f97316' }}>Records</span>
+              </h2>
+              {/* LIVE badge */}
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold self-start sm:self-auto"
+                style={{ background: '#dc2626', color: '#fff', WebkitTextFillColor: '#fff' }}>
+                <span className="relative flex w-2 h-2">
+                  <span className="absolute inline-flex w-full h-full rounded-full bg-red-300 opacity-75 animate-ping" />
+                  <span className="relative inline-flex w-2 h-2 rounded-full bg-white" />
+                </span>
+                <span className="animate-pulse">LIVE</span>
+              </span>
+            </div>
+            <p className="text-sm sm:text-base text-gray-300 max-w-lg">
+              All-time stats, milestones and history from one of the most iconic clay-court ATP Masters 1000 events — updated in real time.
+            </p>
+          </div>
+
+          {/* CTA arrow */}
+          <div className="flex-shrink-0 hidden sm:flex items-center justify-center w-10 h-10 rounded-full border border-red-400/30 group-hover:border-red-400 group-hover:bg-red-400/10 transition-all duration-300">
+            <svg viewBox="0 0 24 24" className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        </div>
+      </a>
+
       {/* Featured Records Card */}
       <div className="w-full mb-8">
         <Card href="/records" title="Records" subtitle="All-Time Achievements & Milestones" large colorClass="text-yellow-400 group-hover:text-yellow-300" accentColor="#facc15">
