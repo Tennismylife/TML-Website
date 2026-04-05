@@ -45,7 +45,9 @@ const Rounds = ({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled
 
       // Trigger client fetch on mount when server provided `initialData`
       // so SSR top‑10 is replaced by the client's `perPage=100` response.
-      const shouldFetch = showModal || (enabled && fetchRequestId) || (!enabled && fetchRequestId) || (Array.isArray(initialData) && initialData.length > 0)
+      // Also trigger a fallback fetch when SSR prefetch failed (initialData is not an array)
+      // so the UI never shows "No data available" just because the server-side prefetch errored out.
+      const shouldFetch = showModal || (enabled && fetchRequestId) || (!enabled && fetchRequestId) || (Array.isArray(initialData) && initialData.length > 0) || (!!selectedRounds && !Array.isArray(initialData))
       if (!shouldFetch) {
         if (Array.isArray(initialData)) setData(initialData);
         setLoading(false);
