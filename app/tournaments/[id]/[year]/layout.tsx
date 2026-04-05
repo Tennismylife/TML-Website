@@ -315,6 +315,12 @@ export async function generateMetadata({ params }: { params: { id: string; year:
     const { id, year } = await params;
     if (!id || !year) return { title: 'Tournament Edition' };
 
+    // Non-numeric "year" segments (e.g. /tournaments/foo/header) are not real
+    // tournament editions — keep them out of search indexes.
+    if (!/^\d{4}$/.test(String(year))) {
+      return { title: 'Tournament Edition', robots: { index: false, follow: false } };
+    }
+
     const site = 'https://stats.tennismylife.org';
 
     // Use the shared edition info lookup so metadata and page use the same existence criteria

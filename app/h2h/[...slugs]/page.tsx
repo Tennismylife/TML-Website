@@ -246,8 +246,7 @@ export default async function Page({ params, searchParams }: { params?: Promise<
   const pageTitle = player1 && player2 ? `${player1.atpname} vs ${player2.atpname} H2H - Tennis  Head to Head, Matches, Stats` : 'Head-to-Head - Tennis  Head to Head, Matches, Stats';
   const pageDescription = player1 && player2 ? `${player1.atpname} vs ${player2.atpname} head-to-head: H2H record, match stats and analysis. Compare ATP players.` : 'Head-to-head statistics between players.';
   const path = slug ? `/h2h/${slug}` : '/h2h';
-  const canonicalBase = new URL(path, canonicalOrigin).toString();
-  const canonical = slug ? `${canonicalBase}?` : canonicalBase;
+  const canonical = new URL(path, canonicalOrigin).toString();
 
   const playersAsPersons = [] as any[];
   if (player1) {

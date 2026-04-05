@@ -80,11 +80,7 @@ export default async function HomePage() {
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h12m0 0-3-3m3 3-3 3M21 17H9m0 0 3 3m-3-3 3-3" />
       </svg>
     )},
-    { href: "/player-vs-player", title: "Player vs Player", subtitle: "Player Comparison", description: "Compare two players side-by-side across multiple metrics: wins, surface records, ranking history, head-to-head, and recent form to spot strengths and weaknesses.", colorClass: "text-pink-400 group-hover:text-pink-300", accentColor: "#f472b6", icon: (
-      <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 0 1-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8Z" />
-      </svg>
-    )},
+
     { href: "/recordsranking", title: "Ranking Records", subtitle: "ATP Ranking Records", description: "Discover who leads the records for most weeks at No. x, wins at No. x, and best ranking at No. x.. Top x, streaks, end of the season rankings", colorClass: "text-yellow-400 group-hover:text-yellow-300", accentColor: "#facc15", icon: (
       <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
         <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 0 1-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8Z" />

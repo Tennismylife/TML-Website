@@ -44,6 +44,10 @@ function isTournamentRecordsPath(pathname: string) {
   return seg.length >= 3 && seg[0] === 'tournaments' && seg[2] === 'records';
 }
 
+const VALID_PLAYER_TABS = new Set([
+  'profile', 'matches', 'season', 'tournaments', 'h2h', 'performance', 'statistics', 'ranking',
+]);
+
 const RECORD_FILTER_QUERY_KEYS = new Set([
   'level', 'level[]',
   'surface', 'surface[]',
@@ -81,7 +85,18 @@ function sanitizeRecordsFilterQuery(searchParams: URLSearchParams) {
       continue;
     }
 
-    cleaned.append(key, stripped);
+    // Normalize case for round/level (uppercase) and surface (Title-case)
+    let normalized = stripped;
+    if (key === 'round' || key === 'round[]') {
+      normalized = stripped.toUpperCase();
+    } else if (key === 'level' || key === 'level[]') {
+      normalized = stripped.toUpperCase();
+    } else if (key === 'surface' || key === 'surface[]') {
+      normalized = stripped.charAt(0).toUpperCase() + stripped.slice(1).toLowerCase();
+    }
+    if (normalized !== stripped) changed = true;
+
+    cleaned.append(key, normalized);
   }
 
   return { cleaned, changed };
@@ -352,6 +367,13 @@ export async function middleware(req: NextRequest) {
     const segments = pathname.split('/').filter(Boolean);
     const origin = req.nextUrl.origin;
 
+    // Redirect legacy /player-vs-player to canonical /h2h
+    if (pathname === '/player-vs-player' || pathname.startsWith('/player-vs-player/')) {
+      const dest = new URL(req.url);
+      dest.pathname = '/h2h' + pathname.slice('/player-vs-player'.length);
+      return new Response(null, { status: 301, headers: { Location: dest.toString() } });
+    }
+
     // Dev debug block removed: avoid noisy POSTs and console.error messages for season routes
 
 
@@ -471,6 +493,22 @@ export async function middleware(req: NextRequest) {
 
     const rest = segments.slice(2).join('/');
 
+    // Normalize ?tab= query param to path segment for player pages.
+    // e.g. /players/slug?tab=matches&bestOf=3 -> /players/slug/matches?bestOf=3
+    // This eliminates the client-side replaceState soft redirect that Google
+    // classifies as "non indicizzata causa reindirizzamento".
+    if (resource === 'players' && !rest) {
+      const tabParam = query.get('tab');
+      if (tabParam && VALID_PLAYER_TABS.has(tabParam.toLowerCase())) {
+        const dest = new URL(req.url);
+        dest.pathname = `/players/${idSegment}/${tabParam.toLowerCase()}`;
+        const newSearch = new URLSearchParams(query as any);
+        newSearch.delete('tab');
+        dest.search = newSearch.toString();
+        return new Response(null, { status: 301, headers: { Location: dest.toString() } });
+      }
+    }
+
     // 1) Numeric ID: header API
     if (/^\d+$/.test(idSegment)) {
       try {
@@ -556,7 +594,7 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/players/:path*', '/tournaments/:path*', '/records/:path*', '/recordsranking/:path*', '/api/records/:path*'],
+  matcher: ['/players/:path*', '/tournaments/:path*', '/records/:path*', '/recordsranking/:path*', '/api/records/:path*', '/player-vs-player', '/player-vs-player/:path*'],
 };
 
 // Note: don't re-export server-side DB helpers here to avoid pulling Prisma into the Edge middleware runtime.
