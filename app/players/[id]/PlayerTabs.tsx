@@ -152,6 +152,7 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
             playerId={player.id}
             playerSlug={player.slug}
             playerName={player.atpname ?? player.player ?? player.id}
+            initialSelectedYear={initialSeasonYear ?? undefined}
             initialAllMatches={initialSeasonMatches}
             initialYears={initialSeasonYears}
             initialSeasonStats={initialSeasonStats}
