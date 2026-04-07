@@ -4,6 +4,28 @@ import Link from 'next/link';
 import React from 'react';
 import EndSeasonCountControls from '../../EndOfTheSeason/Count/EndSeasonCountControls';
 import ServerPagination from '@/components/ServerPagination';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
+  const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
+  const rank = Number((sp.rank as string) ?? 1);
+  const page = Number((sp.page as string) ?? '1');
+  const SITE = 'https://stats.tennismylife.org';
+  const OG_IMAGE = `${SITE}/og/site-preview.png`;
+  const title = `Youngest Year-End No. ${rank} – ATP Age Records`;
+  const description = `Who are the youngest players to finish a season ranked at ATP No. ${rank}? All-time historical list ordered by age.`;
+  const canonical = `${SITE}/recordsranking/agesendoftheseason/youngestsatno/${rank}`;
+  return {
+    title,
+    description,
+    keywords: [`youngest year-end No. ${rank}`, 'ATP year-end age records', 'youngest year-end ATP No 1', 'tennis records by age', 'ATP history'],
+    alternates: { canonical },
+    openGraph: { type: 'website', url: canonical, siteName: 'TennisMyLife', title, description, images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: title }] },
+    twitter: { card: 'summary_large_image', site: '@TennisMyLife68', creator: '@TennisMyLife68', title, description, images: [OG_IMAGE] },
+    robots: page > 1 ? { index: false, follow: true } : { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large', 'max-video-preview': -1 },
+    authors: [{ name: 'TennisMyLife' }],
+  };
+}
 
 interface YoungestEoyItem {
   id: string;
@@ -89,6 +111,7 @@ export default async function YoungestEoyAtRank({ searchParams }: { searchParams
   const renderTable = (list: YoungestEoyItem[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
       <table className="min-w-full border-collapse">
+        <caption className="py-2 text-sm font-semibold text-gray-400 uppercase tracking-wide">Record leaderboard</caption>
         <thead>
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
@@ -113,6 +136,23 @@ export default async function YoungestEoyAtRank({ searchParams }: { searchParams
 
   return (
     <section className="mb-8">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org', '@type': 'ItemList',
+        'url': `https://stats.tennismylife.org/recordsranking/agesendoftheseason/youngestsatno/${rank}`,
+        'inLanguage': 'en-US',
+        'isPartOf': { '@type': 'WebSite', 'name': 'TennisMyLife', 'url': 'https://stats.tennismylife.org' },
+        'dateModified': new Date().toISOString(),
+        'name': `Youngest Year-End ATP No. ${rank} Players – All-Time`,
+        'description': `Players who finished a season ranked at ATP No. ${rank} at the youngest age ever.`,
+        'numberOfItems': Math.min(data.length, 10),
+        'itemListElement': data.slice(0, 10).map((r, idx) => ({
+          '@type': 'ListItem', 'position': idx + 1,
+          'item': { '@type': 'SportsStatistic', 'name': r.name, ...(r.slug ? { 'url': `https://stats.tennismylife.org/players/${r.slug}/ranking` } : {}), 'additionalProperty': [
+            { '@type': 'PropertyValue', 'name': 'Age', 'value': r.ageLabel },
+            { '@type': 'PropertyValue', 'name': 'Year', 'value': r.year },
+          ]},
+        })),
+      }) }} />
       <div className="flex items-center gap-4 mb-4">
         <label className="text-gray-200 font-medium">Rank:</label>
       </div>
@@ -120,6 +160,19 @@ export default async function YoungestEoyAtRank({ searchParams }: { searchParams
         <EndSeasonCountControls initialRank={rank} hideLabel />
       </React.Suspense>
 
+      {page === 1 && data.length > 0 && (
+        <div className="mb-6 px-5 py-4 rounded-xl bg-gray-800/50 border border-white/10 text-gray-400 text-sm leading-relaxed max-w-3xl mx-auto">
+          The youngest player to finish a season ranked No.{' '}<span className="text-white font-medium">{rank}</span> in ATP history is{' '}
+          <span className="text-indigo-300 font-medium">{data[0].name}</span>, who achieved it at the age of{' '}
+          <span className="text-white font-medium">{data[0].ageLabel}</span> in{' '}
+          <span className="text-white font-medium">{data[0].year}</span>.
+          {data.length > 1 && (
+            <> The second youngest is <span className="text-indigo-300 font-medium">{data[1].name}</span>{' '}
+            (<span className="text-white font-medium">{data[1].ageLabel}</span>,{' '}
+            <span className="text-white font-medium">{data[1].year}</span>).</>
+          )}
+        </div>
+      )}
 
       {paginatedRows.length > 0 ? renderTable(paginatedRows, start) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo, useRef } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import MatchesFilterPanel from "./MatchesFilterPanel";
 import MatchTable from "@/components/MatchTable";
 import { Match, SortKey, SortDirection } from "@/types";
@@ -18,6 +18,11 @@ interface AllMatchesProps {
 export default function AllMatches({ playerId, playerSlug, initialMatches, initialHeading, initialTotals, initialFacets }: AllMatchesProps) {
   const search = useSearchParams();
   const router = useRouter();
+  const pathname = usePathname();
+  const surfaceTab = (() => {
+    const seg = pathname?.split('/')?.[3]?.toLowerCase();
+    return seg === 'clay' || seg === 'hard' || seg === 'grass' ? seg : 'matches';
+  })();
 
   // When SSR provides initialMatches (10 matches), keep allMatches empty until full data is fetched
   // This ensures filters are populated with all options, not just from initial 10 matches
@@ -771,7 +776,7 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
               playerId={playerId}
               playerSlug={playerSlug}
               onHeaderHeightChange={setTableHeaderHeight}
-              currentTab={'matches'}
+              currentTab={surfaceTab}
             />
             {/* table may overflow the viewport so all rows remain visible */}
             {/* Show the button when: page not yet in "show all" mode AND either

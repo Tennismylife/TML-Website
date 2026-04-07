@@ -8,8 +8,9 @@ import { getLevelColors, getLevelFullName, getTourneyHref, getPlayerHref } from 
 import { getSurfaceColor, palette } from "@/lib/colors";
 import SummarySeasons from './SummarySeasons';
 import TournamentGrid from "../../TournamentGrid";
-import PlayerServiceSpider from './PlayerServiceSpider';
-import PlayerReturnSpider from './PlayerReturnSpider';
+import dynamic from 'next/dynamic';
+const PlayerServiceSpider = dynamic(() => import('./PlayerServiceSpider'), { ssr: false });
+const PlayerReturnSpider = dynamic(() => import('./PlayerReturnSpider'), { ssr: false });
 import { useYearStatsAsync } from "./useYearStatsAsync";
 import type { YearStatsResult } from "./computeYearStats";
 import { useRouter, usePathname, useSearchParams } from "next/navigation"; // <--- added

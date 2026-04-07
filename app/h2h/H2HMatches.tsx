@@ -13,6 +13,8 @@ interface H2HMatchesProps {
   setSortKey: (key: SortKey) => void;
   setSortDir: (dir: SortDirection) => void;
   playerId: string;
+  player1Slug?: string | null;
+  player2Slug?: string | null;
 }
 
 // Helper per seed / entry
@@ -52,6 +54,8 @@ export default function H2HMatches({
   setSortKey,
   setSortDir,
   playerId,
+  player1Slug,
+  player2Slug,
 }: H2HMatchesProps) {
   const [showWinnerStats, setShowWinnerStats] = useState(true);
 

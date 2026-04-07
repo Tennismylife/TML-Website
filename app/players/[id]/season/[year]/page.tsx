@@ -178,10 +178,170 @@ export default async function SeasonYearPage({ params, searchParams }: any) {
   const grassPct = pct(grassWins, grassMatches);
   const overallPct = pct(wins, totalMatches);
 
+  // Extended stats for rich narrative box
+  let slamWins = 0, slamLosses = 0;
+  let mastersWins = 0, mastersLosses = 0;
+  let top10Wins = 0, top10Losses = 0;
+  let finalsReached = 0, sfReached = 0, qfReached = 0;
+  let finalsWon = 0;
+  let winStreak = 0;
+  try {
+    const yNum2 = Number(year);
+    [slamWins, slamLosses, mastersWins, mastersLosses, top10Wins, top10Losses, finalsReached, sfReached, qfReached] = await Promise.all([
+      prisma.match.count({ where: { year: yNum2, status: true, winner_id: player.id, tourney_level: 'G' } }),
+      prisma.match.count({ where: { year: yNum2, status: true, loser_id: player.id, tourney_level: 'G' } }),
+      prisma.match.count({ where: { year: yNum2, status: true, winner_id: player.id, tourney_level: 'M' } }),
+      prisma.match.count({ where: { year: yNum2, status: true, loser_id: player.id, tourney_level: 'M' } }),
+      prisma.match.count({ where: { year: yNum2, status: true, winner_id: player.id, loser_rank: { lte: 10 } } }),
+      prisma.match.count({ where: { year: yNum2, status: true, loser_id: player.id, winner_rank: { lte: 10 } } }),
+      prisma.match.count({ where: { year: yNum2, status: true, OR: [{ winner_id: player.id }, { loser_id: player.id }], round: 'F' } }),
+      prisma.match.count({ where: { year: yNum2, status: true, OR: [{ winner_id: player.id }, { loser_id: player.id }], round: 'SF' } }),
+      prisma.match.count({ where: { year: yNum2, status: true, OR: [{ winner_id: player.id }, { loser_id: player.id }], round: 'QF' } }),
+    ]);
+    finalsWon = titles.length;
+    // compute win streak in this season
+    try {
+      const seasonMatches = await prisma.match.findMany({
+        where: { year: yNum2, status: true, OR: [{ winner_id: player.id }, { loser_id: player.id }] },
+        orderBy: [{ tourney_date: 'asc' }, { match_num: 'asc' }],
+        select: { winner_id: true, tourney_date: true, match_num: true },
+      });
+      let cur = 0, best = 0;
+      for (const m of seasonMatches) {
+        if (m.winner_id === player.id) { cur++; if (cur > best) best = cur; } else cur = 0;
+      }
+      winStreak = best;
+    } catch (e) { winStreak = 0; }
+  } catch (e) {
+    // ignore
+  }
+
+  // Build narrative paragraphs
+  const narrativeParagraphs: React.ReactNode[] = [];
+
+  // Para 1 – overall record
+  {
+    const titleClause = titles.length > 0
+      ? <>{' '}Throughout the {String(year)} season, {displayName} claimed{' '}
+          <strong className="text-yellow-400">{titles.length}</strong> title{titles.length !== 1 ? 's' : ''}: {titles.join(', ')}.</>
+      : <>{' '}{displayName} did not win a title during the {String(year)} season.</>;
+    narrativeParagraphs.push(
+      <p key="overall">
+        In the <strong className="text-white">{String(year)} ATP season</strong>, {displayName} compiled a record of{' '}
+        <strong className="text-green-400">{wins}</strong>–<strong className="text-red-400">{losses}</strong>{' '}
+        across <strong className="text-yellow-400">{totalMatches}</strong> matches, translating to a win rate of{' '}
+        <strong className="text-yellow-400">{overallPct}</strong>.{titleClause}
+      </p>
+    );
+  }
+
+  // Para 2 – surface breakdown
+  {
+    const parts: React.ReactNode[] = [];
+    if (hardMatches > 0) parts.push(
+      <span key="hard">hard courts (<strong className="text-green-400">{hardWins}</strong>–<strong className="text-red-400">{hardMatches - hardWins}</strong>, <strong className="text-yellow-400">{hardPct}</strong>)</span>
+    );
+    if (clayMatches > 0) parts.push(
+      <span key="clay">clay courts (<strong className="text-green-400">{clayWins}</strong>–<strong className="text-red-400">{clayMatches - clayWins}</strong>, <strong className="text-yellow-400">{clayPct}</strong>)</span>
+    );
+    if (grassMatches > 0) parts.push(
+      <span key="grass">grass courts (<strong className="text-green-400">{grassWins}</strong>–<strong className="text-red-400">{grassMatches - grassWins}</strong>, <strong className="text-yellow-400">{grassPct}</strong>)</span>
+    );
+    if (parts.length > 0) {
+      const joined = parts.reduce<React.ReactNode[]>((acc, el, i) => {
+        if (i === 0) return [el];
+        if (i === parts.length - 1) return [...acc, ' and ', el];
+        return [...acc, ', ', el];
+      }, []);
+      narrativeParagraphs.push(
+        <p key="surface">
+          Breaking down by surface, {displayName} played on {joined}.
+        </p>
+      );
+    }
+  }
+
+  // Para 3 – Grand Slams
+  if ((slamWins + slamLosses) > 0) {
+    narrativeParagraphs.push(
+      <p key="slams">
+        At the <strong className="text-white">Grand Slam</strong> level, {displayName} went{' '}
+        <strong className="text-green-400">{slamWins}</strong>–<strong className="text-red-400">{slamLosses}</strong>{' '}
+        (<strong className="text-yellow-400">{pct(slamWins, slamWins + slamLosses)}</strong>) across{' '}
+        <strong className="text-yellow-400">{slamWins + slamLosses}</strong> matches.
+        {' '}The best-of-five format adds an extra layer of physical and mental endurance, making these results particularly significant.
+      </p>
+    );
+  }
+
+  // Para 4 – Masters 1000
+  if ((mastersWins + mastersLosses) > 0) {
+    narrativeParagraphs.push(
+      <p key="masters">
+        In <strong className="text-white">ATP Masters 1000</strong> events, {displayName} posted a record of{' '}
+        <strong className="text-green-400">{mastersWins}</strong>–<strong className="text-red-400">{mastersLosses}</strong>{' '}
+        (<strong className="text-yellow-400">{pct(mastersWins, mastersWins + mastersLosses)}</strong>),
+        demonstrating {mastersWins > mastersLosses ? 'elite consistency at the highest level of the Tour' : "competitive play against the Tour\u2019s best"}.
+      </p>
+    );
+  }
+
+  // Para 5 – deep runs
+  if (finalsReached > 0 || sfReached > 0 || qfReached > 0) {
+    narrativeParagraphs.push(
+      <p key="deep">
+        When it comes to deep runs in tournaments,{' '}
+        {finalsReached > 0 && (
+          <>{displayName} reached <strong className="text-yellow-400">{finalsReached}</strong> final{finalsReached !== 1 ? 's' : ''} during the {String(year)} season,
+          winning <strong className="text-green-400">{finalsWon}</strong> and losing <strong className="text-red-400">{finalsReached - finalsWon}</strong>.{' '}</>
+        )}
+        {sfReached > 0 && (
+          <>Semifinal appearances total <strong className="text-yellow-400">{sfReached}</strong>,{' '}</>
+        )}
+        {qfReached > 0 && (
+          <>and quarterfinal appearances <strong className="text-yellow-400">{qfReached}</strong>.{' '}</>
+        )}
+        These figures highlight the ability to consistently advance through the draw.
+      </p>
+    );
+  }
+
+  // Para 6 – vs Top 10
+  if ((top10Wins + top10Losses) > 0) {
+    narrativeParagraphs.push(
+      <p key="top10">
+        Against players ranked in the <strong className="text-white">ATP Top 10</strong>, {displayName}&apos;s record in {String(year)} stands at{' '}
+        <strong className="text-green-400">{top10Wins}</strong>–<strong className="text-red-400">{top10Losses}</strong>{' '}
+        (<strong className="text-yellow-400">{pct(top10Wins, top10Wins + top10Losses)}</strong>).
+        {top10Wins > top10Losses
+          ? ' This positive record against elite opponents is a testament to the ability to raise the level of play in the biggest matches.'
+          : ' Facing the world\u2019s best, every result carries extra weight.'}
+      </p>
+    );
+  }
+
+  // Para 7 – win streak
+  if (winStreak >= 3) {
+    narrativeParagraphs.push(
+      <p key="streak">
+        {displayName} demonstrated the ability to string together victories, recording a best winning streak of{' '}
+        <strong className="text-yellow-400">{winStreak}</strong> consecutive matches during the {String(year)} season.
+      </p>
+    );
+  }
+
+  const seasonPreviewNode = (
+    <div className="rounded-xl bg-[#1e2a38] border border-yellow-400/30 p-5 mb-6 text-sm text-gray-200 space-y-3">
+      <h3 className="text-lg font-semibold text-center mb-3" style={{ color: '#facc15' }}>
+        {String(year)} Season Stats Overview
+      </h3>
+      {narrativeParagraphs}
+    </div>
+  );
+
   return (
     <>
       <h1 className="text-3xl font-bold mb-6 text-center">{heading}</h1>
-      <p className="text-center mb-6">In the {String(year)} ATP season, {displayName} played {totalMatches} matches, winning {wins} and losing {losses}. He won {hardWins} matches on hard, {clayWins} on clay and {grassWins} on grass. He has win percentages of {hardPct} on hard, {clayPct} on clay, and {grassPct} on grass courts. He has overall win percentage of {overallPct}.</p>
 
       {/* Structured JSON-LD for season stats (safe for search engines) */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
@@ -256,7 +416,7 @@ export default async function SeasonYearPage({ params, searchParams }: any) {
         ]
       }) }} />
 
-      <PlayerTabPage params={Promise.resolve({ id, tab: 'season' })} searchParams={Promise.resolve({ year: String(year) })} />
+      <PlayerTabPage params={Promise.resolve({ id, tab: 'season' })} searchParams={Promise.resolve({ year: String(year) })} _surfacePreviewNode={seasonPreviewNode} />
     </>
   );
 }

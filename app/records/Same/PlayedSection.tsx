@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { getTourneyHref } from "@/lib/utils";
 import Flag from '@/components/Flag';
-import { playerMatchesUrl } from "../nav";
+import { playerSurfaceOrMatchesUrl } from "../nav";
 import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
 import { useSearchParams } from 'next/navigation';
@@ -107,7 +107,7 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{rank}</td>
                 <td className="border border-white/10 px-4 py-2 flex items-center justify-center gap-2 text-lg text-gray-200">
                   {p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" />}
-                  <Link href={playerMatchesUrl((p as any).slug ?? String(p.player_id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="hover:underline">
+                  <Link href={playerSurfaceOrMatchesUrl((p as any).slug ?? String(p.player_id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="hover:underline">
                     {p.player_name}
                   </Link>
                 </td>

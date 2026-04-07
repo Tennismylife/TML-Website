@@ -469,6 +469,8 @@ export default function H2HPage() {
                 setSortKey={setSortKey}
                 setSortDir={setSortDir}
                 playerId={player1.id}
+                player1Slug={player1.slug}
+                player2Slug={player2.slug}
               />
             )}
           </div>}

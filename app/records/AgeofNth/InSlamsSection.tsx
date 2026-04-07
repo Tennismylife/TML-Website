@@ -7,6 +7,7 @@ import Pagination from "../../../components/Pagination";
 import Modal from "@/components/Modal";
 import Flag from "@/components/Flag";
 import { toOrdinal, getPlayerHrefWithTab } from "@/lib/utils"; 
+import { playerSurfaceHref, surfaceFromSelection } from '../nav';
 
 interface InSlamsSectionProps {
   selectedSurfaces: Set<string>;
@@ -71,6 +72,7 @@ function NInput({ value, onChange }: { value: number; onChange: (n: number) => v
 
 export default function InSlamsSection({ selectedSurfaces, selectedRounds, fetchEnabled, setFetchEnabled, fetchRequestId, description, initialData, initialNth }: InSlamsSectionProps) {
   const enabled = !!fetchEnabled;
+  const surfaceLink = surfaceFromSelection(selectedSurfaces);
   const safeInitialNth = Number.isFinite(initialNth) ? (initialNth as number) : 50;
   const [data, setData] = useState<Player[]>(Array.isArray(initialData) ? formatData(initialData) : []);
   const [loading, setLoading] = useState(false);
@@ -228,7 +230,7 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, fetch
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
                   <div className="flex items-center justify-center gap-2">
                     <Flag ioc={p.ioc} className="w-4 h-3" />
-                    <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.id), 'matches')} className="text-indigo-300 hover:underline">{p.name}</Link>
+                    <Link href={playerSurfaceHref((p as any).slug ?? String(p.id), surfaceLink)} className="text-indigo-300 hover:underline">{p.name}</Link>
                   </div>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.age_nth_win || '-'}</td>

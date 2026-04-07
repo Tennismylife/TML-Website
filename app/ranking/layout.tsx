@@ -7,10 +7,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Rankings - TennisMyLife',
     description: 'Latest ATP rankings and historical ranking tables.',
-    url: '/ranking',
+    url: 'https://stats.tennismylife.org/ranking',
     type: 'website',
   },
-  alternates: { canonical: '/ranking' },
+  twitter: { card: 'summary_large_image', site: '@TennisMyLife68' },
+  alternates: { canonical: 'https://stats.tennismylife.org/ranking' },
 };
 
 export default function RankingLayout({ children }: { children: React.ReactNode }) {

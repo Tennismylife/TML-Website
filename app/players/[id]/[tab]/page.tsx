@@ -11,6 +11,7 @@ import { prisma } from '../../../../lib/prisma';
 import { redirect } from 'next/navigation';
 import { getPlayerHref, createSlug } from '@/lib/utils';
 import type { Metadata } from 'next';
+import { isPlayerInTop100IndexAllowlist } from '../playerIndexing';
 
 function getRankingAllowlist(): Set<string> {
   try {
@@ -115,6 +116,7 @@ export async function generateMetadata(
   const player = await getPlayerBySlug(id);
   const name = player?.name ?? String(id);
   const slug = player?.slug ?? String(id);
+  const isTop100Allowed = await isPlayerInTop100IndexAllowlist(String(id));
 
   // Build canonical URL using path segments and include query params for matches when filters are active
   const base = 'https://stats.tennismylife.org';
@@ -143,7 +145,17 @@ export async function generateMetadata(
       .filter(([k, v]) => k !== 'tab' && v !== undefined && v !== null && String(v).trim() !== '' && String(v) !== 'All')
       .map(([k, v]) => [k, String(v)]);
 
-    if (entries.length) {
+    const surfaceOnlyEntries = entries.filter(([k]) => k !== 'tab');
+    const normalizedSurface = surfaceOnlyEntries.length === 1 && surfaceOnlyEntries[0][0] === 'surface'
+      ? surfaceOnlyEntries[0][1].toLowerCase()
+      : null;
+    const isSurfaceOnlyCanonical = normalizedSurface === 'clay' || normalizedSurface === 'hard' || normalizedSurface === 'grass';
+
+    if (isSurfaceOnlyCanonical) {
+      canonical = `${base}/players/${encodeURIComponent(slug)}/${normalizedSurface}`;
+    }
+
+    if (entries.length && !isSurfaceOnlyCanonical) {
       // Sort keys for deterministic canonical value
       entries.sort(([a], [b]) => a.localeCompare(b));
       const qs = entries.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&');
@@ -283,6 +295,14 @@ export async function generateMetadata(
     // For ranking tab: only index players in the allowlist.
     // For tournaments tab: always noindex.
     robots: ((): { index: boolean; follow: boolean } => {
+      const VALID_TABS = new Set(['overview', 'profile', 'matches', 'season', 'tournaments', 'h2h', 'performance', 'statistics', 'ranking', 'clay', 'hard', 'grass']);
+      const isSurfaceTab = tab === 'clay' || tab === 'hard' || tab === 'grass';
+      if (isSurfaceTab && !isTop100Allowed) {
+        return { index: false, follow: true };
+      }
+      if (tab && !VALID_TABS.has(String(tab).toLowerCase())) {
+        return { index: false, follow: true };
+      }
       if (tab === 'tournaments' || tab === 'statistics' || tab === 'performance') {
         return { index: false, follow: true };
       }
@@ -300,6 +320,12 @@ export async function generateMetadata(
         'set', 'firstSet', 'score',
       ]);
       const activeEntries = Object.entries(resolvedSearchParamsForRobots).filter(([k, v]) => k !== 'tab' && isActive(v));
+      const normalizedSurface = activeEntries.length === 1 && activeEntries[0][0] === 'surface'
+        ? String(activeEntries[0][1]).toLowerCase()
+        : null;
+      if (normalizedSurface === 'clay' || normalizedSurface === 'hard' || normalizedSurface === 'grass') {
+        return { index: false, follow: true };
+      }
       // If any always-noindex filter is present, block immediately.
       if (activeEntries.some(([k]) => ALWAYS_NOINDEX_KEYS.has(k))) {
         return { index: false, follow: true };
@@ -311,7 +337,7 @@ export async function generateMetadata(
   } as Metadata;
 }
 
-export default async function PlayerTabPage({ params, searchParams }: any) {
+export default async function PlayerTabPage({ params, searchParams, _surfacePreviewNode, _surfaceTab }: any) {
   // Removed development debug logs
   const { id: slugParam, tab: tabParam } = await params;
   // Removed development debug logs
@@ -359,6 +385,7 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
 
   // Determine tab for SEO (use 'overview' when missing) and fetch matches server-side for JSON-LD
   const tab = tabParam ?? 'overview';
+  const effectiveTab = _surfaceTab ?? tab;
 
   // Build a small server-side heading that reflects the active filters (used above the table)
   let matchesHeadingParts: string[] = [];
@@ -791,24 +818,15 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
         birthdate={player.birthdate ? (player.birthdate instanceof Date ? player.birthdate.toISOString() : String(player.birthdate)) : undefined}
         ioc={player.ioc}
         birthplace={player.birthplace}
-        tab={tab}
+        tab={effectiveTab}
         // Prefer server-side precomputed summary to avoid fetching all match rows
         summary={seoSummary}
       />
 
-      <SEOBreadcrumb slug={player.slug} name={player.atpname || player.player} tab={tab} />
-
-      {/* Server-rendered matches table for SSR (visible in HTML when matches tab) */}
-      {tab === 'matches' && (
-        <p className="sr-only">{matchesHeading}</p>
-      )}
-      {allMatchesForSSR && allMatchesForSSR.length ? (
-        <AllMatchesServer playerId={player.id} matches={allMatchesForSSR} heading={matchesHeading} />
-      ) : null}
-
+      {!_surfacePreviewNode && <SEOBreadcrumb slug={player.slug} name={player.atpname || player.player} tab={effectiveTab} />}
 
       <PlayerClient
-        params={{ id: player.id, tab: tabParam ?? 'matches' }}
+        params={{ id: player.id, tab: effectiveTab }}
         initialPlayer={player}
         initialMatches={allMatchesForSSR ?? undefined}
         initialFacets={serverFacets ?? undefined}
@@ -818,6 +836,20 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
         initialSeasonYear={initialSeasonYear ?? undefined}
         initialSeasonMatches={initialSeasonMatches ?? undefined}
         initialSeasonYears={initialSeasonYears ?? undefined}
+        belowTabsSlot={(_surfacePreviewNode || (allMatchesForSSR && allMatchesForSSR.length)) ? (
+          <>
+            {_surfacePreviewNode ?? null}
+            {allMatchesForSSR && allMatchesForSSR.length ? (
+              <AllMatchesServer
+                playerId={player.id}
+                playerSlug={player.slug}
+                matches={allMatchesForSSR}
+                heading={matchesHeading}
+                playerLinkTab={effectiveTab}
+              />
+            ) : null}
+          </>
+        ) : null}
         rankingNarrative={
           tab === 'ranking' ? (
             <RankingNarrativeServer
@@ -837,6 +869,10 @@ export default async function PlayerTabPage({ params, searchParams }: any) {
           </div>
         }
       />
+
+      {tab === 'matches' && (
+        <p className="sr-only">{matchesHeading}</p>
+      )}
     </>
   );
 }

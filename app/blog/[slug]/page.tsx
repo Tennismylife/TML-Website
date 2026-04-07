@@ -36,7 +36,9 @@ export async function generateMetadata({ params }: { params: any }) {
         url: new URL(`/blog/${slug}`, METADATA_BASE).toString(),
         images: [{ url: imageUrl, width: 1200, height: 630, alt: post?.title ?? ogTitle }]
       },
-      twitter: { card: 'summary_large_image', images: [imageUrl] }
+      twitter: { card: 'summary_large_image', site: '@TennisMyLife68', title: ogTitle, description, images: [imageUrl] },
+      alternates: { canonical: new URL(`/blog/${slug}`, METADATA_BASE).toString() },
+      robots: { index: true, follow: true },
     } as any;
   } catch (e) {
     try { console.error('generateMetadata error for slug', params && (params.slug || params), e && (e.stack || e.message || e)); } catch (_) {}

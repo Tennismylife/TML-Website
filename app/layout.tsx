@@ -82,6 +82,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   '@type': 'ImageObject',
                   url: 'https://stats.tennismylife.org/logo.png'
                 }
+              },
+              potentialAction: {
+                '@type': 'SearchAction',
+                target: {
+                  '@type': 'EntryPoint',
+                  urlTemplate: 'https://stats.tennismylife.org/players/{search_term_string}'
+                },
+                'query-input': 'required name=search_term_string'
               }
             }),
           }}

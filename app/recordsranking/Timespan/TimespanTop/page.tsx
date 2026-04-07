@@ -1,14 +1,31 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import DropdownNavSelect from '@/components/DropdownNavSelect';
-
 import Flag from '@/components/Flag';
 import Link from 'next/link';
 import { prisma } from "@/lib/prisma";
 import RecordsTopControls from '../../Top/RecordsTopControls';
 import ServerPagination from '@/components/ServerPagination';
 
-export const metadata: Metadata = { title: 'Top-X Timespan | ATP Ranking Records' };
+export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
+  const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
+  const top = Number((sp.top as string) ?? 5);
+  const page = Number((sp.page as string) ?? '1');
+  const SITE = 'https://stats.tennismylife.org';
+  const OG_IMAGE = `${SITE}/og/site-preview.png`;
+  const title = `Longest Career Span in ATP Top ${top} – All-Time Records`;
+  const description = `Which players had the longest career span inside the ATP Top ${top}? Historical list showing first and last date.`;
+  const canonical = `${SITE}/recordsranking/timespan/attop/${top}`;
+  return {
+    title,
+    description,
+    keywords: [`career span ATP Top ${top}`, 'ATP ranking timespan', 'longest time in Top 10', 'tennis ranking records', 'ATP history'],
+    alternates: { canonical },
+    openGraph: { type: 'website', url: canonical, siteName: 'TennisMyLife', title, description, images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: title }] },
+    twitter: { card: 'summary_large_image', site: '@TennisMyLife68', creator: '@TennisMyLife68', title, description, images: [OG_IMAGE] },
+    robots: page > 1 ? { index: false, follow: true } : { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large', 'max-video-preview': -1 },
+    authors: [{ name: 'TennisMyLife' }],
+  };
+}
 
 function diffYMD(a: Date, b: Date) {
   let y = b.getUTCFullYear() - a.getUTCFullYear();
@@ -87,6 +104,7 @@ export default async function TopXTimespan({ searchParams }: { searchParams?: Pr
   }).sort((a,b) => b.timespanDays - a.timespanDays || b.lastDate.localeCompare(a.lastDate) || a.name.localeCompare(b.name, 'en', { sensitivity: 'base' })).slice(0, limit);
 
   const rowsToShow = data.slice(0, 20);
+  const longSpan = data.filter(r => r.timespanDays > 10 * 365).length;
   const perPage = 20;
   const page = Number((sp.page as string) ?? 1);
   const totalPages = Math.ceil(data.length / perPage);
@@ -96,6 +114,7 @@ export default async function TopXTimespan({ searchParams }: { searchParams?: Pr
   const renderTable = (list: any[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
       <table className="min-w-full border-collapse">
+        <caption className="py-2 text-sm font-semibold text-gray-400 uppercase tracking-wide">Record leaderboard</caption>
         <thead>
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">#</th>
@@ -129,9 +148,50 @@ export default async function TopXTimespan({ searchParams }: { searchParams?: Pr
 
   return (
     <section className="mb-8">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org', '@type': 'ItemList',
+        'url': `https://stats.tennismylife.org/recordsranking/timespan/attop/${top}`,
+        'inLanguage': 'en-US',
+        'isPartOf': { '@type': 'WebSite', 'name': 'TennisMyLife', 'url': 'https://stats.tennismylife.org' },
+        'dateModified': new Date().toISOString(),
+        'name': `Longest Career Span in ATP Top ${top} – All-Time`,
+        'description': `Players with the longest career timespan inside the ATP Top ${top}.`,
+        'numberOfItems': Math.min(data.length, 10),
+        'itemListElement': data.slice(0, 10).map((r, idx) => ({
+          '@type': 'ListItem', 'position': idx + 1,
+          'item': { '@type': 'SportsStatistic', 'name': r.name, ...(r.slug ? { 'url': `https://stats.tennismylife.org/players/${r.slug}/ranking` } : {}), 'additionalProperty': [
+            { '@type': 'PropertyValue', 'name': 'Timespan', 'value': r.timespanLabel },
+            { '@type': 'PropertyValue', 'name': 'First Date', 'value': r.firstDate },
+            { '@type': 'PropertyValue', 'name': 'Last Date', 'value': r.lastDate },
+          ]},
+        })),
+      }) }} />
       <React.Suspense fallback={<div className="text-gray-400 py-2 text-center">Loading controls...</div>}>
         <RecordsTopControls initialTop={top} />
       </React.Suspense>
+
+      {page === 1 && data.length > 0 && (
+        <div className="mb-6 px-5 py-4 rounded-xl bg-gray-800/50 border border-white/10 text-gray-400 text-sm leading-relaxed max-w-3xl mx-auto">
+          The longest career span inside the ATP Top{' '}<span className="text-white font-medium">{top}</span> belongs to{' '}
+          <span className="text-indigo-300 font-medium">{data[0].name}</span>:{' '}
+          <span className="text-white font-medium">{data[0].timespanLabel}</span>, from{' '}
+          <span className="text-white font-medium">{data[0].firstDate}</span> to{' '}
+          <span className="text-white font-medium">{data[0].lastDate}</span>.
+          {data.length > 1 && (
+            <> Second is <span className="text-indigo-300 font-medium">{data[1].name}</span>{' '}
+            (<span className="text-white font-medium">{data[1].timespanLabel}</span>).</>
+          )}
+          {data.length > 2 && (
+            <> Third is <span className="text-indigo-300 font-medium">{data[2].name}</span>{' '}
+            (<span className="text-white font-medium">{data[2].timespanLabel}</span>).</>
+          )}
+          {' '}<span className="text-white font-medium">{data.length}</span> players feature in this all-time list.
+          {longSpan > 0 && (
+            <>{' '}<span className="text-white font-medium">{longSpan}</span> of them had a career span of over 10 years inside the Top{' '}
+            <span className="text-white font-medium">{top}</span>.</>
+          )}
+        </div>
+      )}
 
       {pageRows.length > 0 ? renderTable(pageRows, start) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
 

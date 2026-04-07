@@ -6,6 +6,7 @@ import Modal from "@/components/Modal";
 import Pagination from "@/components/Pagination";
 import Flag from "@/components/Flag";
 import { getPlayerHrefWithTab } from "@/lib/utils";
+import { playerSurfaceHref, surfaceFromSelection } from "../nav";
 
 interface RoundSectionProps {
   selectedSurfaces: Set<string>;
@@ -68,6 +69,7 @@ export default function RoundSection({
   const lastRequestIdRef = useRef<string | null>(null);
 
   const surfacesArr = useMemo(() => Array.from(selectedSurfaces), [selectedSurfaces]);
+  const surfaceLink = surfaceFromSelection(selectedSurfaces);
   const levelsArr = useMemo(() => Array.from(selectedLevels), [selectedLevels]);
 
   useEffect(() => setPage(1), [surfacesArr, levelsArr, selectedBestOf, selectedRounds]);
@@ -190,7 +192,7 @@ export default function RoundSection({
                     <div className="flex items-center justify-center gap-2">
                       <Flag ioc={s.player?.ioc ?? undefined} className="w-4 h-3" />
                       {s.player ? (
-                        <Link href={getPlayerHrefWithTab((s.player as any).slug ?? String(s.player.id), 'matches')} className="text-indigo-300 hover:underline">
+                        <Link href={playerSurfaceHref((s.player as any).slug ?? String(s.player.id), surfaceLink)} className="text-indigo-300 hover:underline">
                           {s.player.name}
                         </Link>
                       ) : (

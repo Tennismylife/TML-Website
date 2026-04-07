@@ -52,9 +52,18 @@ export async function generateMetadata({ params, searchParams }: any) {
   // (the canonical clean URL /players/slug/tab is the one that should be indexed)
   const hasTabQueryParam = Boolean(resolvedQuery?.tab);
 
+  const playerDescription = `${name} tennis statistics: career win-loss record, match results, ATP rankings, surface stats, head-to-head and tournament history on TennisMyLife.`;
   return {
     title: `${name} | Tennis Statistics, Match Results & Rankings`,
-    openGraph: { url: canonical },
+    description: playerDescription,
+    openGraph: {
+      url: canonical,
+      type: 'profile',
+      siteName: 'TennisMyLife',
+      title: `${name} | Tennis Statistics, Match Results & Rankings`,
+      description: playerDescription,
+    },
+    twitter: { card: 'summary_large_image', site: '@TennisMyLife68', creator: '@TennisMyLife68', title: `${name} | Tennis Statistics, Match Results & Rankings`, description: playerDescription },
     alternates: { canonical },
     ...(hasTabQueryParam && { robots: { index: false, follow: true } }),
   };

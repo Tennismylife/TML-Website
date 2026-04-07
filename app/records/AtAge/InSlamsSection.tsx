@@ -8,6 +8,7 @@ import Modal from '@/components/Modal';
 import AgeInput from './AgeInput';
 import Flag from '@/components/Flag';
 import { getPlayerHrefWithTab } from '@/lib/utils';
+import { playerSurfaceHref, surfaceFromSelection } from '../nav';
 interface InSlamsSectionProps {
   selectedSurfaces: string[];
   selectedRounds: string;
@@ -39,6 +40,7 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
   const [selectedAge, setSelectedAge] = useState(safeInitialAge);
   const searchParams = useSearchParams();
   const perPage = 20;
+  const surfaceLink = surfaceFromSelection(selectedSurfaces);
 
   const [after, setAfter] = useState<boolean>(() => {
     try { const a = String(searchParams?.get('after') ?? '').toLowerCase(); return a === '1' || a === 'true' || a === 'yes'; } catch (e) { return false; }
@@ -208,7 +210,7 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
                   <div className="flex items-center justify-center gap-2">
                     <Flag ioc={p.ioc} className="w-4 h-3" />
-                    <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.id), 'matches')} className="text-indigo-300 hover:underline">{p.name}</Link>
+                    <Link href={playerSurfaceHref((p as any).slug ?? String(p.id), surfaceLink)} className="text-indigo-300 hover:underline">{p.name}</Link>
                   </div>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.total}</td>

@@ -9,7 +9,7 @@ export default function EndSeasonCountControls({ initialRank, hideLabel = false 
   return (
     <div className="flex items-center gap-4 mb-4">
       {!hideLabel && <label className="text-gray-200 font-medium">Rank:</label>}
-      <DropdownNavSelect name="rank" value={String(initialRank)} options={options} />
+      <DropdownNavSelect name="rank" value={String(initialRank)} options={options} pathMode />
     </div>
   );
 } 

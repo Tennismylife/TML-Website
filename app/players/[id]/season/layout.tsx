@@ -41,7 +41,6 @@ export async function generateMetadata({ params, searchParams }: any): Promise<M
   }
 
   const imageUrl = `https://stats.tennismylife.org/og/${encodeURIComponent(slug)}.png`;
-
   return {
     title,
     description,

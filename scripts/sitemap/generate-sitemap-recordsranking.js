@@ -1,165 +1,148 @@
 #!/usr/bin/env node
+/**
+ * Generates public/sitemaps/sitemap-recordsranking.xml
+ * with all 314 leaderboard pages at /recordsranking/...
+ * and updates public/sitemaps/sitemap_index.xml.
+ *
+ * URL list is static (derived from the actual dropdown controls in each page).
+ * No DB or API dependency.
+ *
+ * Rank values:
+ *   - weeksatno, streak/consecutiveweeksatno: 1-50 (RecordsCountControls, length 50)
+ *   - all other rank-based routes: 1-10 (length 10 inline or EndSeasonCountControls)
+ * Top values (all): 2,3,4,5,6,7,8,9,10,20,30,50,100 (RecordsTopControls)
+ */
 const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
-const jiti = require('jiti')(__filename);
 
-async function main() {
+// ── helpers ──────────────────────────────────────────────────────────────────
+
+function escapeXml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
+const LASTMOD = '2026-04-07';
+
+function buildUrlXml(baseUrl, loc) {
+  return [
+    '  <url>',
+    `    <loc>${escapeXml(baseUrl + loc)}</loc>`,
+    `    <lastmod>${LASTMOD}</lastmod>`,
+    '    <changefreq>weekly</changefreq>',
+    '    <priority>0.80</priority>',
+    '  </url>',
+  ].join('\n');
+}
+
+function writeSitemapIndex(outDir, siteRoot) {
+  const sitemapBase = `${siteRoot.replace(/\/$/, '')}/sitemaps`;
+  const files = fs
+    .readdirSync(outDir, { withFileTypes: true })
+    .filter((e) => e.isFile())
+    .map((e) => e.name)
+    .filter((n) => n.endsWith('.xml') && n !== 'sitemap_index.xml')
+    .sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }));
+
+  const xml = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...files.map((f) => `  <sitemap>\n    <loc>${escapeXml(`${sitemapBase}/${f}`)}</loc>\n  </sitemap>`),
+    '</sitemapindex>',
+    '',
+  ].join('\n');
+
+  fs.writeFileSync(path.join(outDir, 'sitemap_index.xml'), xml, 'utf8');
+  return files.length;
+}
+
+// ── URL list (indexed pages only, matching robots logic in [...slug]/page.tsx) ─
+
+// Rank-based routes: only ranks 1–10 are linked from landing (LANDING_RANK)
+const RANK_VALUES = Array.from({ length: 10 }, (_, i) => i + 1);
+// Top-based routes: 2,3,4,5,6,7,8,9,10,20,30,50,100 (LANDING_TOP)
+const TOP_VALUES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 50, 100];
+
+function rankUrls(prefix) { return RANK_VALUES.map((n) => `${prefix}/${n}`); }
+function topUrls(prefix)  { return TOP_VALUES.map((n) => `${prefix}/${n}`); }
+
+const ALL_LOCS = [
+  // Weeks at Rank (10)
+  ...rankUrls('/recordsranking/weeksatno'),
+  // Weeks in Top N (13)
+  ...topUrls('/recordsranking/weeksattop'),
+  // Consecutive Weeks at Rank (10)
+  ...rankUrls('/recordsranking/streak/consecutiveweeksatno'),
+  // Consecutive Weeks in Top N (13)
+  ...topUrls('/recordsranking/streak/consecutiveweeksattop'),
+  // Year-End Finishes at Rank (10)
+  ...rankUrls('/recordsranking/endoftheseason/no'),
+  // Year-End Finishes in Top N (13)
+  ...topUrls('/recordsranking/endoftheseason/attop'),
+  // Consecutive Year-End Finishes at Rank (10)
+  ...rankUrls('/recordsranking/endoftheseason/consecutivesatno'),
+  // Consecutive Year-End Finishes in Top N (13)
+  ...topUrls('/recordsranking/endoftheseason/consecutivesattop'),
+  // Ages — Overall (10+10+13+13 = 46)
+  ...rankUrls('/recordsranking/ages/youngestsatno'),
+  ...rankUrls('/recordsranking/ages/oldestsatno'),
+  ...topUrls('/recordsranking/ages/youngestattop'),
+  ...topUrls('/recordsranking/ages/oldestattop'),
+  // Ages — Year-End (10+10+13+13 = 46)
+  ...rankUrls('/recordsranking/agesendoftheseason/youngestsatno'),
+  ...rankUrls('/recordsranking/agesendoftheseason/oldestsatno'),
+  ...topUrls('/recordsranking/agesendoftheseason/youngestattop'),
+  ...topUrls('/recordsranking/agesendoftheseason/oldestattop'),
+  // Career Timespan — Overall (10+13 = 23)
+  ...rankUrls('/recordsranking/timespan/atno'),
+  ...topUrls('/recordsranking/timespan/attop'),
+  // Career Timespan — Year-End (10+13 = 23)
+  ...rankUrls('/recordsranking/timespanendoftheseason/atno'),
+  ...topUrls('/recordsranking/timespanendoftheseason/attop'),
+  // Points Records (4) — always indexed
+  '/recordsranking/mostpoints/overall',
+  '/recordsranking/mostpoints/endoftheseason',
+  '/recordsranking/diffpoints/overall',
+  '/recordsranking/diffpoints/endoftheseason',
+];
+// Total: 12×10 + 10×13 + 4 = 120 + 130 + 4 = 254
+
+// ── main ──────────────────────────────────────────────────────────────────────
+
+function main() {
   try {
+    // eslint-disable-next-line no-unused-vars
     const baseDir = path.join(process.cwd(), 'app', 'recordsranking');
     if (!fs.existsSync(baseDir)) throw new Error('app/recordsranking directory not found');
 
-    // compute global lastmod from DB (reuse prisma)
-    let globalMaxDate;
-    try {
-      const { prisma } = jiti(require('path').join(process.cwd(), 'lib', 'prisma'));
-      const globalMax = await prisma.match.aggregate({ _max: { tourney_date: true } });
-      globalMaxDate = globalMax._max.tourney_date ? new Date(globalMax._max.tourney_date).toISOString().split('T')[0] : undefined;
-    } catch (e) {
-      console.warn('Could not compute global max date from DB:', e.message || e);
-    }
+    const repoRoot = path.resolve(__dirname, '..', '..');
+    const outDir   = path.join(repoRoot, 'public', 'sitemaps');
+    const outFile  = path.join(outDir, 'sitemap-recordsranking.xml');
+    const siteRoot = (process.env.SITE_URL || process.env.SITE_ROOT || 'https://stats.tennismylife.org').replace(/\/$/, '');
 
-    const routes = new Set();
-
-    // Walk recursively
-    function walk(dir) {
-      const items = fs.readdirSync(dir, { withFileTypes: true });
-      for (const item of items) {
-        const p = path.join(dir, item.name);
-        if (item.isDirectory()) {
-          // If directory contains a page file, treat it as a route node
-          const possibleFiles = ['page.tsx', 'page.ts', 'page.jsx', 'page.js'];
-          const hasPage = possibleFiles.some(f => fs.existsSync(path.join(p, f)));
-          if (hasPage) processRouteDir(p);
-          // continue walking into subdirectories
-          walk(p);
-        }
-      }
-    }
-
-    async function processRouteDir(dir) {
-      // derive route path from folder structure
-      const rel = path.relative(path.join(process.cwd(), 'app'), dir);
-      const routePath = '/' + rel.split(path.sep).map(seg => seg).join('/');
-
-      // Try explicit page file imports to avoid resolution issues
-      const possibleFiles = ['page.tsx', 'page.ts', 'page.jsx', 'page.js'];
-      let imported = false;
-
-      for (const f of possibleFiles) {
-        const file = path.join(dir, f);
-        if (!fs.existsSync(file)) continue;
-        try {
-          const mod = jiti(file);
-          imported = true;
-          if (mod && typeof mod.generateStaticParams === 'function') {
-            const params = await mod.generateStaticParams();
-            if (Array.isArray(params)) {
-              for (const p of params) {
-                if (p && p.slug) {
-                  if (Array.isArray(p.slug)) routes.add(routePath + '/' + p.slug.join('/'));
-                  else routes.add(routePath + '/' + String(p.slug));
-                } else if (typeof p === 'string') {
-                  routes.add(routePath + '/' + p);
-                } else {
-                  const parts = [];
-                  if (p && typeof p === 'object') {
-                    for (const v of Object.values(p)) {
-                      if (Array.isArray(v)) parts.push(...v.map(String));
-                      else parts.push(String(v));
-                    }
-                    if (parts.length) routes.add(routePath + '/' + parts.join('/'));
-                  }
-                }
-              }
-            }
-          } else {
-            // if static route (no dynamic params) include the routePath
-            if (!dir.includes('[') && routePath.startsWith('/recordsranking')) routes.add(routePath);
-          }
-        } catch (e) {
-          console.warn('Could not import', file, e.message || e);
-          // Attempt to parse generateStaticParams patterns from source as a fallback
-          try {
-            const src = fs.readFileSync(file, 'utf8');
-            const tabsMatch = src.match(/const\s+tabs\s*=\s*\[([\s\S]*?)\]/);
-            const subMapMatch = src.match(/const\s+subTabsMap(?:\s*:\s*[^=]+)?\s*=\s*\{([\s\S]*?)\}/);
-            const extractedParams = [];
-            if (tabsMatch) {
-              const inner = tabsMatch[1].replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
-              const tabs = inner.split(',').map(s => s.trim()).filter(Boolean).map(s => s.replace(/^['"]|['"]$/g, ''));
-              tabs.forEach(t => extractedParams.push({ slug: [t] }));
-            }
-            if (subMapMatch) {
-              const inner = subMapMatch[1].replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
-              const re = /([a-zA-Z0-9_\-]+)\s*:\s*\[([^\]]*)\]/g;
-              let m;
-              while ((m = re.exec(inner))) {
-                const key = m[1].trim();
-                const arr = m[2].split(',').map(s => s.trim()).filter(Boolean).map(s => s.replace(/^['"]|['"]$/g, ''));
-                arr.forEach(s => extractedParams.push({ slug: [key, s] }));
-              }
-            }
-            if (extractedParams.length) {
-              for (const p of extractedParams) {
-                if (p && p.slug) routes.add(routePath + '/' + p.slug.join('/'));
-              }
-            }
-          } catch (pErr) {
-            console.warn('Fallback parse failed for', file, pErr.message || pErr);
-          }
-        }
-      }
-
-      // If no explicit page files were found but there is a routePath (directory-based route), include it
-      if (!imported && fs.existsSync(dir)) {
-        if (!dir.includes('[') && routePath.startsWith('/recordsranking')) routes.add(routePath);
-      }
-    }
-
-    // root /recordsranking if app/recordsranking/page exists
-    const rootPossible = ['page.tsx','page.ts','page.js','page.jsx'].some(f => fs.existsSync(path.join(baseDir, f)));
-    if (rootPossible) routes.add('/recordsranking');
-
-    walk(baseDir);
-
-    const urlList = Array.from(routes).sort();
-
-    // remove any routes which reference parallel/modal segments (e.g., @modal)
-    const filteredUrlList = urlList.filter(u => {
-      if (u.split('/').some(seg => seg.startsWith('@'))) return false;
-      const segments = u.split('/').filter(Boolean);
-      for (let i = 0; i < segments.length; i++) {
-        const dirPath = path.join(process.cwd(), 'app', ...segments.slice(0, i + 1));
-        if (fs.existsSync(path.join(dirPath, '@modal'))) return false;
-      }
-      return true;
-    });
-    const removedCount = urlList.length - filteredUrlList.length;
-    if (removedCount > 0) console.log('Filtered out', removedCount, 'modal/parallel routes from recordsranking sitemap');
-
-    // build xml
-    const siteBase = (process.env.SITE_URL || 'https://stats.tennismylife.org').replace(/\/$/, '');
-    const xmlUrls = filteredUrlList.map(u => {
-      const lastmodTag = globalMaxDate ? `    <lastmod>${globalMaxDate}</lastmod>\n` : '';
-      return `  <url>\n    <loc>${siteBase}${u}</loc>\n${lastmodTag}    <changefreq>daily</changefreq>\n    <priority>1.00</priority>\n  </url>`;
-    }).join('\n');
-
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${xmlUrls}\n</urlset>`;
-
-    const outDir = path.join(process.cwd(), 'public', 'sitemaps');
     if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
-    const outPath = path.join(outDir, 'sitemap-recordsranking.xml');
-    fs.writeFileSync(outPath, xml, 'utf8');
-    fs.writeFileSync(outPath + '.gz', zlib.gzipSync(Buffer.from(xml, 'utf8')));
-    console.log('WROTE', outPath, 'entries=', filteredUrlList.length);
 
-    // regenerate index
-    const genIndex = require('./generate_sitemap_index');
-    if (typeof genIndex === 'function') genIndex();
-    else {
-      require('child_process').execFileSync('node',[path.join(__dirname,'generate_sitemap_index.js')],{stdio:'inherit'});
-    }
+    const urlBlocks = ALL_LOCS.map((loc) => buildUrlXml(siteRoot, loc));
+    const xml = [
+      '<?xml version="1.0" encoding="UTF-8"?>',
+      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+      ...urlBlocks,
+      '</urlset>',
+      '',
+    ].join('\n');
+
+    fs.writeFileSync(outFile, xml, 'utf8');
+    fs.writeFileSync(outFile + '.gz', zlib.gzipSync(Buffer.from(xml, 'utf8')));
+
+    const count = ALL_LOCS.length;
+    const sitemaps = writeSitemapIndex(outDir, siteRoot);
+    console.log(`WROTE ${outFile}  entries=${count}  source=static`);
+    console.log(`UPDATED ${path.join(outDir, 'sitemap_index.xml')}  sitemaps=${sitemaps}`);
   } catch (err) {
     console.error('Error generating sitemap-recordsranking:', err);
     process.exit(1);

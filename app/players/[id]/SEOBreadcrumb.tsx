@@ -12,6 +12,9 @@ function capitalizeTab(tab: string) {
     titles: 'Titles',
     h2h: 'H2H',
     overview: 'Overview',
+    clay: 'Clay Court Stats',
+    hard: 'Hard Court Stats',
+    grass: 'Grass Court Stats',
   };
   if (map[tab]) return map[tab];
   // Fallback Title Case

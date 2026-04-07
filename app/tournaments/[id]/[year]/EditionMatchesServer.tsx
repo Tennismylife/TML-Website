@@ -5,6 +5,10 @@ import { getPlayerHrefWithTab } from '@/lib/utils';
 export default function EditionMatchesServer({ matches }: { matches: any[] }) {
   if (!matches || matches.length === 0) return null;
 
+  // Determine surface for the whole edition (from first match that has one)
+  const rawSurface = matches.find((m) => m.surface)?.surface ?? null;
+  const surfacePath = rawSurface ? String(rawSurface).toLowerCase() : null;
+
   return (
     <div id="server-matches" className="overflow-x-auto md:overflow-x-visible rounded bg-gray-900 shadow mt-4">
       <table className="min-w-full border-collapse">
@@ -40,6 +44,9 @@ export default function EditionMatchesServer({ matches }: { matches: any[] }) {
                 <Link href={getPlayerHrefWithTab(m.winner_slug ?? String(m.winner_id), 'matches')} className="text-gray-200 hover:text-yellow-400">
                   {m.winner_name ?? ''}
                 </Link>
+                {m.winner_slug && surfacePath && (
+                  <Link href={`/players/${m.winner_slug}/${surfacePath}`} className="text-[0.6rem] text-cyan-500 hover:underline" title={`${m.winner_name} ${rawSurface} stats`}>{rawSurface}</Link>
+                )}
               </td>
               <td className="px-4 py-2 text-center text-sm">
                 {m.loser_rank != null && m.loser_slug
@@ -51,6 +58,9 @@ export default function EditionMatchesServer({ matches }: { matches: any[] }) {
                 <Link href={getPlayerHrefWithTab(m.loser_slug ?? String(m.loser_id), 'matches')} className="text-gray-400 hover:text-gray-200">
                   {m.loser_name ?? ''}
                 </Link>
+                {m.loser_slug && surfacePath && (
+                  <Link href={`/players/${m.loser_slug}/${surfacePath}`} className="text-[0.6rem] text-cyan-500 hover:underline" title={`${m.loser_name} ${rawSurface} stats`}>{rawSurface}</Link>
+                )}
               </td>
               <td className="px-4 py-2 text-center font-mono text-sm">{m.score}</td>
               <td className="px-4 py-2 text-center text-sm">{m.best_of ?? '-'}</td>

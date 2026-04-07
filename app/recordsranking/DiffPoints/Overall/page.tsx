@@ -2,6 +2,23 @@ import React from 'react';
 import { prisma } from '@/lib/prisma';
 import Flag from '@/components/Flag';
 import Link from 'next/link';
+import type { Metadata } from 'next';
+
+const SITE = 'https://stats.tennismylife.org';
+const OG_IMAGE = `${SITE}/og/site-preview.png`;
+const _title = 'Largest ATP Points Gap No. 1 vs No. 2 – All-Time Records';
+const _description = 'The biggest all-time point differences between the ATP No. 1 and No. 2 players. Complete historical list with dates.';
+const _canonical = `${SITE}/recordsranking/diffpoints/overall`;
+export const metadata: Metadata = {
+  title: _title,
+  description: _description,
+  keywords: ['ATP points gap No 1 No 2', 'biggest ATP points difference', 'ATP ranking gap all-time', 'tennis records', 'ATP history'],
+  alternates: { canonical: _canonical },
+  openGraph: { type: 'website', url: _canonical, siteName: 'TennisMyLife', title: _title, description: _description, images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: _title }] },
+  twitter: { card: 'summary_large_image', site: '@TennisMyLife68', creator: '@TennisMyLife68', title: _title, description: _description, images: [OG_IMAGE] },
+  robots: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large', 'max-video-preview': -1 },
+  authors: [{ name: 'TennisMyLife' }],
+};
 
 export default async function MaxDifferenceNo1No2({ searchParams }: { searchParams?: Promise<Record<string,string | string[]>> }) {
   const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
@@ -17,6 +34,7 @@ export default async function MaxDifferenceNo1No2({ searchParams }: { searchPara
   const renderTable = (list: any[]) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
       <table className="min-w-full border-collapse">
+        <caption className="py-2 text-sm font-semibold text-gray-400 uppercase tracking-wide">Record leaderboard</caption>
         <thead>
           <tr className="bg-black"><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">No. 1 Player</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">No. 2 Player</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Points No. 1</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Points No. 2</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Points Diff.</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Date</th></tr>
         </thead>
@@ -29,7 +47,37 @@ export default async function MaxDifferenceNo1No2({ searchParams }: { searchPara
 
   return (
     <section className="mb-8">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org', '@type': 'ItemList',
+        'url': 'https://stats.tennismylife.org/recordsranking/diffpoints/overall',
+        'inLanguage': 'en-US',
+        'isPartOf': { '@type': 'WebSite', 'name': 'TennisMyLife', 'url': 'https://stats.tennismylife.org' },
+        'dateModified': new Date().toISOString(),
+        'name': 'Largest ATP Points Gap No. 1 vs No. 2 – All-Time',
+        'description': 'Historical records of the biggest point differences between ATP No. 1 and No. 2.',
+        'numberOfItems': Math.min(toShow.length, 10),
+        'itemListElement': toShow.slice(0, 10).map((r: any, idx: number) => ({
+          '@type': 'ListItem', 'position': idx + 1,
+          'item': { '@type': 'SportsStatistic', 'name': r.name, ...(r.name && slugByName[r.name] ? { 'url': `https://stats.tennismylife.org/players/${slugByName[r.name]}/ranking` } : {}), 'additionalProperty': [
+            { '@type': 'PropertyValue', 'name': 'Points No. 1', 'value': r.points_no1 },
+            { '@type': 'PropertyValue', 'name': 'Points No. 2', 'value': r.points_no2 },
+            { '@type': 'PropertyValue', 'name': 'Points Difference', 'value': r.points_diff },
+            { '@type': 'PropertyValue', 'name': 'Date', 'value': r.date },
+          ]},
+        })),
+      }) }} />
 
+      {toShow.length > 0 && (
+        <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/10 px-4 py-3 mb-4 text-center text-sm md:text-base text-gray-200 leading-relaxed">
+          The largest points gap between ATP No.
+          {' '}<span className="text-white font-medium">1</span> and No.
+          {' '}<span className="text-white font-medium">2</span> in the ATP rankings was{' '}
+          <span className="text-white font-medium">{toShow[0].points_diff.toLocaleString()}</span> points:{' '}
+          <span className="text-indigo-300 font-medium">{toShow[0].name}</span> led{' '}
+          <span className="text-indigo-300 font-medium">{toShow[0].no2}</span> by that margin on{' '}
+          <span className="text-white font-medium">{toShow[0].date}</span>.
+        </div>
+      )}
 
       {rows.length === 0 ? <div className="text-gray-400 py-4 text-center">No data available.</div> : renderTable(toShow)}
     </section>

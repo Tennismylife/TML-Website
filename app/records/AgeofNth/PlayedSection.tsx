@@ -7,6 +7,7 @@ import Pagination from "../../../components/Pagination";
 import Modal from "@/components/Modal";
 import Flag from '@/components/Flag';
 import { toOrdinal, getPlayerHrefWithTab } from "@/lib/utils";
+import { playerSurfaceHref, surfaceFromSelection } from '../nav';
 
 interface PlayedSectionProps {
   selectedSurfaces: string[];
@@ -58,6 +59,7 @@ export default function PlayedSection({
   initialNth,
 }: PlayedSectionProps) {
   const enabled = !!fetchEnabled;
+  const surfaceLink = surfaceFromSelection(selectedSurfaces);
   const safeInitialNth = Number.isFinite(initialNth) ? (initialNth as number) : 50;
   const [data, setData] = useState<Player[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
@@ -225,7 +227,7 @@ export default function PlayedSection({
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
                   <div className="flex items-center justify-center gap-2">
                     {p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" />}
-                    <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.id), 'matches')} className="text-indigo-300 hover:underline">
+                    <Link href={playerSurfaceHref((p as any).slug ?? String(p.id), surfaceLink)} className="text-indigo-300 hover:underline">
                       {p.name}
                     </Link>
                   </div>

@@ -52,8 +52,8 @@ export const metadata = {
       }
     ],
   },
-  twitter: { card: 'summary_large_image', images: [new URL('/og/site-preview.png', METADATA_BASE).toString()] },
-  alternates: { canonical: '/' }
+  twitter: { card: 'summary_large_image', site: '@TennisMyLife68', title: 'Tennis My Life — Tennis Stats, Records & Matches Database', description: 'Explore tournament calendars, match results, player head-to-head records, rankings and advanced tennis metrics on Tennis My Life.', images: [new URL('/og/site-preview.png', METADATA_BASE).toString()] },
+  alternates: { canonical: 'https://stats.tennismylife.org/' }
 } as const;
 
 export default async function HomePage() {

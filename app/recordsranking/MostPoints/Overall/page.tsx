@@ -44,10 +44,13 @@ export default async function No1MaxPointsRanking({ searchParams }: { searchPara
   });
 
   const rows = result.slice(0, 20);
+  const over10k = result.filter(r => r.points >= 10000).length;
+  const over9k = result.filter(r => r.points >= 9000).length;
 
   const renderTable = (list: No1MaxPointsItem[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
       <table className="min-w-full border-collapse">
+        <caption className="py-2 text-sm font-semibold text-gray-400 uppercase tracking-wide">Record leaderboard</caption>
         <thead>
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
@@ -87,7 +90,9 @@ export default async function No1MaxPointsRanking({ searchParams }: { searchPara
         "headline": "Highest ATP Ranking Points All-Time – Alcaraz Hits 13,650 in 2026",
         "description": "Highest career-high ATP ranking points in men's singles tennis history. Updated February 3, 2026 after Australian Open 2026.",
         "url": "https://stats.tennismylife.org/recordsranking/mostpoints/overall",
-        "dateModified": "2026-02-03",
+        "dateModified": new Date().toISOString(),
+        "inLanguage": "en-US",
+        "isPartOf": { "@type": "WebSite", "name": "TennisMyLife", "url": "https://stats.tennismylife.org" },
         "author": {
           "@type": "Organization",
           "name": "TennisMyLife Stats",
@@ -110,6 +115,7 @@ export default async function No1MaxPointsRanking({ searchParams }: { searchPara
             "item": {
               "@type": "SportsStatistic",
               "name": "Highest ATP Points",
+              ...(r.slug ? { "url": `https://stats.tennismylife.org/players/${r.slug}/ranking` } : {}),
               "additionalProperty": [
                 { "@type": "PropertyValue", "name": "Player", "value": r.name },
                 { "@type": "PropertyValue", "name": "Points", "value": r.points },
@@ -120,6 +126,30 @@ export default async function No1MaxPointsRanking({ searchParams }: { searchPara
           }))
         }
       }) }} />
+
+      {rows.length > 0 && (
+        <div className="mb-6 px-5 py-4 rounded-xl bg-gray-800/50 border border-white/10 text-gray-400 text-sm leading-relaxed max-w-3xl mx-auto">
+          The highest ATP ranking points ever recorded in the Open Era is{' '}
+          <span className="text-white font-medium">{rows[0].points.toLocaleString()}</span> points, achieved by{' '}
+          <span className="text-indigo-300 font-medium">{rows[0].name}</span> on{' '}
+          <span className="text-white font-medium">{rows[0].date}</span>.
+          {rows.length > 1 && (
+            <> Second all-time is <span className="text-indigo-300 font-medium">{rows[1].name}</span>{' '}
+            with <span className="text-white font-medium">{rows[1].points.toLocaleString()}</span> points.</>
+          )}
+          {rows.length > 2 && (
+            <> Third is <span className="text-indigo-300 font-medium">{rows[2].name}</span>{' '}
+            with <span className="text-white font-medium">{rows[2].points.toLocaleString()}</span> points.</>
+          )}
+          {over10k > 0 && (
+            <>{' '}Only <span className="text-white font-medium">{over10k}</span> player{over10k > 1 ? 's have' : ' has'} ever surpassed the 10,000-point mark.</>
+          )}
+          {over9k > over10k && (
+            <>{' '}<span className="text-white font-medium">{over9k}</span> have exceeded 9,000 points in total.</>
+          )}
+          {' '}The leaderboard covers <span className="text-white font-medium">{result.length}</span> players in total.
+        </div>
+      )}
 
       {rows.length > 0 ? renderTable(rows, 0) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
     </section>

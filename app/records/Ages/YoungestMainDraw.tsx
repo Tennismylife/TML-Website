@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Flag from '@/components/Flag';
 import { getTourneyHref } from "@/lib/utils";
-import { playerMatchesUrl } from "../nav";
+import { playerSurfaceOrMatchesUrl } from "../nav";
 import Pagination from "../../../components/Pagination";
 import Modal from "@/components/Modal";
 
@@ -108,7 +108,7 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
                   <div className="flex items-center justify-center gap-2">
                     <Flag ioc={p.ioc} className="w-4 h-3" />
-                    <Link href={playerMatchesUrl((p as any).slug ?? String(p.id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="text-indigo-300 hover:underline">{p.name}</Link>
+                    <Link href={playerSurfaceOrMatchesUrl((p as any).slug ?? String(p.id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="text-indigo-300 hover:underline">{p.name}</Link>
                   </div>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{formatAge(p.age)}</td>

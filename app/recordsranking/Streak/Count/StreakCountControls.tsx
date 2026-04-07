@@ -9,7 +9,7 @@ export default function StreakCountControls({ initialRank }: { initialRank: numb
   return (
     <div className="flex justify-start mb-6 ml-4 items-center">
       <label className="text-gray-200 font-medium mr-2">Rank:</label>
-      <DropdownNavSelect name="rank" value={String(initialRank)} options={options} />
+      <DropdownNavSelect name="rank" value={String(initialRank)} options={options} pathMode />
     </div>
   );
 } 

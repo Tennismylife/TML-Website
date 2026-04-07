@@ -5,11 +5,13 @@ import { getPlayerHref, getPlayerHrefWithTab, getTourneyHref, formatDateISO } fr
 
 interface AllMatchesServerProps {
   playerId: string;
+  playerSlug?: string | null;
   matches: any[];
   heading?: string;
+  playerLinkTab?: string;
 }
 
-export default function AllMatchesServer({ playerId, matches, heading }: AllMatchesServerProps) {
+export default function AllMatchesServer({ playerId, playerSlug, matches, heading, playerLinkTab = 'matches' }: AllMatchesServerProps) {
   if (!matches || matches.length === 0) {
     return (
       <div id="server-all-matches" className="w-full p-4 text-center text-gray-400">
@@ -35,10 +37,20 @@ export default function AllMatchesServer({ playerId, matches, heading }: AllMatc
     <div className="w-full">
       {/* Server-rendered table: visible immediately on first load; hidden by AllMatches once the client mounts */}
       <div id="server-all-matches" className="w-full bg-gray-900/80 rounded-md p-4" suppressHydrationWarning>
-        <div className="w-full text-center mb-4">
-          <div className="font-semibold text-xl sm:text-2xl leading-none text-gray-100">
-            W-L: {wins}-{losses} ({winPercentage}%)
-          </div>
+        <div className="mb-3 flex items-center justify-between">
+          <span className="text-sm font-semibold text-gray-200">Showing last {displayMatches.length} matches</span>
+          {playerSlug && (
+            <Link
+              href={
+                playerLinkTab && playerLinkTab !== 'matches'
+                  ? `${getPlayerHrefWithTab(playerSlug, 'matches')}?surface=${playerLinkTab.charAt(0).toUpperCase() + playerLinkTab.slice(1)}`
+                  : getPlayerHrefWithTab(playerSlug, 'matches')
+              }
+              className="inline-block bg-blue-600 hover:bg-blue-700 shadow-lg text-white font-bold text-sm py-1.5 px-4 rounded-full transition-all duration-200 ml-auto"
+            >
+              View All Matches ↗
+            </Link>
+          )}
         </div>
 
         <div className="overflow-x-auto rounded border border-white/20 bg-gray-900 shadow">
@@ -46,13 +58,13 @@ export default function AllMatchesServer({ playerId, matches, heading }: AllMatc
             <thead>
               <tr className="bg-black/80">
                 <th className="border border-white/20 px-3 py-2 text-center font-medium text-gray-200">Date</th>
-                <th className="border border-white/20 px-3 py-2 text-left font-medium text-gray-200">Tournament</th>
+                <th className="border border-white/20 px-3 py-2 text-center font-medium text-gray-200">Tournament</th>
                 <th className="border border-white/20 px-3 py-2 text-center font-medium text-gray-200">Surface</th>
                 <th className="border border-white/20 px-3 py-2 text-center font-medium text-gray-200">Round</th>
                 <th className="border border-white/20 px-3 py-2 text-center font-medium text-gray-200">Wrk</th>
-                <th className="border border-white/20 px-3 py-2 text-left font-medium text-gray-200">Winner</th>
+                <th className="border border-white/20 px-3 py-2 text-center font-medium text-gray-200">Winner</th>
                 <th className="border border-white/20 px-3 py-2 text-center font-medium text-gray-200">Lrk</th>
-                <th className="border border-white/20 px-3 py-2 text-left font-medium text-gray-200">Loser</th>
+                <th className="border border-white/20 px-3 py-2 text-center font-medium text-gray-200">Loser</th>
                 <th className="border border-white/20 px-3 py-2 text-center font-medium text-gray-200">Score</th>
               </tr>
             </thead>
@@ -64,7 +76,7 @@ export default function AllMatchesServer({ playerId, matches, heading }: AllMatc
                     <td className="border border-white/10 px-3 py-2 text-center text-gray-200">
                       {formatDateISO(m.tourney_date)}
                     </td>
-                    <td className="border border-white/10 px-3 py-2 text-gray-200">
+                    <td className="border border-white/10 px-3 py-2 text-center text-gray-200">
                       {m.tourney_name ? (
                         m.tourney_id ? (
                           <Link href={getTourneyHref({ slug: (m as any).tourney_slug ?? undefined, id: m.tourney_id, year: m.year })} className="text-indigo-300 hover:underline">
@@ -84,11 +96,11 @@ export default function AllMatchesServer({ playerId, matches, heading }: AllMatc
                         ? <Link href={`/players/${m.winner_slug}/ranking`} className="hover:underline">{m.winner_rank}</Link>
                         : m.winner_rank ?? "-"}
                     </td>
-                    <td className="border border-white/10 px-3 py-2 text-gray-200">
-                      <div className="flex items-center gap-2">
+                    <td className="border border-white/10 px-3 py-2 text-center text-gray-200">
+                      <div className="flex items-center justify-center gap-2">
                         {m.winner_ioc && <Flag ioc={m.winner_ioc} className="w-6 h-4" />}
                         {m.winner_slug || m.winner_id ? (
-                          <Link href={getPlayerHrefWithTab(m.winner_slug ?? String(m.winner_id), 'matches')} className="text-gray-200 hover:text-yellow-400">
+                          <Link href={getPlayerHrefWithTab(m.winner_slug ?? String(m.winner_id), playerLinkTab)} className="text-gray-200 hover:text-yellow-400">
                             {m.winner_name ?? ""}
                           </Link>
                         ) : (
@@ -101,11 +113,11 @@ export default function AllMatchesServer({ playerId, matches, heading }: AllMatc
                         ? <Link href={`/players/${m.loser_slug}/ranking`} className="hover:underline">{m.loser_rank}</Link>
                         : m.loser_rank ?? "-"}
                     </td>
-                    <td className="border border-white/10 px-3 py-2 text-gray-200">
-                      <div className="flex items-center gap-2">
+                    <td className="border border-white/10 px-3 py-2 text-center text-gray-200">
+                      <div className="flex items-center justify-center gap-2">
                         {m.loser_ioc && <Flag ioc={m.loser_ioc} className="w-6 h-4" />}
                         {m.loser_slug || m.loser_id ? (
-                          <Link href={getPlayerHrefWithTab(m.loser_slug ?? String(m.loser_id), 'matches')} className="text-gray-400 hover:text-gray-200">
+                          <Link href={getPlayerHrefWithTab(m.loser_slug ?? String(m.loser_id), playerLinkTab)} className="text-gray-400 hover:text-gray-200">
                             {m.loser_name ?? ""}
                           </Link>
                         ) : (

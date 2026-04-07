@@ -9,7 +9,22 @@ import type { Metadata } from 'next';
 export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
   const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
   const rank = Number((sp.rank as string) ?? 1);
-  return { title: `Seasons at Year-End No. ${rank} | ATP Ranking Records` };
+  const page = Number((sp.page as string) ?? '1');
+  const SITE = 'https://stats.tennismylife.org';
+  const OG_IMAGE = `${SITE}/og/site-preview.png`;
+  const title = `Seasons at Year-End No. ${rank} – ATP Ranking Records`;
+  const description = `Which players finished the most seasons ranked at ATP No. ${rank} at year-end? Complete all-time list with individual years.`;
+  const canonical = `${SITE}/recordsranking/endoftheseason/${rank}`;
+  return {
+    title,
+    description,
+    keywords: [`year-end No. ${rank}`, 'ATP year-end ranking', 'tennis ranking records', 'end of season ATP', 'ATP history'],
+    alternates: { canonical },
+    openGraph: { type: 'website', url: canonical, siteName: 'TennisMyLife', title, description, images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: title }] },
+    twitter: { card: 'summary_large_image', site: '@TennisMyLife68', creator: '@TennisMyLife68', title, description, images: [OG_IMAGE] },
+    robots: page > 1 ? { index: false, follow: true } : { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large', 'max-video-preview': -1 },
+    authors: [{ name: 'TennisMyLife' }],
+  };
 }
 
 interface Player {
@@ -78,6 +93,7 @@ export default async function RecordsCount({ searchParams }: { searchParams?: Pr
   const renderTable = (list: Player[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
       <table className="min-w-full border-collapse">
+        <caption className="py-2 text-sm font-semibold text-gray-400 uppercase tracking-wide">Record leaderboard</caption>
         <thead>
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
@@ -104,11 +120,59 @@ export default async function RecordsCount({ searchParams }: { searchParams?: Pr
 
   return (
     <section className="mb-8">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org', '@type': 'ItemList',
+        'url': `https://stats.tennismylife.org/recordsranking/endoftheseason/${rank}`,
+        'inLanguage': 'en-US',
+        'isPartOf': { '@type': 'WebSite', 'name': 'TennisMyLife', 'url': 'https://stats.tennismylife.org' },
+        'dateModified': new Date().toISOString(),
+        'name': `Most Season-End No. ${rank} Finishes – All-Time`,
+        'description': `Players with the most ATP year-end No. ${rank} finishes in history.`,
+        'numberOfItems': Math.min(data.length, 10),
+        'itemListElement': data.slice(0, 10).map((r, idx) => ({
+          '@type': 'ListItem', 'position': idx + 1,
+          'item': { '@type': 'SportsStatistic', 'name': r.name, ...(r.slug ? { 'url': `https://stats.tennismylife.org/players/${r.slug}/ranking` } : {}), 'additionalProperty': [
+            { '@type': 'PropertyValue', 'name': 'Year-End Count', 'value': r.endYearCount },
+          ]},
+        })),
+      }) }} />
       <React.Suspense fallback={<div className="text-gray-400 py-2 text-center">Loading controls...</div>}>
         <EndSeasonCountControls initialRank={rank} />
       </React.Suspense>
 
-
+      {/* Descriptive paragraph — page 1 only */}
+      {page === 1 && data.length > 0 && (() => {
+        const leader = data[0];
+        const second = data[1];
+        const third  = data[2];
+        return (
+          <div className="mb-6 px-5 py-4 rounded-xl bg-gray-800/50 border border-white/10 text-gray-400 text-sm leading-relaxed max-w-3xl mx-auto">
+            <p>
+              <span className="text-white font-medium">{totalCount} player{totalCount !== 1 ? 's have' : ' has'}</span>{' '}
+              finished at least one season ranked at ATP No.{' '}
+              <span className="text-white font-medium">{rank}</span> since{' '}
+              <span className="text-white font-medium">1973</span>.{' '}
+              <span className="text-indigo-300 font-medium">{leader.name}</span>{' '}
+              leads with <span className="text-white font-medium">{leader.endYearCount} year-end finish{leader.endYearCount !== 1 ? 'es' : ''}</span>
+              {leader.seasons && leader.seasons.length > 0 ? (
+                <> ({leader.seasons.join(', ')})</>
+              ) : null}
+              {second ? (
+                <>, ahead of{' '}
+                  <span className="text-indigo-300 font-medium">{second.name}</span>{' '}
+                  ({second.endYearCount})
+                  {third ? (
+                    <> and{' '}
+                      <span className="text-indigo-300 font-medium">{third.name}</span>{' '}
+                      ({third.endYearCount})
+                    </>
+                  ) : null}
+                </>
+              ) : null}.
+            </p>
+          </div>
+        );
+      })()}
 
       {paginatedPlayers.length > 0 ? renderTable(paginatedPlayers, start) : (
         <div className="text-gray-400 py-4 text-center">No data available.</div>

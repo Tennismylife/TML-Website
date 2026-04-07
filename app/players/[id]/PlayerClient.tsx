@@ -22,6 +22,9 @@ export default function PlayerClient(props: any) {
   const initialSeasonYear = props.initialSeasonYear;
   const initialSeasonMatches = props.initialSeasonMatches;
   const initialSeasonYears = props.initialSeasonYears;
+  const belowTabsSlot: React.ReactNode = props.belowTabsSlot ?? null;
+  // SSR-rendered matches table to be placed inside the tab content area
+  const serverMatchesTable: React.ReactNode = props.serverMatchesTable ?? null;
   // SSR-provided player data: render immediately without waiting for the API call
   const initialPlayer: Player | null = props.initialPlayer ?? null;
 
@@ -37,7 +40,11 @@ export default function PlayerClient(props: any) {
       if (typeof window === 'undefined') return params?.tab || 'matches';
       const parts = window.location.pathname.split('/');
       const pathTab = parts[3] || null; // /players/<slug>/<tab>
-      return pathTab || (new URLSearchParams(window.location.search).get('tab')) || params?.tab || 'matches';
+      // Surface-specific route segments are not tabs in the UI — map them to the matches tab
+      // so AllMatches renders with the surface-filtered initialMatches provided by the server.
+      const SURFACE_ROUTES = new Set(['clay', 'hard', 'grass']);
+      const resolvedPathTab = pathTab && SURFACE_ROUTES.has(pathTab) ? 'matches' : pathTab;
+      return resolvedPathTab || (new URLSearchParams(window.location.search).get('tab')) || params?.tab || 'matches';
     } catch {
       return params?.tab || 'matches';
     }
@@ -323,7 +330,7 @@ export default function PlayerClient(props: any) {
     { id: "performance", label: "Performance" },
     { id: "statistics", label: "Statistics" },
     { id: "ranking", label: "Ranking" },
-    // { id: "surfaces", label: "Surface Stats" }, // temporarily hidden
+    { id: "surfaces", label: "Surface Stats" },
   ];
 
   return (
@@ -354,6 +361,8 @@ export default function PlayerClient(props: any) {
         initialSeasonStats={initialSeasonStats}
         initialSeasonYear={initialSeasonYear}
         initialSeasonMatches={initialSeasonMatches}
+        belowTabsSlot={belowTabsSlot}
+        serverMatchesTable={serverMatchesTable}
         initialSeasonYears={initialSeasonYears}
         banner={serverBanner}
         rankingNarrative={rankingNarrative}

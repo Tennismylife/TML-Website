@@ -20,6 +20,65 @@ interface SurfaceStatsClientProps {
   initialStats?: SurfaceStatsResult | null;
 }
 
+const YearByYearBreakdownTable: React.FC<{
+  rows: Array<{ year: number; wins: number; losses: number; pct: number; total: number; titles: number; finals: number; sf: number; qf: number; r16: number; r32: number; r64: number; r128: number }>;
+}> = ({ rows }) => {
+  if (!rows.length) return null;
+
+  return (
+    <div className="relative mt-10">
+      <div
+        className="absolute -top-4 -left-3 bg-yellow-400 text-white px-5 py-2 rounded-r-xl shadow-xl font-extrabold text-base tracking-wide border border-yellow-500/70 z-20"
+        style={{ boxShadow: "2px 3px 10px rgba(0,0,0,0.5)", borderLeft: "4px solid rgba(0,0,0,0.3)", transform: "translateY(-4px)", minWidth: "230px", whiteSpace: "nowrap" }}
+      >
+        Year-by-year breakdown
+      </div>
+      <div className="relative border-l-4 border-yellow-400 bg-gray-800 p-6 pl-8 pt-8 shadow-xl rounded-2xl overflow-visible">
+        <div className="mx-auto w-[93%] overflow-x-auto rounded-xl border border-white/10 bg-gray-900/60">
+          <table className="min-w-full border-collapse text-sm">
+            <thead>
+              <tr className="bg-black/40">
+                <th className="border border-white/10 px-3 py-2 text-center text-white">Year</th>
+                <th className="border border-white/10 px-3 py-2 text-center text-white">W</th>
+                <th className="border border-white/10 px-3 py-2 text-center text-white">L</th>
+                <th className="border border-white/10 px-3 py-2 text-center text-white">%</th>
+                <th className="border border-white/10 px-3 py-2 text-center text-white">Titles 🏆</th>
+                <th className="border border-white/10 px-3 py-2 text-center text-white">F</th>
+                <th className="border border-white/10 px-3 py-2 text-center text-white">SF</th>
+                <th className="border border-white/10 px-3 py-2 text-center text-white">QF</th>
+                <th className="border border-white/10 px-3 py-2 text-center text-white">R16</th>
+                <th className="border border-white/10 px-3 py-2 text-center text-white">R32</th>
+                <th className="border border-white/10 px-3 py-2 text-center text-white">R64</th>
+                <th className="border border-white/10 px-3 py-2 text-center text-white">R128</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => {
+                return (
+                  <tr key={row.year} className="text-gray-200 even:bg-white/5">
+                      <td className="border border-white/10 px-3 py-2 text-center font-semibold text-yellow-300">{row.year}</td>
+                    <td className="border border-white/10 px-3 py-2 text-center text-green-400">{row.wins}</td>
+                    <td className="border border-white/10 px-3 py-2 text-center text-red-400">{row.losses}</td>
+                    <td className="border border-white/10 px-3 py-2 text-center text-blue-400">{row.pct.toFixed(1)}%</td>
+                    <td className="border border-white/10 px-3 py-2 text-center text-yellow-400">{row.titles}</td>
+                    <td className="border border-white/10 px-3 py-2 text-center">{row.finals}</td>
+                    <td className="border border-white/10 px-3 py-2 text-center">{row.sf}</td>
+                    <td className="border border-white/10 px-3 py-2 text-center">{row.qf}</td>
+                    <td className="border border-white/10 px-3 py-2 text-center">{row.r16}</td>
+                    <td className="border border-white/10 px-3 py-2 text-center">{row.r32}</td>
+                    <td className="border border-white/10 px-3 py-2 text-center">{row.r64}</td>
+                    <td className="border border-white/10 px-3 py-2 text-center">{row.r128}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ===================== WLStatTable (local copy, same as Seasons) =====================
 interface WLRow { label: string; wins: number; losses: number; color?: string; }
 const WLStatTable: React.FC<{ title: string; rows: WLRow[] }> = ({ title, rows }) => {
@@ -48,7 +107,7 @@ const WLStatTable: React.FC<{ title: string; rows: WLRow[] }> = ({ title, rows }
                 <div className="w-32 font-semibold">{row.label}</div>
                 <div className="flex-1 relative h-6 rounded overflow-hidden bg-gray-900/70">
                   <div className="h-6 rounded transition-all duration-500" style={{ width: `${pct}%`, backgroundColor: color }} />
-                  <div className="absolute inset-0 flex justify-center items-center text-sm font-medium" style={{ color: getTextColor(color) }}>
+                  <div className="absolute inset-0 flex justify-center items-center text-sm font-medium text-blue-400">
                     {total > 0 ? `${pct.toFixed(1)}%` : "0%"}
                   </div>
                 </div>
@@ -128,6 +187,7 @@ export default function SurfaceStatsClient({
     tourneysForSurface,
     careerAgg,
     yearsAgg,
+    yearsBreakdown,
     levelsAgg,
     vsRankAgg,
     roundsAgg,
@@ -136,7 +196,7 @@ export default function SurfaceStatsClient({
     tiebreakAgg,
   } = stats;
 
-  const SECTION_COUNT = 6;
+  const SECTION_COUNT = 7;
   const computing = false;
   const { isMobile: isMobileCards, visibleCount, sentinelRef } = useIncrementalCards(
     !loading ? SECTION_COUNT : 0,
@@ -176,7 +236,7 @@ export default function SurfaceStatsClient({
         )}
 
         <Link
-          href={`${getPlayerHref(playerSlug ?? playerId)}/matches?surface=${encodeURIComponent(surface)}${selectedYear ? `&year=${selectedYear}` : ""}`}
+          href={`${getPlayerHref(playerSlug ?? playerId)}/${surface.toLowerCase()}${selectedYear ? `?year=${selectedYear}` : ""}`}
           className="inline-block bg-blue-600 hover:bg-blue-700 shadow-lg text-white font-bold text-sm py-1.5 px-4 rounded-full transition-all duration-200 ml-auto"
         >
           View Matches ↗
@@ -194,7 +254,7 @@ export default function SurfaceStatsClient({
         <div style={{ opacity: loading ? 0.6 : 1, transition: "opacity 0.3s" }}>
           {/* Mobile summary */}
           <div className="text-gray-200 mb-4 sm:hidden">
-            Wins: {careerAgg.wins}–{careerAgg.losses} ({careerAgg.pct.toFixed(1)}%)
+            Wins: {careerAgg.wins}–{careerAgg.losses} (<span className="text-blue-400">{careerAgg.pct.toFixed(1)}%</span>)
           </div>
 
           {/* Section 1: Tournament tiles — only when a year is selected */}
@@ -311,8 +371,15 @@ export default function SurfaceStatsClient({
             <div ref={sentinelRef} style={{ height: 1 }} />
           )}
 
-          {/* Section 5 & 6: Service & Return Spider */}
+          {/* Section 5: Year-by-year breakdown */}
           {(!isMobileCards || visibleCount >= 5) && (
+            <YearByYearBreakdownTable
+              rows={yearsBreakdown}
+            />
+          )}
+
+          {/* Section 6 & 7: Service & Return Spider */}
+          {(!isMobileCards || visibleCount >= 6) && (
             <div className="flex flex-wrap gap-8 mt-10">
               <div style={{ flex: 1, minWidth: 320 }}>
                 <PlayerServiceSpider

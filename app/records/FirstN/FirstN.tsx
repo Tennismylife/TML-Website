@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
 import { getPlayerHrefWithTab } from "@/lib/utils";
+import { playerSurfaceHref, surfaceFromSelection } from "../nav";
 
 interface FirstNProps {
   selectedSurfaces: Set<string>;
@@ -35,7 +36,7 @@ export default function FirstN({ selectedSurfaces, selectedLevels, selectedRound
   const [n, setN] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
-
+  const surfaceLink = surfaceFromSelection(selectedSurfaces);
   useEffect(() => {
     setLoading(true);
     setError(null);
@@ -134,7 +135,7 @@ export default function FirstN({ selectedSurfaces, selectedLevels, selectedRound
               <tr key={index} className="border-b">
                 <td className="py-1">
                   <Flag ioc={p.player.ioc} className="w-4 h-3 inline-block mr-1" />
-                  <Link href={getPlayerHrefWithTab((p.player as any).slug ?? String(p.player.id), 'matches')} className="text-blue-700 hover:underline">
+                  <Link href={playerSurfaceHref((p.player as any).slug ?? String(p.player.id), surfaceLink)} className="text-blue-700 hover:underline">
                     {p.player.name}
                   </Link>
                 </td>

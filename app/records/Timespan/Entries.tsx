@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
 import { getPlayerHref } from "@/lib/utils";
-import { playerMatchesUrl } from "../nav";
+import { playerSurfaceOrMatchesUrl } from "../nav";
 import { useSearchParams } from 'next/navigation';
 import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
@@ -118,7 +118,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
                     <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-300 font-medium" rowSpan={timespans.length}>{globalRank}</td>
                     <td className="border border-gray-800 px-4 py-2 text-center text-lg text-gray-200 flex items-center justify-center gap-2 font-medium" rowSpan={timespans.length}>
                       <Flag ioc={entry.ioc ?? undefined} className="w-4 h-3 inline-block" />
-                      <Link href={playerMatchesUrl((entry as any).slug ?? String(entry.player_id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="text-gray-300 hover:underline">{entry.player_name}</Link>
+                      <Link href={playerSurfaceOrMatchesUrl((entry as any).slug ?? String(entry.player_id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="text-gray-300 hover:underline">{entry.player_name}</Link>
                     </td>
                   </>
                 )}

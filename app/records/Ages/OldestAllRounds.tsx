@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
 import { getTourneyHref, getPlayerHrefWithTab } from "@/lib/utils";
+import { playerSurfaceHref, surfaceFromSelection } from "../nav";
 import Pagination from '../../../components/Pagination';
 import Modal from "@/components/Modal";
 
@@ -29,7 +30,7 @@ export default function OldestAllRounds({ selectedSurfaces, selectedLevels, fetc
   const [modalData, setModalData] = useState<{ title: string; list: any[] } | null>(null);
   const [page, setPage] = useState(1);
   const [showAll, setShowAll] = useState(false);
-
+  const surfaceLink = surfaceFromSelection(selectedSurfaces);
   useEffect(() => {
     const fetchData = async () => {
       if (!((enabled && fetchRequestId) || showAll)) {
@@ -79,7 +80,7 @@ export default function OldestAllRounds({ selectedSurfaces, selectedLevels, fetc
                 <td className="border border-gray-700 px-4 py-2">
                   <div className="flex items-center justify-center gap-2">
                     <Flag ioc={p.ioc} className="text-sm" />
-                    <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.id), 'matches')} className="text-blue-400 hover:underline">
+                    <Link href={playerSurfaceHref((p as any).slug ?? String(p.id), surfaceLink)} className="text-blue-400 hover:underline">
                       {p.name}
                     </Link>
                   </div>
@@ -172,7 +173,7 @@ export default function OldestAllRounds({ selectedSurfaces, selectedLevels, fetc
                       <td className="border border-gray-700 px-4 py-2 text-center">
                         <div className="flex items-center justify-center gap-2">
                           <Flag ioc={p.ioc} className="w-4 h-3" />
-                          <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.id), 'matches')} className="text-blue-400 hover:underline">
+                          <Link href={playerSurfaceHref((p as any).slug ?? String(p.id), surfaceLink)} className="text-blue-400 hover:underline">
                             {p.name}
                           </Link>
                         </div>

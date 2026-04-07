@@ -284,7 +284,22 @@ export default function MatchTable({
                       {m.tourney_name}
                     </Link>
                   </td>
-                  <td className={tdBase}>{extractUniqueSurfaces(m.surface).join(', ') || m.surface || "-"}</td>
+                  <td className={tdBase}>
+                    {(() => {
+                      const surfaces = extractUniqueSurfaces(m.surface);
+                      const SURFACE_ROUTES = new Set(['clay', 'hard', 'grass']);
+                      return surfaces.length > 0 && playerSlug ? (
+                        <>
+                          {surfaces.map((s, i) => {
+                            const route = s.toLowerCase().split(' ')[0];
+                            return SURFACE_ROUTES.has(route) ? (
+                              <Link key={i} href={`/players/${playerSlug}/${route}`} className="hover:underline text-indigo-300">{s}</Link>
+                            ) : <span key={i}>{s}</span>;
+                          }).reduce((acc: any, el, i) => i === 0 ? [el] : [...acc, ', ', el], [])}
+                        </>
+                      ) : (surfaces.join(', ') || m.surface || "-");
+                    })()}
+                  </td>
                   <td className={tdBase}>{m.round}</td>
                   <td className={tdBase}>
                     {m.winner_rank != null && (m as any).winner_slug

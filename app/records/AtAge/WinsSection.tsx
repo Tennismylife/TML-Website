@@ -8,6 +8,7 @@ import Modal from "@/components/Modal";
 import AgeInput from "./AgeInput";
 import Flag from '@/components/Flag';
 import { getPlayerHrefWithTab } from '@/lib/utils';
+import { playerSurfaceHref, surfaceFromSelection } from '../nav';
 
 interface WinsSectionProps {
   selectedSurfaces: string[];
@@ -42,6 +43,7 @@ export default function WinsSection({
   initialAge,
 }: WinsSectionProps) {
   const enabled = !!fetchEnabled;
+  const surfaceLink = surfaceFromSelection(selectedSurfaces);
   const safeInitialAge = Number.isFinite(initialAge) ? (initialAge as number) : 25;
   const [data, setData] = useState<Player[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
@@ -249,7 +251,7 @@ export default function WinsSection({
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
                   <div className="flex items-center justify-center gap-2">
                     {p.ioc ? <Flag ioc={p.ioc} className="w-4 h-3" /> : <span className="text-base">🏳️</span>}
-                    <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.id), 'matches')} className="text-indigo-300 hover:underline">
+                    <Link href={playerSurfaceHref((p as any).slug ?? String(p.id), surfaceLink)} className="text-indigo-300 hover:underline">
                       {p.name}
                     </Link>
                   </div>

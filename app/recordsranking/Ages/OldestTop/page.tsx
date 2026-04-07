@@ -8,7 +8,22 @@ import type { Metadata } from 'next';
 export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
   const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
   const top = Number((Array.isArray(sp.top) ? sp.top[0] : sp.top) ?? (Array.isArray(sp.rank) ? sp.rank[0] : sp.rank) ?? 100);
-  return { title: `Oldest Players at Top ${top} | ATP Ranking Records` };
+  const page = Number((sp.page as string) ?? '1');
+  const SITE = 'https://stats.tennismylife.org';
+  const OG_IMAGE = `${SITE}/og/site-preview.png`;
+  const title = `Oldest Players Ever in ATP Top ${top} – All-Time Records`;
+  const description = `Who are the oldest players to enter the ATP Top ${top}? All-time historical list ordered by age.`;
+  const canonical = `${SITE}/recordsranking/ages/oldestattop/${top}`;
+  return {
+    title,
+    description,
+    keywords: [`oldest ATP Top ${top}`, 'oldest tennis player ranking', 'ATP records by age', 'ATP history', 'tennis records'],
+    alternates: { canonical },
+    openGraph: { type: 'website', url: canonical, siteName: 'TennisMyLife', title, description, images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: title }] },
+    twitter: { card: 'summary_large_image', site: '@TennisMyLife68', creator: '@TennisMyLife68', title, description, images: [OG_IMAGE] },
+    robots: page > 1 ? { index: false, follow: true } : { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large', 'max-video-preview': -1 },
+    authors: [{ name: 'TennisMyLife' }],
+  };
 }
 
 interface OldestTopItem {
@@ -102,6 +117,8 @@ export default async function OldestAtTopX({ searchParams }: { searchParams?: Pr
     data = Array.from(bestByPlayer.entries()).map(([id, v]) => { const { y,m,d } = diffYMD(v.birth, v.date); return { id, name: v.name, ioc: v.ioc, ageDays: v.ageDays, ageLabel: `${y}y ${m}m ${d}d`, date: v.date.toISOString().slice(0,10) }; }).sort((a,b) => b.ageDays - a.ageDays || a.name.localeCompare(b.name,'en',{sensitivity:'base'})).slice(0,limit);
   }
 
+  const over35Top = data.filter(r => r.ageDays >= 35 * 365).length;
+
   const perPage = 20;
   const page = Number((sp.page as string) ?? '1');
   const totalPages = Math.ceil(data.length / perPage);
@@ -119,6 +136,7 @@ export default async function OldestAtTopX({ searchParams }: { searchParams?: Pr
   const renderTable = (list: OldestTopItem[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
       <table className="min-w-full border-collapse">
+        <caption className="py-2 text-sm font-semibold text-gray-400 uppercase tracking-wide">Record leaderboard</caption>
         <thead>
           <tr className="bg-black"><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Top</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Player</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Age at Top {top}</th><th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Date</th></tr>
         </thead>
@@ -133,11 +151,48 @@ export default async function OldestAtTopX({ searchParams }: { searchParams?: Pr
 
   return (
     <section className="mb-8">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org', '@type': 'ItemList',
+        'url': `https://stats.tennismylife.org/recordsranking/ages/oldestattop/${top}`,
+        'inLanguage': 'en-US',
+        'isPartOf': { '@type': 'WebSite', 'name': 'TennisMyLife', 'url': 'https://stats.tennismylife.org' },
+        'dateModified': new Date().toISOString(),
+        'name': `Oldest Players in ATP Top ${top} – All-Time`,
+        'description': `Oldest ATP Top ${top} entries by age on last appearance in the Top ${top}.`,
+        'numberOfItems': Math.min(data.length, 10),
+        'itemListElement': data.slice(0, 10).map((r, idx) => ({
+          '@type': 'ListItem', 'position': idx + 1,
+          'item': { '@type': 'SportsStatistic', 'name': r.name, ...(r.slug ? { 'url': `https://stats.tennismylife.org/players/${r.slug}/ranking` } : {}), 'additionalProperty': [
+            { '@type': 'PropertyValue', 'name': 'Age', 'value': r.ageLabel },
+            { '@type': 'PropertyValue', 'name': 'Date', 'value': r.date },
+          ]},
+        })),
+      }) }} />
       <div className="flex items-center gap-4 mb-4">
         <label className="text-gray-200 font-medium">Top:</label>
-        <DropdownNavSelect name="top" value={String(top)} options={[1,2,3,4,5,6,7,8,9,10,20,30,50,100].map(n=>({ value: String(n), label: `Top ${n}`}))} />
+        <DropdownNavSelect name="top" value={String(top)} options={[2,3,4,5,6,7,8,9,10,20,30,50,100].map(n=>({ value: String(n), label: `Top ${n}`}))} pathMode />
       </div>
 
+      {page === 1 && data.length > 0 && (
+        <div className="mb-6 px-5 py-4 rounded-xl bg-gray-800/50 border border-white/10 text-gray-400 text-sm leading-relaxed max-w-3xl mx-auto">
+          The oldest player ever to enter the ATP Top{' '}<span className="text-white font-medium">{top}</span> is{' '}
+          <span className="text-indigo-300 font-medium">{data[0].name}</span>, who entered it at the age of{' '}
+          <span className="text-white font-medium">{data[0].ageLabel}</span> on{' '}
+          <span className="text-white font-medium">{data[0].date}</span>.
+          {data.length > 1 && (
+            <> The second oldest is <span className="text-indigo-300 font-medium">{data[1].name}</span>{' '}
+            (<span className="text-white font-medium">{data[1].ageLabel}</span>).</>
+          )}
+          {data.length > 2 && (
+            <> Third is <span className="text-indigo-300 font-medium">{data[2].name}</span>{' '}
+            (<span className="text-white font-medium">{data[2].ageLabel}</span>).</>
+          )}
+          {over35Top > 0 && (
+            <>{' '}<span className="text-white font-medium">{over35Top}</span> players in this all-time list entered the Top{' '}
+            <span className="text-white font-medium">{top}</span> at age 35 or older.</>
+          )}
+        </div>
+      )}
 
       {paginatedRows.length > 0 ? renderTable(paginatedRows, start) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
 

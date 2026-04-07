@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Flag from '@/components/Flag';
 import Link from 'next/link';
-import { playerMatchesUrl } from "../nav";
+import { playerSurfaceOrMatchesUrl } from "../nav";
 import { useSearchParams } from 'next/navigation';
 import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
@@ -131,7 +131,7 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-400">{rank}</td>
                 <td className="border border-white/10 px-4 py-2 flex items-center justify-center gap-2 text-lg text-gray-200">
                   {player.ioc ? <Flag ioc={player.ioc} className="w-4 h-3" /> : <span className="text-base">🏳️</span>}
-                  <Link href={playerMatchesUrl((player as any).slug ?? String(player.PlayerId), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="hover:underline">
+                  <Link href={playerSurfaceOrMatchesUrl((player as any).slug ?? String(player.PlayerId), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="hover:underline">
                     {player.Player}
                   </Link>
                 </td>

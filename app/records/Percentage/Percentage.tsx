@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
-import { playerMatchesUrl } from "../nav";
+import { playerSurfaceOrMatchesUrl } from "../nav";
 import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
@@ -108,7 +108,7 @@ const Percentage = ({ selectedSurfaces, selectedLevels, selectedRounds, selected
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalIdx}</td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 flex items-center justify-center gap-2">
                   <Flag ioc={p.ioc} className="w-4 h-3" />
-                  <Link href={playerMatchesUrl((p as any).slug ?? String(p.id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="text-gray-200 hover:underline">{p.name}</Link>
+                  <Link href={playerSurfaceOrMatchesUrl((p as any).slug ?? String(p.id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="text-gray-200 hover:underline">{p.name}</Link>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{wins}</td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{losses}</td>

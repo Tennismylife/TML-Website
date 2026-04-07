@@ -423,6 +423,8 @@ export default function H2HContentClient({ matches, player1, player2, children, 
           setSortKey={setSortKey}
           setSortDir={setSortDir}
           playerId={player1.id}
+          player1Slug={player1.slug}
+          player2Slug={player2.slug}
         />
       </div>}
 

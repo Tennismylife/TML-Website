@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
 import { getPlayerHrefWithTab } from '@/lib/utils';
+import { playerSurfaceHref, surfaceFromSelection } from '../nav';
 import { useRouter, useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
@@ -30,6 +31,7 @@ interface PlayerData {
 
 export default function RoundAppearancesSection({ selectedSurfaces, selectedLevels, selectedRound, fetchEnabled = true, setFetchEnabled, fetchRequestId, description, initialData, initialAge }: RoundAppearancesProps) {
   const enabled = !!fetchEnabled;
+  const surfaceLink = surfaceFromSelection(selectedSurfaces);
   const safeInitialAge = Number.isFinite(initialAge) ? (initialAge as number) : 25;
   const [data, setData] = useState<PlayerData[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
@@ -237,7 +239,7 @@ export default function RoundAppearancesSection({ selectedSurfaces, selectedLeve
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
                   <div className="flex items-center justify-center gap-2">
                     <Flag ioc={p.ioc ?? undefined} className="w-4 h-3" />
-                    <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.id), 'matches')} className="text-indigo-300 hover:underline">{p.name}</Link>
+                    <Link href={playerSurfaceHref((p as any).slug ?? String(p.id), surfaceLink)} className="text-indigo-300 hover:underline">{p.name}</Link>
                   </div>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.appearances_at_age}</td>

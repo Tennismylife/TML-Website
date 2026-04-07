@@ -3,10 +3,27 @@ import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import Flag from '@/components/Flag';
 import Link from 'next/link';
-import DropdownNavSelect from '../../../../components/DropdownNavSelect';
 import RecordsTopControls from '../../Top/RecordsTopControls';
 
-export const metadata: Metadata = { title: 'Top-X Timespan (EOY) | ATP Ranking Records' };
+export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
+  const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
+  const top = Number((sp.top as string) ?? 5);
+  const SITE = 'https://stats.tennismylife.org';
+  const OG_IMAGE = `${SITE}/og/site-preview.png`;
+  const title = `Longest Year-End Career Span in ATP Top ${top} – Records`;
+  const description = `Which players appeared in the ATP Top ${top} at year-end over the longest period? All-time historical list with first and last year.`;
+  const canonical = `${SITE}/recordsranking/timespanendoftheseason/attop/${top}`;
+  return {
+    title,
+    description,
+    keywords: [`year-end span ATP Top ${top}`, 'ATP year-end timespan', 'longest career year-end Top 10', 'tennis records', 'ATP history'],
+    alternates: { canonical },
+    openGraph: { type: 'website', url: canonical, siteName: 'TennisMyLife', title, description, images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: title }] },
+    twitter: { card: 'summary_large_image', site: '@TennisMyLife68', creator: '@TennisMyLife68', title, description, images: [OG_IMAGE] },
+    robots: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large', 'max-video-preview': -1 },
+    authors: [{ name: 'TennisMyLife' }],
+  };
+}
 
 function diffYMD(a: Date, b: Date) { let y=b.getUTCFullYear()-a.getUTCFullYear(); let m=b.getUTCMonth()-a.getUTCMonth(); let d=b.getUTCDate()-a.getUTCDate(); if (d<0){const prev=new Date(Date.UTC(b.getUTCFullYear(),b.getUTCMonth(),0)); d+=prev.getUTCDate(); m-=1;} if(m<0){m+=12;y-=1;} return {y,m,d}; }
 
@@ -53,6 +70,7 @@ export default async function EoyTopTimespan(props: Props) {
   const renderTable = (list: any[]) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
       <table className="min-w-full border-collapse">
+        <caption className="py-2 text-sm font-semibold text-gray-400 uppercase tracking-wide">Record leaderboard</caption>
         <thead>
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">#</th>
@@ -79,9 +97,41 @@ export default async function EoyTopTimespan(props: Props) {
 
   return (
     <section className="mb-8">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org', '@type': 'ItemList',
+        'url': `https://stats.tennismylife.org/recordsranking/timespanendoftheseason/attop/${top}`,
+        'inLanguage': 'en-US',
+        'isPartOf': { '@type': 'WebSite', 'name': 'TennisMyLife', 'url': 'https://stats.tennismylife.org' },
+        'dateModified': new Date().toISOString(),
+        'name': `Longest Year-End Career Span in ATP Top ${top} – All-Time`,
+        'description': `Players who appeared inside the ATP Top ${top} at year-end over the longest period of years.`,
+        'numberOfItems': Math.min(rowsToShow.length, 10),
+        'itemListElement': rowsToShow.slice(0, 10).map((r, idx) => ({
+          '@type': 'ListItem', 'position': idx + 1,
+          'item': { '@type': 'SportsStatistic', 'name': r.name, ...(r.slug ? { 'url': `https://stats.tennismylife.org/players/${r.slug}/ranking` } : {}), 'additionalProperty': [
+            { '@type': 'PropertyValue', 'name': 'Timespan', 'value': r.timespanLabel },
+            { '@type': 'PropertyValue', 'name': 'First Date', 'value': r.firstDate },
+            { '@type': 'PropertyValue', 'name': 'Last Date', 'value': r.lastDate },
+          ]},
+        })),
+      }) }} />
       <React.Suspense fallback={<div className="text-gray-400 py-2 text-center">Loading controls...</div>}>
         <RecordsTopControls initialTop={top} />
       </React.Suspense>
+
+      {rowsToShow.length > 0 && (
+        <div className="mb-6 px-5 py-4 rounded-xl bg-gray-800/50 border border-white/10 text-gray-400 text-sm leading-relaxed max-w-3xl mx-auto">
+          The longest year-end career span inside the ATP Top{' '}<span className="text-white font-medium">{top}</span> belongs to{' '}
+          <span className="text-indigo-300 font-medium">{rowsToShow[0].name}</span>:{' '}
+          <span className="text-white font-medium">{rowsToShow[0].timespanLabel}</span>, from{' '}
+          <span className="text-white font-medium">{rowsToShow[0].firstDate}</span> to{' '}
+          <span className="text-white font-medium">{rowsToShow[0].lastDate}</span>.
+          {rowsToShow.length > 1 && (
+            <> Second is <span className="text-indigo-300 font-medium">{rowsToShow[1].name}</span>{' '}
+            (<span className="text-white font-medium">{rowsToShow[1].timespanLabel}</span>).</>
+          )}
+        </div>
+      )}
 
       {rowsToShow.length > 0 ? renderTable(rowsToShow) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
     </section>

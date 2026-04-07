@@ -41,9 +41,12 @@ interface PlayerTabsProps {
   initialSeasonYear?: number | null;
   initialSeasonMatches?: any[];
   initialSeasonYears?: number[];
+  belowTabsSlot?: React.ReactNode;
+  // SSR-rendered matches table rendered inside the tab content for Google first-paint
+  serverMatchesTable?: React.ReactNode;
 }
 
-export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNarrative, setTab, tournamentsFilters, setTournamentsFilters, h2hFilters, setH2HFilters, initialMatches, initialHeading, initialTotals, initialFacets, initialSeasonStats, initialSeasonYear, initialSeasonMatches, initialSeasonYears }: PlayerTabsProps) {
+export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNarrative, setTab, tournamentsFilters, setTournamentsFilters, h2hFilters, setH2HFilters, initialMatches, initialHeading, initialTotals, initialFacets, initialSeasonStats, initialSeasonYear, initialSeasonMatches, initialSeasonYears, belowTabsSlot, serverMatchesTable }: PlayerTabsProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -136,20 +139,25 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
       content = <Profile player={player} />;
       break;
     case "matches":
-      content = <AllMatches playerId={player.id} playerSlug={player.slug} initialMatches={initialMatches} initialHeading={initialHeading} initialTotals={initialTotals} initialFacets={initialFacets} />;
+      content = (
+        <>
+          <AllMatches playerId={player.id} playerSlug={player.slug} initialMatches={initialMatches} initialHeading={initialHeading} initialTotals={initialTotals} initialFacets={initialFacets} />
+        </>
+      );
       break;
     case "season":
       content = (
-        <Seasons
-          playerId={player.id}
-          playerSlug={player.slug}
-          playerName={player.atpname ?? player.player ?? player.id}
-          initialSelectedYear={initialSeasonYear ?? undefined}
-          initialAllMatches={initialSeasonMatches}
-          initialYears={initialSeasonYears}
-          initialSeasonStats={initialSeasonStats}
-          initialSeasonYear={initialSeasonYear}
-        />
+        <>
+          <Seasons
+            playerId={player.id}
+            playerSlug={player.slug}
+            playerName={player.atpname ?? player.player ?? player.id}
+            initialAllMatches={initialSeasonMatches}
+            initialYears={initialSeasonYears}
+            initialSeasonStats={initialSeasonStats}
+            initialSeasonYear={initialSeasonYear}
+          />
+        </>
       );
       break;
     case "tournaments":
@@ -180,12 +188,14 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
       const surfaceMap: Record<string, string> = { clay: 'Clay', hard: 'Hard', grass: 'Grass' };
       const surfaceKey = surfaceMap[activeTab] ?? activeTab;
       content = (
-        <SurfaceStatsClient
-          playerId={player.id}
-          playerSlug={player.slug}
-          playerName={player.atpname ?? player.player ?? player.id}
-          surface={surfaceKey}
-        />
+        <>
+          <SurfaceStatsClient
+            playerId={player.id}
+            playerSlug={player.slug}
+            playerName={player.atpname ?? player.player ?? player.id}
+            surface={surfaceKey}
+          />
+        </>
       );
       break;
     }
@@ -227,17 +237,18 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
                   >
                     {label}
                   </button>
-                  <div className={`flex gap-4 ${selected ? 'flex' : 'hidden'} group-hover:flex`}>
+                  <div className="flex flex-wrap gap-4">
                     {[{ key: 'hard', label: 'Hard' }, { key: 'clay', label: 'Clay' }, { key: 'grass', label: 'Grass' }].map(({ key, label: slabel }) => (
-                        <button
+                        <a
                           key={key}
-                          onClick={() => handleTabClick(key)}
+                          href={`/players/${player.slug}/${key}`}
+                          onClick={(e) => { e.preventDefault(); handleTabClick(key); }}
                           className={`px-3 py-1 rounded-md ${
                             activeTab === key
                               ? 'text-white border-b-2 border-yellow-400'
                               : 'text-gray-400 hover:text-yellow-400'
                           }`}
-                        >{slabel}</button>
+                        >{slabel}</a>
                       ))}
                     </div>
                 </div>
@@ -265,6 +276,13 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
       {banner && activeTab === 'ranking' && (
         <div className="mt-2">
           {banner}
+        </div>
+      )}
+      {belowTabsSlot && (
+        <div className="w-full bg-gray-900">
+          <div className="w-full py-6">
+            {belowTabsSlot}
+          </div>
         </div>
       )}
 

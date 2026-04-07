@@ -8,7 +8,7 @@ export default function EndSeasonStreakCountControls({ initialRank }: { initialR
   return (
     <div className="flex items-center gap-4 mb-4">
       <label className="text-gray-200 font-medium">Rank:</label>
-      <DropdownNavSelect name="rank" value={String(initialRank)} options={options} />
+      <DropdownNavSelect name="rank" value={String(initialRank)} options={options} pathMode />
     </div>
   );
 }

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Flag from '@/components/Flag';
 import { getPlayerHrefWithTab } from '@/lib/utils';
-import { playerTournamentsUrl } from '../nav';
+import { playerTournamentsUrl, playerSurfaceHref, surfaceFromSelection } from '../nav';
 import Pagination from '../../../components/Pagination';
 import Modal from "@/components/Modal";
 
@@ -34,7 +34,7 @@ export default function Count({ selectedRounds, selectedSurfaces, selectedLevels
   const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
   const perPage = 20;
-
+  const surfaceLink = surfaceFromSelection(selectedSurfaces);
   useEffect(() => {
     const handler = (e: Event) => { if ((e as CustomEvent)?.detail?.resetPage) setPage(1); };
     window.addEventListener('records:reset', handler as EventListener);
@@ -104,7 +104,7 @@ export default function Count({ selectedRounds, selectedSurfaces, selectedLevels
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
                   <div className="flex items-center justify-center gap-2">
                     <Flag ioc={p.ioc} className="w-4 h-3 inline-block" />
-                    <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.id), 'matches')} className="text-indigo-300 hover:underline">
+                    <Link href={playerSurfaceHref((p as any).slug ?? String(p.id), surfaceLink)} className="text-indigo-300 hover:underline">
                       {p.name}
                     </Link>
                   </div>

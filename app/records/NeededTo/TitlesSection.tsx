@@ -7,6 +7,7 @@ import Pagination from "../../../components/Pagination";
 import Modal from "@/components/Modal";
 import Flag from '@/components/Flag';
 import { getPlayerHrefWithTab } from '@/lib/utils';
+import { playerSurfaceHref, surfaceFromSelection } from '../nav';
 
 interface TitlesSectionProps {
   selectedSurfaces: string[];
@@ -56,7 +57,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
   const searchParams = useSearchParams();
   const router = useRouter();
   const perPage = 20;
-
+  const surfaceLink = surfaceFromSelection(selectedSurfaces);
   useEffect(() => {
     setInputN(safeInitialNth);
     setSelectedN(safeInitialNth);
@@ -176,7 +177,7 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{globalRank}</td>
                 <td className="border border-white/10 px-4 py-2 flex items-center justify-center gap-2 text-lg text-gray-200">
                   {p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" />}
-                  <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.player_id), 'matches')} className="text-indigo-300 hover:underline">{p.player_name}</Link>
+                  <Link href={playerSurfaceHref((p as any).slug ?? String(p.player_id), surfaceLink)} className="text-indigo-300 hover:underline">{p.player_name}</Link>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.titles}</td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.tournaments_played}</td>

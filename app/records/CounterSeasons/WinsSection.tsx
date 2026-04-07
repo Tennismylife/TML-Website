@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Modal from "@/components/Modal";
 import Flag from '@/components/Flag';
 import { getPlayerHrefWithTab } from "@/lib/utils";
+import { playerSurfaceHref, surfaceFromSelection } from "../nav";
 
 interface WinsSectionProps {
   selectedSurfaces: string[];
@@ -43,6 +44,7 @@ export default function WinsSection({
   description,
 }: WinsSectionProps) {
   const [players, setPlayers] = useState<Player[]>(initialData ?? []);
+  const surfaceLink = surfaceFromSelection(selectedSurfaces);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasFetched, setHasFetched] = useState(!!initialData);
@@ -248,7 +250,7 @@ export default function WinsSection({
                   <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
                     <div className="flex items-center justify-center gap-2">
                       {p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" /> }
-                      <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.id), 'matches')} className="text-indigo-300 hover:underline">
+                      <Link href={playerSurfaceHref((p as any).slug ?? String(p.id), surfaceLink)} className="text-indigo-300 hover:underline">
                         {p.name || "Unknown Player"}
                       </Link>
                     </div>

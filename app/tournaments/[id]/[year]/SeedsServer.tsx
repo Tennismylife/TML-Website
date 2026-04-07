@@ -1,4 +1,5 @@
 import Flag from '@/components/Flag';
+import Link from 'next/link';
 import EditionNavigatorServer from '@/components/EditionNavigatorServer';
 import type { Match } from '@/types';
 import { prisma } from '@/lib/prisma';
@@ -23,13 +24,14 @@ export default async function SeedsServer(props: any) {
   const { id, year, matches } = props;
   if (!matches || matches.length === 0) return null;
 
-  const seedsMap = new Map<number, { name: string; ioc?: string | undefined; lastMatch: Match | null; outcome: React.ReactNode }>();
+  const seedsMap = new Map<number, { name: string; ioc?: string | undefined; slug?: string | null; lastMatch: Match | null; outcome: React.ReactNode }>();
 
   for (const m of matches) {
     if (m.winner_seed && !seedsMap.has(m.winner_seed))
       seedsMap.set(m.winner_seed, {
         name: m.winner_name ?? "",
         ioc: m.winner_ioc ?? undefined,
+        slug: (m as any).winner_slug ?? null,
         lastMatch: null,
         outcome: "",
       });
@@ -37,6 +39,7 @@ export default async function SeedsServer(props: any) {
       seedsMap.set(m.loser_seed, {
         name: m.loser_name ?? "",
         ioc: m.loser_ioc ?? undefined,
+        slug: (m as any).loser_slug ?? null,
         lastMatch: null,
         outcome: "",
       });
@@ -90,7 +93,11 @@ export default async function SeedsServer(props: any) {
 
   const seedOutcomes = Array.from(seedsMap.entries())
     .sort(([a], [b]) => a - b)
-    .map(([seed, data]) => ({ seed, name: data.name, ioc: data.ioc, outcome: data.outcome }));
+    .map(([seed, data]) => ({ seed, name: data.name, ioc: data.ioc, slug: data.slug, outcome: data.outcome }));
+
+  // Determine surface for links (use first match with a surface value)
+  const rawSurface = matches.find((m: any) => m.surface)?.surface ?? null;
+  const surfacePath = rawSurface ? String(rawSurface).toLowerCase() : null;
 
   const mid = Math.ceil(seedOutcomes.length / 2);
   const leftColumn = seedOutcomes.slice(0, mid);
@@ -120,16 +127,24 @@ export default async function SeedsServer(props: any) {
 
       <div className="flex gap-4">
         <div className="flex-1 space-y-2">
-          {leftColumn.map(({ seed, name, ioc, outcome }) => (
+          {leftColumn.map(({ seed, name, ioc, slug, outcome }) => (
             <div key={seed} className="bg-gray-800 p-2 rounded">
-              <span className="font-bold">{seed}. <Flag ioc={ioc} className="w-4 h-3 inline-block mr-1" /> {name}</span> ({outcome})
+              <span className="font-bold">{seed}. <Flag ioc={ioc} className="w-4 h-3 inline-block mr-1" />{' '}
+                {slug && surfacePath ? (
+                  <Link href={`/players/${slug}/${surfacePath}`} className="hover:underline text-white">{name}</Link>
+                ) : name}
+              </span>{' '}({outcome})
             </div>
           ))}
         </div>
         <div className="flex-1 space-y-2">
-          {rightColumn.map(({ seed, name, ioc, outcome }) => (
+          {rightColumn.map(({ seed, name, ioc, slug, outcome }) => (
             <div key={seed} className="bg-gray-800 p-2 rounded">
-              <span className="font-bold">{seed}. <Flag ioc={ioc} className="w-4 h-3 inline-block mr-1" /> {name}</span> ({outcome})
+              <span className="font-bold">{seed}. <Flag ioc={ioc} className="w-4 h-3 inline-block mr-1" />{' '}
+                {slug && surfacePath ? (
+                  <Link href={`/players/${slug}/${surfacePath}`} className="hover:underline text-white">{name}</Link>
+                ) : name}
+              </span>{' '}({outcome})
             </div>
           ))}
         </div>

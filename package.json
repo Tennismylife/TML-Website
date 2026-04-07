@@ -36,7 +36,9 @@
     "gen:thumbs": "node scripts/gen-thumbs.js",
     "gen:rss": "node scripts/gen-rss.js",
     "start:standalone": "node scripts/start-standalone.js",
-    "gen:sitemap-h2h-top100": "node scripts/sitemap/generate-sitemap-h2h-top100.js"
+    "gen:sitemap-h2h-top100": "node scripts/sitemap/generate-sitemap-h2h-top100.js",
+    "gen:sitemap-player-surfaces-top100": "node scripts/sitemap/generate-sitemap-player-surfaces-top100.js",
+    "gen:sitemap-recordsranking": "node scripts/sitemap/generate-sitemap-recordsranking.js"
   },
   "dependencies": {
     "@langchain/ollama": "^0.2.4",

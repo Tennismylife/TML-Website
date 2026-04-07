@@ -19,6 +19,7 @@ export type SurfaceStatsResult = {
   tourneysForSurface: TourneyTile[];
   careerAgg:          { wins: number; losses: number; total: number; pct: number };
   yearsAgg:           Array<{ year: number; wins: number; losses: number; total: number; pct: number }>;
+  yearsBreakdown:     Array<{ year: number; wins: number; losses: number; total: number; pct: number; titles: number; finals: number; sf: number; qf: number; r16: number; r32: number; r64: number; r128: number }>;
   levelsAgg:          LevelAgg[];
   vsRankAgg:          VsRankAgg[];
   roundsAgg:          RoundAgg[];
@@ -129,6 +130,33 @@ export function computeSurfaceStats(
     .map(([year, { wins, losses }]) => ({ year, wins, losses, total: wins + losses, pct: (wins + losses) > 0 ? (wins / (wins + losses)) * 100 : 0 }))
     .sort((a, b) => b.year - a.year);
 
+  const seasonMap = new Map<number, { wins: number; losses: number; titles: number; finals: number; sf: number; qf: number; r16: number; r32: number; r64: number; r128: number }>();
+  for (const m of surfaceMatches) {
+    const year = m.year ?? 0;
+    const current = seasonMap.get(year) ?? { wins: 0, losses: 0, titles: 0, finals: 0, sf: 0, qf: 0, r16: 0, r32: 0, r64: 0, r128: 0 };
+    const isWinner = String(m.winner_id) === pid;
+    if (isWinner) current.wins++; else current.losses++;
+    if (m.round === 'F') {
+      current.finals++;
+      if (isWinner) current.titles++;
+    }
+    if (m.round === 'SF') current.sf++;
+    if (m.round === 'QF') current.qf++;
+    if (m.round === 'R16') current.r16++;
+    if (m.round === 'R32') current.r32++;
+    if (m.round === 'R64') current.r64++;
+    if (m.round === 'R128') current.r128++;
+    seasonMap.set(year, current);
+  }
+  const yearsBreakdown = Array.from(seasonMap.entries())
+    .map(([year, row]) => ({
+      year,
+      ...row,
+      total: row.wins + row.losses,
+      pct: row.wins + row.losses > 0 ? (row.wins / (row.wins + row.losses)) * 100 : 0,
+    }))
+    .sort((a, b) => b.year - a.year);
+
   // ── levelsAgg ──
   const levelMap = new Map<string, { wins: number; losses: number }>();
   for (const m of surfaceMatches) {
@@ -236,6 +264,7 @@ export function computeSurfaceStats(
     tourneysForSurface,
     careerAgg,
     yearsAgg,
+    yearsBreakdown,
     levelsAgg,
     vsRankAgg,
     roundsAgg,
@@ -249,6 +278,7 @@ export const emptySurfaceStats: SurfaceStatsResult = {
   tourneysForSurface: [],
   careerAgg:          { wins: 0, losses: 0, total: 0, pct: 0 },
   yearsAgg:           [],
+  yearsBreakdown:     [],
   levelsAgg:          [],
   vsRankAgg:          [],
   roundsAgg:          [],

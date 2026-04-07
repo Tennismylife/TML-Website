@@ -6,7 +6,7 @@ import Flag from '@/components/Flag';
 import { getPlayerHrefWithTab } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
-import { playerTournamentsUrl } from "../nav";
+import { playerTournamentsUrl, playerSurfaceHref, surfaceFromSelection } from "../nav";
 import Modal from "@/components/Modal";
 
 interface PlayerData {
@@ -32,6 +32,7 @@ export default function Titles({ selectedSurfaces, selectedLevels, topTitles, fe
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
   const perPage = 20;
+  const surfaceLink = surfaceFromSelection(selectedSurfaces);
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -99,7 +100,7 @@ export default function Titles({ selectedSurfaces, selectedLevels, topTitles, fe
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
                   <div className="flex items-center justify-center gap-2">
                     <Flag ioc={p.ioc} className="w-4 h-3" />
-                    <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.id), 'matches')} className="text-indigo-300 hover:underline">
+                    <Link href={playerSurfaceHref((p as any).slug ?? String(p.id), surfaceLink)} className="text-indigo-300 hover:underline">
                       {p.name}
                     </Link>
                   </div>

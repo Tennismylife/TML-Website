@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Match, SortKey, SortDirection } from "@/types";
 import Flag from '@/components/Flag';
 import { useState, useMemo } from "react";
-import { getPlayerHref, getRoundIndex, createH2HUrl } from '@/lib/utils';
+import { getPlayerHref, getPlayerHrefWithTab, getRoundIndex, createH2HUrl } from '@/lib/utils';
 import { playerMatchesUrl } from '../../../records/nav';
 
 interface MatchTableProps {
@@ -98,6 +98,9 @@ export default function MatchTable({
           { id: "l_bp", label: "BPSvd", title: "Loser Break Points Saved / Break Points Faced", key: "l_bp" as SortKey },
         ];
   }, [showWinnerStats]);
+
+  const rawSurface = useMemo(() => matches.find((m) => m.surface)?.surface ?? null, [matches]);
+  const surfacePath = rawSurface ? String(rawSurface).toLowerCase() : null;
 
   const sortedMatches = useMemo(() => {
     if (!matches) return [];
@@ -235,6 +238,15 @@ export default function MatchTable({
                   >
                     {renderNameWithSeedEntry(m.winner_name ?? "", m.winner_seed, m.winner_entry)}
                   </Link>
+                  {((m as any).winner_slug || m.winner_id) && surfacePath && (
+                    <Link
+                      href={getPlayerHrefWithTab((m as any).winner_slug ?? String(m.winner_id), surfacePath)}
+                      className="text-[0.6rem] text-cyan-500 hover:underline"
+                      title={`${m.winner_name} ${rawSurface} stats`}
+                    >
+                      {rawSurface}
+                    </Link>
+                  )}
                 </td>
                 <td className="px-4 py-2 text-center text-sm">
                   {m.loser_rank != null && ((m as any).loser_slug)
@@ -249,6 +261,15 @@ export default function MatchTable({
                   >
                     {renderNameWithSeedEntry(m.loser_name ?? "", m.loser_seed, m.loser_entry)}
                   </Link>
+                  {((m as any).loser_slug || m.loser_id) && surfacePath && (
+                    <Link
+                      href={getPlayerHrefWithTab((m as any).loser_slug ?? String(m.loser_id), surfacePath)}
+                      className="text-[0.6rem] text-cyan-500 hover:underline"
+                      title={`${m.loser_name} ${rawSurface} stats`}
+                    >
+                      {rawSurface}
+                    </Link>
+                  )}
                 </td>
                 <td className="px-4 py-2 text-center font-mono text-sm">{m.score}</td>
                 {/* moved H2H link cell after score */}

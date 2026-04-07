@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-all-records.xml</loc>
+  </sitemap>
+  <sitemap>
     <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-top100.xml</loc>
   </sitemap>
   <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-new.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-noindex-410.xml</loc>
+  </sitemap>
+  <sitemap>
     <loc>https://stats.tennismylife.org/sitemaps/sitemap-player-seasons.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-player-surfaces-top100.xml</loc>
   </sitemap>
   <sitemap>
     <loc>https://stats.tennismylife.org/sitemaps/sitemap-players-A.xml</loc>
@@ -83,6 +95,9 @@
   </sitemap>
   <sitemap>
     <loc>https://stats.tennismylife.org/sitemaps/sitemap-players-Z.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-ranking-players.xml</loc>
   </sitemap>
   <sitemap>
     <loc>https://stats.tennismylife.org/sitemaps/sitemap-records.xml</loc>

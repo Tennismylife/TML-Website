@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
 import { getPlayerHrefWithTab } from "@/lib/utils";
+import { playerSurfaceHref, surfaceFromSelection } from "../nav";
 
 interface SetsProps {
   selectedSurfaces: Set<string>;
@@ -31,6 +32,8 @@ export default function Sets({ selectedSurfaces, selectedLevels, selectedRounds,
   const [selectedBestOf, setSelectedBestOf] = useState<Set<number>>(new Set());
 
   const [activeTab, setActiveTab] = useState<'win' | 'straight' | 'decider' | 'won1st' | 'lost1st' | 'won1st2nd' | 'lost1st2nd' | 'split1st2nd' | 'up2to1' | 'down2to1'>('win');
+
+  const surfaceLink = surfaceFromSelection(selectedSurfaces);
 
   // --- Toggle selezione Best Of ---
   const toggleBestOf = (value: number) => {
@@ -124,7 +127,7 @@ export default function Sets({ selectedSurfaces, selectedLevels, selectedRounds,
               <td className="py-1 flex items-center gap-1">
                 <Flag ioc={p.player.ioc ?? undefined} className="w-4 h-3 inline-block" />
                 <Link
-                  href={getPlayerHrefWithTab((p.player as any)?.slug ?? String(p.player.id), 'matches')}
+                  href={playerSurfaceHref((p.player as any)?.slug ?? String(p.player.id), surfaceLink)}
                   className="text-blue-700 hover:underline"
                 >
                   {p.player.name}

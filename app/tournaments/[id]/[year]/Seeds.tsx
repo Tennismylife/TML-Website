@@ -6,6 +6,8 @@ import { Match } from "@/types";
 import Flag from '@/components/Flag';
 import EditionNavigator from '@/components/EditionNavigator';
 import { getRoundColor, getTextColorForRound } from '@/lib/colors';
+import Link from 'next/link';
+import { getPlayerHrefWithTab } from '@/lib/utils';
 
 // Small helper to render a colored badge for rounds using shared color logic
 function RoundBadge({ round }: { round?: string | null }) {
@@ -30,9 +32,12 @@ export default function Seeds({ id, year, matches }: SeedsProps) {
   const seedOutcomes = useMemo(() => {
     if (!matches.length) return [];
 
+    const rawSurface = matches.find((m) => m.surface)?.surface ?? null;
+    const surfacePath = rawSurface ? String(rawSurface).toLowerCase() : null;
+
     const seedsMap = new Map<
       number,
-      { name: string; ioc?: string | undefined; lastMatch: Match | null; outcome: ReactNode }
+      { name: string; ioc?: string | undefined; slug?: string | null; surfacePath?: string | null; rawSurface?: string | null; lastMatch: Match | null; outcome: ReactNode }
     >();
 
     for (const m of matches) {
@@ -40,6 +45,9 @@ export default function Seeds({ id, year, matches }: SeedsProps) {
         seedsMap.set(m.winner_seed, {
           name: m.winner_name ?? "",
           ioc: m.winner_ioc ?? undefined,
+          slug: (m as any).winner_slug ?? null,
+          surfacePath,
+          rawSurface,
           lastMatch: null,
           outcome: "",
         });
@@ -47,6 +55,9 @@ export default function Seeds({ id, year, matches }: SeedsProps) {
         seedsMap.set(m.loser_seed, {
           name: m.loser_name ?? "",
           ioc: m.loser_ioc ?? undefined,
+          slug: (m as any).loser_slug ?? null,
+          surfacePath,
+          rawSurface,
           lastMatch: null,
           outcome: "",
         });
@@ -116,6 +127,9 @@ export default function Seeds({ id, year, matches }: SeedsProps) {
         seed,
         name: data.name,
         ioc: data.ioc,
+        slug: data.slug,
+        surfacePath: data.surfacePath,
+        rawSurface: data.rawSurface,
         outcome: data.outcome,
       }));
   }, [matches]);
@@ -175,20 +189,32 @@ export default function Seeds({ id, year, matches }: SeedsProps) {
 
       <div className="flex gap-4">
         <div className="flex-1 space-y-2">
-          {leftColumn.map(({ seed, name, ioc, outcome }) => (
+          {leftColumn.map(({ seed, name, ioc, slug, surfacePath, rawSurface, outcome }) => (
             <div key={seed} className="bg-gray-800 p-2 rounded">
               <span className="font-bold">
-                {seed}. <Flag ioc={ioc} className="w-4 h-3 inline-block mr-1" /> {name}
+                {seed}. <Flag ioc={ioc} className="w-4 h-3 inline-block mr-1" />{' '}
+                {slug && surfacePath ? (
+                  <Link href={getPlayerHrefWithTab(slug, surfacePath)} className="hover:underline text-white">{name}</Link>
+                ) : name}
+                {slug && surfacePath && rawSurface && (
+                  <Link href={getPlayerHrefWithTab(slug, surfacePath)} className="ml-2 text-[0.65rem] text-cyan-500 hover:underline" title={`${name} ${rawSurface} stats`}>{rawSurface}</Link>
+                )}
               </span>{" "}
               ({outcome})
             </div>
           ))}
         </div>
         <div className="flex-1 space-y-2">
-          {rightColumn.map(({ seed, name, ioc, outcome }) => (
+          {rightColumn.map(({ seed, name, ioc, slug, surfacePath, rawSurface, outcome }) => (
             <div key={seed} className="bg-gray-800 p-2 rounded">
               <span className="font-bold">
-                {seed}. <Flag ioc={ioc} className="w-4 h-3 inline-block mr-1" /> {name}
+                {seed}. <Flag ioc={ioc} className="w-4 h-3 inline-block mr-1" />{' '}
+                {slug && surfacePath ? (
+                  <Link href={getPlayerHrefWithTab(slug, surfacePath)} className="hover:underline text-white">{name}</Link>
+                ) : name}
+                {slug && surfacePath && rawSurface && (
+                  <Link href={getPlayerHrefWithTab(slug, surfacePath)} className="ml-2 text-[0.65rem] text-cyan-500 hover:underline" title={`${name} ${rawSurface} stats`}>{rawSurface}</Link>
+                )}
               </span>{" "}
               ({outcome})
             </div>

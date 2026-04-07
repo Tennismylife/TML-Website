@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import Flag from '@/components/Flag';
 
@@ -6,6 +7,7 @@ interface Player {
   id?: string | number;
   atpname?: string | null;
   ioc?: string | null;
+  slug?: string | null;
 }
 
 interface Match {
@@ -260,13 +262,13 @@ export default async function H2HPreviewServer({ player1, player2, matches }: Pr
           <strong className="text-green-400">{p1Career?.winsAll ?? 0}</strong>–<strong className="text-red-400">{p1Career?.lossesAll ?? 0}</strong> across{' '}
           <strong className="text-yellow-400">{p1Career?.totalAll ?? 0}</strong> matches,{' '}
           translating to a win rate of <strong className="text-yellow-400">{p1Career ? p1Career.percAll.toFixed(2) : '0.00'}%</strong>.{' '}
-          On hard courts his record stands at{' '}
+          On {player1.slug ? <Link href={`/players/${player1.slug}/hard`} className="text-cyan-400 hover:underline">hard courts</Link> : 'hard courts'} his record stands at{' '}
           <strong className="text-green-400">{p1Career?.winsHard ?? 0}</strong>–<strong className="text-red-400">{p1Career?.lossesHard ?? 0}</strong>{' '}
           (<strong className="text-yellow-400">{surfWinPct(p1Career?.winsHard ?? 0, p1Career?.lossesHard ?? 0)}%</strong>),{' '}
-          while on clay he holds a{' '}
+          while on {player1.slug ? <Link href={`/players/${player1.slug}/clay`} className="text-cyan-400 hover:underline">clay</Link> : 'clay'} he holds a{' '}
           <strong className="text-green-400">{p1Career?.winsClay ?? 0}</strong>–<strong className="text-red-400">{p1Career?.lossesClay ?? 0}</strong>{' '}
           (<strong className="text-yellow-400">{surfWinPct(p1Career?.winsClay ?? 0, p1Career?.lossesClay ?? 0)}%</strong>) mark.{' '}
-          On grass the numbers read{' '}
+          On {player1.slug ? <Link href={`/players/${player1.slug}/grass`} className="text-cyan-400 hover:underline">grass</Link> : 'grass'} the numbers read{' '}
           <strong className="text-green-400">{p1Career?.winsGrass ?? 0}</strong>–<strong className="text-red-400">{p1Career?.lossesGrass ?? 0}</strong>{' '}
           (<strong className="text-yellow-400">{surfWinPct(p1Career?.winsGrass ?? 0, p1Career?.lossesGrass ?? 0)}%</strong>){' '}
           {((p1Career?.winsCarpet ?? 0) + (p1Career?.lossesCarpet ?? 0)) > 0 && (
@@ -304,13 +306,13 @@ export default async function H2HPreviewServer({ player1, player2, matches }: Pr
           <strong className="text-green-400">{p2Career?.winsAll ?? 0}</strong>–<strong className="text-red-400">{p2Career?.lossesAll ?? 0}</strong> from{' '}
           <strong className="text-yellow-400">{p2Career?.totalAll ?? 0}</strong> matches{' '}
           (<strong className="text-yellow-400">{p2Career ? p2Career.percAll.toFixed(2) : '0.00'}%</strong> win rate).{' '}
-          His hard-court record is{' '}
+          His {player2.slug ? <Link href={`/players/${player2.slug}/hard`} className="text-orange-400 hover:underline">hard-court</Link> : 'hard-court'} record is{' '}
           <strong className="text-green-400">{p2Career?.winsHard ?? 0}</strong>–<strong className="text-red-400">{p2Career?.lossesHard ?? 0}</strong>{' '}
           (<strong className="text-yellow-400">{surfWinPct(p2Career?.winsHard ?? 0, p2Career?.lossesHard ?? 0)}%</strong>),{' '}
-          on clay he stands at{' '}
+          on {player2.slug ? <Link href={`/players/${player2.slug}/clay`} className="text-orange-400 hover:underline">clay</Link> : 'clay'} he stands at{' '}
           <strong className="text-green-400">{p2Career?.winsClay ?? 0}</strong>–<strong className="text-red-400">{p2Career?.lossesClay ?? 0}</strong>{' '}
           (<strong className="text-yellow-400">{surfWinPct(p2Career?.winsClay ?? 0, p2Career?.lossesClay ?? 0)}%</strong>),{' '}
-          and on grass he has gone{' '}
+          and on {player2.slug ? <Link href={`/players/${player2.slug}/grass`} className="text-orange-400 hover:underline">grass</Link> : 'grass'} he has gone{' '}
           <strong className="text-green-400">{p2Career?.winsGrass ?? 0}</strong>–<strong className="text-red-400">{p2Career?.lossesGrass ?? 0}</strong>{' '}
           (<strong className="text-yellow-400">{surfWinPct(p2Career?.winsGrass ?? 0, p2Career?.lossesGrass ?? 0)}%</strong>){' '}
           {((p2Career?.winsCarpet ?? 0) + (p2Career?.lossesCarpet ?? 0)) > 0 && (

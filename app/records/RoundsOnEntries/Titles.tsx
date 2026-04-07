@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Flag from '@/components/Flag';
 import { getPlayerHrefWithTab } from "@/lib/utils";
+import { playerSurfaceHref, surfaceFromSelection } from "../nav";
 import Pagination from "../../../components/Pagination";
 
 interface TitlesProps {
@@ -29,15 +30,17 @@ interface PlayerStat {
 export default function Titles({ selectedSurfaces, selectedLevels, minEntries, fetchEnabled, fetchRequestId, description, initialData }: TitlesProps) {
   const enabled = !!fetchEnabled;
   const [data, setData] = useState<PlayerStat[]>(Array.isArray(initialData) ? initialData : []);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!initialData?.length);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
-  const perPage = 20; 
+  const perPage = 20;
+  const surfaceLink = surfaceFromSelection(selectedSurfaces);
 
   useEffect(() => {
     // If SSR passed `initialData`, trigger client fetch on mount so the
     // client replaces SSR top‑10 with the full `limit=100` result set.
-    const shouldFetch = ((enabled && fetchRequestId) || showModal || (Array.isArray(initialData) && initialData.length > 0))
+    // Also fetch when initialData is empty/undefined (prefetch failed).
+    const shouldFetch = ((enabled && fetchRequestId) || showModal || !initialData?.length || (Array.isArray(initialData) && initialData.length > 0))
     if (!shouldFetch) {
       if (Array.isArray(initialData)) setData(initialData)
       setLoading(false);
@@ -102,7 +105,7 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries, f
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
                   <div className="flex items-center justify-center gap-2">
                     <Flag ioc={p.ioc ?? undefined} className="w-4 h-3" />
-                    <Link href={getPlayerHrefWithTab((p as any).slug ?? String(p.id), 'matches')} className="text-indigo-300 hover:underline">
+                    <Link href={playerSurfaceHref((p as any).slug ?? String(p.id), surfaceLink)} className="text-indigo-300 hover:underline">
                       {p.name}
                     </Link>
                   </div>
