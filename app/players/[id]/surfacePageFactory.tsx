@@ -460,7 +460,7 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
         {/* Recent form: W/L + form sequence + hot/cold commentary */}
         {recentYearTotal > 0 && (
           <p>
-            <strong className="text-yellow-400">{currentYear}:</strong>{' '}
+            <strong className="text-yellow-400">Recent Form {currentYear}:</strong>{' '}
             <strong className="text-green-400">{recentYearRec.w}</strong>–<strong className="text-red-400">{recentYearRec.l}</strong>{' '}
             (<strong className="text-blue-400">{((recentYearRec.w / recentYearTotal) * 100).toFixed(1)}%</strong>) on {adjective}.
             {recentFormStr.length > 0 && (
