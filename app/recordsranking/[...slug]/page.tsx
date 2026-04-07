@@ -187,6 +187,9 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
       images: [OG_IMAGE],
     },
     robots: (() => {
+      // Pagination pages (page > 1) are always noindex
+      const page = Number((sp.page as string) ?? 1);
+      if (page > 1) return { index: false, follow: true };
       // Pages not linked from /recordsranking landing are noindex
       const LANDING_RANK = new Set([1,2,3,4,5,6,7,8,9,10]);
       const LANDING_TOP  = new Set([2,3,4,5,6,7,8,9,10,20,30,50,100]);

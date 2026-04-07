@@ -8,6 +8,7 @@ import RecordsTopControls from '../../Top/RecordsTopControls';
 export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
   const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
   const top = Number((sp.top as string) ?? 5);
+  const page = Number((sp.page as string) ?? 1);
   const SITE = 'https://stats.tennismylife.org';
   const OG_IMAGE = `${SITE}/og/site-preview.png`;
   const title = `Longest Year-End Career Span in ATP Top ${top} – Records`;
@@ -20,7 +21,7 @@ export async function generateMetadata({ searchParams }: { searchParams?: Promis
     alternates: { canonical },
     openGraph: { type: 'website', url: canonical, siteName: 'TennisMyLife', title, description, images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: title }] },
     twitter: { card: 'summary_large_image', site: '@TennisMyLife68', creator: '@TennisMyLife68', title, description, images: [OG_IMAGE] },
-    robots: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large', 'max-video-preview': -1 },
+    robots: page > 1 ? { index: false, follow: true } : { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large', 'max-video-preview': -1 },
     authors: [{ name: 'TennisMyLife' }],
   };
 }

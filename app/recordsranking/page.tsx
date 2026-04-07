@@ -8,7 +8,7 @@ const CANONICAL = `${SITE}/recordsranking`;
 const OG_IMAGE = `${SITE}/og/site-preview.png`;
 
 export const metadata: Metadata = {
-  title: 'ATP Ranking Records | All-Time Leaderboards | Tennis My Life',
+  title: 'ATP Ranking Records | TennisMyLife',
   description:
     'The complete index of ATP ranking all-time records: most weeks at No. 1, longest consecutive streaks, year-end finishes, youngest & oldest records, career timespans and points records.',
   keywords: [
