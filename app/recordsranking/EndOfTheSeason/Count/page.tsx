@@ -179,7 +179,7 @@ export default async function RecordsCount({ searchParams }: { searchParams?: Pr
       )}
 
       {totalPages > 1 && (
-        <ServerPagination page={page} totalPages={totalPages} getHref={(p) => `?rank=${rank}&page=${p}`} />
+        <ServerPagination page={page} totalPages={totalPages} getHref={(p) => (sp as any)._numericInPath === '1' ? `?page=${p}` : `?rank=${rank}&page=${p}`} />
       )}
     </section>
   );

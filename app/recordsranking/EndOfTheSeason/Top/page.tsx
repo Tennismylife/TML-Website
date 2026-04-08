@@ -142,7 +142,13 @@ export default async function RecordsTopX(props: Props) {
 
       {pageRows.length>0? renderTable(pageRows, start) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
       {totalPages > 1 && (
-        <ServerPagination page={page} totalPages={totalPages} getHref={(p) => `?top=${top}${fromYear !== null ? `&fromYear=${fromYear}` : ''}${toYear !== null ? `&toYear=${toYear}` : ''}${p > 1 ? `&page=${p}` : ''}`} />
+        <ServerPagination page={page} totalPages={totalPages} getHref={(p) => {
+          if ((sp as any)._numericInPath === '1') {
+            const parts = [fromYear !== null ? `fromYear=${fromYear}` : null, toYear !== null ? `toYear=${toYear}` : null, p > 1 ? `page=${p}` : null].filter(Boolean) as string[];
+            return parts.length ? `?${parts.join('&')}` : '?';
+          }
+          return `?top=${top}${fromYear !== null ? `&fromYear=${fromYear}` : ''}${toYear !== null ? `&toYear=${toYear}` : ''}${p > 1 ? `&page=${p}` : ''}`;
+        }} />
       )} 
     </section>
   );

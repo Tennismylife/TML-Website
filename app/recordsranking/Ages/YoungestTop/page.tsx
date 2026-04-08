@@ -83,7 +83,6 @@ export default async function YoungestAtTopX({ searchParams }: { searchParams?: 
       select: { playerId: true, player: { select: { atpname: true, ioc: true, birthdate: true } }, rankingDate: { select: { date: true } } }
     });
   }
-  console.log('youngesttop page: fetched rows', rowsData.length, 'top', top, 'fromMV', fromMV);
 
   let data: YoungestTopItem[];
 
@@ -212,7 +211,7 @@ export default async function YoungestAtTopX({ searchParams }: { searchParams?: 
       {paginatedRows.length > 0 ? renderTable(paginatedRows, start) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
 
       { totalPages > 1 && (
-        <ServerPagination page={page} totalPages={totalPages} getHref={(p) => `?top=${top}&page=${p}`} />
+        <ServerPagination page={page} totalPages={totalPages} getHref={(p) => (sp as any)._numericInPath === '1' ? `?page=${p}` : `?top=${top}&page=${p}`} />
       )}
     </section>
   );

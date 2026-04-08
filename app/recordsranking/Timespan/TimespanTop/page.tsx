@@ -198,7 +198,13 @@ export default async function TopXTimespan({ searchParams }: { searchParams?: Pr
 
 
       {totalPages > 1 && (
-        <ServerPagination page={page} totalPages={totalPages} getHref={(p) => `?top=${top}${eoy ? '&eoy=1' : ''}${fromYear !== null ? `&fromYear=${fromYear}` : ''}${toYear !== null ? `&toYear=${toYear}` : ''}${p > 1 ? `&page=${p}` : ''}`} />
+        <ServerPagination page={page} totalPages={totalPages} getHref={(p) => {
+          if ((sp as any)._numericInPath === '1') {
+            const parts = [eoy ? 'eoy=1' : null, fromYear !== null ? `fromYear=${fromYear}` : null, toYear !== null ? `toYear=${toYear}` : null, p > 1 ? `page=${p}` : null].filter(Boolean) as string[];
+            return parts.length ? `?${parts.join('&')}` : '?';
+          }
+          return `?top=${top}${eoy ? '&eoy=1' : ''}${fromYear !== null ? `&fromYear=${fromYear}` : ''}${toYear !== null ? `&toYear=${toYear}` : ''}${p > 1 ? `&page=${p}` : ''}`;
+        }} />
       )}
     </section>
   );

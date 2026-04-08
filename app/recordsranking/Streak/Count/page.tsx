@@ -182,7 +182,7 @@ async function StreakCountMain({ searchParams, showHeading = true }: { searchPar
       </table>
 
       {totalPages > 1 && (
-        <ServerPagination page={page} totalPages={totalPages} getHref={(p) => `?rank=${rank}&page=${p}`} />
+        <ServerPagination page={page} totalPages={totalPages} getHref={(p) => (sp as any)._numericInPath === '1' ? `?page=${p}` : `?rank=${rank}&page=${p}`} />
       )}
     </div>
   );

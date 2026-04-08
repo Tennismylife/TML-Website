@@ -252,7 +252,7 @@ export default async function RecordsRankingSlugPage({
 
   // Inject path value (if present) as both rank and top so each sub-component reads the right one
   const resolvedSearchParams: Record<string, string | string[]> = pathValStr
-    ? { ...rawSearchParams, rank: pathValStr, top: pathValStr }
+    ? { ...rawSearchParams, rank: pathValStr, top: pathValStr, _numericInPath: '1' }
     : rawSearchParams;
 
   // Debug: log incoming params when RANKING_DEBUG=1

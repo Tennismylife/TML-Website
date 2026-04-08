@@ -182,7 +182,7 @@ export default async function OldestEoyTop({ searchParams }: { searchParams?: Pr
       {paginatedRows.length > 0 ? renderTable(paginatedRows, start) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
 
       { totalPages > 1 && (
-        <ServerPagination page={page} totalPages={totalPages} getHref={(p) => `?top=${top}&page=${p}`} />
+        <ServerPagination page={page} totalPages={totalPages} getHref={(p) => (sp as any)._numericInPath === '1' ? `?page=${p}` : `?top=${top}&page=${p}`} />
       )}
     </section>
   );

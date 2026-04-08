@@ -222,7 +222,7 @@ async function RecordsCountMain({ searchParams, showHeading = true }: { searchPa
         <ServerPagination
           page={page}
           totalPages={totalPages}
-          getHref={(p) => `?rank=${initialTop}&page=${p}`}
+          getHref={(p) => (sp as any)._numericInPath === '1' ? `?page=${p}` : `?rank=${initialTop}&page=${p}`}
         />
       )}
     </section>

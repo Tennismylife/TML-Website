@@ -165,7 +165,7 @@ export default async function StreakTop({ searchParams }: { searchParams?: Promi
       )}
 
       {totalPages > 1 && (
-        <ServerPagination page={page} totalPages={totalPages} getHref={(p) => `?top=${top}&page=${p}`} />
+        <ServerPagination page={page} totalPages={totalPages} getHref={(p) => (sp as any)._numericInPath === '1' ? `?page=${p}` : `?top=${top}&page=${p}`} />
       )} 
     </section>
   );
