@@ -57,14 +57,10 @@ export default async function Page(props: any) {
   // Centralized existence check: call shared helper and render a friendly
   // server-side fallback instead of throwing a 404. This prevents the "ghost
   // 404" UX caused by transient errors or missing DB rows.
-  // eslint-disable-next-line no-console
-  console.info('Rendering Tournament page', { id, year });
   let editionInfo: any = null;
   let editionMissing = false;
   try {
     editionInfo = await fetchEditionInfo({ id, year });
-    // eslint-disable-next-line no-console
-    console.info('fetchEditionInfo result', { id, year, hasInfo: !!editionInfo, hasMatches: editionInfo?.hasMatches });
     if (!editionInfo) editionMissing = true;
   } catch (e) {
     // Log unexpected errors but do NOT treat them as a hard 404. Show a friendly

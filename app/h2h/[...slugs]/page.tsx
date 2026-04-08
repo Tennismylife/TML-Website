@@ -78,8 +78,6 @@ export default async function Page({ params, searchParams }: { params?: Promise<
     return Array.isArray(v) ? v[0] : v;
   })();
 
-  console.log('[H2H Page] Received slug:', slug, 'slugArr:', slugArr, 'best_of:', qBestOf);
-
   let player1: any = null;
   let player2: any = null;
   let initialMatches: any[] = [];
