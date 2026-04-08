@@ -275,47 +275,57 @@ function strongETag(buffer) {
       return originalWrite(chunk, ...args);
     };
 
-    res.end = async (chunk, ...args) => {
+    res.end = (chunk, ...args) => {
       if (chunk) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
 
-      try {
-        if (res.statusCode === 200) {
-          const headers = res.getHeaders();
-          const ct = String(headers['content-type'] || '');
+      // Collect response metadata synchronously before the response is finalized
+      const statusCode = res.statusCode;
+      const headers = res.getHeaders();
+      const ct = String(headers['content-type'] || '');
 
-          // Abbiamo già catturato tutto il body: anche se la sorgente era "chunked", ora è completo
-          let bodyBuffer = Buffer.concat(chunks);
-          bodyBuffer = decompressIfGzip(bodyBuffer, headers);
-
-          // Facoltativo: per HTML, scarta body minuscoli (render parziale)
-          if (ct.includes('text/html') && bodyBuffer.length < 512) {
-            if (process.env.VERBOSE_LOGS === '1') console.warn('[CACHE SKIP] HTML troppo piccolo', key);
-          } else {
-            // TTL configurabili
-            const ttl = req.path.startsWith('/api')
-              ? Number(process.env.CACHE_TTL_API || 3600)   // 1h API
-              : Number(process.env.CACHE_TTL_PAGE || 900);  // 15m HTML
-
-            await redis.set(
-              key,
-              JSON.stringify({ body: bodyBuffer.toString('base64'), type: ct }),
-              { EX: ttl }
-            );
-
-            if (res.getHeader('X-Cache') === 'UNCACHED') {
-              res.setHeader('X-Cache', `${type.toUpperCase()}-STORED`);
-            }
-            res.setHeader('X-SSR-COMPLETE', '1');
-            res.setHeader('Cache-Control', type === 'page' ? 'public, max-age=0, s-maxage=900, stale-while-revalidate=86400' : 'private, max-age=0');
-
-            if (process.env.VERBOSE_LOGS === '1') console.log('[CACHE STORED]', key, bodyBuffer.length, 'bytes');
-          }
+      // Set diagnostic/cache headers synchronously (only if headers not yet sent)
+      if (statusCode === 200 && !res.headersSent) {
+        if (res.getHeader('X-Cache') === 'UNCACHED') {
+          res.setHeader('X-Cache', `${type.toUpperCase()}-STORED`);
         }
-      } catch (e) {
-        console.error('[CACHE PROCESS ERROR]', e);
+        res.setHeader('X-SSR-COMPLETE', '1');
+        res.setHeader('Cache-Control', type === 'page' ? 'public, max-age=0, s-maxage=900, stale-while-revalidate=86400' : 'private, max-age=0');
       }
 
-      return originalEnd(chunk, ...args);
+      // End the response synchronously so we never double-end
+      const result = originalEnd(chunk, ...args);
+
+      // Store in Redis asynchronously (fire-and-forget — never blocks the response)
+      if (statusCode === 200) {
+        (async () => {
+          try {
+            let bodyBuffer = Buffer.concat(chunks);
+            bodyBuffer = decompressIfGzip(bodyBuffer, headers);
+
+            // Facoltativo: per HTML, scarta body minuscoli (render parziale)
+            if (ct.includes('text/html') && bodyBuffer.length < 512) {
+              if (process.env.VERBOSE_LOGS === '1') console.warn('[CACHE SKIP] HTML troppo piccolo', key);
+            } else {
+              // TTL configurabili
+              const ttl = req.path.startsWith('/api')
+                ? Number(process.env.CACHE_TTL_API || 3600)   // 1h API
+                : Number(process.env.CACHE_TTL_PAGE || 900);  // 15m HTML
+
+              await redis.set(
+                key,
+                JSON.stringify({ body: bodyBuffer.toString('base64'), type: ct }),
+                { EX: ttl }
+              );
+
+              if (process.env.VERBOSE_LOGS === '1') console.log('[CACHE STORED]', key, bodyBuffer.length, 'bytes');
+            }
+          } catch (e) {
+            console.error('[CACHE PROCESS ERROR]', e);
+          }
+        })();
+      }
+
+      return result;
     };
 
     next();
