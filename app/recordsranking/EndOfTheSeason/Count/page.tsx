@@ -4,6 +4,7 @@ import Flag from '@/components/Flag';
 import Link from 'next/link';
 import EndSeasonCountControls from "./EndSeasonCountControls";
 import ServerPagination from '@/components/ServerPagination';
+import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
@@ -40,6 +41,7 @@ export default async function RecordsCount({ searchParams }: { searchParams?: Pr
   const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
   const rank = Number((sp.rank as string) ?? 1);
   const page = Number((sp.page as string) ?? '1');
+  if (!Number.isInteger(page) || page < 1) notFound();
   const perPage = 20;
 
   // Server-side logic from API
@@ -83,10 +85,12 @@ export default async function RecordsCount({ searchParams }: { searchParams?: Pr
   }
 
   const data = Array.from(agg.entries()).map(([id, v]) => ({ id, name: v.name, ioc: v.ioc, endYearCount: v.endYearCount, seasons: Array.from(v.seasons).sort((a,b)=>a-b), slug: v.slug }))
-    .sort((a,b) => (b.endYearCount - a.endYearCount) || a.name.localeCompare(b.name));
+    .sort((a,b) => (b.endYearCount - a.endYearCount) || a.name.localeCompare(b.name))
+    .slice(0, 100);
 
   const totalCount = data.length;
   const totalPages = Math.ceil(totalCount / perPage);
+  if (totalCount > 0 && page > totalPages) notFound();
   const start = (page - 1) * perPage;
   const paginatedPlayers = data.slice(start, start + perPage);
 

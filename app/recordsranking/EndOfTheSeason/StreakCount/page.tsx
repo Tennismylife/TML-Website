@@ -24,6 +24,7 @@ function computeStreaks(sortedYears: number[]): number[][] {
 }
 
 import StreakCountControls from "./StreakCountControls";
+import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
@@ -50,6 +51,8 @@ export async function generateMetadata({ searchParams }: { searchParams?: Promis
 export default async function EoyRankStreaks({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
   const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
   const rank = Number((sp.rank as string) ?? 1);
+  const page = Number((sp.page as string) ?? '1');
+  if (!Number.isInteger(page) || page < 1) notFound();
 
   // get last per year
   const dateWhere: any = {};
@@ -98,9 +101,9 @@ export default async function EoyRankStreaks({ searchParams }: { searchParams?: 
   data.sort((a,b) => b.longestStreak - a.longestStreak || a.name.localeCompare(b.name, 'en',{ sensitivity: 'base' }));
 
   const perPage = 20;
-  const page = Number((sp.page as string) ?? '1');
   const totalCount = data.length;
   const totalPages = Math.ceil(totalCount / perPage);
+  if (totalCount > 0 && page > totalPages) notFound();
   const start = (page - 1) * perPage;
   const paginatedPlayers = data.slice(start, start + perPage);
 

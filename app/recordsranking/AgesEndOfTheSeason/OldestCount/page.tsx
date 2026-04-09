@@ -4,6 +4,7 @@ import Flag from '@/components/Flag';
 import Link from 'next/link';
 import EndSeasonCountControls from '../../EndOfTheSeason/Count/EndSeasonCountControls';
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
   const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
@@ -47,7 +48,8 @@ export default async function OldestEoyAtRank({ searchParams }: { searchParams?:
   const rank = Number((sp.rank as string) ?? 1);
   const perPage = 20;
   const page = Number((sp.page as string) ?? 1);
-  const limit = 200;
+  if (!Number.isInteger(page) || page < 1) notFound();
+  const limit = 100;
 
   // validate
   if (!Number.isInteger(rank) || rank < 1) return (<section className="mb-8"><div className="text-gray-400 py-4 text-center">Invalid rank</div></section>);
@@ -93,6 +95,7 @@ export default async function OldestEoyAtRank({ searchParams }: { searchParams?:
   const data = Array.from(bestByPlayer.entries()).map(([id, v]) => { const { y,m,d } = diffYMD(v.birth, v.date); return { id, name: v.name, ioc: v.ioc, ageDays: v.ageDays, ageLabel: `${y}y ${m}m ${d}d`, year: v.year, slug: v.slug }; }).sort((a,b)=> b.ageDays - a.ageDays || a.name.localeCompare(b.name, 'en', { sensitivity: 'base' })).slice(0, limit);
 
   const totalPages = Math.ceil(data.length / perPage);
+  if (data.length > 0 && page > totalPages) notFound();
   const start = (page-1)*perPage;
   const pageRows = data.slice(start, start + perPage);
 

@@ -25,7 +25,7 @@ export async function GET(req: Request) {
     const top = topParam === null ? 100 : Number(topParam);
     const effectiveTop = top;
     // limit rows returned to 100
-    const limit = Math.min(100, Math.max(1, Number(url.searchParams.get("limit") ?? 100)));
+    const limit = 100;
 
     if (topParam !== null && (!Number.isInteger(top) || top < 1)) {
       return NextResponse.json({ error: "Param 'top' non valido" }, { status: 400 });

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { prisma } from "@/lib/prisma";
 import RecordsTopControls from "./RecordsTopControls";
 import ServerPagination from '@/components/ServerPagination';
+import { notFound } from 'next/navigation';
 
 export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
   const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
@@ -39,6 +40,7 @@ export default async function RecordsTopX({ searchParams }: { searchParams?: Pro
   const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
   const initialTop = Number((sp.top as string) ?? 2);
   const page = Number((sp.page as string) ?? '1');
+  if (!Number.isInteger(page) || page < 1) notFound();
   const perPage = 20;
 
   const top = initialTop;
@@ -71,10 +73,12 @@ export default async function RecordsTopX({ searchParams }: { searchParams?: Pro
     }))
     .sort((a, b) => b.weeks - a.weeks);
 
-  const totalCount = result.length;
+  const cappedResult = result.slice(0, 100);
+  const totalCount = cappedResult.length;
   const totalPages = Math.ceil(totalCount / perPage);
+  if (totalCount > 0 && page > totalPages) notFound();
   const start = (page - 1) * perPage;
-  const paginatedPlayers = result.slice(start, start + perPage);
+  const paginatedPlayers = cappedResult.slice(start, start + perPage);
 
   const renderTable = (list: TopXPlayer[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
@@ -115,12 +119,12 @@ export default async function RecordsTopX({ searchParams }: { searchParams?: Pro
     </div>
   );
 
-  const leader = result[0];
-  const second = result[1];
-  const third  = result[2];
-  const totalWeeks  = result.reduce((s, p) => s + p.weeks, 0);
-  const avgWeeks    = Math.round(totalWeeks / (result.length || 1));
-  const overOneYear = result.filter(p => p.weeks >= 52).length;
+  const leader = cappedResult[0];
+  const second = cappedResult[1];
+  const third  = cappedResult[2];
+  const totalWeeks  = cappedResult.reduce((s, p) => s + p.weeks, 0);
+  const avgWeeks    = Math.round(totalWeeks / (cappedResult.length || 1));
+  const overOneYear = cappedResult.filter(p => p.weeks >= 52).length;
   const gapPct      = leader && second ? Math.round(((leader.weeks - second.weeks) / second.weeks) * 100) : null;
 
   return (
@@ -133,8 +137,8 @@ export default async function RecordsTopX({ searchParams }: { searchParams?: Pro
         'dateModified': new Date().toISOString(),
         'name': `Most Weeks in ATP Top ${top} – All-Time Leaders`,
         'description': `Players with the most weeks inside the ATP Top ${top} in history.`,
-        'numberOfItems': Math.min(result.length, 10),
-        'itemListElement': result.slice(0, 10).map((r, idx) => ({
+        'numberOfItems': Math.min(cappedResult.length, 10),
+        'itemListElement': cappedResult.slice(0, 10).map((r, idx) => ({
           '@type': 'ListItem', 'position': idx + 1,
           'item': { '@type': 'SportsStatistic', 'name': r.name, ...(r.slug ? { 'url': `https://stats.tennismylife.org/players/${r.slug}/ranking` } : {}), 'additionalProperty': [
             { '@type': 'PropertyValue', 'name': 'Weeks', 'value': r.weeks },

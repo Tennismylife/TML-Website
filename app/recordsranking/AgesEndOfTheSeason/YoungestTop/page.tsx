@@ -5,6 +5,7 @@ import React from 'react';
 import RecordsTopControls from '../../Top/RecordsTopControls';
 import ServerPagination from '@/components/ServerPagination';
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
   const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
@@ -57,7 +58,7 @@ export default async function YoungestEoyTop({ searchParams }: { searchParams?: 
   const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
   const initialTop = Number((sp.top as string) ?? (sp.rank as string) ?? 2);
   const top = initialTop;
-  const limit = Math.min(500, Math.max(1, Number((sp.limit as string) ?? 200)));
+  const limit = 100;
 
   // Reuse the API logic server-side
   // 1) years
@@ -125,7 +126,9 @@ export default async function YoungestEoyTop({ searchParams }: { searchParams?: 
 
   const perPage = 20;
   const page = Number((sp.page as string) ?? '1');
+  if (!Number.isInteger(page) || page < 1) notFound();
   const totalPages = Math.ceil(data.length / perPage);
+  if (data.length > 0 && page > totalPages) notFound();
   const start = (page - 1) * perPage;
   const paginatedRows = data.slice(start, start + perPage);
 

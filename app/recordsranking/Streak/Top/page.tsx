@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import Flag from '@/components/Flag';
 import DropdownNavSelect from '@/components/DropdownNavSelect';
 import ServerPagination from '@/components/ServerPagination';
+import { notFound } from 'next/navigation';
 
 export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
   const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
@@ -33,6 +34,7 @@ export default async function StreakTop({ searchParams }: { searchParams?: Promi
   const top = Number((sp.top as string) ?? 2);
   const perPage = 20;
   const page = Number((sp.page as string) ?? 1);
+  if (!Number.isInteger(page) || page < 1) notFound();
 
   // replicate API logic server-side
   const allRankings = await prisma.ranking.findMany({
@@ -69,18 +71,20 @@ export default async function StreakTop({ searchParams }: { searchParams?: Promi
   commitStreak();
 
   result.sort((a,b)=> b.weeks - a.weeks);
+  const cappedResult = result.slice(0, 100);
 
   // Enrich with slugs for JSON-LD
-  const slugIds = result.slice(0, 10).map(r => r.id).filter(Boolean) as string[];
+  const slugIds = cappedResult.slice(0, 10).map(r => r.id).filter(Boolean) as string[];
   let slugMap = new Map<string, string | null>();
   if (slugIds.length > 0) {
     const slugRows = await prisma.player.findMany({ where: { id: { in: slugIds } }, select: { id: true, slug: true } });
     slugMap = new Map(slugRows.map(r => [r.id as string, r.slug as string | null]));
   }
 
-  const totalPages = Math.ceil(result.length / perPage);
+  const totalPages = Math.ceil(cappedResult.length / perPage);
+  if (cappedResult.length > 0 && page > totalPages) notFound();
   const start = (page - 1) * perPage;
-  const pageRows = result.slice(start, start + perPage);
+  const pageRows = cappedResult.slice(start, start + perPage);
 
   return (
     <section className="mb-8">
@@ -92,8 +96,8 @@ export default async function StreakTop({ searchParams }: { searchParams?: Promi
         'dateModified': new Date().toISOString(),
         'name': `Longest Consecutive Weeks in ATP Top ${top} – All-Time`,
         'description': `Longest consecutive week streaks inside the ATP Top ${top} in history.`,
-        'numberOfItems': Math.min(result.length, 10),
-        'itemListElement': result.slice(0, 10).map((r, idx) => ({
+        'numberOfItems': Math.min(cappedResult.length, 10),
+        'itemListElement': cappedResult.slice(0, 10).map((r, idx) => ({
           '@type': 'ListItem', 'position': idx + 1,
           'item': { '@type': 'SportsStatistic', 'name': r.name, ...(r.id && slugMap.get(String(r.id)) ? { 'url': `https://stats.tennismylife.org/players/${slugMap.get(String(r.id))}/ranking` } : {}), 'additionalProperty': [
             { '@type': 'PropertyValue', 'name': 'Consecutive Weeks', 'value': r.weeks },
@@ -108,11 +112,11 @@ export default async function StreakTop({ searchParams }: { searchParams?: Promi
       </div>
 
       {/* Descriptive paragraph — page 1 only */}
-      {page === 1 && result.length > 0 && (() => {
-        const leader = result[0];
-        const second = result[1];
-        const third  = result[2];
-        const withAtLeast4 = result.filter(p => p.weeks >= 4).length;
+      {page === 1 && cappedResult.length > 0 && (() => {
+        const leader = cappedResult[0];
+        const second = cappedResult[1];
+        const third  = cappedResult[2];
+        const withAtLeast4 = cappedResult.filter(p => p.weeks >= 4).length;
         return (
           <div className="mb-6 px-5 py-4 rounded-xl bg-gray-800/50 border border-white/10 text-gray-400 text-sm leading-relaxed max-w-3xl mx-auto">
             <p>

@@ -4,6 +4,7 @@ import Flag from '@/components/Flag';
 import Link from 'next/link';
 import DropdownNavSelect from '../../../../components/DropdownNavSelect';
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
   const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
@@ -57,7 +58,7 @@ export default async function OldestAtTopX({ searchParams }: { searchParams?: Pr
   const top = Number((sp.top as string) ?? (sp.rank as string) ?? 100);
   // compute oldest players among the specified Top‑X set
   const effectiveTop = top;
-  const limit = Math.min(100, Math.max(1, Number((sp.limit as string) ?? 100)));
+  const limit = 100;
   let rowsData: any[];
   let fromMV = false;
   const clientAny = prisma as any;
@@ -120,7 +121,9 @@ export default async function OldestAtTopX({ searchParams }: { searchParams?: Pr
 
   const perPage = 20;
   const page = Number((sp.page as string) ?? '1');
+  if (!Number.isInteger(page) || page < 1) notFound();
   const totalPages = Math.ceil(data.length / perPage);
+  if (data.length > 0 && page > totalPages) notFound();
   const start = (page - 1) * perPage;
   const paginatedRows = data.slice(start, start + perPage);
 

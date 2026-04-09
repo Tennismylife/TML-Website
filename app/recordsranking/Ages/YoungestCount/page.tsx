@@ -3,6 +3,7 @@ import DropdownNavSelect from '@/components/DropdownNavSelect';
 import ServerPagination from '@/components/ServerPagination';
 import Flag from '@/components/Flag';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 
 interface YoungestItem {
   id: string;
@@ -56,7 +57,7 @@ export async function generateMetadata({ searchParams }: { searchParams?: Promis
 export default async function YoungestAtRank({ searchParams }: { searchParams?: Promise<Record<string, string | string[]>> }) {
   const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
   const rank = Number((sp.rank as string) ?? 1);
-  const limit = Math.min(500, Math.max(1, Number((sp.limit as string) ?? 200)));
+  const limit = 100;
 
   // determine years and last per year
   const dateWhere: any = {};
@@ -104,7 +105,9 @@ export default async function YoungestAtRank({ searchParams }: { searchParams?: 
 
   const perPage = 20;
   const page = Number((sp.page as string) ?? '1');
+  if (!Number.isInteger(page) || page < 1) notFound();
   const totalPages = Math.ceil(data.length / perPage);
+  if (data.length > 0 && page > totalPages) notFound();
   const start = (page - 1) * perPage;
   const paginatedRows = data.slice(start, start + perPage);
 

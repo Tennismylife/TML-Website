@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { prisma } from "@/lib/prisma";
 import RecordsTopControls from '../../Top/RecordsTopControls';
 import ServerPagination from '@/components/ServerPagination';
+import { notFound } from 'next/navigation';
 
 export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
   const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
@@ -50,7 +51,7 @@ export default async function TopXTimespan({ searchParams }: { searchParams?: Pr
 
   const fromYear = sp.fromYear ? Number(sp.fromYear as string) : null;
   const toYear = sp.toYear ? Number(sp.toYear as string) : null;
-  const limit = 200;
+  const limit = 100;
 
   if (!Number.isInteger(top) || top < 1) {
     return (<section className="mb-8"><div className="text-gray-400 py-4 text-center">Invalid 'top' param</div></section>);
@@ -107,7 +108,9 @@ export default async function TopXTimespan({ searchParams }: { searchParams?: Pr
   const longSpan = data.filter(r => r.timespanDays > 10 * 365).length;
   const perPage = 20;
   const page = Number((sp.page as string) ?? 1);
+  if (!Number.isInteger(page) || page < 1) notFound();
   const totalPages = Math.ceil(data.length / perPage);
+  if (data.length > 0 && page > totalPages) notFound();
   const start = (page - 1) * perPage;
   const pageRows = data.slice(start, start + perPage);
 

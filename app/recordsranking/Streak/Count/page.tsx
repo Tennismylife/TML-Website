@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import RecordsCountControls from "../../Count/RecordsCountControls";
 import ServerPagination from '@/components/ServerPagination';
 import Link from "next/link";
+import { notFound } from 'next/navigation';
 
 export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
   const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
@@ -41,6 +42,7 @@ async function StreakCountMain({ searchParams, showHeading = true }: { searchPar
   const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
   const rank = Number((sp.rank as string) ?? 1);
   const page = Number((sp.page as string) ?? '1');
+  if (!Number.isInteger(page) || page < 1) notFound();
   const perPage = 20;
 
   // replicate server logic from API route
@@ -128,7 +130,7 @@ async function StreakCountMain({ searchParams, showHeading = true }: { searchPar
 
   commitPlayer();
 
-  const resultArray: (Player & { weeks: number })[] = Object.values(resultMap).sort((a, b) => b.weeks - a.weeks);
+  const resultArray: (Player & { weeks: number })[] = Object.values(resultMap).sort((a, b) => b.weeks - a.weeks).slice(0, 100);
 
   // Enrich with slugs where available so links point to canonical /players/:slug/matches
   const ids = resultArray.map(r => r.id).filter(Boolean) as string[];
@@ -139,6 +141,7 @@ async function StreakCountMain({ searchParams, showHeading = true }: { searchPar
   }
 
   const totalPages = Math.ceil(resultArray.length / perPage);
+  if (resultArray.length > 0 && page > totalPages) notFound();
   const start = (page - 1) * perPage;
   const paginatedPlayers = resultArray.slice(start, start + perPage);
 

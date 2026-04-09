@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import Flag from '@/components/Flag';
 import DropdownNavSelect from '../../../../components/DropdownNavSelect';
 import ServerPagination from '@/components/ServerPagination';
+import { notFound } from 'next/navigation';
 
 type Props = { searchParams?: Promise<Record<string,string | string[]>> };
 import type { Metadata } from 'next';
@@ -33,6 +34,7 @@ export default async function RecordsTopX(props: Props) {
   const top = Number((sp.top as string) ?? 2);
   const perPage = 20;
   const page = Number((sp.page as string) ?? 1);
+  if (!Number.isInteger(page) || page < 1) notFound();
 
   // port API logic server-side
   const fromYear = sp.fromYear ? Number(sp.fromYear as string) : null;
@@ -66,9 +68,10 @@ export default async function RecordsTopX(props: Props) {
     if (!a.seasons.has(year)) { a.seasons.add(year); a.endYearTopCount += 1; }
   }
 
-  const data = Array.from(agg.entries()).map(([id,v]) => ({ id, name: v.name, ioc: v.ioc, endYearTopCount: v.endYearTopCount, seasons: Array.from(v.seasons).sort((a,b)=>a-b) })).sort((a,b)=> b.endYearTopCount - a.endYearTopCount || a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }));
+  const data = Array.from(agg.entries()).map(([id,v]) => ({ id, name: v.name, ioc: v.ioc, endYearTopCount: v.endYearTopCount, seasons: Array.from(v.seasons).sort((a,b)=>a-b) })).sort((a,b)=> b.endYearTopCount - a.endYearTopCount || a.name.localeCompare(b.name, 'en', { sensitivity: 'base' })).slice(0, 100);
 
   const totalPages = Math.ceil(data.length / perPage);
+  if (data.length > 0 && page > totalPages) notFound();
   const start = (page-1)*perPage;
   const pageRows = data.slice(start, start + perPage);
 

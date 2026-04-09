@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { prisma } from "@/lib/prisma";
 import RecordsCountControls from "./RecordsCountControls";
 import ServerPagination from '@/components/ServerPagination';
+import { notFound } from 'next/navigation';
 
 export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
   const sp = Object.assign({}, await Promise.resolve(searchParams ?? {})) as Record<string, string | string[]>;
@@ -39,6 +40,7 @@ async function RecordsCountMain({ searchParams, showHeading = true }: { searchPa
   const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
   const initialTop = Number((sp.rank as string) ?? 1);
   const page = Number((sp.page as string) ?? '1');
+  if (!Number.isInteger(page) || page < 1) notFound();
   const perPage = 20;
 
   // Server-side query (same logic as API route)
@@ -68,10 +70,12 @@ async function RecordsCountMain({ searchParams, showHeading = true }: { searchPa
       weeks: r._count.rankingDateId,
       slug: slugMap[r.playerId] ?? null,
     }))
-    .sort((a, b) => b.weeks - a.weeks);
+    .sort((a, b) => b.weeks - a.weeks)
+    .slice(0, 100);
 
   const totalCount = result.length;
   const totalPages = Math.ceil(totalCount / perPage);
+  if (totalCount > 0 && page > totalPages) notFound();
   const start = (page - 1) * perPage;
   const paginatedPlayers = result.slice(start, start + perPage);
 

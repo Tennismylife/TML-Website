@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import Flag from '@/components/Flag';
 import DropdownNavSelect from '../../../../components/DropdownNavSelect';
 import ServerPagination from '@/components/ServerPagination';
+import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
@@ -30,6 +31,7 @@ export default async function EoyTopXStreaks({ searchParams }: { searchParams?: 
   const sp = await Promise.resolve(searchParams ?? {}) as Record<string, string | string[]>;
   const top = Number((sp.top as string) ?? 2);
   const page = Number((sp.page as string) ?? 1);
+  if (!Number.isInteger(page) || page < 1) notFound();
   const perPage = 20;
 
   if (!Number.isInteger(top) || top < 1 || top > 100) {
@@ -88,9 +90,10 @@ export default async function EoyTopXStreaks({ searchParams }: { searchParams?: 
     const years = Array.from(new Set(info.years)).sort((a,b)=>a-b);
     const streaks = computeStreaks(years);
     return streaks.map(s=>({ id, name: info.name, ioc: info.ioc, longestTopStreak: s.length, seasons: s }));
-  }).sort((a,b)=> b.longestTopStreak - a.longestTopStreak || (b.seasons[b.seasons.length-1] - a.seasons[a.seasons.length-1]) || a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }));
+  }).sort((a,b)=> b.longestTopStreak - a.longestTopStreak || (b.seasons[b.seasons.length-1] - a.seasons[a.seasons.length-1]) || a.name.localeCompare(b.name, 'en', { sensitivity: 'base' })).slice(0, 100);
 
   const totalPages = Math.ceil(data.length / perPage);
+  if (data.length > 0 && page > totalPages) notFound();
   const start = (page - 1) * perPage;
   const pageRows = data.slice(start, start + perPage);
 

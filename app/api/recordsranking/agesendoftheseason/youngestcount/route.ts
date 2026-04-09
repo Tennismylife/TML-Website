@@ -25,7 +25,7 @@ export async function GET(req: Request) {
     if (!Number.isInteger(rank) || rank < 1) {
       return NextResponse.json({ error: "Param 'rank' non valido (>=1)" }, { status: 400 });
     }
-    const limit = Math.min(100, Math.max(1, Number(url.searchParams.get("limit") ?? 100)));
+    const limit = 100;
 
     const fromYearParam = url.searchParams.get("fromYear");
     const toYearParam = url.searchParams.get("toYear");
