@@ -86,7 +86,7 @@ export async function GET(req: Request) {
       .sort((a, b) => (b.endYearCount - a.endYearCount) || a.name.localeCompare(b.name));
 
     // 5) Risposta: SOLO data
-    return NextResponse.json(data);
+    return NextResponse.json(data.slice(0, 100));
   } catch (error) {
     console.error("Error fetching end-of-year ranking data:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

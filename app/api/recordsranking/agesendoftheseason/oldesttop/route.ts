@@ -26,7 +26,7 @@ export async function GET(req: Request) {
     if (!Number.isInteger(top) || top < 1) {
       return NextResponse.json({ error: "Param 'top' non valido (>=1)" }, { status: 400 });
     }
-    const limit = Math.min(500, Math.max(1, Number(url.searchParams.get("limit") ?? 50)));
+    const limit = Math.min(100, Math.max(1, Number(url.searchParams.get("limit") ?? 100)));
 
     const fromYearParam = url.searchParams.get("fromYear");
     const toYearParam = url.searchParams.get("toYear");

@@ -89,7 +89,7 @@ export async function GET() {
     results.sort((a, b) => b.points_diff - a.points_diff || b.year - a.year);
     results.forEach((r, i) => { r.rank = i + 1; });
 
-    return NextResponse.json(results);
+    return NextResponse.json(results.slice(0, 100));
   } catch (error) {
     console.error("Error computing year-end difference (year-only):", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

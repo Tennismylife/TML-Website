@@ -28,7 +28,7 @@ export async function GET(req: Request) {
     }
 
     const eoy = url.searchParams.get("eoy") === "1";
-    const limit = Math.min(2000, Math.max(1, Number(url.searchParams.get("limit") ?? 500)));
+    const limit = Math.min(100, Math.max(1, Number(url.searchParams.get("limit") ?? 100)));
 
     // Filtri periodo (opzionali)
     const fromYearParam = url.searchParams.get("fromYear");

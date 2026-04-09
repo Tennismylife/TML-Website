@@ -131,7 +131,7 @@ export async function GET(req: Request) {
         a.name.localeCompare(b.name, "en", { sensitivity: "base" })
     );
 
-    return NextResponse.json(data);
+    return NextResponse.json(data.slice(0, 100));
 
   } catch (error) {
     console.error("Error fetching EOY streaks:", error);

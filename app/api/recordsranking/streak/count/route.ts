@@ -104,7 +104,7 @@ export async function GET(request: Request) {
 
     const resultArray = Object.values(resultMap).sort((a, b) => b.weeks - a.weeks);
 
-    return NextResponse.json(resultArray);
+    return NextResponse.json(resultArray.slice(0, 100));
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

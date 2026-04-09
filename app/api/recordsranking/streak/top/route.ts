@@ -89,7 +89,7 @@ export async function GET(request: Request) {
 
     result.sort((a, b) => b.weeks - a.weeks);
 
-    return NextResponse.json(result);
+    return NextResponse.json(result.slice(0, 100));
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

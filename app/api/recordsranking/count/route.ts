@@ -33,7 +33,7 @@ export async function GET(req: Request) {
       }))
       .sort((a, b) => b.weeks - a.weeks);
 
-    return NextResponse.json(result);
+    return NextResponse.json(result.slice(0, 100));
   } catch (error) {
     console.error("Error fetching ranking data:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
