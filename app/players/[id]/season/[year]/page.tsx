@@ -185,6 +185,7 @@ export default async function SeasonYearPage({ params, searchParams }: any) {
   let finalsReached = 0, sfReached = 0, qfReached = 0;
   let finalsWon = 0;
   let winStreak = 0;
+  let recentForm: string[] = [];
   try {
     const yNum2 = Number(year);
     [slamWins, slamLosses, mastersWins, mastersLosses, top10Wins, top10Losses, finalsReached, sfReached, qfReached] = await Promise.all([
@@ -211,6 +212,7 @@ export default async function SeasonYearPage({ params, searchParams }: any) {
         if (m.winner_id === player.id) { cur++; if (cur > best) best = cur; } else cur = 0;
       }
       winStreak = best;
+      recentForm = seasonMatches.slice(-10).map(m => m.winner_id === player.id ? 'W' : 'L');
     } catch (e) { winStreak = 0; }
   } catch (e) {
     // ignore
@@ -326,6 +328,28 @@ export default async function SeasonYearPage({ params, searchParams }: any) {
       <p key="streak">
         {displayName} demonstrated the ability to string together victories, recording a best winning streak of{' '}
         <strong className="text-yellow-400">{winStreak}</strong> consecutive matches during the {String(year)} season.
+      </p>
+    );
+  }
+
+  // Para 8 – recent form (last up to 10 matches of the season)
+  if (recentForm.length > 0) {
+    const rfW = recentForm.filter(r => r === 'W').length;
+    const rfL = recentForm.length - rfW;
+    const formComment =
+      rfW >= recentForm.length * 0.75 ? ' — excellent form to close out the season.' :
+      rfW > recentForm.length / 2     ? ' — positive form, wins outweighing losses in the final stretch.' :
+      rfW >= recentForm.length * 0.25 ? ' — mixed results in the closing matches of the season.' :
+                                        ' — a difficult run to end the season.';
+    narrativeParagraphs.push(
+      <p key="recentform">
+        <strong className="text-yellow-400">Recent Form {String(year)}:</strong>{' '}
+        <strong className="text-green-400">{rfW}</strong>–<strong className="text-red-400">{rfL}</strong>.{' '}
+        Last {recentForm.length}:{' '}
+        {recentForm.map((r, i) => (
+          <span key={i} className={r === 'W' ? 'text-green-400 font-bold' : 'text-red-400 font-bold'}>{r}{' '}</span>
+        ))}
+        {recentForm.length >= 4 && formComment}
       </p>
     );
   }
