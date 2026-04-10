@@ -251,10 +251,9 @@ export default function SurfaceStatsClient({
     tiebreakAgg,
   } = stats;
 
-  // ── Overview narrative stats (only for surface='All', no year selected) ──
+  // ── Overview narrative stats (all surfaces, no year selected) ──
   const overviewStats = useMemo(() => {
-    const isAllSurface = surface === 'All' || surface === '';
-    if (!isAllSurface || selectedYear || loading || !allMatches.length) return null;
+    if (selectedYear || loading || !allMatches.length) return null;
     const pid = String(playerId);
     const matches = allMatches.filter((m: any) => m.status === true);
     if (!matches.length) return null;
@@ -372,41 +371,17 @@ export default function SurfaceStatsClient({
     { initialVisible: 1, debounceMs: 800 }
   );
 
+  const isSurfacePage = surface !== 'All' && surface !== '';
+  const surfaceLabel = surface === 'Clay' ? 'Clay Court' : surface === 'Hard' ? 'Hard Court' : surface === 'Grass' ? 'Grass Court' : `${surface} Court`;
+  const surfAdj = surface.toLowerCase();
+
   return (
     <div className="w-full p-4 section" style={{ backgroundColor: "rgb(27,36,48)" }}>
-      {/* Header row */}
-      <div className="mb-6 flex flex-wrap items-center gap-4">
-        {surface !== 'All' && surface !== '' && (
-          <span className="font-extrabold text-2xl text-yellow-400">
-            {surface} Court — {selectedYear ? selectedYear : "Career"} Stats
-          </span>
-        )}
 
-        {/* Year selector — hidden on the Overview (All Surfaces) tab */}
-        {surface !== 'All' && surface !== '' && availableYears.length > 0 && (
-          <div className="flex items-center gap-2">
-            <select
-              value={selectedYear ?? ""}
-              onChange={(e) => setSelectedYear(e.target.value ? Number(e.target.value) : null)}
-              className="bg-gray-700 text-white text-sm rounded-lg px-3 py-1.5 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 cursor-pointer"
-            >
-              <option value="">All years</option>
-              {availableYears.map((y) => (
-                <option key={y} value={y}>{y}</option>
-              ))}
-            </select>
-            {selectedYear && (
-              <button
-                onClick={() => setSelectedYear(null)}
-                className="text-xs text-gray-400 hover:text-white transition-colors px-2 py-1 rounded bg-gray-700 hover:bg-gray-600"
-              >
-                ✕ Clear
-              </button>
-            )}
-          </div>
-        )}
-
-      </div>
+      {/* Surface page H1 — shown below the tabs on clay/hard/grass */}
+      {isSurfacePage && (
+        <h1 className="text-3xl font-bold mb-6 text-center">{playerName} {surfaceLabel} Stats &amp; Match Results</h1>
+      )}
 
       {/* Player info card — Overview landing only */}
       {surface === 'All' && !selectedYear && (
@@ -584,50 +559,56 @@ export default function SurfaceStatsClient({
         </div>
       )}
 
-      {/* Statistics Overview narrative panel — only on the Overview landing (surface=All, no year) */}
-      {surface === 'All' && !selectedYear && (
+      {/* Statistics Overview narrative panel — shown on all surface tabs when no year selected */}
+      {!selectedYear && (
         overviewSlot
           ? overviewSlot
           : (overviewStats && !loading && (
               <div className="mb-6 p-5 bg-gray-800 rounded-lg shadow-lg">
-          <h3 className="text-xl font-bold mb-4 text-center" style={{ color: '#facc15' }}>Career Overview</h3>
+          <h3 className="text-xl font-bold mb-4 text-center" style={{ color: '#facc15' }}>{isSurfacePage ? `${surfaceLabel} Overview` : 'Career Overview'}</h3>
           <div className="text-sm leading-relaxed text-gray-200 space-y-3">
 
             {/* Overall career record */}
             {overviewStats.totalMatches < 5 ? (
               <p>
                 <strong>{overviewStats.displayName}</strong> has played only{' '}
-                <strong className="text-yellow-400">{overviewStats.totalMatches}</strong> match{overviewStats.totalMatches !== 1 ? 'es' : ''} — too small a sample to draw firm conclusions about their career record.
+                <strong className="text-yellow-400">{overviewStats.totalMatches}</strong> match{overviewStats.totalMatches !== 1 ? 'es' : ''} on {isSurfacePage ? `${surfAdj} courts` : 'Tour'} — too small a sample to draw firm conclusions.
               </p>
             ) : (
               <p>
                 <strong>{overviewStats.displayName}</strong>{' '}
-                {overviewStats.winRateN >= 75 ? 'has had a dominant career, posting' :
-                 overviewStats.winRateN >= 65 ? 'has an impressive career record of' :
-                 overviewStats.winRateN >= 55 ? 'holds a solid career record of' :
-                 overviewStats.winRateN >= 45 ? 'has a competitive career record of' :
-                 'has found the Tour difficult, recording'}{' '}
+                {isSurfacePage
+                  ? (overviewStats.winRateN >= 75 ? `has been dominant on ${surfAdj}, posting` :
+                     overviewStats.winRateN >= 65 ? `has an impressive ${surfAdj} court record of` :
+                     overviewStats.winRateN >= 55 ? `holds a solid ${surfAdj} court record of` :
+                     overviewStats.winRateN >= 45 ? `has a competitive ${surfAdj} court record of` :
+                     `has found ${surfAdj} courts difficult, recording`)
+                  : (overviewStats.winRateN >= 75 ? 'has had a dominant career, posting' :
+                     overviewStats.winRateN >= 65 ? 'has an impressive career record of' :
+                     overviewStats.winRateN >= 55 ? 'holds a solid career record of' :
+                     overviewStats.winRateN >= 45 ? 'has a competitive career record of' :
+                     'has found the Tour difficult, recording')}{' '}
                 <strong className="text-green-400">{overviewStats.wins}</strong>–<strong className="text-red-400">{overviewStats.losses}</strong>{' '}
                 across <strong className="text-yellow-400">{overviewStats.totalMatches}</strong> matches (<strong className="text-blue-400">{overviewStats.winPct}</strong>
                 {overviewStats.winRateN >= 75 ? ' — exceptional' : overviewStats.winRateN >= 65 ? ' — strong' : ''}).{' '}
                 {overviewStats.winRateN >= 75
-                  ? `Few players in the Open Era have sustained that level of dominance across a full career.`
+                  ? (isSurfacePage ? `Few players have sustained that level of dominance on ${surfAdj} across a full career.` : `Few players in the Open Era have sustained that level of dominance across a full career.`)
                   : overviewStats.winRateN >= 65
-                  ? `A win rate of that calibre over ${overviewStats.totalMatches} matches is a reliable indicator of genuine quality.`
+                  ? `A win rate of that calibre over ${overviewStats.totalMatches} matches${isSurfacePage ? ` on ${surfAdj}` : ''} is a reliable indicator of genuine quality.`
                   : overviewStats.winRateN >= 55
-                  ? `A winning majority across ${overviewStats.totalMatches} matches shows consistent ability to get results on Tour.`
+                  ? `A winning majority across ${overviewStats.totalMatches} matches shows consistent ability to get results${isSurfacePage ? ` on ${surfAdj}` : ' on Tour'}.`
                   : overviewStats.winRateN >= 45
-                  ? `The record shows a player capable of competing at Tour level, though there is clear room to push the win rate higher.`
-                  : `The numbers point to a player still building their Tour presence — a key area of opportunity going forward.`
+                  ? `The record shows a player capable of competing${isSurfacePage ? ` on ${surfAdj}` : ' at Tour level'}, though there is clear room to push the win rate higher.`
+                  : (isSurfacePage ? `The numbers point to a surface that has not consistently suited the game — a key area of opportunity on the calendar.` : `The numbers point to a player still building their Tour presence — a key area of opportunity going forward.`)
                 }
                 {' '}
                 {overviewStats.totalTitles === 0 && overviewStats.finalsReached > 0
                   ? <>{overviewStats.displayName} has reached <strong className="text-yellow-400">{overviewStats.finalsReached}</strong> final{overviewStats.finalsReached !== 1 ? 's' : ''} without yet claiming a title — one of the finest margins in tennis.</>
                   : overviewStats.totalTitles >= 10
-                  ? <>With <strong className="text-yellow-400">{overviewStats.totalTitles}</strong> titles, among the most prolific champions in the Open Era{overviewStats.titleNames.length > 0 ? `: ${overviewStats.titleNames.slice(0, 4).join(', ')}${overviewStats.titleNames.length > 4 ? ` and ${overviewStats.titleNames.length - 4} more` : ''}` : ''}.</>
+                  ? <>With <strong className="text-yellow-400">{overviewStats.totalTitles}</strong> titles{isSurfacePage ? ` on ${surfAdj}` : ''}, among the most prolific {isSurfacePage ? `${surfAdj} court ` : ''}champions in the Open Era{overviewStats.titleNames.length > 0 ? `: ${overviewStats.titleNames.slice(0, 4).join(', ')}${overviewStats.titleNames.length > 4 ? ` and ${overviewStats.titleNames.length - 4} more` : ''}` : ''}.</>
                   : overviewStats.totalTitles >= 4
-                  ? <><strong className="text-yellow-400">{overviewStats.totalTitles}</strong> titles{overviewStats.titleNames.length > 0 ? `: ${overviewStats.titleNames.join(', ')}` : ''} — a record that reflects consistent ability to close out tournaments.</>                  : overviewStats.totalTitles > 0
-                  ? <>Claimed <strong className="text-yellow-400">{overviewStats.totalTitles}</strong> title{overviewStats.totalTitles !== 1 ? 's' : ''}{overviewStats.titleNames.length > 0 ? `: ${overviewStats.titleNames.join(', ')}` : ''}.</>
+                  ? <><strong className="text-yellow-400">{overviewStats.totalTitles}</strong> title{overviewStats.totalTitles !== 1 ? 's' : ''}{isSurfacePage ? ` on ${surfAdj}` : ''}{overviewStats.titleNames.length > 0 ? `: ${overviewStats.titleNames.join(', ')}` : ''} — a record that reflects consistent ability to close out tournaments{isSurfacePage ? ` on this surface` : ''}.</>                  : overviewStats.totalTitles > 0
+                  ? <>Claimed <strong className="text-yellow-400">{overviewStats.totalTitles}</strong> title{overviewStats.totalTitles !== 1 ? 's' : ''}{isSurfacePage ? ` on ${surfAdj}` : ''}{overviewStats.titleNames.length > 0 ? `: ${overviewStats.titleNames.join(', ')}` : ''}.</>
                   : null
                 }
               </p>
@@ -636,7 +617,7 @@ export default function SurfaceStatsClient({
             {/* Grand Slams */}
             {overviewStats.slamTotal > 0 && (
               <p>
-                At Grand Slam level (Australian Open, Roland Garros, Wimbledon, US Open):{' '}
+                At Grand Slam level ({surface === 'Clay' ? 'Roland Garros' : surface === 'Hard' ? 'Australian Open & US Open' : surface === 'Grass' ? 'Wimbledon' : 'Australian Open, Roland Garros, Wimbledon, US Open'}):{' '}
                 {overviewStats.slamWins === 0
                   ? <>{overviewStats.displayName} has yet to record a win at Grand Slam level — <strong className="text-green-400">0</strong>–<strong className="text-red-400">{overviewStats.slamTotal}</strong> across <strong className="text-yellow-400">{overviewStats.slamTotal}</strong> match{overviewStats.slamTotal !== 1 ? 'es' : ''}. Breaking through here would mark a significant step forward.</>                  : overviewStats.slamTotal <= 3
                   ? <><strong className="text-green-400">{overviewStats.slamWins}</strong>–<strong className="text-red-400">{overviewStats.slamLosses}</strong> across just <strong className="text-yellow-400">{overviewStats.slamTotal}</strong> match{overviewStats.slamTotal !== 1 ? 'es' : ''} — still very early days at this level.</>
@@ -652,9 +633,9 @@ export default function SurfaceStatsClient({
             )}
 
             {/* Masters 1000 */}
-            {overviewStats.mastersTotal >= 3 && (
+            {overviewStats.mastersTotal >= 3 && surface !== 'Grass' && (
               <p>
-                ATP Masters 1000 (Indian Wells, Miami, Monte Carlo, Madrid, Rome, Canada, Cincinnati, Shanghai, Paris):{' '}
+                ATP Masters 1000{isSurfacePage ? ` on ${surfAdj}` : ''} ({surface === 'Clay' ? 'Monte Carlo, Madrid, Rome' : surface === 'Hard' ? 'Indian Wells, Miami, Canada, Cincinnati, Shanghai, Paris' : 'Indian Wells, Miami, Monte Carlo, Madrid, Rome, Canada, Cincinnati, Shanghai, Paris'}):{' '}
                 {overviewStats.mastersWinPctN >= 65
                   ? <>{overviewStats.displayName} is elite here — <strong className="text-green-400">{overviewStats.mastersWins}</strong>–<strong className="text-red-400">{overviewStats.mastersLosses}</strong> (<strong className="text-blue-400">{overviewStats.mastersWinPctN.toFixed(1)}%</strong>) across <strong className="text-yellow-400">{overviewStats.mastersTotal}</strong> matches. Sustaining that win rate in the Tour's deepest regular-week draws is a defining quality of the very best.</>
                   : overviewStats.mastersWinPctN >= 50
@@ -669,7 +650,7 @@ export default function SurfaceStatsClient({
             {/* Finals */}
             {overviewStats.finalsReached >= 2 && (
               <p>
-                <strong className="text-yellow-400">{overviewStats.finalsReached}</strong> finals reached —{' '}
+                <strong className="text-yellow-400">{overviewStats.finalsReached}</strong> finals reached{isSurfacePage ? ` on ${surfAdj}` : ''} —{' '}
                 {overviewStats.titleConvRate >= 0.75
                   ? <>converted <strong className="text-yellow-400">{overviewStats.totalTitles}</strong> into titles (outstanding <strong className="text-blue-400">{(overviewStats.titleConvRate * 100).toFixed(0)}%</strong> conversion rate). Converting finals at that rate separates champions from contenders.</>
                   : overviewStats.titleConvRate >= 0.5
@@ -684,7 +665,7 @@ export default function SurfaceStatsClient({
             )}
             {overviewStats.finalsReached === 1 && (
               <p>
-                One final reached{overviewStats.totalTitles === 1
+                One final reached{isSurfacePage ? ` on ${surfAdj}` : ''}{overviewStats.totalTitles === 1
                   ? ', converted into a title — a perfect finals record so far.'
                   : ', without converting it into a title. That final-round experience is valuable groundwork for going one step further next time.'
                 }
@@ -784,10 +765,11 @@ export default function SurfaceStatsClient({
           ))
       )}
 
-      {/* Last 10 matches table — only on Overview landing (surface=All, no year), client fallback when no SSR slot */}
-      {!overviewSlot && surface === 'All' && !selectedYear && !loading && allMatches.length > 0 && (() => {
+      {/* Last 10 matches table — visible on all surface tabs (and Overview when no SSR slot), no year filter */}
+      {!overviewSlot && !selectedYear && !loading && allMatches.length > 0 && (() => {
+        const isSurface = surface !== 'All' && surface !== '';
         const sorted = [...allMatches]
-          .filter((m: any) => m.status === true)
+          .filter((m: any) => m.status === true && (!isSurface || (typeof m.surface === 'string' && m.surface.toLowerCase() === surface.toLowerCase())))
           .sort((a: any, b: any) => {
             const da = a.tourney_date ? new Date(a.tourney_date).getTime() : 0;
             const db = b.tourney_date ? new Date(b.tourney_date).getTime() : 0;
@@ -797,21 +779,20 @@ export default function SurfaceStatsClient({
           })
           .slice(0, 10);
         if (!sorted.length) return null;
+        const input = playerSlug ? { slug: playerSlug } : { id: playerId };
+        const matchesHref = isSurface
+          ? `${getPlayerHrefWithTab(input, 'matches')}?surface=${encodeURIComponent(surface)}`
+          : `${getPlayerHrefWithTab(input, 'matches')}`;
         return (
           <div className="mb-8 p-5 bg-gray-800 rounded-lg shadow-lg">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold" style={{ color: '#facc15' }}>Last 10 Matches</h3>
-              {(() => {
-                const input = playerSlug ? { slug: playerSlug } : { id: playerId };
-                return (
-                  <Link
-                    href={`${getPlayerHrefWithTab(input, 'matches')}`}
-                    className="inline-block bg-blue-600 hover:bg-blue-700 shadow-lg text-white font-bold text-sm py-1.5 px-4 rounded-full transition-all duration-200"
-                  >
-                    View All Matches ↗
-                  </Link>
-                );
-              })()}
+              <h3 className="text-xl font-bold" style={{ color: '#facc15' }}>Last 10 {isSurface ? `${surface} ` : ''}Matches</h3>
+              <Link
+                href={matchesHref}
+                className="inline-block bg-blue-600 hover:bg-blue-700 shadow-lg text-white font-bold text-sm py-1.5 px-4 rounded-full transition-all duration-200"
+              >
+                View All Matches ↗
+              </Link>
             </div>
             <div className="overflow-x-auto rounded border border-white/20 bg-gray-900 shadow">
               <table className="min-w-full border-collapse text-sm">
@@ -905,21 +886,30 @@ export default function SurfaceStatsClient({
           {/* Section 2: W-L + Years/Career + Categories */}
           {(!isMobileCards || visibleCount >= 2) && (
             <div className="flex flex-wrap gap-6 mt-8">
-              {/* By Year — always first */}
-              {!selectedYear && (
-              <div className="flex-1 min-w-[300px]">
-                <WLStatTable
-                  title="By Year"
-                  rows={[...yearsAgg].sort((a, b) => a.year - b.year).map((r, i) => ({
-                    label: String(r.year),
-                    wins: r.wins,
-                    losses: r.losses,
-                    color: palette[i % palette.length],
-                  }))}
-                />
-              </div>
+              {/* Column 1: W-L (surface pages) or By Year (All surfaces) */}
+              {surface === 'All' ? (
+                !selectedYear && (
+                  <div className="flex-1 min-w-[300px]">
+                    <WLStatTable
+                      title="By Year"
+                      rows={[...yearsAgg].sort((a, b) => a.year - b.year).map((r, i) => ({
+                        label: String(r.year),
+                        wins: r.wins,
+                        losses: r.losses,
+                        color: palette[i % palette.length],
+                      }))}
+                    />
+                  </div>
+                )
+              ) : (
+                <div className="flex-1 min-w-[300px]">
+                  <WLStatTable
+                    title="W-L"
+                    rows={[{ label: selectedYear ? String(selectedYear) : "Career", wins: careerAgg.wins, losses: careerAgg.losses, color: palette[0] }]}
+                  />
+                </div>
               )}
-              {/* By Surface (center on Overview) or W-L on surface pages */}
+              {/* Column 2: By Surface (All) or Title + Year dropdown (surface pages) */}
               <div className="flex-1 min-w-[300px]">
                 {surface === 'All' && !selectedYear ? (() => {
                   const pid = String(playerId);
@@ -932,10 +922,38 @@ export default function SurfaceStatsClient({
                     return { label: s, wins: w, losses: l, color: surfaceColors[s] };
                   }).filter(r => r.wins + r.losses > 0);
                   return <WLStatTable title="By Surface" rows={rows} />;
-                })() : (
+                })() : surface !== 'All' ? (
+                  <div className="h-full p-4 bg-gray-900 rounded-lg border border-gray-700 flex flex-col items-center justify-center gap-3">
+                    <span className="font-extrabold text-2xl text-yellow-400 text-center">
+                      {surface} Court — {selectedYear ? selectedYear : 'Career'} Stats
+                    </span>
+                    {availableYears.length > 0 && (
+                      <div className="flex items-center gap-2">
+                        <select
+                          value={selectedYear ?? ''}
+                          onChange={(e) => setSelectedYear(e.target.value ? Number(e.target.value) : null)}
+                          className="bg-gray-700 text-white text-sm rounded-lg px-3 py-1.5 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 cursor-pointer"
+                        >
+                          <option value="">All years</option>
+                          {availableYears.map((y) => (
+                            <option key={y} value={y}>{y}</option>
+                          ))}
+                        </select>
+                        {selectedYear && (
+                          <button
+                            onClick={() => setSelectedYear(null)}
+                            className="text-xs text-gray-400 hover:text-white transition-colors px-2 py-1 rounded bg-gray-700 hover:bg-gray-600"
+                          >
+                            ✕ Clear
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ) : (
                   <WLStatTable
                     title="W-L"
-                    rows={[{ label: selectedYear ? String(selectedYear) : "Career", wins: careerAgg.wins, losses: careerAgg.losses, color: palette[0] }]}
+                    rows={[{ label: selectedYear ? String(selectedYear) : 'Career', wins: careerAgg.wins, losses: careerAgg.losses, color: palette[0] }]}
                   />
                 )}
               </div>

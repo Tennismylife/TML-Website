@@ -488,7 +488,6 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <h1 className="text-3xl font-bold mb-6 text-center">{heading}</h1>
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
         "@context": "https://schema.org",
