@@ -104,12 +104,12 @@ export default function SEOPlayer({ playerId, slug, name, atpname, tab = 'overvi
   const nameForWiki = (atpname || name || '').replace(/\s+/g, '_');
   const ld: any = {
     '@context': 'https://schema.org',
-    '@type': 'Person',
+    '@type': 'Athlete',
     '@id': personId,
     name: atpname || name,
     url,
     mainEntityOfPage: url,
-    description: `Complete statistics for ${name}: ATP results, matches in 2026, career records, ranking, titles, head-to-head records and surface performance. Updated to 2026.`,
+    description: `Complete statistics for ${name}: ATP results, matches in ${new Date().getFullYear()}, career records, ranking, titles, head-to-head records and surface performance. Updated to ${new Date().getFullYear()}.`,
     additionalProperty: [],
     sameAs: [
       `https://en.wikipedia.org/wiki/${encodeURIComponent(nameForWiki)}`,
@@ -155,6 +155,85 @@ export default function SEOPlayer({ playerId, slug, name, atpname, tab = 'overvi
   }
 
   return (
-    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(buildDatasetLd({ name: atpname || name, slug, playerId, url, personId, wins, losses, total, hardWR, clayWR, grassWR, hardWins, hardLosses, clayWins, clayLosses, grassWins, grassLosses })) }} />
+    </>
   );
+}
+
+function buildDatasetLd({
+  name, slug, playerId, url, personId,
+  wins, losses, total,
+  hardWR, clayWR, grassWR,
+  hardWins, hardLosses, clayWins, clayLosses, grassWins, grassLosses,
+}: {
+  name: string; slug: string; playerId: string | number; url: string; personId: string;
+  wins: number; losses: number; total: number;
+  hardWR: number; clayWR: number; grassWR: number;
+  hardWins: number; hardLosses: number; clayWins: number; clayLosses: number; grassWins: number; grassLosses: number;
+}) {
+  const base = 'https://stats.tennismylife.org';
+  const org = { '@type': 'Organization', name: 'TennisMyLife', url: base };
+
+  const variableMeasured: any[] = [
+    { '@type': 'PropertyValue', name: 'Career Matches Played', value: total },
+    { '@type': 'PropertyValue', name: 'Career Wins', value: wins },
+    { '@type': 'PropertyValue', name: 'Career Losses', value: losses },
+  ];
+  if (hardWins + hardLosses > 0) {
+    variableMeasured.push({ '@type': 'PropertyValue', name: 'Hard Court Wins', value: hardWins });
+    variableMeasured.push({ '@type': 'PropertyValue', name: 'Hard Court Losses', value: hardLosses });
+    variableMeasured.push({ '@type': 'PropertyValue', name: 'Hard Court Win Rate (%)', value: hardWR });
+  }
+  if (clayWins + clayLosses > 0) {
+    variableMeasured.push({ '@type': 'PropertyValue', name: 'Clay Court Wins', value: clayWins });
+    variableMeasured.push({ '@type': 'PropertyValue', name: 'Clay Court Losses', value: clayLosses });
+    variableMeasured.push({ '@type': 'PropertyValue', name: 'Clay Court Win Rate (%)', value: clayWR });
+  }
+  if (grassWins + grassLosses > 0) {
+    variableMeasured.push({ '@type': 'PropertyValue', name: 'Grass Court Wins', value: grassWins });
+    variableMeasured.push({ '@type': 'PropertyValue', name: 'Grass Court Losses', value: grassLosses });
+    variableMeasured.push({ '@type': 'PropertyValue', name: 'Grass Court Win Rate (%)', value: grassWR });
+  }
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Dataset',
+    '@id': `${url}#dataset`,
+    name: `${name} – ATP Tennis Statistics Dataset`,
+    description: `Complete ATP match results and career statistics for ${name}: win-loss records, surface performance (hard, clay, grass), ranking history, tournament results and head-to-head data. Source: TennisMyLife.`,
+    url,
+    inLanguage: 'en-US',
+    creator: org,
+    publisher: org,
+    about: { '@id': personId },
+    keywords: [
+      `${name} tennis statistics`,
+      `${name} career stats`,
+      `${name} win loss record`,
+      `${name} surface stats`,
+      `${name} ATP match results`,
+      'ATP tennis data',
+      'tennis statistics dataset',
+    ],
+    variableMeasured,
+    distribution: [
+      {
+        '@type': 'DataDownload',
+        encodingFormat: 'text/html',
+        contentUrl: `${base}/players/${encodeURIComponent(slug)}/matches`,
+        name: 'Match Results',
+      },
+      {
+        '@type': 'DataDownload',
+        encodingFormat: 'text/html',
+        contentUrl: `${base}/players/${encodeURIComponent(slug)}/ranking`,
+        name: 'Ranking History',
+      },
+    ],
+    isAccessibleForFree: true,
+    isPartOf: { '@type': 'WebSite', name: 'TennisMyLife', url: base },
+    dateModified: new Date().toISOString(),
+  };
 }

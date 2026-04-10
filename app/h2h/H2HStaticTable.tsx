@@ -3,7 +3,7 @@
 import React, { useMemo } from "react";
 import Link from "next/link";
 import Flag from '@/components/Flag';
-import { getPlayerHrefWithTab } from '@/lib/utils';
+import { getPlayerHref } from '@/lib/utils';
 import { lastNMatches, playerResultsForMatches } from '@/lib/h2hUtils';
 
 interface Player {
@@ -119,7 +119,7 @@ export default function H2HStaticTable({ player1, player2, matches }: Props) {
                 ) : null}
                 <Link
                   data-h2h-name
-                  href={getPlayerHrefWithTab(player2.slug ?? String(player2.id), 'matches')}
+                  href={getPlayerHref(player2.slug ?? String(player2.id))}
                   className="text-lg font-bold text-gray-100 hover:underline"
                 >
                   {player2.atpname}
@@ -130,7 +130,7 @@ export default function H2HStaticTable({ player1, player2, matches }: Props) {
               <div className="flex items-center justify-end gap-3">
                 <Link
                   data-h2h-name
-                  href={getPlayerHrefWithTab(player1.slug ?? String(player1.id), 'matches')}
+                  href={getPlayerHref(player1.slug ?? String(player1.id))}
                   className="text-lg font-bold text-gray-100 hover:underline text-right"
                 >
                   {player1.atpname}

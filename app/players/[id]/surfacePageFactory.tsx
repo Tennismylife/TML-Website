@@ -345,7 +345,7 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
         {/* Masters 1000: only if 3+ matches, 4 graduated cases + insight sentence */}
         {mastersTotal >= 3 && (
           <p>
-            ATP Masters 1000 on {adjective} ({surface === 'Clay' ? 'Monte Carlo, Madrid, Rome' : surface === 'Hard' ? 'Indian Wells, Miami, Cincinnati, Shanghai, Paris' : 'Stuttgart, Halle, Queen\'s Club'}):{' '}
+            ATP Masters 1000 on {adjective} ({surface === 'Clay' ? 'Monte Carlo, Madrid, Rome' : surface === 'Hard' ? 'Indian Wells, Miami, Canada, Cincinnati, Shanghai, Paris' : 'N/A'}):{' '}
             {mastersWinPctN >= 65
               ? <>{displayName} is elite here — <strong className="text-green-400">{mastersWins}</strong>–<strong className="text-red-400">{mastersLosses}</strong> (<strong className="text-blue-400">{mastersWinPctN.toFixed(1)}%</strong>) across <strong className="text-yellow-400">{mastersTotal}</strong> matches. Sustaining that win rate in the Tour's deepest regular-week draws is a defining quality of the very best on this surface.</>
               : mastersWinPctN >= 50

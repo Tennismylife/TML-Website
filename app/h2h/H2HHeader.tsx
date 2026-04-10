@@ -2,7 +2,7 @@
 
 import Flag from '@/components/Flag';
 import Link from "next/link";
-import { getPlayerHrefWithTab } from '@/lib/utils';
+import { getPlayerHref } from '@/lib/utils';
 import { lastNMatches, playerResultsForMatches } from '@/lib/h2hUtils';
 
 interface Player {
@@ -62,14 +62,14 @@ export default function H2HHeader({
         {/* Player 1 - sinistra */}
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <Flag ioc={player1.ioc ?? undefined} className="w-6 h-4 inline-block shrink-0" />
-          <Link href={getPlayerHrefWithTab((player1 as any).slug ?? String(player1.id ?? ''), 'matches')} className="text-base md:text-xl font-bold text-gray-100 hover:underline min-w-0 truncate">
+          <Link href={getPlayerHref((player1 as any).slug ?? String(player1.id ?? ''))} className="text-base md:text-xl font-bold text-gray-100 hover:underline min-w-0 truncate">
             {player1.atpname ?? ''}
           </Link>
         </div>
 
         {/* Player 2 - destra */}
         <div className="flex items-center gap-2 min-w-0 flex-1 justify-end">
-          <Link href={getPlayerHrefWithTab((player2 as any).slug ?? String(player2.id ?? ''), 'matches')} className="text-base md:text-xl font-bold text-gray-100 text-right hover:underline min-w-0 truncate">
+          <Link href={getPlayerHref((player2 as any).slug ?? String(player2.id ?? ''))} className="text-base md:text-xl font-bold text-gray-100 text-right hover:underline min-w-0 truncate">
             {player2.atpname ?? ''}
           </Link>
           <Flag ioc={player2.ioc ?? undefined} className="w-6 h-4 inline-block shrink-0" />

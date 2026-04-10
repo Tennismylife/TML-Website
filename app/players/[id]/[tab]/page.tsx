@@ -70,7 +70,7 @@ function resolveTourneyName(raw: any): string | null {
   return cleaned ? canonicalGrandSlam(cleaned) : null;
 }
 
-export const dynamic = 'force-dynamic';
+export const revalidate = false; // cache infinita — rivalidare via /api/revalidate dopo import DB
 
 /**
  * Server-side helper to get a player by slug or id.
@@ -138,29 +138,9 @@ export async function generateMetadata(
     }
   }
 
-  // If on matches tab and filters are active, make canonical self-referencing by including normalized query params
+  // For matches tab, consolidate signals to the player overview canonical URL.
   if (tab === 'matches') {
-    // Build a deterministic query string from meaningful params (exclude tab and empty/'All' values)
-    const entries = Object.entries(spForCanonical || {})
-      .filter(([k, v]) => k !== 'tab' && v !== undefined && v !== null && String(v).trim() !== '' && String(v) !== 'All')
-      .map(([k, v]) => [k, String(v)]);
-
-    const surfaceOnlyEntries = entries.filter(([k]) => k !== 'tab');
-    const normalizedSurface = surfaceOnlyEntries.length === 1 && surfaceOnlyEntries[0][0] === 'surface'
-      ? surfaceOnlyEntries[0][1].toLowerCase()
-      : null;
-    const isSurfaceOnlyCanonical = normalizedSurface === 'clay' || normalizedSurface === 'hard' || normalizedSurface === 'grass';
-
-    if (isSurfaceOnlyCanonical) {
-      canonical = `${base}/players/${encodeURIComponent(slug)}/${normalizedSurface}`;
-    }
-
-    if (entries.length && !isSurfaceOnlyCanonical) {
-      // Sort keys for deterministic canonical value
-      entries.sort(([a], [b]) => a.localeCompare(b));
-      const qs = entries.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&');
-      canonical = `${canonical}?${qs}`;
-    }
+    canonical = `${base}/players/${encodeURIComponent(slug)}`;
   }
 
   // determine the series of comma-separated parts used for SEO titles
@@ -224,7 +204,11 @@ export async function generateMetadata(
 
     let heading = 'Matches';
     if (headingParts.length) heading = `Matches — ${headingParts.join(' · ')}`;
-    if (hasFilters) title = `${name} — ${heading}`;
+    if (hasFilters) {
+      title = `${name} — ${heading}`;
+    } else {
+      title = `${name} – Match Results & Career Stats | TennisMyLife`;
+    }
   }
 
   // If on ranking tab, use a dedicated title
@@ -253,10 +237,11 @@ export async function generateMetadata(
   }
 
   // Tab-specific or generic description
+  const currentYear = new Date().getFullYear();
   if (tab === 'ranking') {
-    metaDescription = `${name} ATP ranking history: week-by-week ranking chart, career peak ranking, weeks at top, and full career ranking progression. Updated as of 2026 on TennisMyLife.`;
+    metaDescription = `${name} ATP ranking history: week-by-week ranking chart, career peak ranking, weeks at top, and full career ranking progression. Updated as of ${currentYear} on TennisMyLife.`;
   } else {
-    metaDescription = `Complete statistics for ${name}: ATP results, ${tab === 'matches' ? '2026 matches, ' : ''}career record, rankings, titles, head-to-head records, and surface performance. Updated as of 2026.`;
+    metaDescription = `Complete statistics for ${name}: ATP results, ${tab === 'matches' ? `${currentYear} matches, ` : ''}career record, rankings, titles, head-to-head records, and surface performance. Updated as of ${currentYear}.`;
   }
   const imageUrl = `${base}/og/${encodeURIComponent(slug)}.png`;
 
@@ -289,13 +274,13 @@ export async function generateMetadata(
       site: '@TennisMyLife68',
       creator: '@TennisMyLife68',
     },
-    // Noindex rules for matches tab:
-    // 1. Any "statistical/opponent" filter (thin content, no search intent) → always noindex.
-    // 2. 3 or more active filters on the remaining "meaningful" filters → noindex.
-    // For ranking tab: only index players in the allowlist.
-    // For tournaments tab: always noindex.
+    // Noindex rules:
+    // - matches tab: always noindex (all URLs, with or without filters).
+    // - tournaments / statistics / performance: always noindex.
+    // - ranking tab: only index players in the allowlist.
+    // - surface tabs (clay/hard/grass): only index top-100 players.
     robots: ((): { index: boolean; follow: boolean } => {
-      const VALID_TABS = new Set(['overview', 'profile', 'matches', 'season', 'tournaments', 'h2h', 'performance', 'statistics', 'ranking', 'clay', 'hard', 'grass']);
+      const VALID_TABS = new Set(['overview', 'matches', 'season', 'tournaments', 'h2h', 'performance', 'statistics', 'ranking', 'clay', 'hard', 'grass']);
       const isSurfaceTab = tab === 'clay' || tab === 'hard' || tab === 'grass';
       if (isSurfaceTab && !isTop100Allowed) {
         return { index: false, follow: true };
@@ -303,7 +288,7 @@ export async function generateMetadata(
       if (tab && !VALID_TABS.has(String(tab).toLowerCase())) {
         return { index: false, follow: true };
       }
-      if (tab === 'tournaments' || tab === 'statistics' || tab === 'performance') {
+      if (tab === 'matches' || tab === 'tournaments' || tab === 'statistics' || tab === 'performance') {
         return { index: false, follow: true };
       }
       if (tab === 'ranking') {
@@ -311,27 +296,7 @@ export async function generateMetadata(
         const inList = allowlist.has(name);
         return { index: inList, follow: true };
       }
-      const resolvedSearchParamsForRobots = spForCanonical ?? {} as Record<string, any>;
-      const isActive = (v: any) => v != null && String(v).trim() !== '' && String(v) !== 'All';
-      // Filters that always produce thin/niche pages with no real search intent.
-      const ALWAYS_NOINDEX_KEYS = new Set([
-        'vsRank', 'vsAge', 'vsHand', 'vsBackhand', 'vsEntry',
-        'asRank', 'asEntry',
-        'set', 'firstSet', 'score',
-      ]);
-      const activeEntries = Object.entries(resolvedSearchParamsForRobots).filter(([k, v]) => k !== 'tab' && isActive(v));
-      const normalizedSurface = activeEntries.length === 1 && activeEntries[0][0] === 'surface'
-        ? String(activeEntries[0][1]).toLowerCase()
-        : null;
-      if (normalizedSurface === 'clay' || normalizedSurface === 'hard' || normalizedSurface === 'grass') {
-        return { index: false, follow: true };
-      }
-      // If any always-noindex filter is present, block immediately.
-      if (activeEntries.some(([k]) => ALWAYS_NOINDEX_KEYS.has(k))) {
-        return { index: false, follow: true };
-      }
-      // noindex when 3 or more of the remaining "meaningful" filters are active.
-      return activeEntries.length >= 3 ? { index: false, follow: true } : { index: true, follow: true };
+      return { index: true, follow: true };
     })(),
     alternates: { canonical },
   } as Metadata;

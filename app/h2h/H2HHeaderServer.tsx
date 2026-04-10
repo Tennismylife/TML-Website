@@ -1,6 +1,6 @@
 import Flag from '@/components/Flag';
 import Link from "next/link";
-import { getPlayerHrefWithTab } from "@/lib/utils";
+import { getPlayerHref } from "@/lib/utils";
 import { lastNMatches, playerResultsForMatches } from '@/lib/h2hUtils';
 import H2HHypotheticalMatchup from './H2HHypotheticalMatchup';
 
@@ -109,7 +109,7 @@ export default function H2HHeaderServer({
         <div className="flex flex-col min-w-0 flex-1">
           <div className="flex items-center gap-2 min-w-0">
             <Flag ioc={player1.ioc ?? undefined} className="w-6 h-4 inline-block shrink-0" />
-            <Link href={getPlayerHrefWithTab((player1 as any).slug ?? String(player1.id ?? ''), 'matches')} className="text-lg md:text-2xl font-bold text-gray-100 hover:underline min-w-0 break-words">
+            <Link href={getPlayerHref((player1 as any).slug ?? String(player1.id ?? ''))} className="text-lg md:text-2xl font-bold text-gray-100 hover:underline min-w-0 break-words">
               {player1.atpname ?? ''}
             </Link>
           </div>
@@ -139,7 +139,7 @@ export default function H2HHeaderServer({
         {/* Player 2 - destra */}
         <div className="flex flex-col items-end min-w-0 flex-1">
           <div className="flex items-center gap-2 min-w-0 justify-end">
-            <Link href={getPlayerHrefWithTab((player2 as any).slug ?? String(player2.id ?? ''), 'matches')} className="text-lg md:text-2xl font-bold text-gray-100 text-right hover:underline min-w-0 break-words">
+            <Link href={getPlayerHref((player2 as any).slug ?? String(player2.id ?? ''))} className="text-lg md:text-2xl font-bold text-gray-100 text-right hover:underline min-w-0 break-words">
               {player2.atpname ?? ''}
             </Link>
             <Flag ioc={player2.ioc ?? undefined} className="w-6 h-4 inline-block shrink-0" />

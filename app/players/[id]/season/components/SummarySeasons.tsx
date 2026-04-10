@@ -2,7 +2,7 @@
 import React, { useMemo } from "react";
 import Link from "next/link";
 import type { Match } from "@/types";
-import { getPlayerHref } from "@/lib/utils";
+import { getPlayerHref, getPlayerHrefWithTab } from "@/lib/utils";
 import SummarySeasonsClient from './SummarySeasonsClient';
 
 interface SummarySeasonsProps {
@@ -253,8 +253,13 @@ export default function SummarySeasons({ years, allMatches, playerId, playerSlug
               {renderTd(`${formatPct(r.tpwPct)}%`)}
               {renderTd(r.dr.toFixed(2))}
               {renderTd(r.bestLabel)}
-              <td className="px-2 py-1 text-center">
-                <Link href={`${getPlayerHref(playerSlug ?? playerId)}/matches?year=${r.year}`} className="text-blue-400 hover:underline">View All Matches</Link>
+                <td className="px-2 py-1 text-center">
+                {(() => {
+                  const input = playerSlug ? { slug: playerSlug } : { id: playerId };
+                  return (
+                    <Link href={`${getPlayerHrefWithTab(input, 'matches')}?year=${r.year}`} className="text-blue-400 hover:underline">View All Matches</Link>
+                  );
+                })()}
               </td>
 </tr>
           ))}

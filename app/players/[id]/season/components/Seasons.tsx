@@ -4,7 +4,7 @@ import React, { useEffect, useState, useMemo, useRef } from "react";
 import Link from "next/link";
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import type { Match } from "@/types";
-import { getLevelColors, getLevelFullName, getTourneyHref, getPlayerHref } from "@/lib/utils";
+import { getLevelColors, getLevelFullName, getTourneyHref, getPlayerHref, getPlayerHrefWithTab } from "@/lib/utils";
 import { getSurfaceColor, palette } from "@/lib/colors";
 import SummarySeasons from './SummarySeasons';
 import TournamentGrid from "../../TournamentGrid";
@@ -380,12 +380,17 @@ export default function Seasons({ playerId, playerSlug, playerName, initialYears
         {/* Big button that links to player's matches filtered by the selected year */}
         <div>
           {selectedYear ? (
-            <Link
-              href={`${getPlayerHref(resolvedPlayerSlug ?? playerSlug ?? playerId)}/matches?year=${selectedYear}`}
-              className="inline-block bg-blue-600 hover:bg-blue-700 shadow-lg text-white font-bold text-2xl py-3 px-8 rounded-full transition-all duration-200"
-            >
-              View All Matches
-            </Link>
+            (() => {
+              const input = (resolvedPlayerSlug ?? playerSlug) ? { slug: (resolvedPlayerSlug ?? playerSlug) } : { id: playerId };
+              return (
+                <Link
+                  href={`${getPlayerHrefWithTab(input, 'matches')}?year=${selectedYear}`}
+                  className="inline-block bg-blue-600 hover:bg-blue-700 shadow-lg text-white font-bold text-2xl py-3 px-8 rounded-full transition-all duration-200"
+                >
+                  View All Matches
+                </Link>
+              );
+            })()
           ) : (
             <span className="inline-block bg-blue-600/50 cursor-not-allowed opacity-60 text-white font-bold text-2xl py-3 px-8 rounded-full">
               View All Matches

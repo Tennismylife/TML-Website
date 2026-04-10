@@ -3,7 +3,7 @@
 import React, { useMemo } from "react";
 import Link from 'next/link';
 import Flag from '@/components/Flag';
-import { getPlayerHrefWithTab } from '@/lib/utils';
+import { getPlayerHref } from '@/lib/utils';
 
 interface Player {
   id?: string | number;
@@ -130,11 +130,11 @@ export default function H2HPreviewClient({ player1, player2, matches }: Props) {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-3">
           {player2.ioc ? <Flag ioc={player2.ioc} className="w-6 h-4 inline-block rounded-sm object-cover" /> : null}
-          <Link href={getPlayerHrefWithTab(player2.slug ?? String(player2.id), 'matches')} className="text-2xl font-bold text-gray-100 hover:underline">{player2.atpname}</Link>
+          <Link href={getPlayerHref(player2.slug ?? String(player2.id))} className="text-2xl font-bold text-gray-100 hover:underline">{player2.atpname}</Link>
         </div>
 
         <div className="flex items-center gap-3">
-          <Link href={getPlayerHrefWithTab(player1.slug ?? String(player1.id), 'matches')} className="text-2xl font-bold text-gray-100 text-right hover:underline">{player1.atpname}</Link>
+          <Link href={getPlayerHref(player1.slug ?? String(player1.id))} className="text-2xl font-bold text-gray-100 text-right hover:underline">{player1.atpname}</Link>
           {player1.ioc ? <Flag ioc={player1.ioc} className="w-6 h-4 inline-block rounded-sm object-cover" /> : null}
         </div>
       </div>

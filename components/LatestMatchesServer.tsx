@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { mapIdsToSlugs } from '@/lib/player-slugs';
-import { getTourneyHref, getPlayerHrefWithTab, formatDateISO, createH2HUrl } from '@/lib/utils';
+import { getTourneyHref, getPlayerHref, formatDateISO, createH2HUrl } from '@/lib/utils';
 import Flag from '@/components/Flag';
 
 export default async function LatestMatchesServer() {
@@ -173,7 +173,7 @@ export default async function LatestMatchesServer() {
                         {m.winner_ioc && <Flag ioc={m.winner_ioc} className="w-4 h-3" />}
                         {m.winner_name ? (
                           <Link
-                            href={getPlayerHrefWithTab(wSlug ?? String(m.winner_id || m.winner_name), 'matches')}
+                            href={getPlayerHref(wSlug ?? String(m.winner_id || m.winner_name))}
                             className="text-indigo-300 hover:underline"
                           >
                             {m.winner_name}
@@ -188,7 +188,7 @@ export default async function LatestMatchesServer() {
                         {m.loser_ioc && <Flag ioc={m.loser_ioc} className="w-4 h-3" />}
                         {m.loser_name ? (
                           <Link
-                            href={getPlayerHrefWithTab(lSlug ?? String(m.loser_id || m.loser_name), 'matches')}
+                            href={getPlayerHref(lSlug ?? String(m.loser_id || m.loser_name))}
                             className="text-indigo-300 hover:underline"
                           >
                             {m.loser_name}

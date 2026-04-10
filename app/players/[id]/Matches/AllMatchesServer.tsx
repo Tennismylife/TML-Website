@@ -43,8 +43,8 @@ export default function AllMatchesServer({ playerId, playerSlug, matches, headin
             <Link
               href={
                 playerLinkTab && playerLinkTab !== 'matches'
-                  ? `${getPlayerHrefWithTab(playerSlug, 'matches')}?surface=${playerLinkTab.charAt(0).toUpperCase() + playerLinkTab.slice(1)}`
-                  : getPlayerHrefWithTab(playerSlug, 'matches')
+                  ? `${getPlayerHref(playerSlug)}?surface=${playerLinkTab.charAt(0).toUpperCase() + playerLinkTab.slice(1)}`
+                  : `${getPlayerHref(playerSlug)}/matches`
               }
               className="inline-block bg-blue-600 hover:bg-blue-700 shadow-lg text-white font-bold text-sm py-1.5 px-4 rounded-full transition-all duration-200 ml-auto"
             >
@@ -100,7 +100,7 @@ export default function AllMatchesServer({ playerId, playerSlug, matches, headin
                       <div className="flex items-center justify-center gap-2">
                         {m.winner_ioc && <Flag ioc={m.winner_ioc} className="w-6 h-4" />}
                         {m.winner_slug || m.winner_id ? (
-                          <Link href={getPlayerHrefWithTab(m.winner_slug ?? String(m.winner_id), playerLinkTab)} className="text-gray-200 hover:text-yellow-400">
+                          <Link href={getPlayerHrefWithTab(m.winner_slug ?? String(m.winner_id), playerLinkTab === 'matches' ? null : playerLinkTab)} className="text-gray-200 hover:text-yellow-400">
                             {m.winner_name ?? ""}
                           </Link>
                         ) : (
@@ -117,7 +117,7 @@ export default function AllMatchesServer({ playerId, playerSlug, matches, headin
                       <div className="flex items-center justify-center gap-2">
                         {m.loser_ioc && <Flag ioc={m.loser_ioc} className="w-6 h-4" />}
                         {m.loser_slug || m.loser_id ? (
-                          <Link href={getPlayerHrefWithTab(m.loser_slug ?? String(m.loser_id), playerLinkTab)} className="text-gray-400 hover:text-gray-200">
+                          <Link href={getPlayerHrefWithTab(m.loser_slug ?? String(m.loser_id), playerLinkTab === 'matches' ? null : playerLinkTab)} className="text-gray-400 hover:text-gray-200">
                             {m.loser_name ?? ""}
                           </Link>
                         ) : (

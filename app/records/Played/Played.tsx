@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Flag from '@/components/Flag';
-import { getPlayerHrefWithTab } from '@/lib/utils';
 import { playerMatchesUrl, playerSurfaceHref, surfaceFromSelection } from '../nav';
 import { useSearchParams } from "next/navigation";
 import Pagination from "../../../components/Pagination";
@@ -104,7 +103,7 @@ export default function Played({ topPlayed, fetchEnabled, description, selectedS
                   </div>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
-                  <Link href={playerMatchesUrl(p.slug ?? String(p.id), (() => { const params: Record<string, string | string[]> = { tab: 'matches', result: 'Played' }; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (key === 'bestOf') { const bestOfValues = value.split(',').filter(Boolean); const boMap: Record<string,string> = { '1': 'All+Best+of+1', '3': 'All+Best+of+3', '5': 'All+Best+of+5' }; if (bestOfValues.length === 1) params['set'] = boMap[bestOfValues[0]]; } else { if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } } return params; })())} className="text-indigo-300 hover:underline">
+                  <Link href={playerMatchesUrl(p.slug ?? String(p.id), (() => { const params: Record<string, string | string[]> = { result: 'Played' }; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (key === 'bestOf') { const bestOfValues = value.split(',').filter(Boolean); const boMap: Record<string,string> = { '1': 'All+Best+of+1', '3': 'All+Best+of+3', '5': 'All+Best+of+5' }; if (bestOfValues.length === 1) params['set'] = boMap[bestOfValues[0]]; } else { if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } } return params; })())} className="text-indigo-300 hover:underline">
                     {p.totalPlayed}
                   </Link>
                 </td>

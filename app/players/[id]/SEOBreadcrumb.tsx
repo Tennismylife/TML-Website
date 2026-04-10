@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 interface SEOBreadcrumbProps {
   slug: string;
@@ -17,19 +18,25 @@ function capitalizeTab(tab: string) {
     grass: 'Grass Court Stats',
   };
   if (map[tab]) return map[tab];
-  // Fallback Title Case
   return tab.split(/[-_\s]+/).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
 }
 
 export default function SEOBreadcrumb({ slug, name, tab }: SEOBreadcrumbProps) {
   const base = 'https://stats.tennismylife.org';
+  const playerUrl = `${base}/players/${slug}`;
+
   const items: any[] = [
-    { '@type': 'ListItem', position: 1, name: 'Players', item: `${base}/players` },
-    { '@type': 'ListItem', position: 2, name: name, item: `${base}/players/${slug}` },
+    { '@type': 'ListItem', position: 1, name: 'Home', item: base },
+    { '@type': 'ListItem', position: 2, name, item: playerUrl },
+  ];
+
+  const crumbs: { label: string; href: string }[] = [
+    { label: 'Home', href: '/' },
+    { label: name, href: `/players/${slug}` },
   ];
 
   if (tab && tab !== 'overview') {
-    items.push({ '@type': 'ListItem', position: 3, name: capitalizeTab(tab), item: `${base}/players/${slug}/${tab}` });
+    // tab kept for future use but not added to breadcrumb
   }
 
   const ld = {
@@ -38,5 +45,22 @@ export default function SEOBreadcrumb({ slug, name, tab }: SEOBreadcrumbProps) {
     itemListElement: items,
   };
 
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />;
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
+      <nav aria-label="Breadcrumb" className="sr-only">
+        <ol>
+          {crumbs.map((c, i) => (
+            <li key={c.href}>
+              {i < crumbs.length - 1 ? (
+                <Link href={c.href}>{c.label}</Link>
+              ) : (
+                <span aria-current="page">{c.label}</span>
+              )}
+            </li>
+          ))}
+        </ol>
+      </nav>
+    </>
+  );
 }

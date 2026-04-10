@@ -13,10 +13,15 @@ export async function POST(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const path = searchParams.get('path');
   const tag = searchParams.get('tag');
+  const type = searchParams.get('type'); // 'layout' per invalidare tutti i path figli
 
   if (path) {
-    revalidatePath(path);
-    return NextResponse.json({ revalidated: true, path });
+    if (type === 'layout' || type === 'page') {
+      revalidatePath(path, type);
+    } else {
+      revalidatePath(path);
+    }
+    return NextResponse.json({ revalidated: true, path, type: type ?? 'page' });
   }
 
   const resolvedTag = tag ?? 'records';

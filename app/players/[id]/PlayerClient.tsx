@@ -14,6 +14,8 @@ export default function PlayerClient(props: any) {
   const serverBanner: React.ReactNode | null = props.serverBanner ?? null;
   // server-rendered ranking narrative passed in from page.tsx
   const rankingNarrative: React.ReactNode | null = props.rankingNarrative ?? null;
+  // server-rendered career overview + last 10 matches for SSR
+  const overviewSlot: React.ReactNode | null = props.overviewSlot ?? null;
   const initialMatches = props.initialMatches;
   const initialHeading = props.initialHeading;
   const initialTotals = props.initialTotals;
@@ -37,16 +39,16 @@ export default function PlayerClient(props: any) {
   // Lifted UI state for child tabs (filters)
   const [activeTab, setActiveTab] = useState<string>(() => {
     try {
-      if (typeof window === 'undefined') return params?.tab || 'matches';
+      if (typeof window === 'undefined') return params?.tab || 'overview';
       const parts = window.location.pathname.split('/');
       const pathTab = parts[3] || null; // /players/<slug>/<tab>
       // Surface-specific route segments are not tabs in the UI — map them to the matches tab
       // so AllMatches renders with the surface-filtered initialMatches provided by the server.
       const SURFACE_ROUTES = new Set(['clay', 'hard', 'grass']);
       const resolvedPathTab = pathTab && SURFACE_ROUTES.has(pathTab) ? 'matches' : pathTab;
-      return resolvedPathTab || (new URLSearchParams(window.location.search).get('tab')) || params?.tab || 'matches';
+      return resolvedPathTab || (new URLSearchParams(window.location.search).get('tab')) || params?.tab || 'overview';
     } catch {
-      return params?.tab || 'matches';
+      return params?.tab || 'overview';
     }
   });
 
@@ -96,10 +98,13 @@ export default function PlayerClient(props: any) {
         if (explicitTab) params.delete('tab');
         const pathParts = window.location.pathname.split('/');
         const tabFromPath = pathParts[3];
-        const finalTab = explicitTab || tabFromPath || 'matches';
+        const finalTab = explicitTab || tabFromPath || 'overview';
         const search = params.toString();
         const pathYearSegment = (pathParts[4] && /^[0-9]{4}$/.test(pathParts[4])) ? `/${pathParts[4]}` : '';
-        const desired = `${getPlayerHref(slug)}/${encodeURIComponent(finalTab)}${pathYearSegment}${search ? `?${search}` : ''}`;
+        // For 'overview', keep the URL at /players/slug (no tab segment)
+        const desired = finalTab === 'overview'
+          ? `${getPlayerHref(slug)}${search ? `?${search}` : ''}`
+          : `${getPlayerHref(slug)}/${encodeURIComponent(finalTab)}${pathYearSegment}${search ? `?${search}` : ''}`;
         if (window.location.pathname + (search ? `?${search}` : '') !== desired) {
           window.history.replaceState(null, "", desired);
         }
@@ -140,11 +145,14 @@ export default function PlayerClient(props: any) {
         if (explicitTab) params.delete('tab');
         const pathParts = window.location.pathname.split('/');
         const tabFromPath = pathParts[3];
-        const finalTab = explicitTab || tabFromPath || 'matches';
+        const finalTab = explicitTab || tabFromPath || 'overview';
         const search = params.toString();
         // Preserve a path-based year segment when present (e.g. /players/slug/season/2026)
         const pathYearSegment = (pathParts[4] && /^[0-9]{4}$/.test(pathParts[4])) ? `/${pathParts[4]}` : '';
-        const desired = `${getPlayerHref(slug)}/${encodeURIComponent(finalTab)}${pathYearSegment}${search ? `?${search}` : ''}`;
+        // For 'overview', keep the URL at /players/slug (no tab segment)
+        const desired = finalTab === 'overview'
+          ? `${getPlayerHref(slug)}${search ? `?${search}` : ''}`
+          : `${getPlayerHref(slug)}/${encodeURIComponent(finalTab)}${pathYearSegment}${search ? `?${search}` : ''}`;
         window.history.replaceState(null, "", desired);
       } catch (err) {
         if (!(err instanceof DOMException && err.name === "AbortError")) {
@@ -274,10 +282,18 @@ export default function PlayerClient(props: any) {
       }
 
       // Build new pathname with the active tab as the 3rd segment
+      // For 'overview', keep URL at /players/slug (no tab segment)
       const pathParts = window.location.pathname.split('/');
-      pathParts[3] = activeTab;
-      const newQs = params.toString();
-      const newUrl = `${pathParts.join('/')}${newQs ? `?${newQs}` : ''}`;
+      let newUrl: string;
+      if (activeTab === 'overview') {
+        const basePath = pathParts.slice(0, 3).join('/');
+        const newQs = params.toString();
+        newUrl = `${basePath}${newQs ? `?${newQs}` : ''}`;
+      } else {
+        pathParts[3] = activeTab;
+        const newQs = params.toString();
+        newUrl = `${pathParts.join('/')}${newQs ? `?${newQs}` : ''}`;
+      }
 
       // Skip router.replace() when URL hasn't changed — prevents spurious re-renders on initial mount
       const currentFullUrl = window.location.pathname + (window.location.search || '');
@@ -322,13 +338,13 @@ export default function PlayerClient(props: any) {
   if (!player) return <p className="p-4 text-gray-400">Loading…</p>;
 
   const tabs = [
-    { id: "profile", label: "Profile" },
+    { id: "overview", label: "Overview" },
     { id: "matches", label: "Matches" },
     { id: "season", label: "Seasons" },
     { id: "tournaments", label: "Tournaments" },
     { id: "h2h", label: "H2H" },
     { id: "performance", label: "Performance" },
-    { id: "statistics", label: "Statistics" },
+    { id: "statistics", label: "Match Stats" },
     { id: "ranking", label: "Ranking" },
     { id: "surfaces", label: "Surface Stats" },
   ];
@@ -347,7 +363,7 @@ export default function PlayerClient(props: any) {
       <PlayerTabs
         player={player}
         tabs={tabs}
-        initialTab={"matches"}
+        initialTab={"overview"}
         setTab={setActiveTab}
         tournamentsFilters={tournamentsFilters}
         // pass partial-setter wrapper so children can call setFilters({ sub: 'events' })
@@ -366,6 +382,7 @@ export default function PlayerClient(props: any) {
         initialSeasonYears={initialSeasonYears}
         banner={serverBanner}
         rankingNarrative={rankingNarrative}
+        overviewSlot={overviewSlot}
       />
 
       {/* Content */}

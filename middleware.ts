@@ -247,6 +247,11 @@ function hasMissingRequiredRecordsApiParams(record: string, sub: string | undefi
   return false;
 }
 
+function isPlayersMatchesPath(pathname: string) {
+  const seg = pathname.split('/').filter(Boolean);
+  return seg[0] === 'players' && String(seg[2] || '').toLowerCase() === 'matches';
+}
+
 export async function middleware(req: NextRequest) {
   try {
     // Debugging disabled: verbose middleware request logging removed
@@ -254,6 +259,13 @@ export async function middleware(req: NextRequest) {
     const requestPath = req.nextUrl.pathname;
     const query = req.nextUrl.searchParams;
     const ua = getUserAgent(req).toLowerCase();
+    const nextResponse = () => {
+      const res = NextResponse.next();
+      if (isPlayersMatchesPath(requestPath)) {
+        res.headers.set('X-Robots-Tag', 'noindex, follow');
+      }
+      return res;
+    };
 
     // Normalize malformed records filters (e.g. trailing backslashes, bestOf=NaN)
     // before enforcing validity rules.
@@ -456,7 +468,7 @@ export async function middleware(req: NextRequest) {
         // No rewrite here: allow the request to continue to /records/<record>
         // so the page at `/records/[...slug]` can render the specific record view
         // using the path + any query params (e.g., surface/level).
-        return NextResponse.next();
+        return nextResponse();
       }
     }
 
@@ -483,13 +495,13 @@ export async function middleware(req: NextRequest) {
       }
     }
 
-    if (segments.length < 2) return NextResponse.next();
+    if (segments.length < 2) return nextResponse();
 
     const resource = segments[0]; // 'players' or 'tournaments'
-    if (resource !== 'players' && resource !== 'tournaments') return NextResponse.next();
+    if (resource !== 'players' && resource !== 'tournaments') return nextResponse();
 
     const idSegment = segments[1];
-    if (!idSegment) return NextResponse.next();
+    if (!idSegment) return nextResponse();
 
     const rest = segments.slice(2).join('/');
 
@@ -525,7 +537,7 @@ export async function middleware(req: NextRequest) {
           }
         }
       } catch {}
-      return NextResponse.next();
+      return nextResponse();
     }
 
     const codeKey = String(idSegment).toUpperCase();
@@ -574,7 +586,7 @@ export async function middleware(req: NextRequest) {
 
     // Prevenzione loop redirect
     if (slug && slug.toLowerCase() === String(idSegment).toLowerCase()) {
-      return NextResponse.next();
+      return nextResponse();
     }
 
     // If we resolved a slug (from slug-map, header API or local map), redirect the
@@ -586,7 +598,7 @@ export async function middleware(req: NextRequest) {
       return new Response(null, { status: 301, headers: { Location: dest.toString() } });
     }
 
-    return NextResponse.next();
+    return nextResponse();
   } catch (err) {
     console.error('legacy redirect middleware error', err);
     return NextResponse.next();

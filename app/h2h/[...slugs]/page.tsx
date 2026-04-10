@@ -7,7 +7,7 @@ import H2HPreviewServer from '../H2HPreviewServer';
 import H2HCareerOverviewServer from '../H2HCareerOverviewServer';
 import { prisma } from '@/lib/prisma';
 import { metadataBase } from '@/lib/site';
-import { getPlayerHrefWithTab, IOC_TO_ISO, createSlug } from '@/lib/utils';
+import { getPlayerHref, IOC_TO_ISO, createSlug } from '@/lib/utils';
 import { mapIdsToSlugs } from '@/lib/player-slugs';
 import countries from 'i18n-iso-countries';
 import enLocale from 'i18n-iso-countries/langs/en.json';
@@ -251,14 +251,14 @@ export default async function Page({ params, searchParams }: { params?: Promise<
     playersAsPersons.push({
       "@type": "Person",
       name: player1.atpname,
-      sameAs: new URL(getPlayerHrefWithTab(player1.slug ?? (player1.id ? String(player1.id) : player1.atpname), 'matches'), canonicalOrigin).toString(),
+      sameAs: new URL(getPlayerHref(player1.slug ?? (player1.id ? String(player1.id) : player1.atpname)), canonicalOrigin).toString(),
     });
   }
   if (player2) {
     playersAsPersons.push({
       "@type": "Person",
       name: player2.atpname,
-      sameAs: new URL(getPlayerHrefWithTab(player2.slug ?? (player2.id ? String(player2.id) : player2.atpname), 'matches'), canonicalOrigin).toString(),
+      sameAs: new URL(getPlayerHref(player2.slug ?? (player2.id ? String(player2.id) : player2.atpname)), canonicalOrigin).toString(),
     });
   }
 
@@ -267,8 +267,8 @@ export default async function Page({ params, searchParams }: { params?: Promise<
   let keywords: string | undefined;
   if (player1 && player2) {
     aboutArr = [
-      { "@id": (new URL(getPlayerHrefWithTab(player1.slug ?? (player1.id ? String(player1.id) : String(player1.atpname)), 'matches'), canonicalOrigin).toString()) },
-      { "@id": (new URL(getPlayerHrefWithTab(player2.slug ?? (player2.id ? String(player2.id) : String(player2.atpname)), 'matches'), canonicalOrigin).toString()) },
+      { "@id": (new URL(getPlayerHref(player1.slug ?? (player1.id ? String(player1.id) : String(player1.atpname))), canonicalOrigin).toString()) },
+      { "@id": (new URL(getPlayerHref(player2.slug ?? (player2.id ? String(player2.id) : String(player2.atpname))), canonicalOrigin).toString()) },
     ];
     keywords = `${player1.atpname} vs ${player2.atpname}, ${player1.atpname} ${player2.atpname} h2h, ${player1.atpname} ${player2.atpname} head to head, tennis h2h stats, ${player1.atpname} ${player2.atpname} matches, ${player1.atpname} ${player2.atpname} comparison, ATP h2h`;
   }
@@ -316,29 +316,49 @@ export default async function Page({ params, searchParams }: { params?: Promise<
     const iso = (ioc && IOC_TO_ISO[ioc.toUpperCase()]) || undefined;
     const countryName = iso ? countries.getName(iso, 'en') : undefined;
 
+    const slug = player.slug ?? (player.id ? String(player.id) : String(player.atpname ?? ''));
+    const playerUrl = new URL(getPlayerHref(slug), canonicalOrigin).toString();
+    const personId = `${playerUrl}#person`;
+    const nameForWiki = (player.atpname || player.player || '').replace(/\s+/g, '_');
+
     const additionalProperty: any[] = [];
-    const keys = ['id','player','atpname','coaches','ioc','hand','backhand','birthdate','height','weight','turnedpro','birthplace','slug'];
-    for (const k of keys) {
-      const v = player[k];
-      if (v !== undefined && v !== null && v !== '') {
-        let val = v;
-        if (v instanceof Date) val = v.toISOString().split('T')[0];
-        additionalProperty.push({ "@type": "PropertyValue", name: String(k), value: String(val) });
-      }
+    if (player.height) additionalProperty.push({ '@type': 'PropertyValue', name: 'Height', value: Number(player.height), unitCode: 'CMT', unitText: 'cm' });
+    if (player.weight) additionalProperty.push({ '@type': 'PropertyValue', name: 'Weight', value: Number(player.weight), unitCode: 'KGM', unitText: 'kg' });
+    if (player.hand) {
+      const handMap: Record<string, string> = { R: 'Right-handed', L: 'Left-handed' };
+      additionalProperty.push({ '@type': 'PropertyValue', name: 'Playing Hand', value: handMap[player.hand] ?? player.hand });
     }
+    if (player.backhand) {
+      const bhMap: Record<string, string> = { '1H': 'One-handed backhand', '1': 'One-handed backhand', '2H': 'Two-handed backhand', '2': 'Two-handed backhand' };
+      additionalProperty.push({ '@type': 'PropertyValue', name: 'Backhand', value: bhMap[player.backhand] ?? player.backhand });
+    }
+    if (player.turnedpro) additionalProperty.push({ '@type': 'PropertyValue', name: 'Turned Pro', value: Number(player.turnedpro) });
+    if (player.coaches) additionalProperty.push({ '@type': 'PropertyValue', name: 'Coach', value: String(player.coaches) });
+
+    const nameParts = (player.atpname || player.player || '').split(/\s+/).filter(Boolean);
+    const givenName = nameParts.length > 1 ? nameParts.slice(0, -1).join(' ') : (nameParts[0] ?? '');
+    const familyName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
 
     return {
-      "@context": "https://schema.org",
-      "@type": "Person",
-      "@id": new URL(getPlayerHrefWithTab(player.slug ?? (player.id ? String(player.id) : String(player.atpname)), 'matches'), canonicalOrigin).toString(),
+      '@context': 'https://schema.org',
+      '@type': 'Athlete',
+      '@id': personId,
       name: player.atpname || player.player || '',
-      givenName: player.player || player.atpname || '',
-      jobTitle: 'Tennis Player',
-      birthDate: player.birthdate ? (player.birthdate instanceof Date ? player.birthdate.toISOString().split('T')[0] : String(player.birthdate)) : undefined,
-      nationality: countryName ? { "@type": "Country", name: countryName } : undefined,
-      affiliation: { "@type": "SportsOrganization", name: 'ATP' },
-      url: new URL(getPlayerHrefWithTab(player.slug ?? (player.id ? String(player.id) : String(player.atpname)), 'matches'), canonicalOrigin).toString(),
-      additionalProperty: additionalProperty.length ? additionalProperty : undefined,
+      givenName,
+      familyName,
+      sport: 'Tennis',
+      url: playerUrl,
+      mainEntityOfPage: playerUrl,
+      ...(player.birthdate ? { birthDate: player.birthdate instanceof Date ? player.birthdate.toISOString().split('T')[0] : String(player.birthdate) } : {}),
+      ...(player.birthplace ? { birthPlace: { '@type': 'Place', name: String(player.birthplace) } } : {}),
+      ...(countryName ? { nationality: { '@type': 'Country', name: countryName } } : {}),
+      memberOf: { '@type': 'Organization', name: 'ATP Tour', url: 'https://www.atptour.com' },
+      sameAs: [
+        playerUrl,
+        `https://en.wikipedia.org/wiki/${encodeURIComponent(nameForWiki)}`,
+        `https://www.atptour.com/en/players/${encodeURIComponent(slug)}/${String(player.id ?? '').toLowerCase()}/overview`,
+      ],
+      ...(additionalProperty.length ? { additionalProperty } : {}),
     };
   }
 

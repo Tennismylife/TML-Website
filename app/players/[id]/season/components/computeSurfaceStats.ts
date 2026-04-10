@@ -62,11 +62,11 @@ export function computeSurfaceStats(
   surface: string,
   playerId: string
 ): SurfaceStatsResult {
+  const isAll = surface === 'All' || surface === 'all' || surface === '';
   const surfaceMatches = allMatches.filter(
     (m) =>
       m.status === true &&
-      typeof m.surface === 'string' &&
-      m.surface.toLowerCase().includes(surface.toLowerCase())
+      (isAll || (typeof m.surface === 'string' && m.surface.toLowerCase().includes(surface.toLowerCase())))
   );
   const pid = String(playerId);
 
@@ -90,7 +90,7 @@ export function computeSurfaceStats(
       const rs = getRoundScore(m.round);
       if (rs > bestScore) { bestScore = rs; bestRound = m.round ?? '-'; }
     }
-    champion = arr.some((m) => m.round === 'F' && String(m.winner_id) === pid);
+    champion = arr.some((m) => m.round === 'F' && String(m.winner_id) === pid && !String((m as any).tourney_name ?? '').toLowerCase().includes('next gen') && !((m as any).score && String((m as any).score).includes('WEA')));
     tiles.push({
       key: `${rep.tourney_name ?? 'Unknown'}__${rep.year ?? 0}`,
       name: rep.tourney_name ?? 'Unknown',
@@ -138,7 +138,7 @@ export function computeSurfaceStats(
     if (isWinner) current.wins++; else current.losses++;
     if (m.round === 'F') {
       current.finals++;
-      if (isWinner) current.titles++;
+      if (isWinner && !String((m as any).tourney_name ?? '').toLowerCase().includes('next gen') && !((m as any).score && String((m as any).score).includes('WEA'))) current.titles++;
     }
     if (m.round === 'SF') current.sf++;
     if (m.round === 'QF') current.qf++;

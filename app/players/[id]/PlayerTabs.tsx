@@ -3,7 +3,6 @@
 import { useMemo, useRef } from "react";
 import type { ReactNode } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import Profile from "./Profile";
 import AllMatches from "./Matches/AllMatches";
 import Seasons from "./season/components/Seasons";
 import SurfaceStatsClient from "./season/components/SurfaceStatsClient";
@@ -44,9 +43,11 @@ interface PlayerTabsProps {
   belowTabsSlot?: React.ReactNode;
   // SSR-rendered matches table rendered inside the tab content for Google first-paint
   serverMatchesTable?: React.ReactNode;
+  // SSR-rendered career overview + last 10 matches
+  overviewSlot?: React.ReactNode;
 }
 
-export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNarrative, setTab, tournamentsFilters, setTournamentsFilters, h2hFilters, setH2HFilters, initialMatches, initialHeading, initialTotals, initialFacets, initialSeasonStats, initialSeasonYear, initialSeasonMatches, initialSeasonYears, belowTabsSlot, serverMatchesTable }: PlayerTabsProps) {
+export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNarrative, setTab, tournamentsFilters, setTournamentsFilters, h2hFilters, setH2HFilters, initialMatches, initialHeading, initialTotals, initialFacets, initialSeasonStats, initialSeasonYear, initialSeasonMatches, initialSeasonYears, belowTabsSlot, serverMatchesTable, overviewSlot }: PlayerTabsProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -56,9 +57,9 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
   const SURFACE_TABS = new Set(['clay', 'hard', 'grass']);
 
   const activeTab = useMemo(() => {
-    const tab = (pathTab || initialTab || "profile").toLowerCase();
+    const tab = (pathTab || initialTab || "overview").toLowerCase();
     if (SURFACE_TABS.has(tab)) return tab;
-    return tabs.some(t => t.id === tab) ? tab : "profile";
+    return tabs.some(t => t.id === tab) ? tab : "overview";
   }, [pathTab, initialTab, tabs]);
 
   const lastNavRef = useRef<{ url: string; t: number } | null>(null);
@@ -82,11 +83,18 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
     const currentQs = typeof window !== "undefined" ? window.location.search.replace(/^\?/, "") : "";
 
     // Build new pathname with tab as segment (remove extra trailing segments like an encoded year)
-    const parts = typeof window !== 'undefined' ? window.location.pathname.split('/') : ['','players','','matches'];
+    const parts = typeof window !== 'undefined' ? window.location.pathname.split('/') : ['','players','','overview'];
     // Keep only the first 4 segments: ['', 'players', ':slug', ':tab'] to avoid preserving trailing year or other segments
     const baseParts = parts.slice(0, 4);
-    baseParts[3] = tabId;
-    let newPathname = baseParts.join('/');
+    let newPathname: string;
+
+    // For 'overview', navigate to /players/slug (no tab segment) so the URL stays clean
+    if (tabId === 'overview') {
+      newPathname = parts.slice(0, 3).join('/');
+    } else {
+      baseParts[3] = tabId;
+      newPathname = baseParts.join('/');
+    }
 
     // For season tab: always navigate directly to /season/YYYY to avoid the intermediate redirect
     if (tabId === 'season') {
@@ -135,8 +143,24 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
 
   let content: ReactNode = null;
   switch (activeTab) {
-    case "profile":
-      content = <Profile player={player} />;
+    case "overview":
+      content = (
+        <SurfaceStatsClient
+          playerId={player.id}
+          playerSlug={player.slug}
+          playerName={player.atpname ?? player.player ?? player.id}
+          surface="All"
+          birthdate={player.birthdate ?? undefined}
+          hand={player.hand ?? undefined}
+          backhand={player.backhand ?? undefined}
+          height={player.height ?? undefined}
+          weight={player.weight ?? undefined}
+          turnedpro={player.turnedpro ?? undefined}
+          coaches={player.coaches ?? undefined}
+          ioc={player.ioc ?? undefined}
+          overviewSlot={overviewSlot}
+        />
+      );
       break;
     case "matches":
       content = (
@@ -279,7 +303,7 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
           {banner}
         </div>
       )}
-      {belowTabsSlot && (
+      {belowTabsSlot && activeTab === 'overview' && (
         <div className="w-full bg-gray-900">
           <div className="w-full py-6">
             {belowTabsSlot}

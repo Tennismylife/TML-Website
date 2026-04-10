@@ -6,7 +6,7 @@ import RouteModal from './RouteModal';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
-import { getPlayerHrefWithTab, getTourneyHref } from '@/lib/utils';
+import { getPlayerHref, getTourneyHref } from '@/lib/utils';
 
 export default function AgesModalOutlet({ id }: { id: string }) {
   const [show, setShow] = useState(false);
@@ -263,7 +263,7 @@ export default function AgesModalOutlet({ id }: { id: string }) {
                     <td className="py-2 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <Flag ioc={r.ioc} className="w-4 h-3" />
-                        <Link href={getPlayerHrefWithTab(r.slug ?? String(r.id), 'matches')} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link>
+                        <Link href={getPlayerHref(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</Link>
                       </div>
                     </td>
                     <td className="py-2 text-center text-lg md:text-xl text-white">{formatAge(r.age)}</td>

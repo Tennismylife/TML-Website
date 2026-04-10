@@ -27,7 +27,7 @@ export function playerSurfaceHref(playerId: string, surface: string | null | und
   if (surface && KNOWN_SURFACES.has(surface.toLowerCase())) {
     return `${getPlayerHref(String(playerId))}/${surface.toLowerCase()}`;
   }
-  return `${getPlayerHref(String(playerId))}/matches`;
+  return getPlayerHref(String(playerId));
 }
 
 /**
@@ -59,7 +59,7 @@ export function playerUrl(playerId: string, params?: Record<string, string | num
 }
 
 export function playerMatchesUrl(playerId: string, extra?: Record<string, string | number | boolean | string[]>) {
-  return playerUrl(playerId, { tab: "matches", ...(extra || {}) });
+  return playerUrl(playerId, { ...(extra || {}) });
 }
 
 export function playerTournamentsUrl(playerId: string, extra?: Record<string, string | number | boolean | string[]>) {

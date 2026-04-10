@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Match, SortKey, SortDirection } from "@/types";
 import Flag from '@/components/Flag';
-import { getTourneyHref, extractUniqueSurfaces, getPlayerHrefWithTab, formatDateISO } from "@/lib/utils";
+import { getTourneyHref, extractUniqueSurfaces, getPlayerHref, formatDateISO } from "@/lib/utils";
 import { useEffect, useRef, useState, useMemo } from "react";
 
 interface H2HMatchesProps {
@@ -328,7 +328,7 @@ export default function H2HMatches({
                   <td className="px-3 py-2">
                     <Flag ioc={m.winner_ioc ?? undefined} className="w-4 h-3 inline-block mr-1" />
                     <Link
-                      href={getPlayerHrefWithTab((m as any).winner_slug ?? String(m.winner_id ?? ''), 'matches')}
+                      href={getPlayerHref((m as any).winner_slug ?? String(m.winner_id ?? ''))}
                       className={isPlayerWinner ? "text-green-400" : "text-gray-100 hover:text-white"}
                     >
                       {renderNameWithSeedEntry(m.winner_name ?? '', m.winner_seed, m.winner_entry)}
@@ -338,7 +338,7 @@ export default function H2HMatches({
                   <td className="px-3 py-2">
                     <Flag ioc={m.loser_ioc ?? undefined} className="w-4 h-3 inline-block mr-1" />
                     <Link
-                      href={getPlayerHrefWithTab((m as any).loser_slug ?? String(m.loser_id ?? ''), 'matches')}
+                      href={getPlayerHref((m as any).loser_slug ?? String(m.loser_id ?? ''))}
                       className={isPlayerLoser ? "text-red-400" : "text-gray-100 hover:text-white"}
                     >
                       {renderNameWithSeedEntry(m.loser_name ?? '', m.loser_seed, m.loser_entry)}

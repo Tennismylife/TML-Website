@@ -6,7 +6,7 @@ import RouteModal from './RouteModal';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
-import { getPlayerHrefWithTab, getRoundFullName } from '@/lib/utils';
+import { getPlayerHref, getRoundFullName } from '@/lib/utils';
 
 export default function RoundsModalOutlet({ id }: { id: string }) {
   const pathname = usePathname();
@@ -163,7 +163,7 @@ export default function RoundsModalOutlet({ id }: { id: string }) {
                     <td className="py-2 text-center">
                       <div className="flex items-center justify-center gap-2">
                         {item.ioc && <Flag ioc={item.ioc} className="w-5 h-4" />}
-                        <Link href={getPlayerHrefWithTab(item.slug ?? String(item.id), 'matches')} className="text-blue-400 hover:underline text-lg md:text-xl">{item.name}</Link>
+                        <Link href={getPlayerHref(item.slug ?? String(item.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{item.name}</Link>
                       </div>
                     </td>
                     <td className="py-2 text-center text-lg md:text-xl">{item.count}</td>
