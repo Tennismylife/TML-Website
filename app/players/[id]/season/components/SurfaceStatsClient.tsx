@@ -328,11 +328,16 @@ export default function SurfaceStatsClient({
     const sorted = [...matches].sort((a: any, b: any) => {
       const da = a.tourney_date ? new Date(a.tourney_date).getTime() : 0;
       const db = b.tourney_date ? new Date(b.tourney_date).getTime() : 0;
-      return da - db;
+      if (da !== db) return da - db;
+      // Same tournament week: sort by round (early rounds first)
+      return getRoundIndex(a.round, a.tourney_level) - getRoundIndex(b.round, b.tourney_level);
     });
     let winStreak = 0, curStreak = 0;
     for (const m of sorted) {
-      if (String((m as any).winner_id) === pid) { curStreak++; if (curStreak > winStreak) winStreak = curStreak; }
+      const isWinner = String((m as any).winner_id) === pid;
+      const isWO = (m as any).score && /\bW\/?O\b/i.test(String((m as any).score));
+      if (isWO && !isWinner) continue; // W/O loss (player withdrew): skip — don't reset streak
+      if (isWinner) { curStreak++; if (curStreak > winStreak) winStreak = curStreak; }
       else curStreak = 0;
     }
 
@@ -401,8 +406,8 @@ export default function SurfaceStatsClient({
                 </div>
                 {/* Per-category */}
                 <div className="flex flex-wrap gap-1.5 justify-end">
-                  {(['G','M','F','500','A','250','B','C','D'] as const).map((lvl) => {
-                    const lvlLabels: Record<string, string> = { G: 'Grand Slam', M: 'Masters 1000', F: 'Year-end Finals', '500': 'ATP 500', A: 'Others', '250': 'ATP 250', B: 'ATP 250', C: 'Challenger', D: 'Davis Cup' };
+                  {(['G','M','F','O','500','A','250','B','C','D'] as const).map((lvl) => {
+                    const lvlLabels: Record<string, string> = { G: 'Grand Slam', M: 'Masters 1000', F: 'Year-end Finals', O: 'Olympics', '500': 'ATP 500', A: 'Others', '250': 'ATP 250', B: 'ATP 250', C: 'Challenger', D: 'Davis Cup' };
                     const count = overviewStats.titlesByLevel[lvl];
                     if (!count) return null;
                     return (
@@ -413,7 +418,7 @@ export default function SurfaceStatsClient({
                     );
                   })}
                   {Object.entries(overviewStats.titlesByLevel)
-                    .filter(([lvl]) => !['G','M','F','500','A','250','B','C','D'].includes(lvl))
+                    .filter(([lvl]) => !['G','M','F','O','500','A','250','B','C','D'].includes(lvl))
                     .map(([lvl, count]) => (
                       <span key={lvl} className="text-xs bg-gray-700 border border-gray-600 rounded px-2 py-0.5 text-gray-200">
                         <span className="text-yellow-300 font-bold">{count}</span>

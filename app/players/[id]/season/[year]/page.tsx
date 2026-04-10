@@ -205,14 +205,18 @@ export default async function SeasonYearPage({ params, searchParams }: any) {
       const seasonMatches = await prisma.match.findMany({
         where: { year: yNum2, status: true, OR: [{ winner_id: player.id }, { loser_id: player.id }] },
         orderBy: [{ tourney_date: 'asc' }, { match_num: 'asc' }],
-        select: { winner_id: true, tourney_date: true, match_num: true },
+        select: { winner_id: true, tourney_date: true, match_num: true, score: true },
       });
       let cur = 0, best = 0;
       for (const m of seasonMatches) {
+        const isWO = m.score && /\bW\/?O\b/i.test(String(m.score));
+        if (isWO) continue; // W/O: skip — don't break streak, don't count
         if (m.winner_id === player.id) { cur++; if (cur > best) best = cur; } else cur = 0;
       }
       winStreak = best;
-      recentForm = seasonMatches.slice(-10).map(m => m.winner_id === player.id ? 'W' : 'L');
+      recentForm = seasonMatches
+        .filter(m => !(m.score && /\bW\/?O\b/i.test(String(m.score))))
+        .slice(-10).map(m => m.winner_id === player.id ? 'W' : 'L');
     } catch (e) { winStreak = 0; }
   } catch (e) {
     // ignore
