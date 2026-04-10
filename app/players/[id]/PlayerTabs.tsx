@@ -172,6 +172,7 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
     case "season":
       content = (
         <>
+          {belowTabsSlot && <div className="mb-4">{belowTabsSlot}</div>}
           <Seasons
             playerId={player.id}
             playerSlug={player.slug}
@@ -310,6 +311,7 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
           </div>
         </div>
       )}
+      {/* season: slot is rendered inside the case above */}
 
       {/* Tab content */}
       <div className="flex-1 w-full bg-gray-900">

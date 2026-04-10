@@ -883,99 +883,132 @@ export default function SurfaceStatsClient({
             <TournamentCompactList tourneys={tourneysForSurface} getTourneyLink={getTourneyLink} />
           )}
 
-          {/* Section 2: W-L + Years/Career + Categories */}
+          {/* Section 2: title+dropdown header (surface pages) + 3-col W-L / By Year / Categories */}
           {(!isMobileCards || visibleCount >= 2) && (
-            <div className="flex flex-wrap gap-6 mt-8">
-              {/* Column 1: W-L (surface pages) or By Year (All surfaces) */}
-              {surface === 'All' ? (
-                !selectedYear && (
-                  <div className="flex-1 min-w-[300px]">
-                    <WLStatTable
-                      title="By Year"
-                      rows={[...yearsAgg].sort((a, b) => a.year - b.year).map((r, i) => ({
-                        label: String(r.year),
-                        wins: r.wins,
-                        losses: r.losses,
-                        color: palette[i % palette.length],
-                      }))}
-                    />
-                  </div>
-                )
-              ) : (
-                <div className="flex-1 min-w-[300px]">
-                  <WLStatTable
-                    title="W-L"
-                    rows={[{ label: selectedYear ? String(selectedYear) : "Career", wins: careerAgg.wins, losses: careerAgg.losses, color: palette[0] }]}
-                  />
+            <>
+              {/* Surface pages: title + year picker top-left */}
+              {isSurfacePage && (
+                <div className="flex items-center gap-4 mt-6 mb-2">
+                  <span className="font-extrabold text-2xl text-yellow-400">
+                    {surfaceLabel} — {selectedYear ? `${selectedYear} Stats` : 'Career Stats'}
+                  </span>
+                  {availableYears.length > 0 && (
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={selectedYear ?? ''}
+                        onChange={(e) => setSelectedYear(e.target.value ? Number(e.target.value) : null)}
+                        className="bg-gray-700 text-white text-sm rounded-lg px-3 py-1.5 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 cursor-pointer"
+                      >
+                        <option value="">All years</option>
+                        {availableYears.map((y) => (
+                          <option key={y} value={y}>{y}</option>
+                        ))}
+                      </select>
+                      {selectedYear && (
+                        <button
+                          onClick={() => setSelectedYear(null)}
+                          className="text-xs text-gray-400 hover:text-white transition-colors px-2 py-1 rounded bg-gray-700 hover:bg-gray-600"
+                        >
+                          ✕ Clear
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
-              {/* Column 2: By Surface (All) or Title + Year dropdown (surface pages) */}
-              <div className="flex-1 min-w-[300px]">
-                {surface === 'All' && !selectedYear ? (() => {
-                  const pid = String(playerId);
-                  const surfaces = ['Hard', 'Clay', 'Grass', 'Carpet'];
-                  const surfaceColors: Record<string, string> = { Hard: '#3B82F6', Clay: '#F97316', Grass: '#22C55E', Carpet: '#A855F7' };
-                  const rows = surfaces.map(s => {
-                    const sm = allMatches.filter((m: any) => m.status === true && typeof m.surface === 'string' && m.surface.toLowerCase().includes(s.toLowerCase()));
-                    const w = sm.filter((m: any) => String(m.winner_id) === pid).length;
-                    const l = sm.length - w;
-                    return { label: s, wins: w, losses: l, color: surfaceColors[s] };
-                  }).filter(r => r.wins + r.losses > 0);
-                  return <WLStatTable title="By Surface" rows={rows} />;
-                })() : surface !== 'All' ? (
-                  <div className="h-full p-4 bg-gray-900 rounded-lg border border-gray-700 flex flex-col items-center justify-center gap-3">
-                    <span className="font-extrabold text-2xl text-yellow-400 text-center">
-                      {surface} Court — {selectedYear ? selectedYear : 'Career'} Stats
-                    </span>
-                    {availableYears.length > 0 && (
-                      <div className="flex items-center gap-2">
-                        <select
-                          value={selectedYear ?? ''}
-                          onChange={(e) => setSelectedYear(e.target.value ? Number(e.target.value) : null)}
-                          className="bg-gray-700 text-white text-sm rounded-lg px-3 py-1.5 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 cursor-pointer"
-                        >
-                          <option value="">All years</option>
-                          {availableYears.map((y) => (
-                            <option key={y} value={y}>{y}</option>
-                          ))}
-                        </select>
-                        {selectedYear && (
-                          <button
-                            onClick={() => setSelectedYear(null)}
-                            className="text-xs text-gray-400 hover:text-white transition-colors px-2 py-1 rounded bg-gray-700 hover:bg-gray-600"
-                          >
-                            ✕ Clear
-                          </button>
-                        )}
-                      </div>
-                    )}
+
+              <div className={`flex flex-wrap gap-6 ${isSurfacePage ? 'mt-2' : 'mt-8'}`}>
+                {/* Column 1: W-L (surface pages) or By Year (Overview) */}
+                {isSurfacePage ? (
+                  <div className="flex-1 min-w-[300px]">
+                    <WLStatTable
+                      title="W-L"
+                      rows={[{ label: selectedYear ? String(selectedYear) : 'Career', wins: careerAgg.wins, losses: careerAgg.losses, color: palette[0] }]}
+                    />
                   </div>
                 ) : (
-                  <WLStatTable
-                    title="W-L"
-                    rows={[{ label: selectedYear ? String(selectedYear) : 'Career', wins: careerAgg.wins, losses: careerAgg.losses, color: palette[0] }]}
-                  />
+                  !selectedYear && (
+                    <div className="flex-1 min-w-[300px]">
+                      <WLStatTable
+                        title="By Year"
+                        rows={[...yearsAgg].sort((a, b) => a.year - b.year).map((r, i) => ({
+                          label: String(r.year),
+                          wins: r.wins,
+                          losses: r.losses,
+                          color: palette[i % palette.length],
+                        }))}
+                      />
+                    </div>
+                  )
                 )}
+
+                {/* Column 2: By Year (surface pages) or By Surface (Overview) */}
+                <div className="flex-1 min-w-[300px]">
+                  {isSurfacePage ? (
+                    !selectedYear ? (
+                      <WLStatTable
+                        title="By Year"
+                        rows={[...yearsAgg].sort((a, b) => a.year - b.year).map((r, i) => ({
+                          label: String(r.year),
+                          wins: r.wins,
+                          losses: r.losses,
+                          color: palette[i % palette.length],
+                        }))}
+                      />
+                    ) : (
+                      /* When a year is selected: show rounds breakdown */
+                      <WLStatTable
+                        title="Rounds"
+                        rows={(() => {
+                          const order = ["F","SF","QF","R16","R32","R64","R128","RR"];
+                          return [...roundsAgg].sort((a, b) => {
+                            const ia = order.indexOf(a.round), ib = order.indexOf(b.round);
+                            if (ia === -1 && ib === -1) return a.round.localeCompare(b.round);
+                            if (ia === -1) return 1; if (ib === -1) return -1;
+                            return ia - ib;
+                          }).map((r, i) => ({ label: r.round, wins: r.wins, losses: r.losses, color: palette[i % palette.length] }));
+                        })()}
+                      />
+                    )
+                  ) : !selectedYear ? (() => {
+                    const pid = String(playerId);
+                    const surfaces = ['Hard', 'Clay', 'Grass', 'Carpet'];
+                    const surfaceColors: Record<string, string> = { Hard: '#3B82F6', Clay: '#F97316', Grass: '#22C55E', Carpet: '#A855F7' };
+                    const rows = surfaces.map(s => {
+                      const sm = allMatches.filter((m: any) => m.status === true && typeof m.surface === 'string' && m.surface.toLowerCase().includes(s.toLowerCase()));
+                      const w = sm.filter((m: any) => String(m.winner_id) === pid).length;
+                      const l = sm.length - w;
+                      return { label: s, wins: w, losses: l, color: surfaceColors[s] };
+                    }).filter(r => r.wins + r.losses > 0);
+                    return <WLStatTable title="By Surface" rows={rows} />;
+                  })() : (
+                    <WLStatTable
+                      title="W-L"
+                      rows={[{ label: String(selectedYear), wins: careerAgg.wins, losses: careerAgg.losses, color: palette[0] }]}
+                    />
+                  )}
+                </div>
+
+                {/* Column 3: Categories — always */}
+                <div className="flex-1 min-w-[300px]">
+                  <WLStatTable
+                    title="Categories"
+                    rows={levelsAgg.map((row, idx) => {
+                      const levelName = getLevelFullName(row.level).toLowerCase();
+                      let color: string;
+                      switch (true) {
+                        case levelName.includes("grand slam"): color = "#A855F7"; break;
+                        case levelName.includes("atp 1000") || levelName.includes("masters 1000"): color = "#06B6D4"; break;
+                        case levelName.includes("atp 500"): color = "#22C55E"; break;
+                        case levelName.includes("atp 250"): color = "#EF4444"; break;
+                        default: color = getLevelColors(row.level)?.bar || palette[idx % palette.length];
+                      }
+                      return { label: getLevelFullName(row.level), wins: row.wins, losses: row.losses, color };
+                    })}
+                  />
+                </div>
               </div>
-              {/* Categories — always last */}
-              <div className="flex-1 min-w-[300px]">
-                <WLStatTable
-                  title="Categories"
-                  rows={levelsAgg.map((row, idx) => {
-                    const levelName = getLevelFullName(row.level).toLowerCase();
-                    let color: string;
-                    switch (true) {
-                      case levelName.includes("grand slam"): color = "#A855F7"; break;
-                      case levelName.includes("atp 1000") || levelName.includes("masters 1000"): color = "#06B6D4"; break;
-                      case levelName.includes("atp 500"): color = "#22C55E"; break;
-                      case levelName.includes("atp 250"): color = "#EF4444"; break;
-                      default: color = getLevelColors(row.level)?.bar || palette[idx % palette.length];
-                    }
-                    return { label: getLevelFullName(row.level), wins: row.wins, losses: row.losses, color };
-                  })}
-                />
-              </div>
-            </div>
+            </>
           )}
 
           {/* Section 3: Ranking + Rounds */}
