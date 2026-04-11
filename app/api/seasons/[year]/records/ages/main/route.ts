@@ -17,7 +17,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ year
 
   const where: any = { year: yearNum, team_event: false };
   if (surfaces.length) where.surface = { in: surfaces };
-  if (levels.length) where.tourney_level = { in: levels };
+  if (levels.length) {
+    where.tourney_level = { in: levels };
+  } else {
+    where.tourney_level = { not: 'D' };
+  }
 
   try {
     const allMatches = await prisma.match.findMany({
