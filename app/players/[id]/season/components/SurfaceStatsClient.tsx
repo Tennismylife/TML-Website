@@ -47,10 +47,74 @@ function calcAge(bd: Date | string): { years: number; days: number } {
   return { years, days };
 }
 
+const lvlLabels: Record<string, string> = { G: 'Grand Slam', M: 'Masters 1000', F: 'Year-end Finals', O: 'Olympics', '500': 'ATP 500', A: 'ATP 500', '250': 'ATP 250', B: 'ATP 250', C: 'Challenger', D: 'Davis Cup' };
+const lvlOrder = ['G', 'M', 'F', 'O', '500', 'A', '250', 'B', 'C', 'D'];
+
 const YearByYearBreakdownTable: React.FC<{
-  rows: Array<{ year: number; wins: number; losses: number; pct: number; total: number; titles: number; finals: number; sf: number; qf: number; r16: number; r32: number; r64: number; r128: number }>;
-}> = ({ rows }) => {
-  if (!rows.length) return null;
+  allMatches: Match[];
+  playerId: string;
+  surface: string;
+}> = ({ allMatches, playerId, surface }) => {
+  const pid = String(playerId);
+
+  const surfaceMatches = useMemo(() => {
+    const isAll = surface === 'All' || surface === 'all' || surface === '';
+    return allMatches.filter((m: any) =>
+      m.status === true &&
+      (isAll || (typeof m.surface === 'string' && m.surface.toLowerCase().includes(surface.toLowerCase())))
+    );
+  }, [allMatches, surface]);
+
+  const availableLevels = useMemo(() => {
+    const s = new Set<string>();
+    for (const m of surfaceMatches) if ((m as any).tourney_level) s.add((m as any).tourney_level);
+    return Array.from(s).sort((a, b) => {
+      const ia = lvlOrder.indexOf(a), ib = lvlOrder.indexOf(b);
+      if (ia === -1 && ib === -1) return a.localeCompare(b);
+      if (ia === -1) return 1; if (ib === -1) return -1;
+      return ia - ib;
+    });
+  }, [surfaceMatches]);
+
+  const [selectedLevels, setSelectedLevels] = useState<Set<string>>(new Set());
+
+  useEffect(() => { setSelectedLevels(new Set()); }, [availableLevels]);
+
+  const filteredMatches = useMemo(() =>
+    selectedLevels.size === 0 ? surfaceMatches : surfaceMatches.filter((m: any) => selectedLevels.has((m as any).tourney_level ?? '')),
+    [surfaceMatches, selectedLevels]
+  );
+
+  const rows = useMemo(() => {
+    const seasonMap = new Map<number, { wins: number; losses: number; titles: number; finals: number; sf: number; qf: number; r16: number; r32: number; r64: number; r128: number }>();
+    for (const m of filteredMatches) {
+      if ((m as any).team_event) continue;
+      const year = (m as any).year ?? 0;
+      const cur = seasonMap.get(year) ?? { wins: 0, losses: 0, titles: 0, finals: 0, sf: 0, qf: 0, r16: 0, r32: 0, r64: 0, r128: 0 };
+      const isWinner = String((m as any).winner_id) === pid;
+      if (isWinner) cur.wins++; else cur.losses++;
+      if (m.round === 'F') {
+        cur.finals++;
+        if (isWinner && !String((m as any).tourney_name ?? '').toLowerCase().includes('next gen') && !((m as any).score && String((m as any).score).includes('WEA'))) cur.titles++;
+      }
+      if (m.round === 'SF') cur.sf++;
+      if (m.round === 'QF') cur.qf++;
+      if (m.round === 'R16') cur.r16++;
+      if (m.round === 'R32') cur.r32++;
+      if (m.round === 'R64') cur.r64++;
+      if (m.round === 'R128') cur.r128++;
+      seasonMap.set(year, cur);
+    }
+    return Array.from(seasonMap.entries())
+      .map(([year, r]) => ({ year, ...r, total: r.wins + r.losses, pct: r.wins + r.losses > 0 ? (r.wins / (r.wins + r.losses)) * 100 : 0 }))
+      .sort((a, b) => b.year - a.year);
+  }, [filteredMatches, pid]);
+
+  if (!rows.length && !surfaceMatches.length) return null;
+
+  const toggleLevel = (lvl: string) => setSelectedLevels(prev => {
+    const next = new Set(prev); if (next.has(lvl)) next.delete(lvl); else next.add(lvl); return next;
+  });
 
   return (
     <div className="relative mt-10">
@@ -61,6 +125,31 @@ const YearByYearBreakdownTable: React.FC<{
         Year-by-year breakdown
       </div>
       <div className="relative border-l-4 border-yellow-400 bg-gray-800 p-6 pl-8 pt-8 shadow-xl rounded-2xl overflow-visible">
+        {/* Level checkboxes */}
+        {availableLevels.length > 1 && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            {availableLevels.map(lvl => (
+              <label key={lvl} className={`flex items-center gap-1.5 cursor-pointer px-2.5 py-1 rounded-lg border text-xs font-semibold transition-colors ${
+                selectedLevels.has(lvl)
+                  ? 'bg-yellow-400 border-yellow-500 text-black'
+                  : 'bg-gray-700 border-gray-600 text-gray-300 hover:border-yellow-400/60'
+              }`}>
+                <input
+                  type="checkbox"
+                  className="hidden"
+                  checked={selectedLevels.has(lvl)}
+                  onChange={() => toggleLevel(lvl)}
+                />
+                {lvlLabels[lvl] ?? lvl}
+              </label>
+            ))}
+            {selectedLevels.size > 0 && (
+              <button onClick={() => setSelectedLevels(new Set())} className="px-2.5 py-1 rounded-lg border border-gray-500 text-xs text-gray-400 hover:text-white hover:border-gray-300 transition-colors">
+                Clear
+              </button>
+            )}
+          </div>
+        )}
         <div className="mx-auto w-[93%] overflow-x-auto rounded-xl border border-white/10 bg-gray-900/60">
           <table className="min-w-full border-collapse text-sm">
             <thead>
@@ -80,25 +169,51 @@ const YearByYearBreakdownTable: React.FC<{
               </tr>
             </thead>
             <tbody>
-              {rows.map((row) => {
-                return (
-                  <tr key={row.year} className="text-gray-200 even:bg-white/5">
-                      <td className="border border-white/10 px-3 py-2 text-center font-semibold text-yellow-300">{row.year}</td>
-                    <td className="border border-white/10 px-3 py-2 text-center text-green-400">{row.wins}</td>
-                    <td className="border border-white/10 px-3 py-2 text-center text-red-400">{row.losses}</td>
-                    <td className="border border-white/10 px-3 py-2 text-center text-blue-400">{row.pct.toFixed(1)}%</td>
-                    <td className="border border-white/10 px-3 py-2 text-center text-yellow-400">{row.titles}</td>
-                    <td className="border border-white/10 px-3 py-2 text-center">{row.finals}</td>
-                    <td className="border border-white/10 px-3 py-2 text-center">{row.sf}</td>
-                    <td className="border border-white/10 px-3 py-2 text-center">{row.qf}</td>
-                    <td className="border border-white/10 px-3 py-2 text-center">{row.r16}</td>
-                    <td className="border border-white/10 px-3 py-2 text-center">{row.r32}</td>
-                    <td className="border border-white/10 px-3 py-2 text-center">{row.r64}</td>
-                    <td className="border border-white/10 px-3 py-2 text-center">{row.r128}</td>
-                  </tr>
-                );
-              })}
+              {rows.length === 0 ? (
+                <tr><td colSpan={12} className="py-6 text-center text-gray-400">No data for selected filters.</td></tr>
+              ) : rows.map((row) => (
+                <tr key={row.year} className="text-gray-200 even:bg-white/5">
+                  <td className="border border-white/10 px-3 py-2 text-center font-semibold text-yellow-300">{row.year}</td>
+                  <td className="border border-white/10 px-3 py-2 text-center text-green-400">{row.wins}</td>
+                  <td className="border border-white/10 px-3 py-2 text-center text-red-400">{row.losses}</td>
+                  <td className="border border-white/10 px-3 py-2 text-center text-blue-400">{row.pct.toFixed(1)}%</td>
+                  <td className="border border-white/10 px-3 py-2 text-center text-yellow-400">{row.titles}</td>
+                  <td className="border border-white/10 px-3 py-2 text-center">{row.finals}</td>
+                  <td className="border border-white/10 px-3 py-2 text-center">{row.sf}</td>
+                  <td className="border border-white/10 px-3 py-2 text-center">{row.qf}</td>
+                  <td className="border border-white/10 px-3 py-2 text-center">{row.r16}</td>
+                  <td className="border border-white/10 px-3 py-2 text-center">{row.r32}</td>
+                  <td className="border border-white/10 px-3 py-2 text-center">{row.r64}</td>
+                  <td className="border border-white/10 px-3 py-2 text-center">{row.r128}</td>
+                </tr>
+              ))}
             </tbody>
+            {rows.length > 0 && (
+              <tfoot>
+                {(() => {
+                  const totW = rows.reduce((s, r) => s + r.wins, 0);
+                  const totL = rows.reduce((s, r) => s + r.losses, 0);
+                  const totT = totW + totL;
+                  const totPct = totT > 0 ? (totW / totT) * 100 : 0;
+                  return (
+                    <tr className="bg-black/60 font-bold text-white border-t-2 border-yellow-400/60">
+                      <td className="border border-white/10 px-3 py-2 text-center text-yellow-300">Total</td>
+                      <td className="border border-white/10 px-3 py-2 text-center text-green-400">{totW}</td>
+                      <td className="border border-white/10 px-3 py-2 text-center text-red-400">{totL}</td>
+                      <td className="border border-white/10 px-3 py-2 text-center text-blue-400">{totPct.toFixed(1)}%</td>
+                      <td className="border border-white/10 px-3 py-2 text-center text-yellow-400">{rows.reduce((s, r) => s + r.titles, 0)}</td>
+                      <td className="border border-white/10 px-3 py-2 text-center">{rows.reduce((s, r) => s + r.finals, 0)}</td>
+                      <td className="border border-white/10 px-3 py-2 text-center">{rows.reduce((s, r) => s + r.sf, 0)}</td>
+                      <td className="border border-white/10 px-3 py-2 text-center">{rows.reduce((s, r) => s + r.qf, 0)}</td>
+                      <td className="border border-white/10 px-3 py-2 text-center">{rows.reduce((s, r) => s + r.r16, 0)}</td>
+                      <td className="border border-white/10 px-3 py-2 text-center">{rows.reduce((s, r) => s + r.r32, 0)}</td>
+                      <td className="border border-white/10 px-3 py-2 text-center">{rows.reduce((s, r) => s + r.r64, 0)}</td>
+                      <td className="border border-white/10 px-3 py-2 text-center">{rows.reduce((s, r) => s + r.r128, 0)}</td>
+                    </tr>
+                  );
+                })()}
+              </tfoot>
+            )}
           </table>
         </div>
       </div>
@@ -130,15 +245,15 @@ const WLStatTable: React.FC<{ title: string; rows: WLRow[] }> = ({ title, rows }
             const pct = total > 0 ? (row.wins / total) * 100 : 0;
             const color = row.color || palette[idx % palette.length];
             return (
-              <div key={`${row.label}-${idx}`} className="flex items-center gap-4 p-2 rounded-xl shadow-inner transition-all duration-300">
-                <div className="w-32 font-semibold">{row.label}</div>
+              <div key={`${row.label}-${idx}`} className="flex items-center gap-2 sm:gap-4 p-2 rounded-xl shadow-inner transition-all duration-300">
+                <div className="w-20 sm:w-32 font-semibold text-sm sm:text-base truncate">{row.label}</div>
                 <div className="flex-1 relative h-6 rounded overflow-hidden bg-gray-900/70">
                   <div className="h-6 rounded transition-all duration-500" style={{ width: `${pct}%`, backgroundColor: color }} />
                   <div className="absolute inset-0 flex justify-center items-center text-sm font-medium text-blue-400">
                     {total > 0 ? `${pct.toFixed(1)}%` : "0%"}
                   </div>
                 </div>
-                <div className="w-32 flex justify-end font-mono">{row.wins}-{row.losses} ({total})</div>
+                <div className="w-20 sm:w-32 flex justify-end font-mono text-xs sm:text-sm">{row.wins}-{row.losses} ({total})</div>
               </div>
             );
           })}
@@ -1086,7 +1201,9 @@ export default function SurfaceStatsClient({
           {/* Section 5: Year-by-year breakdown */}
           {(!isMobileCards || visibleCount >= 5) && (
             <YearByYearBreakdownTable
-              rows={yearsBreakdown}
+              allMatches={allMatches}
+              playerId={String(playerId)}
+              surface={surface}
             />
           )}
 
