@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /api/
+Disallow: /players/*/matches
 
 # Sitemap
 Sitemap: https://stats.tennismylife.org/sitemap_index.xml
