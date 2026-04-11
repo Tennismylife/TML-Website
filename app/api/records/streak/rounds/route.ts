@@ -99,35 +99,27 @@ export async function GET(request: NextRequest) {
         const tournaments = Array.from(playerData.tournaments.values()).sort((a, b) => a.date.getTime() - b.date.getTime());
 
         let currentStreak = 0;
-        let maxStreak = 0;
         let streakStartIndex = -1;
-        let maxStreakStartIndex = -1;
 
-        for (let i = 0; i < tournaments.length; i++) {
-          const t = tournaments[i];
-          const reached = selectedRounds.length === 0 || selectedRounds.some(r => t.maxRoundValue >= (roundOrder[r] || 0));
+        for (let i = 0; i <= tournaments.length; i++) {
+          const t = i < tournaments.length ? tournaments[i] : null;
+          const reached = t !== null && (selectedRounds.length === 0 || selectedRounds.some(r => t.maxRoundValue >= (roundOrder[r] || 0)));
 
           if (reached) {
             if (currentStreak === 0) streakStartIndex = i;
             currentStreak++;
-            if (currentStreak > maxStreak) {
-              maxStreak = currentStreak;
-              maxStreakStartIndex = streakStartIndex;
-            }
           } else {
+            if (currentStreak > 1) {
+              const streakTournaments = tournaments.slice(streakStartIndex, streakStartIndex + currentStreak);
+              const event_ids = streakTournaments.map(t => t.event_id);
+              allStreaks.push({
+                player: { id: playerId, name: playerData.name, ioc: playerData.ioc },
+                maxStreak: currentStreak,
+                event_ids,
+              });
+            }
             currentStreak = 0;
           }
-        }
-
-        if (maxStreak > 1) {
-          const streakTournaments = tournaments.slice(maxStreakStartIndex, maxStreakStartIndex + maxStreak);
-          const event_ids = streakTournaments.map(t => t.event_id);
-
-          allStreaks.push({
-            player: { id: playerId, name: playerData.name, ioc: playerData.ioc },
-            maxStreak,
-            event_ids,
-          });
         }
       }
 
