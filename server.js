@@ -512,12 +512,10 @@ function strongETag(buffer) {
     console.warn('Sitemaps router not available', e?.message || e);
   }
 
-  // robots.txt exposes canonical sitemap index
+  // robots.txt — serve from public/robots.txt
   server.get('/robots.txt', (req, res) => {
-    const siteRoot = (process.env.SITE_ROOT || 'https://stats.tennismylife.org').replace(/\/$/, '/') ;
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    // Expose canonical sitemap index at root
-    res.send(`User-agent: *\nAllow: /\nSitemap: ${siteRoot}sitemap_index.xml\n`);
+    res.send(`User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /players/*/matches\n\n# Sitemap\nSitemap: https://stats.tennismylife.org/sitemap_index.xml\n`);
   });
 
   /* 7) Next.js fallback */
