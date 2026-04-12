@@ -514,8 +514,12 @@ function strongETag(buffer) {
 
   // robots.txt — serve from public/robots.txt
   server.get('/robots.txt', (req, res) => {
+    const robotsPath = path.join(process.cwd(), 'public', 'robots.txt');
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    res.send(`User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /players/*/matches\n\n# Sitemap\nSitemap: https://stats.tennismylife.org/sitemap_index.xml\n`);
+    if (fs.existsSync(robotsPath)) {
+      return res.sendFile(robotsPath);
+    }
+    return res.status(404).send('robots.txt not found');
   });
 
   /* 7) Next.js fallback */
