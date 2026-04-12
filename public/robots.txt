@@ -1,5 +1,6 @@
 User-agent: Googlebot
-Disallow: /
+Disallow: /api/
+Disallow: /players/*/matches
 Disallow: /players/*/ranking
 Allow: /players/adam-walton/ranking$
 Allow: /players/adolfo-daniel-vallejo/clay$

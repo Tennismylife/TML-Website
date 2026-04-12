@@ -76,7 +76,8 @@ function main() {
 
   const lines = [];
   lines.push('User-agent: Googlebot');
-  lines.push('Disallow: /');
+  lines.push('Disallow: /api/');
+  lines.push('Disallow: /players/*/matches');
   if (googleDisallow) lines.push(`Disallow: ${googleDisallow}`);
   for (const p of uniquePaths) lines.push(`Allow: ${p}$`);
 
