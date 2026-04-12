@@ -39,7 +39,7 @@
     "gen:sitemap-h2h-top100": "node scripts/sitemap/generate-sitemap-h2h-top100.js",
     "gen:sitemap-player-surfaces-top100": "node scripts/sitemap/generate-sitemap-player-surfaces-top100.js",
     "gen:sitemap-recordsranking": "node scripts/sitemap/generate-sitemap-recordsranking.js",
-    "sync:robots:ranking": "node scripts/sitemap/sync-robots-whitelist.js --sitemap public/sitemaps/sitemap-ranking-players.xml --google-disallow /players/*/ranking"
+    "sync:robots:ranking": "node scripts/sitemap/sync-robots-whitelist.js --sitemaps public/sitemaps/sitemap-ranking-players.xml,public/sitemaps/sitemap-player-surfaces-top100.xml --google-disallow /players/*/ranking"
   },
   "dependencies": {
     "@langchain/ollama": "^0.2.4",

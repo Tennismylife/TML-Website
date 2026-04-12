@@ -22,10 +22,10 @@ function parseArgs(argv) {
 function usage() {
   console.log([
     'Usage:',
-    '  node scripts/sitemap/sync-robots-whitelist.js --sitemap <path> [--site-root <url>] [--google-disallow <path>] [--output <path>]',
+    '  node scripts/sitemap/sync-robots-whitelist.js --sitemap <path> [--sitemaps <path1,path2,...>] [--site-root <url>] [--google-disallow <path>] [--output <path>]',
     '',
     'Example:',
-    '  node scripts/sitemap/sync-robots-whitelist.js --sitemap public/sitemaps/sitemap-ranking-players.xml --google-disallow /players/*/ranking',
+    '  node scripts/sitemap/sync-robots-whitelist.js --sitemaps public/sitemaps/sitemap-ranking-players.xml,public/sitemaps/sitemap-player-surfaces-top100.xml --google-disallow /players/*/ranking',
   ].join('\n'));
 }
 
@@ -42,30 +42,36 @@ function main() {
     return;
   }
 
-  const sitemapRel = String(args.sitemap || 'public/sitemaps/sitemap-ranking-players.xml');
+  const defaultSitemap = 'public/sitemaps/sitemap-ranking-players.xml';
+  const sitemapRels = String(args.sitemaps || args.sitemap || defaultSitemap)
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
   const siteRoot = String(args['site-root'] || 'https://stats.tennismylife.org').replace(/\/$/, '');
   const outputRel = String(args.output || 'public/robots.txt');
   const googleDisallow = args['google-disallow'] ? String(args['google-disallow']) : '';
 
-  const sitemapPath = path.join(repoRoot, sitemapRel);
   const outputPath = path.join(repoRoot, outputRel);
 
-  if (!fs.existsSync(sitemapPath)) {
-    throw new Error(`Sitemap not found: ${sitemapPath}`);
-  }
-
-  const raw = fs.readFileSync(sitemapPath, 'utf8');
-  const locRegex = new RegExp(`<loc>${escapeRegex(siteRoot)}([^<]+)</loc>`, 'g');
   const paths = [];
-  let match;
-  while ((match = locRegex.exec(raw)) !== null) {
-    paths.push(match[1]);
+  for (const sitemapRel of sitemapRels) {
+    const sitemapPath = path.join(repoRoot, sitemapRel);
+    if (!fs.existsSync(sitemapPath)) {
+      throw new Error(`Sitemap not found: ${sitemapPath}`);
+    }
+
+    const raw = fs.readFileSync(sitemapPath, 'utf8');
+    const locRegex = new RegExp(`<loc>${escapeRegex(siteRoot)}([^<]+)</loc>`, 'g');
+    let match;
+    while ((match = locRegex.exec(raw)) !== null) {
+      paths.push(match[1]);
+    }
   }
 
   const uniquePaths = Array.from(new Set(paths)).sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }));
 
   if (uniquePaths.length === 0) {
-    throw new Error(`No <loc> entries for ${siteRoot} found in ${sitemapPath}`);
+    throw new Error(`No <loc> entries for ${siteRoot} found in provided sitemaps: ${sitemapRels.join(', ')}`);
   }
 
   const lines = [];
@@ -86,7 +92,7 @@ function main() {
 
   fs.writeFileSync(outputPath, lines.join('\n') + '\n', 'utf8');
 
-  console.log(`WROTE ${outputRel} allow_count=${uniquePaths.length} source=${sitemapRel}`);
+  console.log(`WROTE ${outputRel} allow_count=${uniquePaths.length} sources=${sitemapRels.join(',')}`);
 }
 
 try {
