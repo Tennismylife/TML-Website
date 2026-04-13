@@ -32,13 +32,17 @@ export default function AllMatchesServer({ playerId, playerSlug, matches, headin
 
   // Show only latest 10 matches in SSR
   const displayMatches = matches.slice(0, 10);
+  const surfaceLabel = playerLinkTab && playerLinkTab !== 'matches'
+    ? `${playerLinkTab.charAt(0).toUpperCase()}${playerLinkTab.slice(1)}`
+    : '';
+  const title = surfaceLabel ? `Last 10 ${surfaceLabel} Matches` : `Last ${displayMatches.length} Matches`;
 
   return (
     <div className="w-full">
       {/* Server-rendered table: visible immediately on first load; hidden by AllMatches once the client mounts */}
       <div id="server-all-matches" className="w-full bg-gray-900/80 rounded-md p-4" suppressHydrationWarning>
         <div className="mb-3 flex items-center justify-between">
-          <span className="text-sm font-semibold text-gray-200">Showing last {displayMatches.length} matches</span>
+          <h3 className="text-xl font-bold" style={{ color: '#facc15' }}>{title}</h3>
           {playerSlug && (
             <Link
               href={

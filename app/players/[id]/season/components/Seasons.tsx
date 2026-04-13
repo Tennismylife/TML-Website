@@ -4,7 +4,8 @@ import React, { useEffect, useState, useMemo, useRef } from "react";
 import Link from "next/link";
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import type { Match } from "@/types";
-import { getLevelColors, getLevelFullName, getTourneyHref, getPlayerHref, getPlayerHrefWithTab } from "@/lib/utils";
+import Flag from "@/components/Flag";
+import { getLevelColors, getLevelFullName, getTourneyHref, getPlayerHref, getPlayerHrefWithTab, formatDateISO } from "@/lib/utils";
 import { getSurfaceColor, palette } from "@/lib/colors";
 import SummarySeasons from './SummarySeasons';
 import TournamentGrid from "../../TournamentGrid";
@@ -168,6 +169,7 @@ export default function Seasons({ playerId, playerSlug, playerName, initialYears
     if (initialAllMatches && initialAllMatches.length) return initialAllMatches as Match[];
     return [];
   });
+  const [last10Matches, setLast10Matches] = useState<any[]>([]);
   const [openDropdown, setOpenDropdown] = useState(false);
 
   // Fetch years list once if not provided by SSR
@@ -245,6 +247,25 @@ export default function Seasons({ playerId, playerSlug, playerName, initialYears
     if (!Number.isNaN(y)) setSelectedYear(y);
   }, [searchParams, pathname]);
 
+  // Fetch enriched last 10 matches for the selected season (same source used by surface pages)
+  useEffect(() => {
+    if (!selectedYear) {
+      setLast10Matches([]);
+      return;
+    }
+    let abort = false;
+    fetch(`/api/players/allmatches?id=${encodeURIComponent(playerId)}&year=${selectedYear}&limit=10`)
+      .then(r => r.ok ? r.json() : [])
+      .then((rows: any[]) => {
+        if (abort) return;
+        setLast10Matches(Array.isArray(rows) ? rows : []);
+      })
+      .catch(() => {
+        if (!abort) setLast10Matches([]);
+      });
+    return () => { abort = true; };
+  }, [playerId, selectedYear]);
+
   // Remember last-seen 'sub' for season so that navigating back to season can restore it
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -312,6 +333,11 @@ export default function Seasons({ playerId, playerSlug, playerName, initialYears
     () => allMatches.filter((m) => !m.team_event),
     [allMatches]
   );
+
+  const last10SeasonMatches = useMemo(() => {
+    if (last10Matches.length) return last10Matches;
+    return [];
+  }, [last10Matches]);
 
   const tourneysForDisplay = useMemo(
     () => tourneysForYear.filter((tourney) =>
@@ -413,6 +439,92 @@ export default function Seasons({ playerId, playerSlug, playerName, initialYears
           <div className="text-gray-200 mb-4 sm:hidden">
             Wins: {seasonAgg.wins}–{seasonAgg.losses} ({((seasonAgg.wins/(seasonAgg.wins+seasonAgg.losses))*100).toFixed(1)}%)
           </div>
+
+          {last10SeasonMatches.length > 0 && (
+            <div className="mb-8 p-5 bg-gray-800 rounded-lg shadow-lg">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold" style={{ color: '#facc15' }}>Last 10 Matches</h3>
+                {(() => {
+                  const input = (resolvedPlayerSlug ?? playerSlug) ? { slug: (resolvedPlayerSlug ?? playerSlug) } : { id: playerId };
+                  return (
+                    <Link
+                      href={`${getPlayerHrefWithTab(input, 'matches')}?year=${selectedYear}`}
+                      className="inline-block bg-blue-600 hover:bg-blue-700 shadow-lg text-white font-bold text-sm py-1.5 px-4 rounded-full transition-all duration-200"
+                    >
+                      View All Matches ↗
+                    </Link>
+                  );
+                })()}
+              </div>
+
+              <div className="overflow-x-auto rounded border border-white/20 bg-gray-900 shadow">
+                <table className="min-w-full border-collapse text-sm">
+                  <thead>
+                    <tr className="bg-black/80">
+                      <th className="border border-white/20 px-3 py-2 text-center font-medium text-gray-200">Date</th>
+                      <th className="border border-white/20 px-3 py-2 text-center font-medium text-gray-200">Tournament</th>
+                      <th className="border border-white/20 px-3 py-2 text-center font-medium text-gray-200">Srf</th>
+                      <th className="border border-white/20 px-3 py-2 text-center font-medium text-gray-200">Rd</th>
+                      <th className="border border-white/20 px-3 py-2 text-center font-medium text-gray-200">Wrk</th>
+                      <th className="border border-white/20 px-3 py-2 text-center font-medium text-gray-200">Winner</th>
+                      <th className="border border-white/20 px-3 py-2 text-center font-medium text-gray-200">Lrk</th>
+                      <th className="border border-white/20 px-3 py-2 text-center font-medium text-gray-200">Loser</th>
+                      <th className="border border-white/20 px-3 py-2 text-center font-medium text-gray-200">Score</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {last10SeasonMatches.map((m: any, idx: number) => (
+                      <tr key={idx} className="hover:bg-gray-800/50">
+                        <td className="border border-white/10 px-3 py-2 text-center text-gray-200">{formatDateISO(m.tourney_date)}</td>
+                        <td className="border border-white/10 px-3 py-2 text-center text-gray-200">
+                          {m.tourney_name ? (
+                            m.tourney_id ? (
+                              <Link href={getTourneyHref({ slug: m.tourney_slug ?? undefined, id: m.tourney_id, year: m.year })} className="text-indigo-300 hover:underline">
+                                {m.tourney_name}
+                              </Link>
+                            ) : m.tourney_name
+                          ) : '-'}
+                        </td>
+                        <td className="border border-white/10 px-3 py-2 text-center text-gray-200">{m.surface ?? '-'}</td>
+                        <td className="border border-white/10 px-3 py-2 text-center text-gray-200">{m.round ?? '-'}</td>
+                        <td className="border border-white/10 px-3 py-2 text-center text-gray-200">
+                          {m.winner_rank != null && m.winner_slug
+                            ? <Link href={`/players/${m.winner_slug}/ranking`} className="hover:underline">{m.winner_rank}</Link>
+                            : m.winner_rank ?? '-'}
+                        </td>
+                        <td className="border border-white/10 px-3 py-2 text-center text-gray-200">
+                          <div className="flex items-center justify-center gap-2">
+                            {m.winner_ioc && <Flag ioc={m.winner_ioc} className="w-6 h-4" />}
+                            {m.winner_slug || m.winner_id ? (
+                              <Link href={getPlayerHref(m.winner_slug ?? String(m.winner_id))} className="text-gray-200 hover:text-yellow-400">
+                                {m.winner_name ?? '-'}
+                              </Link>
+                            ) : (m.winner_name ?? '-')}
+                          </div>
+                        </td>
+                        <td className="border border-white/10 px-3 py-2 text-center text-gray-200">
+                          {m.loser_rank != null && m.loser_slug
+                            ? <Link href={`/players/${m.loser_slug}/ranking`} className="hover:underline">{m.loser_rank}</Link>
+                            : m.loser_rank ?? '-'}
+                        </td>
+                        <td className="border border-white/10 px-3 py-2 text-center text-gray-200">
+                          <div className="flex items-center justify-center gap-2">
+                            {m.loser_ioc && <Flag ioc={m.loser_ioc} className="w-6 h-4" />}
+                            {m.loser_slug || m.loser_id ? (
+                              <Link href={getPlayerHref(m.loser_slug ?? String(m.loser_id))} className="text-gray-400 hover:text-gray-200">
+                                {m.loser_name ?? '-'}
+                              </Link>
+                            ) : (m.loser_name ?? '-')}
+                          </div>
+                        </td>
+                        <td className="border border-white/10 px-3 py-2 text-center font-mono text-gray-200">{m.score ?? '-'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
 
           {/* Section 1: Tournament Grid */}
           {(!isMobileCards || visibleCount >= 1) && (
