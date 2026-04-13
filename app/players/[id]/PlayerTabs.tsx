@@ -221,7 +221,6 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
             playerName={player.atpname ?? player.player ?? player.id}
             surface={surfaceKey}
           />
-          {belowTabsSlot && <div className="mt-2">{belowTabsSlot}</div>}
         </>
       );
       break;
