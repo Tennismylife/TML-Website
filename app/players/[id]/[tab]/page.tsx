@@ -801,9 +801,9 @@ export default async function PlayerTabPage({ params, searchParams, _surfacePrev
         initialSeasonYear={initialSeasonYear ?? undefined}
         initialSeasonMatches={initialSeasonMatches ?? undefined}
         initialSeasonYears={initialSeasonYears ?? undefined}
-        belowTabsSlot={(_surfacePreviewNode || (allMatchesForSSR && allMatchesForSSR.length)) ? (
+        overviewSlot={_surfacePreviewNode ?? undefined}
+        belowTabsSlot={(allMatchesForSSR && allMatchesForSSR.length) ? (
           <>
-            {_surfacePreviewNode ?? null}
             {allMatchesForSSR && allMatchesForSSR.length ? (
               <AllMatchesServer
                 playerId={player.id}
