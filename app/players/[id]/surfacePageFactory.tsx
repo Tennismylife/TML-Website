@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import PlayerTabPage from './[tab]/page';
 import { getPlayerTop100Robots } from './playerIndexing';
-import { notFound } from 'next/navigation';
 
 async function resolvePlayer(id: string) {
   const isSlug = !/^\d+$/.test(String(id));
@@ -93,7 +92,7 @@ interface SurfacePageContentProps {
 export default async function SurfacePageContent({ id, surface }: SurfacePageContentProps) {
   let player: any = null;
   try { player = await resolvePlayer(id); } catch (e) {}
-  if (!player) notFound();
+  if (!player) return <div className="text-red-500 font-bold">Player not found</div>;
 
   const displayName = player.atpname || player.player;
   const slug = player.slug || String(id);
@@ -265,24 +264,6 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
 
   const recentYearRec = bySeason[currentYear] ?? { w: 0, l: 0 };
   const recentYearTotal = recentYearRec.w + recentYearRec.l;
-
-  // Ensure substantial, immediately-visible SSR text in the HTML response.
-  const plainServerSummary = (
-    <section className="w-full mb-6 px-4">
-      <div className="w-full rounded-lg border border-gray-700 bg-gray-900/90 p-4">
-        <h2 className="text-xl font-bold text-yellow-300 mb-2">
-          {displayName} {label} Career Snapshot
-        </h2>
-        <p className="text-sm text-gray-200 leading-relaxed">
-          {displayName} has a {adjective} court record of {wins}-{losses} across {totalMatches} matches ({winPct}) with {totalTitles} title{totalTitles !== 1 ? 's' : ''}.
-          {slamTotal > 0 ? ` At Grand Slam level: ${slamWins}-${slamLosses}.` : ''}
-          {mastersTotal > 0 ? ` At Masters 1000 level: ${mastersWins}-${mastersLosses}.` : ''}
-          {top10Total > 0 ? ` Versus Top 10 opponents: ${top10Wins}-${top10Losses}.` : ''}
-          {bestYear ? ` Best season on this surface: ${bestYear} (${bestYearWins}-${Math.max(0, bestYearTotal - bestYearWins)}).` : ''}
-        </p>
-      </div>
-    </section>
-  );
 
   // Narrative proportion helpers — all thresholds driven by actual stats
   const winRateN = totalMatches > 0 ? (wins / totalMatches) * 100 : 0;
@@ -662,9 +643,7 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
         "measurementTechnique": "ATP official match records",
       }) }} />
 
-        {plainServerSummary}
-
-        {/* Delegate to the full player page shell.
+      {/* Delegate to the full player page shell.
           Pass tab='matches' + surface filter so PlayerTabPage SSR-fetches filtered
           matches and renders AllMatchesServer in the initial HTML for Google.
           _surfaceTab overrides the tab used for SEO URLs (SEOPlayer, SEOBreadcrumb)
