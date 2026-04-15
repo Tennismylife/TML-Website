@@ -121,6 +121,7 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
   let bySeason: Record<number, { w: number; l: number; titles: number; finals: number; sf: number; qf: number; r16: number; r32: number; r64: number; r128: number }> = {};
   const currentYear = new Date().getFullYear();
   let recentFormStr: string[] = [];
+  let last10SurfMatches: { tourney_date: any; tourney_name: any; tourney_level: any; round: any; winner_id: any; loser_id: any; winner_name: any; loser_name: any; winner_rank: any; loser_rank: any; score: any; year: any }[] = [];
 
   try {
     totalMatches = await prisma.match.count({
@@ -231,6 +232,23 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
     // Recent form: current year
     const recentYearMatches = allSurfMatches.filter(m => (m.year as number) === currentYear);
     recentFormStr = recentYearMatches.slice(-10).map(m => String(m.winner_id) === String(player.id) ? 'W' : 'L');
+
+    // Last 10 surface matches with full fields for server-rendered HTML (SEO)
+    last10SurfMatches = await prisma.match.findMany({
+      where: {
+        status: true,
+        surface: { contains: surface, mode: 'insensitive' },
+        OR: [{ winner_id: player.id }, { loser_id: player.id }],
+      },
+      select: {
+        tourney_date: true, tourney_name: true, tourney_level: true,
+        round: true, year: true, score: true,
+        winner_id: true, winner_name: true, winner_rank: true,
+        loser_id: true, loser_name: true, loser_rank: true,
+      },
+      orderBy: { tourney_date: 'desc' },
+      take: 10,
+    });
   } catch (e) {}
 
   const winPct = totalMatches > 0 ? `${((wins / totalMatches) * 100).toFixed(1)}%` : '0%';
@@ -647,7 +665,64 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
           payload scripts). Visually hidden; the visible copy is rendered inside
           the tab via overviewSlot below. Only emitted when stats are meaningful. */}
       {totalMatches >= 5 && (
-        <div className="sr-only">{surfacePreviewNode}</div>
+        <div className="sr-only">
+          {surfacePreviewNode}
+
+          {Object.keys(bySeason).length > 0 && (
+            <section>
+              <h3>{displayName} {label} Record by Year</h3>
+              <table>
+                <thead><tr><th>Year</th><th>W</th><th>L</th><th>Win%</th><th>Titles</th><th>Finals</th><th>SF</th><th>QF</th></tr></thead>
+                <tbody>
+                  {Object.entries(bySeason).sort(([a], [b]) => Number(b) - Number(a)).map(([year, rec]) => (
+                    <tr key={year}>
+                      <td>{year}</td>
+                      <td>{rec.w}</td>
+                      <td>{rec.l}</td>
+                      <td>{rec.w + rec.l > 0 ? ((rec.w / (rec.w + rec.l)) * 100).toFixed(1) + '%' : '0.0%'}</td>
+                      <td>{rec.titles}</td>
+                      <td>{rec.finals}</td>
+                      <td>{rec.sf}</td>
+                      <td>{rec.qf}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </section>
+          )}
+
+          {last10SurfMatches.length > 0 && (
+            <section>
+              <h3>Recent {label} Matches</h3>
+              <table>
+                <thead><tr><th>Date</th><th>Result</th><th>Opponent</th><th>Tournament</th><th>Round</th><th>Score</th></tr></thead>
+                <tbody>
+                  {last10SurfMatches.map((m, i) => {
+                    const isWin = String(m.winner_id) === String(player.id);
+                    const opponent = isWin ? (m.loser_name ?? '') : (m.winner_name ?? '');
+                    const oppRank = isWin ? m.loser_rank : m.winner_rank;
+                    const dateStr = m.tourney_date
+                      ? (m.tourney_date instanceof Date ? m.tourney_date.toISOString().split('T')[0] : String(m.tourney_date).split('T')[0])
+                      : String(m.year ?? '');
+                    const tname = m.tourney_name
+                      ? (typeof m.tourney_name === 'object' ? (m.tourney_name.en ?? String(Object.values(m.tourney_name)[0] ?? '')) : String(m.tourney_name))
+                      : '';
+                    return (
+                      <tr key={i}>
+                        <td>{dateStr}</td>
+                        <td>{isWin ? 'Win' : 'Loss'}</td>
+                        <td>{oppRank != null ? `(${oppRank}) ` : ''}{opponent}</td>
+                        <td>{tname}</td>
+                        <td>{m.round ?? ''}</td>
+                        <td>{m.score ?? ''}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </section>
+          )}
+        </div>
       )}
 
       {/* Delegate to the full player page shell.
