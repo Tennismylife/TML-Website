@@ -121,6 +121,8 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
   let bySeason: Record<number, { w: number; l: number; titles: number; finals: number; sf: number; qf: number; r16: number; r32: number; r64: number; r128: number }> = {};
   const currentYear = new Date().getFullYear();
   let recentFormStr: string[] = [];
+  // Saved outside try/catch so it's accessible for the server-rendered sr-only section
+  let allSurfMatchesForServer: { winner_id: any; loser_id: any; year: any; round: any; tourney_level: any; tourney_date: any }[] = [];
 
   try {
     totalMatches = await prisma.match.count({
@@ -231,6 +233,8 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
     // Recent form: current year
     const recentYearMatches = allSurfMatches.filter(m => (m.year as number) === currentYear);
     recentFormStr = recentYearMatches.slice(-10).map(m => String(m.winner_id) === String(player.id) ? 'W' : 'L');
+    // Expose to server-render section outside try/catch
+    allSurfMatchesForServer = allSurfMatches;
   } catch (e) {}
 
   const winPct = totalMatches > 0 ? `${((wins / totalMatches) * 100).toFixed(1)}%` : '0%';
@@ -647,7 +651,78 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
           payload scripts). Visually hidden; the visible copy is rendered inside
           the tab via overviewSlot below. Only emitted when stats are meaningful. */}
       {totalMatches >= 5 && (
-        <div className="sr-only">{surfacePreviewNode}</div>
+        <div className="sr-only">
+          {/* Narrative overview */}
+          {surfacePreviewNode}
+
+          {/* By-year stats table */}
+          {Object.keys(bySeason).length > 0 && (
+            <section aria-label={`${displayName} ${adjective} stats by year`}>
+              <h3>{displayName} {label} Record by Year</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Year</th><th>W</th><th>L</th><th>Win%</th><th>Titles</th><th>Finals</th><th>SF</th><th>QF</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(bySeason)
+                    .sort(([a], [b]) => Number(b) - Number(a))
+                    .map(([year, rec]) => {
+                      const tot = rec.w + rec.l;
+                      const pct = tot > 0 ? ((rec.w / tot) * 100).toFixed(1) : '0.0';
+                      return (
+                        <tr key={year}>
+                          <td>{year}</td>
+                          <td>{rec.w}</td>
+                          <td>{rec.l}</td>
+                          <td>{pct}%</td>
+                          <td>{rec.titles}</td>
+                          <td>{rec.finals}</td>
+                          <td>{rec.sf}</td>
+                          <td>{rec.qf}</td>
+                        </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+            </section>
+          )}
+
+          {/* Recent matches (last 10) */}
+          {allSurfMatchesForServer.length > 0 && (() => {
+            const recent10 = allSurfMatchesForServer.slice(-10).reverse();
+            const lvlName: Record<string, string> = { G: 'Grand Slam', M: 'Masters 1000', F: 'Tour Finals', O: 'Olympics', A: 'ATP 500', B: 'ATP 250', C: 'Challenger', D: 'Davis Cup' };
+            return (
+              <section aria-label={`${displayName} recent ${adjective} matches`}>
+                <h3>Recent {label} Matches</h3>
+                <table>
+                  <thead>
+                    <tr><th>Date</th><th>Result</th><th>Round</th><th>Level</th></tr>
+                  </thead>
+                  <tbody>
+                    {recent10.map((m, i) => {
+                      const isWin = String(m.winner_id) === String(player.id);
+                      const dateStr = m.tourney_date
+                        ? (m.tourney_date instanceof Date
+                          ? m.tourney_date.toISOString().split('T')[0]
+                          : String(m.tourney_date).split('T')[0])
+                        : String(m.year ?? '');
+                      return (
+                        <tr key={i}>
+                          <td>{dateStr}</td>
+                          <td>{isWin ? 'Win' : 'Loss'}</td>
+                          <td>{m.round ?? ''}</td>
+                          <td>{m.tourney_level ? (lvlName[String(m.tourney_level)] ?? String(m.tourney_level)) : ''}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </section>
+            );
+          })()}
+        </div>
       )}
 
       {/* Delegate to the full player page shell.
