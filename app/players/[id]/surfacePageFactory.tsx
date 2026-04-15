@@ -643,22 +643,15 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
         "measurementTechnique": "ATP official match records",
       }) }} />
 
-      {/* Narrative overview rendered directly as a Server Component so that it
-          appears as real HTML elements in the DOM (not serialised inside RSC
-          payload <script> tags). This is what Google sees without JS execution.
-          Only shown when there is enough data (≥5 matches). */}
-      {totalMatches >= 5 ? surfacePreviewNode : null}
-
       {/* Delegate to the full player page shell.
           Pass tab='matches' + surface filter so PlayerTabPage SSR-fetches filtered
           matches and renders AllMatchesServer in the initial HTML for Google.
           _surfaceTab overrides the tab used for SEO URLs (SEOPlayer, SEOBreadcrumb)
-          so they point to /clay|hard|grass instead of /matches.
-          _surfacePreviewNode is intentionally omitted: the narrative is already
-          server-rendered above, so we avoid duplicating it inside the client tabs. */}
+          so they point to /clay|hard|grass instead of /matches. */}
       <PlayerTabPage
         params={Promise.resolve({ id, tab: 'matches' })}
         searchParams={Promise.resolve({ surface: surface })}
+        _surfacePreviewNode={surfacePreviewNode}
         _surfaceTab={surfPath}
       />
     </>
