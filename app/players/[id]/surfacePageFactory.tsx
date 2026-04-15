@@ -643,6 +643,13 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
         "measurementTechnique": "ATP official match records",
       }) }} />
 
+      {/* Server-rendered directly in HTML DOM for Google crawlers (not in RSC
+          payload scripts). Visually hidden; the visible copy is rendered inside
+          the tab via overviewSlot below. Only emitted when stats are meaningful. */}
+      {totalMatches >= 5 && (
+        <div className="sr-only">{surfacePreviewNode}</div>
+      )}
+
       {/* Delegate to the full player page shell.
           Pass tab='matches' + surface filter so PlayerTabPage SSR-fetches filtered
           matches and renders AllMatchesServer in the initial HTML for Google.
