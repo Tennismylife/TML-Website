@@ -305,6 +305,17 @@ function strongETag(buffer) {
             // Facoltativo: per HTML, scarta body minuscoli (render parziale)
             if (ct.includes('text/html') && bodyBuffer.length < 512) {
               if (process.env.VERBOSE_LOGS === '1') console.warn('[CACHE SKIP] HTML troppo piccolo', key);
+            } else if (
+              // Non cachare le pagine surface con zero stats: succede quando la
+              // try/catch in surfacePageFactory torna silenziosamente con totalMatches=0
+              // (es. DB timeout durante import). Il testo "too small a sample" è nel
+              // payload RSC e indica una render de-facto vuota → non mettere in cache
+              // per evitare che Googlebot veda la versione priva di contenuto.
+              ct.includes('text/html') &&
+              /\/players\/[^\/]+\/(clay|hard|grass)$/.test(req.path) &&
+              bodyBuffer.indexOf(Buffer.from('too small a sample')) !== -1
+            ) {
+              console.warn('[CACHE SKIP] Zero-stats surface page, non caching', key);
             } else {
               // TTL configurabili
               const ttl = req.path.startsWith('/api')
