@@ -60,7 +60,6 @@ const YearByYearBreakdownTable: React.FC<{
   const surfaceMatches = useMemo(() => {
     const isAll = surface === 'All' || surface === 'all' || surface === '';
     return allMatches.filter((m: any) =>
-      m.status === true &&
       (isAll || (typeof m.surface === 'string' && m.surface.toLowerCase().includes(surface.toLowerCase())))
     );
   }, [allMatches, surface]);
@@ -376,8 +375,14 @@ export default function SurfaceStatsClient({
   const overviewStats = useMemo(() => {
     if (selectedYear || loading || !allMatches.length) return null;
     const pid = String(playerId);
-    const matches = allMatches.filter((m: any) => m.status === true);
-    if (!matches.length) return null;
+    // roundMatches: tutti i match inclusi W/O — per round raggiunti e titoli
+    const roundMatches = allMatches.filter((m: any) => m.team_event !== true);
+    // matches: solo match realmente giocati — per W/L, top10, bo3/bo5, best year, form
+    const matches = allMatches.filter((m: any) => {
+      const score = String((m as any).score ?? '').toUpperCase();
+      return m.status === true && !score.includes('W/O') && !score.includes('WEA') && m.team_event !== true;
+    });
+    if (!roundMatches.length) return null;
 
     const totalMatches = matches.length;
     const wins = matches.filter((m: any) => String(m.winner_id) === pid).length;
@@ -397,7 +402,7 @@ export default function SurfaceStatsClient({
     const mastersTotal = mastersMatches.length;
     const mastersWinPctN = mastersTotal > 0 ? (mastersWins / mastersTotal) * 100 : 0;
 
-    const finalMatches = matches.filter((m: any) => m.round === 'F');
+    const finalMatches = roundMatches.filter((m: any) => m.round === 'F');
     const finalsReached = finalMatches.length;
     const totalTitles = finalMatches.filter((m: any) => String(m.winner_id) === pid && m.team_event !== true && !(m.score && String(m.score).includes('WEA')) && !String(m.tourney_name ?? '').toLowerCase().includes('next gen')).length;
     const titleNames = Array.from(new Set(
@@ -407,8 +412,8 @@ export default function SurfaceStatsClient({
         .filter(Boolean) as string[]
     ));
 
-    const sfReached = matches.filter((m: any) => m.round === 'SF' && (String(m.winner_id) === pid || String(m.loser_id) === pid)).length;
-    const qfReached = matches.filter((m: any) => m.round === 'QF' && (String(m.winner_id) === pid || String(m.loser_id) === pid)).length;
+    const sfReached = roundMatches.filter((m: any) => m.round === 'SF' && (String(m.winner_id) === pid || String(m.loser_id) === pid)).length;
+    const qfReached = roundMatches.filter((m: any) => m.round === 'QF' && (String(m.winner_id) === pid || String(m.loser_id) === pid)).length;
 
     const top10Matches = matches.filter((m: any) => {
       const iAmWinner = String(m.winner_id) === pid;
