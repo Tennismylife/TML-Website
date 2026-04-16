@@ -47,8 +47,8 @@ function calcAge(bd: Date | string): { years: number; days: number } {
   return { years, days };
 }
 
-const lvlLabels: Record<string, string> = { G: 'Grand Slam', M: 'Masters 1000', F: 'Year-end Finals', O: 'Olympics', '500': 'ATP 500', A: 'ATP 500', '250': 'ATP 250', B: 'ATP 250', C: 'Challenger', D: 'Davis Cup' };
-const lvlOrder = ['G', 'M', 'F', 'O', '500', 'A', '250', 'B', 'C', 'D'];
+const lvlLabels: Record<string, string> = { G: 'Grand Slam', M: 'Masters 1000', F: 'Year-end Finals', O: 'Olympics', '500': 'ATP 500', '250': 'ATP 250', B: 'ATP 250', A: 'Others', C: 'Challenger' };
+const lvlOrder = ['G', 'M', 'F', 'O', '500', '250', 'B', 'A', 'C'];
 
 const YearByYearBreakdownTable: React.FC<{
   allMatches: Match[];
@@ -89,13 +89,19 @@ const YearByYearBreakdownTable: React.FC<{
     const seasonMap = new Map<number, { wins: number; losses: number; titles: number; finals: number; sf: number; qf: number; r16: number; r32: number; r64: number; r128: number }>();
     for (const m of filteredMatches) {
       if ((m as any).team_event) continue;
+      const score = String((m as any).score ?? '').toUpperCase();
+      const isWalkover = score.includes('W/O') || score.includes('WEA') || (m as any).status === false;
       const year = (m as any).year ?? 0;
       const cur = seasonMap.get(year) ?? { wins: 0, losses: 0, titles: 0, finals: 0, sf: 0, qf: 0, r16: 0, r32: 0, r64: 0, r128: 0 };
       const isWinner = String((m as any).winner_id) === pid;
-      if (isWinner) cur.wins++; else cur.losses++;
+      // W/L: solo match realmente giocati
+      if (!isWalkover) {
+        if (isWinner) cur.wins++; else cur.losses++;
+      }
+      // Round raggiunti: sempre (inclusi W/O e status=false)
       if (m.round === 'F') {
         cur.finals++;
-        if (isWinner && !String((m as any).tourney_name ?? '').toLowerCase().includes('next gen') && !((m as any).score && String((m as any).score).includes('WEA'))) cur.titles++;
+        if (isWinner && !String((m as any).tourney_name ?? '').toLowerCase().includes('next gen') && !score.includes('WEA')) cur.titles++;
       }
       if (m.round === 'SF') cur.sf++;
       if (m.round === 'QF') cur.qf++;
@@ -521,8 +527,8 @@ export default function SurfaceStatsClient({
                 </div>
                 {/* Per-category */}
                 <div className="flex flex-wrap gap-1.5 justify-end">
-                  {(['G','M','F','O','500','A','250','B','C','D'] as const).map((lvl) => {
-                    const lvlLabels: Record<string, string> = { G: 'Grand Slam', M: 'Masters 1000', F: 'Year-end Finals', O: 'Olympics', '500': 'ATP 500', A: 'Others', '250': 'ATP 250', B: 'ATP 250', C: 'Challenger', D: 'Davis Cup' };
+                  {(['G','M','F','O','500','A','250','B','C'] as const).map((lvl) => {
+                    const lvlLabels: Record<string, string> = { G: 'Grand Slam', M: 'Masters 1000', F: 'Year-end Finals', O: 'Olympics', '500': 'ATP 500', A: 'Others', '250': 'ATP 250', B: 'ATP 250', C: 'Challenger' };
                     const count = overviewStats.titlesByLevel[lvl];
                     if (!count) return null;
                     return (
