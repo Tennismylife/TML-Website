@@ -276,6 +276,7 @@ export async function generateMetadata(
     },
     // Noindex rules:
     // - matches tab: always noindex (all URLs, with or without filters).
+    // - matches tab: indexed (canonical points to player landing).
     // - tournaments / statistics / performance: always noindex.
     // - ranking tab: only index players in the allowlist.
     // - surface tabs (clay/hard/grass): only index top-100 players.
@@ -288,7 +289,7 @@ export async function generateMetadata(
       if (tab && !VALID_TABS.has(String(tab).toLowerCase())) {
         return { index: false, follow: true };
       }
-      if (tab === 'matches' || tab === 'tournaments' || tab === 'statistics' || tab === 'performance') {
+      if (tab === 'tournaments' || tab === 'statistics' || tab === 'performance') {
         return { index: false, follow: true };
       }
       if (tab === 'ranking') {
