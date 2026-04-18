@@ -398,11 +398,9 @@ export default async function SeasonYearPage({ params, searchParams }: any) {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
         "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Players", "item": "https://stats.tennismylife.org/players" },
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://stats.tennismylife.org" },
           { "@type": "ListItem", "position": 2, "name": displayName, "item": `https://stats.tennismylife.org/players/${player?.slug || String(id)}` },
-          { "@type": "ListItem", "position": 3, "name": "Season", "item": `https://stats.tennismylife.org/players/${player?.slug || String(id)}/season` },
-          { "@type": "ListItem", "position": 4, "name": "Matches", "item": `https://stats.tennismylife.org/players/${player?.slug || String(id)}/matches?year=${String(year)}` },
-          { "@type": "ListItem", "position": 5, "name": String(year), "item": canonical }
+          { "@type": "ListItem", "position": 3, "name": `${String(year)} Season`, "item": canonical }
         ]
       }) }} />
 

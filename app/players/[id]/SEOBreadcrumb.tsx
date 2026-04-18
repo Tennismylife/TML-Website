@@ -35,8 +35,11 @@ export default function SEOBreadcrumb({ slug, name, tab }: SEOBreadcrumbProps) {
     { label: name, href: `/players/${slug}` },
   ];
 
-  if (tab && tab !== 'overview') {
-    // tab kept for future use but not added to breadcrumb
+  if (tab && tab !== 'overview' && tab !== 'season') {
+    const tabLabel = capitalizeTab(tab);
+    const tabUrl = `${base}/players/${slug}/${tab}`;
+    items.push({ '@type': 'ListItem', position: 3, name: tabLabel, item: tabUrl });
+    crumbs.push({ label: tabLabel, href: `/players/${slug}/${tab}` });
   }
 
   const ld = {

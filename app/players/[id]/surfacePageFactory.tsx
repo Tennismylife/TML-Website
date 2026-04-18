@@ -538,8 +538,8 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
         "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Players",       "item": "https://stats.tennismylife.org/players" },
-          { "@type": "ListItem", "position": 2, "name": displayName,     "item": `https://stats.tennismylife.org/players/${slug}` },
+          { "@type": "ListItem", "position": 1, "name": "Home",           "item": "https://stats.tennismylife.org" },
+          { "@type": "ListItem", "position": 2, "name": displayName,      "item": `https://stats.tennismylife.org/players/${slug}` },
           { "@type": "ListItem", "position": 3, "name": `${label} Statistics`, "item": canonical },
         ],
       }) }} />

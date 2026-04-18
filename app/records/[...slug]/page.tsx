@@ -489,8 +489,12 @@ export default async function SlugPage({ params, searchParams }: Props) {
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', metadataBase).toString() },
         { '@type': 'ListItem', position: 2, name: 'Records', item: new URL('/records', metadataBase).toString() },
-        ...(record ? [{ '@type': 'ListItem', position: 3, name: RECORD_LABELS[record] ?? record, item: new URL(`/records/${record}`, metadataBase).toString() }] : []),
-        ...(record && activeSubResolved ? [{ '@type': 'ListItem', position: 4, name: subLabelResolved ?? activeSubResolved, item: new URL(`/records/${record}/${activeSubResolved}`, metadataBase).toString() }] : []),
+        // Se c'è un subtab, il livello intermedio /records/${record} è un redirect: si salta e il subtab va in position 3
+        ...(record && activeSubResolved
+          ? [{ '@type': 'ListItem', position: 3, name: subLabelResolved ?? activeSubResolved, item: new URL(`/records/${record}/${activeSubResolved}`, metadataBase).toString() }]
+          : record
+            ? [{ '@type': 'ListItem', position: 3, name: RECORD_LABELS[record] ?? record, item: new URL(`/records/${record}`, metadataBase).toString() }]
+            : []),
       ],
     };
 
