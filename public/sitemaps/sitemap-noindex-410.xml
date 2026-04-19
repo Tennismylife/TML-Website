@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url>
     <loc>https://stats.tennismylife.org/records/ageofnth/played?bestOf=1&amp;level=D&amp;round=QF</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -46,17 +45,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/ageofnth/titles?level=500&amp;surface=Grass&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/ageofnth/titles?level=G&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/ageofnth/titles?level=M</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -71,22 +60,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/ageofnth/wins?level=G&amp;round=QF</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/ageofnth/wins?level=G&amp;round=R128</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/ageofnth?subtab=entries&amp;level=F</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/ageofnth?subtab=played&amp;bestOf=5&amp;level=500&amp;round=R128</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -101,22 +80,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/ages/oldest-winners?level=250&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/ages/oldest-winners?level=500&amp;surface=Clay&amp;round=R32&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/ages/oldest-winners?level=A</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/ages/oldest-winners?level=A&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -131,22 +95,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/ages/oldest-winners?level=F&amp;surface=Hard&amp;round=QF&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/ages/oldest-winners?level=F&amp;surface=Hard&amp;round=R32&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/ages/oldest-winners?level=G&amp;round=R32</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/ages/oldest-winners?level=G&amp;surface=Clay&amp;round=R64&amp;bestOf=1</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -181,11 +130,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/ages/oldest?level=D&amp;round=R64</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/ages/oldest?level=D&amp;surface=Clay&amp;bestOf=5</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -197,21 +141,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/ages/oldest?level=F&amp;round=SF&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/ages/oldest?level=G&amp;round=F</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/ages/oldest?level=G&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/ages/oldest?level=M&amp;round=R64&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -237,21 +166,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/ages/oldestWinners?level=F&amp;round=R32</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/ages/oldestWinners?level=F&amp;surface=Grass&amp;round=R128&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/ages/oldestWinners?level=F&amp;surface=Grass&amp;round=R64&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/ages/oldestWinners?level=G&amp;round=F&amp;bestOf=3</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -326,16 +240,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/ages/youngest?level=A&amp;round=R16</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/ages/youngest?level=A&amp;round=R16&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/ages/youngest?level=A&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -346,27 +250,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/ages/youngest?level=D&amp;round=R32</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/ages/youngest?level=D&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/ages/youngest?level=D&amp;surface=Hard&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/ages/youngest?level=F&amp;round=F&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/ages/youngest?level=F&amp;round=R32&amp;bestOf=1</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -391,11 +280,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/ages/youngest?level=M&amp;round=F&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/ages/youngest?level=M&amp;round=R128</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -416,17 +300,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/ages/youngest?round=F&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/ages/youngestWinners?level=250&amp;surface=Grass&amp;round=R16</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/ages/youngestWinners?level=250&amp;surface=Grass&amp;round=R64</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -461,17 +335,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/ages?subtab=allrounds&amp;round=F</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/ages?subtab=oldest&amp;level=500&amp;round=F</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/ages?subtab=oldest&amp;level=A&amp;round=R32&amp;surface=Carpet</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -497,11 +361,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/ages?subtab=oldest&amp;level=M&amp;round=R16</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/ages?subtab=oldest&amp;level=M&amp;surface=Clay</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -551,17 +410,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/atage/entries?level=G</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/atage/played?bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/atage/played?level=F&amp;round=F&amp;surface=Grass</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -586,11 +435,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/atage/round?level=500&amp;round=QF</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/atage/round?level=500&amp;surface=Clay&amp;round=R32&amp;bestOf=5</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -601,32 +445,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/atage/round?level=A&amp;round=R64</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/atage/round?level=A&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/atage/round?level=A&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/atage/round?level=D&amp;round=F&amp;surface=Carpet</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/atage/round?level=D&amp;round=QF&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/atage/round?level=F&amp;round=F</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -651,21 +475,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/atage/round?level=G&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/atage/round?level=M</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/atage/round?round=R32</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/atage/round?round=SF&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -681,37 +490,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/atage/titles?level=500&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/atage/titles?level=500&amp;surface=Clay</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/atage/titles?level=A&amp;surface=Grass&amp;round=QF&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/atage/titles?level=G</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/atage/titles?level=M</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/atage/titles?level=M&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/atage/titles?round=R16&amp;bestOf=5</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -731,17 +515,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/atage/wins?bestOf=3&amp;level=G&amp;round=R128&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/atage/wins?level=250&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/atage/wins?level=500</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -752,11 +526,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/atage/wins?level=D&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/atage/wins?level=F</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -776,17 +545,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/atage/wins?round=R128</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/atage/wins?round=R64</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/atage/wins?round=SF</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -806,17 +565,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/atage?subtab=round&amp;level=F&amp;round=SF&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/atage?subtab=round&amp;level=F&amp;round=SF&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/atage?subtab=round&amp;level=F&amp;round=SF&amp;surface=Grass</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -836,32 +585,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/atage?subtab=wins&amp;level=500</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/count?level=250&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/count?level=250&amp;round=R128&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/count?level=250&amp;surface=Grass&amp;round=QF&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/count?level=250&amp;surface=Hard&amp;round=R128</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/count?level=A&amp;bestOf=1</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -876,11 +600,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/count?level=D&amp;round=F&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/count?level=D&amp;round=R64</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -891,42 +610,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/count?level=D&amp;surface=Carpet&amp;round=F&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/count?level=D&amp;surface=Grass&amp;round=R128&amp;bestOf=5</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/count?level=D&amp;surface=Hard&amp;round=F&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/count?level=F&amp;round=F&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/count?level=F&amp;round=R128&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/count?level=F&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/count?level=F&amp;surface=Clay&amp;round=R64&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/count?level=F&amp;surface=Hard&amp;round=R128&amp;bestOf=3</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -941,42 +630,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/count?level=G&amp;round=R16</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/count?level=G&amp;round=R64&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/count?level=G&amp;round=SF</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/count?level=G&amp;surface=Carpet&amp;round=R64&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/count?level=G&amp;surface=Carpet&amp;round=SF&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/count?level=G&amp;surface=Grass&amp;round=QF&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/count?level=M&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/count?level=M&amp;round=F&amp;bestOf=5</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -991,11 +645,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/count?level=M&amp;surface=Carpet&amp;round=R64&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/count?level=M&amp;surface=Clay&amp;round=R16&amp;bestOf=3</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -1006,57 +655,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/count?round=R64&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/count?round=R64&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/count?surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/count?surface=Grass&amp;round=R16&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/count?surface=Grass&amp;round=R64&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/count?surface=Hard&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/round?level=250</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/round?level=250&amp;round=SF&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/round?level=250&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/counterseasons/round?level=250&amp;surface=Grass&amp;round=F&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/round?level=250&amp;surface=Grass&amp;round=QF</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -1081,11 +685,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/round?level=D</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/counterseasons/round?level=F&amp;round=F</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -1106,22 +705,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/round?level=F&amp;surface=Hard&amp;round=F&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/round?level=F&amp;surface=Hard&amp;round=SF</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/counterseasons/round?level=F&amp;surface=Hard&amp;round=SF&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/round?level=G&amp;round=QF</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -1132,21 +716,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/counterseasons/round?level=G&amp;round=R32</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/round?level=G&amp;round=SF&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/round?level=G&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/round?level=G&amp;surface=Clay&amp;round=R128&amp;bestOf=3</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -1191,11 +760,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/round?surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/counterseasons/round?surface=Carpet&amp;round=R16</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -1206,22 +770,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/round?surface=Hard&amp;round=QF&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/round?surface=Hard&amp;round=R128&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/counterseasons/round?surface=Hard&amp;round=R16</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/round?surface=Hard&amp;round=R32&amp;bestOf=3</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -1246,37 +795,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/titles?level=A&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/titles?level=A&amp;surface=Grass&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/counterseasons/titles?level=A&amp;surface=Grass&amp;bestOf=5</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/titles?level=F&amp;surface=Grass&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/titles?level=G&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/counterseasons/titles?level=M&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/titles?level=M&amp;surface=Clay&amp;round=R128&amp;bestOf=5</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -1287,11 +811,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/counterseasons/titles?surface=Carpet&amp;round=SF&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/titles?surface=Grass&amp;bestOf=1</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -1401,11 +920,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/wins?level=M&amp;round=R16&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/counterseasons/wins?level=M&amp;round=R64&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -1421,17 +935,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/wins?surface=Clay&amp;round=R16&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/counterseasons/wins?surface=Hard&amp;round=R64</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons?subtab=round&amp;level=500</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -1442,11 +946,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/counterseasons?subtab=round&amp;level=500&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons?subtab=round&amp;level=F&amp;round=F</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -1501,27 +1000,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons?subtab=titles&amp;level=500&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/counterseasons?subtab=wins&amp;bestOf=5&amp;level=A&amp;round=F&amp;surface=Carpet</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/counterseasons?subtab=wins&amp;level=D&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons?subtab=wins&amp;level=F</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons?subtab=wins&amp;level=F&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -1541,57 +1025,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/entries?level=250&amp;surface=Hard&amp;round=R16&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/entries?level=500&amp;surface=Carpet&amp;round=R16</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/entries?level=A&amp;round=R128&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/entries?level=A&amp;surface=Grass&amp;round=SF&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/entries?level=A&amp;surface=Hard&amp;round=R16&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/entries?level=A&amp;surface=Hard&amp;round=R32&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/entries?level=D&amp;surface=Clay&amp;round=R128</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/entries?level=D&amp;surface=Grass&amp;round=R32&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/entries?level=D&amp;surface=Hard&amp;round=F</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/entries?level=D&amp;surface=Hard&amp;round=R64&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/entries?level=F&amp;surface=Clay</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -1606,42 +1045,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/entries?level=G&amp;surface=Grass&amp;round=R16&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/entries?level=G&amp;surface=Hard&amp;round=F&amp;bestOf=1</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/entries?level=G&amp;surface=Hard&amp;round=R64&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/entries?level=M&amp;round=SF</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/entries?level=M&amp;round=SF&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/entries?level=M&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/entries?level=M&amp;surface=Hard&amp;round=R32&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/entries?round=F</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -1652,16 +1061,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/entries?surface=Clay&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/entries?surface=Clay&amp;round=QF&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/entries?surface=Hard&amp;round=SF&amp;bestOf=5</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -1741,27 +1140,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/h2h/count?bestOf=5&amp;round=SF&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/h2h/count?bestOf=5&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/h2h/count?level=500&amp;surface=Clay&amp;round=SF</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/h2h/count?level=A&amp;surface=Carpet&amp;round=R64&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/h2h/count?level=D&amp;surface=Carpet&amp;round=F&amp;bestOf=3</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -1776,17 +1160,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/h2h/count?level=F&amp;round=R16</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/h2h/count?level=F&amp;round=SF&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/h2h/count?level=F&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -1851,36 +1225,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/h2h?level=500&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/h2h?level=F</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/h2h?level=G</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/h2h?level=M</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/h2h?level=M&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/h2h?subtab=count&amp;bestOf=1&amp;level=D&amp;round=SF</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/h2h?subtab=count&amp;bestOf=3&amp;round=SF&amp;surface=Carpet</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -1921,11 +1265,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/h2h?subtab=count&amp;level=M&amp;round=SF</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/h2h?subtab=count&amp;round=R32</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -1961,11 +1300,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/percentage?bestOf=3&amp;level=500&amp;round=R64&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/percentage?bestOf=3&amp;level=F&amp;round=F&amp;surface=Clay</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -1976,17 +1310,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/percentage?bestOf=3&amp;level=F&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/percentage?bestOf=3&amp;level=G&amp;round=R16&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/percentage?bestOf=3&amp;level=G&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -2021,16 +1345,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/percentage?bestOf=5&amp;round=R128</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/percentage?level=250&amp;round=F</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/percentage?level=250&amp;round=QF&amp;surface=Carpet</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -2046,22 +1360,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/percentage?level=250&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/percentage?level=500&amp;round=F&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/percentage?level=500&amp;surface=Clay&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/percentage?level=500&amp;surface=Clay&amp;round=F&amp;bestOf=5</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -2091,16 +1390,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/percentage?level=A&amp;surface=Carpet&amp;round=SF&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/percentage?level=A&amp;surface=Clay&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/percentage?level=A&amp;surface=Clay&amp;round=QF</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -2112,16 +1401,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/percentage?level=A&amp;surface=Grass&amp;round=R16&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/percentage?level=A&amp;surface=Hard&amp;round=R128</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/percentage?level=D&amp;round=F&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -2146,32 +1425,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/percentage?level=F&amp;round=R16&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/percentage?level=F&amp;surface=Carpet&amp;round=R128</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/percentage?level=F&amp;surface=Carpet&amp;round=SF&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/percentage?level=F&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/percentage?level=F&amp;surface=Hard&amp;round=R32&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/percentage?level=G&amp;round=F</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -2196,27 +1450,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/percentage?level=M&amp;round=SF&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/percentage?level=M&amp;surface=Clay&amp;bestOf=1</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/percentage?level=M&amp;surface=Clay&amp;round=R128&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/percentage?level=M&amp;surface=Clay&amp;round=R64</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/played?bestOf=1</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -2227,26 +1466,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/played?bestOf=1&amp;level=500&amp;round=SF</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/played?bestOf=5&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/played?level=250&amp;surface=Clay&amp;round=SF&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/played?level=250&amp;surface=Grass&amp;round=R128&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/played?level=500&amp;surface=Carpet&amp;round=F&amp;bestOf=1</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -2271,32 +1490,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/played?level=D&amp;round=QF&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/played?level=D&amp;surface=Clay&amp;round=R128&amp;bestOf=5</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/played?level=D&amp;surface=Hard&amp;round=QF&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/played?level=F&amp;surface=Clay&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/played?level=F&amp;surface=Clay&amp;round=QF&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/played?level=F&amp;surface=Clay&amp;round=R128&amp;bestOf=3</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -2327,16 +1526,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/played?level=M&amp;surface=Carpet&amp;round=QF&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/played?level=M&amp;surface=Carpet&amp;round=QF&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/played?level=M&amp;surface=Clay&amp;bestOf=5</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -2376,27 +1565,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/played?surface=Grass&amp;round=R128&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/roundsonentries/round?level=250&amp;round=R64&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/roundsonentries/round?level=500&amp;round=R64&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/roundsonentries/round?level=A&amp;round=R128&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/roundsonentries/round?level=A&amp;surface=Clay</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -2407,16 +1576,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/roundsonentries/round?level=F</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/roundsonentries/round?level=F&amp;round=R16&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/roundsonentries/round?level=F&amp;round=SF&amp;surface=Clay</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -2451,22 +1610,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/roundsonentries/round?level=M&amp;round=R128&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/roundsonentries/round?level=M&amp;round=R64</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/roundsonentries/round?level=M&amp;round=SF&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/roundsonentries/round?round=F&amp;bestOf=5</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -2486,11 +1630,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/roundsonentries/titles?level=A</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/roundsonentries/titles?level=D&amp;round=R16</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -2501,37 +1640,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/roundsonentries/titles?level=F&amp;round=R32&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/roundsonentries/titles?level=F&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/roundsonentries/titles?level=G&amp;round=R32</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/roundsonentries/titles?level=G&amp;round=SF&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/roundsonentries/titles?level=M&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/roundsonentries?level=250</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/roundsonentries?level=500&amp;surface=Clay</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -2566,11 +1675,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/roundsonentries?subtab=round&amp;level=500&amp;round=F&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/roundsonentries?subtab=round&amp;level=500&amp;round=QF&amp;surface=Grass</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -2591,27 +1695,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/roundsonentries?surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/entries?level=250&amp;surface=Clay&amp;round=R64&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/entries?level=250&amp;surface=Grass&amp;round=R16</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/same/entries?level=250&amp;surface=Grass&amp;round=R64&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/entries?level=G&amp;surface=Carpet</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -2631,22 +1715,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/same/played?bestOf=1&amp;level=F&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/same/played?bestOf=1&amp;level=G&amp;round=R128&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/same/played?bestOf=1&amp;level=G&amp;round=R32&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/played?bestOf=1&amp;level=G&amp;round=R64</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -2676,17 +1750,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/same/played?bestOf=3&amp;level=G&amp;round=R128&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/same/played?bestOf=3&amp;level=G&amp;round=SF&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/played?bestOf=3&amp;round=R16&amp;surface=Grass</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -2697,16 +1761,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/same/played?bestOf=5&amp;level=A&amp;round=QF&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/played?bestOf=5&amp;level=A&amp;round=R128&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/played?bestOf=5&amp;level=F&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -2722,11 +1776,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/same/played?bestOf=5&amp;round=R128</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/played?bestOf=5&amp;round=R128&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -2776,11 +1825,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/same/played?level=G&amp;round=QF&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/same/played?level=G&amp;round=QF&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -2796,22 +1840,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/same/played?level=G&amp;round=SF&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/played?level=G&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/same/played?level=G&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/played?level=M&amp;round=SF&amp;bestOf=5</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -2836,22 +1865,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/same/played?round=F</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/same/played?round=F&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/same/played?round=QF</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/played?round=R128</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -2871,16 +1890,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/same/round?level=250&amp;round=R64</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/round?level=500&amp;round=R128</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/same/round?level=A&amp;surface=Grass&amp;round=R64</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -2891,27 +1900,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/same/round?level=F&amp;round=F</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/same/round?level=F&amp;round=F&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/same/round?level=F&amp;round=QF&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/same/round?level=F&amp;round=R128&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/round?level=F&amp;surface=Grass&amp;round=R64</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -2936,11 +1930,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/same/round?level=G&amp;round=R32</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/same/round?level=G&amp;round=R64&amp;surface=Clay</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -2956,22 +1945,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/same/round?level=M&amp;round=R32</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/same/round?level=M&amp;round=R64</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/same/round?level=M&amp;round=R64&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/round?level=M&amp;round=SF</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -2986,22 +1965,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/same/round?level=M&amp;surface=Hard&amp;round=R64</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/same/round?round=R128</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/round?round=R128&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/round?round=R128&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -3017,11 +1981,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/same/round?surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/round?surface=Clay</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -3051,22 +2010,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/same/titles?level=500&amp;surface=Grass&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/same/titles?level=A&amp;surface=Grass</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/same/titles?level=F&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/titles?round=SF&amp;bestOf=3</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -3131,22 +2080,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/same/wins?bestOf=3&amp;level=500&amp;round=F</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/same/wins?bestOf=3&amp;level=A&amp;round=F&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/wins?bestOf=3&amp;level=G</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/wins?bestOf=3&amp;level=G&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -3166,32 +2100,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/same/wins?bestOf=5&amp;level=500&amp;round=QF&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/wins?bestOf=5&amp;level=F&amp;round=R128</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/same/wins?bestOf=5&amp;level=G&amp;round=QF&amp;surface=Carpet</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/same/wins?bestOf=5&amp;level=M&amp;round=R64&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/wins?bestOf=5&amp;round=R128</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/wins?level=250&amp;round=F&amp;surface=Grass</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -3212,11 +2126,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/same/wins?level=F&amp;round=F</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same/wins?level=F&amp;surface=Clay&amp;round=R16&amp;bestOf=5</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -3256,27 +2165,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/same/wins?round=R32</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/same/wins?surface=Clay&amp;round=R128&amp;bestOf=3</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/same?subtab=entries&amp;level=M&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same?subtab=played&amp;bestOf=1&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same?subtab=played&amp;bestOf=3&amp;level=500&amp;round=R64&amp;surface=Carpet</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -3292,11 +2186,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/same?subtab=played&amp;bestOf=3&amp;round=F</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same?subtab=played&amp;level=500&amp;round=F&amp;surface=Grass</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -3327,16 +2216,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/same?subtab=round&amp;level=F&amp;round=R32&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same?subtab=round&amp;level=M&amp;round=QF&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/same?subtab=titles&amp;level=F&amp;surface=Carpet</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -3386,27 +2265,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/entries?level=250&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/entries?level=250&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/entries?level=500&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons/entries?level=D</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=1&amp;level=250&amp;round=F</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -3421,32 +2280,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=1&amp;level=250&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=1&amp;level=500&amp;round=F&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=1&amp;level=500&amp;round=QF&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=1&amp;level=500&amp;round=R16&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=1&amp;level=500&amp;round=R16&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=1&amp;level=500&amp;round=R16&amp;surface=Grass</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -3491,11 +2325,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=1&amp;level=A&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=1&amp;level=D&amp;round=QF&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -3507,11 +2336,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=1&amp;level=F&amp;round=R128&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=1&amp;level=F&amp;round=R16&amp;surface=Clay</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -3537,11 +2361,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=1&amp;level=M&amp;round=R32&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=1&amp;level=M&amp;surface=Clay</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -3582,11 +2401,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=3&amp;level=250&amp;round=F</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=3&amp;level=250&amp;round=R128&amp;surface=Clay</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -3636,22 +2450,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=3&amp;level=F&amp;round=R32&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=3&amp;level=G&amp;round=F&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=3&amp;level=G&amp;round=R64&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=3&amp;level=G&amp;surface=Clay</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -3671,32 +2470,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=3&amp;round=R128</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=3&amp;round=SF</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=5&amp;level=250&amp;round=F&amp;surface=Carpet</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=5&amp;level=500&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=5&amp;level=A&amp;round=F&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=5&amp;level=A&amp;round=F&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -3746,11 +2525,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=5&amp;level=M&amp;round=F</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=5&amp;level=M&amp;round=F&amp;surface=Clay</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -3771,11 +2545,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?bestOf=5&amp;round=SF&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons/percentage?level=250&amp;round=SF&amp;surface=Carpet</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -3786,37 +2555,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?level=250&amp;surface=Grass&amp;round=R32&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?level=500&amp;round=F</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons/percentage?level=500&amp;round=SF&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?level=500&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?level=500&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons/percentage?level=500&amp;surface=Grass&amp;round=F&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?level=A&amp;round=QF&amp;surface=Grass</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -3832,11 +2576,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/seasons/percentage?level=A&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?level=F&amp;round=F</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -3876,11 +2615,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?level=G&amp;round=R16&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons/percentage?level=G&amp;round=R32&amp;bestOf=3</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -3891,22 +2625,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?level=M&amp;round=F&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons/percentage?level=M&amp;round=F&amp;surface=Grass</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/seasons/percentage?level=M&amp;round=SF</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?level=M&amp;surface=Hard&amp;round=QF</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -3926,17 +2650,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage?round=R16&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons/percentage?surface=Hard&amp;round=R64&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/played?bestOf=1&amp;level=G&amp;surface=Grass</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -3947,11 +2661,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/seasons/played?bestOf=3&amp;level=G&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/played?bestOf=3&amp;level=M&amp;round=QF</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -4036,11 +2745,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/round?level=A&amp;round=R128&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons/round?level=A&amp;round=R64&amp;surface=Clay</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -4056,21 +2760,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/round?level=G&amp;round=QF&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/round?level=G&amp;round=R128</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/round?level=G&amp;round=R32</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons/round?level=M&amp;round=F&amp;surface=Clay</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -4082,11 +2771,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/seasons/round?level=M&amp;round=SF</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/round?round=QF&amp;surface=Grass</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -4111,11 +2795,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/titles?level=500&amp;round=R128&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons/titles?level=500&amp;surface=Clay</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -4132,11 +2811,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/seasons/titles?level=A&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/titles?level=F&amp;surface=Clay</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -4176,17 +2850,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/wins?bestOf=1&amp;level=250&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons/wins?bestOf=1&amp;level=500&amp;round=R32</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/wins?bestOf=1&amp;level=D&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -4291,11 +2955,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/wins?bestOf=3&amp;level=M&amp;round=R32</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons/wins?bestOf=3&amp;level=M&amp;round=R64&amp;surface=Carpet</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -4316,17 +2975,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/wins?bestOf=3&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons/wins?bestOf=5&amp;level=500&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/wins?bestOf=5&amp;level=A&amp;round=SF&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -4366,11 +3015,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/wins?bestOf=5&amp;level=G&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons/wins?bestOf=5&amp;level=M</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -4382,16 +3026,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/seasons/wins?bestOf=5&amp;level=M&amp;round=SF&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/wins?bestOf=5&amp;round=R16&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/wins?level=250&amp;surface=Grass</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -4436,27 +3070,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/wins?level=G&amp;round=R128&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons/wins?level=G&amp;round=R16&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/wins?level=G&amp;round=R64&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons/wins?level=G&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons/wins?level=M&amp;round=F</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -4477,16 +3096,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/seasons/wins?round=F&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons?level=500&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons?level=F</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -4581,11 +3190,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons?subtab=percentage&amp;level=A&amp;round=R32&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons?subtab=percentage&amp;level=A&amp;round=SF&amp;surface=Grass</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -4621,22 +3225,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons?subtab=played&amp;bestOf=5&amp;round=R32&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons?subtab=played&amp;level=M</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/seasons?subtab=played&amp;round=F</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons?subtab=round&amp;level=G&amp;round=R128</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -4651,22 +3245,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons?subtab=wins&amp;bestOf=1&amp;level=F</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/seasons?subtab=wins&amp;bestOf=1&amp;level=F&amp;round=R128&amp;surface=Clay</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/seasons?subtab=wins&amp;bestOf=3&amp;round=R128&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons?subtab=wins&amp;bestOf=5&amp;level=500&amp;round=R32&amp;surface=Grass</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -4682,11 +3266,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/seasons?subtab=wins&amp;level=F&amp;round=F&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/seasons?subtab=wins&amp;level=M&amp;round=F&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -4727,16 +3306,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/streak/round?level=250&amp;round=R128&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/streak/round?level=250&amp;round=R16&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/streak/round?level=500&amp;round=F&amp;bestOf=1</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -4791,11 +3360,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/streak/wins?bestOf=3&amp;level=G&amp;round=R128</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/streak/wins?bestOf=3&amp;level=M&amp;round=F</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -4811,22 +3375,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/streak/wins?bestOf=3&amp;level=M&amp;round=SF&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/streak/wins?bestOf=3&amp;level=M&amp;surface=Clay</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/streak/wins?bestOf=3&amp;round=F&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/streak/wins?bestOf=5&amp;level=250&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -4856,17 +3410,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/streak/wins?level=500&amp;surface=Clay&amp;round=R16</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/streak/wins?level=D&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/streak/wins?level=F&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -4901,22 +3445,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/streak/wins?level=M&amp;round=R32&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/streak/wins?level=M&amp;round=SF&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/streak/wins?level=M&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/streak/wins?round=R128</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -4991,27 +3520,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/timespan/entries?level=500&amp;surface=Hard&amp;round=SF&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/timespan/entries?level=G&amp;round=R128&amp;bestOf=5</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/timespan/entries?level=G&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/timespan/entries?level=G&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/timespan/entries?level=G&amp;surface=Hard&amp;round=R16&amp;bestOf=5</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -5031,17 +3545,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/timespan/entries?round=R16&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/timespan/rounds?level=250&amp;round=F&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/timespan/rounds?level=250&amp;round=QF&amp;surface=Hard</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -5057,11 +3561,6 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/timespan/rounds?level=500&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/timespan/rounds?level=A&amp;round=R16&amp;surface=Clay</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -5091,22 +3590,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/timespan/rounds?level=G&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/timespan/rounds?level=M&amp;round=F&amp;surface=Clay</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/timespan/rounds?level=M&amp;round=R128&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/timespan/rounds?level=M&amp;surface=Clay&amp;round=R32&amp;bestOf=5</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -5141,11 +3630,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/timespan/rounds?round=R64&amp;surface=Grass</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/timespan/titles?level=250&amp;surface=Hard&amp;round=R128&amp;bestOf=1</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -5166,11 +3650,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/timespan/titles?surface=Carpet&amp;round=R128</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/timespan/titles?surface=Clay&amp;round=R128&amp;bestOf=5</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -5181,22 +3660,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/timespan?level=250&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/timespan?level=G&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/timespan?level=M</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/timespan?level=M&amp;surface=Clay</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -5236,27 +3700,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/titles?level=250&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/titles?level=250&amp;surface=Hard</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/titles?level=500&amp;surface=Carpet&amp;round=R64&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/titles?level=500&amp;surface=Clay&amp;round=F</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/titles?level=500&amp;surface=Clay&amp;round=R32</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -5271,32 +3715,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/titles?level=D&amp;surface=Carpet&amp;round=R32&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/titles?level=D&amp;surface=Grass&amp;round=F</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/titles?level=F&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/titles?level=F&amp;surface=Carpet</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/titles?level=F&amp;surface=Carpet&amp;round=R128&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/titles?level=F&amp;surface=Clay&amp;round=R128&amp;bestOf=5</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -5311,42 +3730,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/titles?level=G&amp;surface=Hard&amp;round=QF&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/titles?level=G&amp;surface=Hard&amp;round=SF&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/titles?level=M&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/titles?level=M&amp;bestOf=5</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/titles?level=M&amp;round=QF</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/titles?level=M&amp;round=R128</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/titles?level=M&amp;round=R64</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/titles?level=M&amp;surface=Clay&amp;round=F&amp;bestOf=1</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -5366,41 +3755,6 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/titles?round=R32&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/titles?round=R64</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/titles?round=R64&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/titles?surface=Carpet&amp;round=F&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/titles?surface=Grass&amp;round=R16&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/titles?surface=Grass&amp;round=R16&amp;bestOf=5</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/titles?surface=Hard&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/titles?surface=Hard&amp;round=F</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
@@ -5416,27 +3770,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/wins?bestOf=3&amp;level=M&amp;round=QF</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/wins?bestOf=5&amp;level=500&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/wins?bestOf=5&amp;level=A</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/wins?bestOf=5&amp;level=M</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/wins?bestOf=5&amp;level=M&amp;round=F</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -5461,22 +3795,12 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/wins?level=500&amp;round=R64</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/wins?level=500&amp;surface=Carpet&amp;round=F&amp;bestOf=3</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/records/wins?level=A&amp;surface=Grass&amp;round=R16&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/wins?level=A&amp;surface=Hard&amp;bestOf=1</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -5491,17 +3815,7 @@
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/wins?level=D&amp;surface=Carpet&amp;round=R16&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/records/wins?level=D&amp;surface=Clay</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/wins?level=F&amp;surface=Grass&amp;round=R64&amp;bestOf=5</loc>
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
@@ -5515,19 +3829,4 @@
     <lastmod>2026-04-02</lastmod>
     <priority>1</priority>
   </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/wins?level=M&amp;surface=Carpet&amp;round=SF&amp;bestOf=1</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/wins?level=M&amp;surface=Grass&amp;bestOf=3</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/records/wins?round=R128</loc>
-    <lastmod>2026-04-02</lastmod>
-    <priority>1</priority>
-  </url>
-</urlset>
+  </urlset>
