@@ -283,6 +283,9 @@ export async function generateMetadata(
     robots: ((): { index: boolean; follow: boolean } => {
       const VALID_TABS = new Set(['overview', 'matches', 'season', 'tournaments', 'h2h', 'performance', 'statistics', 'ranking', 'clay', 'hard', 'grass']);
       const isSurfaceTab = tab === 'clay' || tab === 'hard' || tab === 'grass';
+      if (tab === 'matches') {
+        return { index: false, follow: true };
+      }
       if (isSurfaceTab && !isTop100Allowed) {
         return { index: false, follow: true };
       }
