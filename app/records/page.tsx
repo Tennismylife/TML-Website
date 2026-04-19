@@ -4,7 +4,7 @@ import RecordsTabs from './RecordsTabs';
 import { metadataBase } from '../../lib/site';
 import type { Metadata } from 'next';
 
-const CANONICAL = 'https://stats.tennismylife.org/records';
+const CANONICAL = new URL('/records', metadataBase).toString();
 const OG_IMAGE = new URL('/og/site-preview.png', metadataBase).toString();
 
 export const metadata: Metadata = {
