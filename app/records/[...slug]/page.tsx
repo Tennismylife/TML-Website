@@ -337,6 +337,21 @@ export default async function SlugPage({ params, searchParams }: Props) {
     h2h: 'count',
   };
 
+  // Redirect query-based subtab URLs to canonical path-based routes.
+  if (record && record in activeSubTabsDefault && !sub && typeof sp.subtab === 'string') {
+    const subtab = kebabToKey(sp.subtab as string);
+    const otherParams = Object.entries(sp)
+      .filter(([k]) => k !== 'subtab')
+      .flatMap(([k, v]) =>
+        Array.isArray(v)
+          ? v.map(val => `${encodeURIComponent(k)}=${encodeURIComponent(String(val))}`)
+          : [`${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`]
+      )
+      .join('&');
+    const qs = otherParams ? `${otherParams}` : '';
+    redirect(`/records/${record}/${subtab}${qs ? `?${qs}` : ''}`);
+  }
+
   // Records that have subtabs must not be navigable at the root level — redirect to the default subtab
   if (record && record in activeSubTabsDefault && !sub && typeof sp.subtab !== 'string') {
     redirect(`/records/${record}/${activeSubTabsDefault[record]}`);
