@@ -61,8 +61,13 @@ export default async function RecordsPage({ params }: { params: Promise<{ id: st
 
   // Read tournament-specific markdown content (server-side, SSR)
   let markdownHtml: string | undefined;
-  if (slugId === 'monte-carlo-masters' || id === 'monte-carlo-masters') {
-    const mdPath = path.join(process.cwd(), 'public', 'MonteCarlo_Records.md');
+  const markdownFiles: Record<string, string> = {
+    'monte-carlo-masters': 'MonteCarlo_Records.md',
+    'madrid-masters': 'Madrid_Records.md',
+  };
+  const markdownFileName = markdownFiles[slugId] || markdownFiles[id];
+  if (markdownFileName) {
+    const mdPath = path.join(process.cwd(), 'public', markdownFileName);
     if (fs.existsSync(mdPath)) {
       const today = new Date().toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
       markdownHtml = await marked(fs.readFileSync(mdPath, 'utf-8').replace('{{TODAY}}', today), { gfm: true }) as string;
