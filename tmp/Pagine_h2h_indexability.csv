@@ -1,0 +1,402 @@
+url,indexable,reason,p1_id,p1_name,p1_slug,p2_id,p2_name,p2_slug
+https://stats.tennismylife.org/h2h/carlos-alcaraz-vs-daniil-medvedev,true,both_active,A0E2,Carlos Alcaraz,carlos-alcaraz,MM58,Daniil Medvedev,daniil-medvedev
+https://stats.tennismylife.org/h2h/carlos-alcaraz-vs-sebastian-korda,true,both_active,A0E2,Carlos Alcaraz,carlos-alcaraz,K0AH,Sebastian Korda,sebastian-korda
+https://stats.tennismylife.org/h2h/alex-michelsen-vs-jannik-sinner,true,both_active,M0QI,Alex Michelsen,alex-michelsen,S0AG,Jannik Sinner,jannik-sinner
+https://stats.tennismylife.org/h2h/jannik-sinner-vs-jiri-lehecka,true,both_active,S0AG,Jannik Sinner,jannik-sinner,L0BV,Jiri Lehecka,jiri-lehecka
+https://stats.tennismylife.org/h2h/alexander-zverev-vs-jannik-sinner,true,both_active,Z355,Alexander Zverev,alexander-zverev,S0AG,Jannik Sinner,jannik-sinner
+https://stats.tennismylife.org/h2h/arthur-fils-vs-tommy-paul,true,both_active,F0F1,Arthur Fils,arthur-fils,PL56,Tommy Paul,tommy-paul
+https://stats.tennismylife.org/h2h/daniil-medvedev-vs-jannik-sinner,true,both_active,MM58,Daniil Medvedev,daniil-medvedev,S0AG,Jannik Sinner,jannik-sinner
+https://stats.tennismylife.org/h2h/frances-tiafoe-vs-tommy-paul,true,both_active,TD51,Frances Tiafoe,frances-tiafoe,PL56,Tommy Paul,tommy-paul
+https://stats.tennismylife.org/h2h/daniil-medvedev-vs-jack-draper,true,both_active,MM58,Daniil Medvedev,daniil-medvedev,D0CO,Jack Draper,jack-draper
+https://stats.tennismylife.org/h2h/arthur-fils-vs-jannik-sinner,true,both_active,F0F1,Arthur Fils,arthur-fils,S0AG,Jannik Sinner,jannik-sinner
+https://stats.tennismylife.org/h2h/joao-fonseca-vs-matteo-berrettini,true,both_active,F0FV,Joao Fonseca,joao-fonseca,BK40,Matteo Berrettini,matteo-berrettini
+https://stats.tennismylife.org/h2h/frances-tiafoe-vs-jannik-sinner,true,both_active,TD51,Frances Tiafoe,frances-tiafoe,S0AG,Jannik Sinner,jannik-sinner
+https://stats.tennismylife.org/h2h/alex-de-minaur-vs-alexander-blockx,true,both_active,DH58,Alex de Minaur,alex-de-minaur,B0PG,Alexander Blockx,alexander-blockx
+https://stats.tennismylife.org/h2h/jiri-lehecka-vs-martin-landaluce,true,both_active,L0BV,Jiri Lehecka,jiri-lehecka,L0IL,Martin Landaluce,martin-landaluce
+https://stats.tennismylife.org/h2h/alexander-bublik-vs-matteo-berrettini,true,both_active,BK92,Alexander Bublik,alexander-bublik,BK40,Matteo Berrettini,matteo-berrettini
+https://stats.tennismylife.org/h2h/jannik-sinner-vs-learner-tien,true,both_active,S0AG,Jannik Sinner,jannik-sinner,T0HA,Learner Tien,learner-tien
+https://stats.tennismylife.org/h2h/alexander-zverev-vs-matteo-berrettini,true,both_active,Z355,Alexander Zverev,alexander-zverev,BK40,Matteo Berrettini,matteo-berrettini
+https://stats.tennismylife.org/h2h/matteo-berrettini-vs-valentin-vacherot,true,both_active,BK40,Matteo Berrettini,matteo-berrettini,VA25,Valentin Vacherot,valentin-vacherot
+https://stats.tennismylife.org/h2h/jack-draper-vs-novak-djokovic,true,both_active,D0CO,Jack Draper,jack-draper,D643,Novak Djokovic,novak-djokovic
+https://stats.tennismylife.org/h2h/corentin-moutet-vs-jannik-sinner,true,both_active,MW02,Corentin Moutet,corentin-moutet,S0AG,Jannik Sinner,jannik-sinner
+https://stats.tennismylife.org/h2h/jack-draper-vs-reilly-opelka,true,both_active,D0CO,Jack Draper,jack-draper,O522,Reilly Opelka,reilly-opelka
+https://stats.tennismylife.org/h2h/damir-dzumhur-vs-jannik-sinner,true,both_active,D923,Damir Dzumhur,damir-dzumhur,S0AG,Jannik Sinner,jannik-sinner
+https://stats.tennismylife.org/h2h/damir-dzumhur-vs-ignacio-buse,true,both_active,D923,Damir Dzumhur,damir-dzumhur,B0ID,Ignacio Buse,ignacio-buse
+https://stats.tennismylife.org/h2h/carlos-alcaraz-vs-jannik-sinner,true,both_active,A0E2,Carlos Alcaraz,carlos-alcaraz,S0AG,Jannik Sinner,jannik-sinner
+https://stats.tennismylife.org/h2h/jannik-sinner-vs-joao-fonseca,true,both_active,S0AG,Jannik Sinner,jannik-sinner,F0FV,Joao Fonseca,joao-fonseca
+https://stats.tennismylife.org/h2h/ben-shelton-vs-reilly-opelka,true,both_active,S0S1,Ben Shelton,ben-shelton,O522,Reilly Opelka,reilly-opelka
+https://stats.tennismylife.org/h2h/arthur-fils-vs-andrey-rublev,true,both_active,F0F1,Arthur Fils,arthur-fils,RE44,Andrey Rublev,andrey-rublev
+https://stats.tennismylife.org/h2h/alex-de-minaur-vs-valentin-vacherot,true,both_active,DH58,Alex de Minaur,alex-de-minaur,VA25,Valentin Vacherot,valentin-vacherot
+https://stats.tennismylife.org/h2h/martin-landaluce-vs-sebastian-korda,true,both_active,L0IL,Martin Landaluce,martin-landaluce,K0AH,Sebastian Korda,sebastian-korda
+https://stats.tennismylife.org/h2h/daniil-medvedev-vs-rei-sakamoto,true,both_active,MM58,Daniil Medvedev,daniil-medvedev,S0UV,Rei Sakamoto,rei-sakamoto
+https://stats.tennismylife.org/h2h/alexander-zverev-vs-cristian-garin,true,both_active,Z355,Alexander Zverev,alexander-zverev,GD64,Cristian Garin,cristian-garin
+https://stats.tennismylife.org/h2h/ben-shelton-vs-joao-fonseca,true,both_active,S0S1,Ben Shelton,ben-shelton,F0FV,Joao Fonseca,joao-fonseca
+https://stats.tennismylife.org/h2h/felix-auger-aliassime-vs-gael-monfils,true,both_active,AG37,Felix Auger-Aliassime,felix-auger-aliassime,MC65,Gael Monfils,gael-monfils
+https://stats.tennismylife.org/h2h/arthur-fils-vs-rafael-jodar,true,both_active,F0F1,Arthur Fils,arthur-fils,J0DZ,Rafael Jodar,rafael-jodar
+https://stats.tennismylife.org/h2h/carlos-alcaraz-vs-sebastian-baez,true,both_active,A0E2,Carlos Alcaraz,carlos-alcaraz,B0BI,Sebastian Baez,sebastian-baez
+https://stats.tennismylife.org/h2h/bjorn-borg-vs-john-mcenroe,true,direct_h2h_and_top20,B058,Bjorn Borg,bjorn-borg,M047,John McEnroe,john-mcenroe
+https://stats.tennismylife.org/h2h/jannik-sinner-vs-ugo-humbert,true,both_active,S0AG,Jannik Sinner,jannik-sinner,HH26,Ugo Humbert,ugo-humbert
+https://stats.tennismylife.org/h2h/adam-walton-vs-jakub-mensik,true,both_active,W09E,Adam Walton,adam-walton,M0NI,Jakub Mensik,jakub-mensik
+https://stats.tennismylife.org/h2h/bjorn-borg-vs-jimmy-connors,true,direct_h2h_and_top20,B058,Bjorn Borg,bjorn-borg,C044,Jimmy Connors,jimmy-connors
+https://stats.tennismylife.org/h2h/jiri-lehecka-vs-moise-kouame,false,missing_player2,L0BV,Jiri Lehecka,jiri-lehecka,,,
+https://stats.tennismylife.org/h2h/cameron-norrie-vs-carlos-alcaraz,true,both_active,N771,Cameron Norrie,cameron-norrie,A0E2,Carlos Alcaraz,carlos-alcaraz
+https://stats.tennismylife.org/h2h/felix-auger-aliassime-vs-marin-cilic,true,both_active,AG37,Felix Auger-Aliassime,felix-auger-aliassime,C977,Marin Cilic,marin-cilic
+https://stats.tennismylife.org/h2h/joao-fonseca-vs-karen-khachanov,true,both_active,F0FV,Joao Fonseca,joao-fonseca,KE29,Karen Khachanov,karen-khachanov
+https://stats.tennismylife.org/h2h/joao-fonseca-vs-learner-tien,true,both_active,F0FV,Joao Fonseca,joao-fonseca,T0HA,Learner Tien,learner-tien
+https://stats.tennismylife.org/h2h/frances-tiafoe-vs-terence-atmane,true,both_active,TD51,Frances Tiafoe,frances-tiafoe,A0GC,Terence Atmane,terence-atmane
+https://stats.tennismylife.org/h2h/casper-ruud-vs-ethan-quinn,true,both_active,RH16,Casper Ruud,casper-ruud,Q02L,Ethan Quinn,ethan-quinn
+https://stats.tennismylife.org/h2h/roman-andres-burruchaga-vs-tommy-paul,true,both_active,B0FV,Roman Andres Burruchaga,roman-andres-burruchaga,PL56,Tommy Paul,tommy-paul
+https://stats.tennismylife.org/h2h/alejandro-tabilo-vs-alex-michelsen,true,both_active,TE30,Alejandro Tabilo,alejandro-tabilo,M0QI,Alex Michelsen,alex-michelsen
+https://stats.tennismylife.org/h2h/lorenzo-musetti-vs-marton-fucsovics,true,both_active,M0EJ,Lorenzo Musetti,lorenzo-musetti,F724,Marton Fucsovics,marton-fucsovics
+https://stats.tennismylife.org/h2h/luciano-darderi-vs-yannick-hanfmann,true,both_active,D0FJ,Luciano Darderi,luciano-darderi,H997,Yannick Hanfmann,yannick-hanfmann
+https://stats.tennismylife.org/h2h/carlos-alcaraz-vs-martin-landaluce,true,both_active,A0E2,Carlos Alcaraz,carlos-alcaraz,L0IL,Martin Landaluce,martin-landaluce
+https://stats.tennismylife.org/h2h/rafael-nadal-vs-sebastian-korda,true,both_active,N409,Rafael Nadal,rafael-nadal,K0AH,Sebastian Korda,sebastian-korda
+https://stats.tennismylife.org/h2h/daniel-merida-vs-mariano-navone,false,missing_player1,,,,N0BS,Mariano Navone,mariano-navone
+https://stats.tennismylife.org/h2h/carlos-alcaraz-vs-joao-fonseca,true,both_active,A0E2,Carlos Alcaraz,carlos-alcaraz,F0FV,Joao Fonseca,joao-fonseca
+https://stats.tennismylife.org/h2h/jiri-lehecka-vs-taylor-fritz,true,both_active,L0BV,Jiri Lehecka,jiri-lehecka,FB98,Taylor Fritz,taylor-fritz
+https://stats.tennismylife.org/h2h/alexander-zverev-vs-zizou-bergs,true,both_active,Z355,Alexander Zverev,alexander-zverev,BU13,Zizou Bergs,zizou-bergs
+https://stats.tennismylife.org/h2h/denis-shapovalov-vs-jannik-sinner,true,both_active,SU55,Denis Shapovalov,denis-shapovalov,S0AG,Jannik Sinner,jannik-sinner
+https://stats.tennismylife.org/h2h/alex-michelsen-vs-taylor-fritz,true,both_active,M0QI,Alex Michelsen,alex-michelsen,FB98,Taylor Fritz,taylor-fritz
+https://stats.tennismylife.org/h2h/alexander-bublik-vs-gael-monfils,true,both_active,BK92,Alexander Bublik,alexander-bublik,MC65,Gael Monfils,gael-monfils
+https://stats.tennismylife.org/h2h/arthur-fils-vs-felix-auger-aliassime,true,both_active,F0F1,Arthur Fils,arthur-fils,AG37,Felix Auger-Aliassime,felix-auger-aliassime
+https://stats.tennismylife.org/h2h/fabian-marozsan-vs-stefanos-tsitsipas,true,both_active,M0CI,Fabian Marozsan,fabian-marozsan,TE51,Stefanos Tsitsipas,stefanos-tsitsipas
+https://stats.tennismylife.org/h2h/adrian-mannarino-vs-ze-zhang,false,not_eligible,ME82,Adrian Mannarino,adrian-mannarino,Z272,Ze Zhang,ze-zhang
+https://stats.tennismylife.org/h2h/felix-auger-aliassime-vs-marton-fucsovics,true,both_active,AG37,Felix Auger-Aliassime,felix-auger-aliassime,F724,Marton Fucsovics,marton-fucsovics
+https://stats.tennismylife.org/h2h/arthur-fils-vs-brandon-nakashima,true,both_active,F0F1,Arthur Fils,arthur-fils,N0AE,Brandon Nakashima,brandon-nakashima
+https://stats.tennismylife.org/h2h/mariano-navone-vs-valentin-vacherot,true,both_active,N0BS,Mariano Navone,mariano-navone,VA25,Valentin Vacherot,valentin-vacherot
+https://stats.tennismylife.org/h2h/pete-sampras-vs-petr-korda,true,direct_h2h_and_top20,S402,Pete Sampras,pete-sampras,K148,Petr Korda,petr-korda
+https://stats.tennismylife.org/h2h/james-duckworth-vs-roberto-bautista-agut,true,both_active,D994,James Duckworth,james-duckworth,BD06,Roberto Bautista Agut,roberto-bautista-agut
+https://stats.tennismylife.org/h2h/alexander-shevchenko-vs-ugo-humbert,true,both_active,S0H2,Alexander Shevchenko,alexander-shevchenko,HH26,Ugo Humbert,ugo-humbert
+https://stats.tennismylife.org/h2h/alexander-zverev-vs-martin-damm,true,both_active,Z355,Alexander Zverev,alexander-zverev,D0DT,Martin Damm,martin-damm
+https://stats.tennismylife.org/h2h/carlos-alcaraz-vs-tomas-machac,true,both_active,A0E2,Carlos Alcaraz,carlos-alcaraz,M0FH,Tomas Machac,tomas-machac
+https://stats.tennismylife.org/h2h/carlos-alcaraz-vs-casper-ruud,true,both_active,A0E2,Carlos Alcaraz,carlos-alcaraz,RH16,Casper Ruud,casper-ruud
+https://stats.tennismylife.org/h2h/daniil-medvedev-vs-matteo-berrettini,true,both_active,MM58,Daniil Medvedev,daniil-medvedev,BK40,Matteo Berrettini,matteo-berrettini
+https://stats.tennismylife.org/h2h/alexander-zverev-vs-flavio-cobolli,true,both_active,Z355,Alexander Zverev,alexander-zverev,C0E9,Flavio Cobolli,flavio-cobolli
+https://stats.tennismylife.org/h2h/arthur-fils-vs-stefanos-tsitsipas,true,both_active,F0F1,Arthur Fils,arthur-fils,TE51,Stefanos Tsitsipas,stefanos-tsitsipas
+https://stats.tennismylife.org/h2h/flavio-cobolli-vs-frances-tiafoe,true,both_active,C0E9,Flavio Cobolli,flavio-cobolli,TD51,Frances Tiafoe,frances-tiafoe
+https://stats.tennismylife.org/h2h/alexander-shevchenko-vs-botic-van-de-zandschulp,true,both_active,S0H2,Alexander Shevchenko,alexander-shevchenko,V812,Botic van de Zandschulp,botic-van-de-zandschulp
+https://stats.tennismylife.org/h2h/daniil-medvedev-vs-francisco-cerundolo,true,both_active,MM58,Daniil Medvedev,daniil-medvedev,C0AU,Francisco Cerundolo,francisco-cerundolo
+https://stats.tennismylife.org/h2h/reilly-opelka-vs-taylor-fritz,true,both_active,O522,Reilly Opelka,reilly-opelka,FB98,Taylor Fritz,taylor-fritz
+https://stats.tennismylife.org/h2h/alex-de-minaur-vs-sebastian-korda,true,both_active,DH58,Alex de Minaur,alex-de-minaur,K0AH,Sebastian Korda,sebastian-korda
+https://stats.tennismylife.org/h2h/francisco-cerundolo-vs-stefanos-tsitsipas,true,both_active,C0AU,Francisco Cerundolo,francisco-cerundolo,TE51,Stefanos Tsitsipas,stefanos-tsitsipas
+https://stats.tennismylife.org/h2h/felix-auger-aliassime-vs-terence-atmane,true,both_active,AG37,Felix Auger-Aliassime,felix-auger-aliassime,A0GC,Terence Atmane,terence-atmane
+https://stats.tennismylife.org/h2h/boris-becker-vs-ivan-lendl,true,direct_h2h_and_top20,B028,Boris Becker,boris-becker,L018,Ivan Lendl,ivan-lendl
+https://stats.tennismylife.org/h2h/casper-ruud-vs-valentin-vacherot,true,both_active,RH16,Casper Ruud,casper-ruud,VA25,Valentin Vacherot,valentin-vacherot
+https://stats.tennismylife.org/h2h/frances-tiafoe-vs-jakub-mensik,true,both_active,TD51,Frances Tiafoe,frances-tiafoe,M0NI,Jakub Mensik,jakub-mensik
+https://stats.tennismylife.org/h2h/alejandro-davidovich-fokina-vs-learner-tien,true,both_active,DH50,Alejandro Davidovich Fokina,alejandro-davidovich-fokina,T0HA,Learner Tien,learner-tien
+https://stats.tennismylife.org/h2h/ben-shelton-vs-zhizhen-zhang,true,both_active,S0S1,Ben Shelton,ben-shelton,Z371,Zhizhen Zhang,zhizhen-zhang
+https://stats.tennismylife.org/h2h/denis-shapovalov-vs-fabian-marozsan,true,both_active,SU55,Denis Shapovalov,denis-shapovalov,M0CI,Fabian Marozsan,fabian-marozsan
+https://stats.tennismylife.org/h2h/alejandro-davidovich-fokina-vs-quentin-halys,true,both_active,DH50,Alejandro Davidovich Fokina,alejandro-davidovich-fokina,HB64,Quentin Halys,quentin-halys
+https://stats.tennismylife.org/h2h/arthur-fils-vs-darwin-blanch,true,both_active,F0F1,Arthur Fils,arthur-fils,B0NO,Darwin Blanch,darwin-blanch
+https://stats.tennismylife.org/h2h/alexander-shevchenko-vs-casper-ruud,true,both_active,S0H2,Alexander Shevchenko,alexander-shevchenko,RH16,Casper Ruud,casper-ruud
+https://stats.tennismylife.org/h2h/botic-van-de-zandschulp-vs-francesco-maestrelli,true,both_active,V812,Botic van de Zandschulp,botic-van-de-zandschulp,M0IF,Francesco Maestrelli,francesco-maestrelli
+https://stats.tennismylife.org/h2h/kamil-majchrzak-vs-learner-tien,true,both_active,MQ75,Kamil Majchrzak,kamil-majchrzak,T0HA,Learner Tien,learner-tien
+https://stats.tennismylife.org/h2h/jiri-lehecka-vs-tommy-paul,true,both_active,L0BV,Jiri Lehecka,jiri-lehecka,PL56,Tommy Paul,tommy-paul
+https://stats.tennismylife.org/h2h/nuno-borges-vs-reilly-opelka,true,both_active,BT72,Nuno Borges,nuno-borges,O522,Reilly Opelka,reilly-opelka
+https://stats.tennismylife.org/h2h/carlos-alcaraz-vs-learner-tien,true,both_active,A0E2,Carlos Alcaraz,carlos-alcaraz,T0HA,Learner Tien,learner-tien
+https://stats.tennismylife.org/h2h/andy-murray-vs-rafael-nadal,true,direct_h2h_and_top20,MC10,Andy Murray,andy-murray,N409,Rafael Nadal,rafael-nadal
+https://stats.tennismylife.org/h2h/juan-manuel-cerundolo-vs-kamil-majchrzak,true,both_active,C0C8,Juan Manuel Cerundolo,juan-manuel-cerundolo,MQ75,Kamil Majchrzak,kamil-majchrzak
+https://stats.tennismylife.org/h2h/ivo-karlovic-vs-roger-federer,true,direct_h2h_and_top20,K336,Ivo Karlovic,ivo-karlovic,F324,Roger Federer,roger-federer
+https://stats.tennismylife.org/h2h/jo-wilfried-tsonga-vs-ricardas-berankis,false,not_eligible,T786,Jo-Wilfried Tsonga,jo-wilfried-tsonga,BE90,Ricardas Berankis,ricardas-berankis
+https://stats.tennismylife.org/h2h/roger-federer-vs-ivo-karlovic,true,direct_h2h_and_top20,F324,Roger Federer,roger-federer,K336,Ivo Karlovic,ivo-karlovic
+https://stats.tennismylife.org/h2h/jiri-lehecka-vs-sebastian-baez,true,both_active,L0BV,Jiri Lehecka,jiri-lehecka,B0BI,Sebastian Baez,sebastian-baez
+https://stats.tennismylife.org/h2h/daniil-medvedev-vs-joao-fonseca,true,both_active,MM58,Daniil Medvedev,daniil-medvedev,F0FV,Joao Fonseca,joao-fonseca
+https://stats.tennismylife.org/h2h/andy-roddick-vs-andre-agassi,true,direct_h2h_and_top20,R485,Andy Roddick,andy-roddick,A092,Andre Agassi,andre-agassi
+https://stats.tennismylife.org/h2h/ivan-lendl-vs-michael-stich,true,direct_h2h_and_top20,L018,Ivan Lendl,ivan-lendl,S351,Michael Stich,michael-stich
+https://stats.tennismylife.org/h2h/ben-shelton-vs-thiago-agustin-tirante,true,both_active,S0S1,Ben Shelton,ben-shelton,T0A1,Thiago Agustin Tirante,thiago-agustin-tirante
+https://stats.tennismylife.org/h2h/rafael-nadal-vs-fabio-fognini,true,both_active,N409,Rafael Nadal,rafael-nadal,F510,Fabio Fognini,fabio-fognini
+https://stats.tennismylife.org/h2h/john-mcenroe-vs-pat-cash,true,direct_h2h_and_top20,M047,John McEnroe,john-mcenroe,C023,Pat Cash,pat-cash
+https://stats.tennismylife.org/h2h/boris-becker-vs-petr-korda,true,direct_h2h_and_top20,B028,Boris Becker,boris-becker,K148,Petr Korda,petr-korda
+https://stats.tennismylife.org/h2h/jim-courier-vs-paradorn-srichaphan,true,direct_h2h_and_top20,C243,Jim Courier,jim-courier,S675,Paradorn Srichaphan,paradorn-srichaphan
+https://stats.tennismylife.org/h2h/alex-de-minaur-vs-stefanos-tsitsipas,true,both_active,DH58,Alex de Minaur,alex-de-minaur,TE51,Stefanos Tsitsipas,stefanos-tsitsipas
+https://stats.tennismylife.org/h2h/alexander-zverev-vs-quentin-halys,true,both_active,Z355,Alexander Zverev,alexander-zverev,HB64,Quentin Halys,quentin-halys
+https://stats.tennismylife.org/h2h/carlos-alcaraz-vs-grigor-dimitrov,true,both_active,A0E2,Carlos Alcaraz,carlos-alcaraz,D875,Grigor Dimitrov,grigor-dimitrov
+https://stats.tennismylife.org/h2h/francisco-cerundolo-vs-ugo-humbert,true,both_active,C0AU,Francisco Cerundolo,francisco-cerundolo,HH26,Ugo Humbert,ugo-humbert
+https://stats.tennismylife.org/h2h/arthur-fils-vs-valentin-vacherot,true,both_active,F0F1,Arthur Fils,arthur-fils,VA25,Valentin Vacherot,valentin-vacherot
+https://stats.tennismylife.org/h2h/jannik-sinner-vs-felix-auger-aliassime,true,both_active,S0AG,Jannik Sinner,jannik-sinner,AG37,Felix Auger-Aliassime,felix-auger-aliassime
+https://stats.tennismylife.org/h2h/alexander-zverev-vs-brandon-nakashima,true,both_active,Z355,Alexander Zverev,alexander-zverev,N0AE,Brandon Nakashima,brandon-nakashima
+https://stats.tennismylife.org/h2h/ben-shelton-vs-flavio-cobolli,true,both_active,S0S1,Ben Shelton,ben-shelton,C0E9,Flavio Cobolli,flavio-cobolli
+https://stats.tennismylife.org/h2h/rafael-nadal-vs-jannik-sinner,true,both_active,N409,Rafael Nadal,rafael-nadal,S0AG,Jannik Sinner,jannik-sinner
+https://stats.tennismylife.org/h2h/ben-shelton-vs-learner-tien,true,both_active,S0S1,Ben Shelton,ben-shelton,T0HA,Learner Tien,learner-tien
+https://stats.tennismylife.org/h2h/casper-ruud-vs-felix-auger-aliassime,true,both_active,RH16,Casper Ruud,casper-ruud,AG37,Felix Auger-Aliassime,felix-auger-aliassime
+https://stats.tennismylife.org/h2h/matteo-berrettini-vs-roberto-bautista-agut,true,both_active,BK40,Matteo Berrettini,matteo-berrettini,BD06,Roberto Bautista Agut,roberto-bautista-agut
+https://stats.tennismylife.org/h2h/alexander-zverev-vs-joao-fonseca,true,both_active,Z355,Alexander Zverev,alexander-zverev,F0FV,Joao Fonseca,joao-fonseca
+https://stats.tennismylife.org/h2h/arthur-fils-vs-jiri-lehecka,true,both_active,F0F1,Arthur Fils,arthur-fils,L0BV,Jiri Lehecka,jiri-lehecka
+https://stats.tennismylife.org/h2h/jack-draper-vs-tomas-martin-etcheverry,true,both_active,D0CO,Jack Draper,jack-draper,EA24,Tomas Martin Etcheverry,tomas-martin-etcheverry
+https://stats.tennismylife.org/h2h/rafael-nadal-vs-andy-roddick,true,direct_h2h_and_top20,N409,Rafael Nadal,rafael-nadal,R485,Andy Roddick,andy-roddick
+https://stats.tennismylife.org/h2h/kamil-majchrzak-vs-novak-djokovic,true,both_active,MQ75,Kamil Majchrzak,kamil-majchrzak,D643,Novak Djokovic,novak-djokovic
+https://stats.tennismylife.org/h2h/andy-murray-vs-roger-federer,true,direct_h2h_and_top20,MC10,Andy Murray,andy-murray,F324,Roger Federer,roger-federer
+https://stats.tennismylife.org/h2h/alexander-blockx-vs-flavio-cobolli,true,both_active,B0PG,Alexander Blockx,alexander-blockx,C0E9,Flavio Cobolli,flavio-cobolli
+https://stats.tennismylife.org/h2h/alexander-zverev-vs-rafael-nadal,true,both_active,Z355,Alexander Zverev,alexander-zverev,N409,Rafael Nadal,rafael-nadal
+https://stats.tennismylife.org/h2h/roger-federer-vs-juan-martin-del-potro,true,direct_h2h_and_top20,F324,Roger Federer,roger-federer,D683,Juan Martin del Potro,juan-martin-del-potro
+https://stats.tennismylife.org/h2h/alexandre-muller-vs-corentin-moutet,true,both_active,MP20,Alexandre Muller,alexandre-muller,MW02,Corentin Moutet,corentin-moutet
+https://stats.tennismylife.org/h2h/alejandro-tabilo-vs-daniil-medvedev,true,both_active,TE30,Alejandro Tabilo,alejandro-tabilo,MM58,Daniil Medvedev,daniil-medvedev
+https://stats.tennismylife.org/h2h/rafael-nadal-vs-roger-federer,true,direct_h2h_and_top20,N409,Rafael Nadal,rafael-nadal,F324,Roger Federer,roger-federer
+https://stats.tennismylife.org/h2h/juan-manuel-cerundolo-vs-valentin-vacherot,true,both_active,C0C8,Juan Manuel Cerundolo,juan-manuel-cerundolo,VA25,Valentin Vacherot,valentin-vacherot
+https://stats.tennismylife.org/h2h/alexander-blockx-vs-ben-shelton,true,both_active,B0PG,Alexander Blockx,alexander-blockx,S0S1,Ben Shelton,ben-shelton
+https://stats.tennismylife.org/h2h/brandon-nakashima-vs-martin-damm,true,both_active,N0AE,Brandon Nakashima,brandon-nakashima,D0DT,Martin Damm,martin-damm
+https://stats.tennismylife.org/h2h/joao-fonseca-vs-tommy-paul,true,both_active,F0FV,Joao Fonseca,joao-fonseca,PL56,Tommy Paul,tommy-paul
+https://stats.tennismylife.org/h2h/tomas-martin-etcheverry-vs-zizou-bergs,true,both_active,EA24,Tomas Martin Etcheverry,tomas-martin-etcheverry,BU13,Zizou Bergs,zizou-bergs
+https://stats.tennismylife.org/h2h/francisco-cerundolo-vs-tomas-machac,true,both_active,C0AU,Francisco Cerundolo,francisco-cerundolo,M0FH,Tomas Machac,tomas-machac
+https://stats.tennismylife.org/h2h/camilo-ugo-carabelli-vs-giovanni-mpetshi-perricard,true,both_active,U182,Camilo Ugo Carabelli,camilo-ugo-carabelli,M0GZ,Giovanni Mpetshi Perricard,giovanni-mpetshi-perricard
+https://stats.tennismylife.org/h2h/stefan-edberg-vs-ivan-lendl,true,direct_h2h_and_top20,E004,Stefan Edberg,stefan-edberg,L018,Ivan Lendl,ivan-lendl
+https://stats.tennismylife.org/h2h/andrey-rublev-vs-hamad-medjedovic,true,both_active,RE44,Andrey Rublev,andrey-rublev,M0JF,Hamad Medjedovic,hamad-medjedovic
+https://stats.tennismylife.org/h2h/carlos-alcaraz-vs-jack-draper,true,both_active,A0E2,Carlos Alcaraz,carlos-alcaraz,D0CO,Jack Draper,jack-draper
+https://stats.tennismylife.org/h2h/flavio-cobolli-vs-raphael-collignon,true,both_active,C0E9,Flavio Cobolli,flavio-cobolli,C0JP,Raphael Collignon,raphael-collignon
+https://stats.tennismylife.org/h2h/boris-becker-vs-pete-sampras,true,direct_h2h_and_top20,B028,Boris Becker,boris-becker,S402,Pete Sampras,pete-sampras
+https://stats.tennismylife.org/h2h/luciano-darderi-vs-vit-kopriva,true,both_active,D0FJ,Luciano Darderi,luciano-darderi,KI82,Vit Kopriva,vit-kopriva
+https://stats.tennismylife.org/h2h/alex-molcan-vs-denis-shapovalov,true,both_active,MV14,Alex Molcan,alex-molcan,SU55,Denis Shapovalov,denis-shapovalov
+https://stats.tennismylife.org/h2h/alexander-zverev-vs-jiri-lehecka,true,both_active,Z355,Alexander Zverev,alexander-zverev,L0BV,Jiri Lehecka,jiri-lehecka
+https://stats.tennismylife.org/h2h/benjamin-bonzi-vs-francisco-cerundolo,true,both_active,BM95,Benjamin Bonzi,benjamin-bonzi,C0AU,Francisco Cerundolo,francisco-cerundolo
+https://stats.tennismylife.org/h2h/francisco-cerundolo-vs-valentin-vacherot,true,both_active,C0AU,Francisco Cerundolo,francisco-cerundolo,VA25,Valentin Vacherot,valentin-vacherot
+https://stats.tennismylife.org/h2h/terence-atmane-vs-tomas-martin-etcheverry,true,both_active,A0GC,Terence Atmane,terence-atmane,EA24,Tomas Martin Etcheverry,tomas-martin-etcheverry
+https://stats.tennismylife.org/h2h/corentin-moutet-vs-tomas-machac,true,both_active,MW02,Corentin Moutet,corentin-moutet,M0FH,Tomas Machac,tomas-machac
+https://stats.tennismylife.org/h2h/fabian-marozsan-vs-jakub-mensik,true,both_active,M0CI,Fabian Marozsan,fabian-marozsan,M0NI,Jakub Mensik,jakub-mensik
+https://stats.tennismylife.org/h2h/alexander-zverev-vs-gabriel-diallo,true,both_active,Z355,Alexander Zverev,alexander-zverev,D0F6,Gabriel Diallo,gabriel-diallo
+https://stats.tennismylife.org/h2h/karim-bennani-vs-yannick-hanfmann,true,both_active,B0QQ,Karim Bennani,karim-bennani,H997,Yannick Hanfmann,yannick-hanfmann
+https://stats.tennismylife.org/h2h/alexander-shevchenko-vs-matteo-arnaldi,true,both_active,S0H2,Alexander Shevchenko,alexander-shevchenko,A0FC,Matteo Arnaldi,matteo-arnaldi
+https://stats.tennismylife.org/h2h/sebastian-baez-vs-titouan-droguet,true,both_active,B0BI,Sebastian Baez,sebastian-baez,D0DW,Titouan Droguet,titouan-droguet
+https://stats.tennismylife.org/h2h/pete-sampras-vs-roger-federer,true,direct_h2h_and_top20,S402,Pete Sampras,pete-sampras,F324,Roger Federer,roger-federer
+https://stats.tennismylife.org/h2h/adrian-mannarino-vs-zizou-bergs,true,both_active,ME82,Adrian Mannarino,adrian-mannarino,BU13,Zizou Bergs,zizou-bergs
+https://stats.tennismylife.org/h2h/karen-khachanov-vs-martin-landaluce,true,both_active,KE29,Karen Khachanov,karen-khachanov,L0IL,Martin Landaluce,martin-landaluce
+https://stats.tennismylife.org/h2h/cameron-norrie-vs-rafael-jodar,true,both_active,N771,Cameron Norrie,cameron-norrie,J0DZ,Rafael Jodar,rafael-jodar
+https://stats.tennismylife.org/h2h/camilo-ugo-carabelli-vs-rafael-jodar,true,both_active,U182,Camilo Ugo Carabelli,camilo-ugo-carabelli,J0DZ,Rafael Jodar,rafael-jodar
+https://stats.tennismylife.org/h2h/alexei-popyrin-vs-casper-ruud,true,both_active,P09Z,Alexei Popyrin,alexei-popyrin,RH16,Casper Ruud,casper-ruud
+https://stats.tennismylife.org/h2h/lorenzo-musetti-vs-martin-landaluce,true,both_active,M0EJ,Lorenzo Musetti,lorenzo-musetti,L0IL,Martin Landaluce,martin-landaluce
+https://stats.tennismylife.org/h2h/camilo-ugo-carabelli-vs-sebastian-korda,true,both_active,U182,Camilo Ugo Carabelli,camilo-ugo-carabelli,K0AH,Sebastian Korda,sebastian-korda
+https://stats.tennismylife.org/h2h/roger-federer-vs-nick-kyrgios,true,direct_h2h_and_top20,F324,Roger Federer,roger-federer,KE17,Nick Kyrgios,nick-kyrgios
+https://stats.tennismylife.org/h2h/jannik-sinner-vs-valentin-vacherot,true,both_active,S0AG,Jannik Sinner,jannik-sinner,VA25,Valentin Vacherot,valentin-vacherot
+https://stats.tennismylife.org/h2h/roger-federer-vs-pete-sampras,true,direct_h2h_and_top20,F324,Roger Federer,roger-federer,S402,Pete Sampras,pete-sampras
+https://stats.tennismylife.org/h2h/michael-chang-vs-pete-sampras,true,direct_h2h_and_top20,C274,Michael Chang,michael-chang,S402,Pete Sampras,pete-sampras
+https://stats.tennismylife.org/h2h/lorenzo-musetti-vs-valentin-vacherot,true,both_active,M0EJ,Lorenzo Musetti,lorenzo-musetti,VA25,Valentin Vacherot,valentin-vacherot
+https://stats.tennismylife.org/h2h/ivan-lendl-vs-brad-gilbert,true,direct_h2h_and_top20,L018,Ivan Lendl,ivan-lendl,G016,Brad Gilbert,brad-gilbert
+https://stats.tennismylife.org/h2h/alexander-zverev-vs-jack-draper,true,both_active,Z355,Alexander Zverev,alexander-zverev,D0CO,Jack Draper,jack-draper
+https://stats.tennismylife.org/h2h/novak-djokovic-vs-hubert-hurkacz,true,both_active,D643,Novak Djokovic,novak-djokovic,HB71,Hubert Hurkacz,hubert-hurkacz
+https://stats.tennismylife.org/h2h/goran-ivanisevic-vs-boris-becker,true,direct_h2h_and_top20,I034,Goran Ivanisevic,goran-ivanisevic,B028,Boris Becker,boris-becker
+https://stats.tennismylife.org/h2h/roger-federer-vs-david-ferrer,true,direct_h2h_and_top20,F324,Roger Federer,roger-federer,F401,David Ferrer,david-ferrer
+https://stats.tennismylife.org/h2h/andre-agassi-vs-lleyton-hewitt,true,direct_h2h_and_top20,A092,Andre Agassi,andre-agassi,H432,Lleyton Hewitt,lleyton-hewitt
+https://stats.tennismylife.org/h2h/ivan-lendl-vs-yannick-noah,true,direct_h2h_and_top20,L018,Ivan Lendl,ivan-lendl,N022,Yannick Noah,yannick-noah
+https://stats.tennismylife.org/records/h2h/count,false,invalid_url,,,,,,
+https://stats.tennismylife.org/h2h/ilie-nastase-vs-jimmy-connors,true,direct_h2h_and_top20,N008,Ilie Nastase,ilie-nastase,C044,Jimmy Connors,jimmy-connors
+https://stats.tennismylife.org/h2h/jimmy-connors-vs-ilie-nastase,true,direct_h2h_and_top20,C044,Jimmy Connors,jimmy-connors,N008,Ilie Nastase,ilie-nastase
+https://stats.tennismylife.org/h2h/jimmy-connors-vs-mats-wilander,true,direct_h2h_and_top20,C044,Jimmy Connors,jimmy-connors,W023,Mats Wilander,mats-wilander
+https://stats.tennismylife.org/h2h/bjorn-borg-vs-mats-wilander,true,direct_h2h_and_top20,B058,Bjorn Borg,bjorn-borg,W023,Mats Wilander,mats-wilander
+https://stats.tennismylife.org/h2h/alex-molcan-vs-flavio-cobolli,true,both_active,MV14,Alex Molcan,alex-molcan,C0E9,Flavio Cobolli,flavio-cobolli
+https://stats.tennismylife.org/h2h/goran-ivanisevic-vs-greg-rusedski,true,direct_h2h_and_top20,I034,Goran Ivanisevic,goran-ivanisevic,R237,Greg Rusedski,greg-rusedski
+https://stats.tennismylife.org/h2h/gustavo-kuerten-vs-goran-ivanisevic,true,direct_h2h_and_top20,K293,Gustavo Kuerten,gustavo-kuerten,I034,Goran Ivanisevic,goran-ivanisevic
+https://stats.tennismylife.org/h2h/denis-shapovalov-vs-jack-draper,true,both_active,SU55,Denis Shapovalov,denis-shapovalov,D0CO,Jack Draper,jack-draper
+https://stats.tennismylife.org/h2h/goran-ivanisevic-vs-yevgeny-kafelnikov,true,direct_h2h_and_top20,I034,Goran Ivanisevic,goran-ivanisevic,K267,Yevgeny Kafelnikov,yevgeny-kafelnikov
+https://stats.tennismylife.org/h2h/yannick-noah-vs-mats-wilander,true,direct_h2h_and_top20,N022,Yannick Noah,yannick-noah,W023,Mats Wilander,mats-wilander
+https://stats.tennismylife.org/records/h2h/count?level=G&surface=Hard&bestOf=3,false,invalid_url,,,,,,
+https://stats.tennismylife.org/h2h/ignacio-buse-vs-marcos-giron,true,both_active,B0ID,Ignacio Buse,ignacio-buse,GC88,Marcos Giron,marcos-giron
+https://stats.tennismylife.org/h2h/franco-squillari-vs-marcelo-rios,true,direct_h2h_and_top20,S568,Franco Squillari,franco-squillari,R286,Marcelo Rios,marcelo-rios
+https://stats.tennismylife.org/h2h/victor-pecci-vs-vitas-gerulaitis,true,direct_h2h_and_top20,P015,Victor Pecci,victor-pecci,G008,Vitas Gerulaitis,vitas-gerulaitis
+https://stats.tennismylife.org/h2h/francisco-comesana-vs-jiri-lehecka,true,both_active,C0DF,Francisco Comesana,francisco-comesana,L0BV,Jiri Lehecka,jiri-lehecka
+https://stats.tennismylife.org/h2h/stan-wawrinka-vs-yannick-hanfmann,true,both_active,W367,Stan Wawrinka,stan-wawrinka,H997,Yannick Hanfmann,yannick-hanfmann
+https://stats.tennismylife.org/h2h/alan-haswell-vs-cliff-letcher,false,not_eligible,H189,Alan Haswell,alan-haswell,L062,Cliff Letcher,cliff-letcher
+https://stats.tennismylife.org/h2h/john-alexander-vs-earl-butch-buchholz,false,not_eligible,A014,John Alexander,john-alexander,B228,Earl Butch Buchholz,earl-butch-buchholz
+https://stats.tennismylife.org/h2h/roger-federer-vs-novak-djokovic,true,direct_h2h_and_top20,F324,Roger Federer,roger-federer,D643,Novak Djokovic,novak-djokovic
+https://stats.tennismylife.org/h2h/rafael-nadal-vs-juan-martin-del-potro,true,direct_h2h_and_top20,N409,Rafael Nadal,rafael-nadal,D683,Juan Martin del Potro,juan-martin-del-potro
+https://stats.tennismylife.org/h2h/alexander-zverev-vs-frances-tiafoe,true,both_active,Z355,Alexander Zverev,alexander-zverev,TD51,Frances Tiafoe,frances-tiafoe
+https://stats.tennismylife.org/h2h/aleksandar-kovacevic-vs-novak-djokovic,true,both_active,K0AZ,Aleksandar Kovacevic,aleksandar-kovacevic,D643,Novak Djokovic,novak-djokovic
+https://stats.tennismylife.org/h2h/alex-de-minaur-vs-cameron-norrie,true,both_active,DH58,Alex de Minaur,alex-de-minaur,N771,Cameron Norrie,cameron-norrie
+https://stats.tennismylife.org/h2h/andy-murray-vs-novak-djokovic,true,direct_h2h_and_top20,MC10,Andy Murray,andy-murray,D643,Novak Djokovic,novak-djokovic
+https://stats.tennismylife.org/h2h/frances-tiafoe-vs-jenson-brooksby,true,both_active,TD51,Frances Tiafoe,frances-tiafoe,B0CD,Jenson Brooksby,jenson-brooksby
+https://stats.tennismylife.org/h2h/casper-ruud-vs-corentin-moutet,true,both_active,RH16,Casper Ruud,casper-ruud,MW02,Corentin Moutet,corentin-moutet
+https://stats.tennismylife.org/h2h/novak-djokovic-vs-roger-federer,true,direct_h2h_and_top20,D643,Novak Djokovic,novak-djokovic,F324,Roger Federer,roger-federer
+https://stats.tennismylife.org/h2h/adolfo-daniel-vallejo-vs-zachary-svajda,true,both_active,V0DP,Adolfo Daniel Vallejo,adolfo-daniel-vallejo,S0K7,Zachary Svajda,zachary-svajda
+https://stats.tennismylife.org/h2h/pete-sampras-vs-andre-agassi,true,direct_h2h_and_top20,S402,Pete Sampras,pete-sampras,A092,Andre Agassi,andre-agassi
+https://stats.tennismylife.org/h2h/stan-wawrinka-vs-roger-federer,true,direct_h2h_and_top20,W367,Stan Wawrinka,stan-wawrinka,F324,Roger Federer,roger-federer
+https://stats.tennismylife.org/h2h/andrey-rublev-vs-zizou-bergs,true,both_active,RE44,Andrey Rublev,andrey-rublev,BU13,Zizou Bergs,zizou-bergs
+https://stats.tennismylife.org/h2h/francisco-cerundolo-vs-jack-draper,true,both_active,C0AU,Francisco Cerundolo,francisco-cerundolo,D0CO,Jack Draper,jack-draper
+https://stats.tennismylife.org/h2h/adrian-mannarino-vs-daniel-merida,false,missing_player2,ME82,Adrian Mannarino,adrian-mannarino,,,
+https://stats.tennismylife.org/h2h/alexander-zverev-vs-arthur-fils,true,both_active,Z355,Alexander Zverev,alexander-zverev,F0F1,Arthur Fils,arthur-fils
+https://stats.tennismylife.org/h2h/roger-federer-vs-andy-roddick,true,direct_h2h_and_top20,F324,Roger Federer,roger-federer,R485,Andy Roddick,andy-roddick
+https://stats.tennismylife.org/h2h/cameron-norrie-vs-rinky-hijikata,true,both_active,N771,Cameron Norrie,cameron-norrie,H0BH,Rinky Hijikata,rinky-hijikata
+https://stats.tennismylife.org/h2h/rafael-nadal-vs-novak-djokovic,true,both_active,N409,Rafael Nadal,rafael-nadal,D643,Novak Djokovic,novak-djokovic
+https://stats.tennismylife.org/h2h/nikolay-davydenko-vs-rafael-nadal,true,direct_h2h_and_top20,D402,Nikolay Davydenko,nikolay-davydenko,N409,Rafael Nadal,rafael-nadal
+https://stats.tennismylife.org/h2h/andre-agassi-vs-roger-federer,true,direct_h2h_and_top20,A092,Andre Agassi,andre-agassi,F324,Roger Federer,roger-federer
+https://stats.tennismylife.org/h2h/boris-becker-vs-stefan-edberg,true,direct_h2h_and_top20,B028,Boris Becker,boris-becker,E004,Stefan Edberg,stefan-edberg
+https://stats.tennismylife.org/h2h/arthur-rinderknech-vs-joao-fonseca,true,both_active,RC91,Arthur Rinderknech,arthur-rinderknech,F0FV,Joao Fonseca,joao-fonseca
+https://stats.tennismylife.org/h2h/daniel-altmaier-vs-dino-prizmic,true,both_active,AE14,Daniel Altmaier,daniel-altmaier,P0HW,Dino Prizmic,dino-prizmic
+https://stats.tennismylife.org/h2h/alex-michelsen-vs-daniil-medvedev,true,both_active,M0QI,Alex Michelsen,alex-michelsen,MM58,Daniil Medvedev,daniil-medvedev
+https://stats.tennismylife.org/h2h/arthur-rinderknech-vs-terence-atmane,true,both_active,RC91,Arthur Rinderknech,arthur-rinderknech,A0GC,Terence Atmane,terence-atmane
+https://stats.tennismylife.org/h2h/jaume-munar-vs-rafael-jodar,true,both_active,MU94,Jaume Munar,jaume-munar,J0DZ,Rafael Jodar,rafael-jodar
+https://stats.tennismylife.org/h2h/alex-de-minaur-vs-hamad-medjedovic,true,both_active,DH58,Alex de Minaur,alex-de-minaur,M0JF,Hamad Medjedovic,hamad-medjedovic
+https://stats.tennismylife.org/h2h/alex-molcan-vs-daniel-altmaier,true,both_active,MV14,Alex Molcan,alex-molcan,AE14,Daniel Altmaier,daniel-altmaier
+https://stats.tennismylife.org/h2h/alexander-blockx-vs-yannick-hanfmann,true,both_active,B0PG,Alexander Blockx,alexander-blockx,H997,Yannick Hanfmann,yannick-hanfmann
+https://stats.tennismylife.org/h2h/novak-djokovic-vs-alexander-zverev,true,both_active,D643,Novak Djokovic,novak-djokovic,Z355,Alexander Zverev,alexander-zverev
+https://stats.tennismylife.org/h2h/luciano-darderi-vs-martin-landaluce,true,both_active,D0FJ,Luciano Darderi,luciano-darderi,L0IL,Martin Landaluce,martin-landaluce
+https://stats.tennismylife.org/h2h/stefan-edberg-vs-john-mcenroe,true,direct_h2h_and_top20,E004,Stefan Edberg,stefan-edberg,M047,John McEnroe,john-mcenroe
+https://stats.tennismylife.org/h2h/arthur-fils-vs-marton-fucsovics,true,both_active,F0F1,Arthur Fils,arthur-fils,F724,Marton Fucsovics,marton-fucsovics
+https://stats.tennismylife.org/h2h/andre-agassi-vs-pete-sampras,true,direct_h2h_and_top20,A092,Andre Agassi,andre-agassi,S402,Pete Sampras,pete-sampras
+https://stats.tennismylife.org/h2h/lorenzo-sonego-vs-pedro-martinez,true,both_active,SU87,Lorenzo Sonego,lorenzo-sonego,MO44,Pedro Martinez,pedro-martinez
+https://stats.tennismylife.org/h2h/nick-kyrgios-vs-novak-djokovic,true,both_active,KE17,Nick Kyrgios,nick-kyrgios,D643,Novak Djokovic,novak-djokovic
+https://stats.tennismylife.org/h2h/rafael-nadal-vs-stan-wawrinka,true,both_active,N409,Rafael Nadal,rafael-nadal,W367,Stan Wawrinka,stan-wawrinka
+https://stats.tennismylife.org/h2h/arthur-cazaux-vs-frances-tiafoe,true,both_active,C0H0,Arthur Cazaux,arthur-cazaux,TD51,Frances Tiafoe,frances-tiafoe
+https://stats.tennismylife.org/h2h/novak-djokovic-vs-daniil-medvedev,true,both_active,D643,Novak Djokovic,novak-djokovic,MM58,Daniil Medvedev,daniil-medvedev
+https://stats.tennismylife.org/h2h/novak-djokovic-vs-gael-monfils,true,both_active,D643,Novak Djokovic,novak-djokovic,MC65,Gael Monfils,gael-monfils
+https://stats.tennismylife.org/h2h/alex-molcan-vs-mariano-navone,true,both_active,MV14,Alex Molcan,alex-molcan,N0BS,Mariano Navone,mariano-navone
+https://stats.tennismylife.org/h2h/gustavo-kuerten-vs-roger-federer,true,direct_h2h_and_top20,K293,Gustavo Kuerten,gustavo-kuerten,F324,Roger Federer,roger-federer
+https://stats.tennismylife.org/h2h/jakub-mensik-vs-frances-tiafoe,true,both_active,M0NI,Jakub Mensik,jakub-mensik,TD51,Frances Tiafoe,frances-tiafoe
+https://stats.tennismylife.org/h2h/carlos-alcaraz-vs-otto-virtanen,true,both_active,A0E2,Carlos Alcaraz,carlos-alcaraz,V0AM,Otto Virtanen,otto-virtanen
+https://stats.tennismylife.org/h2h/juan-manuel-cerundolo-vs-ugo-humbert,true,both_active,C0C8,Juan Manuel Cerundolo,juan-manuel-cerundolo,HH26,Ugo Humbert,ugo-humbert
+https://stats.tennismylife.org/h2h/francisco-cerundolo-vs-jannik-sinner,true,both_active,C0AU,Francisco Cerundolo,francisco-cerundolo,S0AG,Jannik Sinner,jannik-sinner
+https://stats.tennismylife.org/h2h/novak-djokovic-vs-kei-nishikori,true,both_active,D643,Novak Djokovic,novak-djokovic,N552,Kei Nishikori,kei-nishikori
+https://stats.tennismylife.org/h2h/ethan-quinn-vs-jiri-lehecka,true,both_active,Q02L,Ethan Quinn,ethan-quinn,L0BV,Jiri Lehecka,jiri-lehecka
+https://stats.tennismylife.org/h2h/rafael-nadal-vs-kei-nishikori,true,both_active,N409,Rafael Nadal,rafael-nadal,N552,Kei Nishikori,kei-nishikori
+https://stats.tennismylife.org/h2h/dominic-thiem-vs-rafael-nadal,true,direct_h2h_and_top20,TB69,Dominic Thiem,dominic-thiem,N409,Rafael Nadal,rafael-nadal
+https://stats.tennismylife.org/h2h/adam-walton-vs-learner-tien,true,both_active,W09E,Adam Walton,adam-walton,T0HA,Learner Tien,learner-tien
+https://stats.tennismylife.org/h2h/roger-federer-vs-tomas-berdych,true,direct_h2h_and_top20,F324,Roger Federer,roger-federer,BA47,Tomas Berdych,tomas-berdych
+https://stats.tennismylife.org/h2h/jack-pinnington-jones-vs-zhizhen-zhang,true,both_active,P0HT,Jack Pinnington Jones,jack-pinnington-jones,Z371,Zhizhen Zhang,zhizhen-zhang
+https://stats.tennismylife.org/h2h/roger-federer-vs-alexander-zverev,true,direct_h2h_and_top20,F324,Roger Federer,roger-federer,Z355,Alexander Zverev,alexander-zverev
+https://stats.tennismylife.org/h2h/carlos-alcaraz-vs-mikael-ymer,true,both_active,A0E2,Carlos Alcaraz,carlos-alcaraz,Y268,Mikael Ymer,mikael-ymer
+https://stats.tennismylife.org/h2h/emilio-nava-vs-quentin-halys,true,both_active,N0AM,Emilio Nava,emilio-nava,HB64,Quentin Halys,quentin-halys
+https://stats.tennismylife.org/h2h/jakub-mensik-vs-marcos-giron,true,both_active,M0NI,Jakub Mensik,jakub-mensik,GC88,Marcos Giron,marcos-giron
+https://stats.tennismylife.org/h2h/luciano-darderi-vs-zhizhen-zhang,true,both_active,D0FJ,Luciano Darderi,luciano-darderi,Z371,Zhizhen Zhang,zhizhen-zhang
+https://stats.tennismylife.org/h2h/marcos-giron-vs-nuno-borges,true,both_active,GC88,Marcos Giron,marcos-giron,BT72,Nuno Borges,nuno-borges
+https://stats.tennismylife.org/h2h/roger-federer-vs-andy-murray,true,direct_h2h_and_top20,F324,Roger Federer,roger-federer,MC10,Andy Murray,andy-murray
+https://stats.tennismylife.org/h2h/denis-shapovalov-vs-roger-federer,true,direct_h2h_and_top20,SU55,Denis Shapovalov,denis-shapovalov,F324,Roger Federer,roger-federer
+https://stats.tennismylife.org/h2h/aleksandar-kovacevic-vs-rinky-hijikata,true,both_active,K0AZ,Aleksandar Kovacevic,aleksandar-kovacevic,H0BH,Rinky Hijikata,rinky-hijikata
+https://stats.tennismylife.org/h2h/learner-tien-vs-roman-andres-burruchaga,true,both_active,T0HA,Learner Tien,learner-tien,B0FV,Roman Andres Burruchaga,roman-andres-burruchaga
+https://stats.tennismylife.org/h2h/camilo-ugo-carabelli-vs-ignacio-buse,true,both_active,U182,Camilo Ugo Carabelli,camilo-ugo-carabelli,B0ID,Ignacio Buse,ignacio-buse
+https://stats.tennismylife.org/h2h/ben-shelton-vs-emilio-nava,true,both_active,S0S1,Ben Shelton,ben-shelton,N0AM,Emilio Nava,emilio-nava
+https://stats.tennismylife.org/h2h/felix-auger-aliassime-vs-gabriel-diallo,true,both_active,AG37,Felix Auger-Aliassime,felix-auger-aliassime,D0F6,Gabriel Diallo,gabriel-diallo
+https://stats.tennismylife.org/h2h/hamad-medjedovic-vs-nuno-borges,true,both_active,M0JF,Hamad Medjedovic,hamad-medjedovic,BT72,Nuno Borges,nuno-borges
+https://stats.tennismylife.org/h2h/flavio-cobolli-vs-miomir-kecmanovic,true,both_active,C0E9,Flavio Cobolli,flavio-cobolli,KI95,Miomir Kecmanovic,miomir-kecmanovic
+https://stats.tennismylife.org/h2h/daniil-medvedev-vs-felix-auger-aliassime,true,both_active,MM58,Daniil Medvedev,daniil-medvedev,AG37,Felix Auger-Aliassime,felix-auger-aliassime
+https://stats.tennismylife.org/h2h/sebastian-baez-vs-vilius-gaubas,true,both_active,B0BI,Sebastian Baez,sebastian-baez,G0FW,Vilius Gaubas,vilius-gaubas
+https://stats.tennismylife.org/h2h/rafael-nadal-vs-andy-murray,true,direct_h2h_and_top20,N409,Rafael Nadal,rafael-nadal,MC10,Andy Murray,andy-murray
+https://stats.tennismylife.org/h2h/carlos-alcaraz-vs-terence-atmane,true,both_active,A0E2,Carlos Alcaraz,carlos-alcaraz,A0GC,Terence Atmane,terence-atmane
+https://stats.tennismylife.org/h2h/daniel-altmaier-vs-terence-atmane,true,both_active,AE14,Daniel Altmaier,daniel-altmaier,A0GC,Terence Atmane,terence-atmane
+https://stats.tennismylife.org/h2h/ben-shelton-vs-daniil-medvedev,true,both_active,S0S1,Ben Shelton,ben-shelton,MM58,Daniil Medvedev,daniil-medvedev
+https://stats.tennismylife.org/h2h/raphael-collignon-vs-tommy-paul,true,both_active,C0JP,Raphael Collignon,raphael-collignon,PL56,Tommy Paul,tommy-paul
+https://stats.tennismylife.org/h2h/matteo-arnaldi-vs-vit-kopriva,true,both_active,A0FC,Matteo Arnaldi,matteo-arnaldi,KI82,Vit Kopriva,vit-kopriva
+https://stats.tennismylife.org/h2h/carlos-alcaraz-vs-tomas-martin-etcheverry,true,both_active,A0E2,Carlos Alcaraz,carlos-alcaraz,EA24,Tomas Martin Etcheverry,tomas-martin-etcheverry
+https://stats.tennismylife.org/h2h/andre-agassi-vs-rafael-nadal,true,direct_h2h_and_top20,A092,Andre Agassi,andre-agassi,N409,Rafael Nadal,rafael-nadal
+https://stats.tennismylife.org/h2h/ivan-lendl-vs-pete-sampras,true,direct_h2h_and_top20,L018,Ivan Lendl,ivan-lendl,S402,Pete Sampras,pete-sampras
+https://stats.tennismylife.org/h2h/jiri-lehecka-vs-novak-djokovic,true,both_active,L0BV,Jiri Lehecka,jiri-lehecka,D643,Novak Djokovic,novak-djokovic
+https://stats.tennismylife.org/h2h/stan-wawrinka-vs-andy-murray,true,direct_h2h_and_top20,W367,Stan Wawrinka,stan-wawrinka,MC10,Andy Murray,andy-murray
+https://stats.tennismylife.org/h2h/pete-sampras-vs-lleyton-hewitt,true,direct_h2h_and_top20,S402,Pete Sampras,pete-sampras,H432,Lleyton Hewitt,lleyton-hewitt
+https://stats.tennismylife.org/h2h/emilio-nava-vs-tomas-machac,true,both_active,N0AM,Emilio Nava,emilio-nava,M0FH,Tomas Machac,tomas-machac
+https://stats.tennismylife.org/h2h/mischa-zverev-vs-roger-federer,false,not_eligible,Z168,Mischa Zverev,mischa-zverev,F324,Roger Federer,roger-federer
+https://stats.tennismylife.org/h2h/andy-roddick-vs-lleyton-hewitt,true,direct_h2h_and_top20,R485,Andy Roddick,andy-roddick,H432,Lleyton Hewitt,lleyton-hewitt
+https://stats.tennismylife.org/h2h/andy-murray-vs-stan-wawrinka,true,direct_h2h_and_top20,MC10,Andy Murray,andy-murray,W367,Stan Wawrinka,stan-wawrinka
+https://stats.tennismylife.org/h2h/ivan-lendl-vs-mats-wilander,true,direct_h2h_and_top20,L018,Ivan Lendl,ivan-lendl,W023,Mats Wilander,mats-wilander
+https://stats.tennismylife.org/h2h/alejandro-tabilo-vs-francisco-comesana,true,both_active,TE30,Alejandro Tabilo,alejandro-tabilo,C0DF,Francisco Comesana,francisco-comesana
+https://stats.tennismylife.org/h2h/matteo-arnaldi-vs-quentin-halys,true,both_active,A0FC,Matteo Arnaldi,matteo-arnaldi,HB64,Quentin Halys,quentin-halys
+https://stats.tennismylife.org/h2h/patrick-mcenroe-vs-stefan-edberg,false,not_eligible,M048,Patrick McEnroe,patrick-mcenroe,E004,Stefan Edberg,stefan-edberg
+https://stats.tennismylife.org/h2h/andrey-rublev-vs-gabriel-diallo,true,both_active,RE44,Andrey Rublev,andrey-rublev,D0F6,Gabriel Diallo,gabriel-diallo
+https://stats.tennismylife.org/h2h/andy-murray-vs-andy-roddick,true,direct_h2h_and_top20,MC10,Andy Murray,andy-murray,R485,Andy Roddick,andy-roddick
+https://stats.tennismylife.org/h2h/gabriel-diallo-vs-yibing-wu,true,both_active,D0F6,Gabriel Diallo,gabriel-diallo,WB32,Yibing Wu,yibing-wu
+https://stats.tennismylife.org/h2h/roberto-bautista-agut-vs-valentin-royer,true,both_active,BD06,Roberto Bautista Agut,roberto-bautista-agut,R0EB,Valentin Royer,valentin-royer
+https://stats.tennismylife.org/h2h/novak-djokovic-vs-stan-wawrinka,true,both_active,D643,Novak Djokovic,novak-djokovic,W367,Stan Wawrinka,stan-wawrinka
+https://stats.tennismylife.org/h2h/gabriel-diallo-vs-joao-fonseca,true,both_active,D0F6,Gabriel Diallo,gabriel-diallo,F0FV,Joao Fonseca,joao-fonseca
+https://stats.tennismylife.org/h2h/hugo-gaston-vs-luca-van-assche,true,both_active,G09O,Hugo Gaston,hugo-gaston,V0DZ,Luca Van Assche,luca-van-assche
+https://stats.tennismylife.org/h2h/marat-safin-vs-pete-sampras,true,direct_h2h_and_top20,S741,Marat Safin,marat-safin,S402,Pete Sampras,pete-sampras
+https://stats.tennismylife.org/h2h/moise-kouame-vs-ugo-humbert,false,missing_player1,,,,HH26,Ugo Humbert,ugo-humbert
+https://stats.tennismylife.org/h2h/carlos-alcaraz-vs-damir-dzumhur,true,both_active,A0E2,Carlos Alcaraz,carlos-alcaraz,D923,Damir Dzumhur,damir-dzumhur
+https://stats.tennismylife.org/h2h/carlos-alcaraz-vs-valentin-vacherot,true,both_active,A0E2,Carlos Alcaraz,carlos-alcaraz,VA25,Valentin Vacherot,valentin-vacherot
+https://stats.tennismylife.org/h2h/joao-fonseca-vs-sebastian-korda,true,both_active,F0FV,Joao Fonseca,joao-fonseca,K0AH,Sebastian Korda,sebastian-korda
+https://stats.tennismylife.org/h2h/ivan-lendl-vs-todd-martin,true,direct_h2h_and_top20,L018,Ivan Lendl,ivan-lendl,M442,Todd Martin,todd-martin
+https://stats.tennismylife.org/h2h/brad-gilbert-vs-jimmy-connors,true,direct_h2h_and_top20,G016,Brad Gilbert,brad-gilbert,C044,Jimmy Connors,jimmy-connors
+https://stats.tennismylife.org/h2h/john-isner-vs-rafael-nadal,true,direct_h2h_and_top20,I186,John Isner,john-isner,N409,Rafael Nadal,rafael-nadal
+https://stats.tennismylife.org/h2h/frances-tiafoe-vs-novak-djokovic,true,both_active,TD51,Frances Tiafoe,frances-tiafoe,D643,Novak Djokovic,novak-djokovic
+https://stats.tennismylife.org/h2h/alexander-bublik-vs-jiri-lehecka,true,both_active,BK92,Alexander Bublik,alexander-bublik,L0BV,Jiri Lehecka,jiri-lehecka
+https://stats.tennismylife.org/h2h/roman-andres-burruchaga-vs-thiago-agustin-tirante,true,both_active,B0FV,Roman Andres Burruchaga,roman-andres-burruchaga,T0A1,Thiago Agustin Tirante,thiago-agustin-tirante
+https://stats.tennismylife.org/h2h/cameron-norrie-vs-jack-draper,true,both_active,N771,Cameron Norrie,cameron-norrie,D0CO,Jack Draper,jack-draper
+https://stats.tennismylife.org/h2h/juan-martin-del-potro-vs-novak-djokovic,true,direct_h2h_and_top20,D683,Juan Martin del Potro,juan-martin-del-potro,D643,Novak Djokovic,novak-djokovic
+https://stats.tennismylife.org/h2h/andy-roddick-vs-james-blake,true,direct_h2h_and_top20,R485,Andy Roddick,andy-roddick,B676,James Blake,james-blake
+https://stats.tennismylife.org/h2h/jannik-sinner-vs-alexander-bublik,true,both_active,S0AG,Jannik Sinner,jannik-sinner,BK92,Alexander Bublik,alexander-bublik
+https://stats.tennismylife.org/h2h/hamad-medjedovic-vs-vit-kopriva,true,both_active,M0JF,Hamad Medjedovic,hamad-medjedovic,KI82,Vit Kopriva,vit-kopriva
+https://stats.tennismylife.org/h2h/alex-michelsen-vs-carlos-alcaraz,true,both_active,M0QI,Alex Michelsen,alex-michelsen,A0E2,Carlos Alcaraz,carlos-alcaraz
+https://stats.tennismylife.org/h2h/carlos-alcaraz-vs-stan-wawrinka,true,both_active,A0E2,Carlos Alcaraz,carlos-alcaraz,W367,Stan Wawrinka,stan-wawrinka
+https://stats.tennismylife.org/h2h/jiri-lehecka-vs-sebastian-korda,true,both_active,L0BV,Jiri Lehecka,jiri-lehecka,K0AH,Sebastian Korda,sebastian-korda
+https://stats.tennismylife.org/h2h/tommy-paul-vs-valentin-vacherot,true,both_active,PL56,Tommy Paul,tommy-paul,VA25,Valentin Vacherot,valentin-vacherot
+https://stats.tennismylife.org/h2h/brandon-nakashima-vs-camilo-ugo-carabelli,true,both_active,N0AE,Brandon Nakashima,brandon-nakashima,U182,Camilo Ugo Carabelli,camilo-ugo-carabelli
+https://stats.tennismylife.org/h2h/andy-murray-vs-jo-wilfried-tsonga,true,direct_h2h_and_top20,MC10,Andy Murray,andy-murray,T786,Jo-Wilfried Tsonga,jo-wilfried-tsonga
+https://stats.tennismylife.org/h2h/david-ferrer-vs-andy-murray,true,direct_h2h_and_top20,F401,David Ferrer,david-ferrer,MC10,Andy Murray,andy-murray
+https://stats.tennismylife.org/h2h/pete-sampras-vs-michael-chang,true,direct_h2h_and_top20,S402,Pete Sampras,pete-sampras,C274,Michael Chang,michael-chang
+https://stats.tennismylife.org/h2h/flavio-cobolli-vs-grigor-dimitrov,true,both_active,C0E9,Flavio Cobolli,flavio-cobolli,D875,Grigor Dimitrov,grigor-dimitrov
+https://stats.tennismylife.org/h2h/pete-sampras-vs-patrick-rafter,true,direct_h2h_and_top20,S402,Pete Sampras,pete-sampras,R255,Patrick Rafter,patrick-rafter
+https://stats.tennismylife.org/h2h/bjorn-borg-vs-vitas-gerulaitis,true,direct_h2h_and_top20,B058,Bjorn Borg,bjorn-borg,G008,Vitas Gerulaitis,vitas-gerulaitis
+https://stats.tennismylife.org/h2h/jimmy-connors-vs-guillermo-vilas,true,direct_h2h_and_top20,C044,Jimmy Connors,jimmy-connors,V028,Guillermo Vilas,guillermo-vilas
+https://stats.tennismylife.org/h2h/alexander-zverev-vs-stan-wawrinka,true,both_active,Z355,Alexander Zverev,alexander-zverev,W367,Stan Wawrinka,stan-wawrinka
+https://stats.tennismylife.org/h2h/alex-michelsen-vs-learner-tien,true,both_active,M0QI,Alex Michelsen,alex-michelsen,T0HA,Learner Tien,learner-tien
+https://stats.tennismylife.org/h2h/patrick-mcenroe-vs-pete-sampras,false,not_eligible,M048,Patrick McEnroe,patrick-mcenroe,S402,Pete Sampras,pete-sampras
+https://stats.tennismylife.org/h2h/corentin-moutet-vs-luciano-darderi,true,both_active,MW02,Corentin Moutet,corentin-moutet,D0FJ,Luciano Darderi,luciano-darderi
+https://stats.tennismylife.org/h2h/arthur-fils-vs-tomas-martin-etcheverry,true,both_active,F0F1,Arthur Fils,arthur-fils,EA24,Tomas Martin Etcheverry,tomas-martin-etcheverry
+https://stats.tennismylife.org/h2h/jakub-mensik-vs-terence-atmane,true,both_active,M0NI,Jakub Mensik,jakub-mensik,A0GC,Terence Atmane,terence-atmane
+https://stats.tennismylife.org/h2h/alexandre-muller-vs-carlos-alcaraz,true,both_active,MP20,Alexandre Muller,alexandre-muller,A0E2,Carlos Alcaraz,carlos-alcaraz
+https://stats.tennismylife.org/h2h/felix-auger-aliassime-vs-roger-federer,true,direct_h2h_and_top20,AG37,Felix Auger-Aliassime,felix-auger-aliassime,F324,Roger Federer,roger-federer
+https://stats.tennismylife.org/h2h/arthur-fils-vs-sebastian-korda,true,both_active,F0F1,Arthur Fils,arthur-fils,K0AH,Sebastian Korda,sebastian-korda
+https://stats.tennismylife.org/h2h/ugo-humbert-vs-valentin-vacherot,true,both_active,HH26,Ugo Humbert,ugo-humbert,VA25,Valentin Vacherot,valentin-vacherot
+https://stats.tennismylife.org/h2h/john-mcenroe-vs-vitas-gerulaitis,true,direct_h2h_and_top20,M047,John McEnroe,john-mcenroe,G008,Vitas Gerulaitis,vitas-gerulaitis
+https://stats.tennismylife.org/h2h/alexander-zverev-vs-kamil-majchrzak,true,both_active,Z355,Alexander Zverev,alexander-zverev,MQ75,Kamil Majchrzak,kamil-majchrzak
+https://stats.tennismylife.org/h2h/andre-agassi-vs-marat-safin,true,direct_h2h_and_top20,A092,Andre Agassi,andre-agassi,S741,Marat Safin,marat-safin
+https://stats.tennismylife.org/h2h/ivan-lendl-vs-michael-chang,true,direct_h2h_and_top20,L018,Ivan Lendl,ivan-lendl,C274,Michael Chang,michael-chang
+https://stats.tennismylife.org/h2h/jannik-sinner-vs-tallon-griekspoor,true,both_active,S0AG,Jannik Sinner,jannik-sinner,GJ37,Tallon Griekspoor,tallon-griekspoor
+https://stats.tennismylife.org/h2h/fabian-marozsan-vs-novak-djokovic,true,both_active,M0CI,Fabian Marozsan,fabian-marozsan,D643,Novak Djokovic,novak-djokovic
+https://stats.tennismylife.org/h2h/hamad-medjedovic-vs-tomas-machac,true,both_active,M0JF,Hamad Medjedovic,hamad-medjedovic,M0FH,Tomas Machac,tomas-machac
+https://stats.tennismylife.org/h2h/roger-federer-vs-paradorn-srichaphan,true,direct_h2h_and_top20,F324,Roger Federer,roger-federer,S675,Paradorn Srichaphan,paradorn-srichaphan
+https://stats.tennismylife.org/h2h/denis-shapovalov-vs-tallon-griekspoor,true,both_active,SU55,Denis Shapovalov,denis-shapovalov,GJ37,Tallon Griekspoor,tallon-griekspoor
+https://stats.tennismylife.org/h2h/andrey-rublev-vs-jack-sock,true,direct_h2h_and_top20,RE44,Andrey Rublev,andrey-rublev,SM25,Jack Sock,jack-sock
+https://stats.tennismylife.org/h2h/goran-ivanisevic-vs-stefan-edberg,true,direct_h2h_and_top20,I034,Goran Ivanisevic,goran-ivanisevic,E004,Stefan Edberg,stefan-edberg
+https://stats.tennismylife.org/h2h/jimmy-connors-vs-vitas-gerulaitis,true,direct_h2h_and_top20,C044,Jimmy Connors,jimmy-connors,G008,Vitas Gerulaitis,vitas-gerulaitis
+https://stats.tennismylife.org/h2h/rafael-jodar-vs-andrey-rublev,true,both_active,J0DZ,Rafael Jodar,rafael-jodar,RE44,Andrey Rublev,andrey-rublev
+https://stats.tennismylife.org/h2h/boris-becker-vs-richard-krajicek,true,direct_h2h_and_top20,B028,Boris Becker,boris-becker,K214,Richard Krajicek,richard-krajicek
+https://stats.tennismylife.org/h2h/bernard-tomic-vs-roger-federer,true,direct_h2h_and_top20,TA46,Bernard Tomic,bernard-tomic,F324,Roger Federer,roger-federer
+https://stats.tennismylife.org/h2h/marat-safin-vs-lleyton-hewitt,true,direct_h2h_and_top20,S741,Marat Safin,marat-safin,H432,Lleyton Hewitt,lleyton-hewitt
+https://stats.tennismylife.org/h2h/nuno-borges-vs-rafael-nadal,true,both_active,BT72,Nuno Borges,nuno-borges,N409,Rafael Nadal,rafael-nadal
+https://stats.tennismylife.org/h2h/boris-becker-vs-thomas-muster,true,direct_h2h_and_top20,B028,Boris Becker,boris-becker,M099,Thomas Muster,thomas-muster
+https://stats.tennismylife.org/h2h/federico-coria-vs-novak-djokovic,true,both_active,CE77,Federico Coria,federico-coria,D643,Novak Djokovic,novak-djokovic
+https://stats.tennismylife.org/h2h/ben-shelton-vs-sebastian-korda,true,both_active,S0S1,Ben Shelton,ben-shelton,K0AH,Sebastian Korda,sebastian-korda
+https://stats.tennismylife.org/h2h/bjorn-borg-vs-manuel-orantes,true,direct_h2h_and_top20,B058,Bjorn Borg,bjorn-borg,O017,Manuel Orantes,manuel-orantes
+https://stats.tennismylife.org/h2h/jimmy-connors-vs-roscoe-tanner,true,direct_h2h_and_top20,C044,Jimmy Connors,jimmy-connors,T006,Roscoe Tanner,roscoe-tanner
+https://stats.tennismylife.org/h2h/learner-tien-vs-tomas-machac,true,both_active,T0HA,Learner Tien,learner-tien,M0FH,Tomas Machac,tomas-machac
+https://stats.tennismylife.org/h2h/john-mcenroe-vs-yannick-noah,true,direct_h2h_and_top20,M047,John McEnroe,john-mcenroe,N022,Yannick Noah,yannick-noah
+https://stats.tennismylife.org/h2h/andre-agassi-vs-john-mcenroe,true,direct_h2h_and_top20,A092,Andre Agassi,andre-agassi,M047,John McEnroe,john-mcenroe
+https://stats.tennismylife.org/h2h/bjorn-borg-vs-jose-luis-clerc,true,direct_h2h_and_top20,B058,Bjorn Borg,bjorn-borg,C039,Jose-Luis Clerc,jose-luis-clerc
+https://stats.tennismylife.org/h2h/stefan-edberg-vs-michael-chang,true,direct_h2h_and_top20,E004,Stefan Edberg,stefan-edberg,C274,Michael Chang,michael-chang
+https://stats.tennismylife.org/h2h/thomas-enqvist-vs-marcelo-rios,true,direct_h2h_and_top20,E113,Thomas Enqvist,thomas-enqvist,R286,Marcelo Rios,marcelo-rios
+https://stats.tennismylife.org/h2h/cristian-garin-vs-jesper-de-jong,true,both_active,GD64,Cristian Garin,cristian-garin,D0C1,Jesper de Jong,jesper-de-jong
+https://stats.tennismylife.org/h2h/andy-roddick-vs-david-nalbandian,true,direct_h2h_and_top20,R485,Andy Roddick,andy-roddick,N301,David Nalbandian,david-nalbandian
+https://stats.tennismylife.org/h2h/andy-roddick-vs-guillermo-coria,true,direct_h2h_and_top20,R485,Andy Roddick,andy-roddick,C524,Guillermo Coria,guillermo-coria
+https://stats.tennismylife.org/h2h/stefanos-tsitsipas-vs-andrey-rublev,true,both_active,TE51,Stefanos Tsitsipas,stefanos-tsitsipas,RE44,Andrey Rublev,andrey-rublev
+https://stats.tennismylife.org/h2h/mats-wilander-vs-goran-ivanisevic,true,direct_h2h_and_top20,W023,Mats Wilander,mats-wilander,I034,Goran Ivanisevic,goran-ivanisevic
+https://stats.tennismylife.org/records/h2h/count?bestOf=3&round=SF&surface=Carpet,false,invalid_url,,,,,,
+https://stats.tennismylife.org/h2h/alexander-zverev-vs-hamad-medjedovic,true,both_active,Z355,Alexander Zverev,alexander-zverev,M0JF,Hamad Medjedovic,hamad-medjedovic
+https://stats.tennismylife.org/h2h/arthur-ashe-vs-stan-smith,true,direct_h2h_and_top20,A063,Arthur Ashe,arthur-ashe,S060,Stan Smith,stan-smith
+https://stats.tennismylife.org/h2h/andy-murray-vs-richard-gasquet,true,direct_h2h_and_top20,MC10,Andy Murray,andy-murray,G628,Richard Gasquet,richard-gasquet
+https://stats.tennismylife.org/h2h/boris-becker-vs-goran-ivanisevic,true,direct_h2h_and_top20,B028,Boris Becker,boris-becker,I034,Goran Ivanisevic,goran-ivanisevic
+https://stats.tennismylife.org/h2h/carlos-alcaraz-vs-raphael-collignon,true,both_active,A0E2,Carlos Alcaraz,carlos-alcaraz,C0JP,Raphael Collignon,raphael-collignon
+https://stats.tennismylife.org/h2h/juan-manuel-cerundolo-vs-learner-tien,true,both_active,C0C8,Juan Manuel Cerundolo,juan-manuel-cerundolo,T0HA,Learner Tien,learner-tien
+https://stats.tennismylife.org/h2h/stefan-edberg-vs-yannick-noah,true,direct_h2h_and_top20,E004,Stefan Edberg,stefan-edberg,N022,Yannick Noah,yannick-noah
+https://stats.tennismylife.org/h2h/yannick-noah-vs-jimmy-connors,true,direct_h2h_and_top20,N022,Yannick Noah,yannick-noah,C044,Jimmy Connors,jimmy-connors
+https://stats.tennismylife.org/h2h/jose-luis-clerc-vs-stefan-edberg,true,direct_h2h_and_top20,C039,Jose-Luis Clerc,jose-luis-clerc,E004,Stefan Edberg,stefan-edberg
+https://stats.tennismylife.org/h2h/rafael-nadal-vs-rainer-schuettler,true,direct_h2h_and_top20,N409,Rafael Nadal,rafael-nadal,S636,Rainer Schuettler,rainer-schuettler
+https://stats.tennismylife.org/h2h/alexander-zverev-vs-ignacio-buse,true,both_active,Z355,Alexander Zverev,alexander-zverev,B0ID,Ignacio Buse,ignacio-buse
+https://stats.tennismylife.org/h2h/andy-murray-vs-tim-henman,true,direct_h2h_and_top20,MC10,Andy Murray,andy-murray,H336,Tim Henman,tim-henman
+https://stats.tennismylife.org/h2h/boris-becker-vs-juan-aguilera,true,direct_h2h_and_top20,B028,Boris Becker,boris-becker,A007,Juan Aguilera,juan-aguilera
+https://stats.tennismylife.org/h2h/karen-khachanov-vs-marton-fucsovics,true,both_active,KE29,Karen Khachanov,karen-khachanov,F724,Marton Fucsovics,marton-fucsovics
+https://stats.tennismylife.org/h2h/ivan-lendl-vs-aaron-krickstein,true,direct_h2h_and_top20,L018,Ivan Lendl,ivan-lendl,K023,Aaron Krickstein,aaron-krickstein
+https://stats.tennismylife.org/h2h/alexander-zverev-vs-jenson-brooksby,true,both_active,Z355,Alexander Zverev,alexander-zverev,B0CD,Jenson Brooksby,jenson-brooksby
+https://stats.tennismylife.org/h2h/arthur-ashe-vs-tom-okker,true,direct_h2h_and_top20,A063,Arthur Ashe,arthur-ashe,O032,Tom Okker,tom-okker
+https://stats.tennismylife.org/h2h/carlos-moya-vs-juan-carlos-ferrero,true,direct_h2h_and_top20,M605,Carlos Moya,carlos-moya,F316,Juan Carlos Ferrero,juan-carlos-ferrero
+https://stats.tennismylife.org/h2h/jack-draper-vs-rafael-nadal,true,both_active,D0CO,Jack Draper,jack-draper,N409,Rafael Nadal,rafael-nadal
+https://stats.tennismylife.org/h2h/rafael-nadal-vs-francisco-cerundolo,true,both_active,N409,Rafael Nadal,rafael-nadal,C0AU,Francisco Cerundolo,francisco-cerundolo
+https://stats.tennismylife.org/h2h/ignacio-buse-vs-novak-djokovic,true,both_active,B0ID,Ignacio Buse,ignacio-buse,D643,Novak Djokovic,novak-djokovic
+https://stats.tennismylife.org/h2h/rafael-nadal-vs-robin-soderling,true,direct_h2h_and_top20,N409,Rafael Nadal,rafael-nadal,SA49,Robin Soderling,robin-soderling
+https://stats.tennismylife.org/h2h/boris-becker-vs-yevgeny-kafelnikov,true,direct_h2h_and_top20,B028,Boris Becker,boris-becker,K267,Yevgeny Kafelnikov,yevgeny-kafelnikov
+https://stats.tennismylife.org/h2h/jeremy-chardy-vs-karen-khachanov,false,not_eligible,CA12,Jeremy Chardy,jeremy-chardy,KE29,Karen Khachanov,karen-khachanov
+https://stats.tennismylife.org/h2h/daniil-medvedev-vs-valentin-vacherot,true,both_active,MM58,Daniil Medvedev,daniil-medvedev,VA25,Valentin Vacherot,valentin-vacherot
+https://stats.tennismylife.org/h2h/davide-sanguinetti-vs-roger-federer,false,not_eligible,S480,Davide Sanguinetti,davide-sanguinetti,F324,Roger Federer,roger-federer
+https://stats.tennismylife.org/h2h/denis-shapovalov-vs-juan-manuel-cerundolo,true,both_active,SU55,Denis Shapovalov,denis-shapovalov,C0C8,Juan Manuel Cerundolo,juan-manuel-cerundolo
+https://stats.tennismylife.org/h2h/gaston-gaudio-vs-gustavo-kuerten,true,direct_h2h_and_top20,G374,Gaston Gaudio,gaston-gaudio,K293,Gustavo Kuerten,gustavo-kuerten
+https://stats.tennismylife.org/h2h/pete-sampras-vs-tommy-haas,true,direct_h2h_and_top20,S402,Pete Sampras,pete-sampras,H355,Tommy Haas,tommy-haas
+https://stats.tennismylife.org/h2h/fabrice-santoro-vs-pete-sampras,true,direct_h2h_and_top20,S424,Fabrice Santoro,fabrice-santoro,S402,Pete Sampras,pete-sampras
+https://stats.tennismylife.org/h2h/felix-mantilla-vs-robby-ginepri,true,direct_h2h_and_top20,M535,Felix Mantilla,felix-mantilla,G569,Robby Ginepri,robby-ginepri
+https://stats.tennismylife.org/h2h/gustavo-kuerten-vs-carlos-moya,true,direct_h2h_and_top20,K293,Gustavo Kuerten,gustavo-kuerten,M605,Carlos Moya,carlos-moya
+https://stats.tennismylife.org/h2h/john-mcenroe-vs-kevin-curren,true,direct_h2h_and_top20,M047,John McEnroe,john-mcenroe,C057,Kevin Curren,kevin-curren
+https://stats.tennismylife.org/h2h/john-newcombe-vs-ken-rosewall,true,direct_h2h_and_top20,N044,John Newcombe,john-newcombe,R075,Ken Rosewall,ken-rosewall
+https://stats.tennismylife.org/h2h/sandy-mayer-vs-stefan-edberg,true,direct_h2h_and_top20,M039,Sandy Mayer,sandy-mayer,E004,Stefan Edberg,stefan-edberg

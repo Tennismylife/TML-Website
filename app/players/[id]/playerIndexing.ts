@@ -2,6 +2,8 @@ import { prisma } from '@/lib/prisma';
 
 const INDEX_SNAPSHOT_DATE = new Date('2026-04-06T00:00:00.000Z');
 const SURFACE_PAGE_MANUAL_ALLOWLIST = new Set(['alex-molcan']);
+const SEASON_INDEX_MANUAL_ALLOWLIST = new Set(['alex-molcan']);
+const SEASON_ALWAYS_INDEX_YEARS = new Set([2024, 2025, 2026]);
 
 async function resolvePlayerForIndexing(idOrSlug: string) {
   const value = String(idOrSlug);
@@ -49,9 +51,63 @@ export async function isPlayerInTop100IndexAllowlist(idOrSlug: string): Promise<
   }
 }
 
+async function hasPlayerEverBeenTop10(playerId: string): Promise<boolean> {
+  try {
+    const count = await prisma.ranking.count({
+      where: {
+        playerId,
+        rank: { lte: 10 },
+      },
+    });
+    return count > 0;
+  } catch {
+    return false;
+  }
+}
+
 export async function getPlayerTop100Robots(idOrSlug: string): Promise<{ index: boolean; follow: boolean }> {
   return {
     index: await isPlayerInTop100IndexAllowlist(idOrSlug),
+    follow: true,
+  };
+}
+
+export async function shouldIndexPlayerSeason(idOrSlug: string, year: number): Promise<boolean> {
+  const player = await resolvePlayerForIndexing(idOrSlug);
+  if (!player?.id) return false;
+
+  if (player.slug && SEASON_INDEX_MANUAL_ALLOWLIST.has(player.slug)) {
+    return true;
+  }
+
+  const y = Number(year);
+  if (!Number.isInteger(y) || y < 1900 || y > new Date().getFullYear() + 1) {
+    return false;
+  }
+
+  const totalMatches = await prisma.match.count({
+    where: {
+      year: y,
+      status: true,
+      OR: [{ winner_id: player.id }, { loser_id: player.id }],
+    },
+  });
+
+  if (totalMatches === 0) {
+    return false;
+  }
+
+  if (y >= 2024) {
+    return true;
+  }
+
+  const everTop10 = await hasPlayerEverBeenTop10(player.id);
+  return everTop10;
+}
+
+export async function getPlayerSeasonRobots(idOrSlug: string, year: number): Promise<{ index: boolean; follow: boolean }> {
+  return {
+    index: await shouldIndexPlayerSeason(idOrSlug, year),
     follow: true,
   };
 }
