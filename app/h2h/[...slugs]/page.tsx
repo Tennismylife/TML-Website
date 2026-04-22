@@ -14,6 +14,85 @@ import enLocale from 'i18n-iso-countries/langs/en.json';
 
 const canonicalOrigin = new URL(process.env.NEXT_PUBLIC_SITE_ORIGIN ?? 'https://stats.tennismylife.org');
 
+export const dynamic = 'force-dynamic';
+const ENABLE_H2H_NOINDEX_ALGORITHM = true;
+
+async function playerIsActive(playerId: string, latestRankingDateId: number | null) {
+  if (!playerId) return false;
+
+  if (latestRankingDateId) {
+    const currentRanking = await prisma.ranking.findFirst({
+      where: {
+        playerId: String(playerId),
+        rankingDateId: latestRankingDateId,
+      },
+      select: { id: true },
+    });
+    if (currentRanking) return true;
+  }
+
+  const last18Months = new Date();
+  last18Months.setUTCMonth(last18Months.getUTCMonth() - 18);
+
+  const recentMatch = await prisma.match.findFirst({
+    where: {
+      status: true,
+      tourney_date: { gte: last18Months },
+      OR: [
+        { winner_id: playerId },
+        { loser_id: playerId },
+      ],
+    },
+    select: { id: true },
+  });
+  return Boolean(recentMatch);
+}
+
+async function playerHasEverBeenTop20(playerId: string) {
+  if (!playerId) return false;
+  const everTop20 = await prisma.ranking.findFirst({
+    where: {
+      playerId: String(playerId),
+      rank: { lte: 20 },
+    },
+    select: { id: true },
+  });
+  return Boolean(everTop20);
+}
+
+async function playerHasDirectH2HMatch(player1Id: string, player2Id: string) {
+  const match = await prisma.match.findFirst({
+    where: {
+      status: true,
+      OR: [
+        { winner_id: player1Id, loser_id: player2Id },
+        { winner_id: player2Id, loser_id: player1Id },
+      ],
+    },
+    select: { id: true },
+  });
+  return Boolean(match);
+}
+
+async function isPlayerEligibleForH2H(playerId: string, latestRankingDateId: number | null) {
+  if (!playerId) return false;
+  const active = await playerIsActive(playerId, latestRankingDateId);
+  if (active) return true;
+  return await playerHasEverBeenTop20(playerId);
+}
+
+async function hasEverBeenTop20(playerId: string) {
+  if (!playerId) return false;
+  const everTop20 = await prisma.ranking.findFirst({
+    where: {
+      playerId: String(playerId),
+      rank: { lte: 20 },
+    },
+    select: { id: true },
+  });
+  return Boolean(everTop20);
+}
+
 export async function generateMetadata({ params, searchParams }: { params?: Promise<{ slugs?: string[] }> | { slugs?: string[] }, searchParams?: Record<string, string | string[]> }): Promise<Metadata> {
   // Next.js 16+ params can be a Promise
   const resolvedParams = params instanceof Promise ? await params : params;
@@ -22,6 +101,7 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
 
   let player1Name: string | null = null;
   let player2Name: string | null = null;
+  let indexable = false;
 
   const match = slug.match(/^(.+)-vs-(.+)$/);
   if (match) {
@@ -29,11 +109,34 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
     const p2slug = match[2].replace(/-/g, ' ');
     try {
       const [p1, p2] = await Promise.all([
-        prisma.player.findFirst({ where: { atpname: { equals: p1slug, mode: 'insensitive' } }, select: { atpname: true } }),
-        prisma.player.findFirst({ where: { atpname: { equals: p2slug, mode: 'insensitive' } }, select: { atpname: true } })
+        prisma.player.findFirst({ where: { atpname: { equals: p1slug, mode: 'insensitive' } }, select: { id: true, atpname: true } }),
+        prisma.player.findFirst({ where: { atpname: { equals: p2slug, mode: 'insensitive' } }, select: { id: true, atpname: true } }),
       ]);
+
       player1Name = p1?.atpname ?? null;
       player2Name = p2?.atpname ?? null;
+
+      if (p1?.id && p2?.id) {
+        const latestRankingDate = await prisma.rankingDate.findFirst({ orderBy: { date: 'desc' }, select: { id: true } });
+        const latestRankingDateId = latestRankingDate?.id ?? null;
+
+        const [p1Active, p2Active, p1Eligible, p2Eligible, p1EverTop20, p2EverTop20] = await Promise.all([
+          playerIsActive(p1.id, latestRankingDateId),
+          playerIsActive(p2.id, latestRankingDateId),
+          isPlayerEligibleForH2H(p1.id, latestRankingDateId),
+          isPlayerEligibleForH2H(p2.id, latestRankingDateId),
+          playerHasEverBeenTop20(p1.id),
+          playerHasEverBeenTop20(p2.id),
+        ]);
+
+        if (p1Active && p2Active) {
+          indexable = true;
+        } else if (p1Eligible && p2Eligible && (p1EverTop20 || p2EverTop20)) {
+          indexable = await playerHasDirectH2HMatch(p1.id, p2.id);
+        } else {
+          indexable = false;
+        }
+      }
     } catch (err) {
       // ignore and fallback to generic metadata
     }
@@ -46,13 +149,13 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
   const canonical = new URL(path, canonicalOrigin).toString();
 
   const hasQuery = searchParams && Object.keys(searchParams).length > 0;
+  const shouldIndex = !hasQuery && (ENABLE_H2H_NOINDEX_ALGORITHM ? indexable : true);
 
   return {
     title: siteTitle,
     description,
     authors: [{ name: 'TennisMyLife' }],
-    // prevent pages with query strings from being indexed (filters applied)
-    robots: hasQuery ? { index: false, follow: true } : { index: true, follow: true },
+    robots: { index: shouldIndex, follow: true },
     openGraph: {
       title: siteTitle,
       description,
