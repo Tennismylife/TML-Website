@@ -122,15 +122,27 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
   let player2Name: string | null = null;
   let indexable = false;
 
-  const match = slug.match(/^(.+)-vs-(.+)$/);
+    const match = slug.match(/^(.+)-vs-(.+)$/);
   if (match) {
-    const p1slug = match[1].replace(/-/g, ' ');
-    const p2slug = match[2].replace(/-/g, ' ');
+    const p1slugRaw = match[1];
+    const p2slugRaw = match[2];
+    const p1slug = p1slugRaw.replace(/-/g, ' ');
+    const p2slug = p2slugRaw.replace(/-/g, ' ');
     try {
-      const [p1, p2] = await Promise.all([
+      // Prefer lookup by slug (URL) and fallback to atpname matching to avoid
+      // false negatives caused by spacing/casing/punctuation differences.
+      const [p1BySlug, p2BySlug] = await Promise.all([
+        prisma.player.findUnique({ where: { slug: p1slugRaw }, select: { id: true, atpname: true } }),
+        prisma.player.findUnique({ where: { slug: p2slugRaw }, select: { id: true, atpname: true } }),
+      ]);
+
+      const [p1ByName, p2ByName] = await Promise.all([
         prisma.player.findFirst({ where: { atpname: { equals: p1slug, mode: 'insensitive' } }, select: { id: true, atpname: true } }),
         prisma.player.findFirst({ where: { atpname: { equals: p2slug, mode: 'insensitive' } }, select: { id: true, atpname: true } }),
       ]);
+
+      const p1 = p1BySlug ?? p1ByName ?? null;
+      const p2 = p2BySlug ?? p2ByName ?? null;
 
       player1Name = p1?.atpname ?? null;
       player2Name = p2?.atpname ?? null;
