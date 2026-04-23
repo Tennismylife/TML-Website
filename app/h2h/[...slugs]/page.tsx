@@ -48,6 +48,25 @@ async function playerIsActive(playerId: string, latestRankingDateId: number | nu
   return Boolean(recentMatch);
 }
 
+async function playerHasRecentMatch(playerId: string) {
+  if (!playerId) return false;
+  const last18Months = new Date();
+  last18Months.setUTCMonth(last18Months.getUTCMonth() - 18);
+
+  const recentMatch = await prisma.match.findFirst({
+    where: {
+      status: true,
+      tourney_date: { gte: last18Months },
+      OR: [
+        { winner_id: playerId },
+        { loser_id: playerId },
+      ],
+    },
+    select: { id: true },
+  });
+  return Boolean(recentMatch);
+}
+
 async function playerHasEverBeenTop20(playerId: string) {
   if (!playerId) return false;
   const everTop20 = await prisma.ranking.findFirst({
@@ -120,16 +139,22 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
         const latestRankingDate = await prisma.rankingDate.findFirst({ orderBy: { date: 'desc' }, select: { id: true } });
         const latestRankingDateId = latestRankingDate?.id ?? null;
 
-        const [p1Active, p2Active, p1Eligible, p2Eligible, p1EverTop20, p2EverTop20] = await Promise.all([
+        const [p1Active, p2Active, p1RecentMatch, p2RecentMatch, p1Eligible, p2Eligible, p1EverTop20, p2EverTop20] = await Promise.all([
           playerIsActive(p1.id, latestRankingDateId),
           playerIsActive(p2.id, latestRankingDateId),
+          playerHasRecentMatch(p1.id),
+          playerHasRecentMatch(p2.id),
           isPlayerEligibleForH2H(p1.id, latestRankingDateId),
           isPlayerEligibleForH2H(p2.id, latestRankingDateId),
           playerHasEverBeenTop20(p1.id),
           playerHasEverBeenTop20(p2.id),
         ]);
 
-        if (p1Active && p2Active) {
+        // New rule: if both players have played at least one match individually in the
+        // last 18 months, consider the H2H page indexable even without a direct match.
+        if (p1RecentMatch && p2RecentMatch) {
+          indexable = true;
+        } else if (p1Active && p2Active) {
           indexable = true;
         } else if (p1Eligible && p2Eligible && (p1EverTop20 || p2EverTop20)) {
           indexable = await playerHasDirectH2HMatch(p1.id, p2.id);

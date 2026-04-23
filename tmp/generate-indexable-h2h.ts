@@ -28,9 +28,16 @@ async function main() {
     },
     select: { winner_id: true, loser_id: true },
   });
+  const recentPlayers = new Set<string>();
   recentMatches.forEach((m) => {
-    if (m.winner_id) activePlayers.add(m.winner_id);
-    if (m.loser_id) activePlayers.add(m.loser_id);
+    if (m.winner_id) {
+      activePlayers.add(m.winner_id);
+      recentPlayers.add(m.winner_id);
+    }
+    if (m.loser_id) {
+      activePlayers.add(m.loser_id);
+      recentPlayers.add(m.loser_id);
+    }
   });
   console.log(`Players with match in last 18 months: ${recentMatches.length} matches`);
 
@@ -82,12 +89,19 @@ async function main() {
 
       const p1Active = activePlayers.has(p1id);
       const p2Active = activePlayers.has(p2id);
+      const p1Recent = recentPlayers.has(p1id);
+      const p2Recent = recentPlayers.has(p2id);
       const key = [p1id, p2id].sort().join('_');
       const hasDirectMatch = directH2H.has(key);
 
-      if (!p1Active || !p2Active) {
-        if (!hasDirectMatch) continue;
-        if (!top20Set.has(p1id) && !top20Set.has(p2id)) continue;
+      // Include pair if both players played individually in the last 18 months
+      if (p1Recent && p2Recent) {
+        // include
+      } else {
+        if (!p1Active || !p2Active) {
+          if (!hasDirectMatch) continue;
+          if (!top20Set.has(p1id) && !top20Set.has(p2id)) continue;
+        }
       }
 
       const url = `/h2h/${encodeURIComponent(p1.slug ?? p1.atpname?.toLowerCase().replace(/\s+/g, '-'))}-vs-${encodeURIComponent(p2.slug ?? p2.atpname?.toLowerCase().replace(/\s+/g, '-'))}`;
