@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import RecordsRankingClient from '../RecordsRankingClient';
 import type { Metadata } from 'next';
+import { INDEX_FOLLOW_URLS_SET } from './indexability';
 
 export const dynamic = 'force-dynamic';
 
@@ -193,23 +194,10 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
         ? pageRaw.some((v) => String(v ?? '').trim() !== '')
         : pageRaw !== undefined && String(pageRaw).trim() !== '';
       if (pageParamPresent) return { index: false, follow: true };
-      // Pages not linked from /recordsranking landing are noindex
-      const LANDING_RANK = new Set([1,2,3,4,5,6,7,8,9,10]);
-      const LANDING_TOP  = new Set([2,3,4,5,6,7,8,9,10,20,30,50,100]);
-      const routeKey = sub ? `${tab}/${sub}` : tab;
-      const TOP_ROUTES = new Set([
-        'weeksattop', 'streak/consecutiveweeksattop',
-        'endoftheseason/attop', 'endoftheseason/consecutivesattop',
-        'ages/youngestattop', 'ages/oldestattop',
-        'agesendoftheseason/youngestattop', 'agesendoftheseason/oldestattop',
-        'timespan/attop', 'timespanendoftheseason/attop',
-      ]);
-      const POINTS_ROUTES = new Set(['mostpoints', 'diffpoints']);
-      let linked = true;
-      if (!POINTS_ROUTES.has(tab)) {
-        linked = TOP_ROUTES.has(routeKey) ? LANDING_TOP.has(top) : LANDING_RANK.has(rank);
-      }
-      return linked
+
+      const currentPath = `/recordsranking${slug.length ? `/${slug.map((segment) => String(segment).toLowerCase()).join('/')}` : ''}`;
+      const isIndexable = INDEX_FOLLOW_URLS_SET.has(currentPath);
+      return isIndexable
         ? { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large' as const, 'max-video-preview': -1 }
         : { index: false, follow: true };
     })(),

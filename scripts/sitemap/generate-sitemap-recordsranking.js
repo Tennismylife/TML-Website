@@ -27,7 +27,7 @@ function escapeXml(value) {
     .replace(/'/g, '&apos;');
 }
 
-const LASTMOD = '2026-04-07';
+const LASTMOD = new Date().toISOString().slice(0, 10);
 
 function buildUrlXml(baseUrl, loc) {
   return [
@@ -61,56 +61,21 @@ function writeSitemapIndex(outDir, siteRoot) {
   return files.length;
 }
 
-// ── URL list (indexed pages only, matching robots logic in [...slug]/page.tsx) ─
+// ── URL list (indexed pages only, matching INDEX_FOLLOW_URLS in app/recordsranking/indexability.ts) ─
 
-// Rank-based routes: only ranks 1–10 are linked from landing (LANDING_RANK)
-const RANK_VALUES = Array.from({ length: 10 }, (_, i) => i + 1);
-// Top-based routes: 2,3,4,5,6,7,8,9,10,20,30,50,100 (LANDING_TOP)
-const TOP_VALUES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 50, 100];
+function parseIndexableUrls(filePath) {
+  const content = fs.readFileSync(filePath, 'utf8');
+  const match = content.match(/export const INDEX_FOLLOW_URLS = \[([\s\S]*?)\] as const/);
+  if (!match) throw new Error(`INDEX_FOLLOW_URLS block not found in ${filePath}`);
 
-function rankUrls(prefix) { return RANK_VALUES.map((n) => `${prefix}/${n}`); }
-function topUrls(prefix)  { return TOP_VALUES.map((n) => `${prefix}/${n}`); }
+  return match[1]
+    .split(/\r?\n/)
+    .map((line) => line.trim().replace(/,$/, '').replace(/^['"]|['"]$/g, ''))
+    .filter((line) => line.startsWith('/recordsranking'));
+}
 
-const ALL_LOCS = [
-  // Weeks at Rank (10)
-  ...rankUrls('/recordsranking/weeksatno'),
-  // Weeks in Top N (13)
-  ...topUrls('/recordsranking/weeksattop'),
-  // Consecutive Weeks at Rank (10)
-  ...rankUrls('/recordsranking/streak/consecutiveweeksatno'),
-  // Consecutive Weeks in Top N (13)
-  ...topUrls('/recordsranking/streak/consecutiveweeksattop'),
-  // Year-End Finishes at Rank (10)
-  ...rankUrls('/recordsranking/endoftheseason/no'),
-  // Year-End Finishes in Top N (13)
-  ...topUrls('/recordsranking/endoftheseason/attop'),
-  // Consecutive Year-End Finishes at Rank (10)
-  ...rankUrls('/recordsranking/endoftheseason/consecutivesatno'),
-  // Consecutive Year-End Finishes in Top N (13)
-  ...topUrls('/recordsranking/endoftheseason/consecutivesattop'),
-  // Ages — Overall (10+10+13+13 = 46)
-  ...rankUrls('/recordsranking/ages/youngestsatno'),
-  ...rankUrls('/recordsranking/ages/oldestsatno'),
-  ...topUrls('/recordsranking/ages/youngestattop'),
-  ...topUrls('/recordsranking/ages/oldestattop'),
-  // Ages — Year-End (10+10+13+13 = 46)
-  ...rankUrls('/recordsranking/agesendoftheseason/youngestsatno'),
-  ...rankUrls('/recordsranking/agesendoftheseason/oldestsatno'),
-  ...topUrls('/recordsranking/agesendoftheseason/youngestattop'),
-  ...topUrls('/recordsranking/agesendoftheseason/oldestattop'),
-  // Career Timespan — Overall (10+13 = 23)
-  ...rankUrls('/recordsranking/timespan/atno'),
-  ...topUrls('/recordsranking/timespan/attop'),
-  // Career Timespan — Year-End (10+13 = 23)
-  ...rankUrls('/recordsranking/timespanendoftheseason/atno'),
-  ...topUrls('/recordsranking/timespanendoftheseason/attop'),
-  // Points Records (4) — always indexed
-  '/recordsranking/mostpoints/overall',
-  '/recordsranking/mostpoints/endoftheseason',
-  '/recordsranking/diffpoints/overall',
-  '/recordsranking/diffpoints/endoftheseason',
-];
-// Total: 12×10 + 10×13 + 4 = 120 + 130 + 4 = 254
+const INDEXABILITY_FILE = path.join(process.cwd(), 'app', 'recordsranking', 'indexability.ts');
+const ALL_LOCS = parseIndexableUrls(INDEXABILITY_FILE);
 
 // ── main ──────────────────────────────────────────────────────────────────────
 
