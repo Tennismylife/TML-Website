@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import RecordsRankingClient from '../RecordsRankingClient';
 import type { Metadata } from 'next';
-import { INDEX_FOLLOW_URLS_SET } from './indexability';
+import { INDEX_FOLLOW_URLS_SET } from '../indexability';
 
 export const dynamic = 'force-dynamic';
 
