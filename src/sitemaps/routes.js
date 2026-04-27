@@ -7,7 +7,16 @@ const { xmlHeaderUrlset, xmlFooterUrlset, xmlHeaderSitemapIndex, xmlFooterSitema
 const SITE_ROOT = (process.env.SITE_ROOT || 'https://stats.tennismylife.org').replace(/\/$/, '/') + '/sitemaps';
 const MAX_PER_FILE = Number(process.env.MAX_URLS_PER_FILE || 40000);
 const EXCLUDE_PREFIXES = (process.env.SITEMAP_EXCLUDE_PREFIXES || 'unknown-,qualifier-').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-const CACHE_MAX_AGE = Number(process.env.SITEMAP_CACHE_MAX_AGE || process.env.CACHE_MAX_AGE || 3600);const PLAYER_INDEX_SNAPSHOT_DATE = new Date('2026-04-20T00:00:00.000Z');
+const CACHE_MAX_AGE = Number(process.env.SITEMAP_CACHE_MAX_AGE || process.env.CACHE_MAX_AGE || 3600);
+const PLAYER_INDEX_SNAPSHOT_DATE = new Date('2026-04-20T00:00:00.000Z');
+
+const ROOT_ONLY_RECORDS_TOURNAMENT_SLUGS = new Set([
+  'brisbane','hong-kong','united-cup','adelaide-3','auckland','montpellier','dallas-2','rotterdam','buenos-aires-2','delray-beach','marseille','doha','rio-de-janeiro','acapulco','dubai','santiago-2','indian-wells-masters','miami-masters','bucharest-2','houston-2','marrakech','monte-carlo-masters','barcelona','munich','madrid-masters','rome-masters','geneva','hamburg','s-hertogenbosch','stuttgart','halle','queens-club','eastbourne','mallorca-2','bastad','gstaad','los-cabos','kitzbuhel','umag','washington','canada-masters','cincinnati-masters','winston-salem','chengdu','hangzhou','beijing','tokyo','shanghai','almaty','brussels-3','stockholm','basel','vienna','paris-masters','athens-2','metz','atp-finals','next-gen-atp-finals',
+]);
+
+const SLAM_RECORDS_TOURNAMENT_SLUGS = new Set([
+  'australian-open','roland-garros','wimbledon','us-open',
+]);
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
@@ -288,9 +297,14 @@ async function buildTournamentPartitions() {
         yield xmlHeaderUrlset();
         for (const s of chunkLocal) {
           yield urlEntry({ loc: (process.env.SITE_ROOT || 'https://stats.tennismylife.org').replace(/\/$/, '') + `/tournaments/${s.slug}`, changefreq: s.changefreq, priority: s.priority, lastmod: s.lastmod });
-          yield urlEntry({ loc: (process.env.SITE_ROOT || 'https://stats.tennismylife.org').replace(/\/$/, '') + `/tournaments/${s.slug}/records`, changefreq: 'daily', priority: '1.00', lastmod: s.lastmod });
-          const tournamentRecordSegments = ['count/titles','count/wins','count/played','count/entries','percentage/wins','percentage/rounds/R128','percentage/rounds/R64','percentage/rounds/R32','percentage/rounds/R16','percentage/rounds/QF','percentage/rounds/SF','percentage/rounds/F','timespan/rounds/Titles','timespan/rounds/R128','timespan/rounds/R64','timespan/rounds/R32','timespan/rounds/R16','timespan/rounds/QF','timespan/rounds/SF','timespan/rounds/F','roundsonentries/rounds/Winner','roundsonentries/rounds/R32','roundsonentries/rounds/R16','roundsonentries/rounds/QF','roundsonentries/rounds/SF','roundsonentries/rounds/F','least/rounds/R32','least/rounds/R16','least/rounds/QF','least/rounds/SF','least/rounds/F','least/rounds/W','ages/main/youngest','ages/main/oldest','ages/titles/youngest','ages/titles/oldest','ages/youngestrounds/R128','ages/youngestrounds/R64','ages/youngestrounds/R32','ages/youngestrounds/R16','ages/youngestrounds/QF','ages/youngestrounds/SF','ages/youngestrounds/F','ages/oldestrounds/R128','ages/oldestrounds/R64','ages/oldestrounds/R32','ages/oldestrounds/R16','ages/oldestrounds/QF','ages/oldestrounds/SF','ages/oldestrounds/F'];
-          for (const seg of tournamentRecordSegments) yield urlEntry({ loc: (process.env.SITE_ROOT || 'https://stats.tennismylife.org').replace(/\/$/, '') + `/tournaments/${s.slug}/records/${seg}`, changefreq: 'daily', priority: '1.00', lastmod: s.lastmod });
+          const hasRecordsRoot = ROOT_ONLY_RECORDS_TOURNAMENT_SLUGS.has(s.slug) || SLAM_RECORDS_TOURNAMENT_SLUGS.has(s.slug);
+          if (hasRecordsRoot) {
+            yield urlEntry({ loc: (process.env.SITE_ROOT || 'https://stats.tennismylife.org').replace(/\/$/, '') + `/tournaments/${s.slug}/records`, changefreq: 'daily', priority: '1.00', lastmod: s.lastmod });
+          }
+          if (SLAM_RECORDS_TOURNAMENT_SLUGS.has(s.slug)) {
+            const tournamentRecordSegments = ['count/titles','count/wins','count/played','count/entries','percentage/wins','percentage/rounds/R128','percentage/rounds/R64','percentage/rounds/R32','percentage/rounds/R16','percentage/rounds/QF','percentage/rounds/SF','percentage/rounds/F','timespan/rounds/Titles','timespan/rounds/R128','timespan/rounds/R64','timespan/rounds/R32','timespan/rounds/R16','timespan/rounds/QF','timespan/rounds/SF','timespan/rounds/F','roundsonentries/rounds/Winner','roundsonentries/rounds/R32','roundsonentries/rounds/R16','roundsonentries/rounds/QF','roundsonentries/rounds/SF','roundsonentries/rounds/F','least/rounds/R32','least/rounds/R16','least/rounds/QF','least/rounds/SF','least/rounds/F','least/rounds/W','ages/main/youngest','ages/main/oldest','ages/titles/youngest','ages/titles/oldest','ages/youngestrounds/R128','ages/youngestrounds/R64','ages/youngestrounds/R32','ages/youngestrounds/R16','ages/youngestrounds/QF','ages/youngestrounds/SF','ages/youngestrounds/F','ages/oldestrounds/R128','ages/oldestrounds/R64','ages/oldestrounds/R32','ages/oldestrounds/R16','ages/oldestrounds/QF','ages/oldestrounds/SF','ages/oldestrounds/F'];
+            for (const seg of tournamentRecordSegments) yield urlEntry({ loc: (process.env.SITE_ROOT || 'https://stats.tennismylife.org').replace(/\/$/, '') + `/tournaments/${s.slug}/records/${seg}`, changefreq: 'daily', priority: '1.00', lastmod: s.lastmod });
+          }
         }
         yield xmlFooterUrlset();
       })(chunk));

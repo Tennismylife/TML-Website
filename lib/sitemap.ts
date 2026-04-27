@@ -3,6 +3,14 @@ import { getWhitelistedSitemapPaths } from './seo/records-policy';
 
 const PLAYER_INDEX_SNAPSHOT_DATE = new Date('2026-04-20T00:00:00.000Z');
 
+const ROOT_ONLY_RECORDS_TOURNAMENT_SLUGS = new Set([
+  'brisbane','hong-kong','united-cup','adelaide-3','auckland','montpellier','dallas-2','rotterdam','buenos-aires-2','delray-beach','marseille','doha','rio-de-janeiro','acapulco','dubai','santiago-2','indian-wells-masters','miami-masters','bucharest-2','houston-2','marrakech','monte-carlo-masters','barcelona','munich','madrid-masters','rome-masters','geneva','hamburg','s-hertogenbosch','stuttgart','halle','queens-club','eastbourne','mallorca-2','bastad','gstaad','los-cabos','kitzbuhel','umag','washington','canada-masters','cincinnati-masters','winston-salem','chengdu','hangzhou','beijing','tokyo','shanghai','almaty','brussels-3','stockholm','basel','vienna','paris-masters','athens-2','metz','atp-finals','next-gen-atp-finals',
+]);
+
+const SLAM_RECORDS_TOURNAMENT_SLUGS = new Set([
+  'australian-open','roland-garros','wimbledon','us-open',
+]);
+
 export type SitemapEntry = {
   path: string;
   lastmod?: string; // YYYY-MM-DD
@@ -295,8 +303,13 @@ export async function getSitemapEntries(opts?: { excludePlayers?: boolean; exclu
 
     tournaments.filter(t => !!t.slug).forEach(t => {
       const basePath = `/tournaments/${t.slug}`;
-      entries.push({ path: `${basePath}/records` });
-      tournamentRecordSegments.forEach(seg => entries.push({ path: `${basePath}/records/${seg}` }));
+      const hasRecordsRoot = ROOT_ONLY_RECORDS_TOURNAMENT_SLUGS.has(t.slug) || SLAM_RECORDS_TOURNAMENT_SLUGS.has(t.slug);
+      if (hasRecordsRoot) {
+        entries.push({ path: `${basePath}/records` });
+      }
+      if (SLAM_RECORDS_TOURNAMENT_SLUGS.has(t.slug)) {
+        tournamentRecordSegments.forEach(seg => entries.push({ path: `${basePath}/records/${seg}` }));
+      }
     });
   }
 
