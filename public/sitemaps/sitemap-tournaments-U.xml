@@ -2,937 +2,781 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/count/titles</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/count/wins</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/count/played</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/count/entries</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/percentage/wins</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/percentage/rounds/R128</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/percentage/rounds/R64</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/percentage/rounds/R32</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/percentage/rounds/R16</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/percentage/rounds/QF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/percentage/rounds/SF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/percentage/rounds/F</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/timespan/rounds/Titles</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/timespan/rounds/R128</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/timespan/rounds/R64</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/timespan/rounds/R32</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/timespan/rounds/R16</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/timespan/rounds/QF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/timespan/rounds/SF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/timespan/rounds/F</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/roundsonentries/rounds/Winner</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/roundsonentries/rounds/R32</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/roundsonentries/rounds/R16</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/roundsonentries/rounds/QF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/roundsonentries/rounds/SF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/roundsonentries/rounds/F</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/least/rounds/R32</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/least/rounds/R16</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/least/rounds/QF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/least/rounds/SF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/least/rounds/F</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/least/rounds/W</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/ages/main/youngest</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/ages/main/oldest</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/ages/titles/youngest</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/ages/titles/oldest</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/ages/youngestrounds/R128</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/ages/youngestrounds/R64</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/ages/youngestrounds/R32</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/ages/youngestrounds/R16</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/ages/youngestrounds/QF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/ages/youngestrounds/SF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/ages/youngestrounds/F</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/ages/oldestrounds/R128</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/ages/oldestrounds/R64</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/ages/oldestrounds/R32</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/ages/oldestrounds/R16</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/ages/oldestrounds/QF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/ages/oldestrounds/SF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/umag/records/ages/oldestrounds/F</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/count/titles</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/count/wins</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/count/played</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/count/entries</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/percentage/wins</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/percentage/rounds/R128</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/percentage/rounds/R64</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/percentage/rounds/R32</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/percentage/rounds/R16</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/percentage/rounds/QF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/percentage/rounds/SF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/percentage/rounds/F</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/timespan/rounds/Titles</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/timespan/rounds/R128</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/timespan/rounds/R64</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/timespan/rounds/R32</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/timespan/rounds/R16</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/timespan/rounds/QF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/timespan/rounds/SF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/timespan/rounds/F</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/roundsonentries/rounds/Winner</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/roundsonentries/rounds/R32</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/roundsonentries/rounds/R16</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/roundsonentries/rounds/QF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/roundsonentries/rounds/SF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/roundsonentries/rounds/F</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/least/rounds/R32</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/least/rounds/R16</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/least/rounds/QF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/least/rounds/SF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/least/rounds/F</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/least/rounds/W</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/ages/main/youngest</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/ages/main/oldest</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/ages/titles/youngest</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/ages/titles/oldest</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/ages/youngestrounds/R128</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/ages/youngestrounds/R64</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/ages/youngestrounds/R32</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/ages/youngestrounds/R16</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/ages/youngestrounds/QF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/ages/youngestrounds/SF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/ages/youngestrounds/F</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/ages/oldestrounds/R128</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/ages/oldestrounds/R64</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/ages/oldestrounds/R32</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/ages/oldestrounds/R16</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/ages/oldestrounds/QF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/ages/oldestrounds/SF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/united-cup/records/ages/oldestrounds/F</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/count/titles</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/count/wins</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/count/played</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/count/entries</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/percentage/wins</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/percentage/rounds/R128</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/percentage/rounds/R64</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/percentage/rounds/R32</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/percentage/rounds/R16</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/percentage/rounds/QF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/percentage/rounds/SF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/percentage/rounds/F</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/timespan/rounds/Titles</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/timespan/rounds/R128</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/timespan/rounds/R64</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/timespan/rounds/R32</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/timespan/rounds/R16</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/timespan/rounds/QF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/timespan/rounds/SF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/timespan/rounds/F</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/roundsonentries/rounds/Winner</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/roundsonentries/rounds/R32</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/roundsonentries/rounds/R16</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/roundsonentries/rounds/QF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/roundsonentries/rounds/SF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/roundsonentries/rounds/F</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/least/rounds/R32</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/least/rounds/R16</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/least/rounds/QF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/least/rounds/SF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/least/rounds/F</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/least/rounds/W</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/ages/main/youngest</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/ages/main/oldest</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/ages/titles/youngest</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/ages/titles/oldest</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/ages/youngestrounds/R128</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/ages/youngestrounds/R64</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/ages/youngestrounds/R32</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/ages/youngestrounds/R16</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/ages/youngestrounds/QF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/ages/youngestrounds/SF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/ages/youngestrounds/F</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/ages/oldestrounds/R128</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/ages/oldestrounds/R64</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/ages/oldestrounds/R32</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/ages/oldestrounds/R16</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/ages/oldestrounds/QF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/ages/oldestrounds/SF</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/tournaments/us-open/records/ages/oldestrounds/F</loc>
-    <lastmod>2026-01-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>

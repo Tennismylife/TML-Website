@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
 
-const INDEX_SNAPSHOT_DATE = '2026-04-06';
+const INDEX_SNAPSHOT_DATE = '2026-04-20';
 const SURFACES = ['clay', 'hard', 'grass'];
 
 function escapeXml(value) {

@@ -7,8 +7,7 @@ const { xmlHeaderUrlset, xmlFooterUrlset, xmlHeaderSitemapIndex, xmlFooterSitema
 const SITE_ROOT = (process.env.SITE_ROOT || 'https://stats.tennismylife.org').replace(/\/$/, '/') + '/sitemaps';
 const MAX_PER_FILE = Number(process.env.MAX_URLS_PER_FILE || 40000);
 const EXCLUDE_PREFIXES = (process.env.SITEMAP_EXCLUDE_PREFIXES || 'unknown-,qualifier-').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-const CACHE_MAX_AGE = Number(process.env.SITEMAP_CACHE_MAX_AGE || process.env.CACHE_MAX_AGE || 3600);
-
+const CACHE_MAX_AGE = Number(process.env.SITEMAP_CACHE_MAX_AGE || process.env.CACHE_MAX_AGE || 3600);const PLAYER_INDEX_SNAPSHOT_DATE = new Date('2026-04-20T00:00:00.000Z');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
@@ -55,8 +54,46 @@ async function* getPlayersForSitemap() {
     return null;
   }
 
+  const eligiblePlayerIds = new Set();
+  const rankingDate = await prisma.rankingDate.findFirst({ where: { date: PLAYER_INDEX_SNAPSHOT_DATE }, select: { id: true } });
+  if (rankingDate?.id) {
+    const rankingRows = await prisma.ranking.findMany({ where: { rankingDateId: rankingDate.id }, select: { playerId: true } });
+    rankingRows.forEach(row => { if (row.playerId) eligiblePlayerIds.add(String(row.playerId)); });
+  }
+
+  const thresholdDate = new Date();
+  thresholdDate.setMonth(thresholdDate.getMonth() - 18);
+  const recentMatches = await prisma.match.findMany({ where: { status: true, tourney_date: { gte: thresholdDate }, tourney_level: { not: 'D' } }, select: { winner_id: true, loser_id: true } });
+  for (const match of recentMatches) {
+    if (match.winner_id) eligiblePlayerIds.add(match.winner_id);
+    if (match.loser_id) eligiblePlayerIds.add(match.loser_id);
+  }
+
+  const titleWinners = await prisma.match.findMany({
+    where: {
+      status: true,
+      round: 'F',
+      team_event: false,
+      tourney_level: { not: 'D' },
+      NOT: {
+        OR: [
+          { score: { contains: 'WEA' } },
+          { score: 'To play' },
+        ],
+      },
+    },
+    select: { winner_id: true },
+  });
+  for (const row of titleWinners) {
+    if (row.winner_id) eligiblePlayerIds.add(row.winner_id);
+  }
+
+  const top20Rows = await prisma.ranking.findMany({ where: { rank: { lte: 20 } }, select: { playerId: true } });
+  top20Rows.forEach(row => { if (row.playerId) eligiblePlayerIds.add(String(row.playerId)); });
+
   const sorted = rows.filter(r => r.slug).map(r => ({ id: r.id, slug: String(r.slug).toLowerCase() })).sort((a,b)=>a.slug.localeCompare(b.slug));
   for (const r of sorted) {
+    if (!eligiblePlayerIds.has(r.id)) continue;
     const slug = r.slug;
     if (!slug) continue;
     if (EXCLUDE_PREFIXES.some(pre => slug.startsWith(pre))) continue;

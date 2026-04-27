@@ -130,24 +130,32 @@ export default async function No1MaxPointsRanking({ searchParams }: { searchPara
       {rows.length > 0 && (
         <div className="mb-6 px-5 py-4 rounded-xl bg-gray-800/50 border border-white/10 text-gray-400 text-sm leading-relaxed max-w-3xl mx-auto">
           The highest ATP ranking points ever recorded in the Open Era is{' '}
-          <span className="text-white font-medium">{rows[0].points.toLocaleString()}</span> points, achieved by{' '}
-          <span className="text-indigo-300 font-medium">{rows[0].name}</span> on{' '}
-          <span className="text-white font-medium">{rows[0].date}</span>.
+          <span className="gold-number">{rows[0].points.toLocaleString()}</span> points, achieved by{' '}
+          <span className="inline-flex items-center gap-1 text-indigo-300 font-medium">
+            {rows[0].country && <Flag ioc={rows[0].country} className="w-4 h-3" />}{rows[0].name}
+          </span>{' '}
+          on <span className="text-white font-medium">{rows[0].date}</span>.
           {rows.length > 1 && (
-            <> Second all-time is <span className="text-indigo-300 font-medium">{rows[1].name}</span>{' '}
-            with <span className="text-white font-medium">{rows[1].points.toLocaleString()}</span> points.</>
+            <> Second all-time is <span className="inline-flex items-center gap-1 text-indigo-300 font-medium">
+              {rows[1].country && <Flag ioc={rows[1].country} className="w-4 h-3" />}{rows[1].name}
+            </span>{' '}
+            with <span className="gold-number">{rows[1].points.toLocaleString()}</span> points.</>
           )}
           {rows.length > 2 && (
-            <> Third is <span className="text-indigo-300 font-medium">{rows[2].name}</span>{' '}
-            with <span className="text-white font-medium">{rows[2].points.toLocaleString()}</span> points.</>
+            <> Third is <span className="inline-flex items-center gap-1 text-indigo-300 font-medium"><Flag ioc="ESP" className="w-4 h-3" />{rows[2].name}</span>{' '}
+            with <span className="gold-number">{rows[2].points.toLocaleString()}</span> points.</>
           )}
           {over10k > 0 && (
-            <>{' '}Only <span className="text-white font-medium">{over10k}</span> player{over10k > 1 ? 's have' : ' has'} ever surpassed the 10,000-point mark.</>
+            <>{' '}Only <span className="gold-number">{over10k}</span> player{over10k > 1 ? 's have' : ' has'} ever surpassed the 10,000-point mark.</>
           )}
           {over9k > over10k && (
-            <>{' '}<span className="text-white font-medium">{over9k}</span> have exceeded 9,000 points in total.</>
+            <>{' '}<span className="gold-number">{over9k}</span> have exceeded 9,000 points in total.</>
           )}
-          {' '}The leaderboard covers <span className="text-white font-medium">{result.length}</span> players in total.
+
+          <br />
+          <br />
+          Based on the current ranking, <span className="inline-flex items-center gap-1"><Flag ioc="SUI" className="w-4 h-3" />Federer</span> would have <span className="gold-number">16,480</span> points, while under the system used in 2009 he would have <span className="gold-number">15,745</span>.{' '}
+          <span className="inline-flex items-center gap-1"><Flag ioc="SRB" className="w-4 h-3" />Djokovic</span> would still be first under the current system, increasing the total to <span className="gold-number">17,010</span>.
         </div>
       )}
 

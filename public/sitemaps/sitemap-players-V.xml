@@ -1,650 +1,104 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://stats.tennismylife.org/players/v-gillespie</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/v-rudj</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/v-scarfi</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/va-scarti</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vaclav-roubicek</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vaclav-safranek</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vadim-borisov</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vadim-davletshin</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vadim-kutsenko</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vaja-uzakov</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/valentin-dimov</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/valentin-rahmine</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/players/valentin-royer</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/valentin-sanon</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2026-01-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/valentin-vacherot</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/valerio-baiardo</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/valerio-boccitto</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/valerio-vettesi</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vallis-wilder</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/van-bay-vo</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/van-hill</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/van-minh-duong</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/van-thanh-nguyen</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/van-thanh-vo</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2026-01-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/van-winitsky</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vartan-tetikbas</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1985-02-04</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/vasek-pospisil</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vasilis-mazarakis</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vasilly-kazhera</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vasko-mladenov</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vasuthevan-ortchuan</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vazha-shubladze</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/veli-paloheimo</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vernon-lewis</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/viacheslav-bielinskyi</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vic-bercham</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vic-rollins</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vicente-castano</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vicente-elberto-anasta</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vicente-solves</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vicente-zarazua</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2025-07-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/victor-amaya</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/victor-baluda</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/victor-bruthans</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/victor-caballero</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/victor-caldarelli</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/victor-crivoi</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/victor-ebbessen</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/victor-egorov</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/victor-eke</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1983-10-31</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/victor-estrella-burgos</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2018-07-16</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/victor-hanescu</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/victor-ionita</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/victor-lopez</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/victor-palman</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2015-03-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/victor-pecci</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/victor-pereira</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/victor-ribas</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/victor-romero</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/victor-sendin</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/victor-trotzko</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1990-03-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/vijay-amritraj</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vijay-sundar-prashanth</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vijayant-malik</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/viktor-durasovic</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/viktor-filipenko</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/viktor-galovic</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/viktor-kazakevitch</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/viktor-nagy</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1993-01-04</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/viktor-troicki</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2021-06-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/vilius-gaubas</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/ville-jansson</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/ville-liukko</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vimuktha-de-alwis</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vincent-millot</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vincent-owens</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2025-09-13</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/vincent-spadea</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2010-02-22</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/vincent-van-patten</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vincenzo-franchitti</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vincenzo-labellarte</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vincenzo-santopadre</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/viorel-marcu</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/viorel-sotiriu</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vishal-punna</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vishal-uppal</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vishnu-vardhan</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1987-07-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/vit-kopriva</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vitaley-pavlov</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2026-01-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/vitaliy-sachko</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2025-11-03</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/vitas-gerulaitis</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vittorio-crotta</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vittorio-magnelli</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vivek-shokeen</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vivian-gotto</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vjeran-friscic</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vladimir-gabrichidze</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vladimir-ivanov</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vladimir-korotkov</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vladimir-margalitadze</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vladimir-obradovic</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vladimir-pavicevic</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vladimir-petrovic</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vladimir-voltchkov</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1986-03-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/vladimir-zednik</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vladyslav-manafov</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vladyslav-orlov</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vojtech-flegl</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/vyacheslav-egorov</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1980-03-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>

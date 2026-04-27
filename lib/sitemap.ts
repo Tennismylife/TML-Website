@@ -1,6 +1,8 @@
 ﻿import { prisma } from './prisma';
 import { getWhitelistedSitemapPaths } from './seo/records-policy';
 
+const PLAYER_INDEX_SNAPSHOT_DATE = new Date('2026-04-20T00:00:00.000Z');
+
 export type SitemapEntry = {
   path: string;
   lastmod?: string; // YYYY-MM-DD
@@ -85,6 +87,42 @@ export async function getSitemapEntries(opts?: { excludePlayers?: boolean; exclu
     // Build set of slugs for canonical detection
     const slugSet = new Set(players.filter(p => p.slug).map(p => String(p.slug).toLowerCase()));
 
+    // Build indexable landing player set from the current snapshot, recent matches and top-20 history.
+    const eligiblePlayerIds = new Set<string>();
+    const rankingDate = await prisma.rankingDate.findFirst({ where: { date: PLAYER_INDEX_SNAPSHOT_DATE }, select: { id: true } });
+    if (rankingDate?.id) {
+      const rankingRows = await prisma.ranking.findMany({ where: { rankingDateId: rankingDate.id }, select: { playerId: true } });
+      rankingRows.forEach(row => { if (row.playerId) eligiblePlayerIds.add(String(row.playerId)); });
+    }
+
+    const thresholdDate = new Date();
+    thresholdDate.setMonth(thresholdDate.getMonth() - 18);
+    const recentMatches = await prisma.match.findMany({ where: { status: true, tourney_date: { gte: thresholdDate }, tourney_level: { not: 'D' } }, select: { winner_id: true, loser_id: true } });
+    recentMatches.forEach(match => {
+      if (match.winner_id) eligiblePlayerIds.add(match.winner_id);
+      if (match.loser_id) eligiblePlayerIds.add(match.loser_id);
+    });
+
+    const titleWinners = await prisma.match.findMany({
+      where: {
+        status: true,
+        round: 'F',
+        team_event: false,
+        tourney_level: { not: 'D' },
+        NOT: {
+          OR: [
+            { score: { contains: 'WEA' } },
+            { score: 'To play' },
+          ],
+        },
+      },
+      select: { winner_id: true },
+    });
+    titleWinners.forEach(row => { if (row.winner_id) eligiblePlayerIds.add(row.winner_id); });
+
+    const top20Rows = await prisma.ranking.findMany({ where: { rank: { lte: 20 } }, select: { playerId: true } });
+    top20Rows.forEach(row => { if (row.playerId) eligiblePlayerIds.add(String(row.playerId)); });
+
     // Aggregate popularity / lastmod per player (wins + losses) using groupBy
     const playerIds = players.map(p => p.id).filter(Boolean);
     const popularityMap: Record<string, { count: number; lastmod?: string }> = {};
@@ -117,6 +155,7 @@ export async function getSitemapEntries(opts?: { excludePlayers?: boolean; exclu
 
     for (const p of players) {
       if (!p.slug) continue;
+      if (!eligiblePlayerIds.has(p.id)) continue;
       const slug = String(p.slug).toLowerCase();
       // Exclude anonymous or qualifier placeholder slugs
       if (slug.startsWith('unknown-') || slug.startsWith('qualifier-')) continue;

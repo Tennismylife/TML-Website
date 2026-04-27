@@ -6,6 +6,8 @@ export const CACHE_MAX_AGE = Number(process.env.SITEMAP_CACHE_MAX_AGE || process
 // Placeholder async iterables (MOCK). TODO: replace with Prisma-based streaming queries.
 import { prisma } from '@/lib/prisma';
 
+const PLAYER_INDEX_SNAPSHOT_DATE = new Date('2026-04-20T00:00:00.000Z');
+
 export async function* getPlayersForSitemap(): AsyncIterable<{ slug: string; changefreq?: string; priority?: string; lastmod?: string }> {
   // Load full list of players (ids + slugs) to enable normalization/deduplication
   const players = await prisma.player.findMany({ select: { id: true, slug: true } });
@@ -39,11 +41,47 @@ export async function* getPlayersForSitemap(): AsyncIterable<{ slug: string; cha
     }
   }
 
+  const eligiblePlayerIds = new Set<string>();
+  const rankingDate = await prisma.rankingDate.findFirst({ where: { date: PLAYER_INDEX_SNAPSHOT_DATE }, select: { id: true } });
+  if (rankingDate?.id) {
+    const top100Rows = await prisma.ranking.findMany({ where: { rankingDateId: rankingDate.id, rank: { lte: 100 } }, select: { playerId: true } });
+    top100Rows.forEach(row => { if (row.playerId) eligiblePlayerIds.add(String(row.playerId)); });
+  }
+
+  const thresholdDate = new Date();
+  thresholdDate.setMonth(thresholdDate.getMonth() - 18);
+  const recentMatches = await prisma.match.findMany({ where: { status: true, tourney_date: { gte: thresholdDate }, tourney_level: { not: 'D' } }, select: { winner_id: true, loser_id: true } });
+  for (const match of recentMatches) {
+    if (match.winner_id) eligiblePlayerIds.add(match.winner_id);
+    if (match.loser_id) eligiblePlayerIds.add(match.loser_id);
+  }
+
+  const titleWinners = await prisma.match.findMany({
+    where: {
+      status: true,
+      round: 'F',
+      team_event: false,
+      tourney_level: { not: 'D' },
+      NOT: {
+        OR: [
+          { score: { contains: 'WEA' } },
+          { score: 'To play' },
+        ],
+      },
+    },
+    select: { winner_id: true },
+  });
+  titleWinners.forEach(row => { if (row.winner_id) eligiblePlayerIds.add(row.winner_id); });
+
+  const top20Rows = await prisma.ranking.findMany({ where: { rank: { lte: 20 } }, select: { playerId: true } });
+  top20Rows.forEach(row => { if (row.playerId) eligiblePlayerIds.add(String(row.playerId)); });
+
   const { normalizePlayerSlugVariant } = await import('@/lib/utils');
 
   // Yield canonical slugs only (normalize variants like name-D214 -> name if base exists)
   const sorted = players.filter(p => p.slug).map(p => ({ id: p.id, slug: String(p.slug).toLowerCase() })).sort((a, b) => a.slug.localeCompare(b.slug));
   for (const p of sorted) {
+    if (!eligiblePlayerIds.has(p.id)) continue;
     const slug = p.slug;
     if (!slug) continue;
     if (EXCLUDE_PREFIXES.some(pre => slug.startsWith(pre))) continue;

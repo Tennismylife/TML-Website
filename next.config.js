@@ -32,6 +32,7 @@ const nextConfig = {
       { source: '/recordsranking/agesendoftheseason/youngestcount',         destination: '/recordsranking/agesendoftheseason/youngestsatno/1',       permanent: true },
       { source: '/recordsranking/timespan/count',                           destination: '/recordsranking/timespan/atno/1',                          permanent: true },
       { source: '/recordsranking/timespanendoftheseason/count',             destination: '/recordsranking/timespanendoftheseason/atno/1',            permanent: true },
+      { source: '/recordsranking/mostpoints',                               destination: '/recordsranking/mostpoints/overall',                       permanent: true },
     ];
   },
 

@@ -8,6 +8,7 @@ import countries from 'i18n-iso-countries';
 import enLocale from 'i18n-iso-countries/langs/en.json';
 import RankingNarrativeServer from './Ranking/RankingNarrativeServer';
 import OverviewServer from './OverviewServer';
+import { getPlayerLandingRobots } from './playerIndexing';
 
 const PlayerClient = dynamic(() => import('./PlayerClient'), {
   loading: () => <div className="mb-6 rounded-xl border border-gray-700 bg-gray-800 p-4 text-sm text-gray-300">Loading player data...</div>,
@@ -147,6 +148,10 @@ export async function generateMetadata({ params, searchParams }: any) {
     'tennis player statistics',
   ];
   const pageTitle = `${name} – Stats, Matches, Results, Records & Rankings | TennisMyLife`;
+  const robots = hasTabQueryParam
+    ? { index: false, follow: true }
+    : await getPlayerLandingRobots(String(slugParam));
+
   return {
     title: pageTitle,
     description: playerDescription,
@@ -165,7 +170,7 @@ export async function generateMetadata({ params, searchParams }: any) {
     },
     twitter: { card: 'summary_large_image', site: '@TennisMyLife68', creator: '@TennisMyLife68', title: pageTitle, description: playerDescription, images: [imageUrl] },
     alternates: { canonical },
-    ...(hasTabQueryParam && { robots: { index: false, follow: true } }),
+    robots,
   };
 }
 

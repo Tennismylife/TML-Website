@@ -1,2084 +1,254 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://stats.tennismylife.org/players/c-bothwell</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/c-francis</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/c-graham</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/c-j-bendall</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/c-jakins</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/c-lane</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/c-mora</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/c-munoz</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/c-sakolsky</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/c-webster</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/c-whittle</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cahit-atas</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/caio-zampieri</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/caleb-chakravarthi</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
     <loc>https://stats.tennismylife.org/players/calvin-hemery</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2025-07-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/cameron-norrie</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2026-01-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/camilo-ugo-carabelli</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/candy-idoko</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carey-brading</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carl-axel-hageskog</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carl-chang</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carl-edvard-hedelund</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carl-heddrick</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carl-johnson</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carl-limberger</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carl-soderlund</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carl-sundberg</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carl-turich</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2026-01-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/carl-uwe-steeb</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlo-borea</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-alberto-fernandes</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1996-10-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/carlos-alcaraz</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-alvarado</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-alvarez</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-angel</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-avellan</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-ayala</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-behar</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2026-01-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/carlos-berlocq</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-castellan</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-chabalgoity</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-chavez</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-claverie</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2019-04-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/carlos-costa</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-cuadrado</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-di-laura</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-drada</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-espinosa</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-feldstedt</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-gattiker</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-gimeno-valero</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-gomez</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-gomez-herrera</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-junquet</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1999-09-13</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/carlos-kirmayr</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-lando</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-lopez</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-lozano</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-medranos</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-menendez</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1987-02-23</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/carlos-moya</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-navarro</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-palencia</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-roberto-paez</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-romero</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-salamanca</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-schlettwein</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-suero</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2010-05-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/carlos-taberner</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carlos-taborga</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2026-01-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/carsten-arriens</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/carsten-ball</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cary-leeds</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cary-stansbury</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1998-11-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/casper-ruud</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cassio-motta</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/catalin-ionut-gard</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cayetano-march</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cecil-mamiit</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cecil-pedlow</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cedric-kauffmann</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cedric-mason</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2026-01-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/cedric-pioline</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cedrik-marcel-stebe</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/celso-sacomandi</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cem-ilkel</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cesar-cruz</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cesar-escobar-serrano</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cesar-kist</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cesar-ramirez</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cevdet-cika</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cezar-cretu</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chad-floe</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chana-techasen</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chang-dae-jeon</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chang-hong-ni</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chang-nam-ju</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chang-rung-wu</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/charalampos-kapogiannis</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chareonchai-tritilinant</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/charles-alloo</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/charles-applewhaite</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/charles-auffray</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/charles-beckman</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/charles-bournival</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/charles-broom</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/charles-bud-cox</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/charles-buzz-strode</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/charles-caudle</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/charles-chang</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/charles-darley</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/charles-hoeveler</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/charles-honey</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/charles-irie</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/charles-merzbacher</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/charles-owens</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/charles-white</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/charlie-ellis</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/charlie-fancutt</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2002-10-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/charlie-pasarell</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/charlie-shaw</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/charlton-eagle</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chase-buchanan</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chauncey-steele</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chee-leong-wong</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chee-yen-chen</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chemseddine-belal</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cheng-fong-chang</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cheuk-wai-hui</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chi-wan-kim</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chi-yuan-lin</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chi-yuen-pang</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chia-yen-tsai</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chieh-fu-wang</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chih-jung-chen</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chin-chuan-chow</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/ching-lam</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/ching-mou-yu</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chip-fisher</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1979-08-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/chip-hooper</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chip-tolleson</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chiradip-mukerjea</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chiradip-mukherjea</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/choon-ho-kim</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-bailey</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-bovett</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-bradnam</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-brandi</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-burr</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-chapin</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-dunk</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-eaton</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-garner</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-greendale</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-guccione</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-gunning</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-haggard</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-johnstone</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-kachel</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-kennedy</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-lewis</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-louw</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-mayotte</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-numbers</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-pridham</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1988-08-22</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/chris-rodesch</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-walsh</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-wells</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chris-wilkinson</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2025-06-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/chris-woodruff</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christer-allgardh</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christer-holm</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christian-bemba</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christian-bergstrom</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christian-bimes</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christian-camradt</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christian-collange</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christian-duxin</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christian-feenstra</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christian-garay</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christian-geyer</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christian-harrison</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christian-hill</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christian-hohnhold</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christian-janssens</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christian-jessel</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2002-03-04</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/christian-kuhnke</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christian-lindell</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1974-10-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/christian-miniussi</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christian-ruud</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1995-07-31</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/christian-saceanu</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christian-saravia</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christian-sigsgaard</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christian-vinck</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christian-weis</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christo-steyn</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1994-10-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/christo-van-rensburg</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christofer-delaney</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christofer-koutrouzas</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christoffer-konigsfeldt</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christoph-geukens</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christoph-meyer</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christoph-zipf</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christophe-bernelle</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christophe-boggetti</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christophe-bosio</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christophe-casa</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christophe-freyss</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christophe-lesage</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christophe-pognon</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christophe-rochus</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christophe-roger-vasselin</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christophe-tholl</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christophe-van-garsse</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christopher-bulus</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christopher-diaz-figueroa</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christopher-eldon</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1995-04-03</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/christopher-eubanks</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christopher-gatt</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christopher-kas</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christopher-koderisch</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christopher-lai</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christopher-lawson</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2025-06-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/christopher-oconnell</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christopher-rungkat</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christopher-sylvan</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christopher-wolff</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christos-antonopoulos</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/christos-hadjigeorgiou</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chu-huan-yi</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2026-01-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/chuck-adams</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chuck-bleckinger</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chuck-chichese</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chuck-de-voe</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chuck-mckinley</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chuck-saacke</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chuck-willenborg</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chuhan-wang</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1996-08-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/chun-hsin-tseng</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chun-hun-wong</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/chung-hsing-liu</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/ciccio-gorla</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/ciprian-petre-porumb</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/clarence-thompson</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2025-09-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/clark-graebner</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/claude-de-gronckel</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/claude-england</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/claude-ngoran</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/claudio-dias-conduto</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1976-02-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/claudio-mezzadri</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/claudio-narbone</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1993-10-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/claudio-panatta</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1989-06-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/claudio-pistolesi</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/clay-iles</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/clay-thompson</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cleeve-harper</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/clem-robertson</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/clemens-trimmel</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1993-06-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/clement-chidekh</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/clement-mainguy</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/clement-morel</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/clement-ngoran</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/clement-reix</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2025-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/clement-tabur</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2025-11-03</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/cliff-drysdale</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cliff-letcher</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cliff-mayne</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cliff-montgomery</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cliff-murphy</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1980-06-23</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/cliff-richey</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cliff-skakle</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/clint-bowles</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/clint-murphy</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/clinton-marsh</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/clive-brebnor</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/clive-wilderspin</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/clive-wilson</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/clyde-smithwick</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/clyde-witt</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/codie-schalk-van-schalkwyk</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/coenie-van-wyk</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cole-gromley</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1979-01-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/coleman-wong</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/colin-beecher</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2025-09-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/colin-dibley</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/colin-diederichs</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1981-08-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/colin-dowdeswell</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/colin-ebelthite</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/colin-fleming</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/colin-grant</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/colin-mchugo</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/colin-obrien</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/colin-rees</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/colin-robertson</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/colin-sinclair</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/colin-stubs</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/colin-zeeman</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/collin-altamirano</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/colon-nunez</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1986-06-23</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/colton-smith</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/compton-russell</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/conner-huertas-del-pino</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/connor-doig</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/connor-henry-van-schalkwyk</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/connors-ryan</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/conny-falk</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/conor-gannon</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/conor-niland</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/conrad-hamilton</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/conrad-johnson</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2025-08-07</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/constant-lestienne</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/constantin-popovici</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/constantinos-ioannides</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/conway-unger</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2025-02-03</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/corentin-denolly</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2025-03-31</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/corentin-moutet</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/corey-wittenberg</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/corrado-aprili</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2026-01-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/corrado-barazzutti</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/corrado-borroni</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/courtney-john-lock</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cr-evans</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/craig-a-miller</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/craig-boynton</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/craig-campbell</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/craig-duncan</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/craig-edwards</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/craig-gold</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/craig-parsons</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/craig-smith</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/craig-tregonning</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/craig-venter</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/craig-wittus</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/crawford-henry</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/crepin-ossombi</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>1984-07-16</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/players/cristian-garin</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cristian-paiz</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cristian-rodriguez</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cristiano-caratti</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cristobal-saavedra-corvalan</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cumhur-ongen</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/curt-stalder</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cyril-jacobe</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cyril-rudman</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cyril-saulnier</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/cyril-suk</loc>
-    <lastmod>2026-01-26</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/players/czaslaw-dobrowolski</loc>
-    <lastmod>2026-01-26</lastmod>
+    <lastmod>2026-01-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.50</priority>
   </url>
