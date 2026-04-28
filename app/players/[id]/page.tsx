@@ -112,12 +112,15 @@ export async function generateMetadata({ params, searchParams }: any) {
         prisma.match.count({ where: { status: true, winner_id: String(player.id) } }),
         prisma.match.count({
           where: {
-            status: true,
             winner_id: String(player.id),
             round: 'F',
             NOT: [
               { tourney_name: { contains: 'next gen', mode: 'insensitive' } },
               { score: { contains: 'WEA' } },
+            ],
+            OR: [
+              { status: true },
+              { score: { contains: 'W/O', mode: 'insensitive' } },
             ],
           },
         }),

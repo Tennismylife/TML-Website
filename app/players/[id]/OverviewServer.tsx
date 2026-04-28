@@ -37,18 +37,18 @@ function computeStats(matches: any[], playerId: string, playerName: string) {
   const mastersTotal = mastersMatches.length;
   const mastersWinPctN = mastersTotal > 0 ? (mastersWins / mastersTotal) * 100 : 0;
 
-  const finalMatches = active.filter((m: any) => m.round === 'F');
+  const finalMatches = matches.filter((m: any) => m.round === 'F' && (m.status === true || String((m.score ?? '').toUpperCase()).includes('W/O')));
   const finalsReached = finalMatches.length;
-  const isValidTitle = (m: any) =>
+  const titleMatches = finalMatches.filter((m: any) =>
     String(m.winner_id) === pid &&
     m.team_event !== true &&
     !(m.score && String(m.score).includes('WEA')) &&
-    !String(m.tourney_name ?? '').toLowerCase().includes('next gen');
+    !String(m.tourney_name ?? '').toLowerCase().includes('next gen'),
+  );
 
-  const totalTitles = finalMatches.filter(isValidTitle).length;
+  const totalTitles = titleMatches.length;
   const titleNames = Array.from(new Set(
-    finalMatches
-      .filter((m: any) => String(m.winner_id) === pid && m.team_event !== true)
+    titleMatches
       .map((m: any) => (typeof m.tourney_name === 'string' ? m.tourney_name : null))
       .filter(Boolean) as string[],
   ));
@@ -127,7 +127,7 @@ function computeStats(matches: any[], playerId: string, playerName: string) {
 
   const titlesByLevel: Record<string, number> = {};
   const titlesBySurface: Record<string, number> = {};
-  finalMatches.filter(isValidTitle).forEach((m: any) => {
+  titleMatches.forEach((m: any) => {
     const lvl = m.tourney_level ?? 'Other';
     titlesByLevel[lvl] = (titlesByLevel[lvl] || 0) + 1;
     const surf = m.surface ?? 'Unknown';
@@ -156,7 +156,19 @@ function computeStats(matches: any[], playerId: string, playerName: string) {
 export default async function OverviewServer({ playerId, playerName, playerSlug }: OverviewServerProps) {
   // ── 1. fetch matches ─────────────────────────────────────────────────────
   const rawMatches = await prisma.match.findMany({
-    where: { OR: [{ winner_id: playerId }, { loser_id: playerId }], status: true },
+    where: {
+      OR: [
+        {
+          status: true,
+          OR: [{ winner_id: playerId }, { loser_id: playerId }],
+        },
+        {
+          round: 'F',
+          score: { contains: 'W/O', mode: 'insensitive' },
+          OR: [{ winner_id: playerId }, { loser_id: playerId }],
+        },
+      ],
+    },
     select: {
       winner_id: true, loser_id: true, status: true,
       surface: true, round: true,
