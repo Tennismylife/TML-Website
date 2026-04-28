@@ -3,7 +3,6 @@ import { buildTournamentJsonLdFromDb, fetchEditionInfo, getEditionValue } from '
 import Breadcrumbs from './Breadcrumbs';
 import EditionMatchesServer from './EditionMatchesServer';
 import SeedsServer from './SeedsServer';
-import TournamentH2HLinks from './TournamentH2HLinks';
 import EditionNavigatorServer from '@/components/EditionNavigatorServer';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
@@ -300,9 +299,6 @@ export default async function Page(props: any) {
 
       {/* Bottom server-side navigator fallback — compact version after content */}
       <EditionNavigatorServer id={id} slug={slug} editions={serverEditions} currentYear={year} idSuffix="bottom" compact />
-
-      {/* H2H matchup links — server-rendered at the bottom for Google crawlability */}
-      <TournamentH2HLinks tournamentId={id} year={year} />
     </>
   );
 }
