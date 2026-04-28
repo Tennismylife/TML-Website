@@ -3,6 +3,8 @@ Allow: /
 Disallow: /api/
 Disallow: /tournaments/*/*/records
 Disallow: /*?_rsc=
+Disallow: /*&_rsc=
+
 
 # Sitemap
 Sitemap: https://stats.tennismylife.org/sitemap_index.xml
