@@ -519,6 +519,17 @@ export async function middleware(req: NextRequest) {
         dest.search = newSearch.toString();
         return new Response(null, { status: 301, headers: { Location: dest.toString() } });
       }
+
+      const hasPlayerFilterParams = Array.from(query.keys()).some(key => RECORD_FILTER_QUERY_KEYS.has(key));
+      if (hasPlayerFilterParams) {
+        const dest = new URL(req.url);
+        const sanitized = new URLSearchParams(query as any);
+        for (const key of RECORD_FILTER_QUERY_KEYS) {
+          sanitized.delete(key);
+        }
+        dest.search = sanitized.toString();
+        return new Response(null, { status: 301, headers: { Location: dest.toString() } });
+      }
     }
 
     // 1) Numeric ID: header API
