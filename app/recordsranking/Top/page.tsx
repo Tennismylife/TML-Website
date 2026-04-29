@@ -159,9 +159,10 @@ export default async function RecordsTopX({ searchParams }: { searchParams?: Pro
           <p>
             Since the ATP computerized ranking was introduced in{' '}
             <span className="text-white font-medium">1973</span>,{' '}
-            <span className="text-white font-medium">{totalCount} player{totalCount !== 1 ? 's' : ''}</span>{' '}
-            have spent at least one week inside the ATP Top {top}.{' '}
-            The all-time leader is{' '}
+            {totalCount < 100 && (
+              <>this page lists the <span className="text-white font-medium">{totalCount}</span> players returned by the API for Top {top}, rather than the complete historical total. </>
+            )}
+            the all-time leader is{' '}
             <span className="text-indigo-300 font-medium">{leader.name}</span>{' '}
             with <span className="text-white font-medium">{leader.weeks} week{leader.weeks !== 1 ? 's' : ''}</span>
             {gapPct !== null && gapPct > 0 ? (
