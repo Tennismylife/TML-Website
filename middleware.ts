@@ -536,15 +536,19 @@ export async function middleware(req: NextRequest) {
     // The slug-map includes numeric ID → slug mappings (e.g. 405 → houston),
     // so we don't need a separate numeric-only branch that calls the header API,
     // which can fail silently in Docker when the container can't loop back externally.
+    //
+    // IMPORTANT: use NEXT_PRIVATE_BASE_URL (http://localhost:3000) inside Docker
+    // so the container doesn't try to reach its own external domain (which fails).
     const canonicalHost = process.env.NEXT_PUBLIC_SITE_URL || origin;
+    const internalBase = process.env.NEXT_PRIVATE_BASE_URL || canonicalHost;
     let slug: string | undefined;
     let source: string | undefined;
     const codeKey = String(idSegment).toUpperCase();
 
     // 1) Slug-map API (handles numeric IDs and legacy codes)
     try {
-      const apiUrl = `${canonicalHost}/api/slug-map`;
-      const apiResp = await fetch(apiUrl, { method: 'GET', cache: 'force-cache' });
+      const apiUrl = `${internalBase}/api/slug-map`;
+      const apiResp = await fetch(apiUrl, { method: 'GET', next: { revalidate: 3600 } } as RequestInit);
       if (apiResp.ok) {
         const maps = await apiResp.json();
         const mapForResource = maps?.[resource] || {};
@@ -564,7 +568,7 @@ export async function middleware(req: NextRequest) {
     // 3) Header API fallback (last resort)
     if (!slug) {
       try {
-        const apiUrl = `${canonicalHost}/api/${resource}/${encodeURIComponent(idSegment)}/header`;
+        const apiUrl = `${internalBase}/api/${resource}/${encodeURIComponent(idSegment)}/header`;
         const apiResp = await fetch(apiUrl, { method: 'GET', cache: 'no-store' });
         if (apiResp.ok) {
           const body = await apiResp.json();
