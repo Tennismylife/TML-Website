@@ -8,7 +8,7 @@ import CurrentRankingBanner from '../Ranking/CurrentRankingBanner';
 import RankingNarrativeServer from '../Ranking/RankingNarrativeServer';
 import AllMatchesServer from '../Matches/AllMatchesServer';
 import { prisma } from '../../../../lib/prisma';
-import { redirect } from 'next/navigation';
+import { redirect, permanentRedirect } from 'next/navigation';
 import { getPlayerHref, createSlug } from '@/lib/utils';
 import type { Metadata } from 'next';
 import { isPlayerInTop100IndexAllowlist } from '../playerIndexing';
@@ -348,9 +348,11 @@ export default async function PlayerTabPage({ params, searchParams, _surfacePrev
 
   if (!player) return <div>Player not found: {slugParam}</div>;
 
-  // Previously we redirected numeric IDs to slug paths here. To avoid redirects, render the page
-  // inline for both slug and numeric IDs. Do not perform any redirect for numeric IDs.
-  // (No-op)
+  // Redirect to canonical slug URL: handles numeric IDs, legacy codes (e.g. P0FU) and case mismatches.
+  if (player.slug && String(slugParam) !== player.slug) {
+    const qs = new URLSearchParams(resolvedParamsObj).toString();
+    permanentRedirect(`/players/${player.slug}/${tabParam ?? 'overview'}${qs ? `?${qs}` : ''}`);
+  }
 
   // Determine tab for SEO (use 'overview' when missing) and fetch matches server-side for JSON-LD
   const tab = tabParam ?? 'overview';

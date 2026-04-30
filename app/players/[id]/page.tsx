@@ -223,8 +223,8 @@ export default async function PlayerPage({ params, searchParams }: any) {
     ? Object.fromEntries(resolvedSearchParams.entries())
     : resolvedSearchParams || {};
 
-  // Normalize numeric player URLs to canonical slug URLs.
-  if (!isSlug && player.slug && !hasTab) {
+  // Redirect to canonical slug URL: handles numeric IDs, legacy codes (e.g. P0FU) and case mismatches.
+  if (player.slug && !hasTab && String(slugParam) !== player.slug) {
     const remainingParams = new URLSearchParams();
     for (const [k, v] of Object.entries(resolvedQuery)) {
       if (k !== 'tab' && v != null && String(v) !== '') {
