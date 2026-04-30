@@ -1,5 +1,6 @@
 
 // server.js — Next.js + Express + Redis v4 + Compression + Cache HIT/MISS
+// v2
 // Obiettivo: cache server-side realmente efficace per HTML e API
 // - Nessun taglio dei dati (mostri tutto), ma risposte veloci e leggere
 // - Chiavi stabili (query ordinata), TTL, niente skip su 'chunked'
