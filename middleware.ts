@@ -532,50 +532,36 @@ export async function middleware(req: NextRequest) {
       }
     }
 
-    // 1) Numeric ID: header API
+    // Resolve canonical slug for both numeric IDs and legacy codes via slug-map.
+    // The slug-map includes numeric ID → slug mappings (e.g. 405 → houston),
+    // so we don't need a separate numeric-only branch that calls the header API,
+    // which can fail silently in Docker when the container can't loop back externally.
     const canonicalHost = process.env.NEXT_PUBLIC_SITE_URL || origin;
-    if (/^\d+$/.test(idSegment)) {
-      try {
-        const apiUrl = `${canonicalHost}/api/${resource}/${encodeURIComponent(idSegment)}/header`;
-        const apiResp = await fetch(apiUrl, { method: 'GET', cache: 'no-store' });
-        if (apiResp.ok) {
-          const body = await apiResp.json();
-          const slugFromApi = body?.slug;
-          if (slugFromApi) {
-            const dest = new URL(req.url);
-            dest.pathname = `/${resource}/${slugFromApi}${rest ? '/' + rest : ''}`;
-            dest.search = search;
-            return new Response(null, { status: 301, headers: { Location: dest.toString() } });
-          }
-        }
-      } catch {}
-      return nextResponse();
-    }
-
     let slug: string | undefined;
     let source: string | undefined;
     const codeKey = String(idSegment).toUpperCase();
 
-    // 2) Slug-map API
+    // 1) Slug-map API (handles numeric IDs and legacy codes)
     try {
       const apiUrl = `${canonicalHost}/api/slug-map`;
       const apiResp = await fetch(apiUrl, { method: 'GET', cache: 'force-cache' });
       if (apiResp.ok) {
         const maps = await apiResp.json();
         const mapForResource = maps?.[resource] || {};
-        slug = mapForResource[codeKey];
+        // Try exact key (e.g. '405', 'SD32', 'HOUSTON')
+        slug = mapForResource[codeKey] ?? mapForResource[String(idSegment)];
         if (slug) source = 'slug-map-api';
       }
     } catch {}
 
-    // 3) Local map fallback
+    // 2) Local map fallback
     if (!slug) {
       const map = resource === 'players' ? slugMapPlayers : slugMapTournaments;
       slug = map ? map[codeKey] : undefined;
       if (slug) source = 'local-map';
     }
 
-    // 4) Header API fallback
+    // 3) Header API fallback (last resort)
     if (!slug) {
       try {
         const apiUrl = `${canonicalHost}/api/${resource}/${encodeURIComponent(idSegment)}/header`;
