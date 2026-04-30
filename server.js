@@ -221,33 +221,40 @@ function strongETag(buffer) {
     }
   });
 
-  /* 4.9) Redirect numeric tournament/player IDs BEFORE cache read.
+  /* 4.9) Redirect numeric tournament IDs AND player legacy codes BEFORE cache read.
    * The Redis cache may serve stale 200 responses for URLs like /tournaments/405/1981
-   * that should redirect to the canonical slug. Since cache reads bypass Next.js middleware,
-   * we must intercept here and redirect before serving from cache.
+   * or /players/L018/grass that should redirect to the canonical slug. Since cache
+   * reads bypass Next.js middleware, we must intercept here.
    */
+  const legacyCodePattern = /^[A-Za-z]+\d+$/i;
   server.use(async (req, res, next) => {
     if (req.method !== 'GET') return next();
     const segments = req.path.split('/').filter(Boolean);
     const resource = segments[0];
     if (resource !== 'players' && resource !== 'tournaments') return next();
     const idSegment = segments[1];
-    if (!idSegment || !/^\d+$/.test(idSegment)) return next();
+    if (!idSegment) return next();
+    const isNumeric = /^\d+$/.test(idSegment);
+    const isLegacy = legacyCodePattern.test(idSegment);
+    if (!isNumeric && !isLegacy) return next();
     const rest = segments.slice(2).join('/');
     try {
       let slug = null;
-      if (resource === 'tournaments') {
+      if (resource === 'tournaments' && isNumeric) {
         const t = await prisma.tournament.findUnique({ where: { id: parseInt(idSegment, 10) }, select: { slug: true } });
         slug = t?.slug || null;
+      } else if (resource === 'players' && isLegacy) {
+        // Player IDs in DB are legacy codes (e.g. L018, SD32), not numeric
+        const p = await prisma.player.findUnique({ where: { id: idSegment }, select: { slug: true } });
+        slug = p?.slug || null;
       }
-      // Note: player IDs in DB are string (cuid), not numeric — skip player redirect here
       if (slug && slug !== idSegment) {
         const qs = req.originalUrl.includes('?') ? req.originalUrl.slice(req.originalUrl.indexOf('?')) : '';
         const dest = `/${resource}/${slug}${rest ? '/' + rest : ''}${qs}`;
         return res.redirect(308, dest);
       }
     } catch (e) {
-      console.error('[NUMERIC ID REDIRECT ERROR]', e);
+      console.error('[LEGACY ID REDIRECT ERROR]', e);
     }
     return next();
   });
