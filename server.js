@@ -221,6 +221,37 @@ function strongETag(buffer) {
     }
   });
 
+  /* 4.9) Redirect numeric tournament/player IDs BEFORE cache read.
+   * The Redis cache may serve stale 200 responses for URLs like /tournaments/405/1981
+   * that should redirect to the canonical slug. Since cache reads bypass Next.js middleware,
+   * we must intercept here and redirect before serving from cache.
+   */
+  server.use(async (req, res, next) => {
+    if (req.method !== 'GET') return next();
+    const segments = req.path.split('/').filter(Boolean);
+    const resource = segments[0];
+    if (resource !== 'players' && resource !== 'tournaments') return next();
+    const idSegment = segments[1];
+    if (!idSegment || !/^\d+$/.test(idSegment)) return next();
+    const rest = segments.slice(2).join('/');
+    try {
+      let slug = null;
+      if (resource === 'tournaments') {
+        const t = await prisma.tournament.findUnique({ where: { id: parseInt(idSegment, 10) }, select: { slug: true } });
+        slug = t?.slug || null;
+      }
+      // Note: player IDs in DB are string (cuid), not numeric — skip player redirect here
+      if (slug && slug !== idSegment) {
+        const qs = req.originalUrl.includes('?') ? req.originalUrl.slice(req.originalUrl.indexOf('?')) : '';
+        const dest = `/${resource}/${slug}${rest ? '/' + rest : ''}${qs}`;
+        return res.redirect(308, dest);
+      }
+    } catch (e) {
+      console.error('[NUMERIC ID REDIRECT ERROR]', e);
+    }
+    return next();
+  });
+
   /* 5) CACHE READ */
   server.use(async (req, res, next) => {
     if (!redis || shouldBypassCache(req)) return next();
