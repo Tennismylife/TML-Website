@@ -8,7 +8,7 @@ import { shouldShowRecordFilter, type FilterName } from './lib/records/allowed-f
 const slugMapPlayers: Record<string, string> = {
   'W367': 'novak-djokovic',
   'P123': 'roger-federer',
-  // add more known player legacy mappings here...
+  // add more known player legacy mappings here if needed for local/dev fallback
 };
 
 const slugMapTournaments: Record<string, string> = {
@@ -554,10 +554,11 @@ export async function middleware(req: NextRequest) {
     const codeKey = String(idSegment).toUpperCase();
     let slug: string | undefined;
     let source: string | undefined;
+    const canonicalHost = process.env.NEXT_PUBLIC_SITE_URL || origin;
 
     // 2) Slug-map API
     try {
-      const apiUrl = `${origin}/api/slug-map`;
+      const apiUrl = `${canonicalHost}/api/slug-map`;
       const apiResp = await fetch(apiUrl, { method: 'GET', cache: 'force-cache' });
       if (apiResp.ok) {
         const maps = await apiResp.json();
@@ -567,7 +568,7 @@ export async function middleware(req: NextRequest) {
       }
     } catch {}
 
-    // 3) Local map
+    // 3) Local map fallback
     if (!slug) {
       const map = resource === 'players' ? slugMapPlayers : slugMapTournaments;
       slug = map ? map[codeKey] : undefined;
@@ -577,7 +578,7 @@ export async function middleware(req: NextRequest) {
     // 4) Header API fallback
     if (!slug) {
       try {
-        const apiUrl = `${origin}/api/${resource}/${encodeURIComponent(idSegment)}/header`;
+        const apiUrl = `${canonicalHost}/api/${resource}/${encodeURIComponent(idSegment)}/header`;
         const apiResp = await fetch(apiUrl, { method: 'GET', cache: 'no-store' });
         if (apiResp.ok) {
           const body = await apiResp.json();
@@ -589,14 +590,9 @@ export async function middleware(req: NextRequest) {
       } catch {}
     }
 
-    // ⚡ Piccola correzione: fallback automatico dai codici legacy
-    if (!slug) {
-      slug = codeKey.toLowerCase();
-      source = 'legacy-code-fallback';
-    }
-
-    // Prevenzione loop redirect
-    if (slug && slug.toLowerCase() === String(idSegment).toLowerCase()) {
+    // Prevent redirect when the incoming path already matches the canonical slug exactly.
+    // This still allows redirects for case-only mismatches like /players/C022 -> /players/c022.
+    if (slug && slug === idSegment) {
       return nextResponse();
     }
 
