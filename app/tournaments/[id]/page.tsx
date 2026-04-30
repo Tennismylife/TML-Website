@@ -3,7 +3,7 @@ import React from 'react';
 import TournamentServer from './TournamentServer';
 import TournamentHeaderServer from './TournamentHeaderServer';
 import { prisma } from '../../../lib/prisma';
-import { redirect } from 'next/navigation';
+import { redirect, permanentRedirect } from 'next/navigation';
 import { resolveCanonicalTourneyId, resolveTourneyIds } from '@/lib/tournament';
 import { extractUniqueSurfaces, extractNames } from '@/lib/utils';
 
@@ -108,7 +108,7 @@ export default async function TournamentPage({ params }: TournamentPageProps) {
 
   // Redirect se l’ID numerico ha uno slug canonico
   if (/^\d+$/.test(param) && tournament.slug) {
-    redirect(`/tournaments/${tournament.slug}`);
+    permanentRedirect(`/tournaments/${tournament.slug}`);
   }
 
   // Estrazione valori dai campi JSON - usa l'ultimo nome (più recente) per H1

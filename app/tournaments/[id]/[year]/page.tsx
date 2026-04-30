@@ -5,7 +5,7 @@ import EditionMatchesServer from './EditionMatchesServer';
 import SeedsServer from './SeedsServer';
 import EditionNavigatorServer from '@/components/EditionNavigatorServer';
 import { prisma } from '@/lib/prisma';
-import { redirect } from 'next/navigation';
+import { redirect, permanentRedirect } from 'next/navigation';
 
 // Local helpers
 function humanizeName(name: string) {
@@ -39,14 +39,13 @@ export default async function Page(props: any) {
   const id = resolvedParams?.id ?? '';
   const year = resolvedParams?.year ?? '';
 
-  // when using a numeric id, fetch header to determine canonical slug and
-  // redirect to it before doing any other work. this keeps URLs consistent
-  // and matches the behaviour in other tournament pages.
+  // when using a numeric id, look up the canonical slug via Prisma and
+  // permanently redirect to it before doing any other work.
   if (/^\d+$/.test(id)) {
     try {
-      const header = await import('@/lib/tournamentHeaderCache').then(m => m.fetchTournamentHeaderCached(id));
-      if (header?.slug && header.slug !== id) {
-        redirect(`/tournaments/${header.slug}/${year}`);
+      const t = await prisma.tournament.findUnique({ where: { id: parseInt(id, 10) }, select: { slug: true } });
+      if (t?.slug && t.slug !== id) {
+        permanentRedirect(`/tournaments/${t.slug}/${year}`);
       }
     } catch {
       // ignore failures; we'll continue with whatever id we have
