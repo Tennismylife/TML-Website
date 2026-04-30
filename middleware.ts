@@ -533,9 +533,10 @@ export async function middleware(req: NextRequest) {
     }
 
     // 1) Numeric ID: header API
+    const canonicalHost = process.env.NEXT_PUBLIC_SITE_URL || origin;
     if (/^\d+$/.test(idSegment)) {
       try {
-        const apiUrl = `${origin}/api/${resource}/${encodeURIComponent(idSegment)}/header`;
+        const apiUrl = `${canonicalHost}/api/${resource}/${encodeURIComponent(idSegment)}/header`;
         const apiResp = await fetch(apiUrl, { method: 'GET', cache: 'no-store' });
         if (apiResp.ok) {
           const body = await apiResp.json();
@@ -551,10 +552,9 @@ export async function middleware(req: NextRequest) {
       return nextResponse();
     }
 
-    const codeKey = String(idSegment).toUpperCase();
     let slug: string | undefined;
     let source: string | undefined;
-    const canonicalHost = process.env.NEXT_PUBLIC_SITE_URL || origin;
+    const codeKey = String(idSegment).toUpperCase();
 
     // 2) Slug-map API
     try {
