@@ -56,6 +56,9 @@ const RECORD_FILTER_QUERY_KEYS = new Set([
   'best_of', 'best_of[]',
 ]);
 
+// Known valid surface values, sorted longest-first for greedy prefix matching.
+const KNOWN_SURFACES = ['Unknown', 'Carpet', 'Grass', 'Hard', 'Clay'];
+
 function sanitizeRecordsFilterQuery(searchParams: URLSearchParams) {
   const cleaned = new URLSearchParams();
   let changed = false;
@@ -74,27 +77,45 @@ function sanitizeRecordsFilterQuery(searchParams: URLSearchParams) {
       continue;
     }
 
+    // Handle %3D-corrupted values: e.g. surface=Hardace%3Dhard arrives as
+    // surface=Hardace=hard after URL decoding. Strip from '=' onwards and,
+    // for surface params, recover the known valid prefix (Hardace → Hard).
+    let value = stripped;
+    const eqIdx = value.indexOf('=');
+    if (eqIdx !== -1) {
+      value = value.slice(0, eqIdx);
+      changed = true;
+      if (!value) continue;
+      if (key === 'surface' || key === 'surface[]') {
+        const lower = value.toLowerCase();
+        const recovered = KNOWN_SURFACES.find(
+          s => lower.startsWith(s.toLowerCase()) && lower.length > s.length
+        );
+        if (recovered) value = recovered;
+      }
+    }
+
     if (key === 'bestOf' || key === 'bestOf[]' || key === 'best_of' || key === 'best_of[]') {
-      const n = Number(stripped);
+      const n = Number(value);
       if (!Number.isFinite(n) || !Number.isInteger(n) || n <= 0) {
         changed = true;
         continue;
       }
       cleaned.append(key, String(n));
-      if (String(n) !== stripped) changed = true;
+      if (String(n) !== value) changed = true;
       continue;
     }
 
     // Normalize case for round/level (uppercase) and surface (Title-case)
-    let normalized = stripped;
+    let normalized = value;
     if (key === 'round' || key === 'round[]') {
-      normalized = stripped.toUpperCase();
+      normalized = value.toUpperCase();
     } else if (key === 'level' || key === 'level[]') {
-      normalized = stripped.toUpperCase();
+      normalized = value.toUpperCase();
     } else if (key === 'surface' || key === 'surface[]') {
-      normalized = stripped.charAt(0).toUpperCase() + stripped.slice(1).toLowerCase();
+      normalized = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
     }
-    if (normalized !== stripped) changed = true;
+    if (normalized !== value) changed = true;
 
     cleaned.append(key, normalized);
   }
