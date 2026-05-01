@@ -85,7 +85,7 @@ async function redirectRecordsBotToLanding(id: string) {
   if (shouldIndexRecords(tournament.category, tournament.years)) return;
 
   const slugId = await getTournamentSlug(id).catch(() => id);
-  redirect(`/tournaments/${encodeURIComponent(slugId)}`);
+  redirect(`/tournaments/${encodeURIComponent(slugId)}/records`);
 }
 
 export async function generateMetadata({ params, searchParams }: any): Promise<Metadata> {
