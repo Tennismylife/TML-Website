@@ -29,7 +29,7 @@ const SURFACE_META: Record<SurfaceKey, { label: string; adjective: string }> = {
 };
 
 function isSearchBot(userAgent: string) {
-  return /googlebot|bingbot|slurp|yahoo|duckduckgo|yandex|baiduspider|facebookexternalhit|twitterbot|linkedinbot|applebot/i.test(userAgent);
+  return /google(bot|other)|bingbot|slurp|yahoo|duckduckgo|yandex|baiduspider|facebookexternalhit|twitterbot|linkedinbot|applebot/i.test(userAgent);
 }
 
 async function redirectSurfaceBotToLanding(id: string) {

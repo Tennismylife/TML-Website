@@ -42,7 +42,7 @@ function hasAnyParam(searchParams: URLSearchParams, names: string[]) {
 
 function isSearchBot(userAgent: string) {
   if (!userAgent) return false;
-  return /googlebot|bingbot|slurp|yahoo|duckduckgo|yandex|baiduspider|facebookexternalhit|twitterbot|linkedinbot|applebot/i.test(userAgent);
+  return /google(bot|other)|bingbot|slurp|yahoo|duckduckgo|yandex|baiduspider|facebookexternalhit|twitterbot|linkedinbot|applebot/i.test(userAgent);
 }
 
 function isTournamentRecordsPath(pathname: string) {
@@ -353,6 +353,28 @@ export async function middleware(req: NextRequest) {
       }
     }
 
+    // Redirect non-indexable /records filter combinations for search bots to the base record path.
+    if (requestPath.startsWith('/records/') && isSearchBot(ua)) {
+      const { record, sub } = resolvePageRecordAndSub(requestPath);
+      const effectiveSub = sub ?? (query.get('subtab') ? kebabToKey(query.get('subtab')!) : undefined);
+      if (record) {
+        const filters = queryToRecordFilters(query);
+        if (!sub && effectiveSub) {
+          filters.subtab = effectiveSub;
+        }
+        const slug = [record];
+        if (sub || query.get('subtab')) {
+          slug.push(effectiveSub || '');
+        }
+        const policy = evaluateRecordsPolicy(req.nextUrl.origin, slug.filter(Boolean), filters);
+        if (!policy.index) {
+          const dest = new URL(req.url);
+          dest.search = '';
+          return new Response(null, { status: 308, headers: { Location: dest.toString() } });
+        }
+      }
+    }
+
     // Strict 410 for invalid records filter combinations.
     if (requestPath.startsWith('/records/')) {
       const { record, sub } = resolvePageRecordAndSub(requestPath);
@@ -566,28 +588,6 @@ export async function middleware(req: NextRequest) {
         // so the page at `/records/[...slug]` can render the specific record view
         // using the path + any query params (e.g., surface/level).
         return nextResponse();
-      }
-    }
-
-    // Redirect non-indexable /records filter combinations back to the base record landing for bots only.
-    if (segments[0] === 'records' && segments[1] && isSearchBot(ua)) {
-      const { record, sub } = resolvePageRecordAndSub(requestPath);
-      const effectiveSub = sub ?? (query.get('subtab') ? kebabToKey(query.get('subtab')!) : undefined);
-      if (record) {
-        const filters = queryToRecordFilters(query);
-        if (!sub && effectiveSub) {
-          filters.subtab = effectiveSub;
-        }
-        const slug = [record];
-        if (sub || query.get('subtab')) {
-          slug.push(effectiveSub || '');
-        }
-        const policy = evaluateRecordsPolicy(origin, slug.filter(Boolean), filters);
-        if (!policy.index) {
-          const dest = new URL(req.url);
-          dest.search = '';
-          return new Response(null, { status: 308, headers: { Location: dest.toString() } });
-        }
       }
     }
 
