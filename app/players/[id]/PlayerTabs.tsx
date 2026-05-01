@@ -96,10 +96,13 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
       newPathname = baseParts.join('/');
     }
 
-    // For season tab: always navigate directly to /season/YYYY to avoid the intermediate redirect
+    // For season tab: if we already know the player's latest season year, navigate there directly.
+    // Otherwise keep /season and let the server redirect to the player's latest played season.
     if (tabId === 'season') {
-      const defaultYear = initialSeasonYears?.[0] ?? new Date().getFullYear();
-      newPathname = `${newPathname}/${defaultYear}`;
+      const defaultYear = initialSeasonYears?.[0] ?? initialSeasonYear ?? null;
+      if (defaultYear) {
+        newPathname = `${newPathname}/${defaultYear}`;
+      }
     }
 
     // Avoid triggering navigation if nothing actually changed (both pathname and qs)
