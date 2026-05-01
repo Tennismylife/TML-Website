@@ -77,7 +77,7 @@ function isSearchBot(userAgent: string) {
 }
 
 async function redirectRecordsBotToLanding(id: string) {
-  const ua = String(headers().get('user-agent') || '');
+  const ua = String((await headers()).get('user-agent') || '');
   if (!isSearchBot(ua)) return;
 
   const tournament = await getTournament(id);
