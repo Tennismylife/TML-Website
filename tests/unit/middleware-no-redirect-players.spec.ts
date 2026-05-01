@@ -3,7 +3,7 @@ import { NextRequest } from 'next/server';
 import { middleware } from '../../middleware';
 
 describe('middleware player redirect -> canonical slug', () => {
-  it('returns 301 for players when slug-map resolves a legacy code', async () => {
+  it('returns 308 for players when slug-map resolves a legacy code', async () => {
     // Mock fetch for /api/slug-map used in middleware
     global.fetch = vi.fn().mockImplementation((url: string) => {
       if (url.includes('/api/slug-map')) {
@@ -21,13 +21,13 @@ describe('middleware player redirect -> canonical slug', () => {
     };
 
     const res = await middleware(req as any);
-    // middleware should now return a 301 Response for players when slug resolved
+    // middleware should now return a 308 Response for players when slug resolved
     expect(res).toBeTruthy();
-    expect((res as any).status).toBe(301);
+    expect((res as any).status).toBe(308);
     expect((res as any).headers.get('location')).toContain('/players/dominik-hrbaty');
   });
 
-  it('returns 301 for legacy player code C022 to actual slug dan-cassidy via slug-map', async () => {
+  it('returns 308 for legacy player code C022 to actual slug dan-cassidy via slug-map', async () => {
     global.fetch = vi.fn().mockImplementation((url: string) => {
       if (url.includes('/api/slug-map')) {
         return Promise.resolve({ ok: true, json: () => Promise.resolve({ players: { C022: 'dan-cassidy' } }) });
@@ -44,7 +44,7 @@ describe('middleware player redirect -> canonical slug', () => {
 
     const res = await middleware(req as any);
     expect(res).toBeTruthy();
-    expect((res as any).status).toBe(301);
+    expect((res as any).status).toBe(308);
     expect((res as any).headers.get('location')).toBe('https://stats.tennismylife.org/players/dan-cassidy');
   });
 });

@@ -469,7 +469,7 @@ export async function middleware(req: NextRequest) {
     if (pathname === '/player-vs-player' || pathname.startsWith('/player-vs-player/')) {
       const dest = new URL(req.url);
       dest.pathname = '/h2h' + pathname.slice('/player-vs-player'.length);
-      return new Response(null, { status: 301, headers: { Location: dest.toString() } });
+      return new Response(null, { status: 308, headers: { Location: dest.toString() } });
     }
 
     // Dev debug block removed: avoid noisy POSTs and console.error messages for season routes
@@ -488,7 +488,7 @@ export async function middleware(req: NextRequest) {
         const newSearch = new URLSearchParams(req.nextUrl.searchParams as any);
         newSearch.delete('year');
         dest.search = newSearch.toString();
-        return new Response(null, { status: 301, headers: { Location: dest.toString() } });
+        return new Response(null, { status: 308, headers: { Location: dest.toString() } });
       }
     }
 
@@ -501,7 +501,34 @@ export async function middleware(req: NextRequest) {
         const dest = new URL(req.url);
         dest.pathname = `/players/${playerSlug}`;
         dest.search = '';
-        return new Response(null, { status: 301, headers: { Location: dest.toString() } });
+        return new Response(null, { status: 308, headers: { Location: dest.toString() } });
+      }
+    }
+
+    // Redirect noindex player season pages for search engine bots to the player landing page.
+    if (segments[0] === 'players' && String(segments[2] || '').toLowerCase() === 'season' && segments[3]) {
+      const isBot = isSearchBot(ua);
+      if (isBot) {
+        const playerSlug = segments[1];
+        const year = Number(segments[3]);
+        if (Number.isInteger(year)) {
+          try {
+            const apiUrl = new URL(`/api/players/${encodeURIComponent(playerSlug)}/season-robots`, req.nextUrl.origin);
+            apiUrl.searchParams.set('year', String(year));
+            const apiResp = await fetch(apiUrl.toString(), { method: 'GET', next: { revalidate: 3600 } } as RequestInit);
+            if (apiResp.ok) {
+              const data = await apiResp.json();
+              if (data && data.index === false) {
+                const dest = new URL(req.url);
+                dest.pathname = `/players/${playerSlug}`;
+                dest.search = '';
+                return new Response(null, { status: 308, headers: { Location: dest.toString() } });
+              }
+            }
+          } catch (e) {
+            // If the helper fails, continue to allow normal rendering rather than blocking the request.
+          }
+        }
       }
     }
 
@@ -514,7 +541,7 @@ export async function middleware(req: NextRequest) {
         const dest = new URL(req.url);
         dest.pathname = normalizedPath;
         dest.search = req.nextUrl.search;
-        return new Response(null, { status: 301, headers: { Location: dest.toString() } });
+        return new Response(null, { status: 308, headers: { Location: dest.toString() } });
       }
     }
 
@@ -559,7 +586,7 @@ export async function middleware(req: NextRequest) {
           const newSearch = new URLSearchParams(req.nextUrl.searchParams as any);
           newSearch.delete('subtab');
           dest.search = newSearch.toString();
-          return new Response(null, { status: 301, headers: { Location: dest.toString() } });
+          return new Response(null, { status: 308, headers: { Location: dest.toString() } });
         }
 
         // Redirect non-indexable /records filter combinations back to the base record landing for bots only.
@@ -610,7 +637,7 @@ export async function middleware(req: NextRequest) {
         newParams.delete('record');
         newParams.delete('subtab');
         dest.search = newParams.toString();
-        return new Response(null, { status: 301, headers: { Location: dest.toString() } });
+        return new Response(null, { status: 308, headers: { Location: dest.toString() } });
       }
     }
 
@@ -636,7 +663,7 @@ export async function middleware(req: NextRequest) {
         const newSearch = new URLSearchParams(query as any);
         newSearch.delete('tab');
         dest.search = newSearch.toString();
-        return new Response(null, { status: 301, headers: { Location: dest.toString() } });
+        return new Response(null, { status: 308, headers: { Location: dest.toString() } });
       }
 
       const hasPlayerFilterParams = Array.from(query.keys()).some(key => RECORD_FILTER_QUERY_KEYS.has(key));
@@ -647,7 +674,7 @@ export async function middleware(req: NextRequest) {
           sanitized.delete(key);
         }
         dest.search = sanitized.toString();
-        return new Response(null, { status: 301, headers: { Location: dest.toString() } });
+        return new Response(null, { status: 308, headers: { Location: dest.toString() } });
       }
     }
 
@@ -711,7 +738,16 @@ export async function middleware(req: NextRequest) {
       const dest = new URL(req.url);
       dest.pathname = `/${resource}/${slug}${rest ? '/' + rest : ''}`;
       dest.search = search;
-      return new Response(null, { status: 301, headers: { Location: dest.toString() } });
+      return new Response(null, { status: 308, headers: { Location: dest.toString() } });
+    }
+
+    // Canonical player matches pages should always redirect to the player landing page.
+    if (resource === 'players' && String(segments[2] || '').toLowerCase() === 'matches') {
+      const playerSlug = idSegment;
+      const dest = new URL(req.url);
+      dest.pathname = `/players/${playerSlug}`;
+      dest.search = '';
+      return new Response(null, { status: 308, headers: { Location: dest.toString() } });
     }
 
     return nextResponse();
