@@ -39,6 +39,11 @@ function hasAnyParam(searchParams: URLSearchParams, names: string[]) {
   return false;
 }
 
+function isSearchBot(userAgent: string) {
+  if (!userAgent) return false;
+  return /googlebot|bingbot|slurp|yahoo|duckduckgo|yandex|baiduspider|facebookexternalhit|twitterbot|linkedinbot|applebot/i.test(userAgent);
+}
+
 function isTournamentRecordsPath(pathname: string) {
   const seg = pathname.split('/').filter(Boolean);
   return seg.length >= 3 && seg[0] === 'tournaments' && seg[2] === 'records';
@@ -439,10 +444,11 @@ export async function middleware(req: NextRequest) {
       }
     }
 
-    // Redirect any /players/:slug/matches requests containing filter query params to the player landing page.
+    // Redirect any /players/:slug/matches requests from search engine bots to the player landing page.
+    // Real users keep the /matches tab path.
     if (segments[0] === 'players' && String(segments[2] || '').toLowerCase() === 'matches') {
-      const hasMatchFilters = Array.from(req.nextUrl.searchParams.keys()).some(key => PLAYER_MATCH_FILTER_KEYS.has(key));
-      if (hasMatchFilters) {
+      const isBot = isSearchBot(ua);
+      if (isBot) {
         const playerSlug = segments[1];
         const dest = new URL(req.url);
         dest.pathname = `/players/${playerSlug}`;
@@ -450,7 +456,6 @@ export async function middleware(req: NextRequest) {
         return new Response(null, { status: 301, headers: { Location: dest.toString() } });
       }
     }
-
 
     // Normalize any /recordsranking path segments to lowercase canonical form
     if (segments[0] === 'recordsranking' && segments[1]) {
