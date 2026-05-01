@@ -78,21 +78,29 @@ function sanitizeRecordsFilterQuery(searchParams: URLSearchParams) {
     }
 
     // Handle %3D-corrupted values: e.g. surface=Hardace%3Dhard arrives as
-    // surface=Hardace=hard after URL decoding. Strip from '=' onwards and,
-    // for surface params, recover the known valid prefix (Hardace → Hard).
+    // surface=Hardace=hard after URL decoding. Also normalize malformed
+    // surface values that begin with a valid known surface prefix.
     let value = stripped;
     const eqIdx = value.indexOf('=');
     if (eqIdx !== -1) {
       value = value.slice(0, eqIdx);
       changed = true;
-      if (!value) continue;
-      if (key === 'surface' || key === 'surface[]') {
-        const lower = value.toLowerCase();
-        const recovered = KNOWN_SURFACES.find(
-          s => lower.startsWith(s.toLowerCase()) && lower.length > s.length
-        );
-        if (recovered) value = recovered;
+    }
+
+    if (key === 'surface' || key === 'surface[]') {
+      const lower = value.toLowerCase();
+      const recovered = KNOWN_SURFACES.find(
+        s => lower.startsWith(s.toLowerCase()) && lower.length > s.length
+      );
+      if (recovered) {
+        value = recovered;
+        changed = true;
       }
+    }
+
+    if (!value) {
+      changed = true;
+      continue;
     }
 
     if (key === 'bestOf' || key === 'bestOf[]' || key === 'best_of' || key === 'best_of[]') {

@@ -223,6 +223,26 @@ export default async function PlayerPage({ params, searchParams }: any) {
     ? Object.fromEntries(resolvedSearchParams.entries())
     : resolvedSearchParams || {};
 
+  const PLAYER_LANDING_FILTER_KEYS = new Set([
+    'year', 'season', 'level', 'surface', 'round', 'firstSet', 'result',
+    'vsRank', 'vsAge', 'vsHand', 'vsBackhand', 'tourney', 'search', 'sub',
+    'opponent', 'bestOf', 'best_of', 'n', 'age', 'page',
+  ]);
+
+  const hasLandingFilters = Object.keys(resolvedQuery).some((key) =>
+    PLAYER_LANDING_FILTER_KEYS.has(key) && resolvedQuery[key] != null && String(resolvedQuery[key]) !== ''
+  );
+
+  if (!hasTab && hasLandingFilters) {
+    const remainingParams = new URLSearchParams();
+    for (const [k, v] of Object.entries(resolvedQuery)) {
+      if (PLAYER_LANDING_FILTER_KEYS.has(k) || k === 'tab' || v == null || String(v) === '') continue;
+      remainingParams.set(k, String(v));
+    }
+    const qs = remainingParams.toString();
+    permanentRedirect(`/players/${player.slug}${qs ? `?${qs}` : ''}`);
+  }
+
   // Redirect to canonical slug URL: handles numeric IDs, legacy codes (e.g. P0FU) and case mismatches.
   if (player.slug && !hasTab && String(slugParam) !== player.slug) {
     const remainingParams = new URLSearchParams();
