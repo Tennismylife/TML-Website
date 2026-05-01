@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import React from 'react';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
@@ -9,6 +11,8 @@ import PercentageModalOutlet from '@/components/PercentageModalOutlet';
 import TimespanModalOutlet from '@/components/TimespanModalOutlet';
 import RoundOnEntriesModalOutlet from '@/components/RoundOnEntriesModalOutlet';
 import LeastModalOutlet from '@/components/LeastModalOutlet';
+
+export const dynamic = 'force-dynamic';
 
 // Helper to extract name (server-side)
 function extractName(nameField: any): string {
@@ -66,6 +70,22 @@ async function getTournament(param: string) {
     return prisma.tournament.findUnique({ where: { id: parseInt(canonicalId, 10) } });
   }
   return prisma.tournament.findUnique({ where: { slug: param } });
+}
+
+function isSearchBot(userAgent: string) {
+  return /googlebot|bingbot|slurp|yahoo|duckduckgo|yandex|baiduspider|facebookexternalhit|twitterbot|linkedinbot|applebot/i.test(userAgent);
+}
+
+async function redirectRecordsBotToLanding(id: string) {
+  const ua = String(headers().get('user-agent') || '');
+  if (!isSearchBot(ua)) return;
+
+  const tournament = await getTournament(id);
+  if (!tournament) return;
+  if (shouldIndexRecords(tournament.category, tournament.years)) return;
+
+  const slugId = await getTournamentSlug(id).catch(() => id);
+  redirect(`/tournaments/${encodeURIComponent(slugId)}`);
 }
 
 export async function generateMetadata({ params, searchParams }: any): Promise<Metadata> {
@@ -270,6 +290,7 @@ export default async function RecordsLayout({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  await redirectRecordsBotToLanding(id);
 
   // Resolve the canonical slug for structured data URLs
   const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
