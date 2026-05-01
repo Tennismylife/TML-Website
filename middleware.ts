@@ -349,7 +349,7 @@ export async function middleware(req: NextRequest) {
           return NextResponse.rewrite(dest);
         }
 
-        return new Response(null, { status: 307, headers: { Location: dest.toString() } });
+        return new Response(null, { status: 308, headers: { Location: dest.toString() } });
       }
     }
 
@@ -388,7 +388,7 @@ export async function middleware(req: NextRequest) {
         if (changed) {
           const dest = new URL(req.url);
           dest.search = cleaned.toString();
-          return new Response(null, { status: 307, headers: { Location: dest.toString() } });
+          return new Response(null, { status: 308, headers: { Location: dest.toString() } });
         }
       }
 
@@ -557,7 +557,7 @@ export async function middleware(req: NextRequest) {
             if (!policy.index) {
               const dest = new URL(req.url);
               dest.search = '';
-              return new Response(null, { status: 307, headers: { Location: dest.toString() } });
+              return new Response(null, { status: 308, headers: { Location: dest.toString() } });
             }
           }
         }
@@ -586,7 +586,7 @@ export async function middleware(req: NextRequest) {
         if (!policy.index) {
           const dest = new URL(req.url);
           dest.search = '';
-          return new Response(null, { status: 307, headers: { Location: dest.toString() } });
+          return new Response(null, { status: 308, headers: { Location: dest.toString() } });
         }
       }
     }
