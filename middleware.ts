@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { shouldShowRecordFilter, type FilterName } from './lib/records/allowed-filters';
+import { evaluateRecordsPolicy, type RecordFilters } from './lib/seo/records-policy';
 
 /**
  * Local fallback mapping for player and tournament legacy codes -> slug.
@@ -190,6 +191,31 @@ function resolveTournamentRecordsPageRecordAndSub(pathname: string) {
 
 function hasAnyRecordsFilter(searchParams: URLSearchParams) {
   return hasAnyParam(searchParams, ['level', 'level[]', 'surface', 'surface[]', 'round', 'round[]', 'bestOf', 'bestOf[]']);
+}
+
+function queryToRecordFilters(searchParams: URLSearchParams): RecordFilters {
+  const levels = [...searchParams.getAll('level'), ...searchParams.getAll('level[]')]
+    .filter(Boolean)
+    .map((value) => String(value).toUpperCase());
+  const surfaces = [...searchParams.getAll('surface'), ...searchParams.getAll('surface[]')]
+    .filter(Boolean)
+    .map((value) => {
+      const raw = String(value);
+      return raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
+    });
+  const rounds = [...searchParams.getAll('round'), ...searchParams.getAll('round[]')]
+    .filter(Boolean)
+    .map((value) => String(value).toUpperCase());
+  const bestOfValues = [...searchParams.getAll('bestOf'), ...searchParams.getAll('bestOf[]')]
+    .map((value) => Number(value))
+    .filter((value) => Number.isFinite(value) && Number.isInteger(value) && value > 0);
+
+  const filters: RecordFilters = {};
+  if (levels.length) filters.level = levels;
+  if (surfaces.length) filters.surface = surfaces;
+  if (rounds.length) filters.round = rounds[0];
+  if (bestOfValues.length) filters.bestOf = bestOfValues[0];
+  return filters;
 }
 
 function hasInvalidRecordFilter(record: string, sub: string | undefined, searchParams: URLSearchParams) {
@@ -518,6 +544,28 @@ export async function middleware(req: NextRequest) {
         // so the page at `/records/[...slug]` can render the specific record view
         // using the path + any query params (e.g., surface/level).
         return nextResponse();
+      }
+    }
+
+    // Redirect non-indexable /records filter combinations back to the base record landing for bots only.
+    if (segments[0] === 'records' && segments[1] && isSearchBot(ua)) {
+      const { record, sub } = resolvePageRecordAndSub(requestPath);
+      const effectiveSub = sub ?? (query.get('subtab') ? kebabToKey(query.get('subtab')!) : undefined);
+      if (record) {
+        const filters = queryToRecordFilters(query);
+        if (!sub && effectiveSub) {
+          filters.subtab = effectiveSub;
+        }
+        const slug = [record];
+        if (sub || query.get('subtab')) {
+          slug.push(effectiveSub || '');
+        }
+        const policy = evaluateRecordsPolicy(origin, slug.filter(Boolean), filters);
+        if (!policy.index) {
+          const dest = new URL(req.url);
+          dest.search = '';
+          return new Response(null, { status: 307, headers: { Location: dest.toString() } });
+        }
       }
     }
 
