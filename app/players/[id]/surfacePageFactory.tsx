@@ -1,5 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import PlayerTabPage from './[tab]/page';
 import { getPlayerTop100Robots } from './playerIndexing';
@@ -26,7 +28,26 @@ const SURFACE_META: Record<SurfaceKey, { label: string; adjective: string }> = {
   Grass: { label: 'Grass Court', adjective: 'grass' },
 };
 
+function isSearchBot(userAgent: string) {
+  return /googlebot|bingbot|slurp|yahoo|duckduckgo|yandex|baiduspider|facebookexternalhit|twitterbot|linkedinbot|applebot/i.test(userAgent);
+}
+
+async function redirectSurfaceBotToLanding(id: string) {
+  const headersList = await headers();
+  const ua = String(headersList.get('user-agent') || '');
+  if (!isSearchBot(ua)) return;
+
+  const robots = await getPlayerTop100Robots(id);
+  if (robots.index) return;
+
+  const player = await resolvePlayer(id);
+  const slug = player?.slug || String(id);
+  redirect(`/players/${encodeURIComponent(slug)}`);
+}
+
 export async function generateSurfaceMetadata(id: string, surface: SurfaceKey): Promise<Metadata> {
+  await redirectSurfaceBotToLanding(id);
+
   let player: any = null;
   try { player = await resolvePlayer(id); } catch (e) {}
   const name = player ? (player.atpname || player.player) : String(id);
@@ -90,6 +111,8 @@ interface SurfacePageContentProps {
 }
 
 export default async function SurfacePageContent({ id, surface }: SurfacePageContentProps) {
+  await redirectSurfaceBotToLanding(id);
+
   let player: any = null;
   try { player = await resolvePlayer(id); } catch (e) {}
   if (!player) return <div className="text-red-500 font-bold">Player not found</div>;
