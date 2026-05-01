@@ -64,7 +64,7 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
 
   const lastNavRef = useRef<{ url: string; t: number } | null>(null);
 
-  const handleTabClick = (tabId: string) => {
+  const handleTabClick = async (tabId: string) => {
     // "Surface Stats" tab defaults to hard court
     if (tabId === 'surfaces') { tabId = 'hard'; }
     // Build a new query string based on current search params (preserve filters, but don't use ?tab=)
@@ -97,9 +97,23 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
     }
 
     // For season tab: if we already know the player's latest season year, navigate there directly.
-    // Otherwise keep /season and let the server redirect to the player's latest played season.
+    // Otherwise fetch the latest year from the server and navigate to the year path.
     if (tabId === 'season') {
-      const defaultYear = initialSeasonYears?.[0] ?? initialSeasonYear ?? null;
+      let defaultYear = initialSeasonYears?.[0] ?? initialSeasonYear ?? null;
+      if (!defaultYear && player?.slug) {
+        try {
+          const res = await fetch(`/api/players/match-facets?id=${encodeURIComponent(player.slug)}`, { cache: 'force-cache' });
+          if (res.ok) {
+            const json = await res.json();
+            const latest = json?.years?.[0]?.value;
+            if (Number.isFinite(latest)) {
+              defaultYear = Number(latest);
+            }
+          }
+        } catch (e) {
+          // Ignore fetch errors and fall back to /season path if we cannot determine the latest year.
+        }
+      }
       if (defaultYear) {
         newPathname = `${newPathname}/${defaultYear}`;
       }
