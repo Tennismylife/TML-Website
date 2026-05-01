@@ -540,6 +540,28 @@ export async function middleware(req: NextRequest) {
           return new Response(null, { status: 301, headers: { Location: dest.toString() } });
         }
 
+        // Redirect non-indexable /records filter combinations back to the base record landing for bots only.
+        if (isSearchBot(ua)) {
+          const { record, sub } = resolvePageRecordAndSub(requestPath);
+          const effectiveSub = sub ?? (query.get('subtab') ? kebabToKey(query.get('subtab')!) : undefined);
+          if (record) {
+            const filters = queryToRecordFilters(query);
+            if (!sub && effectiveSub) {
+              filters.subtab = effectiveSub;
+            }
+            const slug = [record];
+            if (sub || query.get('subtab')) {
+              slug.push(effectiveSub || '');
+            }
+            const policy = evaluateRecordsPolicy(origin, slug.filter(Boolean), filters);
+            if (!policy.index) {
+              const dest = new URL(req.url);
+              dest.search = '';
+              return new Response(null, { status: 307, headers: { Location: dest.toString() } });
+            }
+          }
+        }
+
         // No rewrite here: allow the request to continue to /records/<record>
         // so the page at `/records/[...slug]` can render the specific record view
         // using the path + any query params (e.g., surface/level).
