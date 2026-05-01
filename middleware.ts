@@ -56,6 +56,10 @@ const RECORD_FILTER_QUERY_KEYS = new Set([
   'best_of', 'best_of[]',
 ]);
 
+const PLAYER_MATCH_FILTER_KEYS = new Set([
+  'year', 'tourney', 'level', 'surface', 'round', 'result', 'vsRank', 'vsAge', 'vsHand', 'vsBackhand', 'vsEntry', 'asRank', 'asEntry', 'set', 'firstSet', 'score'
+]);
+
 // Known valid surface values, sorted longest-first for greedy prefix matching.
 const KNOWN_SURFACES = ['Unknown', 'Carpet', 'Grass', 'Hard', 'Clay'];
 
@@ -435,6 +439,17 @@ export async function middleware(req: NextRequest) {
       }
     }
 
+    // Redirect any /players/:slug/matches requests containing filter query params to the player landing page.
+    if (segments[0] === 'players' && String(segments[2] || '').toLowerCase() === 'matches') {
+      const hasMatchFilters = Array.from(req.nextUrl.searchParams.keys()).some(key => PLAYER_MATCH_FILTER_KEYS.has(key));
+      if (hasMatchFilters) {
+        const playerSlug = segments[1];
+        const dest = new URL(req.url);
+        dest.pathname = `/players/${playerSlug}`;
+        dest.search = '';
+        return new Response(null, { status: 301, headers: { Location: dest.toString() } });
+      }
+    }
 
 
     // Normalize any /recordsranking path segments to lowercase canonical form

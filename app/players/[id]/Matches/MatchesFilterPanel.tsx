@@ -81,8 +81,6 @@ interface Props {
   allMatchesFetched?: boolean;
   /** The subset of matches currently displayed (e.g. first 10) */
   displayedMatches?: Match[];
-  updateUrl: (filters: Record<string, string>) => void;
-  onExplicitChange?: (key: string, value: string) => void;
   // Callback to notify parent about current selected filters (for dynamic headings etc.)
   onFiltersChange?: (filters: Record<string, string>) => void;
   // Optional server-provided facets (SSR) to avoid a client-side fetch
@@ -100,7 +98,7 @@ const TOURNEY_LEVELS = [
   { code: "O", label: "Olympics" },
 ];
 
-export default function MatchesFilterPanel({ playerId, matches, allMatches, displayedMatches, updateUrl, onExplicitChange, onFiltersChange, allMatchesFetched, serverFacets }: Props) {
+export default function MatchesFilterPanel({ playerId, matches, allMatches, displayedMatches, onFiltersChange, allMatchesFetched, serverFacets }: Props) {
   const searchParams = useSearchParams();
   const urlYear = searchParams?.get("year");
   const urlTourney = searchParams?.get("tourney");
@@ -346,52 +344,13 @@ export default function MatchesFilterPanel({ playerId, matches, allMatches, disp
 
   }, [allMatches, urlYear, urlTourney, urlLevel, searchParams, allMatchesFetched]);
 
-  // --- Ref per evitare updateUrl al primo render ---
-  const skipFirstUpdateRef = useRef(true);
+  // We intentionally do not mutate the browser URL when filters change.
+  // Filter state remains client-only to prevent indexed query-string URLs.
 
   // small logs for debugging filter changes
   useEffect(() => { console.debug('[MatchesFilterPanel] selectedYear changed ->', selectedYear); }, [selectedYear]);
   useEffect(() => { console.debug('[MatchesFilterPanel] tourneyIdFilter changed ->', tourneyIdFilter); }, [tourneyIdFilter]);
   useEffect(() => { console.debug('[MatchesFilterPanel] tourneyLevelFilter changed ->', tourneyLevelFilter); }, [tourneyLevelFilter]);
-
-  // --- Aggiorna URL quando cambiano filtri ---
-  useEffect(() => {
-    if (!initializedRef.current) {
-      console.debug('[MatchesFilterPanel] not initialized yet, skipping update');
-      return;
-    }
-
-    if (skipFirstUpdateRef.current) {
-      skipFirstUpdateRef.current = false;
-      console.debug('[MatchesFilterPanel] skipping first automatic update');
-      return;
-    }
-
-    const payload = {
-      year: selectedYear,
-      level: tourneyLevelFilter,
-      tourney: tourneyIdFilter,
-      surface: surfaceFilter,
-      round: roundFilter,
-      result: resultFilter,
-      vsRank: vsRankFilter,
-      vsAge: vsAgeFilter,
-      vsHand: vsHandFilter,
-      vsBackhand: vsBackhandFilter,
-      vsEntry: vsEntryFilter,
-      asRank: asRankFilter,
-      asEntry: asEntryFilter,
-      set: matchSetFilter,
-      firstSet: firstSetFilter,
-      score: scoreFilter,
-    };
-    console.debug('[MatchesFilterPanel] automatic updateUrl payload:', payload);
-    updateUrl(payload as Record<string, string>);
-  }, [
-    selectedYear, tourneyLevelFilter, tourneyIdFilter, surfaceFilter, roundFilter,
-    resultFilter, vsRankFilter, vsAgeFilter, vsHandFilter, vsBackhandFilter,
-    vsEntryFilter, asRankFilter, asEntryFilter, matchSetFilter, firstSetFilter, scoreFilter
-  ]);
 
   // --- Filtraggio dei match ---
   const filteredMatches = useMemo(() => {
@@ -576,7 +535,6 @@ useEffect(() => {
             setFirstSetFilter={setFirstSetFilter}
             scoreFilter={scoreFilter}
             setScoreFilter={setScoreFilter}
-            onExplicitChange={onExplicitChange}
           />
         </div>
       )}

@@ -172,9 +172,6 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
   }, [heading]);
 
   // Track which query keys were present when the page was opened (external links)
-  const initialQueryKeysRef = useRef<Set<string>>(new Set());
-  const initialKeysReadyRef = useRef<boolean>(false);
-
   // Supported filters that we seed from URL
   const SUPPORTED_FILTER_KEYS = [
     'year','tourney','level','surface','round','result','vsRank','vsAge','vsHand','vsBackhand','vsEntry','asRank','asEntry','set','firstSet','score'
@@ -182,15 +179,8 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const s = new Set<string>();
     try {
       const u = new URL(window.location.href);
-      u.searchParams.forEach((_, k) => { if (k !== 'tab') s.add(k); });
-      initialQueryKeysRef.current = s;
-      initialKeysReadyRef.current = true;
-      
-
-      // Seed currentFilters from URL for supported keys (if no current filters yet)
       const seeds: Record<string,string> = {};
       SUPPORTED_FILTER_KEYS.forEach(k => {
         const v = u.searchParams.get(k);
@@ -198,24 +188,12 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
       });
 
       if (Object.keys(currentFilters || {}).length === 0 && Object.keys(seeds).length > 0) {
-      
         setCurrentFilters(seeds);
-      }
-
-      // If there was a queued payload during hydration, apply it now
-      if (queuedPayloadRef.current) {
-        
-        // call updateUrl with the queued payload (it will not re-queue because keysReady is true)
-        updateUrl(queuedPayloadRef.current as Record<string,string>);
-        queuedPayloadRef.current = null;
       }
     } catch (e) {
       // noop
     }
   }, []);
-
-  // Track explicit deletions performed by the user to avoid them being re-added by automatic sync
-  const explicitDeletedRef = useRef(new Set<string>());
 
 
   // DEV DEBUG: history wrapper removed to reduce noisy stack traces in test logs
@@ -512,150 +490,9 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
   // extra offset (pixels) to push filters further down; tweak this value if you want larger gap
   const extraOffsetPx = 24;
 
-  const queuedPayloadRef = useRef<Record<string,string> | null>(null);
-
-  const updateUrl = (filters: Record<string, string | number>) => {
-    // If initial keys haven't been captured yet (race on refresh/hydration), queue the payload
-    if (!initialKeysReadyRef.current) {
-      queuedPayloadRef.current = Object.fromEntries(Object.entries(filters).map(([k,v]) => [k, String(v)]));
-      
-      return;
-    }
-
-    // If the current active tab is not 'matches', abstain from updating the URL to avoid clobbering navigations
-    if (typeof window !== 'undefined') {
-      const currentTab = window.location.pathname.split('/')[3];
-      if (currentTab !== 'matches') {
-        
-        return;
-      }
-    }
-
-    const url = new URL(window.location.href);
-    // Do NOT force the pathname tab segment here; keep current pathname and only update search params
-
-    Object.entries(filters).forEach(([key, value]) => {
-      const currentHas = typeof window !== 'undefined' ? new URL(window.location.href).searchParams.has(key) : false;
-      const explicitDeleted = explicitDeletedRef.current.has(key);
-      const initialHas = initialKeysReadyRef.current ? initialQueryKeysRef.current.has(key) : false;
-      
-
-      if (!value || value === "All" || value === "") {
-        // Respect explicit deletions performed by the user immediately
-        if (explicitDeleted) {
-          
-          url.searchParams.delete(key);
-          explicitDeletedRef.current.delete(key);
-          initialQueryKeysRef.current.delete(key);
-        } else {
-          // Since initial keys are ready, we can safely decide whether to remove keys
-          if (!currentHas && !initialHas) {
-            
-            url.searchParams.delete(key);
-          } else {
-            
-          }
-        }
-      } else {
-        url.searchParams.set(key, String(value));
-      }
-    });
-    // Build a relative path and use history.replaceState to avoid a full page reload
-    const searchString = url.searchParams.toString();
-    const newPath = url.pathname + (searchString ? '?' + searchString : '');
-    
-    if (typeof window !== 'undefined' && window.history && typeof window.history.replaceState === 'function') {
-      window.history.replaceState(null, '', newPath);
-    } else {
-      router.replace(newPath, { scroll: false });
-    }
-  };
-
-
-  // explicit change handler: used when user explicitly clicks a filter (will force delete even if it existed initially)
-  const updateUrlExplicit = (key: string, value: string | number) => {
-    // If not on matches tab, ignore explicit updates to avoid clobbering navigation
-    if (typeof window !== 'undefined') {
-      const currentTab = window.location.pathname.split('/')[3];
-      if (currentTab !== 'matches') {
-        
-        return;
-      }
-    }
-
-    const searchParams = new URLSearchParams(window.location.search);
-
-    if (!value || value === "All" || value === "") {
-      
-      searchParams.delete(key);
-      // If user explicitly removed a filter, mark it so automatic updates respect it
-      explicitDeletedRef.current.add(key);
-      // also remove it from the initial-key set so subsequent updateUrl calls can delete it as well.
-      initialQueryKeysRef.current.delete(key);
-    } else {
-      
-      searchParams.set(key, String(value));
-      // ensure the key is considered present going forward
-      initialQueryKeysRef.current.add(key);
-      // clear explicit deletion flag if present
-      explicitDeletedRef.current.delete(key);
-    }
-    // Keep local filter state in sync for immediate H1/title updates
-    setCurrentFilters(prev => {
-      const next = { ...(prev || {}) } as Record<string, string>;
-      if (!value || value === "All" || value === "") {
-        delete next[key];
-      } else {
-        next[key] = String(value);
-      }
-      return next;
-    });
-    const newSearch = searchParams.toString();
-    const newUrl = window.location.pathname + (newSearch ? '?' + newSearch : '');
-    if (typeof window !== 'undefined' && window.history && typeof window.history.replaceState === 'function') {
-      window.history.replaceState(null, '', newUrl);
-    } else {
-      router.replace(newUrl, { scroll: false });
-    }
-
-    // If no filters remain, reset matches immediately
-    const hasFilters = SUPPORTED_FILTER_KEYS.some((k) => searchParams.has(k));
-    if (!hasFilters) {
-      if (showAll) {
-        if (allMatches && allMatches.length > 0) {
-          setMatches(allMatches);
-        } else {
-          (async () => {
-            try {
-              const res = await fetch(`/api/players/allmatches?id=${playerId}`, { cache: 'no-store' });
-              if (!res.ok) throw new Error(`HTTP ${res.status}`);
-              const data: Match[] = await res.json();
-              setAllMatches(data);
-              setMatches(data);
-              setAllMatchesFetched(true);
-            } catch (err: any) {
-              console.error(err);
-            }
-          })();
-        }
-      } else {
-        if (initialMatches && initialMatches.length > 0) {
-          setMatches(initialMatches);
-        } else {
-          (async () => {
-            try {
-              const res = await fetch(`/api/players/allmatches?id=${playerId}&limit=10`, { cache: 'no-store' });
-              if (!res.ok) throw new Error(`HTTP ${res.status}`);
-              const data: Match[] = await res.json();
-              setMatches(data);
-            } catch (err: any) {
-              console.error(err);
-            }
-          })();
-        }
-      }
-    }
-  };
+  // Filters are client-only. We intentionally do not mutate the browser URL for filter changes
+  // so the site does not create a large number of indexable query-string URLs.
+  // The filter panel still seeds initial state from any incoming search params.
 
   // Handler to load all matches when user clicks "Show All"
   const handleShowAllClick = async () => {
@@ -741,8 +578,6 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
                 allMatches={allMatches}
                 allMatchesFetched={allMatchesFetched}
                 displayedMatches={sortedMatches}
-                updateUrl={updateUrl}
-                onExplicitChange={updateUrlExplicit}
                 onFiltersChange={setCurrentFilters}
                 serverFacets={initialFacets ?? clientFacets}
               />
