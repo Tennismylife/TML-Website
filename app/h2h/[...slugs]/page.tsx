@@ -246,7 +246,8 @@ export default async function Page({ params, searchParams }: { params?: Promise<
   const slugArr = resolvedParams?.slugs;
   const slug = Array.isArray(slugArr) ? slugArr.join('/') : slugArr?.[0] || '';
 
-  const ua = String(headers().get('user-agent') || '');
+  const reqHeaders = await headers();
+  const ua = String(reqHeaders.get('user-agent') || '');
   const isBot = isSearchBot(ua);
   const hasQuery = searchParams && Object.keys(searchParams).length > 0;
   if (isBot && (hasQuery || !(ENABLE_H2H_NOINDEX_ALGORITHM ? await isH2HIndexable(slug) : true))) {
