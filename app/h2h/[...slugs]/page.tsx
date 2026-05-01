@@ -1,6 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
+import { permanentRedirect } from 'next/navigation';
 import H2HClient from '../H2HClient';
 import H2HContentClient from '../H2HContentClient';
 import H2HPreviewServer from '../H2HPreviewServer';
@@ -100,6 +102,67 @@ async function isPlayerEligibleForH2H(playerId: string, latestRankingDateId: num
   return await playerHasEverBeenTop20(playerId);
 }
 
+function isSearchBot(userAgent: string) {
+  return /google(bot|other)|bingbot|slurp|yahoo|duckduckgo|yandex|baiduspider|facebookexternalhit|twitterbot|linkedinbot|applebot/i.test(userAgent);
+}
+
+async function resolvePlayersFromSlug(slug: string) {
+  const match = slug.match(/^(.+)-vs-(.+)$/);
+  if (!match) return { p1: null as any, p2: null as any };
+
+  const p1slugRaw = match[1];
+  const p2slugRaw = match[2];
+  const p1slug = p1slugRaw.replace(/-/g, ' ');
+  const p2slug = p2slugRaw.replace(/-/g, ' ');
+
+  const [p1BySlug, p2BySlug] = await Promise.all([
+    prisma.player.findUnique({ where: { slug: p1slugRaw }, select: { id: true, atpname: true } }),
+    prisma.player.findUnique({ where: { slug: p2slugRaw }, select: { id: true, atpname: true } }),
+  ]);
+
+  const [p1ByName, p2ByName] = await Promise.all([
+    prisma.player.findFirst({ where: { atpname: { equals: p1slug, mode: 'insensitive' } }, select: { id: true, atpname: true } }),
+    prisma.player.findFirst({ where: { atpname: { equals: p2slug, mode: 'insensitive' } }, select: { id: true, atpname: true } }),
+  ]);
+
+  const p1 = p1BySlug ?? p1ByName ?? null;
+  const p2 = p2BySlug ?? p2ByName ?? null;
+
+  return { p1, p2 };
+}
+
+async function isH2HIndexable(slug: string) {
+  if (!slug) return false;
+  const { p1, p2 } = await resolvePlayersFromSlug(slug);
+  if (!p1 || !p2) return false;
+
+  const latestRankingDate = await prisma.rankingDate.findFirst({ orderBy: { date: 'desc' }, select: { id: true } });
+  const latestRankingDateId = latestRankingDate?.id ?? null;
+
+  const [p1Active, p2Active, p1RecentMatch, p2RecentMatch, p1Eligible, p2Eligible, p1EverTop20, p2EverTop20] = await Promise.all([
+    playerIsActive(p1.id, latestRankingDateId),
+    playerIsActive(p2.id, latestRankingDateId),
+    playerHasRecentMatch(p1.id),
+    playerHasRecentMatch(p2.id),
+    isPlayerEligibleForH2H(p1.id, latestRankingDateId),
+    isPlayerEligibleForH2H(p2.id, latestRankingDateId),
+    playerHasEverBeenTop20(p1.id),
+    playerHasEverBeenTop20(p2.id),
+  ]);
+
+  if (p1RecentMatch && p2RecentMatch) {
+    return true;
+  }
+  if (p1Active && p2Active) {
+    return true;
+  }
+  if (p1Eligible && p2Eligible && (p1EverTop20 || p2EverTop20)) {
+    return await playerHasDirectH2HMatch(p1.id, p2.id);
+  }
+
+  return false;
+}
+
 async function hasEverBeenTop20(playerId: string) {
   if (!playerId) return false;
   const everTop20 = await prisma.ranking.findFirst({
@@ -120,9 +183,8 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
 
   let player1Name: string | null = null;
   let player2Name: string | null = null;
-  let indexable = false;
 
-    const match = slug.match(/^(.+)-vs-(.+)$/);
+  const match = slug.match(/^(.+)-vs-(.+)$/);
   if (match) {
     const p1slugRaw = match[1];
     const p2slugRaw = match[2];
@@ -138,7 +200,7 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
 
       const [p1ByName, p2ByName] = await Promise.all([
         prisma.player.findFirst({ where: { atpname: { equals: p1slug, mode: 'insensitive' } }, select: { id: true, atpname: true } }),
-        prisma.player.findFirst({ where: { atpname: { equals: p2slug, mode: 'insensitive' } }, select: { id: true, atpname: true } }),
+        prisma.player.findFirst({ where: { atpname: { equals: p2slug, mode: 'insensitive' } }, select: { id: true, atpname: true } } ),
       ]);
 
       const p1 = p1BySlug ?? p1ByName ?? null;
@@ -146,34 +208,6 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
 
       player1Name = p1?.atpname ?? null;
       player2Name = p2?.atpname ?? null;
-
-      if (p1?.id && p2?.id) {
-        const latestRankingDate = await prisma.rankingDate.findFirst({ orderBy: { date: 'desc' }, select: { id: true } });
-        const latestRankingDateId = latestRankingDate?.id ?? null;
-
-        const [p1Active, p2Active, p1RecentMatch, p2RecentMatch, p1Eligible, p2Eligible, p1EverTop20, p2EverTop20] = await Promise.all([
-          playerIsActive(p1.id, latestRankingDateId),
-          playerIsActive(p2.id, latestRankingDateId),
-          playerHasRecentMatch(p1.id),
-          playerHasRecentMatch(p2.id),
-          isPlayerEligibleForH2H(p1.id, latestRankingDateId),
-          isPlayerEligibleForH2H(p2.id, latestRankingDateId),
-          playerHasEverBeenTop20(p1.id),
-          playerHasEverBeenTop20(p2.id),
-        ]);
-
-        // New rule: if both players have played at least one match individually in the
-        // last 18 months, consider the H2H page indexable even without a direct match.
-        if (p1RecentMatch && p2RecentMatch) {
-          indexable = true;
-        } else if (p1Active && p2Active) {
-          indexable = true;
-        } else if (p1Eligible && p2Eligible && (p1EverTop20 || p2EverTop20)) {
-          indexable = await playerHasDirectH2HMatch(p1.id, p2.id);
-        } else {
-          indexable = false;
-        }
-      }
     } catch (err) {
       // ignore and fallback to generic metadata
     }
@@ -185,6 +219,7 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
   const ogImage = new URL('/og/site-preview.png', canonicalOrigin).toString();
   const canonical = new URL(path, canonicalOrigin).toString();
 
+  const indexable = await isH2HIndexable(slug);
   const hasQuery = searchParams && Object.keys(searchParams).length > 0;
   const shouldIndex = !hasQuery && (ENABLE_H2H_NOINDEX_ALGORITHM ? indexable : true);
 
@@ -210,6 +245,13 @@ export default async function Page({ params, searchParams }: { params?: Promise<
   const resolvedParams = params instanceof Promise ? await params : params;
   const slugArr = resolvedParams?.slugs;
   const slug = Array.isArray(slugArr) ? slugArr.join('/') : slugArr?.[0] || '';
+
+  const ua = String(headers().get('user-agent') || '');
+  const isBot = isSearchBot(ua);
+  const hasQuery = searchParams && Object.keys(searchParams).length > 0;
+  if (isBot && (hasQuery || !(ENABLE_H2H_NOINDEX_ALGORITHM ? await isH2HIndexable(slug) : true))) {
+    permanentRedirect('/h2h');
+  }
 
   const qBestOf = (() => {
     if (!searchParams) return undefined;

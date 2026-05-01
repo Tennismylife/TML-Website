@@ -219,6 +219,11 @@ export default async function PlayerPage({ params, searchParams }: any) {
 
   if (!player) return <div>Player not found: {slugParam}</div>;
 
+  const landingRobots = await getPlayerLandingRobots(String(slugParam));
+  if (!hasTab && !landingRobots.index) {
+    permanentRedirect('/');
+  }
+
   const resolvedQuery: Record<string, any> = resolvedSearchParams instanceof URLSearchParams
     ? Object.fromEntries(resolvedSearchParams.entries())
     : resolvedSearchParams || {};
