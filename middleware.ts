@@ -334,7 +334,7 @@ export async function middleware(req: NextRequest) {
       if (!hasOnlyWhitelisted) {
         return new Response('Gone', { status: 410 });
       }
-    }
+    } 
 
     // Normalize malformed records filters (e.g. trailing backslashes, bestOf=NaN)
     // before enforcing validity rules.
