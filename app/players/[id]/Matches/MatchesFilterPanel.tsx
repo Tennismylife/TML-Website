@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef, useMemo } from "react";
-import { useSearchParams, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import FilterBar from "./FilterBar";
 import { Match } from "@/types";
 import FilteredMatchesCalculation from "./FilteredMatchesCalculation";
@@ -98,12 +98,31 @@ const TOURNEY_LEVELS = [
   { code: "O", label: "Olympics" },
 ];
 
+/**
+ * Reads filter params from the URL hash fragment (#year=2026&surface=Hard).
+ * Hash fragments are never sent to the server — Google's crawler never sees them.
+ */
+function useHashParams(): URLSearchParams {
+  const [params, setParams] = useState<URLSearchParams>(() => {
+    if (typeof window === 'undefined') return new URLSearchParams();
+    return new URLSearchParams(window.location.hash.slice(1));
+  });
+  useEffect(() => {
+    const onHashChange = () => {
+      setParams(new URLSearchParams(window.location.hash.slice(1)));
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+  return params;
+}
+
 export default function MatchesFilterPanel({ playerId, matches, allMatches, displayedMatches, onFiltersChange, allMatchesFetched, serverFacets }: Props) {
-  const searchParams = useSearchParams();
-  const urlYear = searchParams?.get("year");
-  const urlTourney = searchParams?.get("tourney");
-  const urlLevel = searchParams?.get("level");
-  const urlSurface = searchParams?.get("surface");
+  const hashParams = useHashParams();
+  const urlYear = hashParams.get("year");
+  const urlTourney = hashParams.get("tourney");
+  const urlLevel = hashParams.get("level");
+  const urlSurface = hashParams.get("surface");
   const pathname = usePathname();
   const pathSurface = (() => {
     const seg = pathname?.split('/')?.[3]?.toLowerCase();
@@ -320,18 +339,18 @@ export default function MatchesFilterPanel({ playerId, matches, allMatches, disp
       setSurfaceFilter(prev => (prev && prev !== 'All') ? prev : (urlSurface ?? pathSurface ?? 'All'));
 
       // Use the same seed-or-keep logic for other filters so that explicit user choices are preserved
-      setVsRankFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('vsRank') ?? prev ?? 'All'));
-      setVsAgeFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('vsAge') ?? prev ?? 'All'));
-      setVsHandFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('vsHand') ?? prev ?? 'All'));
-      setVsBackhandFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('vsBackhand') ?? prev ?? 'All'));
-      setVsEntryFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('vsEntry') ?? prev ?? 'All'));
-      setAsRankFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('asRank') ?? prev ?? 'All'));
-      setAsEntryFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('asEntry') ?? prev ?? 'All'));
-      setMatchSetFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('set') ?? prev ?? 'All'));
-      setFirstSetFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('firstSet') ?? prev ?? 'All'));
-      setScoreFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('score') ?? prev ?? 'All'));
-      setRoundFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('round') ?? prev ?? 'All'));
-      setResultFilter(prev => (prev && prev !== 'All') ? prev : (searchParams?.get('result') ?? prev ?? 'All'));
+      setVsRankFilter(prev => (prev && prev !== 'All') ? prev : (hashParams.get('vsRank') ?? prev ?? 'All'));
+      setVsAgeFilter(prev => (prev && prev !== 'All') ? prev : (hashParams.get('vsAge') ?? prev ?? 'All'));
+      setVsHandFilter(prev => (prev && prev !== 'All') ? prev : (hashParams.get('vsHand') ?? prev ?? 'All'));
+      setVsBackhandFilter(prev => (prev && prev !== 'All') ? prev : (hashParams.get('vsBackhand') ?? prev ?? 'All'));
+      setVsEntryFilter(prev => (prev && prev !== 'All') ? prev : (hashParams.get('vsEntry') ?? prev ?? 'All'));
+      setAsRankFilter(prev => (prev && prev !== 'All') ? prev : (hashParams.get('asRank') ?? prev ?? 'All'));
+      setAsEntryFilter(prev => (prev && prev !== 'All') ? prev : (hashParams.get('asEntry') ?? prev ?? 'All'));
+      setMatchSetFilter(prev => (prev && prev !== 'All') ? prev : (hashParams.get('set') ?? prev ?? 'All'));
+      setFirstSetFilter(prev => (prev && prev !== 'All') ? prev : (hashParams.get('firstSet') ?? prev ?? 'All'));
+      setScoreFilter(prev => (prev && prev !== 'All') ? prev : (hashParams.get('score') ?? prev ?? 'All'));
+      setRoundFilter(prev => (prev && prev !== 'All') ? prev : (hashParams.get('round') ?? prev ?? 'All'));
+      setResultFilter(prev => (prev && prev !== 'All') ? prev : (hashParams.get('result') ?? prev ?? 'All'));
 
       initializedRef.current = true;
     }
@@ -342,7 +361,7 @@ export default function MatchesFilterPanel({ playerId, matches, allMatches, disp
       fullOptionsPopulatedRef.current = true;
     }
 
-  }, [allMatches, urlYear, urlTourney, urlLevel, searchParams, allMatchesFetched]);
+  }, [allMatches, urlYear, urlTourney, urlLevel, hashParams, allMatchesFetched]);
 
   // We intentionally do not mutate the browser URL when filters change.
   // Filter state remains client-only to prevent indexed query-string URLs.
