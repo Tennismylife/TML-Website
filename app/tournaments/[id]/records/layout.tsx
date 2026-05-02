@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import React from 'react';
@@ -72,21 +71,6 @@ async function getTournament(param: string) {
   return prisma.tournament.findUnique({ where: { slug: param } });
 }
 
-function isSearchBot(userAgent: string) {
-  return /google(bot|other)|bingbot|slurp|yahoo|duckduckgo|yandex|baiduspider|facebookexternalhit|twitterbot|linkedinbot|applebot/i.test(userAgent);
-}
-
-async function redirectRecordsBotToLanding(id: string) {
-  const ua = String((await headers()).get('user-agent') || '');
-  if (!isSearchBot(ua)) return;
-
-  const tournament = await getTournament(id);
-  if (!tournament) return;
-  if (shouldIndexRecords(tournament.category, tournament.years)) return;
-
-  const slugId = await getTournamentSlug(id).catch(() => id);
-  redirect(`/tournaments/${encodeURIComponent(slugId)}/records`);
-}
 
 export async function generateMetadata({ params, searchParams }: any): Promise<Metadata> {
   const { id: param, segments } = await params;
@@ -290,7 +274,6 @@ export default async function RecordsLayout({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  await redirectRecordsBotToLanding(id);
 
   // Resolve the canonical slug for structured data URLs
   const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';

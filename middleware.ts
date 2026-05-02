@@ -40,11 +40,6 @@ function hasAnyParam(searchParams: URLSearchParams, names: string[]) {
   return false;
 }
 
-function isSearchBot(userAgent: string) {
-  if (!userAgent) return false;
-  return /google(bot|other)|bingbot|slurp|yahoo|duckduckgo|yandex|baiduspider|facebookexternalhit|twitterbot|linkedinbot|applebot/i.test(userAgent);
-}
-
 function isTournamentRecordsPath(pathname: string) {
   const seg = pathname.split('/').filter(Boolean);
   return seg.length >= 3 && seg[0] === 'tournaments' && seg[2] === 'records';
@@ -353,28 +348,6 @@ export async function middleware(req: NextRequest) {
       }
     }
 
-    // Redirect non-indexable /records filter combinations for search bots to the base record path.
-    if (requestPath.startsWith('/records/') && isSearchBot(ua)) {
-      const { record, sub } = resolvePageRecordAndSub(requestPath);
-      const effectiveSub = sub ?? (query.get('subtab') ? kebabToKey(query.get('subtab')!) : undefined);
-      if (record) {
-        const filters = queryToRecordFilters(query);
-        if (!sub && effectiveSub) {
-          filters.subtab = effectiveSub;
-        }
-        const slug = [record];
-        if (sub || query.get('subtab')) {
-          slug.push(effectiveSub || '');
-        }
-        const policy = evaluateRecordsPolicy(req.nextUrl.origin, slug.filter(Boolean), filters);
-        if (!policy.index) {
-          const dest = new URL(req.url);
-          dest.search = '';
-          return new Response(null, { status: 308, headers: { Location: dest.toString() } });
-        }
-      }
-    }
-
     // Strict 410 for invalid records filter combinations.
     if (requestPath.startsWith('/records/')) {
       const { record, sub } = resolvePageRecordAndSub(requestPath);
@@ -492,46 +465,6 @@ export async function middleware(req: NextRequest) {
       }
     }
 
-    // Redirect any /players/:slug/matches requests from search engine bots to the player landing page.
-    // Real users keep the /matches tab path.
-    if (segments[0] === 'players' && String(segments[2] || '').toLowerCase() === 'matches') {
-      const isBot = isSearchBot(ua);
-      if (isBot) {
-        const playerSlug = segments[1];
-        const dest = new URL(req.url);
-        dest.pathname = `/players/${playerSlug}`;
-        dest.search = '';
-        return new Response(null, { status: 308, headers: { Location: dest.toString() } });
-      }
-    }
-
-    // Redirect noindex player season pages for search engine bots to the player landing page.
-    if (segments[0] === 'players' && String(segments[2] || '').toLowerCase() === 'season' && segments[3]) {
-      const isBot = isSearchBot(ua);
-      if (isBot) {
-        const playerSlug = segments[1];
-        const year = Number(segments[3]);
-        if (Number.isInteger(year)) {
-          try {
-            const apiUrl = new URL(`/api/players/${encodeURIComponent(playerSlug)}/season-robots`, req.nextUrl.origin);
-            apiUrl.searchParams.set('year', String(year));
-            const apiResp = await fetch(apiUrl.toString(), { method: 'GET', next: { revalidate: 3600 } } as RequestInit);
-            if (apiResp.ok) {
-              const data = await apiResp.json();
-              if (data && data.index === false) {
-                const dest = new URL(req.url);
-                dest.pathname = `/players/${playerSlug}`;
-                dest.search = '';
-                return new Response(null, { status: 308, headers: { Location: dest.toString() } });
-              }
-            }
-          } catch (e) {
-            // If the helper fails, continue to allow normal rendering rather than blocking the request.
-          }
-        }
-      }
-    }
-
     // Normalize any /recordsranking path segments to lowercase canonical form
     if (segments[0] === 'recordsranking' && segments[1]) {
       const lowerSegments = [segments[0], ...segments.slice(1).map(s => String(s).toLowerCase())];
@@ -587,28 +520,6 @@ export async function middleware(req: NextRequest) {
           newSearch.delete('subtab');
           dest.search = newSearch.toString();
           return new Response(null, { status: 308, headers: { Location: dest.toString() } });
-        }
-
-        // Redirect non-indexable /records filter combinations back to the base record landing for bots only.
-        if (isSearchBot(ua)) {
-          const { record, sub } = resolvePageRecordAndSub(requestPath);
-          const effectiveSub = sub ?? (query.get('subtab') ? kebabToKey(query.get('subtab')!) : undefined);
-          if (record) {
-            const filters = queryToRecordFilters(query);
-            if (!sub && effectiveSub) {
-              filters.subtab = effectiveSub;
-            }
-            const slug = [record];
-            if (sub || query.get('subtab')) {
-              slug.push(effectiveSub || '');
-            }
-            const policy = evaluateRecordsPolicy(origin, slug.filter(Boolean), filters);
-            if (!policy.index) {
-              const dest = new URL(req.url);
-              dest.search = '';
-              return new Response(null, { status: 308, headers: { Location: dest.toString() } });
-            }
-          }
         }
 
         // No rewrite here: allow the request to continue to /records/<record>
@@ -738,15 +649,6 @@ export async function middleware(req: NextRequest) {
       const dest = new URL(req.url);
       dest.pathname = `/${resource}/${slug}${rest ? '/' + rest : ''}`;
       dest.search = search;
-      return new Response(null, { status: 308, headers: { Location: dest.toString() } });
-    }
-
-    // Canonical player matches pages should always redirect to the player landing page.
-    if (resource === 'players' && String(segments[2] || '').toLowerCase() === 'matches') {
-      const playerSlug = idSegment;
-      const dest = new URL(req.url);
-      dest.pathname = `/players/${playerSlug}`;
-      dest.search = '';
       return new Response(null, { status: 308, headers: { Location: dest.toString() } });
     }
 

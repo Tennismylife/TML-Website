@@ -1,8 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { headers } from 'next/headers';
-import { permanentRedirect } from 'next/navigation';
 import H2HClient from '../H2HClient';
 import H2HContentClient from '../H2HContentClient';
 import H2HPreviewServer from '../H2HPreviewServer';
@@ -100,10 +98,6 @@ async function isPlayerEligibleForH2H(playerId: string, latestRankingDateId: num
   const active = await playerIsActive(playerId, latestRankingDateId);
   if (active) return true;
   return await playerHasEverBeenTop20(playerId);
-}
-
-function isSearchBot(userAgent: string) {
-  return /google(bot|other)|bingbot|slurp|yahoo|duckduckgo|yandex|baiduspider|facebookexternalhit|twitterbot|linkedinbot|applebot/i.test(userAgent);
 }
 
 async function resolvePlayersFromSlug(slug: string) {
@@ -246,13 +240,7 @@ export default async function Page({ params, searchParams }: { params?: Promise<
   const slugArr = resolvedParams?.slugs;
   const slug = Array.isArray(slugArr) ? slugArr.join('/') : slugArr?.[0] || '';
 
-  const reqHeaders = await headers();
-  const ua = String(reqHeaders.get('user-agent') || '');
-  const isBot = isSearchBot(ua);
   const hasQuery = searchParams && Object.keys(searchParams).length > 0;
-  if (isBot && (hasQuery || !(ENABLE_H2H_NOINDEX_ALGORITHM ? await isH2HIndexable(slug) : true))) {
-    permanentRedirect('/h2h');
-  }
 
   const qBestOf = (() => {
     if (!searchParams) return undefined;
