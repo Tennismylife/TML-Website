@@ -331,7 +331,7 @@ export async function middleware(req: NextRequest) {
     if (isPlayersMatchesPath(requestPath) && req.nextUrl.search) {
       const seg = requestPath.split('/').filter(Boolean); // ['players', 'albert-costa', 'matches']
       const playerLanding = `/${seg[0]}/${seg[1]}`;
-      return new Response(null, { status: 301, headers: { Location: playerLanding } });
+      return NextResponse.redirect(new URL(playerLanding, req.url));
     }
 
     // Normalize malformed records filters (e.g. trailing backslashes, bestOf=NaN)
