@@ -326,8 +326,11 @@ export async function middleware(req: NextRequest) {
       return res;
     };
 
-    // Allow /players/<slug>/matches to render normally, even if a filter query string is present.
-    // Only direct /players/<slug>?query variants should be rejected by the root-player rule below.
+    // Block any /players/<slug>/matches query-string requests with 410.
+    // These filter variants should not be crawled or server-rendered.
+    if (isPlayersMatchesPath(requestPath) && req.nextUrl.search) {
+      return new Response('Gone', { status: 410 });
+    }
 
     // Normalize malformed records filters (e.g. trailing backslashes, bestOf=NaN)
     // before enforcing validity rules.
