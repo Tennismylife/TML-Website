@@ -326,11 +326,8 @@ export async function middleware(req: NextRequest) {
       return res;
     };
 
-    // Block any /players/*/matches requests carrying query params.
-    // Filters are now hash-based and should never be crawled or server-rendered.
-    if (isPlayersMatchesPath(requestPath) && req.nextUrl.search) {
-      return new Response('Gone', { status: 410 });
-    }
+    // Allow /players/<slug>/matches to render normally, even if a filter query string is present.
+    // Only direct /players/<slug>?query variants should be rejected by the root-player rule below.
 
     // Normalize malformed records filters (e.g. trailing backslashes, bestOf=NaN)
     // before enforcing validity rules.
@@ -397,48 +394,6 @@ export async function middleware(req: NextRequest) {
         return NextResponse.json({ error: 'Gone' }, { status: 410 });
       }
     }
-
-    // Server-side visit tracking: derive a readable pageTitle, filter bots, and call API route fire-and-forget
-    try {
-      const pathnameOnly = req.nextUrl?.pathname || '';
-      // Skip tracking for API routes, Next internals and non-GET methods
-      if (req.method === 'GET' && !pathnameOnly.startsWith('/api/') && !pathnameOnly.startsWith('/_next/') && !pathnameOnly.startsWith('/favicon.ico')) {
-        // Read UA and forwarded IP (support both Next Request headers.get and plain header object shapes)
-        const ua = req.headers?.get ? req.headers.get('user-agent') : (req.headers && (req.headers['user-agent'] || req.headers['User-Agent'])) || '';
-        const xff = req.headers?.get ? (req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip')) : (req.headers && (req.headers['x-forwarded-for'] || req.headers['x-real-ip'])) || '';
-
-        // Basic bot filtering on the middleware side to avoid extra calls
-        const BOT_RE = /(bot|crawl|spider|slurp|curl|wget)/i;
-        if (!BOT_RE.test(String(ua || ''))) {
-          // Derive pageTitle from path: '/' -> 'Home', otherwise join segments, replace dashes with spaces
-          let pageTitle: string | null = null;
-          try {
-            if (!pathnameOnly || pathnameOnly === '/' || pathnameOnly === '') pageTitle = 'Home';
-            else {
-              const parts = pathnameOnly.split('/').filter(Boolean).map(s => decodeURIComponent(String(s)).replace(/-/g, ' ').replace(/\s+/g, ' ').trim());
-              pageTitle = parts.join(' ').toLowerCase();
-            }
-          } catch (e) {
-            pageTitle = null;
-          }
-
-          fetch(new URL('/api/track-visit', req.nextUrl.origin).toString(), {
-            method: 'POST',
-            headers: {
-              'content-type': 'application/json',
-              'x-original-user-agent': ua || '',
-              'x-original-ip': xff || '',
-            },
-            body: JSON.stringify({ pageTitle, pageUrl: req.nextUrl?.href || null }),
-            // keepalive ensures the fetch will be attempted even during navigation/closing
-            keepalive: true,
-          }).catch(() => {});
-
-          // Matomo server-side probe removed — no server-side Matomo calls from middleware.
-          // If you want to reintroduce server-side Matomo tracking, add a safe, privacy-preserving call here.
-        }
-      }
-    } catch (e) {}
 
     const { pathname, search } = req.nextUrl;
     const segments = pathname.split('/').filter(Boolean);
@@ -573,6 +528,10 @@ export async function middleware(req: NextRequest) {
     // This eliminates the client-side replaceState soft redirect that Google
     // classifies as "non indicizzata causa reindirizzamento".
     if (resource === 'players' && !rest) {
+      if (Array.from(query.keys()).some(key => PLAYER_MATCH_FILTER_KEYS.has(key))) {
+        return new Response('Gone', { status: 410 });
+      }
+
       const tabParam = query.get('tab');
       if (tabParam && VALID_PLAYER_TABS.has(tabParam.toLowerCase())) {
         const dest = new URL(req.url);
@@ -645,6 +604,16 @@ export async function middleware(req: NextRequest) {
 
     // Prevent redirect when the incoming path already matches the canonical slug exactly.
     // This still allows redirects for case-only mismatches like /players/C022 -> /players/c022.
+    const canonicalSlugPattern = /^[a-z0-9-]+$/;
+    const isNumericId = /^[0-9]+$/.test(idSegment);
+    const isLegacyCode = legacyCodeRegex.test(idSegment);
+
+    // If the path already contains a lowercase slug-looking segment, skip slug
+    // resolution entirely to avoid extra middleware overhead on canonical pages.
+    if (!isNumericId && !isLegacyCode && canonicalSlugPattern.test(idSegment)) {
+      return nextResponse();
+    }
+
     if (slug && slug === idSegment) {
       return nextResponse();
     }
