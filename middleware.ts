@@ -326,6 +326,14 @@ export async function middleware(req: NextRequest) {
       return res;
     };
 
+    // Strip query params from /players/*/matches — filters are now hash-based.
+    // Redirect any URL with query params to the player landing page so bots stop indexing filter variants.
+    if (isPlayersMatchesPath(requestPath) && req.nextUrl.search) {
+      const seg = requestPath.split('/').filter(Boolean); // ['players', 'albert-costa', 'matches']
+      const playerLanding = `/${seg[0]}/${seg[1]}`;
+      return new Response(null, { status: 301, headers: { Location: playerLanding } });
+    }
+
     // Normalize malformed records filters (e.g. trailing backslashes, bestOf=NaN)
     // before enforcing validity rules.
     if (
