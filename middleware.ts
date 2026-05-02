@@ -326,10 +326,14 @@ export async function middleware(req: NextRequest) {
       return res;
     };
 
-    // Block any /players/<slug>/matches query-string requests with 410.
-    // These filter variants should not be crawled or server-rendered.
+    // Allow only whitelisted /players/<slug>/matches query params.
+    // These are produced by season/surface links and should remain valid.
     if (isPlayersMatchesPath(requestPath) && req.nextUrl.search) {
-      return new Response('Gone', { status: 410 });
+      const MATCH_QUERY_WHITELIST = new Set(['year', 'surface']);
+      const hasOnlyWhitelisted = Array.from(query.keys()).every((key) => MATCH_QUERY_WHITELIST.has(key));
+      if (!hasOnlyWhitelisted) {
+        return new Response('Gone', { status: 410 });
+      }
     }
 
     // Normalize malformed records filters (e.g. trailing backslashes, bestOf=NaN)
