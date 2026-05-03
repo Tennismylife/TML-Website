@@ -67,7 +67,7 @@ export default async function No1MaxPointsRanking({ searchParams }: { searchPara
             >
               <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{startIndex + idx + 1}</td>
               <td className={`border border-white/10 px-4 py-2 text-lg ${startIndex + idx + 1 === 3 && String(r.name).toLowerCase().includes('alcaraz') ? 'text-yellow-300 font-bold' : 'text-gray-200'}`}>
-                <div className="flex items-center justify-center gap-2">{r.country && <Flag ioc={r.country} className="w-4 h-3" />}{r.slug ? <Link href={`/players/${r.slug}/ranking`} className="hover:underline">{r.name}</Link> : <span>{r.name}</span>}</div>
+                <div className="flex flex-nowrap items-center justify-center gap-2 whitespace-nowrap">{r.country && <Flag ioc={r.country} className="w-4 h-3" />}{r.slug ? <Link href={`/players/${r.slug}/ranking`} className="hover:underline whitespace-nowrap">{r.name}</Link> : <span className="whitespace-nowrap">{r.name}</span>}</div>
               </td>
               <td className={`border border-white/10 px-4 py-2 text-center text-lg ${startIndex + idx + 1 === 3 && String(r.name).toLowerCase().includes('alcaraz') ? 'text-yellow-200 font-semibold' : 'text-indigo-300'}`}>{r.points.toLocaleString()}</td>
               <td className={`border border-white/10 px-4 py-2 ${startIndex + idx + 1 === 3 && String(r.name).toLowerCase().includes('alcaraz') ? 'text-yellow-200' : 'text-gray-300'}`}>{r.date}</td>
@@ -120,7 +120,7 @@ export default async function No1MaxPointsRanking({ searchParams }: { searchPara
                 { "@type": "PropertyValue", "name": "Player", "value": r.name },
                 { "@type": "PropertyValue", "name": "Points", "value": r.points },
                 { "@type": "PropertyValue", "name": "Date", "value": r.date },
-                ...(String(r.name).toLowerCase().includes('alcaraz') ? [{ "@type": "PropertyValue", "name": "Note", "value": "Post-Australian Open 2026 - Career Grand Slam completed; also the youngest player in history to complete the Career Grand Slam" }] : [])
+                ...(String(r.name).toLowerCase().includes('alcaraz') ? [{ "@type": "PropertyValue", "name": "Note", "value": "Post-Australian Open 2026 - Career Grand Slam completed" }] : [])
               ]
             }
           }))
