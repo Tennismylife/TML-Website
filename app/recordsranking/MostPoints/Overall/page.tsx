@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import Flag from '@/components/Flag';
 import Link from 'next/link';
 import LastUpdateBanner from '@/components/LastUpdateBanner';
+import ComparisonTableClient from './ComparisonTableClient';
 
 export const metadata: Metadata = { title: 'Most ATP Points | ATP Ranking Records' };
 
@@ -63,14 +64,14 @@ export default async function No1MaxPointsRanking({ searchParams }: { searchPara
           {list.map((r, idx) => (
             <tr
               key={`${r.name}-${r.date}-${idx}`}
-              className={`${startIndex + idx + 1 === 3 && String(r.name).toLowerCase().includes('alcaraz') ? 'bg-yellow-900/30 border-l-4 border-yellow-400' : ''} hover:bg-gray-800 border-b border-white/10`}
+              className="hover:bg-gray-800 border-b border-white/10"
             >
               <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{startIndex + idx + 1}</td>
-              <td className={`border border-white/10 px-4 py-2 text-lg ${startIndex + idx + 1 === 3 && String(r.name).toLowerCase().includes('alcaraz') ? 'text-yellow-300 font-bold' : 'text-gray-200'}`}>
+              <td className={`border border-white/10 px-4 py-2 text-lg text-gray-200`}>
                 <div className="flex flex-nowrap items-center justify-center gap-2 whitespace-nowrap">{r.country && <Flag ioc={r.country} className="w-4 h-3" />}{r.slug ? <Link href={`/players/${r.slug}/ranking`} className="hover:underline whitespace-nowrap">{r.name}</Link> : <span className="whitespace-nowrap">{r.name}</span>}</div>
               </td>
-              <td className={`border border-white/10 px-4 py-2 text-center text-lg ${startIndex + idx + 1 === 3 && String(r.name).toLowerCase().includes('alcaraz') ? 'text-yellow-200 font-semibold' : 'text-indigo-300'}`}>{r.points.toLocaleString()}</td>
-              <td className={`border border-white/10 px-4 py-2 ${startIndex + idx + 1 === 3 && String(r.name).toLowerCase().includes('alcaraz') ? 'text-yellow-200' : 'text-gray-300'}`}>{r.date}</td>
+              <td className="border border-white/10 px-4 py-2 text-center text-lg text-indigo-300">{r.points.toLocaleString()}</td>
+              <td className="border border-white/10 px-4 py-2 text-gray-300">{r.date}</td>
             </tr>
           ))}
         </tbody>
@@ -142,8 +143,8 @@ export default async function No1MaxPointsRanking({ searchParams }: { searchPara
             with <span className="gold-number">{rows[1].points.toLocaleString()}</span> points.</>
           )}
           {rows.length > 2 && (
-            <> Third is <span className="inline-flex items-center gap-1 text-indigo-300 font-medium"><Flag ioc="ESP" className="w-4 h-3" />{rows[2].name}</span>{' '}
-            with <span className="gold-number">{rows[2].points.toLocaleString()}</span> points.</>
+            <> Third is <span className="inline-flex items-center gap-1 text-indigo-300 font-medium"><Flag ioc="ITA" className="w-4 h-3" /> Jannik Sinner</span>{' '}
+            with <span className="gold-number">14,350</span> points.</>
           )}
           {over10k > 0 && (
             <>{' '}Only <span className="gold-number">{over10k}</span> player{over10k > 1 ? 's have' : ' has'} ever surpassed the 10,000-point mark.</>
@@ -154,11 +155,15 @@ export default async function No1MaxPointsRanking({ searchParams }: { searchPara
 
           <br />
           <br />
-          Based on the current ranking, <span className="inline-flex items-center gap-1"><Flag ioc="SUI" className="w-4 h-3" />Federer</span> would have <span className="gold-number">16,480</span> points, while under the system used in 2009 he would have <span className="gold-number">15,745</span>.{' '}
-          <span className="inline-flex items-center gap-1"><Flag ioc="SRB" className="w-4 h-3" />Djokovic</span> would still be first under the current system, increasing the total to <span className="gold-number">17,010</span>.
+          Based on the current ranking, <span className="inline-flex items-center gap-1"><Flag ioc="SUI" className="w-4 h-3" />Federer</span> would have <span className="gold-number">15,730</span> points, while under the system used in 2009 he would have <span className="gold-number">15,495</span>.{' '}
+          <span className="inline-flex items-center gap-1"><Flag ioc="SRB" className="w-4 h-3" />Djokovic</span> would still be first under the current system, increasing the total to <span className="gold-number">17,150</span>.
         </div>
       )}
 
+      <div className="mb-8 overflow-x-auto overflow-y-visible rounded-xl border border-white/20 bg-gray-900 p-4 shadow-sm">
+        <h2 className="mb-4 text-lg font-semibold text-center text-white">ATP Points Comparison</h2>
+        <ComparisonTableClient />
+      </div>
       {rows.length > 0 ? renderTable(rows, 0) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
     </section>
   );
