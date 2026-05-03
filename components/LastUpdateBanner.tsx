@@ -17,9 +17,9 @@ export default function LastUpdateBanner() {
         {/* Left: main content */}
         <div className="flex-1 text-left text-base md:text-lg sm:px-4">
           <span className="font-bold text-white">{latestUpdate.flag} {latestUpdate.player}</span>
-          <span className="mx-1.5 text-gray-300">{latestUpdate.highlight}</span>
-          <span className="gold-number">{latestUpdate.points}</span><span className="mx-1 text-gray-300">points</span>
-          <span className="mx-1.5 text-gray-300">{latestUpdate.event}</span>
+          {' '}<span className="text-gray-300">{latestUpdate.highlight}</span>
+          {' '}<span className="gold-number">{latestUpdate.points}</span>
+          {' '}<span className="text-gray-300">points {latestUpdate.event}</span>
 
           <div className="mt-1.5 text-sm text-gray-400">
             {latestUpdate.result}

@@ -169,18 +169,18 @@ export default function ComparisonTableClient() {
     </div>
   );
 
-  const trClass = 'border-t border-white/10 hover:bg-white/5 cursor-default';
-  const tdBase = 'border border-white/10 px-3 py-2';
+  const trClass = 'border-t border-white/10 hover:bg-gray-800 cursor-default';
+  const tdBase = 'border border-white/10 px-4 py-2 text-lg';
 
   return (
     <>
       <table className="min-w-full border-collapse text-sm text-center overflow-visible">
         <thead>
-          <tr className="bg-white/5 text-white">
-            <th className={`${tdBase} text-center text-white`}>Player</th>
-            <th className={`${tdBase} text-center text-white`}>Real points (era)</th>
-            <th className={`${tdBase} text-center text-white`}>2009 point system</th>
-            <th className={`${tdBase} text-center text-white`}>2024 point system</th>
+          <tr className="bg-black">
+            <th className={`${tdBase} text-center text-gray-200`}>Player</th>
+            <th className={`${tdBase} text-center text-gray-200`}>Real points</th>
+            <th className={`${tdBase} text-center text-gray-200`}>2009 point system</th>
+            <th className={`${tdBase} text-center text-gray-200`}>2024 point system</th>
           </tr>
         </thead>
         <tbody>

@@ -160,8 +160,8 @@ export default async function No1MaxPointsRanking({ searchParams }: { searchPara
         </div>
       )}
 
-      <div className="mb-8 overflow-x-auto overflow-y-visible rounded-xl border border-white/20 bg-gray-900 p-4 shadow-sm">
-        <h2 className="mb-4 text-lg font-semibold text-center text-white">ATP Points Comparison</h2>
+      <div className="mb-8 overflow-x-auto overflow-y-visible rounded border border-white/30 bg-gray-900 shadow">
+        <h2 className="py-2 text-sm font-semibold text-gray-400 uppercase tracking-wide text-center">ATP Points Comparison</h2>
         <ComparisonTableClient />
       </div>
       {rows.length > 0 ? renderTable(rows, 0) : (<div className="text-gray-400 py-4 text-center">No data available.</div>)}
