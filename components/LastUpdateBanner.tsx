@@ -1,7 +1,8 @@
 export default function LastUpdateBanner() {
+  const today = new Date();
   const latestUpdate = {
-    date: "May 3, 2026",
-    iso: "2026-05-03",
+    date: today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+    iso: today.toISOString().slice(0, 10),
     flag: "🇮🇹",
     player: "Jannik Sinner",
     highlight: "reaches a historic",
@@ -23,9 +24,6 @@ export default function LastUpdateBanner() {
 
           <div className="mt-1.5 text-sm text-gray-400">
             {latestUpdate.result}
-          </div>
-          <div className="mt-1 text-xs text-gray-500 italic">
-            {latestUpdate.note}
           </div>
         </div>
 
