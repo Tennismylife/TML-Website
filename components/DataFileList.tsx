@@ -9,6 +9,7 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
   const [err, setErr] = React.useState<string | null>(null);
   const [visible, setVisible] = React.useState(10); // show 10 items by default
   const [visibleChallenger, setVisibleChallenger] = React.useState(10);
+  const [visibleQuali, setVisibleQuali] = React.useState(10);
   const [copyStatus, setCopyStatus] = React.useState<string | null>(null);
   const cmdCmd = `mkdir tml-data & powershell -NoProfile -Command "Try { $files=(Invoke-RestMethod 'https://stats.tennismylife.org/api/data-files').files; New-Item -ItemType Directory -Path 'tml-data' -Force | Out-Null; foreach($f in $files){ Write-Host 'Downloading ' $f.name; Invoke-WebRequest -Uri $f.url -OutFile (Join-Path 'tml-data' $f.name) } } Catch { Write-Error $_.Exception.Message; exit 1 }"`;
   // Ensure pre blocks wrap long single-line commands visually (allow line breaks)
@@ -16,6 +17,7 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
   const bashCmd = `mkdir -p tml-data && curl -s 'https://stats.tennismylife.org/api/data-files' | jq -r '.files[] | "\\(.url)\\t\\(.name)"' | while IFS=$'\\t' read -r url name; do curl -sSL "$url" -o "tml-data/$name"; done`;
   const showMore = () => setVisible((v) => v + 10);
   const showMoreChallenger = () => setVisibleChallenger((v) => v + 10);
+  const showMoreQuali = () => setVisibleQuali((v) => v + 10);
 
   React.useEffect(() => {
     // If files were pre-populated from SSR (initialFiles prop), skip the API fetch entirely.
@@ -62,18 +64,29 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
 
   const others = remainingFiles.filter((f) => !/^\d{4}\.csv$/i.test(f.name));
 
+  const extractYear = (name: string): number | null => {
+    const match = name.match(/(^|\/)(\d{4})/);
+    return match ? parseInt(match[2], 10) : null;
+  };
+
   // Files for challenger tournaments between 1978 and 2026 inclusive
   const challengerFiles = files
     .filter((f) => {
-      const m = f.name.match(/^(\d{4})/);
-      if (!m) return false;
-      const year = parseInt(m[1], 10);
-      return year >= 1978 && year <= 2026 && /challenger/i.test(f.name);
+      const year = extractYear(f.name);
+      return year !== null && year >= 1978 && year <= 2026 && /challenger/i.test(f.name);
     })
     .sort((a, b) => {
-      // sort newest first by year then name
-      const ya = parseInt((a.name.match(/^(\d{4})/) || [0, '0'])[1], 10);
-      const yb = parseInt((b.name.match(/^(\d{4})/) || [0, '0'])[1], 10);
+      const ya = extractYear(a.name) ?? 0;
+      const yb = extractYear(b.name) ?? 0;
+      if (ya !== yb) return yb - ya;
+      return a.name.localeCompare(b.name);
+    });
+
+  const atpQualiFiles = files
+    .filter((f) => /(^|\/)atp_quali\//i.test(f.name))
+    .sort((a, b) => {
+      const ya = extractYear(a.name) ?? 0;
+      const yb = extractYear(b.name) ?? 0;
       if (ya !== yb) return yb - ya;
       return a.name.localeCompare(b.name);
     });
@@ -86,7 +99,7 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
       {/* header row with notice; mailbox placed absolutely at top-right */}
       <div className="flex justify-center mb-4 mt-4">
         <div className="bg-yellow-300 font-semibold text-3xl px-8 py-4 rounded-lg shadow-md changelog">
-          <span className="uppercase">🔔 New:</span> ATP Challenger Tour added!
+          <span className="uppercase">🔔 New:</span> ATP Tour Qualifying added!
         </div>
       </div>
       <style jsx>{` 
@@ -231,8 +244,7 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
               </thead>
               <tbody>
                 {challengerFiles.slice(0, visibleChallenger).map((f) => {
-                  const yearMatch = f.name.match(/^(\d{4})/);
-                  const yearLabel = yearMatch ? yearMatch[1] : '';
+                  const yearLabel = extractYear(f.name)?.toString() ?? '';
                   return (
                     <tr key={f.name} className="hover:bg-gray-800 border-b border-white/10">
                       <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-24 whitespace-nowrap">{yearLabel}</td>
@@ -263,8 +275,51 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
         </div>
       </div>
 
-
-
+      {/* ATP Tour Qualifying files */}
+      <div className="mt-10">
+        <div className="text-center text-2xl sm:text-3xl font-extrabold !text-yellow-400 mb-2">ATP Tour Qualifying</div>
+        <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow mt-0" style={{ marginBottom: 8 }}>
+          <table className="table-fixed w-full border-collapse" aria-label="ATP Tour Qualifying files">
+            <thead>
+              <tr className="bg-black">
+                <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200 w-24">Year</th>
+                <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200 w-auto">File</th>
+                <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200 w-28 hidden sm:table-cell">Size</th>
+                <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200 w-48 hidden sm:table-cell">Last modified</th>
+                <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200 w-auto sm:w-80"> </th>
+              </tr>
+            </thead>
+            <tbody>
+              {atpQualiFiles.slice(0, visibleQuali).map((f) => {
+                const yearLabel = extractYear(f.name)?.toString() ?? '';
+                return (
+                  <tr key={f.name} className="hover:bg-gray-800 border-b border-white/10">
+                    <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-24 whitespace-nowrap">{yearLabel}</td>
+                    <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 whitespace-nowrap"><a href={f.url} download className="text-indigo-300 hover:underline whitespace-nowrap">{f.name}</a></td>
+                    <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-28 whitespace-nowrap hidden sm:table-cell">{f.size ? humanSize(f.size) : ''}</td>
+                    <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-48 whitespace-nowrap hidden sm:table-cell">{f.mtime ? new Date(f.mtime).toLocaleString('it-IT') : ''}</td>
+                    <td className="border border-white/10 px-4 py-2 whitespace-nowrap w-auto sm:w-80 flex items-center justify-center">
+                      <a href={f.url} download aria-label={`Download ${f.name}`} className="inline-flex items-center px-3 sm:px-4 py-1 text-sm sm:text-base bg-indigo-600 text-white rounded hover:bg-indigo-500 whitespace-nowrap">
+                        <svg className="w-4 h-4 sm:mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                          <path d="M12 3v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                          <path d="M5 11l7 7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                          <path d="M21 21H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        <span className="hidden sm:inline">Download</span>
+                      </a>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        {atpQualiFiles.length > visibleQuali ? (
+          <div style={{ marginTop: 12, textAlign: 'center' }}>
+            <button onClick={showMoreQuali} className="px-4 py-2 bg-gray-700 text-white rounded border border-white/20 hover:bg-gray-600">Load more</button>
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }

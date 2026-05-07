@@ -496,15 +496,30 @@ function strongETag(buffer) {
       const dataDir = path.join(process.cwd(), 'data');
       if (!fs.existsSync(dataDir)) return res.status(404).json({ error: 'data directory not found' });
 
-      const files = fs.readdirSync(dataDir).filter((f) => /\.csv$/i.test(f));
-      // Build absolute URLs using incoming request host/proto so links point to this domain
       const proto = req.headers['x-forwarded-proto'] || req.protocol;
       const host = req.headers.host || 'localhost:3000';
       const base = `${proto}://${host}`;
 
-      const results = files.map((f) => {
-        const st = fs.statSync(path.join(dataDir, f));
-        return { name: f, url: `${base}/data/${encodeURIComponent(f)}`, size: st.size, mtime: st.mtime.toISOString() };
+      const walkCsvFiles = (dir, rootDir) => {
+        const items = [];
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+          if (entry.isDirectory()) {
+            items.push(...walkCsvFiles(fullPath, rootDir));
+          } else if (entry.isFile() && /\.csv$/i.test(entry.name)) {
+            const relativePath = path.relative(rootDir, fullPath).split(path.sep).join('/');
+            items.push({ name: relativePath, path: fullPath });
+          }
+        }
+        return items;
+      };
+
+      const files = walkCsvFiles(dataDir, dataDir);
+      const results = files.map(({ name, path: fullPath }) => {
+        const st = fs.statSync(fullPath);
+        const encoded = name.split('/').map(encodeURIComponent).join('/');
+        return { name, url: `${base}/data/${encoded}`, size: st.size, mtime: st.mtime.toISOString() };
       });
 
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -521,10 +536,25 @@ function strongETag(buffer) {
       const dataDir = path.join(process.cwd(), 'data');
       if (!fs.existsSync(dataDir)) return res.status(404).send('data directory not found');
 
+      const walkCsvFiles = (dir, rootDir) => {
+        const items = [];
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+          if (entry.isDirectory()) {
+            items.push(...walkCsvFiles(fullPath, rootDir));
+          } else if (entry.isFile() && /\.csv$/i.test(entry.name)) {
+            const relativePath = path.relative(rootDir, fullPath).split(path.sep).join('/');
+            items.push(relativePath);
+          }
+        }
+        return items;
+      };
+
       // Optional query parameter `files=name1.csv,name2.csv` to include a subset
       const requested = req.query.files ? req.query.files.toString().split(',').map((s) => s.trim()).filter(Boolean) : null;
 
-      let files = fs.readdirSync(dataDir).filter((f) => /\.csv$/i.test(f));
+      let files = walkCsvFiles(dataDir, dataDir);
       if (requested && requested.length) {
         files = files.filter((f) => requested.includes(f));
       }

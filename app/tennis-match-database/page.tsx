@@ -14,13 +14,28 @@ export default function Page() {
 
   try {
     if (fs.existsSync(dataDir)) {
-      const files = fs.readdirSync(dataDir).filter(f => /\.csv$/i.test(f));
+      const walkCsvFiles = (dir: string, rootDir: string): string[] => {
+        const items: string[] = [];
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+          if (entry.isDirectory()) {
+            items.push(...walkCsvFiles(fullPath, rootDir));
+          } else if (entry.isFile() && /\.csv$/i.test(entry.name)) {
+            const relPath = path.relative(rootDir, fullPath).split(path.sep).join('/');
+            items.push(relPath);
+          }
+        }
+        return items;
+      };
+
+      const files = walkCsvFiles(dataDir, dataDir);
       const years: number[] = [];
       initialFiles = files.map((name) => {
-        const st = fs.statSync(path.join(dataDir, name));
+        const st = fs.statSync(path.join(dataDir, ...name.split('/')));
         return {
           name,
-          url: `https://stats.tennismylife.org/data/${encodeURIComponent(name)}`,
+          url: `https://stats.tennismylife.org/data/${name.split('/').map(encodeURIComponent).join('/')}`,
           size: st.size,
           mtime: st.mtime.toISOString(),
         };
