@@ -391,7 +391,9 @@ export default async function Page({ params, searchParams }: { params?: Promise<
         points1 = r1?.points ?? null;
         points2 = r2?.points ?? null;
       }
-    } catch (err) {
+    } catch (err: any) {
+      // Re-throw Next.js redirect/notFound errors — do NOT swallow them
+      if (err?.digest?.startsWith('NEXT_REDIRECT') || err?.digest?.startsWith('NEXT_NOT_FOUND')) throw err;
       console.error('Error in H2H page:', err);
       player1 = null;
       player2 = null;
