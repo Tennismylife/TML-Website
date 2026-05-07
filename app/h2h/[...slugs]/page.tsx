@@ -8,7 +8,7 @@ import H2HPreviewServer from '../H2HPreviewServer';
 import H2HCareerOverviewServer from '../H2HCareerOverviewServer';
 import { prisma } from '@/lib/prisma';
 import { metadataBase } from '@/lib/site';
-import { getPlayerHref, IOC_TO_ISO, createSlug } from '@/lib/utils';
+import { getPlayerHref, IOC_TO_ISO, createSlug, createH2HUrl } from '@/lib/utils';
 import { mapIdsToSlugs } from '@/lib/player-slugs';
 import countries from 'i18n-iso-countries';
 import enLocale from 'i18n-iso-countries/langs/en.json';
