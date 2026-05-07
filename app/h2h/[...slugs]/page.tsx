@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import H2HClient from '../H2HClient';
 import H2HContentClient from '../H2HContentClient';
@@ -210,8 +211,9 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
   const siteTitle = player1Name && player2Name ? `${player1Name} vs ${player2Name} H2H - Tennis  Head to Head, Matches, Stats` : 'Head-to-Head - Tennis  Head to Head, Matches, Stats';
   const description = player1Name && player2Name ? `${player1Name} vs ${player2Name} head-to-head: H2H record, match stats and analysis. Compare ATP players.` : 'Head-to-head statistics between players.'; 
   const path = `/h2h/${slug}`;
+  const canonicalPath = player1Name && player2Name ? createH2HUrl(player1Name, player2Name) : path;
   const ogImage = new URL('/og/site-preview.png', canonicalOrigin).toString();
-  const canonical = new URL(path, canonicalOrigin).toString();
+  const canonical = new URL(canonicalPath, canonicalOrigin).toString();
 
   const indexable = await isH2HIndexable(slug);
   const hasQuery = searchParams && Object.keys(searchParams).length > 0;
@@ -279,6 +281,21 @@ export default async function Page({ params, searchParams }: { params?: Promise<
 
       player1 = p1 ?? null;
       player2 = p2 ?? null;
+
+      if (player1 && player2) {
+        const canonicalSlug = createH2HUrl(player1.atpname ?? '', player2.atpname ?? '');
+        const currentPath = `/h2h/${slug}`;
+        if (canonicalSlug !== currentPath) {
+          const queryString = searchParams && Object.keys(searchParams).length > 0
+            ? new URLSearchParams(
+                Object.entries(searchParams).flatMap(([key, value]) =>
+                  Array.isArray(value) ? value.map((v) => [key, v]) : [[key, value]]
+                )
+              ).toString()
+            : '';
+          redirect(queryString ? `${canonicalSlug}?${queryString}` : canonicalSlug);
+        }
+      }
 
       // Fetch H2H matches server-side if both players found
       if (player1 && player2) {
@@ -415,7 +432,8 @@ export default async function Page({ params, searchParams }: { params?: Promise<
   const pageTitle = player1 && player2 ? `${player1.atpname} vs ${player2.atpname} H2H - Tennis  Head to Head, Matches, Stats` : 'Head-to-Head - Tennis  Head to Head, Matches, Stats';
   const pageDescription = player1 && player2 ? `${player1.atpname} vs ${player2.atpname} head-to-head: H2H record, match stats and analysis. Compare ATP players.` : 'Head-to-head statistics between players.';
   const path = slug ? `/h2h/${slug}` : '/h2h';
-  const canonical = new URL(path, canonicalOrigin).toString();
+  const canonicalPath = player1 && player2 ? createH2HUrl(player1.atpname ?? '', player2.atpname ?? '') : path;
+  const canonical = new URL(canonicalPath, canonicalOrigin).toString();
 
   const playersAsPersons = [] as any[];
   if (player1) {
