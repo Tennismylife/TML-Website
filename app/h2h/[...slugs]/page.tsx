@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
+import { redirect, permanentRedirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import H2HClient from '../H2HClient';
 import H2HContentClient from '../H2HContentClient';
@@ -293,7 +293,7 @@ export default async function Page({ params, searchParams }: { params?: Promise<
                 )
               ).toString()
             : '';
-          redirect(queryString ? `${canonicalSlug}?${queryString}` : canonicalSlug);
+          permanentRedirect(queryString ? `${canonicalSlug}?${queryString}` : canonicalSlug);
         }
       }
 
@@ -393,7 +393,7 @@ export default async function Page({ params, searchParams }: { params?: Promise<
       }
     } catch (err: any) {
       // Re-throw Next.js redirect/notFound errors — do NOT swallow them
-      if (err?.digest?.startsWith('NEXT_REDIRECT') || err?.digest?.startsWith('NEXT_NOT_FOUND')) throw err;
+      if (err?.digest?.startsWith('NEXT_REDIRECT') || err?.digest?.startsWith('NEXT_REDIRECT_PERMANENT') || err?.digest?.startsWith('NEXT_NOT_FOUND')) throw err;
       console.error('Error in H2H page:', err);
       player1 = null;
       player2 = null;
