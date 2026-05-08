@@ -1,5 +1,7 @@
 import { headers } from 'next/headers';
 
+export const dynamic = 'force-dynamic';
+
 async function getMatches() {
   const headersList = await headers();
   const host = headersList.get('x-forwarded-host') || headersList.get('host') || 'localhost:3000';
