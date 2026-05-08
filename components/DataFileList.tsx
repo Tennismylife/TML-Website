@@ -69,16 +69,19 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
     return match ? parseInt(match[2], 10) : null;
   };
 
-  // Files for challenger tournaments between 1978 and 2026 inclusive
+  // Files for challenger tournaments between 1978 and 2026 inclusive,
+  // plus the special ongoing challenger file.
   const challengerFiles = files
     .filter((f) => {
       const year = extractYear(f.name);
-      return year !== null && year >= 1978 && year <= 2026 && /challenger/i.test(f.name);
+      return (/challenger/i.test(f.name) && ((year !== null && year >= 1978 && year <= 2026) || f.name.toLowerCase() === 'challenger_ongoing_tourneys.csv'));
     })
     .sort((a, b) => {
-      const ya = extractYear(a.name) ?? 0;
-      const yb = extractYear(b.name) ?? 0;
-      if (ya !== yb) return yb - ya;
+      const ya = extractYear(a.name);
+      const yb = extractYear(b.name);
+      const na = ya === null ? Number.POSITIVE_INFINITY : ya;
+      const nb = yb === null ? Number.POSITIVE_INFINITY : yb;
+      if (na !== nb) return nb - na;
       return a.name.localeCompare(b.name);
     });
 
