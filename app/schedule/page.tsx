@@ -1,17 +1,13 @@
-import { headers } from 'next/headers';
+import { readFile } from 'fs/promises';
+import path from 'path';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 async function getMatches() {
-  const headersList = await headers();
-  const host = headersList.get('x-forwarded-host') || headersList.get('host') || 'localhost:3000';
-  const protocol = headersList.get('x-forwarded-proto') || (host.includes('localhost') ? 'http' : 'https');
-  const baseUrl = `${protocol}://${host}`;
-  const response = await fetch(`${baseUrl}/schedule/matches.json`, { cache: 'no-store' });
-  if (!response.ok) {
-    throw new Error('Failed to load schedule matches data');
-  }
-  return response.json();
+  const filePath = path.join(process.cwd(), 'public', 'schedule', 'matches.json');
+  const raw = await readFile(filePath, 'utf8');
+  return JSON.parse(raw);
 }
 
 export default async function SchedulePage() {
