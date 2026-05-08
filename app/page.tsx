@@ -107,6 +107,11 @@ export default async function HomePage() {
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16M3 8h9M3 16h9" />
       </svg>
     )},
+    { href: "/schedule", title: "Schedule", subtitle: "Daily Matches", description: "Today’s match schedule and head-to-head links for the day, updated for daily tennis action.", colorClass: "text-sky-400 group-hover:text-sky-300", accentColor: "#38bdf8", icon: (
+      <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3M3 8h18M5 8h14v13H5z" />
+      </svg>
+    )},
   ];
 
   const criticalCss = `
@@ -306,6 +311,7 @@ export default async function HomePage() {
           </Card>
         ))}
       </div>
+
     </main>
   );
 }
