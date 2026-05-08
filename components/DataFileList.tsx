@@ -254,10 +254,11 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
               <tbody>
                 {challengerFiles.slice(0, visibleChallenger).map((f) => {
                   const yearLabel = extractYear(f.name)?.toString() ?? (isChallengerOngoingFile(f.name) ? 'Ongoing' : '');
+                  const displayName = isChallengerOngoingFile(f.name) ? 'ch_ongoing_tourney.csv' : f.name;
                   return (
                     <tr key={f.name} className="hover:bg-gray-800 border-b border-white/10">
                       <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-24 whitespace-nowrap">{yearLabel}</td>
-                      <td className="border border-white/10 px-4 py-2 text-lg text-gray-200 whitespace-nowrap"><a href={f.url} download className="text-indigo-300 hover:underline whitespace-nowrap">{f.name}</a></td>
+                      <td className="border border-white/10 px-4 py-2 text-lg text-gray-200 whitespace-nowrap"><a href={f.url} download className="text-indigo-300 hover:underline whitespace-nowrap">{displayName}</a></td>
                       <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-28 whitespace-nowrap hidden sm:table-cell">{f.size ? humanSize(f.size) : ''}</td>
                       <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-48 whitespace-nowrap hidden sm:table-cell">{f.mtime ? new Date(f.mtime).toLocaleString('it-IT') : ''}</td>
                       <td className="border border-white/10 px-4 py-2 whitespace-nowrap w-auto sm:w-80 flex items-center justify-center">
