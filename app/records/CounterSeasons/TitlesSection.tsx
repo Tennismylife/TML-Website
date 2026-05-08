@@ -150,9 +150,9 @@ export default function TitlesSection({
 	};
 
 	useEffect(() => {
-		const shouldFetch = fetchEnabled || (Array.isArray(initialData) && initialData.length > 0) || (fetchRequestId && lastRequestIdRef.current !== fetchRequestId);
+		const shouldFetch = fetchEnabled || initialData !== undefined || (fetchRequestId && lastRequestIdRef.current !== fetchRequestId);
 		if (!shouldFetch) return;
-		const forceFetch = Array.isArray(initialData) && initialData.length > 0;
+		const forceFetch = Array.isArray(initialData);
 		fetchPlayers(100, forceFetch);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [fetchEnabled, fetchRequestId, initialData]);
