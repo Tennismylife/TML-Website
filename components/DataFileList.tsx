@@ -71,10 +71,16 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
 
   // Files for challenger tournaments between 1978 and 2026 inclusive,
   // plus the special ongoing challenger file.
+  const isChallengerOngoingFile = (name: string) => {
+    const normalized = name.toLowerCase();
+    return normalized === 'challenger_ongoing_tourneys.csv' || normalized === 'ch_ongoing_tourney.csv';
+  };
+
   const challengerFiles = files
     .filter((f) => {
       const year = extractYear(f.name);
-      return (/challenger/i.test(f.name) && ((year !== null && year >= 1978 && year <= 2026) || f.name.toLowerCase() === 'challenger_ongoing_tourneys.csv'));
+      return (/challenger/i.test(f.name) && year !== null && year >= 1978 && year <= 2026)
+        || isChallengerOngoingFile(f.name);
     })
     .sort((a, b) => {
       const ya = extractYear(a.name);
@@ -247,7 +253,7 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
               </thead>
               <tbody>
                 {challengerFiles.slice(0, visibleChallenger).map((f) => {
-                  const yearLabel = extractYear(f.name)?.toString() ?? '';
+                  const yearLabel = extractYear(f.name)?.toString() ?? (isChallengerOngoingFile(f.name) ? 'Ongoing' : '');
                   return (
                     <tr key={f.name} className="hover:bg-gray-800 border-b border-white/10">
                       <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-24 whitespace-nowrap">{yearLabel}</td>
