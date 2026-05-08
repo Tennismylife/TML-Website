@@ -1,11 +1,23 @@
-import Link from 'next/link';
-import matchesData from './matches.json';
+import { headers } from 'next/headers';
 
-const r64Matches = matchesData.r64;
-const r32Matches = matchesData.r32;
-const totalMatches = (r64Matches?.length || 0) + (r32Matches?.length || 0);
+async function getMatches() {
+  const headersList = await headers();
+  const host = headersList.get('x-forwarded-host') || headersList.get('host') || 'localhost:3000';
+  const protocol = headersList.get('x-forwarded-proto') || (host.includes('localhost') ? 'http' : 'https');
+  const baseUrl = `${protocol}://${host}`;
+  const response = await fetch(`${baseUrl}/schedule/matches.json`, { cache: 'no-store' });
+  if (!response.ok) {
+    throw new Error('Failed to load schedule matches data');
+  }
+  return response.json();
+}
 
-export default function SchedulePage() {
+export default async function SchedulePage() {
+  const matchesData = await getMatches();
+  const r64Matches = matchesData.r64 ?? [];
+  const r32Matches = matchesData.r32 ?? [];
+  const totalMatches = r64Matches.length + r32Matches.length;
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 space-y-10">
       <div className="rounded-3xl border border-white/10 bg-slate-950/80 p-8 shadow-xl shadow-black/20">
