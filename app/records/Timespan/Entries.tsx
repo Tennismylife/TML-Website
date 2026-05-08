@@ -47,7 +47,9 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
     const fetchData = async () => {
       // Trigger client fetch on mount when server provided `initialData`
       // so SSR top‑10 is replaced by the client's `perPage=100` result.
-      const shouldFetch = showModal || (enabled && fetchRequestId) || (Array.isArray(initialData) && initialData.length > 0);
+      // Also fetch when SSR prefetch is enabled but the server did not return any initial data,
+      // otherwise the page can incorrectly show "No data available." before client fetch occurs.
+      const shouldFetch = showModal || (enabled && fetchRequestId) || initialData !== undefined;
       if (!shouldFetch) {
         if (Array.isArray(initialData)) setEntries(initialData);
         setLoading(false);
