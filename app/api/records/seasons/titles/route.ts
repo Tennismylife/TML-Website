@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
+export const dynamic = 'force-dynamic';
+
 let prisma: PrismaClient;
 if (!globalThis.prisma) {
   globalThis.prisma = new PrismaClient();
@@ -24,6 +26,16 @@ function jsonResponse(data: any, status = 200) {
   return NextResponse.json(data, { status, headers: cacheHeaders() });
 }
 
+function normalizeSurfaceValue(surface: string) {
+  const value = surface.trim();
+  if (!value) return value;
+  return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+}
+
+function normalizeLevelValue(level: string) {
+  return level.trim().toUpperCase();
+}
+
 type TitleRecord = {
   year: number;
   player_id: string;
@@ -35,18 +47,15 @@ type TitleRecord = {
 export async function GET(request: NextRequest) {
   try {
     const url = request.nextUrl;
-    const selectedSurfaces = getMultiParam(url, 'surface');
-    const selectedLevels = getMultiParam(url, 'level');
+    const selectedSurfaces = getMultiParam(url, 'surface').map(normalizeSurfaceValue).filter(Boolean);
+    const selectedLevels = getMultiParam(url, 'level').map(normalizeLevelValue).filter(Boolean);
     const limit = Math.max(1, Math.min(100, Number(url.searchParams.get('limit') ?? 100)));
 
     let finalTitles: TitleRecord[] = [];
 
     // --- Caso 1: un solo filtro o nessun filtro → usa MV JSON ---
     if (selectedSurfaces.length + selectedLevels.length <= 1) {
-      const titles = await prisma.mVSameSeasonTitles.findMany({
-        orderBy: { titles_in_year: 'desc' },
-        take: limit,
-      });
+      const titles = await prisma.mVSameSeasonTitles.findMany();
       if (!titles.length) return jsonResponse([]);
 
       const playerIds = titles.map(e => e.player_id);
