@@ -6,6 +6,7 @@ import Pagination from "../../../components/Pagination";
 import Modal from "@/components/Modal";
 import Flag from '@/components/Flag';
 import { playerSurfaceOrMatchesUrl } from "../nav";
+import { getTourneyHref } from '@/lib/utils';
 
 interface WinsSectionProps {
   selectedSurfaces: Set<string>;
@@ -205,6 +206,20 @@ export default function WinsSection({
   return (
     <section className="mb-0">
       {description && <h2 className="mb-6 text-center text-2xl font-semibold text-white">{description}</h2>} 
+      <div className="mb-6 text-base leading-7 text-gray-300">
+        <p className="mb-4">
+          <span className="inline-flex items-center gap-2"><Flag ioc="ITA" className="w-4 h-3" />Jannik Sinner</span>’s run of <span className="!text-amber-300">31 consecutive wins</span> in ATP Masters 1000 events has now entered tennis history, because with his 6-2, 6-3 win over <Link href="/players/andrea-pellegrino" className="text-indigo-300 no-underline hover:text-indigo-200"><span className="inline-flex items-center gap-2"><Flag ioc="ITA" className="w-4 h-3" />Andrea Pellegrino</span></Link> in Rome on 12 May 2026 he equalled <span className="inline-flex items-center gap-2"><Flag ioc="SRB" className="w-4 h-3" />Novak Djokovic</span>’s all-time record of 31 straight Masters 1000 victories, set in 2011 from Indian Wells to Cincinnati.
+        </p>
+        <p className="mb-4">
+          The streak began after Sinner’s last Masters 1000 defeat in <Link href={getTourneyHref({ slug: 'shanghai', year: 2025 })} className="text-indigo-300 no-underline hover:text-indigo-200">Shanghai 2025</Link> and has included a remarkable sequence of titles: <Link href={getTourneyHref({ slug: 'paris', year: 2025 })} className="text-indigo-300 no-underline hover:text-indigo-200">Paris 2025</Link>, <Link href={getTourneyHref({ slug: 'indian-wells', year: 2026 })} className="text-indigo-300 no-underline hover:text-indigo-200">Indian Wells 2026</Link>, <Link href={getTourneyHref({ slug: 'miami', year: 2026 })} className="text-indigo-300 no-underline hover:text-indigo-200">Miami 2026</Link>, <Link href={getTourneyHref({ slug: 'monte-carlo', year: 2026 })} className="text-indigo-300 no-underline hover:text-indigo-200">Monte-Carlo 2026</Link> and <Link href={getTourneyHref({ slug: 'madrid', year: 2026 })} className="text-indigo-300 no-underline hover:text-indigo-200">Madrid 2026</Link>, making him the first man to win five consecutive Masters 1000 tournaments.
+        </p>
+        <p className="mb-4">
+          In doing so, Sinner has already passed <span className="inline-flex items-center gap-2"><Flag ioc="CHE" className="w-4 h-3" />Roger Federer</span>’s best Masters 1000 streak of <span className="!text-amber-300">29 wins</span> and Djokovic’s second-best run of <span className="!text-amber-300">30</span>, while also leaving behind other historic streaks such as Djokovic and <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" />Rafael Nadal</span>’s <span className="!text-amber-300">23-match runs</span>, Djokovic’s <span className="!text-amber-300">22-match run</span>, <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" />Pete Sampras</span>’ <span className="!text-amber-300">19-match streak</span>, and Nadal’s <span className="!text-amber-300">two 18-match streaks</span>.
+        </p>
+        <p>
+          Sinner has built this streak across different conditions, from indoor hard courts to outdoor hard courts and clay. With one more win in Rome, he would move to 32 consecutive Masters 1000 victories and stand alone above Djokovic, turning an already historic run into the longest Masters 1000 winning streak ever recorded since the series began in 1990.
+        </p>
+      </div>
 
 
 
