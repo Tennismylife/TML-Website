@@ -5,17 +5,21 @@ WITH surface_json AS (
     SELECT
         year,
         player_id::text,
-        jsonb_object_agg(COALESCE(surface, 'Unknown'), cnt) AS surface_totals
+        jsonb_object_agg(surface, cnt) AS surface_totals
     FROM (
-        SELECT year, winner_id::text AS player_id, surface, COUNT(*) AS cnt
-        FROM "Match"
-        WHERE status = true
-        GROUP BY year, winner_id, surface
-        UNION ALL
-        SELECT year, loser_id::text AS player_id, surface, COUNT(*) AS cnt
-        FROM "Match"
-        WHERE status = true
-        GROUP BY year, loser_id, surface
+        SELECT year, player_id, COALESCE(surface, 'Unknown') AS surface, SUM(cnt) AS cnt
+        FROM (
+            SELECT year, winner_id::text AS player_id, surface, COUNT(*) AS cnt
+            FROM "Match"
+            WHERE status = true
+            GROUP BY year, winner_id, surface
+            UNION ALL
+            SELECT year, loser_id::text AS player_id, surface, COUNT(*) AS cnt
+            FROM "Match"
+            WHERE status = true
+            GROUP BY year, loser_id, surface
+        ) raw
+        GROUP BY year, player_id, surface
     ) sub
     GROUP BY year, player_id
 ),
@@ -23,17 +27,21 @@ level_json AS (
     SELECT
         year,
         player_id::text,
-        jsonb_object_agg(COALESCE(tourney_level, 'Unknown'), cnt) AS level_totals
+        jsonb_object_agg(tourney_level, cnt) AS level_totals
     FROM (
-        SELECT year, winner_id::text AS player_id, tourney_level, COUNT(*) AS cnt
-        FROM "Match"
-        WHERE status = true
-        GROUP BY year, winner_id, tourney_level
-        UNION ALL
-        SELECT year, loser_id::text AS player_id, tourney_level, COUNT(*) AS cnt
-        FROM "Match"
-        WHERE status = true
-        GROUP BY year, loser_id, tourney_level
+        SELECT year, player_id, COALESCE(tourney_level, 'Unknown') AS tourney_level, SUM(cnt) AS cnt
+        FROM (
+            SELECT year, winner_id::text AS player_id, tourney_level, COUNT(*) AS cnt
+            FROM "Match"
+            WHERE status = true
+            GROUP BY year, winner_id, tourney_level
+            UNION ALL
+            SELECT year, loser_id::text AS player_id, tourney_level, COUNT(*) AS cnt
+            FROM "Match"
+            WHERE status = true
+            GROUP BY year, loser_id, tourney_level
+        ) raw
+        GROUP BY year, player_id, tourney_level
     ) sub
     GROUP BY year, player_id
 ),
@@ -41,17 +49,21 @@ round_json AS (
     SELECT
         year,
         player_id::text,
-        jsonb_object_agg(COALESCE(round, 'Unknown'), cnt) AS round_totals
+        jsonb_object_agg(round, cnt) AS round_totals
     FROM (
-        SELECT year, winner_id::text AS player_id, round, COUNT(*) AS cnt
-        FROM "Match"
-        WHERE status = true
-        GROUP BY year, winner_id, round
-        UNION ALL
-        SELECT year, loser_id::text AS player_id, round, COUNT(*) AS cnt
-        FROM "Match"
-        WHERE status = true
-        GROUP BY year, loser_id, round
+        SELECT year, player_id, COALESCE(round, 'Unknown') AS round, SUM(cnt) AS cnt
+        FROM (
+            SELECT year, winner_id::text AS player_id, round, COUNT(*) AS cnt
+            FROM "Match"
+            WHERE status = true
+            GROUP BY year, winner_id, round
+            UNION ALL
+            SELECT year, loser_id::text AS player_id, round, COUNT(*) AS cnt
+            FROM "Match"
+            WHERE status = true
+            GROUP BY year, loser_id, round
+        ) raw
+        GROUP BY year, player_id, round
     ) sub
     GROUP BY year, player_id
 ),
