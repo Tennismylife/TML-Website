@@ -81,8 +81,8 @@ export default async function StreakServer({ searchParams, ...serverProps }: { s
               (() => {
                 const byP: Record<string, any[]> = {}
                 for (const m of matches) {
-                  ;(byP[m.winner_id] ??= []).push({ win: 1, match_id: m.id })
-                  ;(byP[m.loser_id] ??= []).push({ win: 0, match_id: m.id })
+                  if (m.winner_id) (byP[m.winner_id] ??= []).push({ win: 1, match_id: m.id })
+                  if (m.loser_id) (byP[m.loser_id] ??= []).push({ win: 0, match_id: m.id })
                 }
                 const s: any[] = []
                 for (const [pid, rs] of Object.entries(byP)) {
@@ -113,8 +113,8 @@ export default async function StreakServer({ searchParams, ...serverProps }: { s
             (() => {
               const byP: Record<string, any[]> = {}
               for (const m of matches) {
-                ;(byP[m.winner_id] ??= []).push({ win: 1, match_id: m.id })
-                ;(byP[m.loser_id] ??= []).push({ win: 0, match_id: m.id })
+                if (m.winner_id) (byP[m.winner_id] ??= []).push({ win: 1, match_id: m.id })
+                if (m.loser_id) (byP[m.loser_id] ??= []).push({ win: 0, match_id: m.id })
               }
               const s: any[] = []
               for (const [pid, rs] of Object.entries(byP)) {
