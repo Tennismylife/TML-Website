@@ -118,8 +118,8 @@ export async function GET(request: NextRequest) {
 
       if (selectedLevels.length && mvData.levels) {
         for (const l of selectedLevels) {
-          if (mvData.levels[l]?.length) {
-            const enriched = await enrichStreaks(mvData.levels[l]);
+          if ((mvData.levels as any)[l]?.length) {
+            const enriched = await enrichStreaks((mvData.levels as any)[l]);
             result[l] = enriched.slice(0, limit);
             usedMV = true;
           }
@@ -128,8 +128,8 @@ export async function GET(request: NextRequest) {
 
       if (selectedSurfaces.length && mvData.surfaces) {
         for (const s of selectedSurfaces) {
-          if (mvData.surfaces[s]?.length) {
-            const enriched = await enrichStreaks(mvData.surfaces[s]);
+          if ((mvData.surfaces as any)[s]?.length) {
+            const enriched = await enrichStreaks((mvData.surfaces as any)[s]);
             result[s] = enriched.slice(0, limit);
             usedMV = true;
           }
@@ -138,8 +138,8 @@ export async function GET(request: NextRequest) {
 
       if (selectedRounds.length && mvData.rounds) {
         for (const r of selectedRounds) {
-          if (mvData.rounds[r]?.length) {
-            const enriched = await enrichStreaks(mvData.rounds[r]);
+          if ((mvData.rounds as any)[r]?.length) {
+            const enriched = await enrichStreaks((mvData.rounds as any)[r]);
             result[r] = enriched.slice(0, limit);
             usedMV = true;
           }
@@ -149,8 +149,8 @@ export async function GET(request: NextRequest) {
       if (selectedBestOf.length && mvData.best_of) {
         for (const bo of selectedBestOf) {
           const key = bo.toString();
-          if (mvData.best_of[key]?.length) {
-            const enriched = await enrichStreaks(mvData.best_of[key]);
+          if ((mvData.best_of as any)[key]?.length) {
+            const enriched = await enrichStreaks((mvData.best_of as any)[key]);
             result[key] = enriched.slice(0, limit);
             usedMV = true;
           }
@@ -194,3 +194,4 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+

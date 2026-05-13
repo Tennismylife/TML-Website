@@ -1,9 +1,8 @@
 import React from 'react'
 import ServerWrapper from '../../../components/ServerWrapper'
 import Streak from './Streak'
-import { metadataBase } from '../../../lib/site'
 import { isRecordsSsrPrefetchEnabled } from '../../../lib/recordsSsrPrefetch'
-import { rateLimitedFetch } from '../../../lib/recordsPrefetchThrottle'
+import { prisma } from '../../../lib/prisma'
 
 type SearchParams = Record<string, string | string[] | undefined>
 
@@ -26,54 +25,134 @@ export default async function StreakServer({ searchParams, ...serverProps }: { s
   })()
   const activeSubTab = (serverProps.sub ?? getFirst('subtab') ?? 'wins') as string
 
-  const hasFilters =
-    selectedSurfaces.size > 0 ||
-    selectedLevels.size > 0 ||
-    !!selectedRounds ||
-    selectedBestOf !== null
-
   const prefetchEnabled = isRecordsSsrPrefetchEnabled()
-  // Prefetch streak results with selected filters so SSR includes filtered table
   const prefetchedData: Record<string, any[] | undefined> = {}
+
   if (prefetchEnabled) {
     try {
-    const params = new URLSearchParams()
-    params.set('limit', '10')
-    for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
-    for (const l of Array.from(selectedLevels)) params.append('level', l)
-    if (selectedRounds) params.set('round', selectedRounds)
-    if (selectedBestOf !== null) params.set('best_of', String(selectedBestOf))
-
-    const fetchJsonArray = async (path: string, key?: string) => {
-      try {
-        const url = new URL(path, metadataBase)
-        const res = await rateLimitedFetch(url, { next: { tags: ['records'] } })
-        if (!res.ok) return undefined
-        const json = await res.json()
-        if (key) {
-          const value = (json && typeof json === 'object') ? (json as any)[key] : undefined
-          if (Array.isArray(value)) return value
-          // fallback: l'API ritorna { "M": [...] } invece di { "global": [...] } quando ci sono filtri
-          if (json && typeof json === 'object' && !Array.isArray(json)) {
-            const firstArr = Object.values(json as object).find(v => Array.isArray(v))
-            return firstArr as any[] | undefined
-          }
-          return undefined
-        }
-        return Array.isArray(json) ? json : undefined
-      } catch (err) {
-        return undefined
-      }
-    }
-
       if (activeSubTab === 'wins') {
-        prefetchedData.wins = await fetchJsonArray(`/api/records/streak/wins${params.toString() ? '?' + params.toString() : ''}`, 'global')
+        const levels = Array.from(selectedLevels)
+        const surfaces = Array.from(selectedSurfaces)
+        const rounds = selectedRounds ? [selectedRounds] : []
+        const bestOf = selectedBestOf !== null ? [selectedBestOf] : []
+        const limit = 100
+        const filtersCount = [levels, surfaces, rounds, bestOf].filter(a => a.length).length
+
+        const enrichStreaks = async (streaks: any[]) => {
+          if (!streaks.length) return []
+          const playerIds = Array.from(new Set(streaks.map(s => s.player_id)))
+          const players = await prisma.player.findMany({
+            where: { id: { in: playerIds } },
+            select: { id: true, atpname: true, ioc: true, slug: true },
+          })
+          const pm = Object.fromEntries(players.map(p => [p.id, p]))
+          return streaks.map(s => ({
+            ...s,
+            player_name: pm[s.player_id]?.atpname || `Player ${s.player_id}`,
+            player_ioc: pm[s.player_id]?.ioc || '',
+            slug: pm[s.player_id]?.slug ?? null,
+          }))
+        }
+
+        const mvData = await prisma.mvAllConsecutiveWinStreaks.findFirst()
+
+        if (filtersCount === 0 && mvData?.global) {
+          prefetchedData.wins = (await enrichStreaks(mvData.global as any[])).slice(0, limit)
+        } else if (filtersCount === 1 && mvData) {
+          let found = false
+          if (levels.length && mvData.levels && (mvData.levels as any)[levels[0]]?.length) {
+            prefetchedData.wins = (await enrichStreaks((mvData.levels as any)[levels[0]])).slice(0, limit)
+            found = true
+          } else if (surfaces.length && mvData.surfaces && (mvData.surfaces as any)[surfaces[0]]?.length) {
+            prefetchedData.wins = (await enrichStreaks((mvData.surfaces as any)[surfaces[0]])).slice(0, limit)
+            found = true
+          } else if (rounds.length && mvData.rounds && (mvData.rounds as any)[rounds[0]]?.length) {
+            prefetchedData.wins = (await enrichStreaks((mvData.rounds as any)[rounds[0]])).slice(0, limit)
+            found = true
+          } else if (bestOf.length && mvData.best_of && (mvData.best_of as any)[String(bestOf[0])]?.length) {
+            prefetchedData.wins = (await enrichStreaks((mvData.best_of as any)[String(bestOf[0])])).slice(0, limit)
+            found = true
+          }
+          if (!found) {
+            // fallback live
+            const matches = await prisma.match.findMany({
+              where: { status: true, ...(levels.length && { tourney_level: { in: levels } }) },
+              orderBy: [{ tourney_date: 'asc' }, { id: 'asc' }],
+              select: { id: true, winner_id: true, loser_id: true },
+            })
+            prefetchedData.wins = await enrichStreaks(
+              (() => {
+                const byP: Record<string, any[]> = {}
+                for (const m of matches) {
+                  ;(byP[m.winner_id] ??= []).push({ win: 1, match_id: m.id })
+                  ;(byP[m.loser_id] ??= []).push({ win: 0, match_id: m.id })
+                }
+                const s: any[] = []
+                for (const [pid, rs] of Object.entries(byP)) {
+                  let cur: number[] = []
+                  for (const r of rs) {
+                    if (r.win) { cur.push(r.match_id) } else { if (cur.length) s.push({ player_id: pid, total_wins: cur.length, match_ids: [...cur] }); cur = [] }
+                  }
+                  if (cur.length) s.push({ player_id: pid, total_wins: cur.length, match_ids: [...cur] })
+                }
+                return s.sort((a, b) => b.total_wins - a.total_wins).slice(0, limit)
+              })()
+            )
+          }
+        } else {
+          // 2+ filtri → live
+          const matches = await prisma.match.findMany({
+            where: {
+              status: true,
+              ...(levels.length && { tourney_level: { in: levels } }),
+              ...(surfaces.length && { surface: { in: surfaces } }),
+              ...(rounds.length && { round: { in: rounds } }),
+              ...(bestOf.length && { best_of: { in: bestOf } }),
+            },
+            orderBy: [{ tourney_date: 'asc' }, { id: 'asc' }],
+            select: { id: true, winner_id: true, loser_id: true },
+          })
+          prefetchedData.wins = await enrichStreaks(
+            (() => {
+              const byP: Record<string, any[]> = {}
+              for (const m of matches) {
+                ;(byP[m.winner_id] ??= []).push({ win: 1, match_id: m.id })
+                ;(byP[m.loser_id] ??= []).push({ win: 0, match_id: m.id })
+              }
+              const s: any[] = []
+              for (const [pid, rs] of Object.entries(byP)) {
+                let cur: number[] = []
+                for (const r of rs) {
+                  if (r.win) { cur.push(r.match_id) } else { if (cur.length) s.push({ player_id: pid, total_wins: cur.length, match_ids: [...cur] }); cur = [] }
+                }
+                if (cur.length) s.push({ player_id: pid, total_wins: cur.length, match_ids: [...cur] })
+              }
+              return s.sort((a, b) => b.total_wins - a.total_wins).slice(0, limit)
+            })()
+          )
+        }
       }
       if (activeSubTab === 'round') {
-        prefetchedData.round = await fetchJsonArray(`/api/records/streak/rounds${params.toString() ? '?' + params.toString() : ''}`, 'streaks')
+        // /streak/round usa fetch HTTP (API separata)
+        const { rateLimitedFetch } = await import('../../../lib/recordsPrefetchThrottle')
+        const { metadataBase } = await import('../../../lib/site')
+        const params = new URLSearchParams()
+        params.set('limit', '10')
+        for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
+        for (const l of Array.from(selectedLevels)) params.append('level', l)
+        if (selectedRounds) params.set('round', selectedRounds)
+        if (selectedBestOf !== null) params.set('best_of', String(selectedBestOf))
+        try {
+          const url = new URL(`/api/records/streak/rounds${params.toString() ? '?' + params.toString() : ''}`, metadataBase)
+          const res = await rateLimitedFetch(url, { next: { tags: ['records'] } })
+          if (res.ok) {
+            const json = await res.json()
+            prefetchedData.round = Array.isArray(json?.streaks) ? json.streaks : undefined
+          }
+        } catch { /* ignore */ }
       }
     } catch (err) {
-      // ignore
+      // ignore — la pagina si caricherà comunque lato client
     }
   }
 
