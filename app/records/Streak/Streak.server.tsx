@@ -66,9 +66,6 @@ export default async function StreakServer({ searchParams, ...serverProps }: { s
           } else if (surfaces.length && mvData.surfaces && (mvData.surfaces as any)[surfaces[0]]?.length) {
             prefetchedData.wins = (await enrichStreaks((mvData.surfaces as any)[surfaces[0]])).slice(0, limit)
             found = true
-          } else if (rounds.length && mvData.rounds && (mvData.rounds as any)[rounds[0]]?.length) {
-            prefetchedData.wins = (await enrichStreaks((mvData.rounds as any)[rounds[0]])).slice(0, limit)
-            found = true
           } else if (bestOf.length && mvData.best_of && (mvData.best_of as any)[String(bestOf[0])]?.length) {
             prefetchedData.wins = (await enrichStreaks((mvData.best_of as any)[String(bestOf[0])])).slice(0, limit)
             found = true
@@ -76,7 +73,7 @@ export default async function StreakServer({ searchParams, ...serverProps }: { s
           if (!found) {
             // fallback live
             const matches = await prisma.match.findMany({
-              where: { status: true, ...(levels.length && { tourney_level: { in: levels } }) },
+              where: { status: true, ...(levels.length && { tourney_level: { in: levels } }), ...(rounds.length && { round: { in: rounds } }) },
               orderBy: [{ tourney_date: 'asc' }, { id: 'asc' }],
               select: { id: true, winner_id: true, loser_id: true },
             })
