@@ -52,7 +52,13 @@ export default async function StreakServer({ searchParams, ...serverProps }: { s
         const json = await res.json()
         if (key) {
           const value = (json && typeof json === 'object') ? (json as any)[key] : undefined
-          return Array.isArray(value) ? value : undefined
+          if (Array.isArray(value)) return value
+          // fallback: l'API ritorna { "M": [...] } invece di { "global": [...] } quando ci sono filtri
+          if (json && typeof json === 'object' && !Array.isArray(json)) {
+            const firstArr = Object.values(json as object).find(v => Array.isArray(v))
+            return firstArr as any[] | undefined
+          }
+          return undefined
         }
         return Array.isArray(json) ? json : undefined
       } catch (err) {
