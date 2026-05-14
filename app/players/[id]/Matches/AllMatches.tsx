@@ -5,6 +5,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import MatchesFilterPanel from "./MatchesFilterPanel";
 import MatchTable from "@/components/MatchTable";
 import { Match, SortKey, SortDirection } from "@/types";
+import { getRoundIndex } from "@/lib/utils";
 
 interface AllMatchesProps {
   playerId: string;
@@ -416,9 +417,17 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
         return sortDir === "asc" ? valA - valB : valB - valA;
       }
 
-      return sortDir === "asc"
+      const cmp = sortDir === "asc"
         ? String(valA).localeCompare(String(valB))
         : String(valB).localeCompare(String(valA));
+
+      // When sorting by date and two matches share the same date (same tournament week),
+      // sort by round descending so the Final appears before SF before QF.
+      if (cmp === 0 && sortKey === "tourney_date") {
+        return getRoundIndex(b.round, b.tourney_level) - getRoundIndex(a.round, a.tourney_level);
+      }
+
+      return cmp;
     });
   }, [matches, sortKey, sortDir]);
 

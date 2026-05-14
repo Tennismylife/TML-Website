@@ -25,7 +25,8 @@ export async function GET(req: NextRequest) {
   });
 
   // Sort matches by date asc then by round according to tournament progression
-  const roundOrder: Record<string, number> = { R128: 0, R64: 1, R32: 2, R16: 3, QF: 4, SF: 5, F: 6, '1R': 0, '2R': 1, '3R': 2, '4R': 3, Q: 4, S: 5 };
+  // RR = Round Robin (ATP Finals group stage), must come before SF and F
+  const roundOrder: Record<string, number> = { RR: 0, R128: 1, R64: 2, R32: 3, R16: 4, QF: 5, SF: 6, F: 7, '1R': 1, '2R': 2, '3R': 3, '4R': 4, Q: 5, S: 6 };
   matches.sort((a, b) => {
     const da = a.tourney_date ? (a.tourney_date instanceof Date ? a.tourney_date.toISOString() : String(a.tourney_date)) : '';
     const db = b.tourney_date ? (b.tourney_date instanceof Date ? b.tourney_date.toISOString() : String(b.tourney_date)) : '';

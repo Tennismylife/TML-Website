@@ -172,10 +172,34 @@ export async function GET(request: NextRequest) {
         ...(selectedLevels.length && { tourney_level: { in: selectedLevels } }),
         ...(selectedSurfaces.length && { surface: { in: selectedSurfaces } }),
         ...(selectedRounds.length && { round: { in: selectedRounds } }),
-        ...(selectedBestOf.length && { best_of: { in: selectedBestOf } })
+        ...(selectedBestOf.length && { best_of: { in: selectedBestOf } }),
+        NOT: {
+          OR: [
+            { score: { contains: "W/O", mode: 'insensitive' } },
+            { score: { equals: "DEF", mode: 'insensitive' } },
+            { score: { contains: "WEA", mode: 'insensitive' } },
+            { score: "To play" },
+          ],
+        },
       },
       orderBy: [{ tourney_date: "asc" }, { id: "asc" }],
-      select: { id: true, winner_id: true, loser_id: true }
+      select: { id: true, winner_id: true, loser_id: true, round: true, tourney_date: true }
+    });
+
+    // Sort by (tourney_date, round_order, id) so within the same tournament week
+    // earlier rounds (QF, SF) always precede later rounds (F), regardless of row IDs.
+    const LIVE_ROUND_ORDER: Record<string, number> = {
+      Q1: 1, Q2: 2, Q3: 3, R256: 4, R128: 5, R64: 6,
+      R32: 7, R16: 8, RR: 9, QF: 10, SF: 11, F: 12, W: 13, BR: 14
+    };
+    matches.sort((a, b) => {
+      const da = a.tourney_date ? new Date(a.tourney_date).getTime() : 0;
+      const db = b.tourney_date ? new Date(b.tourney_date).getTime() : 0;
+      if (da !== db) return da - db;
+      const ra = LIVE_ROUND_ORDER[a.round ?? ''] ?? 15;
+      const rb = LIVE_ROUND_ORDER[b.round ?? ''] ?? 15;
+      if (ra !== rb) return ra - rb;
+      return (a.id as number) - (b.id as number);
     });
 
     const liveStreaks = calculateLiveStreaks(matches)

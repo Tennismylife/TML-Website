@@ -2,33 +2,46 @@ DROP MATERIALIZED VIEW IF EXISTS mv_all_consecutive_win_streaks;
 
 CREATE MATERIALIZED VIEW mv_all_consecutive_win_streaks AS
 WITH all_matches AS (
-    SELECT id, winner_id AS player_id, loser_id, tourney_date, surface, tourney_level, best_of, round
+    SELECT id, winner_id AS player_id, loser_id, tourney_date, surface, tourney_level, best_of, round,
+           CASE round
+             WHEN 'Q1'   THEN 1  WHEN 'Q2'   THEN 2  WHEN 'Q3'   THEN 3
+             WHEN 'R256' THEN 4  WHEN 'R128' THEN 5  WHEN 'R64'  THEN 6
+             WHEN 'R32'  THEN 7  WHEN 'R16'  THEN 8  WHEN 'RR'   THEN 9
+             WHEN 'QF'   THEN 10 WHEN 'SF'   THEN 11 WHEN 'F'    THEN 12
+             WHEN 'W'    THEN 13 WHEN 'BR'   THEN 14 ELSE 15
+           END AS round_order
     FROM "Match"
     WHERE status = true
+      AND NOT (
+        score ILIKE '%W/O%' OR
+        score ILIKE 'DEF' OR
+        score ILIKE '%WEA%' OR
+        score = 'To play'
+      )
 ),
 player_results AS (
-    SELECT player_id, id, tourney_date, surface, tourney_level, best_of, round, 1 AS win
+    SELECT player_id, id, tourney_date, surface, tourney_level, best_of, round, round_order, 1 AS win
     FROM all_matches
     UNION ALL
-    SELECT loser_id AS player_id, id, tourney_date, surface, tourney_level, best_of, round, 0 AS win
+    SELECT loser_id AS player_id, id, tourney_date, surface, tourney_level, best_of, round, round_order, 0 AS win
     FROM all_matches
 ),
 ordered_results AS (
     SELECT *
     FROM player_results
-    ORDER BY player_id, tourney_date, id
+    ORDER BY player_id, tourney_date, round_order, id
 ),
 -- Gruppi per streak globali
 streaks_global AS (
     SELECT *,
-        SUM(CASE WHEN win = 0 THEN 1 ELSE 0 END) OVER (PARTITION BY player_id ORDER BY tourney_date, id) AS loss_group
+        SUM(CASE WHEN win = 0 THEN 1 ELSE 0 END) OVER (PARTITION BY player_id ORDER BY tourney_date, round_order, id) AS loss_group
     FROM ordered_results
 ),
 global_prep AS (
     SELECT player_id,
            loss_group AS grp,
            COUNT(*) AS total_wins,
-           JSON_AGG(id ORDER BY tourney_date, id) AS match_ids
+           JSON_AGG(id ORDER BY tourney_date, round_order, id) AS match_ids
     FROM streaks_global
     WHERE win = 1
     GROUP BY player_id, loss_group
@@ -36,7 +49,7 @@ global_prep AS (
 -- Gruppi per superficie
 streaks_surface AS (
     SELECT *,
-        SUM(CASE WHEN win = 0 THEN 1 ELSE 0 END) OVER (PARTITION BY player_id, surface ORDER BY tourney_date, id) AS loss_group_surface
+        SUM(CASE WHEN win = 0 THEN 1 ELSE 0 END) OVER (PARTITION BY player_id, surface ORDER BY tourney_date, round_order, id) AS loss_group_surface
     FROM ordered_results
 ),
 surface_prep AS (
@@ -44,7 +57,7 @@ surface_prep AS (
            COALESCE(surface,'Unknown') AS surface,
            loss_group_surface AS grp,
            COUNT(*) AS total_wins,
-           JSON_AGG(id ORDER BY tourney_date, id) AS match_ids
+           JSON_AGG(id ORDER BY tourney_date, round_order, id) AS match_ids
     FROM streaks_surface
     WHERE win = 1
     GROUP BY player_id, COALESCE(surface,'Unknown'), loss_group_surface
@@ -56,7 +69,7 @@ surface_ranked AS (
 -- Gruppi per livello torneo
 streaks_level AS (
     SELECT *,
-        SUM(CASE WHEN win = 0 THEN 1 ELSE 0 END) OVER (PARTITION BY player_id, tourney_level ORDER BY tourney_date, id) AS loss_group_level
+        SUM(CASE WHEN win = 0 THEN 1 ELSE 0 END) OVER (PARTITION BY player_id, tourney_level ORDER BY tourney_date, round_order, id) AS loss_group_level
     FROM ordered_results
 ),
 level_prep AS (
@@ -64,7 +77,7 @@ level_prep AS (
            COALESCE(tourney_level,'Unknown') AS tourney_level,
            loss_group_level AS grp,
            COUNT(*) AS total_wins,
-           JSON_AGG(id ORDER BY tourney_date, id) AS match_ids
+           JSON_AGG(id ORDER BY tourney_date, round_order, id) AS match_ids
     FROM streaks_level
     WHERE win = 1
     GROUP BY player_id, COALESCE(tourney_level,'Unknown'), loss_group_level
@@ -76,7 +89,7 @@ level_ranked AS (
 -- Gruppi per best_of
 streaks_best_of AS (
     SELECT *,
-        SUM(CASE WHEN win = 0 THEN 1 ELSE 0 END) OVER (PARTITION BY player_id, best_of ORDER BY tourney_date, id) AS loss_group_best_of
+        SUM(CASE WHEN win = 0 THEN 1 ELSE 0 END) OVER (PARTITION BY player_id, best_of ORDER BY tourney_date, round_order, id) AS loss_group_best_of
     FROM ordered_results
 ),
 best_of_prep AS (
@@ -84,7 +97,7 @@ best_of_prep AS (
            COALESCE(best_of::text,'Unknown') AS best_of,
            loss_group_best_of AS grp,
            COUNT(*) AS total_wins,
-           JSON_AGG(id ORDER BY tourney_date, id) AS match_ids
+           JSON_AGG(id ORDER BY tourney_date, round_order, id) AS match_ids
     FROM streaks_best_of
     WHERE win = 1
     GROUP BY player_id, COALESCE(best_of::text,'Unknown'), loss_group_best_of
@@ -98,11 +111,12 @@ round_islands AS (
     SELECT 
         player_id,
         round,
+        round_order,
         id,
         tourney_date,
         win,
-        ROW_NUMBER() OVER (PARTITION BY player_id, round ORDER BY tourney_date, id) AS rn1,
-        ROW_NUMBER() OVER (PARTITION BY player_id, round, win ORDER BY tourney_date, id) AS rn2
+        ROW_NUMBER() OVER (PARTITION BY player_id, round ORDER BY tourney_date, round_order, id) AS rn1,
+        ROW_NUMBER() OVER (PARTITION BY player_id, round, win ORDER BY tourney_date, round_order, id) AS rn2
     FROM ordered_results
     WHERE round IS NOT NULL
 ),
@@ -110,6 +124,7 @@ round_grouped AS (
     SELECT
         player_id,
         COALESCE(round, 'Unknown') AS round,
+        round_order,
         win,
         id,
         tourney_date,
@@ -122,7 +137,7 @@ round_prep AS (
         round,
         island_id AS grp,
         COUNT(*) AS total_wins,
-        JSON_AGG(id ORDER BY tourney_date, id) AS match_ids
+        JSON_AGG(id ORDER BY tourney_date, round_order, id) AS match_ids
     FROM round_grouped
     WHERE win = 1
     GROUP BY player_id, round, island_id

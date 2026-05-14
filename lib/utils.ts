@@ -36,6 +36,7 @@ export const IOC_TO_ISO: Record<string, string> = {
   CGO: "CG", // 🇨🇬 Republic of the Congo
   CHA: "TD", // 🇹🇩 Chad
   CHI: "CL", // 🇨🇱 Chile
+  CHE: "CH", // 🇨🇭 Switzerland
   CHN: "CN", // 🇨🇳 China
   CIV: "CI", // 🇨🇮 Côte d'Ivoire
   CMR: "CM", // 🇨🇲 Cameroon
@@ -50,6 +51,7 @@ export const IOC_TO_ISO: Record<string, string> = {
   CYP: "CY", // 🇨🇾 Cyprus
   CZE: "CZ", // 🇨🇿 Czechia
   DEN: "DK", // 🇩🇰 Denmark
+  DNK: "DK", // 🇩🇰 Denmark (alternative IOC code)
   DJI: "DJ", // 🇩🇯 Djibouti
   DMA: "DM", // 🇩🇲 Dominica
   DOM: "DO", // 🇩🇴 Dominican Republic
@@ -112,6 +114,7 @@ export const IOC_TO_ISO: Record<string, string> = {
   MOZ: "MZ", // 🇲🇿 Mozambique
   NAM: "NA", // 🇳🇦 Namibia
   NED: "NL", // 🇳🇱 Netherlands
+  NLD: "NL", // 🇳🇱 Netherlands (alternative IOC code)
   NGR: "NG", // 🇳🇬 Nigeria
   NOR: "NO", // 🇳🇴 Norway
   NZL: "NZ", // 🇳🇿 New Zealand
@@ -133,6 +136,8 @@ export const IOC_TO_ISO: Record<string, string> = {
   SRB: "RS", // 🇷🇸 Serbia
   SUI: "CH", // 🇨🇭 Switzerland
   SVK: "SK", // 🇸🇰 Slovakia
+  HRV: "HR", // 🇭🇷 Croatia
+  DEU: "DE", // 🇩🇪 Germany
   SVN: "SI", // 🇸🇮 Slovenia
   SWE: "SE", // 🇸🇪 Sweden
   TAJ: "TJ", // 🇹🇯 Tajikistan
@@ -147,6 +152,7 @@ export const IOC_TO_ISO: Record<string, string> = {
   UKR: "UA", // 🇺🇦 Ukraine
   URU: "UY", // 🇺🇾 Uruguay
   USA: "US", // 🇺🇸 United States
+  PRY: "PY", // 🇵🇾 Paraguay
   UZB: "UZ", // 🇺🇿 Uzbekistan
   VEN: "VE", // 🇻🇪 Venezuela
   VGB: "VG", // 🇻🇬 British Virgin Islands
@@ -584,16 +590,18 @@ export function getRoundIndex(round?: string | null, tourneyLevel?: string | nul
   const r = round.toUpperCase();
 
   // special ordering for Masters/ATP Finals (level 'F')
+  // Early editions (1970s-1980s) used knockout formats with R16/QF before SF/F;
+  // later editions use a round-robin stage (RR) before SF/F.
   if (tourneyLevel === 'F') {
     if (r === 'RR') return 0;
-    if (r === 'SF') return 1;
-    if (r === 'F') return 2;
-    if (r === 'W') return 3;
-    // push quarterfinals after final so they don't interfere
-    if (r === 'QF') return Number.MAX_SAFE_INTEGER - 1;
+    if (r === 'R16') return 1;
+    if (r === 'QF') return 2;
+    if (r === 'SF') return 3;
+    if (r === 'F') return 4;
+    if (r === 'W') return 5;
     // fall back to global index + offset to keep remaining rounds later
     const idx = ROUND_ORDER.indexOf(r);
-    return idx >= 0 ? idx + 4 : Number.MAX_SAFE_INTEGER;
+    return idx >= 0 ? idx + 6 : Number.MAX_SAFE_INTEGER;
   }
 
   // try case-insensitive lookup against the canonical list
