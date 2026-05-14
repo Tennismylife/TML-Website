@@ -253,7 +253,7 @@ export default function WinsSection({
           The Grand Slam hierarchy is therefore led by Djokovic at 30, followed by Laver at 29, Federer at 27, and the group of Connors, Nadal and Sampras at 25. These streaks count only consecutive wins in Grand Slam main-draw matches.
         </p>
       </RecordNarrative>}
-      {description === 'Longest Winning Streak at Masters 1000' && <RecordNarrative>
+      {isMasters1000Only && <RecordNarrative>
         <p>
           <span className="inline-flex items-center gap-2"><Flag ioc="ITA" className="w-4 h-3" /><span>Jannik Sinner</span></span>’s run of <strong className="!text-amber-300">32 consecutive wins</strong> in ATP Masters 1000 events has now entered tennis history, because with his victory over <span className="inline-flex items-center gap-2"><Flag ioc="RUS" className="w-4 h-3" /><span>Andrey Rublev</span></span> in Rome on 14 May 2026 he moved past <span className="inline-flex items-center gap-2"><Flag ioc="SRB" className="w-4 h-3" /><span>Novak Djokovic</span></span>’s all-time record of 31 straight Masters 1000 victories, set in 2011 from Indian Wells to Cincinnati.
         </p>
