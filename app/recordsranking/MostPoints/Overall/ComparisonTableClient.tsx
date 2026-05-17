@@ -69,7 +69,6 @@ const TOOLTIPS: Record<Player, { title: string; cols: string[]; rows: (string | 
       ['Nitto ATP Finals', 2025, 'W', 1500, 1500],
       ['Paris Masters', 2025, 'W', 1000, 1000],
       ['Cincinnati Masters', 2025, 'F', 650, 600],
-      ['Rome Masters', 2025, 'F', 650, 600],
       ['Vienna', 2025, 'W', 500, 500],
       ['Beijing', 2025, 'W', 500, 500],
       ['Shanghai Masters', 2025, 'R32', 50, 45],
@@ -78,9 +77,9 @@ const TOOLTIPS: Record<Player, { title: string; cols: string[]; rows: (string | 
       ['Miami Masters', 2026, 'W', 1000, 1000],
       ['Indian Wells Masters', 2026, 'W', 1000, 1000],
       ['Doha', 2026, 'QF', 100, 90],
-      ['Madrid', 2026, 'W', 1000, 1000],
+      ['Rome', 2026, 'W', 1000, 1000],
     ],
-    totals: ['Total', '', '', '14,350', '13,955'],
+    totals: ['Total', '', '', '14,700', '13,955'],
   },
   federer: {
     title: 'Ranking at 20/11/2006',
@@ -198,9 +197,9 @@ export default function ComparisonTableClient() {
           </tr>
           <tr className={trClass} onMouseEnter={e => handleEnter('sinner', e)} onMouseLeave={() => setHovered(null)}>
             <td className={`${tdBase} text-gray-200`}><span className="inline-flex items-center gap-2 justify-center"><Flag ioc="ITA" className="w-4 h-3" /> Jannik Sinner</span></td>
-            <td className={`${tdBase} text-indigo-300`}>14,350</td>
+            <td className={`${tdBase} text-indigo-300`}>14,700</td>
             <td className={`${tdBase} text-gray-200`}>13,955</td>
-            <td className={`${tdBase} text-gray-200`}>14,350</td>
+            <td className={`${tdBase} text-gray-200`}>14,700</td>
           </tr>
           <tr className={trClass} onMouseEnter={e => handleEnter('federer', e)} onMouseLeave={() => setHovered(null)}>
             <td className={`${tdBase} text-gray-200`}><span className="inline-flex items-center gap-2 justify-center"><Flag ioc="SUI" className="w-4 h-3" /> Roger Federer</span></td>

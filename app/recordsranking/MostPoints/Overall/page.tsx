@@ -143,8 +143,7 @@ export default async function No1MaxPointsRanking({ searchParams }: { searchPara
             with <span className="gold-number">{rows[1].points.toLocaleString()}</span> points.</>
           )}
           {rows.length > 2 && (
-            <> Third is <span className="inline-flex items-center gap-1 text-indigo-300 font-medium"><Flag ioc="ITA" className="w-4 h-3" /> Jannik Sinner</span>{' '}
-            with <span className="gold-number">14,350</span> points.</>
+            <> <span className="inline-flex items-center gap-1 text-indigo-300 font-medium"><Flag ioc="ITA" className="w-4 h-3" /> Jannik Sinner</span> is 3rd with <span className="gold-number">14.700</span> points.</>
           )}
           {over10k > 0 && (
             <>{' '}Only <span className="gold-number">{over10k}</span> player{over10k > 1 ? 's have' : ' has'} ever surpassed the 10,000-point mark.</>

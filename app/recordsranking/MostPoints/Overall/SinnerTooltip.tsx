@@ -45,7 +45,6 @@ export default function SinnerTooltip() {
         <span>Nitto ATP Finals</span><span className="text-center">2025</span><span className="text-center">W</span><span className="text-center">1500</span><span className="text-center">1500</span>
         <span>Paris Masters</span><span className="text-center">2025</span><span className="text-center">W</span><span className="text-center">1000</span><span className="text-center">1000</span>
         <span>Cincinnati Masters</span><span className="text-center">2025</span><span className="text-center">F</span><span className="text-center">650</span><span className="text-center">600</span>
-        <span>Rome Masters</span><span className="text-center">2025</span><span className="text-center">F</span><span className="text-center">650</span><span className="text-center">600</span>
         <span>Vienna</span><span className="text-center">2025</span><span className="text-center">W</span><span className="text-center">500</span><span className="text-center">500</span>
         <span>Beijing</span><span className="text-center">2025</span><span className="text-center">W</span><span className="text-center">500</span><span className="text-center">500</span>
         <span>Shanghai Masters</span><span className="text-center">2025</span><span className="text-center">R32</span><span className="text-center">50</span><span className="text-center">45</span>
@@ -54,13 +53,13 @@ export default function SinnerTooltip() {
         <span>Miami Masters</span><span className="text-center">2026</span><span className="text-center">W</span><span className="text-center">1000</span><span className="text-center">1000</span>
         <span>Indian Wells Masters</span><span className="text-center">2026</span><span className="text-center">W</span><span className="text-center">1000</span><span className="text-center">1000</span>
         <span>Doha</span><span className="text-center">2026</span><span className="text-center">QF</span><span className="text-center">100</span><span className="text-center">90</span>
-        <span>Madrid</span><span className="text-center">2026</span><span className="text-center">W</span><span className="text-center">1000</span><span className="text-center">1000</span>
+        <span>Rome</span><span className="text-center">2026</span><span className="text-center">W</span><span className="text-center">1000</span><span className="text-center">1000</span>
       </div>
       <div className="mt-3 grid grid-cols-[1.7fr_0.8fr_0.8fr_0.9fr_0.9fr] gap-2 border-t border-white/10 pt-2 text-sm font-semibold text-white">
         <span>Total</span>
         <span></span>
         <span></span>
-        <span className="text-center">14,350</span>
+        <span className="text-center">14,700</span>
         <span className="text-center">13,955</span>
       </div>
     </div>
