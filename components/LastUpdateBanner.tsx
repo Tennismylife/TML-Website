@@ -5,13 +5,13 @@ export default function LastUpdateBanner() {
     iso: today.toISOString().slice(0, 10),
     flag: "🇮🇹",
     player: "Jannik Sinner",
-    highlight: "reaches a historic",
-    points: "14,350",
-    event: "after winning Madrid 2026",
-    result: "He has now won 5 ATP Masters 1000 titles in a row and remains No. 3 in the standings",
+    highlight: "with",
+    points: "14,700",
+    event: "after winning Rome 2026",
+    result: "He has now won 6 ATP Masters 1000 titles in a row and complete the Career Golden Masters remaining No. 3 in the standings",
     note: "The standings will be updated tomorrow with official ATP Ranking",
   };
-
+ 
   return (
     <div className="mb-6 rounded-xl border border-gray-700/60 bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 p-4 shadow-md md:p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
