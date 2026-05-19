@@ -119,11 +119,11 @@ export default function TournamentsPage() {
           </p>
           <p className="mt-4 text-sm text-gray-400">
             Explore records by tournament level:{' '}
-            <a href="/records/wins?level=G" className="text-cyan-400 hover:text-cyan-200 underline">Grand Slam</a>
+            <a href="/records/most-grand-slam-wins" className="text-cyan-400 hover:text-cyan-200 underline">Grand Slam</a>
             {' · '}
-            <a href="/records/wins?level=M" className="text-cyan-400 hover:text-cyan-200 underline">Masters 1000</a>
+            <a href="/records/most-masters-1000-wins" className="text-cyan-400 hover:text-cyan-200 underline">Masters 1000</a>
             {' · '}
-            <a href="/records/wins?level=F" className="text-cyan-400 hover:text-cyan-200 underline">ATP Finals</a>
+            <a href="/records/most-wins-in-atp-finals" className="text-cyan-400 hover:text-cyan-200 underline">ATP Finals</a>
             {' · '}
             <a href="/records" className="text-cyan-400 hover:text-cyan-200 underline">All Records →</a>
           </p>

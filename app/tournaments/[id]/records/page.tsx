@@ -65,6 +65,7 @@ export default async function RecordsPage({ params }: { params: Promise<{ id: st
     'monte-carlo-masters': 'MonteCarlo_Records.md',
     'rome-masters': 'Rome_Records.md',
     'madrid-masters': 'Madrid_Records.md',
+    'roland-garros': 'RolandGarros_Records.md',
   };
   const markdownFileName = markdownFiles[slugId] || markdownFiles[id];
   if (markdownFileName) {

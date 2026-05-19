@@ -200,7 +200,7 @@ export default async function HomePage() {
       {/* Featured Madrid Records LIVE banner */}
       <div className="w-full mb-8">
         <a
-          href="/tournaments/rome-masters/records"
+          href="/tournaments/roland-garros/records"
           className="group relative w-full mb-8 flex overflow-hidden rounded-2xl border border-yellow-500/30 shadow-2xl hover:shadow-yellow-500/20 transition-all duration-300 hover:scale-[1.01]"
           style={{ background: 'linear-gradient(135deg, #0f1720 0%, #1a2a10 40%, #2a1a05 100%)' }}
         >
@@ -211,14 +211,14 @@ export default async function HomePage() {
 
           <div className="flex flex-col sm:flex-row items-center gap-6 w-full px-6 py-8 sm:px-10">
             <div className="flex-shrink-0 flex items-center justify-center w-20 h-20 rounded-full border-2 border-yellow-400/40 bg-yellow-400/10 shadow-lg shadow-yellow-500/20 text-4xl select-none">
-              🍝
+              🗼
             </div>
 
             <div className="flex-1 text-center sm:text-left">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
                 <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight"
                   style={{ color: '#facc15', WebkitTextFillColor: '#facc15' }}>
-                  Rome Masters
+                  Roland Garros
                   <span className="ml-2" style={{ color: '#f97316', WebkitTextFillColor: '#f97316' }}>Records</span>
                 </h2>
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold self-start sm:self-auto"
@@ -231,7 +231,7 @@ export default async function HomePage() {
                 </span>
               </div>
               <p className="text-sm sm:text-base text-gray-300 max-w-lg">
-                All-time Rome stats, milestones and history from one of the most prestigious ATP Masters 1000 events — updated in real time.
+                All-time Roland Garros stats, milestones and history from the most iconic clay court Grand Slam — updated in real time.
               </p>
             </div>
 
