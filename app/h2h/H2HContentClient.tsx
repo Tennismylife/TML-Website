@@ -208,25 +208,25 @@ export default function H2HContentClient({ matches, player1, player2, children, 
     let wins1 = 0;
     let wins2 = 0;
     allCountedMatches.forEach((m: any) => {
-      if (m.winner_name === player1.atpname) wins1++;
-      if (m.winner_name === player2.atpname) wins2++;
+      if (String(m.winner_id) === String(player1.id)) wins1++;
+      if (String(m.winner_id) === String(player2.id)) wins2++;
     });
     return { wins1, wins2 };
-  }, [allCountedMatches, player1.atpname, player2.atpname]);
+  }, [allCountedMatches, player1.id, player2.id]);
 
   // Calcola statistiche dai match filtrati (usando quelli conteggiati)
   const stats = useMemo(() => {
     let wins1 = 0;
     let wins2 = 0;
     countedFilteredMatches.forEach((m: any) => {
-      if (m.winner_name === player1.atpname) wins1++;
-      if (m.winner_name === player2.atpname) wins2++;
+      if (String(m.winner_id) === String(player1.id)) wins1++;
+      if (String(m.winner_id) === String(player2.id)) wins2++;
     });
     const totalMatches = wins1 + wins2;
     const perc1 = totalMatches > 0 ? (wins1 / totalMatches) * 100 : 0;
     const perc2 = totalMatches > 0 ? (wins2 / totalMatches) * 100 : 0;
     return { wins1, wins2, perc1, perc2 };
-  }, [countedFilteredMatches, player1.atpname, player2.atpname]);
+  }, [countedFilteredMatches, player1.id, player2.id]);
 
   return (
     <div className="space-y-8">
