@@ -116,4 +116,8 @@
     <loc>https://stats.tennismylife.org/h2h/learner-tien-vs-mariano-navone</loc>
     <priority>1.0</priority>
   </url>
+    <url>
+    <loc>https://stats.tennismylife.org/h2h/terence-atmane-vs-thanasi-kokkinakis</loc>
+    <priority>1.0</priority>
+  </url>
 </urlset>
