@@ -5,10 +5,10 @@ export default function LastUpdateBanner() {
     iso: today.toISOString().slice(0, 10),
     flag: "🇮🇹",
     player: "Jannik Sinner",
-    highlight: "with",
-    points: "14,700",
-    event: "after winning Rome 2026",
-    result: "He has now won 6 ATP Masters 1000 titles in a row and complete the Career Golden Masters remaining No. 3 in the standings",
+    highlight: "has",
+    points: "14,750",
+    event: "after winning Rome 2026 (14,700 + 50 points for Halle 2025)",
+    result: "Jannik Sinner has achieved a historic milestone: he has now won 6 ATP Masters 1000 titles in a row and completed the Career Golden Masters, remaining No. 3 in the standings",
     note: "The standings will be updated tomorrow with official ATP Ranking",
   };
  
