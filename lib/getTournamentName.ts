@@ -93,6 +93,13 @@ function collectCategoryVals(category: any): string[] {
  * @param category  Tournament.category (Json?) from the DB
  * @param years     Tournament.years (Json?) from the DB — array of edition-year strings
  */
+const SLAM_RECORDS_TOURNAMENT_SLUGS = new Set([
+  'australian-open',
+  'roland-garros',
+  'wimbledon',
+  'us-open',
+]);
+
 export function shouldIndexRecords(category: any, years?: any): boolean {
   const vals = collectCategoryVals(category);
   const ALWAYS = new Set(['G', 'M', 'F', 'O', 'GRAND_SLAM', 'MASTERS_1000', 'FINALS', 'OLYMPICS']);
@@ -108,6 +115,11 @@ export function shouldIndexRecords(category: any, years?: any): boolean {
     return maxYear >= 2020;
   }
   return false;
+}
+
+export function isSlamTournamentSlug(slug?: string | null): boolean {
+  if (!slug) return false;
+  return SLAM_RECORDS_TOURNAMENT_SLUGS.has(String(slug).toLowerCase());
 }
 
 /**
