@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import Link from 'next/link';
@@ -27,14 +27,17 @@ interface PercentageData {
   allRoundItems: RoundItem[];
 }
 
-export default function PercentageSection({ id, activeSubTab }: { id: string; activeSubTab: 'overall' | 'rounds' }) {
-  const [percentageData, setPercentageData] = useState<PercentageData | null>(null);
-  const [loading, setLoading] = useState(true);
+export default function PercentageSection({ id, activeSubTab, initialData }: { id: string; activeSubTab: 'overall' | 'rounds'; initialData?: PercentageData }) {
+  const [percentageData, setPercentageData] = useState<PercentageData | null>(initialData ?? null);
+  const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState<string | null>(null);
 
   const [modalData, setModalData] = useState<{ title: string; list: PlayerPercentage[] } | null>(null);
   const [minMatchesOverall, setMinMatchesOverall] = useState(1);
   const [minMatchesPerRound, setMinMatchesPerRound] = useState<{ [round: string]: number }>({});
+
+  // Track first render to skip fetch when SSR initialData was provided
+  const firstRenderRef = useRef(true);
 
   // call incremental hook early so hooks order is stable even before data loads
   const { isMobile, visibleCount, sentinelRef } = useIncrementalCards(percentageData?.allRoundItems?.length ?? 0, { initialVisible: 1, debounceMs: 1000 });
@@ -61,6 +64,12 @@ export default function PercentageSection({ id, activeSubTab }: { id: string; ac
 
   // --- Fetch data ---
   useEffect(() => {
+    // Skip fetch on first render if SSR initialData was provided
+    if (firstRenderRef.current && initialData) {
+      firstRenderRef.current = false;
+      return;
+    }
+    firstRenderRef.current = false;
     const fetchPercentages = async () => {
       try {
         setLoading(true);

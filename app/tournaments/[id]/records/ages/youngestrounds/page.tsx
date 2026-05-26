@@ -50,6 +50,13 @@ export default async function Page({ params }: any) {
   const pageDescription = `The youngest players ever to reach each round at ${tournamentName}. Age records per round from Open Era men's singles.`;
   const canonical = `${site}/tournaments/${slugId}/records/ages/youngestrounds`;
 
+  // SSR data fetch for ages/youngestrounds table
+  let agesData: any;
+  try {
+    const res = await fetch(`${site}/api/tournaments/${id}/records/ages/youngestrounds`, { cache: 'no-store' });
+    if (res.ok) agesData = await res.json();
+  } catch { /* fall back to client-side fetch */ }
+
   // Render a server-side H1 for the Youngest per-round overview
   return (
     <div>
@@ -70,6 +77,7 @@ export default async function Page({ params }: any) {
           initialPathId={slugId}
           initialActiveTab="ages"
           initialAgeSubTab="youngestrounds"
+          initialAgesData={agesData}
         />
       </main>
     </div>

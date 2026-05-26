@@ -3,6 +3,9 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
+// Stub global fetch so server-component SSR data calls return empty/ok=false without network I/O
+vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, json: async () => ({}) }));
+
 // Mock the metadata helper to return the canonical tournament name on the server
 vi.mock('@/lib/getTournamentName', () => ({
   getTournamentName: vi.fn().mockResolvedValue('Australian Open'),
@@ -61,8 +64,7 @@ describe('RecordsPage H1', () => {
     const h1 = container.querySelector('h1');
     expect(h1).toHaveTextContent('Australian Open | Least Games Lost to Reach a Round');
 
-    const h3 = await screen.findByRole('heading', { level: 3 });
-    expect(h3).toHaveTextContent('A curated collection of least games lost to reach a round at Australian Open. Explore match-level data, historical trends, and the players who left their mark on this tournament.');
+    expect(screen.queryByRole('heading', { level: 3 })).toBeNull();
     expect(screen.queryByRole('heading', { level: 2 })).toBeNull();
   });
 
@@ -82,8 +84,7 @@ describe('RecordsPage H1', () => {
     const h1 = container.querySelector('h1');
     expect(h1).toHaveTextContent('Australian Open | Records by Round');
 
-    const desc = await screen.findByText('A curated collection of records by round at Australian Open. Explore match-level data, historical trends, and the players who left their mark on this tournament.');
-    expect(desc).toBeTruthy();
+    expect(screen.queryByText('A curated collection of records by round at Australian Open. Explore match-level data, historical trends, and the players who left their mark on this tournament.')).toBeNull();
     expect(screen.queryByRole('heading', { level: 2 })).toBeNull();
 
   });
@@ -101,8 +102,7 @@ describe('RecordsPage H1', () => {
     const h1 = container.querySelector('h1');
     expect(h1).toHaveTextContent('Australian Open | Open Era Records');
 
-    const desc = await screen.findByText('A curated collection of records at Australian Open. Titles, Wins Matches Played and Appearances. Explore match-level data, historical trends, and the players who left their mark on this tournament.');
-    expect(desc).toBeTruthy();
+    expect(screen.queryByText('A curated collection of records at Australian Open. Titles, Wins Matches Played and Appearances. Explore match-level data, historical trends, and the players who left their mark on this tournament.')).toBeNull();
     expect(screen.queryByRole('heading', { level: 2 })).toBeNull();
   });
 
@@ -119,8 +119,7 @@ describe('RecordsPage H1', () => {
     const h1 = container.querySelector('h1');
     expect(h1).toHaveTextContent('Australian Open | Ages');
 
-    const desc = await screen.findByText('A curated collection of ages at Australian Open. Explore match-level data, historical trends, and the players who left their mark on this tournament.');
-    expect(desc).toBeTruthy();
+    expect(screen.queryByText('A curated collection of ages at Australian Open. Explore match-level data, historical trends, and the players who left their mark on this tournament.')).toBeNull();
     expect(screen.queryByRole('heading', { level: 2 })).toBeNull();
   });
 

@@ -117,7 +117,7 @@ export async function generateMetadata({ params, searchParams }: any): Promise<M
   const subLabel = sub ? ` — ${humanizeName(sub)}` : '';
 
   let titleFromParam = `${displayFromParam} | ${typeLabelFromParam}${subLabel}`;
-  let fallbackDescription = `A curated collection of records at ${displayFromParam}. Explore Titles, Wins, Matches Played and Appearances, and discover historical trends in tournament history.`;
+  let fallbackDescription = `Open Era men's singles records for ${displayFromParam}, including titles, wins, matches played, appearances, and historical statistics.`;
 
   if (!tab) {
     titleFromParam = `${displayFromParam} Records: wins, titles, matches, ages, streak, stats`;

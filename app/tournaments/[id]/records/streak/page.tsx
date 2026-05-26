@@ -1,4 +1,4 @@
-import StreakFull from './StreakFull';
+import RecordsPageClient from '../RecordsClient';
 import { getTournamentName, getTournamentSlug, shouldIndexRecords } from '@/lib/getTournamentName';
 import { prisma } from '@/lib/prisma';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
@@ -70,18 +70,35 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const pageTitle = `${tournamentName} Longest Winning Streaks | Tennis Records`;
   const pageDescription = `The longest winning streaks in men's singles at ${tournamentName}. Historical streak records from Open Era editions.`;
   const canonical = `${site}/tournaments/${slugId}/records/streak`;
+
+  // SSR data fetch for streak table
+  let streakData: { streaks: any[] } | undefined;
+  try {
+    const base = site.replace(/\/+$/, '');
+    const res = await fetch(`${base}/api/tournaments/${id}/records/streak`, { cache: 'no-store' });
+    if (res.ok) streakData = await res.json();
+  } catch { /* fall back to client-side fetch */ }
+
   return (
-    <main className="w-full mx-auto pt-0 pb-8 px-0 text-white" style={{ backgroundColor: 'rgba(17,24,39,0.95)', backdropFilter: 'blur(6px)', minHeight: '100vh' }}>
-      <RecordsWebPageJsonLd
-        pageTitle={pageTitle}
-        pageDescription={pageDescription}
-        canonical={canonical}
-        keywords={`${tournamentName}, winning streaks, longest streak, tennis records`}
-      />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: `${site}/` }, { '@type': 'ListItem', position: 2, name: 'Tournaments', item: `${site}/tournaments` }, { '@type': 'ListItem', position: 3, name: tournamentName, item: `${site}/tournaments/${slugId}` }, { '@type': 'ListItem', position: 4, name: 'Records', item: `${site}/tournaments/${slugId}/records` }, { '@type': 'ListItem', position: 5, name: 'Winning Streaks', item: canonical }] }) }} />
-      <RecordsBreadcrumb slugId={slugId} tournamentName={tournamentName} crumbs={[{ label: 'Winning Streaks' }]} className="px-6" />
-      <h1 className="relative z-50 mt-0 text-4xl md:text-5xl font-extrabold mb-6 text-center text-white">{`${tournamentName} Longest Winning Streaks`}</h1>
-      <StreakFull id={id} />
-    </main>
+    <div>
+      <main className="w-full mx-auto py-8 px-0 text-white relative" style={{ backgroundColor: 'rgba(17,24,39,0.95)', backdropFilter: 'blur(6px)', minHeight: '100vh' }}>
+        <RecordsWebPageJsonLd
+          pageTitle={pageTitle}
+          pageDescription={pageDescription}
+          canonical={canonical}
+          keywords={`${tournamentName}, winning streaks, longest streak, tennis records`}
+        />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: `${site}/` }, { '@type': 'ListItem', position: 2, name: 'Tournaments', item: `${site}/tournaments` }, { '@type': 'ListItem', position: 3, name: tournamentName, item: `${site}/tournaments/${slugId}` }, { '@type': 'ListItem', position: 4, name: 'Records', item: `${site}/tournaments/${slugId}/records` }, { '@type': 'ListItem', position: 5, name: 'Winning Streaks', item: canonical }] }) }} />
+        <RecordsBreadcrumb slugId={slugId} tournamentName={tournamentName} crumbs={[{ label: 'Winning Streaks' }]} className="px-6" />
+        <h1 className="relative z-50 mt-0 text-4xl md:text-5xl font-extrabold mb-6 text-center text-white">{`${tournamentName} Longest Winning Streaks`}</h1>
+        <RecordsPageClient
+          params={Promise.resolve({ id })}
+          initialTournament={{ id, slug: slugId, name: tournamentName }}
+          initialPathId={slugId}
+          initialActiveTab="streak"
+          initialStreakData={streakData}
+        />
+      </main>
+    </div>
   );
 }

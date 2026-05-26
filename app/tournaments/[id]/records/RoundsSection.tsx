@@ -79,9 +79,9 @@ const RoundCard = React.memo(function RoundCard({
   );
 });
 
-export default function RoundsSection({ tournamentId }: { tournamentId: string }) {
-  const [roundItems, setRoundItems] = useState<RoundItem[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function RoundsSection({ tournamentId, initialData }: { tournamentId: string; initialData?: { roundItems: RoundItem[] } }) {
+  const [roundItems, setRoundItems] = useState<RoundItem[]>(initialData?.roundItems ?? []);
+  const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState<string | null>(null);
 
   const [modalData, setModalData] = useState<{ title: string; list: PlayerStat[] } | null>(null);
@@ -165,6 +165,7 @@ export default function RoundsSection({ tournamentId }: { tournamentId: string }
 
   // ─── Primo fetch: top10 per round ───
   useEffect(() => {
+    if (initialData) return; // SSR data provided, skip initial fetch
     const fetchTop10 = async () => {
       try {
         const res = await fetch(`/api/tournaments/${tournamentId}/records/rounds`);

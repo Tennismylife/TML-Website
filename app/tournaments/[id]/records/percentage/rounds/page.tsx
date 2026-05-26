@@ -47,6 +47,14 @@ export default async function Page({ params }: any) {
   const tournamentName = await getTournamentName(id);
   const slugId = await getTournamentSlug(id).catch(() => id);
   const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
+
+  // SSR data fetch for percentage/rounds table
+  let percentageData: any;
+  try {
+    const res = await fetch(`${site}/api/tournaments/${id}/records/percentage/rounds`, { cache: 'no-store' });
+    if (res.ok) percentageData = await res.json();
+  } catch { /* fall back to client-side fetch */ }
+
   return (
     <>
       <RecordsWebPageJsonLd
@@ -63,6 +71,7 @@ export default async function Page({ params }: any) {
         initialPathId={slugId}
         initialActiveTab="percentage"
         initialPercentageSubTab="per-round"
+        initialPercentageData={percentageData}
       />
     </>
   );

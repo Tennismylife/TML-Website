@@ -23,9 +23,9 @@ interface AverageAgeData {
   overallAverage: string;
 }
 
-export default function AverageAgeSection({ id }: { id: string }) {
-  const [data, setData] = useState<AverageAgeData | null>(null);
-  const [loading, setLoading] = useState(true);
+export default function AverageAgeSection({ id, initialData }: { id: string; initialData?: AverageAgeData }) {
+  const [data, setData] = useState<AverageAgeData | null>(initialData ?? null);
+  const [loading, setLoading] = useState(!initialData);
 
   // detect mobile to reduce animations and chart height
   const [isMobile, setIsMobile] = useState(false);
@@ -38,6 +38,7 @@ export default function AverageAgeSection({ id }: { id: string }) {
   }, []);
 
   useEffect(() => {
+    if (initialData) return; // SSR data provided, skip initial fetch
     fetch(`/api/tournaments/${id}/records/averageage`)
       .then((res) => res.json())
       .then((json) => {

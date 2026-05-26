@@ -63,6 +63,13 @@ export default async function Page({ params }: any) {
   const pageTitle = `${tournamentName} Age Records | Tennis My Life`;
   const pageDescription = `Youngest and oldest players in the men's singles main draw at ${tournamentName}. Historical age records across all Open Era editions.`;
 
+  // SSR data fetch for ages/main table
+  let agesData: any;
+  try {
+    const res = await fetch(`${site}/api/tournaments/${id}/records/ages/main`, { cache: 'no-store' });
+    if (res.ok) agesData = await res.json();
+  } catch { /* fall back to client-side fetch */ }
+
   // Render a server-side H1 so this page has an authoritative title like "{tournamentName} | Ages"
   return (
     <div>
@@ -83,6 +90,7 @@ export default async function Page({ params }: any) {
           initialPathId={slugId}
           initialActiveTab="ages"
           initialAgeSubTab="main"
+          initialAgesData={agesData}
         />
       </main>
     </div>

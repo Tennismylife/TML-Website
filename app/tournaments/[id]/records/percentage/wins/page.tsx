@@ -48,6 +48,14 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const pageTitle = `Best Winning Percentage at ${tournamentName}`;
   const pageDescription = `Players with the best winning percentage in men's singles at ${tournamentName}. Minimum match threshold applied. Open Era records.`;
   const canonical = `${site}/tournaments/${slugId}/records/percentage/wins`;
+
+  // SSR data fetch for percentage/overall table
+  let percentageData: any;
+  try {
+    const res = await fetch(`${site}/api/tournaments/${id}/records/percentage/wins`, { cache: 'no-store' });
+    if (res.ok) percentageData = await res.json();
+  } catch { /* fall back to client-side fetch */ }
+
   return (
     <>
       <RecordsWebPageJsonLd
@@ -64,6 +72,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         initialPathId={slugId}
         initialActiveTab="percentage"
         initialPercentageSubTab="overall"
+        initialPercentageData={percentageData}
       />
     </>
   );

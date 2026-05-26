@@ -51,6 +51,13 @@ export default async function Page({ params }: any) {
   const pageDescription = `Youngest and oldest title winners at ${tournamentName}. Age records for men's singles champions from the Open Era.`;
   const canonical = `${site}/tournaments/${slugId}/records/ages/titles`;
 
+  // SSR data fetch for ages/titles table
+  let agesData: any;
+  try {
+    const res = await fetch(`${site}/api/tournaments/${id}/records/ages/titles`, { cache: 'no-store' });
+    if (res.ok) agesData = await res.json();
+  } catch { /* fall back to client-side fetch */ }
+
   // Render a server-side H1 so this page has an authoritative title like "{Tournament} | Title Age Records"
   return (
     <div>
@@ -64,7 +71,7 @@ export default async function Page({ params }: any) {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: `${site}/` }, { '@type': 'ListItem', position: 2, name: 'Tournaments', item: `${site}/tournaments` }, { '@type': 'ListItem', position: 3, name: tournamentName, item: `${site}/tournaments/${slugId}` }, { '@type': 'ListItem', position: 4, name: 'Records', item: `${site}/tournaments/${slugId}/records` }, { '@type': 'ListItem', position: 5, name: 'Ages', item: `${site}/tournaments/${slugId}/records/ages` }, { '@type': 'ListItem', position: 6, name: 'Title Age Records', item: canonical }] }) }} />
         <RecordsBreadcrumb slugId={slugId} tournamentName={tournamentName} crumbs={[{ label: 'Ages', href: `/tournaments/${slugId}/records/ages` }, { label: 'Title Age Records' }]} className="px-2" />
         <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">{`${tournamentName} | Title Age Records`}</h1>
-        <TitlesClient id={id} />
+        <TitlesClient id={id} initialData={agesData} />
       </main>
     </div>
   );

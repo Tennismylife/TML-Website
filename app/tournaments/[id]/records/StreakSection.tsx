@@ -8,9 +8,9 @@ import Pagination from '@/components/Pagination';
 import { playerMatchesUrl } from '../../../records/nav';
 import { getRoundIndex } from '@/lib/utils';
 
-export default function StreakSection({ id }: { id: string }) {
-  const [streaks, setStreaks] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function StreakSection({ id, initialData }: { id: string; initialData?: { streaks: any[] } }) {
+  const [streaks, setStreaks] = useState<any[]>(initialData?.streaks ?? []);
+  const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState<string | null>(null);
 
   // Hooks that must be stable across renders (avoid defining after early returns)
@@ -25,6 +25,7 @@ export default function StreakSection({ id }: { id: string }) {
   useEffect(() => { setPage(1); }, [streaks]);
 
   useEffect(() => {
+    if (initialData) return; // SSR data provided, skip initial fetch
     let mounted = true;
     async function load() {
       try {

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
@@ -35,17 +35,21 @@ interface AgesSectionProps {
   linkId?: string | number;
   pathId?: string | number;   // slug or fallback id for building URLs
   activeSubTab: 'main' | 'winners' | 'titles' | 'youngestrounds' | 'oldestrounds';
+  initialData?: AgesData;
 }
 
-export default function AgesSection({ id, linkId, pathId, activeSubTab }: AgesSectionProps) {
-  const [agesData, setAgesData] = useState<AgesData | null>(null);
-  const [loading, setLoading] = useState(true);
+export default function AgesSection({ id, linkId, pathId, activeSubTab, initialData }: AgesSectionProps) {
+  const [agesData, setAgesData] = useState<AgesData | null>(initialData ?? null);
+  const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState<string | null>(null);
   // keep modal state hook in place to preserve hook order for consistent hydration
   const [modalData, setModalData] = useState<{ title: string; list: PlayerStatAge[] } | null>(null);
 
   // Client-side fallback modal state (like CountSection) - declare early to keep hooks order stable
   const [clientModal, setClientModal] = useState<{ open: boolean; section?: string; title?: string | null; list?: PlayerStatAge[] | null; loading?: boolean }>({ open: false });
+
+  // Track first render to skip fetch when SSR initialData was provided
+  const firstRenderRef = useRef(true);
 
   // call incremental hook at top-level to keep hooks order stable across renders
   const totalItemsForHook = agesData ? (activeSubTab === 'youngestrounds' ? (agesData.allYoungestItems?.length ?? 0) : (agesData.allOldestItems?.length ?? 0)) : 0;
@@ -55,6 +59,12 @@ export default function AgesSection({ id, linkId, pathId, activeSubTab }: AgesSe
   const router = useRouter();
 
   useEffect(() => {
+    // Skip fetch on first render if SSR initialData was provided
+    if (firstRenderRef.current && initialData) {
+      firstRenderRef.current = false;
+      return;
+    }
+    firstRenderRef.current = false;
     const fetchAges = async () => {
       try {
         setLoading(true);

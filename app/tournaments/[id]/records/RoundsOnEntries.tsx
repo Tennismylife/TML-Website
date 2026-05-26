@@ -26,9 +26,9 @@ interface RoundsOnEntriesData {
   allRoundItems: RoundItem[];
 }
 
-export default function RoundsOnEntries({ id, pathId }: { id: string; pathId?: string | number }) {
-  const [roundsData, setRoundsData] = useState<RoundsOnEntriesData | null>(null);
-  const [loading, setLoading] = useState(true);
+export default function RoundsOnEntries({ id, pathId, initialData }: { id: string; pathId?: string | number; initialData?: RoundsOnEntriesData }) {
+  const [roundsData, setRoundsData] = useState<RoundsOnEntriesData | null>(initialData ?? null);
+  const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState<string | null>(null);
 
   const [minEntriesPerRound, setMinEntriesPerRound] = useState<{ [round: string]: number }>({});
@@ -37,6 +37,7 @@ export default function RoundsOnEntries({ id, pathId }: { id: string; pathId?: s
 
   // Fetch rounds data
   useEffect(() => {
+    if (initialData) return; // SSR data provided, skip initial fetch
     const fetchRounds = async () => {
       try {
         const res = await fetch(`/api/tournaments/${id}/records/roundsonentries`);

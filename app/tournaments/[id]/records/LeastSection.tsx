@@ -30,15 +30,16 @@ interface LeastData {
   roundItems: RoundItem[];
 }
 
-export default function LeastSection({ id, linkId, pathId }: { id: string; linkId?: string | number; pathId?: string | number }) {
-  const [leastData, setLeastData] = useState<LeastData | null>(null);
-  const [loading, setLoading] = useState(true);
+export default function LeastSection({ id, linkId, pathId, initialData }: { id: string; linkId?: string | number; pathId?: string | number; initialData?: LeastData }) {
+  const [leastData, setLeastData] = useState<LeastData | null>(initialData ?? null);
+  const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState<string | null>(null);
 
   const [modalData, setModalData] = useState<{ round: string; data: RoundData[] } | null>(null);
   const [modalLoadingRound, setModalLoadingRound] = useState<string | null>(null);
 
   useEffect(() => {
+    if (initialData) return; // SSR data provided, skip initial fetch
     const fetchLeast = async () => {
       try {
         setLoading(true);

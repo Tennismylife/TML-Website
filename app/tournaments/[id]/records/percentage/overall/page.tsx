@@ -2,9 +2,9 @@ import React from 'react';
 import { getTournamentName, getTournamentSlug, shouldIndexRecords } from '@/lib/getTournamentName';
 import { prisma } from '@/lib/prisma';
 import { resolveCanonicalTourneyId } from '@/lib/tournament';
+import RecordsPageClient from '../../RecordsClient';
 import RecordsWebPageJsonLd from '../../RecordsWebPageJsonLd';
 import RecordsBreadcrumb from '../../RecordsBreadcrumb';
-import PercentageFull from '../_components/PercentageFull';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const p = await params;
@@ -55,6 +55,13 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const pageDescription = `Players with the best winning percentage in men's singles at ${tournamentName}. Minimum match threshold applied. Open Era records.`;
   const canonical = `${site}/tournaments/${slugId}/records/percentage/overall`;
 
+  // SSR data fetch for percentage/overall table
+  let percentageData: any;
+  try {
+    const res = await fetch(`${site}/api/tournaments/${id}/records/percentage/wins`, { cache: 'no-store' });
+    if (res.ok) percentageData = await res.json();
+  } catch { /* fall back to client-side fetch */ }
+
   return (
     <>
       <RecordsWebPageJsonLd
@@ -81,7 +88,14 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       />
       <RecordsBreadcrumb slugId={slugId} tournamentName={tournamentName} crumbs={[{ label: 'Best Win Percentage' }]} className="px-2" />
       <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">{pageTitle}</h1>
-      <PercentageFull id={id} section="wins" />
+      <RecordsPageClient
+        params={Promise.resolve({ id })}
+        initialTournament={{ id, slug: slugId, name: tournamentName }}
+        initialPathId={slugId}
+        initialActiveTab="percentage"
+        initialPercentageSubTab="overall"
+        initialPercentageData={percentageData}
+      />
     </>
   );
 }

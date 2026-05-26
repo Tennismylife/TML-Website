@@ -218,6 +218,33 @@ export default async function RecordsTabPage({ params }: { params: Promise<{ id:
   // For server-rendering contexts, normalize to a Promise that resolves to { id }
   const idPromise = Promise.resolve({ id });
 
+  // SSR data fetch for the active tab — allows tables to render in initial HTML
+  async function fetchTabSSRData(tabName: string | undefined): Promise<any> {
+    if (!tabName) return null;
+    const base = (process.env.SITE_URL || 'http://localhost:3000').replace(/\/+$/, '');
+    const apiMap: Record<string, string> = {
+      streak: `/api/tournaments/${id}/records/streak`,
+      rounds: `/api/tournaments/${id}/records/rounds`,
+      least: `/api/tournaments/${id}/records/least`,
+      timespan: `/api/tournaments/${id}/records/timespan`,
+      'rounds-on-entries': `/api/tournaments/${id}/records/roundsonentries`,
+      roundsonentries: `/api/tournaments/${id}/records/roundsonentries`,
+      'average-age': `/api/tournaments/${id}/records/averageage`,
+      percentage: `/api/tournaments/${id}/records/percentage/wins`,
+    };
+    const path = apiMap[tabName];
+    if (!path) return null;
+    try {
+      const res = await fetch(`${base}${path}`, { cache: 'no-store' });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
+  }
+
+  const sectionData = await fetchTabSSRData(tab);
+
   const headerTitle = tab ? `${tournamentName} | ${recordTitle}` : `${tournamentName} Records`;
   return (
     <div>
@@ -238,6 +265,13 @@ export default async function RecordsTabPage({ params }: { params: Promise<{ id:
             initialTournament={{ id, slug: slugId, name: tournamentName }}
             initialPathId={slugId}
             initialActiveTab={tab}
+            initialStreakData={tab === 'streak' ? sectionData : undefined}
+            initialRoundsData={tab === 'rounds' ? sectionData : undefined}
+            initialLeastData={tab === 'least' ? sectionData : undefined}
+            initialTimespanData={tab === 'timespan' ? sectionData : undefined}
+            initialRoundsOnEntriesData={(tab === 'rounds-on-entries' || tab === 'roundsonentries') ? sectionData : undefined}
+            initialAverageAgeData={tab === 'average-age' ? sectionData : undefined}
+            initialPercentageData={tab === 'percentage' ? sectionData : undefined}
           />
       </main>
     </div>

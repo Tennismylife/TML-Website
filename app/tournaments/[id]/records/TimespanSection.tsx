@@ -36,9 +36,9 @@ interface TimespanData {
   allRoundItems: RoundItem[];
 }
 
-export default function TimespanSection({ id, pathId }: { id: string; pathId?: string | number }) {
-  const [timespanData, setTimespanData] = useState<TimespanData | null>(null);
-  const [loading, setLoading] = useState(true);
+export default function TimespanSection({ id, pathId, initialData }: { id: string; pathId?: string | number; initialData?: TimespanData }) {
+  const [timespanData, setTimespanData] = useState<TimespanData | null>(initialData ?? null);
+  const [loading, setLoading] = useState(!initialData);
   const [loadingViewAll, setLoadingViewAll] = useState<string | null>(null);
   const [modalData, setModalData] = useState<{ title: string; list: PlayerTimespan[] } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -47,6 +47,7 @@ export default function TimespanSection({ id, pathId }: { id: string; pathId?: s
 
   // Primo caricamento: solo Top 10
   useEffect(() => {
+    if (initialData) return; // SSR data provided, skip initial fetch
     const fetchInitial = async () => {
       try {
         setLoading(true);

@@ -67,6 +67,14 @@ interface RecordsPageClientProps {
   initialAgeSubTab?: AgeSubTab;
   initialPercentageSubTab?: PercentageSubTabState;
   initialPathId?: string;
+  initialStreakData?: { streaks: any[] };
+  initialRoundsData?: { roundItems: any[] };
+  initialLeastData?: { roundItems: any[] };
+  initialTimespanData?: { allRoundItems: any[] };
+  initialAverageAgeData?: { chartData: any[]; overallAverage: string };
+  initialRoundsOnEntriesData?: { allRoundItems: any[] };
+  initialAgesData?: any;
+  initialPercentageData?: any;
 }
 
 export default function RecordsPageClient({
@@ -78,6 +86,14 @@ export default function RecordsPageClient({
   initialAgeSubTab,
   initialPercentageSubTab,
   initialPathId,
+  initialStreakData,
+  initialRoundsData,
+  initialLeastData,
+  initialTimespanData,
+  initialAverageAgeData,
+  initialRoundsOnEntriesData,
+  initialAgesData,
+  initialPercentageData,
 }: RecordsPageClientProps) {
   // Accept both a Promise (Next's server use(params)) or a plain object (useful in tests)
   // Resolve params into a stable `id` state so hooks and effects run predictably
@@ -306,22 +322,7 @@ export default function RecordsPageClient({
     return `${humanizedDisplayName} ${typeLabel}`;
   })();
 
-  const pageIntroDescription = (() => {
-    if (!activeTab) return undefined;
-    if (activeTab === 'count') {
-      return `A curated collection of records at ${humanizedDisplayName}. Titles, Wins Matches Played and Appearances. Explore match-level data, historical trends, and the players who left their mark on this tournament.`;
-    }
-    if (activeTab === 'rounds') {
-      return `A curated collection of records by round at ${humanizedDisplayName}. Explore match-level data, historical trends, and the players who left their mark on this tournament.`;
-    }
-    if (activeTab === 'ages') {
-      return `A curated collection of ages at ${humanizedDisplayName}. Explore match-level data, historical trends, and the players who left their mark on this tournament.`;
-    }
-    if (activeTab === 'least') {
-      return `A curated collection of least games lost to reach a round at ${humanizedDisplayName}. Explore match-level data, historical trends, and the players who left their mark on this tournament.`;
-    }
-    return undefined;
-  })();
+  const pageIntroDescription = undefined;
 
   return (
     <>
@@ -394,26 +395,28 @@ export default function RecordsPageClient({
         }}
       >
         {activeTab === 'count' && <CountSection tournamentId={id} initialData={initialCountData} />}
-        {activeTab === 'rounds' && <RoundsSection tournamentId={id} />}
+        {activeTab === 'rounds' && <RoundsSection tournamentId={id} initialData={initialRoundsData} />}
         {activeTab === 'ages' && (
           <AgesSection
             id={id}
             linkId={linkId}
             pathId={pathId}
             activeSubTab={activeAgeSubTab}
+            initialData={initialAgesData}
           />
         )}
         {activeTab === 'percentage' && (
           <PercentageSection
             id={id}
             activeSubTab={percentageActiveSubTab}
+            initialData={initialPercentageData}
           />
         )}
-        {activeTab === 'timespan' && <TimespanSection id={id} pathId={pathId} />}
-        {activeTab === 'rounds-on-entries' && <RoundsOnEntries id={id} pathId={pathId} />}
-        {activeTab === 'streak' && <StreakSection id={id} />}
-        {activeTab === 'least' && <LeastSection id={id} linkId={linkId} pathId={pathId} />}
-        {activeTab === 'average-age' && <AverageAgeSection id={id} />}
+        {activeTab === 'timespan' && <TimespanSection id={id} pathId={pathId} initialData={initialTimespanData} />}
+        {activeTab === 'rounds-on-entries' && <RoundsOnEntries id={id} pathId={pathId} initialData={initialRoundsOnEntriesData} />}
+        {activeTab === 'streak' && <StreakSection id={id} initialData={initialStreakData} />}
+        {activeTab === 'least' && <LeastSection id={id} linkId={linkId} pathId={pathId} initialData={initialLeastData} />}
+        {activeTab === 'average-age' && <AverageAgeSection id={id} initialData={initialAverageAgeData} />}
       </div>
     </>
   );
