@@ -1,8 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Flag from '@/components/Flag';
-import { playerMatchesUrl } from '../../../records/nav';
-import { getRoundIndex } from '@/lib/utils';
+import { playerMatchesUrl } from '../../../../records/nav';
 import { prisma } from '@/lib/prisma';
 
 async function resolveStreaks(id: string) {
