@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import RecordsPage from "../page";
+import RecordsPageClient from "../RecordsClient";
 import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
 import RecordsWebPageJsonLd from '../RecordsWebPageJsonLd';
 
@@ -183,6 +183,15 @@ export default async function RecordsCatchAllPage({
 
   const showViewRecords = !(segments && segments[0] === 'percentage');
 
+  const inferredTab = segments && segments.length ? String(segments[0]) : 'count';
+  const initialActiveTab = inferredTab;
+  const initialAgeSubTab = inferredTab === 'ages'
+    ? (segments && segments[1] ? String(segments[1]) as any : 'main')
+    : undefined;
+  const initialPercentageSubTab = inferredTab === 'percentage'
+    ? ((segments && segments[1] === 'per-round') || (segments && segments[1] === 'rounds') ? 'per-round' : 'overall')
+    : undefined;
+
   return (
     <div>
       <main className={`w-full mx-auto ${showViewRecords ? 'pt-24 md:pt-32' : 'pt-16 md:pt-20'} py-8 px-0 text-white relative`} style={{ backgroundColor: 'rgba(17,24,39,0.95)', backdropFilter: 'blur(6px)', minHeight: '100vh' }}>
@@ -206,7 +215,14 @@ export default async function RecordsCatchAllPage({
           )}
 
           <h1 className={`relative z-50 text-4xl md:text-5xl font-extrabold mb-6 text-center text-white${showViewRecords ? ' mt-8' : ''}`}>{`${humanTournament} | ${recordTitle}`}</h1>
-          <RecordsPage params={idPromise} />
+          <RecordsPageClient
+            params={idPromise}
+            initialTournament={{ id, slug: slugId, name: tournamentName }}
+            initialPathId={slugId}
+            initialActiveTab={initialActiveTab}
+            initialAgeSubTab={initialAgeSubTab}
+            initialPercentageSubTab={initialPercentageSubTab}
+          />
       </main>
     </div>
   );

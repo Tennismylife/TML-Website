@@ -42,7 +42,19 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   };
 }
 
-export default async function RecordsPage({ params }: { params: Promise<{ id: string }> }) {
+type AgeSubTab = 'main' | 'winners' | 'titles' | 'youngestrounds' | 'oldestrounds';
+type PercentageSubTabState = 'overall' | 'per-round';
+
+interface RecordsPageProps {
+  params: Promise<{ id: string }>;
+  initialTournament?: { id: string; slug?: string; name?: string };
+  initialActiveTab?: string;
+  initialAgeSubTab?: AgeSubTab;
+  initialPercentageSubTab?: PercentageSubTabState;
+  initialPathId?: string;
+}
+
+export default async function RecordsPage({ params, initialTournament, initialActiveTab, initialAgeSubTab, initialPercentageSubTab, initialPathId }: RecordsPageProps) {
   const { id } = await params;
 
   // In test environments, avoid rendering the client component (which uses `use()` with a Promise)
@@ -270,6 +282,9 @@ export default async function RecordsPage({ params }: { params: Promise<{ id: st
       {/* @ts-ignore */}
       <RecordsPageClient
         params={idPromise}
+        initialTournament={{ id, slug: slugId, name: tournamentName }}
+        initialPathId={slugId}
+        initialActiveTab="count"
         markdownHtml={markdownHtml}
         initialCountData={{
           titles:  topTitles.map(r =>  ({ id: r.name, name: r.name, ioc: '', count: r.count })),

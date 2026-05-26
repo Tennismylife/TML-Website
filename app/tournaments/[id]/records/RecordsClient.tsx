@@ -47,10 +47,41 @@ interface InitialCountData {
   entries: CountItem[];
 }
 
-export default function RecordsPageClient({ params, initialCountData, markdownHtml }: { params: Promise<{ id: string }>; initialCountData?: InitialCountData; markdownHtml?: string }) {
+type TournamentInfo = {
+  id: string;
+  slug?: string;
+  name?: string;
+};
+
+type AgeSubTab = 'main' | 'winners' | 'titles' | 'youngestrounds' | 'oldestrounds';
+type PercentageSubTabState = 'overall' | 'per-round';
+type PercentageURLSub = 'overall' | 'per-round';
+type PercentageSectionProp = 'overall' | 'rounds';
+
+interface RecordsPageClientProps {
+  params: Promise<{ id: string }> | { id: string };
+  initialCountData?: InitialCountData;
+  markdownHtml?: string;
+  initialTournament?: TournamentInfo;
+  initialActiveTab?: string;
+  initialAgeSubTab?: AgeSubTab;
+  initialPercentageSubTab?: PercentageSubTabState;
+  initialPathId?: string;
+}
+
+export default function RecordsPageClient({
+  params,
+  initialCountData,
+  markdownHtml,
+  initialTournament,
+  initialActiveTab,
+  initialAgeSubTab,
+  initialPercentageSubTab,
+  initialPathId,
+}: RecordsPageClientProps) {
   // Accept both a Promise (Next's server use(params)) or a plain object (useful in tests)
   // Resolve params into a stable `id` state so hooks and effects run predictably
-  const [id, setId] = useState<string>('');
+  const [id, setId] = useState<string>(initialTournament?.id ?? '');
 
   useEffect(() => {
     let mounted = true;
@@ -76,20 +107,16 @@ export default function RecordsPageClient({ params, initialCountData, markdownHt
   const pathname = usePathname();
   const router = useRouter();
 
-  const [tournament, setTournament] = useState<any>(null);
-  const [loadingTournament, setLoadingTournament] = useState(true);
+  const [tournament, setTournament] = useState<any>(initialTournament ?? null);
+  const [loadingTournament, setLoadingTournament] = useState(!Boolean(initialTournament));
 
   // headerId: use numeric id from fetched header when available, otherwise fall back to numeric route id if valid
   const headerId = tournament?.id ?? (isNaN(Number(id)) ? undefined : Number(id));
 
   // default tab is 'count' — initial data is passed from the server component for SSR
-  const [activeTab, setActiveTab] = useState('count');
-  const [activeAgeSubTab, setActiveAgeSubTab] = useState<'main' | 'winners' | 'titles' | 'youngestrounds' | 'oldestrounds'>('main');
-  type PercentageSubTabState = 'overall' | 'per-round';
-  type PercentageURLSub = 'overall' | 'per-round';
-  type PercentageSectionProp = 'overall' | 'rounds';
-
-  const [activePercentageSubTab, setActivePercentageSubTab] = useState<PercentageSubTabState>('overall');
+  const [activeTab, setActiveTab] = useState(initialActiveTab ?? 'count');
+  const [activeAgeSubTab, setActiveAgeSubTab] = useState<AgeSubTab>(initialAgeSubTab ?? 'main');
+  const [activePercentageSubTab, setActivePercentageSubTab] = useState<PercentageSubTabState>(initialPercentageSubTab ?? 'overall');
 
   // Map local state ('overall' | 'per-round') to the prop expected by PercentageSection ('overall' | 'rounds')
   const percentageActiveSubTab: PercentageSectionProp = activePercentageSubTab === 'per-round' ? 'rounds' : 'overall';
@@ -102,10 +129,16 @@ export default function RecordsPageClient({ params, initialCountData, markdownHt
   // because it is still used by the section components for season/year
   // links where stability matters.
   const pathId = (tournament && typeof tournament.slug === 'string' && tournament.slug)
+    || initialPathId
     || id;
 
   // Fetch tournament header (contains slug) and redirect numeric IDs to slug-preserving paths
   useEffect(() => {
+    if (initialTournament && initialTournament.slug && initialTournament.name) {
+      // We already have enough server-provided header data.
+      return;
+    }
+
     let mounted = true;
     async function loadHeader() {
       try {
@@ -133,7 +166,7 @@ export default function RecordsPageClient({ params, initialCountData, markdownHt
     }
     loadHeader();
     return () => { mounted = false; };
-  }, [id, pathname, router]);
+  }, [id, initialTournament, pathname, router]);
 
   // Sync activeTab and subtab from pathname (supports /records, /records/<tab>, /records/<tab>/<subtab>)
   useEffect(() => {
@@ -273,9 +306,32 @@ export default function RecordsPageClient({ params, initialCountData, markdownHt
     return `${humanizedDisplayName} ${typeLabel}`;
   })();
 
+  const pageIntroDescription = (() => {
+    if (!activeTab) return undefined;
+    if (activeTab === 'count') {
+      return `A curated collection of records at ${humanizedDisplayName}. Titles, Wins Matches Played and Appearances. Explore match-level data, historical trends, and the players who left their mark on this tournament.`;
+    }
+    if (activeTab === 'rounds') {
+      return `A curated collection of records by round at ${humanizedDisplayName}. Explore match-level data, historical trends, and the players who left their mark on this tournament.`;
+    }
+    if (activeTab === 'ages') {
+      return `A curated collection of ages at ${humanizedDisplayName}. Explore match-level data, historical trends, and the players who left their mark on this tournament.`;
+    }
+    if (activeTab === 'least') {
+      return `A curated collection of least games lost to reach a round at ${humanizedDisplayName}. Explore match-level data, historical trends, and the players who left their mark on this tournament.`;
+    }
+    return undefined;
+  })();
+
   return (
     <>
       <TournamentHeader id={headerId} />
+
+      {!isRecordsHome && pageIntroDescription && (
+        <section className="mb-8 px-4 md:px-0 text-center max-w-4xl mx-auto text-gray-300 text-sm md:text-base leading-relaxed">
+          <h3 className="text-lg md:text-xl font-medium mx-auto max-w-3xl">{pageIntroDescription}</h3>
+        </section>
+      )}
 
       {isRecordsHome && (
         <section className="mb-8 p-6 md:p-8 bg-gray-900/40 rounded-2xl border border-gray-800/80 shadow-lg">

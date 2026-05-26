@@ -6,6 +6,7 @@ import { vi } from 'vitest';
 // Mock the metadata helper to return the canonical tournament name on the server
 vi.mock('@/lib/getTournamentName', () => ({
   getTournamentName: vi.fn().mockResolvedValue('Australian Open'),
+  getTournamentSlug: vi.fn().mockResolvedValue('australian-open'),
 }));
 
 import RecordsTabPage from '@/app/tournaments/[id]/records/[tab]/page';

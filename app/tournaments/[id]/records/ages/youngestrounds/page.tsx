@@ -1,5 +1,5 @@
 import React from 'react';
-import TournamentPage from '@/app/tournaments/[id]/records/page';
+import RecordsPageClient from '@/app/tournaments/[id]/records/RecordsClient';
 import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
 import { shouldIndexRecords } from '@/lib/getTournamentName';
 import { prisma } from '@/lib/prisma';
@@ -64,8 +64,13 @@ export default async function Page({ params }: any) {
         <RecordsBreadcrumb slugId={slugId} tournamentName={tournamentName} crumbs={[{ label: 'Ages', href: `/tournaments/${slugId}/records/ages` }, { label: 'Youngest by Round' }]} className="px-2" />
         <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">{`Youngest per Round at ${tournamentName}`}</h1>
         {/* Pass tab so the client renders the AgesSection in the correct subtab */}
-        {/* @ts-ignore - TournamentPage is a client component */}
-        <TournamentPage params={Promise.resolve({ id, tab: 'ages' })} />
+        <RecordsPageClient
+          params={Promise.resolve({ id, tab: 'ages' })}
+          initialTournament={{ id, slug: slugId, name: tournamentName }}
+          initialPathId={slugId}
+          initialActiveTab="ages"
+          initialAgeSubTab="youngestrounds"
+        />
       </main>
     </div>
   );

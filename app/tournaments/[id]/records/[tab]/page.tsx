@@ -1,5 +1,5 @@
 import React from 'react';
-import RecordsPage from "../page";
+import RecordsPageClient from "../RecordsClient";
 import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
 import type { Metadata } from 'next';
 import RecordsWebPageJsonLd from '../RecordsWebPageJsonLd';
@@ -233,7 +233,12 @@ export default async function RecordsTabPage({ params }: { params: Promise<{ id:
 
 
           {/* Client-side interactive page (keeps existing loading/fallback logic for data tables) */}
-          <RecordsPage params={idPromise} />
+          <RecordsPageClient
+            params={idPromise}
+            initialTournament={{ id, slug: slugId, name: tournamentName }}
+            initialPathId={slugId}
+            initialActiveTab={tab}
+          />
       </main>
     </div>
   );

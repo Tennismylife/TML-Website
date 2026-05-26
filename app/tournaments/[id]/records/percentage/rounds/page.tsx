@@ -1,5 +1,5 @@
-import React from 'react';
-import TournamentPage from '@/app/tournaments/[id]/records/page';
+﻿import React from 'react';
+import RecordsPageClient from '@/app/tournaments/[id]/records/RecordsClient';
 import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
 import { shouldIndexRecords } from '@/lib/getTournamentName';
 import { prisma } from '@/lib/prisma';
@@ -40,27 +40,30 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   };
 }
 
-export default function Page({ params }: any) {
-  const p = (React as any).use ? (React as any).use(params) : params;
+export default async function Page({ params }: any) {
+  const p = await params;
   const { id } = p;
   // Ensure server renders an H1 for the percentage tab
-  const page = async () => {
-    const tournamentName = await getTournamentName(id);
-    const slugId = await getTournamentSlug(id).catch(() => id);
-    const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
-    return (
-      <>
-        <RecordsWebPageJsonLd
-          pageTitle={`${tournamentName} Win Percentage Per Round | Tennis Records`}
-          pageDescription={`Win percentage per round in men's singles at ${tournamentName}. Discover which players dominate each stage of the draw. Open Era records.`}
-          canonical={`${site}/tournaments/${slugId}/records/percentage/rounds`}
-          keywords={`${tournamentName}, win percentage per round, tennis records, open era stats`}
-        />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: `${site}/` }, { '@type': 'ListItem', position: 2, name: 'Tournaments', item: `${site}/tournaments` }, { '@type': 'ListItem', position: 3, name: tournamentName, item: `${site}/tournaments/${slugId}` }, { '@type': 'ListItem', position: 4, name: 'Records', item: `${site}/tournaments/${slugId}/records` }, { '@type': 'ListItem', position: 5, name: 'Win % by Round', item: `${site}/tournaments/${slugId}/records/percentage/rounds` }] }) }} />
-        <RecordsBreadcrumb slugId={slugId} tournamentName={tournamentName} crumbs={[{ label: 'Win % by Round' }]} className="px-2" />
-        <TournamentPage params={Promise.resolve({ id, tab: 'percentage' })} />
-      </>
-    );
-  };
-  return page() as any;
+  const tournamentName = await getTournamentName(id);
+  const slugId = await getTournamentSlug(id).catch(() => id);
+  const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
+  return (
+    <>
+      <RecordsWebPageJsonLd
+        pageTitle={`${tournamentName} Win Percentage Per Round | Tennis Records`}
+        pageDescription={`Win percentage per round in men's singles at ${tournamentName}. Discover which players dominate each stage of the draw. Open Era records.`}
+        canonical={`${site}/tournaments/${slugId}/records/percentage/rounds`}
+        keywords={`${tournamentName}, win percentage per round, tennis records, open era stats`}
+      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: `${site}/` }, { '@type': 'ListItem', position: 2, name: 'Tournaments', item: `${site}/tournaments` }, { '@type': 'ListItem', position: 3, name: tournamentName, item: `${site}/tournaments/${slugId}` }, { '@type': 'ListItem', position: 4, name: 'Records', item: `${site}/tournaments/${slugId}/records` }, { '@type': 'ListItem', position: 5, name: 'Win % by Round', item: `${site}/tournaments/${slugId}/records/percentage/rounds` }] }) }} />
+      <RecordsBreadcrumb slugId={slugId} tournamentName={tournamentName} crumbs={[{ label: 'Win % by Round' }]} className="px-2" />
+      <RecordsPageClient
+        params={Promise.resolve({ id, tab: 'percentage' })}
+        initialTournament={{ id, slug: slugId, name: tournamentName }}
+        initialPathId={slugId}
+        initialActiveTab="percentage"
+        initialPercentageSubTab="per-round"
+      />
+    </>
+  );
 }
