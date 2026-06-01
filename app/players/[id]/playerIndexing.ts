@@ -130,23 +130,6 @@ async function shouldIndexPlayerLanding(idOrSlug: string): Promise<boolean> {
   const player = await resolvePlayerForIndexing(idOrSlug);
   if (!player?.id) return false;
 
-  const rankingDate = await prisma.rankingDate.findFirst({
-    where: { date: INDEX_SNAPSHOT_DATE },
-    select: { id: true },
-  });
-  if (rankingDate?.id) {
-    const rankingRow = await prisma.ranking.findFirst({
-      where: {
-        rankingDateId: rankingDate.id,
-        playerId: player.id,
-      },
-      select: { id: true },
-    });
-    if (rankingRow) {
-      return true;
-    }
-  }
-
   if (await hasPlayerPlayedInLast18Months(player.id)) {
     return true;
   }
