@@ -124,53 +124,64 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
   let recentFormStr: string[] = [];
   let last10SurfMatches: { tourney_date: any; tourney_name: any; tourney_level: any; round: any; winner_id: any; loser_id: any; winner_name: any; loser_name: any; winner_rank: any; loser_rank: any; score: any; year: any }[] = [];
 
+  const surfaceWhere = { status: true, surface: { contains: surface, mode: 'insensitive' as const } };
+
   try {
-    totalMatches = await prisma.match.count({
-      where: {
-        status: true,
-        surface: { contains: surface, mode: 'insensitive' },
-        OR: [{ winner_id: player.id }, { loser_id: player.id }],
-      },
-    });
-    wins = await prisma.match.count({
-      where: { status: true, winner_id: player.id, surface: { contains: surface, mode: 'insensitive' } },
-    });
+    // Run all independent queries in parallel to minimise total DB round-trip time
+    const [countAll, countWins, finalsRows, allSurfMatches, last10] = await Promise.all([
+      prisma.match.count({
+        where: { ...surfaceWhere, OR: [{ winner_id: player.id }, { loser_id: player.id }] },
+      }),
+      prisma.match.count({
+        where: { ...surfaceWhere, winner_id: player.id },
+      }),
+      prisma.match.findMany({
+        where: {
+          ...surfaceWhere,
+          winner_id: player.id,
+          round: 'F',
+          team_event: { not: true },
+          NOT: { score: { contains: 'WEA' } },
+        },
+        select: { tourney_name: true },
+      }),
+      prisma.match.findMany({
+        where: { ...surfaceWhere, OR: [{ winner_id: player.id }, { loser_id: player.id }] },
+        select: {
+          winner_id: true, loser_id: true,
+          tourney_level: true, round: true,
+          winner_rank: true, loser_rank: true,
+          best_of: true, year: true,
+          tourney_date: true,
+        },
+        orderBy: { tourney_date: 'asc' },
+      }),
+      prisma.match.findMany({
+        where: { ...surfaceWhere, OR: [{ winner_id: player.id }, { loser_id: player.id }] },
+        select: {
+          tourney_date: true, tourney_name: true, tourney_level: true,
+          round: true, year: true, score: true,
+          winner_id: true, winner_name: true, winner_rank: true,
+          loser_id: true, loser_name: true, loser_rank: true,
+        },
+        orderBy: { tourney_date: 'desc' },
+        take: 10,
+      }),
+    ]);
+
+    totalMatches = countAll;
+    wins = countWins;
     losses = totalMatches - wins;
+    last10SurfMatches = last10;
 
-    const surfaceWhere = { status: true, surface: { contains: surface, mode: 'insensitive' as const } };
-
-    // Titles (finals won)
-    const finals = await prisma.match.findMany({
-      where: {
-        ...surfaceWhere,
-        winner_id: player.id,
-        round: 'F',
-        team_event: { not: true },
-        NOT: { score: { contains: 'WEA' } },
-      },
-      select: { tourney_name: true },
-    });
-    totalTitles = finals.length;
-    const rawTitles = (finals || []).map((f: any) => {
+    totalTitles = finalsRows.length;
+    const rawTitles = (finalsRows || []).map((f: any) => {
       if (!f?.tourney_name) return null;
       if (typeof f.tourney_name === 'string') return f.tourney_name;
       if (typeof f.tourney_name === 'object') return f.tourney_name.en || Object.values(f.tourney_name)[0] || null;
       return String(f.tourney_name);
     }).filter(Boolean) as string[];
     titles = Array.from(new Set(rawTitles));
-
-    // All matches with extra fields for extended stats
-    const allSurfMatches = await prisma.match.findMany({
-      where: { ...surfaceWhere, OR: [{ winner_id: player.id }, { loser_id: player.id }] },
-      select: {
-        winner_id: true, loser_id: true,
-        tourney_level: true, round: true,
-        winner_rank: true, loser_rank: true,
-        best_of: true, year: true,
-        tourney_date: true,
-      },
-      orderBy: { tourney_date: 'asc' },
-    });
 
     // Grand Slams, Masters
     for (const m of allSurfMatches) {
@@ -233,23 +244,6 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
     // Recent form: current year
     const recentYearMatches = allSurfMatches.filter(m => (m.year as number) === currentYear);
     recentFormStr = recentYearMatches.slice(-10).map(m => String(m.winner_id) === String(player.id) ? 'W' : 'L');
-
-    // Last 10 surface matches with full fields for server-rendered HTML (SEO)
-    last10SurfMatches = await prisma.match.findMany({
-      where: {
-        status: true,
-        surface: { contains: surface, mode: 'insensitive' },
-        OR: [{ winner_id: player.id }, { loser_id: player.id }],
-      },
-      select: {
-        tourney_date: true, tourney_name: true, tourney_level: true,
-        round: true, year: true, score: true,
-        winner_id: true, winner_name: true, winner_rank: true,
-        loser_id: true, loser_name: true, loser_rank: true,
-      },
-      orderBy: { tourney_date: 'desc' },
-      take: 10,
-    });
   } catch (e) {}
 
   const winPct = totalMatches > 0 ? `${((wins / totalMatches) * 100).toFixed(1)}%` : '0%';
