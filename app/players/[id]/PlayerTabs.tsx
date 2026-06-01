@@ -237,6 +237,7 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
             playerSlug={player.slug}
             playerName={player.atpname ?? player.player ?? player.id}
             surface={surfaceKey}
+            overviewSlot={overviewSlot}
           />
         </>
       );
@@ -321,7 +322,7 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
           {banner}
         </div>
       )}
-      {belowTabsSlot && activeTab === 'overview' && (
+      {belowTabsSlot && (activeTab === 'overview' || SURFACE_TABS.has(activeTab)) && (
         <div className="w-full bg-gray-900">
           <div className="w-full py-6">
             {belowTabsSlot}
