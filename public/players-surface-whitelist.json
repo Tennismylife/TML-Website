@@ -37,7 +37,7 @@
     "guillermo-vilas"
   ],
   "top100Count": 100,
-  "totalSlugs": 125,
+  "totalSlugs": 126,
   "slugs": [
     "adam-walton",
     "adolfo-daniel-vallejo",
@@ -126,6 +126,7 @@
     "marton-fucsovics",
     "mats-wilander",
     "matteo-arnaldi",
+    "matteo-berrettini",
     "mattia-bellucci",
     "miomir-kecmanovic",
     "novak-djokovic",
@@ -430,6 +431,9 @@
     "/players/matteo-arnaldi/clay",
     "/players/matteo-arnaldi/hard",
     "/players/matteo-arnaldi/grass",
+    "/players/matteo-berrettini/clay",
+    "/players/matteo-berrettini/hard",
+    "/players/matteo-berrettini/grass",
     "/players/mattia-bellucci/clay",
     "/players/mattia-bellucci/hard",
     "/players/mattia-bellucci/grass",
