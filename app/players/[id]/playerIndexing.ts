@@ -1,7 +1,10 @@
+import fs from 'fs';
+import path from 'path';
 import { prisma } from '@/lib/prisma';
 
-const INDEX_SNAPSHOT_DATE = new Date('2026-04-20T00:00:00.000Z');
-const SURFACE_PAGE_MANUAL_ALLOWLIST = new Set(['alex-molcan']);
+const WHITELIST_FILE_PATH = path.join(process.cwd(), 'public', 'players-surface-whitelist.json');
+let cachedSurfaceAllowlist: Set<string> | null = null;
+
 const SEASON_INDEX_MANUAL_ALLOWLIST = new Set(['alex-molcan']);
 const SEASON_ALWAYS_INDEX_YEARS = new Set([2024, 2025, 2026]);
 
@@ -22,30 +25,27 @@ async function resolvePlayerForIndexing(idOrSlug: string) {
   });
 }
 
+function loadSurfaceAllowlist(): Set<string> {
+  if (cachedSurfaceAllowlist) return cachedSurfaceAllowlist;
+
+  try {
+    const raw = fs.readFileSync(WHITELIST_FILE_PATH, 'utf-8');
+    const json = JSON.parse(raw);
+    const slugs = Array.isArray(json.slugs) ? json.slugs : [];
+    cachedSurfaceAllowlist = new Set(slugs.map((slug: string) => String(slug).toLowerCase()));
+  } catch {
+    cachedSurfaceAllowlist = new Set();
+  }
+
+  return cachedSurfaceAllowlist;
+}
+
 export async function isPlayerInTop100IndexAllowlist(idOrSlug: string): Promise<boolean> {
   try {
     const player = await resolvePlayerForIndexing(idOrSlug);
-    if (!player?.id) return false;
-    if (player.slug && SURFACE_PAGE_MANUAL_ALLOWLIST.has(player.slug)) {
-      return true;
-    }
-
-    const rankingDate = await prisma.rankingDate.findFirst({
-      where: { date: INDEX_SNAPSHOT_DATE },
-      select: { id: true },
-    });
-    if (!rankingDate?.id) return false;
-
-    const rankingRow = await prisma.ranking.findFirst({
-      where: {
-        rankingDateId: rankingDate.id,
-        playerId: player.id,
-        rank: { lte: 100 },
-      },
-      select: { id: true },
-    });
-
-    return Boolean(rankingRow);
+    if (!player?.slug) return false;
+    const allowlist = loadSurfaceAllowlist();
+    return allowlist.has(player.slug);
   } catch {
     return false;
   }
