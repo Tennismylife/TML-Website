@@ -30,6 +30,7 @@ interface SurfaceStatsClientProps {
   ioc?: string | null;
   // SSR-rendered career overview + last 10 matches (for Google/SEO)
   overviewSlot?: React.ReactNode;
+  bottomSlot?: React.ReactNode;
 }
 
 function calcAge(bd: Date | string): { years: number; days: number } {
@@ -289,6 +290,7 @@ export default function SurfaceStatsClient({
   coaches,
   ioc,
   overviewSlot,
+  bottomSlot,
 }: SurfaceStatsClientProps) {
   const [allMatches, setAllMatches] = useState<Match[]>(initialMatches ?? []);
   const [loading, setLoading] = useState<boolean>(!initialMatches || initialMatches.length === 0);
@@ -894,6 +896,12 @@ export default function SurfaceStatsClient({
           </div>
         </div>
           ))
+      )}
+
+      {bottomSlot && !selectedYear && (
+        <div className="mb-8">
+          {bottomSlot}
+        </div>
       )}
 
       {/* Last 10 matches table — visible on all surface tabs (and Overview when no SSR slot), no year filter */}

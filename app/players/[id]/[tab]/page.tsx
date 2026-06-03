@@ -822,6 +822,20 @@ export default async function PlayerTabPage({ params, searchParams, _surfacePrev
             ) : null}
           </>
         ) : null}
+        bottomSlot={((tab === 'season' && _surfacePreviewNode) || (allMatchesForSSR && allMatchesForSSR.length)) ? (
+          <>
+            {tab === 'season' ? (_surfacePreviewNode ?? null) : null}
+            {allMatchesForSSR && allMatchesForSSR.length ? (
+              <AllMatchesServer
+                playerId={player.id}
+                playerSlug={player.slug}
+                matches={allMatchesForSSR}
+                heading={matchesHeading}
+                playerLinkTab={effectiveTab}
+              />
+            ) : null}
+          </>
+        ) : null}
         rankingNarrative={
           tab === 'ranking' ? (
             <RankingNarrativeServer

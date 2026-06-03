@@ -25,6 +25,7 @@ export default function PlayerClient(props: any) {
   const initialSeasonMatches = props.initialSeasonMatches;
   const initialSeasonYears = props.initialSeasonYears;
   const belowTabsSlot: React.ReactNode = props.belowTabsSlot ?? null;
+  const bottomSlot: React.ReactNode = props.bottomSlot ?? null;
   // SSR-rendered matches table to be placed inside the tab content area
   const serverMatchesTable: React.ReactNode = props.serverMatchesTable ?? null;
   // SSR-provided player data: render immediately without waiting for the API call
@@ -378,6 +379,7 @@ export default function PlayerClient(props: any) {
         initialSeasonYear={initialSeasonYear}
         initialSeasonMatches={initialSeasonMatches}
         belowTabsSlot={belowTabsSlot}
+        bottomSlot={bottomSlot}
         serverMatchesTable={serverMatchesTable}
         initialSeasonYears={initialSeasonYears}
         banner={serverBanner}

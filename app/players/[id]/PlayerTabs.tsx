@@ -45,9 +45,10 @@ interface PlayerTabsProps {
   serverMatchesTable?: React.ReactNode;
   // SSR-rendered career overview + last 10 matches
   overviewSlot?: React.ReactNode;
+  bottomSlot?: React.ReactNode;
 }
 
-export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNarrative, setTab, tournamentsFilters, setTournamentsFilters, h2hFilters, setH2HFilters, initialMatches, initialHeading, initialTotals, initialFacets, initialSeasonStats, initialSeasonYear, initialSeasonMatches, initialSeasonYears, belowTabsSlot, serverMatchesTable, overviewSlot }: PlayerTabsProps) {
+export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNarrative, setTab, tournamentsFilters, setTournamentsFilters, h2hFilters, setH2HFilters, initialMatches, initialHeading, initialTotals, initialFacets, initialSeasonStats, initialSeasonYear, initialSeasonMatches, initialSeasonYears, belowTabsSlot, serverMatchesTable, overviewSlot, bottomSlot }: PlayerTabsProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -238,6 +239,7 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
             playerName={player.atpname ?? player.player ?? player.id}
             surface={surfaceKey}
             overviewSlot={overviewSlot}
+            bottomSlot={belowTabsSlot}
           />
         </>
       );
@@ -322,7 +324,7 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
           {banner}
         </div>
       )}
-      {belowTabsSlot && (activeTab === 'overview' || SURFACE_TABS.has(activeTab)) && (
+      {belowTabsSlot && activeTab === 'overview' && (
         <div className="w-full bg-gray-900">
           <div className="w-full py-6">
             {belowTabsSlot}
