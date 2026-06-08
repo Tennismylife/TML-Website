@@ -1,4 +1,4 @@
-import Image from 'next/image'
+﻿import Image from 'next/image'
 import { Suspense } from 'react'
 import LatestMatchesServer from '@/components/LatestMatchesServer'
 import SearchPlayerLoader from '@/components/SearchPlayerLoader'
@@ -34,10 +34,10 @@ import { getAllPosts } from '@/lib/blog';
 const METADATA_BASE = process.env.NEXT_PUBLIC_SITE_ORIGIN ?? (process.env.NODE_ENV === 'production' ? 'https://stats.tennismylife.org' : 'http://localhost:3000');
 
 export const metadata = {
-  title: 'Tennis My Life — Tennis Stats, Records & Matches Database',
+  title: 'Tennis My Life â€” Tennis Stats, Records & Matches Database',
   description: "Explore tournament calendars, match results, player head-to-head records, rankings and advanced tennis metrics on Tennis My Life.",
   openGraph: {
-    title: 'Tennis My Life — Tennis Stats, Records & Matches Database',
+    title: 'Tennis My Life â€” Tennis Stats, Records & Matches Database',
     description: "Explore tournament calendars, match results, player head-to-head records, rankings and advanced tennis metrics on Tennis My Life.",
     siteName: 'TennisMyLife',
     url: 'https://stats.tennismylife.org/',
@@ -52,7 +52,7 @@ export const metadata = {
       }
     ],
   },
-  twitter: { card: 'summary_large_image', site: '@TennisMyLife68', title: 'Tennis My Life — Tennis Stats, Records & Matches Database', description: 'Explore tournament calendars, match results, player head-to-head records, rankings and advanced tennis metrics on Tennis My Life.', images: [new URL('/og/site-preview.png', METADATA_BASE).toString()] },
+  twitter: { card: 'summary_large_image', site: '@TennisMyLife68', title: 'Tennis My Life â€” Tennis Stats, Records & Matches Database', description: 'Explore tournament calendars, match results, player head-to-head records, rankings and advanced tennis metrics on Tennis My Life.', images: [new URL('/og/site-preview.png', METADATA_BASE).toString()] },
   alternates: { canonical: 'https://stats.tennismylife.org/' }
 } as const;
 
@@ -107,7 +107,7 @@ export default async function HomePage() {
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16M3 8h9M3 16h9" />
       </svg>
     )},
-    { href: "/schedule", title: "Schedule", subtitle: "Daily Matches", description: "Today’s match schedule and head-to-head links for the day, updated for daily tennis action.", colorClass: "text-sky-400 group-hover:text-sky-300", accentColor: "#38bdf8", icon: (
+    { href: "/schedule", title: "Schedule", subtitle: "Daily Matches", description: "Todayâ€™s match schedule and head-to-head links for the day, updated for daily tennis action.", colorClass: "text-sky-400 group-hover:text-sky-300", accentColor: "#38bdf8", icon: (
       <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
         <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3M3 8h18M5 8h14v13H5z" />
       </svg>
@@ -151,7 +151,7 @@ export default async function HomePage() {
       <div className="hero-container" style={{ backgroundImage: `url("${heroLQIP}")`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <div className="flex flex-col md:flex-row items-center justify-center gap-0">
           
-          {/* Header (più largo) */}
+          {/* Header (piÃ¹ largo) */}
           <div className="hero-image-wrapper flex justify-center md:flex-[0_0_60%]">
             <div className="hero-inner md:max-w-[56rem]">
               <Image
@@ -173,7 +173,7 @@ export default async function HomePage() {
           {/* Intro */}
           <div className="intro flex flex-col items-center justify-center text-center md:flex-[0_0_40%] p-4 md:p-8 mt-0 md:mt-0">
             <h1 className="text-gray-300 mb-0 text-base md:text-lg font-normal">
-              Welcome to TennisMyLife — a comprehensive tennis statistics site. Explore match records, ranking records, tournament calendars, match results, player head-to-head, season summaries, rankings, ranking tables, and advanced metrics to follow players' careers and compare performances
+              Welcome to TennisMyLife â€” a comprehensive tennis statistics site. Explore match records, ranking records, tournament calendars, match results, player head-to-head, season summaries, rankings, ranking tables, and advanced metrics to follow players' careers and compare performances
             </h1>
           </div>
 
@@ -196,54 +196,6 @@ export default async function HomePage() {
 
       {/* Client Components */}
       <SearchPlayerLoader />
-
-      {/* Featured Madrid Records LIVE banner */}
-      <div className="w-full mb-8">
-        <a
-          href="/tournaments/roland-garros/records"
-          className="group relative w-full mb-8 flex overflow-hidden rounded-2xl border border-yellow-500/30 shadow-2xl hover:shadow-yellow-500/20 transition-all duration-300 hover:scale-[1.01]"
-          style={{ background: 'linear-gradient(135deg, #0f1720 0%, #1a2a10 40%, #2a1a05 100%)' }}
-        >
-          <div className="pointer-events-none absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity duration-500"
-            style={{ background: 'radial-gradient(ellipse at 70% 50%, #facc15 0%, transparent 70%)' }} />
-
-          <div className="w-1.5 flex-shrink-0" style={{ background: 'linear-gradient(to bottom, #facc15, #f97316)' }} />
-
-          <div className="flex flex-col sm:flex-row items-center gap-6 w-full px-6 py-8 sm:px-10">
-            <div className="flex-shrink-0 flex items-center justify-center w-20 h-20 rounded-full border-2 border-yellow-400/40 bg-yellow-400/10 shadow-lg shadow-yellow-500/20 text-4xl select-none">
-              🗼
-            </div>
-
-            <div className="flex-1 text-center sm:text-left">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight"
-                  style={{ color: '#facc15', WebkitTextFillColor: '#facc15' }}>
-                  Roland Garros
-                  <span className="ml-2" style={{ color: '#f97316', WebkitTextFillColor: '#f97316' }}>Records</span>
-                </h2>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold self-start sm:self-auto"
-                  style={{ background: '#dc2626', color: '#fff', WebkitTextFillColor: '#fff' }}>
-                  <span className="relative flex w-2 h-2">
-                    <span className="absolute inline-flex w-full h-full rounded-full bg-red-300 opacity-75 animate-ping" />
-                    <span className="relative inline-flex w-2 h-2 rounded-full bg-white" />
-                  </span>
-                  <span className="animate-pulse">LIVE</span>
-                </span>
-              </div>
-              <p className="text-sm sm:text-base text-gray-300 max-w-lg">
-                All-time Roland Garros stats, milestones and history from the most iconic clay court Grand Slam — updated in real time.
-              </p>
-            </div>
-
-            <div className="flex-shrink-0 hidden sm:flex items-center justify-center w-10 h-10 rounded-full border border-yellow-400/30 group-hover:border-yellow-400 group-hover:bg-yellow-400/10 transition-all duration-300">
-              <svg viewBox="0 0 24 24" className="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
-          </div>
-        </a>
-      </div>
-
       {/* Featured Records Card */}
       <div className="w-full mb-8">
         <Card href="/records" title="Records" subtitle="All-Time Achievements & Milestones" large colorClass="text-yellow-400 group-hover:text-yellow-300" accentColor="#facc15">
@@ -258,7 +210,7 @@ export default async function HomePage() {
         <div className="w-full mb-8">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <span className="text-amber-400">📅</span>
+              <span className="text-amber-400">ðŸ“…</span>
               <h2 className="text-base font-semibold text-gray-100">Latest Matches</h2>
             </div>
             <span className="text-xs text-gray-400">Showing last 10 matches</span>
@@ -315,3 +267,4 @@ export default async function HomePage() {
     </main>
   );
 }
+
