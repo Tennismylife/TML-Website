@@ -66,7 +66,6 @@ export default function Header() {
           {/* Link alla nuova pagina Tennis Match Database */}
           <Link href="/tennis-match-database" className={linkClass("/tennis-match-database")}>Match Database</Link>
           <Link href="/blog" className={linkClass("/blog")}>Blog</Link>
-          <Link href="/schedule" className={linkClass("/schedule")}>Schedule</Link>
         </nav>
 
       </div>

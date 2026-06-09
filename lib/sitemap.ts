@@ -30,7 +30,6 @@ export async function getSitemapEntries(opts?: { excludePlayers?: boolean; exclu
     '/seasons',
     '/forecasts',
     '/rankingtables',
-    '/schedule',
     '/tournaments',
 
     // --- RECORDS DAILY ---

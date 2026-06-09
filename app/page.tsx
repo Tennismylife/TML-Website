@@ -34,10 +34,10 @@ import { getAllPosts } from '@/lib/blog';
 const METADATA_BASE = process.env.NEXT_PUBLIC_SITE_ORIGIN ?? (process.env.NODE_ENV === 'production' ? 'https://stats.tennismylife.org' : 'http://localhost:3000');
 
 export const metadata = {
-  title: 'Tennis My Life â€” Tennis Stats, Records & Matches Database',
+  title: 'Tennis My Life - Tennis Stats, Records & Matches Database',
   description: "Explore tournament calendars, match results, player head-to-head records, rankings and advanced tennis metrics on Tennis My Life.",
   openGraph: {
-    title: 'Tennis My Life â€” Tennis Stats, Records & Matches Database',
+    title: 'Tennis My Life - Tennis Stats, Records & Matches Database',
     description: "Explore tournament calendars, match results, player head-to-head records, rankings and advanced tennis metrics on Tennis My Life.",
     siteName: 'TennisMyLife',
     url: 'https://stats.tennismylife.org/',
@@ -52,7 +52,7 @@ export const metadata = {
       }
     ],
   },
-  twitter: { card: 'summary_large_image', site: '@TennisMyLife68', title: 'Tennis My Life â€” Tennis Stats, Records & Matches Database', description: 'Explore tournament calendars, match results, player head-to-head records, rankings and advanced tennis metrics on Tennis My Life.', images: [new URL('/og/site-preview.png', METADATA_BASE).toString()] },
+  twitter: { card: 'summary_large_image', site: '@TennisMyLife68', title: 'Tennis My Life - Tennis Stats, Records & Matches Database', description: 'Explore tournament calendars, match results, player head-to-head records, rankings and advanced tennis metrics on Tennis My Life.', images: [new URL('/og/site-preview.png', METADATA_BASE).toString()] },
   alternates: { canonical: 'https://stats.tennismylife.org/' }
 } as const;
 
@@ -107,11 +107,6 @@ export default async function HomePage() {
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16M3 8h9M3 16h9" />
       </svg>
     )},
-    { href: "/schedule", title: "Schedule", subtitle: "Daily Matches", description: "Todayâ€™s match schedule and head-to-head links for the day, updated for daily tennis action.", colorClass: "text-sky-400 group-hover:text-sky-300", accentColor: "#38bdf8", icon: (
-      <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3M3 8h18M5 8h14v13H5z" />
-      </svg>
-    )},
   ];
 
   const criticalCss = `
@@ -151,7 +146,7 @@ export default async function HomePage() {
       <div className="hero-container" style={{ backgroundImage: `url("${heroLQIP}")`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <div className="flex flex-col md:flex-row items-center justify-center gap-0">
           
-          {/* Header (piÃ¹ largo) */}
+          {/* Header (larger) */}
           <div className="hero-image-wrapper flex justify-center md:flex-[0_0_60%]">
             <div className="hero-inner md:max-w-[56rem]">
               <Image
@@ -173,7 +168,7 @@ export default async function HomePage() {
           {/* Intro */}
           <div className="intro flex flex-col items-center justify-center text-center md:flex-[0_0_40%] p-4 md:p-8 mt-0 md:mt-0">
             <h1 className="text-gray-300 mb-0 text-base md:text-lg font-normal">
-              Welcome to TennisMyLife â€” a comprehensive tennis statistics site. Explore match records, ranking records, tournament calendars, match results, player head-to-head, season summaries, rankings, ranking tables, and advanced metrics to follow players' careers and compare performances
+              Welcome to TennisMyLife - a comprehensive tennis statistics site. Explore match records, ranking records, tournament calendars, match results, player head-to-head, season summaries, rankings, ranking tables, and advanced metrics to follow players' careers and compare performances
             </h1>
           </div>
 
@@ -210,7 +205,7 @@ export default async function HomePage() {
         <div className="w-full mb-8">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <span className="text-amber-400">ðŸ“…</span>
+              <span className="text-amber-400">📅</span>
               <h2 className="text-base font-semibold text-gray-100">Latest Matches</h2>
             </div>
             <span className="text-xs text-gray-400">Showing last 10 matches</span>
@@ -241,8 +236,6 @@ export default async function HomePage() {
       }>
         <LatestMatchesServer />
       </Suspense>
-
-
 
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">

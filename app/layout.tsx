@@ -132,8 +132,21 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           })()}
         </main>
 
-        <footer className="text-sm text-gray-400 py-6 text-center">
-          © 2026 TennisMyLife - Tennis Data Records History
+        <footer className="text-sm text-gray-400 py-6 text-center space-y-2">
+          <div>
+            Official X:{" "}
+            <a
+              href="https://x.com/TennisMyLife68"
+              target="_blank"
+              rel="me noopener noreferrer"
+              className="text-yellow-400 hover:text-yellow-300 underline underline-offset-2"
+            >
+              @TennisMyLife68
+            </a>
+          </div>
+          <div>
+            &copy; 2026 TennisMyLife - Tennis Data Records History
+          </div>
         </footer>
       </body>
     </html>
