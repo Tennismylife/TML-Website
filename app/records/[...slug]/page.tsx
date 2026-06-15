@@ -314,7 +314,7 @@ function buildItemListEntries(rows: any[], selectedSurface: string | null) {
     name: getRecordItemLabel(row),
     url: getRecordItemUrl(row, selectedSurface),
     position: index + 1,
-  })).filter((item) => item.url);
+  })).filter((item): item is { name: string; url: string; position: number } => Boolean(item.url));
 }
 
 function buildFaqEntries(
