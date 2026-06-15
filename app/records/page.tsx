@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import Link from 'next/link';
 import RecordsTabs from './RecordsTabs';
+import RecordsItemListJsonLd from './RecordsJsonLd';
 import { metadataBase } from '../../lib/site';
 import { resolveCanonicalRecordHref, resolveRecordHref } from './record-links';
 import type { Metadata } from 'next';
@@ -361,29 +362,14 @@ const webPageSchema = {
   breadcrumb: breadcrumbSchema,
 };
 
-const faqSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: faqsForSchema.map(({ q, a }) => ({
-    '@type': 'Question',
-    name: q,
-    acceptedAnswer: { '@type': 'Answer', text: a },
-  })),
-};
-
-const itemListSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'ItemList',
-  name: 'ATP Tennis Record Categories',
-  description: 'All record categories available on TennisMyLife: wins, titles, ages, streaks, H2H and more.',
-  url: CANONICAL,
-  itemListElement: categories.map((cat, idx) => ({
-    '@type': 'ListItem',
-    position: idx + 1,
-    name: cat.label,
-    url: new URL(cat.href, 'https://stats.tennismylife.org').toString(),
-  })),
-};
+const itemListEntries = [
+  { name: 'Wins', url: new URL(recordHref(['wins']), metadataBase).toString() },
+  { name: 'Titles', url: new URL(recordHref(['titles']), metadataBase).toString() },
+  { name: 'Entries', url: new URL(recordHref(['entries']), metadataBase).toString() },
+  { name: 'Ages', url: new URL(recordHref(['ages', 'oldest']), metadataBase).toString() },
+  { name: 'Streak', url: new URL('/records/longest-winning-streak', metadataBase).toString() },
+  { name: 'H2H', url: new URL(recordHref(['h2h', 'count']), metadataBase).toString() },
+];
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -402,11 +388,22 @@ export default function RecordsPage() {
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: faqsForSchema.map(({ q, a }) => ({
+              '@type': 'Question',
+              name: q,
+              acceptedAnswer: { '@type': 'Answer', text: a },
+            })),
+          }),
+        }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+      <RecordsItemListJsonLd
+        name="Tennis Records navigation"
+        description="A minimal overview of the main tennis record sections on TennisMyLife."
+        items={itemListEntries}
       />
 
       <main className="w-full min-h-screen bg-gray-900 text-white">

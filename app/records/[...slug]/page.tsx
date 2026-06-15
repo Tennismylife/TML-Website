@@ -5,6 +5,7 @@ import { shouldShowRecordFilter } from '../../../lib/records/allowed-filters';
 import { Metadata } from 'next';
 import { metadataBase } from '../../../lib/site';
 import { getPlayerHref, getTourneyHref, createSlug } from '../../../lib/utils';
+import { playerSurfaceHref, surfaceFromSelection } from '../nav';
 import {
   evaluateRecordsPolicy,
   getRecordsPageTitle,
@@ -17,6 +18,8 @@ import {
 import { generateRecordDescription } from '../../../lib/generateRecordDescription';
 import RecordsFilteredClient from './RecordsFilteredClient';
 import SyncUrlClient from '../../../components/SyncUrlClient';
+import RecordsItemListJsonLd from '../RecordsJsonLd';
+import RecordsFaqJsonLd from '../RecordsFaqJsonLd';
 import RecordsTabs from '../RecordsTabs';
 import RecordsFilters from '../RecordsFilters.server';
 import RelatedRecordsLinks from '../RelatedRecordsLinks';
@@ -263,6 +266,136 @@ async function fetchRecordData(record: string | null, sub?: string | null) {
   } catch {
     return [];
   }
+}
+
+function getRecordItemLabel(row: any) {
+  const base =
+    row?.name ??
+    row?.player ??
+    row?.winner_name ??
+    row?.title ??
+    row?.label ??
+    row?.tourney_name ??
+    row?.id;
+
+  const metricKey =
+    ['wins', 'entries', 'titles', 'matches', 'count', 'value', 'percentage', 'winPercentage'].find(
+      (key) => row?.[key] !== undefined && row?.[key] !== null,
+    ) ?? null;
+
+  if (metricKey) {
+    const metricValue = row?.[metricKey];
+    const metricSuffix =
+      metricKey === 'wins' ? 'wins' :
+      metricKey === 'entries' ? 'entries' :
+      metricKey === 'titles' ? 'titles' :
+      metricKey === 'matches' ? 'matches' :
+      metricKey === 'count' ? 'matches' :
+      metricKey === 'percentage' || metricKey === 'winPercentage' ? 'percent' :
+      metricKey;
+    return `${String(base)} - ${String(metricValue)} ${metricSuffix}`;
+  }
+
+  return String(base);
+}
+
+function getRecordItemUrl(row: any, selectedSurface: string | null) {
+  if (row?.url) return String(row.url);
+  if (row?.href) return String(row.href);
+
+  const slug = row?.slug ?? row?.player_slug ?? row?.playerId ?? row?.player_id ?? row?.winner_id ?? row?.id;
+  if (!slug) return null;
+
+  return playerSurfaceHref(String(slug), selectedSurface);
+}
+
+function buildItemListEntries(rows: any[], selectedSurface: string | null) {
+  return rows.slice(0, 5).map((row, index) => ({
+    name: getRecordItemLabel(row),
+    url: getRecordItemUrl(row, selectedSurface),
+    position: index + 1,
+  })).filter((item) => item.url);
+}
+
+function buildFaqEntries(
+  pageTitle: string,
+  description: string,
+  rows: any[],
+  selectedSurfaces: Set<string>,
+  selectedLevels: Set<string>,
+  selectedRounds: string,
+  selectedBestOf: number | null,
+) {
+  const stripSuffix = (s: string) => s.replace(/\s*\|\s*Tennis Records$/i, '').trim();
+  const cleanTitle = stripSuffix(pageTitle);
+  const firstRow = rows[0];
+  const secondRow = rows[1];
+  const topName =
+    firstRow?.name ??
+    firstRow?.player ??
+    firstRow?.winner_name ??
+    firstRow?.title ??
+    firstRow?.label ??
+    firstRow?.tourney_name ??
+    'the current leader';
+  const topValue =
+    firstRow?.wins ??
+    firstRow?.entries ??
+    firstRow?.titles ??
+    firstRow?.matches ??
+    firstRow?.count ??
+    firstRow?.value ??
+    firstRow?.percentage ??
+    firstRow?.winPercentage ??
+    null;
+
+  const activeFilters = [
+    selectedSurfaces.size ? `surface ${Array.from(selectedSurfaces).join(', ')}` : null,
+    selectedLevels.size ? `level ${Array.from(selectedLevels).join(', ')}` : null,
+    selectedRounds ? `round ${selectedRounds}` : null,
+    selectedBestOf != null ? `best of ${selectedBestOf}` : null,
+  ].filter(Boolean);
+
+  const filterText = activeFilters.length
+    ? `The current page applies ${activeFilters.join(', ')} filters.`
+    : 'This page is showing the unfiltered ranking.';
+
+  const topValueText = topValue != null ? ` It is currently led by ${topName} with ${topValue}.` : ` The current leader is ${topName}.`;
+  const runnerUpName =
+    secondRow?.name ??
+    secondRow?.player ??
+    secondRow?.winner_name ??
+    secondRow?.title ??
+    secondRow?.label ??
+    secondRow?.tourney_name ??
+    null;
+  const runnerUpValue =
+    secondRow?.wins ??
+    secondRow?.entries ??
+    secondRow?.titles ??
+    secondRow?.matches ??
+    secondRow?.count ??
+    secondRow?.value ??
+    secondRow?.percentage ??
+    secondRow?.winPercentage ??
+    null;
+
+  return [
+    {
+      question: `Why does ${cleanTitle} matter?`,
+      answer: description || `${cleanTitle} tracks this ATP record ranking.`,
+    },
+    {
+      question: `Who leads ${cleanTitle} right now?`,
+      answer: `${cleanTitle} is currently led by ${topName}.${topValueText}`,
+    },
+    {
+      question: `What is the closest chase on ${cleanTitle}?`,
+      answer: runnerUpName
+        ? `${runnerUpName} is the current nearest challenger${runnerUpValue != null ? `, with ${runnerUpValue}` : ''}. ${filterText}`
+        : filterText,
+    },
+  ];
 }
 
 export async function generateMetadata(
@@ -632,7 +765,7 @@ export default async function SlugPage({ params, searchParams }: Props) {
 
     const webPageJsonLd = {
       '@context': 'https://schema.org',
-      '@type': 'WebPage',
+      '@type': 'CollectionPage',
       name: getRecordsPageTitle(policySlugRender, filtersForPolicy, description),
       description: description || 'TML records and statistics',
       url: canonicalFull,
@@ -642,13 +775,39 @@ export default async function SlugPage({ params, searchParams }: Props) {
         name: 'TennisMyLife',
         url: metadataBase.toString(),
       },
+      publisher: {
+        '@type': 'Organization',
+        name: 'TennisMyLife',
+        url: metadataBase.toString(),
+      },
       dateModified: new Date().toISOString(),
     };
+
+    const pageTitle = getRecordsPageTitle(policySlugRender, filtersForPolicy, description);
+
+    const tableRows = await fetchRecordData(record, sub);
+    const itemListEntries = buildItemListEntries(tableRows, surfaceFromSelection(selectedSurfaces));
+
+    const faqEntries = buildFaqEntries(
+      pageTitle,
+      description || '',
+      tableRows,
+      selectedSurfaces,
+      selectedLevels,
+      selectedRounds,
+      selectedBestOf,
+    );
 
     return (
       <>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+        <RecordsItemListJsonLd
+          name="Top 5 records"
+          description="The first five rows shown in the current records table."
+          items={itemListEntries}
+        />
+        <RecordsFaqJsonLd items={faqEntries} />
         <main className="w-full min-h-screen p-4 bg-gray-900 text-white">
           <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1 text-sm text-gray-400 mb-4">
             <Link href="/" className="hover:text-white transition-colors">Home</Link>
@@ -663,40 +822,38 @@ export default async function SlugPage({ params, searchParams }: Props) {
               </>
             )}
           </nav>
-          <React.Suspense fallback={<div className="text-gray-300">Loading…</div>}>
-            <SyncUrlClient url={canonicalFull} />
-            {(() => {
-              const h1 = getRecordsPageTitle(
-                policySlugRender,
-                filtersForPolicy,
-                description,
-              ).replace(/ \| TennisMyLife$/, '').replace(/ \| Tennis Records$/, '');
-              const HeadingTag = record === 'h2h' ? 'h2' : 'h1';
-              return h1 ? (
-                <HeadingTag className="mb-10 text-center text-3xl sm:text-4xl font-semibold text-white">
-                  {h1}
-                </HeadingTag>
-              ) : null;
-            })()}
-            <RecordsTabs activeTab={displayRecord} activeSubTab={activeSubResolved || null} />
-            <RecordsFilters
-              activeTab={record}
-              activeSubTab={activeSubResolved || null}
-              currentPath={`/records/${slug.map((segment) => encodeURIComponent(segment)).join('/')}`}
-              searchParams={effectiveSearchParams}
-            />
-            <ServerComponent searchParams={effectiveSearchParams} record={record} sub={activeSubResolved} canonicalUrl={canonicalFull} description={description} />
-            <RelatedRecordsLinks
-              currentTab={record}
-              currentSub={activeSubResolved || null}
-              filters={{
-                level: selectedLevels.size ? Array.from(selectedLevels) : undefined,
-                surface: selectedSurfaces.size ? Array.from(selectedSurfaces) : undefined,
-                round: selectedRounds || undefined,
-                bestOf: selectedBestOf,
-              }}
-            />
-          </React.Suspense>
+          <SyncUrlClient url={canonicalFull} />
+          {(() => {
+            const h1 = getRecordsPageTitle(
+              policySlugRender,
+              filtersForPolicy,
+              description,
+            ).replace(/ \| TennisMyLife$/, '').replace(/ \| Tennis Records$/, '');
+            const HeadingTag = record === 'h2h' ? 'h2' : 'h1';
+            return h1 ? (
+              <HeadingTag className="mb-10 text-center text-3xl sm:text-4xl font-semibold text-white">
+                {h1}
+              </HeadingTag>
+            ) : null;
+          })()}
+          <RecordsTabs activeTab={displayRecord} activeSubTab={activeSubResolved || null} />
+          <RecordsFilters
+            activeTab={record}
+            activeSubTab={activeSubResolved || null}
+            currentPath={`/records/${slug.map((segment) => encodeURIComponent(segment)).join('/')}`}
+            searchParams={effectiveSearchParams}
+          />
+          <ServerComponent searchParams={effectiveSearchParams} record={record} sub={activeSubResolved} canonicalUrl={canonicalFull} description={description} />
+          <RelatedRecordsLinks
+            currentTab={record}
+            currentSub={activeSubResolved || null}
+            filters={{
+              level: selectedLevels.size ? Array.from(selectedLevels) : undefined,
+              surface: selectedSurfaces.size ? Array.from(selectedSurfaces) : undefined,
+              round: selectedRounds || undefined,
+              bestOf: selectedBestOf,
+            }}
+          />
         </main>
       </>
     );
