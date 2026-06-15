@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/halle-2026-h2h-sitemap.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/queens-2026-h2h-sitemap.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-rome-2026-new.xml</loc>
+  </sitemap>
+  <sitemap>
     <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-top100.xml</loc>
   </sitemap>
   <sitemap>
-    <loc>https://stats.tennismylife.org/sitemaps/sitemap-new.xml</loc>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-new-roland-garros-2026.xml</loc>
   </sitemap>
   <sitemap>
     <loc>https://stats.tennismylife.org/sitemaps/sitemap-new-today.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-new.xml</loc>
   </sitemap>
   <sitemap>
     <loc>https://stats.tennismylife.org/sitemaps/sitemap-player-seasons.xml</loc>
@@ -103,7 +115,19 @@
     <loc>https://stats.tennismylife.org/sitemaps/sitemap-recordsranking.xml</loc>
   </sitemap>
   <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-roland-garros-2026-2R.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-roland-garros-2026-3R.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-s-hertogenbosch-2026-possibile-h2h.xml</loc>
+  </sitemap>
+  <sitemap>
     <loc>https://stats.tennismylife.org/sitemaps/sitemap-sections.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-stuttgart-2026-possible-h2h.xml</loc>
   </sitemap>
   <sitemap>
     <loc>https://stats.tennismylife.org/sitemaps/sitemap-tournaments-A.xml</loc>

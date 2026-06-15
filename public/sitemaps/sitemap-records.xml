@@ -1,338 +1,1034 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://stats.tennismylife.org/records</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/best-win-percentage-at-grand-slams</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/ageofnth</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/best-win-percentage-at-masters-1000</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/ageofnth/entries</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/best-win-percentage-in-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/ageofnth/played</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/best-win-percentage-on-carpet-court</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/ageofnth/round</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/best-win-percentage-on-clay-court</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/ageofnth/slams</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/best-win-percentage-on-grass-court</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/ageofnth/titles</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/best-win-percentage-on-hard-court</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/ageofnth/wins</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/best-winning-percentage</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/ages</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-appearance-timespan</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/ages/oldest</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-appearance-timespan-at-atp-250</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/ages/oldest-winners</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-appearance-timespan-at-atp-500</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/ages/youngest</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-appearance-timespan-at-atp-finals</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/ages/youngest-winners</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-appearance-timespan-at-grand-slams</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/atage</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-appearance-timespan-at-masters-1000</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/atage/entries</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-carpet-court-appearance-timespan</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/atage/played</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-clay-court-appearance-timespan</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/atage/round</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-grass-court-appearance-timespan</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/atage/slams</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-hard-court-appearance-timespan</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/atage/titles</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-streak-of-consecutive-finals</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/atage/wins</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-streak-of-consecutive-grand-slam-finals</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/count</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-streak-of-consecutive-grand-slam-quarterfinals</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-streak-of-consecutive-grand-slam-semifinals</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/round</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-streak-of-consecutive-masters-1000-finals</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/titles</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-streak-of-consecutive-quarterfinals</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/counterseasons/wins</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-streak-of-consecutive-semifinals</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/entries</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-timespan-between-2-atp-titles</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/h2h</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-timespan-between-two-atp-250-titles</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/h2h/count</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-timespan-between-two-atp-500-titles</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/neededto</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-timespan-between-two-atp-finals-titles</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/neededto/titles</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-timespan-between-two-carpet-court-titles</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/percentage</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-timespan-between-two-clay-court-titles</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/played</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-timespan-between-two-grand-slam-titles</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/roundsonentries</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-timespan-between-two-grass-court-titles</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/roundsonentries/round</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-timespan-between-two-hard-court-titles</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/same</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-timespan-between-two-masters-1000-titles</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/same/entries</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-win-streak</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/same/played</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-winning-streak</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/same/round</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-winning-streak-at-grand-slams</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/same/titles</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-winning-streak-at-masters-1000</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/same/wins</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-winning-streak-on-carpet</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-winning-streak-on-clay</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/most-tournament-appearances-single-season</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-winning-streak-on-grass</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/percentage</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/longest-winning-streak-on-hard-court</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/played</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/most-appearances</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/round</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/most-appearances-at-single-grand-slam-tournament</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/titles</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/most-appearances-at-single-masters-1000-tournament</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/wins</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/most-appearances-at-single-tournament</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/streak</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/most-appearances-on-carpet-court</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/streak/round</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/most-appearances-on-clay-court</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/streak/wins</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/most-appearances-on-grass-court</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/timespan</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/most-appearances-on-hard-court</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/timespan/entries</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/most-atp-250-matches-played</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/timespan/rounds</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/most-atp-250-wins</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/timespan/titles</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/most-atp-500-matches-played</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/titles</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/most-atp-500-wins</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/wins</loc>
-    <lastmod>2026-01-26</lastmod>
+    <loc>https://stats.tennismylife.org/records/most-atp-titles</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-career-wins</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-carpet-court-finals-reached</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-carpet-court-matches-played-in-a-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-carpet-court-titles-in-a-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-carpet-court-wins-in-a-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-clay-court-finals-reached</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-clay-court-matches-played-in-a-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-clay-court-titles-in-a-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-clay-court-wins-in-a-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-davis-cup-matches-played</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-davis-cup-wins</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-finals-at-single-tournament</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-finals-in-a-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-finals-reached</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-grand-slam-appearances</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-grand-slam-finals-reached</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-grand-slam-matches-played</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-grand-slam-matches-played-in-a-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-grand-slam-quarterfinals-reached</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-grand-slam-semifinals-reached</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-grand-slam-titles</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-grand-slam-titles-in-a-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-grand-slam-titles-per-appearance</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-grand-slam-wins</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-grand-slam-wins-in-a-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-grass-court-finals-reached</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-grass-court-matches-played-in-a-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-grass-court-titles-in-a-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-grass-court-wins-in-a-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-hard-court-finals-reached</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-hard-court-matches-played-in-a-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-hard-court-titles-in-a-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-hard-court-wins-in-a-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-masters-1000-appearances</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-masters-1000-finals-reached</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-masters-1000-matches-played-in-a-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-masters-1000-quarterfinals-reached</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-masters-1000-semifinals-reached</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-masters-1000-titles</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-masters-1000-titles-in-a-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-masters-1000-titles-per-appearance</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-masters-1000-wins</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-masters-1000-wins-in-a-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-matches-played</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-matches-played-at-masters-1000</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-matches-played-at-single-grand-slam-tournament</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-matches-played-at-single-masters-1000-tournament</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-matches-played-at-single-tournament</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-matches-played-best-of-3</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-matches-played-best-of-5</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-matches-played-in-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-matches-played-on-carpet-court</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-matches-played-on-clay-court</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-matches-played-on-grass-court</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-matches-played-on-hard-court</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-played-h2h</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-quarterfinals-at-single-tournament</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-quarterfinals-reached</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-semifinals-at-single-tournament</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-semifinals-reached</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-titles-at-single-grand-slam-tournament</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-titles-at-single-masters-1000-tournament</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-titles-at-single-tournament</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-titles-in-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-titles-per-appearance</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-titles-won-on-carpet</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-titles-won-on-clay</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-titles-won-on-grass</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-titles-won-on-hard-court</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-tournament-appearances-in-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-wins-at-single-grand-slam-tournament</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-wins-at-single-masters-1000-tournament</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-wins-at-single-tournament</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-wins-best-of-3</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-wins-best-of-5</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-wins-in-atp-finals</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-wins-in-single-season</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-wins-on-carpet-court</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-wins-on-clay-court</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-wins-on-grass-court</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/most-wins-on-hard-court</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/oldest-carpet-court-title-winners</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/oldest-clay-court-title-winners</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/oldest-grand-slam-finalists</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/oldest-grand-slam-quarterfinalists</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/oldest-grand-slam-semifinalists</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/oldest-grand-slam-title-winners</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/oldest-grass-court-title-winners</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/oldest-hard-court-title-winners</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/oldest-masters-1000-finalists</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/oldest-masters-1000-quarterfinalists</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/oldest-masters-1000-semifinalists</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/oldest-masters-1000-title-winners</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/oldest-players-in-main-draw</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/oldest-players-in-main-draw-at-grand-slam</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/oldest-players-in-main-draw-at-masters-1000</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/oldest-players-in-main-draw-on-carpet-court</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/oldest-players-in-main-draw-on-clay-court</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/oldest-players-in-main-draw-on-grass-court</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/oldest-players-in-main-draw-on-hard-court</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/oldest-title-winners</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/youngest-carpet-court-title-winners</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/youngest-clay-court-title-winners</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/youngest-grand-slam-finalists</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/youngest-grand-slam-quarterfinalists</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/youngest-grand-slam-semifinalists</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/youngest-grand-slam-title-winners</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/youngest-grass-court-title-winners</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/youngest-hard-court-title-winners</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/youngest-masters-1000-finalists</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/youngest-masters-1000-quarterfinalists</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/youngest-masters-1000-semifinalists</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/youngest-masters-1000-title-winners</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/youngest-players-in-main-draw-at-grand-slam</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/youngest-players-in-main-draw-at-masters-1000</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/records/youngest-title-winners</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
