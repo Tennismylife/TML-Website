@@ -107,9 +107,10 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
   const totalPages = Math.ceil(seasonPercentageData.length / perPage);
   const start = (page - 1) * perPage;
   const currentData = seasonPercentageData.slice(start, start + perPage);
+  const isBestWinPercentageInSingleSeason = description === 'Best Win Percentage in Single Season';
+  const topWinPercentageSeason = isBestWinPercentageInSingleSeason ? seasonPercentageData[0] : undefined;
 
  
-
   const renderTable = (data: PercentageRecord[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
       <table className="min-w-full border-collapse">
@@ -155,6 +156,32 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
         <h2 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
         </h2>
+      )}
+
+      {isBestWinPercentageInSingleSeason && topWinPercentageSeason && (
+        <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
+          <p>
+            Best Win Percentage in Single Season ranks the most efficient men's tennis seasons of the Open Era, focusing on players who combined a full schedule with an exceptional match-winning rate. This record is about more than a short unbeaten run: it rewards seasons where dominance held up across months of tour-level matches, major events and repeated pressure.
+          </p>
+          <p>
+            At the top of the list stands <span className="inline-flex items-center gap-2">{topWinPercentageSeason.ioc && <Flag ioc={topWinPercentageSeason.ioc} className="w-4 h-3" />}{topWinPercentageSeason.Player}</span>, whose <strong className="!text-sky-300">{topWinPercentageSeason.Year}</strong> season remains the highest single-season winning percentage of the Open Era. <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><Link href="/players/john-mcenroe" className="!text-cyan-300 hover:!text-cyan-100 font-semibold">John McEnroe</Link></span> finished the year with an extraordinary <strong className="!text-amber-300">82-3</strong> record, winning <strong className="!text-amber-300">96.47%</strong> of his matches. What makes McEnroe's <strong className="!text-sky-300">1984</strong> so difficult to match is that the percentage was built over a real, full season and not a reduced sample. He played <strong className="!text-orange-300">85</strong> matches, reached finals almost everywhere, and lost only three times all year. His season included titles at Wimbledon and the US Open, plus a run to the Roland Garros final, where one of those three defeats came against Ivan Lendl after McEnroe had led by two sets.
+          </p>
+          <p>
+            Behind him stands <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><Link href="/players/jimmy-connors" className="!text-cyan-300 hover:!text-cyan-100 font-semibold">Jimmy Connors</Link></span>, whose <strong className="!text-sky-300">1974</strong> season produced the second-best winning percentage in the Open Era. Connors went <strong className="!text-amber-300">94-4</strong>, winning <strong className="!text-amber-300">95.92%</strong> of his matches. Connors' 1974 was also one of the great major-winning years: he won the Australian Open, Wimbledon and the US Open, turning dominance into both volume and efficiency.
+          </p>
+          <p>
+            <span className="inline-flex items-center gap-2"><Flag ioc="CHE" className="w-4 h-3" /><Link href="/players/roger-federer" className="!text-cyan-300 hover:!text-cyan-100 font-semibold">Roger Federer</Link></span> came closest in the modern era. In <strong className="!text-sky-300">2005</strong>, Federer finished <strong className="!text-amber-300">81-4</strong>, a <strong className="!text-amber-300">95.29%</strong> winning percentage. He also appears again with his <strong className="!text-sky-300">2006</strong> season, when he went <strong className="!text-amber-300">92-5</strong>, winning <strong className="!text-amber-300">94.85%</strong> of his matches.
+          </p>
+          <p>
+            <span className="inline-flex items-center gap-2"><Flag ioc="SWE" className="w-4 h-3" /><Link href="/players/bjorn-borg" className="!text-cyan-300 hover:!text-cyan-100 font-semibold">Bjorn Borg</Link></span> follows with his <strong className="!text-sky-300">1979</strong> season, finishing <strong className="!text-amber-300">84-6</strong> for a <strong className="!text-amber-300">93.33%</strong> win rate.
+          </p>
+          <p>
+            <span className="inline-flex items-center gap-2"><Flag ioc="SRB" className="w-4 h-3" /><Link href="/players/novak-djokovic" className="!text-cyan-300 hover:!text-cyan-100 font-semibold">Novak Djokovic</Link></span> produced his best season by percentage in <strong className="!text-sky-300">2015</strong>, going <strong className="!text-amber-300">82-6</strong> for <strong className="!text-amber-300">93.18%</strong>. That season was built on total control of the elite calendar: three Grand Slam titles, six Masters 1000 titles and the ATP Finals.
+          </p>
+          <p>
+            That is why McEnroe's <strong className="!text-amber-300">96.47%</strong> in <strong className="!text-sky-300">1984</strong> remains the benchmark. Connors, Federer, Borg and Djokovic all came close, but none matched the same combination of volume and near-perfection.
+          </p>
+        </div>
       )}
 
       <div className="flex justify-end mb-4">

@@ -44,6 +44,7 @@ export default function Ages({ selectedSurfaces, selectedLevels, selectedRounds,
           initialData={prefetchedData?.["youngest"] as any[]}
         />
       );
+    case "oldest-winners":
     case "oldestWinners":
       return (
         <OldestWinners
@@ -55,6 +56,7 @@ export default function Ages({ selectedSurfaces, selectedLevels, selectedRounds,
           initialData={prefetchedData?.["oldestWinners"] as any[]}
         />
       );
+    case "youngest-winners":
     case "youngestWinners":
       return (
         <YoungestWinners

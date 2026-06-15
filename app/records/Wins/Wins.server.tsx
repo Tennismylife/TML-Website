@@ -49,6 +49,10 @@ export default async function WinsServer({ searchParams, ...serverProps }: { sea
 
   const apiUrl = new URL(`/api/records/wins${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
   let topWinners: any[] = []
+  let grandSlamContext: any = null
+  let masters1000Context: any = null
+  let careerContext: any = null
+  let hardCourtContext: any = null
   if (prefetchEnabled) {
     try {
       const res = await rateLimitedFetch(apiUrl, { next: { tags: ['records'] } })
@@ -57,6 +61,10 @@ export default async function WinsServer({ searchParams, ...serverProps }: { sea
         if (Array.isArray(data)) topWinners = data
         else if (Array.isArray((data as any).topWinners)) topWinners = (data as any).topWinners
         else if (Array.isArray((data as any).rows)) topWinners = (data as any).rows
+        grandSlamContext = (data as any)?.grandSlamContext ?? null
+        masters1000Context = (data as any)?.masters1000Context ?? null
+        careerContext = (data as any)?.careerContext ?? null
+        hardCourtContext = (data as any)?.hardCourtContext ?? null
       }
     } catch (err) {
       // ignore - topWinners stays empty
@@ -72,7 +80,7 @@ export default async function WinsServer({ searchParams, ...serverProps }: { sea
     <ServerWrapper
       Component={Wins}
       searchParams={sp}
-      serverProps={{ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, selectedTopN, activeSubTab, fetchEnabled, topWinners, ...(serverProps as any) } as any}
+      serverProps={{ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, selectedTopN, activeSubTab, fetchEnabled, topWinners, grandSlamContext, masters1000Context, careerContext, hardCourtContext, ...(serverProps as any) } as any}
     />
   )
 }

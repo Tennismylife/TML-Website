@@ -92,7 +92,7 @@ export default function YoungestAllRounds({ selectedSurfaces, selectedLevels, fe
                 </td>
                 <td className="border border-gray-700 px-4 py-2 text-center">{formatAge(p.age)}</td>
                 <td className="border border-gray-700 px-4 py-2 text-center">
-                  <Link href={getTourneyHref({ slug: (p as any).tourney_slug ?? undefined, id: p.tourney_id, name: p.tourney_name, year: p.year })} className="text-blue-400 hover:underline">
+                  <Link href={getTourneyHref({ slug: (selectedSurfaces?.size === 0 && selectedLevels?.size === 0) ? ((p as any).tourney_slug ?? undefined) : undefined, id: p.tourney_id, name: p.tourney_name, year: p.year })} className="text-blue-400 hover:underline">
                     {p.tourney_name} {p.year}
                   </Link>
                 </td>
@@ -180,7 +180,7 @@ export default function YoungestAllRounds({ selectedSurfaces, selectedLevels, fe
                       </td>
                       <td className="border border-gray-700 px-4 py-2 text-center">{formatAge(p.age)}</td>
                       <td className="border border-gray-700 px-4 py-2">
-                        <Link href={getTourneyHref({ slug: (p as any).tourney_slug ?? undefined, id: p.tourney_id, name: p.tourney_name, year: p.year })} className="text-blue-400 hover:underline">
+                        <Link href={getTourneyHref({ slug: (selectedSurfaces?.size === 0 && selectedLevels?.size === 0) ? ((p as any).tourney_slug ?? undefined) : undefined, id: p.tourney_id, name: p.tourney_name, year: p.year })} className="text-blue-400 hover:underline">
                           {p.tourney_name} {p.year}
                         </Link>
                       </td>

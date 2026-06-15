@@ -126,7 +126,7 @@
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/entries</loc>
+    <loc>https://stats.tennismylife.org/records/most-tournament-appearances-single-season</loc>
     <lastmod>2026-03-18</lastmod>
     <changefreq>weekly</changefreq>
   </url>
@@ -856,27 +856,27 @@
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/entries?level=G</loc>
+    <loc>https://stats.tennismylife.org/records/most-tournament-appearances-single-season?level=G</loc>
     <lastmod>2026-03-18</lastmod>
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/entries?level=M</loc>
+    <loc>https://stats.tennismylife.org/records/most-tournament-appearances-single-season?level=M</loc>
     <lastmod>2026-03-18</lastmod>
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/entries?level=F</loc>
+    <loc>https://stats.tennismylife.org/records/most-tournament-appearances-single-season?level=F</loc>
     <lastmod>2026-03-18</lastmod>
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/entries?level=250</loc>
+    <loc>https://stats.tennismylife.org/records/most-tournament-appearances-single-season?level=250</loc>
     <lastmod>2026-03-18</lastmod>
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/entries?level=500</loc>
+    <loc>https://stats.tennismylife.org/records/most-tournament-appearances-single-season?level=500</loc>
     <lastmod>2026-03-18</lastmod>
     <changefreq>weekly</changefreq>
   </url>
@@ -1666,22 +1666,22 @@
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/entries?surface=Hard</loc>
+    <loc>https://stats.tennismylife.org/records/most-tournament-appearances-single-season?surface=Hard</loc>
     <lastmod>2026-03-18</lastmod>
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/entries?surface=Clay</loc>
+    <loc>https://stats.tennismylife.org/records/most-tournament-appearances-single-season?surface=Clay</loc>
     <lastmod>2026-03-18</lastmod>
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/entries?surface=Grass</loc>
+    <loc>https://stats.tennismylife.org/records/most-tournament-appearances-single-season?surface=Grass</loc>
     <lastmod>2026-03-18</lastmod>
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/entries?surface=Carpet</loc>
+    <loc>https://stats.tennismylife.org/records/most-tournament-appearances-single-season?surface=Carpet</loc>
     <lastmod>2026-03-18</lastmod>
     <changefreq>weekly</changefreq>
   </url>
@@ -2281,12 +2281,12 @@
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/entries?bestOf=3</loc>
+    <loc>https://stats.tennismylife.org/records/most-tournament-appearances-single-season?bestOf=3</loc>
     <lastmod>2026-03-18</lastmod>
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/records/seasons/entries?bestOf=5</loc>
+    <loc>https://stats.tennismylife.org/records/most-tournament-appearances-single-season?bestOf=5</loc>
     <lastmod>2026-03-18</lastmod>
     <changefreq>weekly</changefreq>
   </url>

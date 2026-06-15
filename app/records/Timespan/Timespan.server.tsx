@@ -17,8 +17,9 @@ export default async function TimespanServer({ searchParams, ...serverProps }: {
 
   const selectedSurfaces = new Set(toArray(sp.surface ?? sp['surface[]']))
   const selectedLevels = new Set(toArray(sp.level ?? sp['level[]']))
-  const selectedRounds = serverProps.selectedRounds ?? (getFirst('round') ?? '')
   const selectedTab = serverProps.sub ?? getFirst('subtab') ?? 'entries'
+  const rawRound = serverProps.selectedRounds ?? (getFirst('round') ?? '')
+  const selectedRounds = (!rawRound && selectedTab === 'rounds') ? 'F' : rawRound
 
   const hasFilters = (() => {
     if (selectedTab === 'rounds') {

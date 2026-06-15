@@ -26,6 +26,54 @@ export async function GET(request: NextRequest) {
       selectedBestOf.length ||
       maxLoserRank !== null;
 
+    // If any filters are active, compute the wins ranking live from Match.
+    // If no filters are active, use the pre-aggregated materialized view mVTopWinners.
+    const isGrandSlamOnly =
+      selectedLevels.length === 1 &&
+      selectedLevels[0] === "G" &&
+      selectedSurfaces.length === 0 &&
+      selectedRounds.length === 0 &&
+      selectedBestOf.length === 0 &&
+      maxLoserRank === null;
+
+    const isMasters1000Only =
+      selectedLevels.length === 1 &&
+      selectedLevels[0] === "M" &&
+      selectedSurfaces.length === 0 &&
+      selectedRounds.length === 0 &&
+      selectedBestOf.length === 0 &&
+      maxLoserRank === null;
+
+    const isHardCourtOnly =
+      selectedSurfaces.length === 1 &&
+      selectedSurfaces[0] === "Hard" &&
+      selectedLevels.length === 0 &&
+      selectedRounds.length === 0 &&
+      selectedBestOf.length === 0 &&
+      maxLoserRank === null;
+
+    let grandSlamContext: {
+      latestTourneyName: string;
+      latestTourneyYear: number | null;
+      wins: number;
+    } | null = null;
+
+    let masters1000Context: {
+      wins: number;
+      losses: number;
+      latestTourneyName: string;
+      latestTourneyYear: number | null;
+    } | null = null;
+
+    let careerContext: {
+      wins: number;
+      losses: number;
+    } | null = null;
+
+    let hardCourtContext: {
+      wins: number;
+    } | null = null;
+
     let topWinners: Array<{ id: any; name: string; ioc?: string | null; wins: number; slug?: string | null }> = [];
     let totalCount = 0;
 
@@ -79,7 +127,7 @@ export async function GET(request: NextRequest) {
 
       // Fetch slugs for returned players to provide canonical URLs
       try {
-        const ids = topWinners.map(t => t.id).filter(Boolean);
+        const ids = [...new Set([...topWinners.map(t => t.id)])].filter(Boolean);
         if (ids.length) {
           const players = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
           const slugMap: Record<string | number, string | null> = {};
@@ -90,7 +138,106 @@ export async function GET(request: NextRequest) {
         // non-critical: if slug lookup fails, continue without slugs
         console.warn('Failed to fetch player slugs for wins', e);
       }
+
+      if (isGrandSlamOnly) {
+        try {
+          const latestDjokovicSlam = await prisma.match.findFirst({
+            where: {
+              status: true,
+              tourney_level: "G",
+              OR: [
+                { winner_name: "Novak Djokovic" },
+                { loser_name: "Novak Djokovic" },
+              ],
+            },
+            orderBy: [{ tourney_date: "desc" }, { id: "desc" }],
+            select: {
+              tourney_name: true,
+              tourney_date: true,
+            },
+          });
+
+          const grandSlamWins = await prisma.match.count({
+            where: {
+              status: true,
+              tourney_level: "G",
+              winner_name: "Novak Djokovic",
+              NOT: { score: "W/O" },
+            },
+          });
+
+          const rawName = (latestDjokovicSlam?.tourney_name ?? "").trim();
+          const normalizedName =
+            rawName === "Australian Open-1" || rawName === "Australian Open-2"
+              ? "Australian Open"
+              : rawName;
+
+          grandSlamContext = {
+            latestTourneyName: normalizedName || "Australian Open",
+            latestTourneyYear: latestDjokovicSlam?.tourney_date
+              ? new Date(latestDjokovicSlam.tourney_date).getUTCFullYear()
+              : null,
+            wins: grandSlamWins,
+          };
+        } catch (e) {
+          // Non-critical metadata: keep response working even if this lookup fails.
+          console.warn("Failed to fetch latest Djokovic slam context", e);
+        }
+      }
+
+      if (isHardCourtOnly) {
+        try {
+          const wins = await prisma.match.count({
+            where: { status: true, surface: 'Hard', winner_name: 'Novak Djokovic', NOT: { score: 'W/O' } },
+          });
+          hardCourtContext = { wins };
+        } catch (e) {
+          console.warn('Failed to fetch Djokovic hard-court context', e);
+        }
+      }
+
+      if (isMasters1000Only) {
+        try {
+          const djokovicMastersWins = topWinners.find((p) => p.name === "Novak Djokovic")?.wins ?? 0;
+          const djokovicMastersLosses = await prisma.match.count({
+            where: {
+              status: true,
+              tourney_level: "M",
+              loser_name: "Novak Djokovic",
+            },
+          });
+
+          const latestDjokovicMasters = await prisma.match.findFirst({
+            where: {
+              status: true,
+              tourney_level: "M",
+              OR: [
+                { winner_name: "Novak Djokovic" },
+                { loser_name: "Novak Djokovic" },
+              ],
+            },
+            orderBy: [{ tourney_date: "desc" }, { id: "desc" }],
+            select: {
+              tourney_name: true,
+              tourney_date: true,
+            },
+          });
+
+          masters1000Context = {
+            wins: djokovicMastersWins,
+            losses: djokovicMastersLosses,
+            latestTourneyName: (latestDjokovicMasters?.tourney_name ?? "").trim() || "Mutua Madrid Open",
+            latestTourneyYear: latestDjokovicMasters?.tourney_date
+              ? new Date(latestDjokovicMasters.tourney_date).getUTCFullYear()
+              : null,
+          };
+        } catch (e) {
+          // Non-critical metadata: keep response working even if this lookup fails.
+          console.warn("Failed to fetch latest Djokovic masters context", e);
+        }
+      }
     } else {
+      // No filters active: use materialized view mVTopWinners for the global wins ranking.
       const winners = await prisma.mVTopWinners.findMany({
         orderBy: { total_wins: "desc" },
         take: 100,
@@ -107,7 +254,7 @@ export async function GET(request: NextRequest) {
 
       // Fetch slugs for returned players to provide canonical URLs
       try {
-        const ids = topWinners.map(t => t.id).filter(Boolean);
+        const ids = [...new Set([...topWinners.map(t => t.id)])].filter(Boolean);
         if (ids.length) {
           const players = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
           const slugMap: Record<string | number, string | null> = {};
@@ -118,9 +265,24 @@ export async function GET(request: NextRequest) {
         // non-critical: if slug lookup fails, continue without slugs
         console.warn('Failed to fetch player slugs for wins', e);
       }
+
+      // Fetch Djokovic's career wins and losses (excluding W/O) for the narrative
+      try {
+        const [wins, losses] = await Promise.all([
+          prisma.match.count({
+            where: { status: true, winner_name: 'Novak Djokovic', NOT: { score: 'W/O' } },
+          }),
+          prisma.match.count({
+            where: { status: true, loser_name: 'Novak Djokovic', NOT: { score: 'W/O' } },
+          }),
+        ]);
+        careerContext = { wins, losses };
+      } catch (e) {
+        console.warn('Failed to fetch Djokovic career context', e);
+      }
     }
 
-    return NextResponse.json({ topWinners, totalCount });
+    return NextResponse.json({ topWinners, totalCount, grandSlamContext, masters1000Context, careerContext, hardCourtContext });
   } catch (error) {
     console.error("Error in GET /records/wins:", error);
     return NextResponse.json(

@@ -23,6 +23,16 @@ function jsonResponse(data: any, status = 200) {
   return NextResponse.json(data, { status, headers: cacheHeaders() });
 }
 
+function normalizeSurfaceValue(surface: string) {
+  const value = surface.trim();
+  if (!value) return value;
+  return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+}
+
+function normalizeLevelValue(level: string) {
+  return level.trim().toUpperCase();
+}
+
 type YearPlayedRecord = {
   year: number;
   player_id: string;
@@ -34,22 +44,19 @@ type YearPlayedRecord = {
 export async function GET(request: NextRequest) {
   try {
     const url = request.nextUrl;
-    const selectedSurfaces = getMultiParam(url, 'surface');
-    const selectedLevels = getMultiParam(url, 'level');
+    const selectedSurfaces = getMultiParam(url, 'surface').map(normalizeSurfaceValue).filter(Boolean);
+    const selectedLevels = getMultiParam(url, 'level').map(normalizeLevelValue).filter(Boolean);
     const selectedBestOf = getMultiParam(url, 'best_of');
     const selectedRounds = getMultiParam(url, 'round');
     const limit = Math.max(1, Math.min(100, Number(url.searchParams.get('limit') ?? 100)));
 
     let finalPlayed: YearPlayedRecord[] = [];
 
-    // --- Caso 1: 0 o 1 filtro → usa MV ---
+    // --- Caso 0 filtri → usa MV (rapido, già aggregato) ---
     if (
-      selectedSurfaces.length + selectedLevels.length + selectedBestOf.length + selectedRounds.length <= 1
+      selectedSurfaces.length + selectedLevels.length + selectedBestOf.length + selectedRounds.length === 0
     ) {
-      const played = await prisma.mVSameSeasonPlayed.findMany({
-        orderBy: { total_played: 'desc' },
-        take: limit,
-      });
+      const played = await prisma.mVSameSeasonPlayed.findMany();
 
       if (!played.length) return jsonResponse([]);
 
@@ -64,37 +71,19 @@ export async function GET(request: NextRequest) {
       );
 
       played.forEach(e => {
-        let total_played = e.total_played;
-
-        if (selectedSurfaces.length === 1) {
-          total_played = e.surface_played?.[selectedSurfaces[0]] ?? 0;
-        }
-        if (selectedLevels.length === 1) {
-          total_played = e.level_played?.[selectedLevels[0]] ?? 0;
-        }
-        if (selectedBestOf.length === 1) {
-          total_played = e.best_of_played?.[selectedBestOf[0]] ?? 0;
-        }
-        if (selectedRounds.length === 1) {
-          total_played = e.round_played?.[selectedRounds[0]] ?? 0;
-        }
-
-        if (total_played > 0) {
-          const mapEntry = playerMap[e.player_id];
-          finalPlayed.push({
-            year: e.year,
-            player_id: e.player_id,
-            player_name: mapEntry?.player_name ?? 'Unknown',
-            ioc: mapEntry?.ioc ?? null,
-            total_played,
-          });
-        }
+        finalPlayed.push({
+          year: e.year,
+          player_id: e.player_id,
+          player_name: playerMap[e.player_id]?.player_name ?? 'Unknown',
+          ioc: playerMap[e.player_id]?.ioc ?? null,
+          total_played: e.total_played,
+        });
       });
     }
 
-    // --- Caso 2: ≥2 filtri → query diretta su Match ---
+    // --- Caso 1+ filtri → query diretta su Match con conteggio totale per stagione ---
     if (
-      selectedSurfaces.length + selectedLevels.length + selectedBestOf.length + selectedRounds.length >= 2
+      selectedSurfaces.length + selectedLevels.length + selectedBestOf.length + selectedRounds.length >= 1
     ) {
       const where: any = { status: true };
       if (selectedSurfaces.length > 0) {

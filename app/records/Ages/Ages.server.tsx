@@ -18,7 +18,10 @@ export default async function AgesServer({ searchParams, ...serverProps }: { sea
   const selectedSurfaces = new Set(toArray(sp.surface ?? sp['surface[]']))
   const selectedLevels = new Set(toArray(sp.level ?? sp['level[]']))
   const selectedRounds = (getFirst('round') ?? '') as string
-  const activeSubTab = serverProps.sub ?? getFirst('subtab') ?? 'oldest'
+  const rawSub: string = serverProps.sub ?? getFirst('subtab') ?? 'oldest'
+  const activeSubTab = rawSub.includes('-')
+    ? rawSub.split('-').map((p: string, i: number) => i === 0 ? p : p.charAt(0).toUpperCase() + p.slice(1)).join('')
+    : rawSub
 
   const hasFilters = (selectedSurfaces.size > 0) || (selectedLevels.size > 0) || (selectedRounds ? true : false)
 

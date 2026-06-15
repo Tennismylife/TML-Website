@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import RecordsTabs from './RecordsTabs';
 import { metadataBase } from '../../lib/site';
+import { resolveCanonicalRecordHref, resolveRecordHref } from './record-links';
 import type { Metadata } from 'next';
 
 const CANONICAL = new URL('/records', metadataBase).toString();
@@ -44,174 +45,178 @@ type Category = {
   children?: SubLink[];
 };
 
+const recordHref = (slug: string[], filters: Record<string, any> = {}) =>
+  resolveRecordHref(slug, filters as any);
+
 const categories: Category[] = [
   {
     key: 'wins',
     label: 'Wins',
     desc: 'All-time most match wins in ATP history.',
-    href: '/records/wins',
+    href: recordHref(['wins']),
     emoji: '🏆',
   },
   {
     key: 'played',
     label: 'Played',
     desc: 'Most matches played throughout a career.',
-    href: '/records/played',
+    href: recordHref(['played']),
     emoji: '🎾',
   },
   {
     key: 'titles',
     label: 'Titles',
     desc: 'Most tournament titles won at any level.',
-    href: '/records/titles',
+    href: recordHref(['titles']),
     emoji: '🥇',
   },
   {
     key: 'entries',
-    label: 'Entries',
+    label: 'Appearances',
     desc: 'Most tournament entries over a career.',
-    href: '/records/entries',
+    href: recordHref(['entries']),
     emoji: '📋',
   },
   {
     key: 'count',
     label: 'Count',
     desc: 'Counts and aggregated stats by category.',
-    href: '/records/count',
+    href: recordHref(['count']),
     emoji: '🔢',
   },
   {
     key: 'percentage',
     label: 'Win Percentage',
     desc: 'Best win percentage records in ATP history.',
-    href: '/records/percentage',
+    href: recordHref(['percentage']),
     emoji: '📊',
   },
   {
     key: 'ages',
     label: 'Ages',
     desc: 'Youngest and oldest players in ATP history.',
-    href: '/records/ages/oldest',
+    href: recordHref(['ages', 'oldest']),
     emoji: '🎂',
     children: [
-      { label: 'Oldest Main Draw', href: '/records/ages/oldest' },
-      { label: 'Youngest Main Draw', href: '/records/ages/youngest' },
-      { label: 'Oldest Title Winners', href: '/records/ages/oldest-winners' },
-      { label: 'Youngest Title Winners', href: '/records/ages/youngest-winners' },
+      { label: 'Oldest Main Draw', href: recordHref(['ages', 'oldest']) },
+      { label: 'Youngest Main Draw', href: recordHref(['ages', 'youngest']) },
+      { label: 'Oldest Title Winners', href: recordHref(['ages', 'oldest-winners']) },
+      { label: 'Youngest Title Winners', href: recordHref(['ages', 'youngest-winners']) },
     ],
   },
   {
     key: 'streak',
     label: 'Streak',
     desc: 'Longest consecutive winning streaks.',
-    href: '/records/streak/wins',
+    href: '/records/longest-winning-streak',
     emoji: '🔥',
     children: [
-      { label: 'Win Streak', href: '/records/streak/wins' },
-      { label: 'Round Streak', href: '/records/streak/round' },
+      { label: 'Win Streak', href: '/records/longest-winning-streak' },
+      { label: 'Round Streak', href: recordHref(['streak', 'round'], { round: 'F' }) },
     ],
   },
   {
     key: 'timespan',
     label: 'Timespan',
     desc: 'Longest timespans between career milestones.',
-    href: '/records/timespan/entries',
+    href: recordHref(['timespan', 'entries']),
     emoji: '⏳',
     children: [
-      { label: 'Between Entries', href: '/records/timespan/entries' },
-      { label: 'Between Titles', href: '/records/timespan/titles' },
-      { label: 'Between Rounds', href: '/records/timespan/rounds' },
+      { label: 'Between Entries', href: recordHref(['timespan', 'entries']) },
+      { label: 'Between Titles', href: recordHref(['timespan', 'titles']) },
+      { label: 'Between Finals', href: recordHref(['timespan', 'rounds'], { round: 'F' }) },
     ],
   },
   {
     key: 'atage',
     label: 'At Age',
     desc: 'Records achieved at a specific age.',
-    href: '/records/atage/wins',
+    href: recordHref(['atage', 'wins']),
     emoji: '📅',
     children: [
-      { label: 'Wins at Age', href: '/records/atage/wins' },
-      { label: 'Titles at Age', href: '/records/atage/titles' },
-      { label: 'Entries at Age', href: '/records/atage/entries' },
-      { label: 'Rounds at Age', href: '/records/atage/round' },
+      { label: 'Wins at Age', href: recordHref(['atage', 'wins']) },
+      { label: 'Titles at Age', href: recordHref(['atage', 'titles']) },
+      { label: 'Entries at Age', href: recordHref(['atage', 'entries']) },
+      { label: 'Rounds at Age', href: recordHref(['atage', 'round'], { round: 'F' }) },
     ],
   },
   {
     key: 'ageofnth',
     label: 'Age at Nth',
     desc: 'Age when reaching the Nth career milestone.',
-    href: '/records/ageofnth/wins',
+    href: recordHref(['ageofnth', 'wins']),
     emoji: '🔖',
     children: [
-      { label: 'Age at Nth Win', href: '/records/ageofnth/wins' },
-      { label: 'Age at Nth Title', href: '/records/ageofnth/titles' },
-      { label: 'Age at Nth Slam', href: '/records/ageofnth/slams' },
+      { label: 'Age at Nth Win', href: recordHref(['ageofnth', 'wins']) },
+      { label: 'Age at Nth Title', href: recordHref(['ageofnth', 'titles']) },
+      { label: 'Age at Nth Slam', href: recordHref(['ageofnth', 'slams']) },
     ],
   },
   {
     key: 'roundsonentries',
-    label: 'Rounds on Entries',
+    label: 'Results by Appearances',
     desc: 'Best rounds reached per tournament entry.',
-    href: '/records/roundsonentries/titles',
+    href: recordHref(['roundsonentries', 'titles']),
     emoji: '📈',
     children: [
-      { label: 'Titles per Entry', href: '/records/roundsonentries/titles' },
-      { label: 'Round per Entry', href: '/records/roundsonentries/round' },
+      { label: 'Titles per Entry', href: recordHref(['roundsonentries', 'titles']) },
+      { label: 'Round per Entry', href: recordHref(['roundsonentries', 'round'], { round: 'F' }) },
     ],
   },
   {
     key: 'same',
-    label: 'Same Tournament',
+    label: 'Single Tournament',
     desc: 'Records at the same tournament across editions.',
-    href: '/records/same/wins',
+    href: recordHref(['same', 'wins']),
     emoji: '🏟️',
     children: [
-      { label: 'Wins', href: '/records/same/wins' },
-      { label: 'Titles', href: '/records/same/titles' },
-      { label: 'Entries', href: '/records/same/entries' },
-      { label: 'Rounds', href: '/records/same/round' },
+      { label: 'Wins', href: recordHref(['same', 'wins']) },
+      { label: 'Titles', href: recordHref(['same', 'titles']) },
+      { label: 'Entries', href: recordHref(['same', 'entries']) },
+      { label: 'Rounds', href: recordHref(['same', 'round'], { round: 'F' }) },
     ],
   },
   {
     key: 'seasons',
-    label: 'Seasons',
+    label: 'Single Season',
     desc: 'Records accumulated across multiple seasons.',
-    href: '/records/seasons/wins',
+    href: recordHref(['seasons', 'wins']),
     emoji: '📆',
     children: [
-      { label: 'Wins per Season', href: '/records/seasons/wins' },
-      { label: 'Titles per Season', href: '/records/seasons/titles' },
-      { label: 'Win % per Season', href: '/records/seasons/percentage' },
-      { label: 'Rounds per Season', href: '/records/seasons/round' },
+      { label: 'Wins per Season', href: recordHref(['seasons', 'wins']) },
+      { label: 'Titles per Season', href: recordHref(['seasons', 'titles']) },
+      { label: 'Appearances per Season', href: '/records/most-tournament-appearances-in-single-season' },
+      { label: 'Win % per Season', href: recordHref(['seasons', 'percentage']) },
+      { label: 'Rounds per Season', href: recordHref(['seasons', 'round'], { round: 'F' }) },
     ],
   },
   {
     key: 'neededto',
     label: 'Needed To',
     desc: 'Matches needed to reach milestone targets.',
-    href: '/records/neededto/titles',
+    href: recordHref(['neededto', 'titles']),
     emoji: '🎯',
-    children: [{ label: 'Titles', href: '/records/neededto/titles' }],
+    children: [{ label: 'Titles', href: recordHref(['neededto', 'titles']) }],
   },
   {
     key: 'counterseasons',
     label: 'Counter Seasons',
     desc: 'Count of seasons achieving specific records.',
-    href: '/records/counterseasons/round',
+    href: recordHref(['counterseasons', 'round'], { round: 'F' }),
     emoji: '🗓️',
     children: [
-      { label: 'Rounds', href: '/records/counterseasons/round' },
-      { label: 'Titles', href: '/records/counterseasons/titles' },
-      { label: 'Wins', href: '/records/counterseasons/wins' },
+      { label: 'Rounds', href: recordHref(['counterseasons', 'round'], { round: 'F' }) },
+      { label: 'Titles', href: recordHref(['counterseasons', 'titles']) },
+      { label: 'Wins', href: recordHref(['counterseasons', 'wins']) },
     ],
   },
   {
     key: 'h2h',
     label: 'Head-to-Head',
     desc: 'H2H records and rivalry stats between players.',
-    href: '/records/h2h/count',
+    href: recordHref(['h2h', 'count']),
     emoji: '⚔️',
-    children: [{ label: 'H2H Count', href: '/records/h2h/count' }],
+    children: [{ label: 'H2H Count', href: recordHref(['h2h', 'count']) }],
   },
 ];
 
@@ -236,10 +241,12 @@ const CORE_RECORDS: { tab: string; sub: string | null; label: string }[] = [
 ];
 
 function makeFilteredLinks(paramKey: string, paramValue: string) {
-  return CORE_RECORDS.map(r => ({
-    label: r.label,
-    href: `/records/${r.tab}${r.sub ? `/${r.sub}` : ''}?${paramKey}=${encodeURIComponent(paramValue)}`,
-  }));
+  return CORE_RECORDS.flatMap(r => {
+    const slug = r.sub ? [r.tab, r.sub] : [r.tab];
+    const filters = paramKey === 'level' ? { level: [paramValue] } : { surface: [paramValue] };
+    const canonicalPath = resolveCanonicalRecordHref(slug, filters);
+    return canonicalPath ? [{ label: r.label, href: canonicalPath }] : [];
+  });
 }
 
 const filteredGroups: FilterGroup[] = [
@@ -248,8 +255,8 @@ const filteredGroups: FilterGroup[] = [
   { title: 'ATP Finals Records',    color: 'from-rose-600 to-pink-500',      links: makeFilteredLinks('level', 'F') },
   { title: 'ATP 500 Records',       color: 'from-green-600 to-emerald-500',  links: makeFilteredLinks('level', '500') },
   { title: 'ATP 250 Records',       color: 'from-purple-600 to-violet-500',  links: makeFilteredLinks('level', '250') },
+  { title: 'Davis Cup Records',      color: 'from-teal-600 to-cyan-500',      links: makeFilteredLinks('level', 'D') },
   { title: 'Clay Court Records',    color: 'from-orange-700 to-red-600',     links: makeFilteredLinks('surface', 'Clay') },
-  { title: 'Hard Court Records',    color: 'from-sky-700 to-blue-600',       links: makeFilteredLinks('surface', 'Hard') },
   { title: 'Grass Court Records',   color: 'from-lime-700 to-green-600',     links: makeFilteredLinks('surface', 'Grass') },
 ];
 
@@ -295,31 +302,31 @@ const faqsForSchema: { q: string; a: string }[] = [
 const faqs: { q: string; a: React.ReactNode }[] = [
   {
     q: 'Who holds the all-time ATP wins record?',
-    a: <>Jimmy Connors holds the record for most ATP match wins with 1,274 victories. Explore the full ranking in the{' '}<Link href="/records/wins" className="text-indigo-400 hover:text-indigo-200 underline">Wins Records</Link>{' '}section, filterable by surface, level and round.</>,
+    a: <>Jimmy Connors holds the record for most ATP match wins with 1,274 victories. Explore the full ranking in the{' '}<Link href={recordHref(['wins'])} className="text-indigo-400 hover:text-indigo-200 underline">Wins Records</Link>{' '}section, filterable by surface, level and round.</>,
   },
   {
     q: 'Who played the most ATP matches in career?',
-    a: <>Jimmy Connors also leads the &lsquo;matches played&rsquo; ranking with over 1,500 career matches. The{' '}<Link href="/records/played" className="text-indigo-400 hover:text-indigo-200 underline">Played Records</Link>{' '}section lists the complete ranking with filters for surface and tournament level.</>,
+    a: <>Jimmy Connors also leads the &lsquo;matches played&rsquo; ranking with over 1,500 career matches. The{' '}<Link href={recordHref(['played'])} className="text-indigo-400 hover:text-indigo-200 underline">Played Records</Link>{' '}section lists the complete ranking with filters for surface and tournament level.</>,
   },
   {
     q: 'Who is the youngest ATP title winner ever?',
-    a: <>The{' '}<Link href="/records/ages/youngest-winners" className="text-indigo-400 hover:text-indigo-200 underline">Youngest Title Winners</Link>{' '}section shows the complete all-time ranking of players who won a title at the youngest age, filterable by surface and tournament level.</>,
+    a: <>The{' '}<Link href={recordHref(['ages', 'youngest-winners'])} className="text-indigo-400 hover:text-indigo-200 underline">Youngest Title Winners</Link>{' '}section shows the complete all-time ranking of players who won a title at the youngest age, filterable by surface and tournament level.</>,
   },
   {
     q: 'Who is the oldest player in an ATP main draw?',
-    a: <>The{' '}<Link href="/records/ages/oldest" className="text-indigo-400 hover:text-indigo-200 underline">Ages Records</Link>{' '}section tracks both the oldest and youngest players to appear in ATP main draws, covering every level from Grand Slams to 250-level events.</>,
+    a: <>The{' '}<Link href={recordHref(['ages', 'oldest'])} className="text-indigo-400 hover:text-indigo-200 underline">Ages Records</Link>{' '}section tracks both the oldest and youngest players to appear in ATP main draws, covering every level from Grand Slams to 250-level events.</>,
   },
   {
     q: 'What is the longest winning streak in ATP history?',
-    a: <>Guillermo Vilas holds one of the longest winning streaks in ATP history. The{' '}<Link href="/records/streak/wins" className="text-indigo-400 hover:text-indigo-200 underline">Streak Records</Link>{' '}section covers both{' '}<Link href="/records/streak/wins" className="text-indigo-400 hover:text-indigo-200 underline">win streaks</Link>{' '}and{' '}<Link href="/records/streak/round" className="text-indigo-400 hover:text-indigo-200 underline">round-specific streaks</Link>.</>,
+    a: <>Guillermo Vilas holds one of the longest winning streaks in ATP history. The{' '}<Link href={recordHref(['streak', 'wins'])} className="text-indigo-400 hover:text-indigo-200 underline">Streak Records</Link>{' '}section covers both{' '}<Link href={recordHref(['streak', 'wins'])} className="text-indigo-400 hover:text-indigo-200 underline">win streaks</Link>{' '}and{' '}<Link href={recordHref(['streak', 'round'], { round: 'F' })} className="text-indigo-400 hover:text-indigo-200 underline">round-specific streaks</Link>.</>,
   },
   {
     q: 'Can I filter records by surface or tournament level?',
-    a: <>Yes. Every record page includes filters for surface (Hard, Clay, Grass, Carpet), tournament level (Grand Slam, Masters 1000, ATP 500, ATP 250) and round &mdash; try them on the{' '}<Link href="/records/wins" className="text-indigo-400 hover:text-indigo-200 underline">Wins</Link>{' '}or{' '}<Link href="/records/titles" className="text-indigo-400 hover:text-indigo-200 underline">Titles</Link>{' '}page.</>,
+    a: <>Yes. Every record page includes filters for surface (Hard, Clay, Grass, Carpet), tournament level (Grand Slam, Masters 1000, ATP 500, ATP 250) and round &mdash; try them on the{' '}<Link href={recordHref(['wins'])} className="text-indigo-400 hover:text-indigo-200 underline">Wins</Link>{' '}or{' '}<Link href={recordHref(['titles'])} className="text-indigo-400 hover:text-indigo-200 underline">Titles</Link>{' '}page.</>,
   },
   {
     q: 'How are these tennis records calculated?',
-    a: <>All records are computed in real-time from TennisMyLife&apos;s match database, which contains ATP match data from 1968 onwards. Start exploring from the{' '}<Link href="/records/wins" className="text-indigo-400 hover:text-indigo-200 underline">Wins</Link>{' '}or{' '}<Link href="/records/percentage" className="text-indigo-400 hover:text-indigo-200 underline">Win Percentage</Link>{' '}pages.</>,
+    a: <>All records are computed in real-time from TennisMyLife&apos;s match database, which contains ATP match data from 1968 onwards. Start exploring from the{' '}<Link href={recordHref(['wins'])} className="text-indigo-400 hover:text-indigo-200 underline">Wins</Link>{' '}or{' '}<Link href={recordHref(['percentage'])} className="text-indigo-400 hover:text-indigo-200 underline">Win Percentage</Link>{' '}pages.</>,
   },
   {
     q: 'How far back does the data go?',

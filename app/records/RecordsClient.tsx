@@ -22,6 +22,7 @@ import NeededToSection from './NeededTo/NeededTo';
 import CounterSeasonsSection from './CounterSeasons/CounterSeasons';
 import H2HSection from './H2H/H2H';
 import StreakSection from './Streak/Streak';
+import { resolveRecordHref } from './record-links';
 
 interface Props {
   initialRecord?: string | null;
@@ -37,7 +38,7 @@ const tabs = [
   { key: 'ages', label: 'Ages' },
   { key: 'timespan', label: 'Timespan' },
   { key: 'percentage', label: 'Percentage' },
-  { key: 'roundsonentries', label: 'Rounds on Entries' },
+  { key: 'roundsonentries', label: 'Results by Appearances' },
   { key: 'same', label: 'Same' },
   { key: 'seasons', label: 'Seasons' },
   { key: 'atage', label: 'At Age' },
@@ -56,7 +57,7 @@ const subTabs: Record<string, { key: string; label: string }[]> = {
     { key: "youngest-winners", label: "Youngest Title Winners" },
   ],
   timespan: [
-    { key: "entries", label: "2 entries" },
+    { key: "entries", label: "2 appearances" },
     { key: "titles", label: "2 titles" },
     { key: "rounds", label:"2 rounds" },
   ],
@@ -67,14 +68,14 @@ const subTabs: Record<string, { key: string; label: string }[]> = {
   same: [
     { key: "wins", label: "Wins" },
     { key: "played", label: "Played" },
-    { key: "entries", label: "Entries" },
+    { key: "entries", label: "Appearances" },
     { key: "titles", label: "Titles" },
     { key: "round", label: "Round" },
   ],
   seasons: [
     { key: "wins", label: "Wins" },
     { key: "played", label: "Played" },
-    { key: "entries", label: "Entries" },
+    { key: "entries", label: "Appearances" },
     { key: "titles", label: "Titles" },
     { key: "round", label: "Round" },
     { key: "percentage", label: "Percentage" },
@@ -109,9 +110,30 @@ const subTabs: Record<string, { key: string; label: string }[]> = {
 };
 
 function buildPath(record: string, sub?: string) {
-  let path = `/records/${encodeURIComponent(record)}`;
-  if (sub) path += `/${encodeURIComponent(sub)}`;
-  return path;
+  const slug = sub ? [record, sub] : [record];
+  const filters = record === 'timespan' && sub === 'rounds' ? { round: 'F' } : {};
+  return resolveRecordHref(slug, filters);
+}
+
+const MENU_SUBTAB_DEFAULTS: Record<string, string> = {
+  ages: 'oldest',
+  timespan: 'entries',
+  roundsonentries: 'titles',
+  same: 'wins',
+  seasons: 'wins',
+  atage: 'wins',
+  ageofnth: 'wins',
+  neededto: 'titles',
+  counterseasons: 'round',
+  streak: 'wins',
+  h2h: 'count',
+};
+
+function getMenuTooltip(record: string, sub?: string) {
+  const targetSub = sub || MENU_SUBTAB_DEFAULTS[record] || '';
+  const effectiveSubTabs = { ...MENU_SUBTAB_DEFAULTS, [record]: targetSub };
+  const selectedRounds = record === 'timespan' && targetSub === 'rounds' ? 'F' : '';
+  return generateRecordDescription(record, effectiveSubTabs, new Set(), new Set(), selectedRounds, null) || record;
 }
 
 export default function RecordsClient({ initialRecord = null, initialSubtab = null }: Props) {
@@ -255,14 +277,23 @@ export default function RecordsClient({ initialRecord = null, initialSubtab = nu
       <div className="mb-6 flex flex-wrap gap-2 bg-gray-800/40 rounded-2xl p-2 shadow-lg">
         {tabs.map(tab => (
           <div key={tab.key} className="relative">
-            <button onClick={() => handleTabClick(tab.key)} className={`px-4 py-2 rounded-xl ${activeTab === tab.key ? 'text-white' : 'text-gray-300 hover:text-white'}`}>
+            <button
+              onClick={() => handleTabClick(tab.key)}
+              title={getMenuTooltip(tab.key)}
+              className={`px-4 py-2 rounded-xl ${activeTab === tab.key ? 'text-white' : 'text-gray-300 hover:text-white'}`}
+            >
               {tab.label}
             </button>
 
             {subTabs[tab.key] && activeTab === tab.key && (
               <div className="mt-2 flex flex-col gap-1">
                 {subTabs[tab.key].map(st => (
-                  <button key={st.key} onClick={() => handleSubtabClick(tab.key, st.key)} className={`px-3 py-1 rounded ${activeSubTabsRef.current[tab.key] === st.key ? 'bg-gray-700 text-white' : 'text-gray-300 hover:text-white'}`}>
+                  <button
+                    key={st.key}
+                    onClick={() => handleSubtabClick(tab.key, st.key)}
+                    title={getMenuTooltip(tab.key, st.key)}
+                    className={`px-3 py-1 rounded ${activeSubTabsRef.current[tab.key] === st.key ? 'bg-gray-700 text-white' : 'text-gray-300 hover:text-white'}`}
+                  >
                     {st.label}
                   </button>
                 ))}

@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import RelatedRecordsLinks from '../../app/records/RelatedRecordsLinks';
 
 describe('RelatedRecordsLinks', () => {
-  it('does not propagate bestOf to destinations where the filter is invalid', () => {
+  it('keeps related links canonical and does not append bestOf query params', () => {
     const html = renderToStaticMarkup(
       <RelatedRecordsLinks
         currentTab="played"
@@ -13,8 +13,7 @@ describe('RelatedRecordsLinks', () => {
       />,
     );
 
-    expect(html).not.toContain('/records/roundsonentries/round?bestOf=1');
-    expect(html).toContain('/records/roundsonentries/round');
-    expect(html).toContain('/records/percentage?bestOf=1');
+    expect(html).not.toContain('?bestOf=1');
+    expect(html).toContain('/records/most-matches-played');
   });
 });

@@ -140,7 +140,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
       <Modal
         show={showModalEntries}
         onClose={() => setShowModalEntries(false)}
-        title="Top Entries in a Single Season"
+        title="Most Tournament Appearances in Single Season"
       >
         {renderTable(topSeasonEntries)}
       </Modal>

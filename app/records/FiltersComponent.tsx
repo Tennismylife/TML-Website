@@ -83,7 +83,7 @@ export default function FiltersComponent({
 
   const isSeasonsOrSame = activeTab === "same" || activeTab === "seasons";
   const isAtAgeLike = activeTab === "atage" || activeTab === "ageofnth";
-  const hideRoundAndBestOfSubtabs = ["oldest","youngest","oldestWinners","youngestWinners"];
+  const hideRoundAndBestOfSubtabs = ["oldest","youngest","oldestWinners","youngestWinners","oldestTitleWinners","youngestTitleWinners","oldest-winners","youngest-winners","oldest-title-winners","youngest-title-winners"];
 
   const shouldShowFilter = (filter: "levels" | "rounds" | "bestOf" | "surfaces") => {
     // Percentage → tutti i filtri attivi
@@ -126,8 +126,8 @@ export default function FiltersComponent({
       return ["levels","surfaces"].includes(filter);
     }
 
-    // Count → Level, Surface, Round
-    if (activeTab === "count") {
+    // Count / Rounds → Level, Surface, Round
+    if (activeTab === "count" || activeTab === "rounds") {
       return ["levels","surfaces","rounds"].includes(filter);
     }
 
@@ -221,7 +221,7 @@ export default function FiltersComponent({
     setSelectedSurfaces(new Set(surfaceTitles));
     setSelectedLevels(new Set(levelKeys));
 
-    setSelectedRounds(rounds || "");
+    setSelectedRounds(rounds || (activeTab === 'timespan' && activeSubTab === 'rounds' ? 'F' : ''));
     setSelectedBestOf(bestOf);
   }, [searchParams, activeTab, activeSubTab]);
 
@@ -234,6 +234,10 @@ export default function FiltersComponent({
     if (selectedRounds) params.set("round", String(selectedRounds).toUpperCase());
     // If we're on CounterSeasons → round subtab and URL has no round, preselect Finals (F)
     if (activeTab === 'counterseasons' && activeSubTab === 'round' && !(searchParams?.get('round'))) {
+      params.set('round', 'F');
+    }
+    // If we're on Timespan → rounds subtab and URL has no round, preselect Finals (F)
+    if (activeTab === 'timespan' && activeSubTab === 'rounds' && !(searchParams?.get('round'))) {
       params.set('round', 'F');
     }
     if (selectedBestOf !== null) params.set("bestOf", selectedBestOf.toString());
@@ -275,7 +279,10 @@ export default function FiltersComponent({
 
     const newCanon = canonicalize(params);
     const currentCanon = canonicalize(new URLSearchParams(window.location.search));
-    const newPath = `/records/${encodeURIComponent(activeTab)}${incomingSubtab ? `/${encodeURIComponent(incomingSubtab)}` : ""}`;
+    // Use the activeTab and activeSubTab props directly (they come from server-side canonical resolution)
+    // instead of parsing the pathname, which can be a canonical alias
+    const resolvedSubtab = activeSubTab || incomingSubtab || null;
+    const newPath = `/records/${encodeURIComponent(activeTab)}${resolvedSubtab ? `/${encodeURIComponent(resolvedSubtab)}` : ""}`;
 
     const desiredSearch = newCanon ? `?${newCanon}` : "";
     const desiredHref = `${window.location.origin}${newPath}${desiredSearch}`;

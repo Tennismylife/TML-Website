@@ -22,8 +22,6 @@ services:
       DATABASE_URL: postgres://postgres:postgres@db:5432/tennis
       # Canonical site origin used by middleware for redirects
       NEXT_PUBLIC_SITE_URL: 'https://stats.tennismylife.org'
-      # Internal base URL for server-side API fetches (avoids Docker loopback via external domain)
-      NEXT_PRIVATE_BASE_URL: 'http://localhost:3000'
     ports:
       - "3000:3000"
     volumes:

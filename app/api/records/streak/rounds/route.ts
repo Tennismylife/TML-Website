@@ -28,6 +28,7 @@ export async function GET(request: NextRequest) {
       : 100;
 
     const roundOrder: Record<string, number> = {
+      'RR': 0,
       'R128': 1,
       'R64': 2,
       'R32': 3,
@@ -44,7 +45,6 @@ export async function GET(request: NextRequest) {
           ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),
           ...(selectedBestOf.length > 0 && { best_of: { in: selectedBestOf } }),
           team_event: false,
-          round: { not: 'RR' },
         },
         select: {
           winner_id: true,
@@ -133,7 +133,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ streaks: await computeLive() });
     }
 
-    // Caso 2: solo round selezionato → usa la MV
+    // Single-round records use the materialized view; live calculation remains the fallback.
     if (selectedRounds.length === 1) {
       const minRound = selectedRounds[0];
 
@@ -150,7 +150,6 @@ export async function GET(request: NextRequest) {
       }));
 
       if (result.length > 0) {
-        // Attach slugs for MV result
         const ids = Array.from(new Set(result.map(r => String(r.player.id)))).filter(Boolean);
         if (ids.length > 0) {
           const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
@@ -160,9 +159,8 @@ export async function GET(request: NextRequest) {
         }
         return NextResponse.json({ streaks: result });
       }
-      // Fallback se MV vuota
+
       const live = await computeLive();
-      // Attach slugs to live result
       const liveIds = Array.from(new Set(live.map(r => String(r.player.id)))).filter(Boolean);
       if (liveIds.length > 0) {
         const rowsLive = await prisma.player.findMany({ where: { id: { in: liveIds } }, select: { id: true, slug: true } });

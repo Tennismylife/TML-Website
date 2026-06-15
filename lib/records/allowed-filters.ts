@@ -23,7 +23,7 @@ export function shouldShowRecordFilter(
 ): boolean {
   const isSeasonsOrSame = activeTab === 'same' || activeTab === 'seasons';
   const isAtAgeLike = activeTab === 'atage' || activeTab === 'ageofnth';
-  const hideRoundAndBestOfSubtabs = ['oldest', 'youngest', 'oldestWinners', 'youngestWinners'];
+  const hideRoundAndBestOfSubtabs = ['oldest', 'youngest', 'oldestWinners', 'youngestWinners', 'oldestTitleWinners', 'youngestTitleWinners', 'oldest-winners', 'youngest-winners', 'oldest-title-winners', 'youngest-title-winners'];
 
   // Percentage → all filters active
   if (activeTab === 'percentage') return true;
@@ -68,8 +68,8 @@ export function shouldShowRecordFilter(
     return ['levels', 'surfaces'].includes(filter);
   }
 
-  // Count → level, surface, round
-  if (activeTab === 'count') {
+  // Count / Rounds → level, surface, round
+  if (activeTab === 'count' || activeTab === 'rounds') {
     return ['levels', 'surfaces', 'rounds'].includes(filter);
   }
 

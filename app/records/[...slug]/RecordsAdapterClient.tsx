@@ -62,43 +62,6 @@ export default function RecordsAdapterClient({ record, sub, filters = {}, topDat
   const selectedBestOf = filters.bestOf ? Number(filters.bestOf) : null;
   const fetchEnabled = Boolean(params.toString());
 
-  // If a legacy 'subtab' query param is present (eg. /records/ages?subtab=oldestWinners),
-  // normalize it and convert it to the canonical path `/records/<record>/<subtab>` client-side
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    try {
-      const url = new URL(window.location.href);
-      const subParam = url.searchParams.get('subtab');
-      if (!subParam || !record) return;
-
-      const parts = window.location.pathname.split('/').filter(Boolean);
-      const recordsIndex = parts.indexOf('records');
-      const hasSubPath = recordsIndex >= 0 && parts.length > recordsIndex + 2;
-      if (hasSubPath) return; // already canonical
-
-      const normalizeSubtab = (s: string | null) => {
-        if (!s) return s;
-        if (s.includes('-')) return s;
-        return s.replace(/([a-z0-9])([A-Z])/g, '$1-$2').replace(/_/g, '-').toLowerCase();
-      };
-      const normalized = normalizeSubtab(subParam);
-
-      // Remove only the 'subtab' param from the query string and preserve others
-      url.searchParams.delete('subtab');
-      const remaining = url.searchParams.toString();
-
-      const newPath = `/records/${encodeURIComponent(record)}${normalized ? '/' + encodeURIComponent(normalized) : ''}${remaining ? '?' + remaining : ''}`;
-      // Replace history so we don't trigger a full navigation
-      try {
-        router.replace(newPath);
-      } catch (err) {
-        try { window.history.replaceState(null, '', newPath); } catch {}
-      }
-    } catch (e) {
-      // ignore malformed urls
-    }
-  }, [record, pathname, router]);
-
   // Synchronize search params in the URL without reloading the page (so client components using useSearchParams see them)
   useEffect(() => {
     if (!window) return;
@@ -125,7 +88,7 @@ export default function RecordsAdapterClient({ record, sub, filters = {}, topDat
   // Render the specialized component when possible, otherwise fall back to generic table client
   switch (record) {
     case 'wins':
-      return <Wins topWinners={topData || []} fetchEnabled={fetchEnabled} description={description} />;
+      return <Wins topWinners={topData || []} fetchEnabled={fetchEnabled} description={description} canonicalUrl={canonicalUrl} />;
     case 'played':
       return <Played topPlayed={topData || []} fetchEnabled={fetchEnabled} description={description} />;
     case 'titles':

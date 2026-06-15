@@ -4,11 +4,14 @@ import { redirect, notFound } from 'next/navigation';
 import { shouldShowRecordFilter } from '../../../lib/records/allowed-filters';
 import { Metadata } from 'next';
 import { metadataBase } from '../../../lib/site';
+import { getPlayerHref, getTourneyHref, createSlug } from '../../../lib/utils';
 import {
   evaluateRecordsPolicy,
   getRecordsPageTitle,
   getRecordsRobotsMeta,
   buildCanonicalQueryString,
+  getWhitelistEntryByCanonicalPath,
+  getCanonicalAliasEntryByCanonicalPath,
   type RecordFilters,
 } from '../../../lib/seo/records-policy';
 import { generateRecordDescription } from '../../../lib/generateRecordDescription';
@@ -17,6 +20,7 @@ import SyncUrlClient from '../../../components/SyncUrlClient';
 import RecordsTabs from '../RecordsTabs';
 import RecordsFilters from '../RecordsFilters.server';
 import RelatedRecordsLinks from '../RelatedRecordsLinks';
+import { resolveRecordHref } from '../record-links';
 
 import AgesServer from '../Ages/Ages.server';
 import AtAgeServer from '../AtAge/AtAge.server';
@@ -43,16 +47,17 @@ const RECORD_LABELS: Record<string, string> = {
   played: 'Played',
   titles: 'Titles',
   entries: 'Entries',
-  count: 'Count',
+  count: 'Rounds',
+  rounds: 'Rounds',
   percentage: 'Win Percentage',
   ages: 'Ages',
   streak: 'Streak',
   timespan: 'Timespan',
   atage: 'At Age',
   ageofnth: 'Age at Nth',
-  roundsonentries: 'Rounds on Entries',
-  same: 'Same Tournament',
-  seasons: 'Seasons',
+  roundsonentries: 'Results by Appearances',
+  same: 'Single Tournament',
+  seasons: 'Single Season',
   neededto: 'Needed To',
   counterseasons: 'Counter Seasons',
   h2h: 'Head-to-Head',
@@ -69,7 +74,7 @@ const SUB_LABELS: Record<string, Record<string, string>> = {
     'youngest-winners': 'Youngest Title Winners',
     youngestWinners: 'Youngest Title Winners',
   },
-  timespan: { entries: 'Between Entries', titles: 'Between Titles', rounds: 'Between Rounds' },
+  timespan: { entries: 'Between Entries', titles: 'Between Titles', rounds: 'Between Finals' },
   roundsonentries: { titles: 'Titles per Entry', round: 'Round per Entry' },
   same: { wins: 'Wins', played: 'Played', entries: 'Entries', titles: 'Titles', round: 'Round' },
   seasons: { wins: 'Wins per Season', titles: 'Titles per Season', percentage: 'Win % per Season', round: 'Rounds per Season' },
@@ -105,6 +110,33 @@ function kebabToKey(s?: string) {
   }
 
   return s;
+}
+
+function camelToKebab(s?: string) {
+  if (!s) return s;
+  return s.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+}
+
+function normalizeSlugSegments(slug: string[]) {
+  return slug.map((segment) => camelToKebab(segment) ?? segment);
+}
+
+function filtersToSearchParams(filters: RecordFilters): Record<string, string | string[]> {
+  const params: Record<string, string | string[]> = {};
+  if (filters.level?.length) params.level = filters.level.map(v => v.toUpperCase());
+  if (filters.surface?.length) params.surface = filters.surface.map(v => v.charAt(0).toUpperCase() + v.slice(1).toLowerCase());
+  if (filters.round) params.round = filters.round.toUpperCase();
+  if (filters.bestOf != null) params.bestOf = String(filters.bestOf);
+  if (filters.subtab) params.subtab = filters.subtab.toLowerCase();
+  return params;
+}
+
+function resolveAliasPath(slug: string[]) {
+  if (!slug || slug.length === 0) return null;
+  if (slug[0] === 'longest-winning-streak' || slug[0] === 'longest-win-streak') {
+    return getWhitelistEntryByCanonicalPath('/records/longest-winning-streak') ?? null;
+  }
+  return getCanonicalAliasEntryByCanonicalPath(`/records/${slug.join('/')}`) ?? getWhitelistEntryByCanonicalPath(`/records/${slug.join('/')}`) ?? null;
 }
 
 // Forza il rendering dinamico su ogni richiesta: i searchParams (surface, level, round, bestOf)
@@ -183,6 +215,29 @@ function canonicalizeParamsObj(sp: Record<string, any> | undefined) {
     .join('&');
 }
 
+function searchParamsToRecordFilters(sp: Record<string, string | string[] | undefined>): RecordFilters {
+  return {
+    level: Array.isArray(sp.level) ? sp.level.map(String) : sp.level ? [String(sp.level)] : undefined,
+    surface: Array.isArray(sp.surface) ? sp.surface.map(String) : sp.surface ? [String(sp.surface)] : undefined,
+    round: typeof sp.round === 'string' ? sp.round : undefined,
+    bestOf: sp.bestOf !== undefined ? Number(Array.isArray(sp.bestOf) ? sp.bestOf[0] : sp.bestOf) : undefined,
+  };
+}
+
+function buildPreservedParams(
+  sp: Record<string, string | string[] | undefined>,
+  excludedKeys: string[] = ['level', 'surface', 'round', 'bestOf', 'subtab'],
+) {
+  return Object.entries(sp)
+    .filter(([k, v]) => !excludedKeys.includes(k) && v !== undefined)
+    .flatMap(([k, v]) =>
+      Array.isArray(v)
+        ? v.map((val) => `${encodeURIComponent(k)}=${encodeURIComponent(String(val))}`)
+        : [`${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`],
+    )
+    .join('&');
+}
+
 async function fetchRecordData(record: string | null, sub?: string | null) {
   if (!record) return [];
   const path = `/api/records/${encodeURIComponent(record)}${sub ? '/' + encodeURIComponent(sub) : ''}`;
@@ -216,19 +271,33 @@ export async function generateMetadata(
   const p = await params;
   const sp = (await searchParams) ?? {};
   const slug = p.slug ?? [];
-  const record = slug[0] ?? null;
-  const sub = slug[1] ?? null;
+  if (slug[0] === 'seasons' && slug[1] === 'entries') {
+    redirect('/records/most-tournament-appearances-in-single-season');
+  }
+  if (slug[0] === 'streak' && slug[1] === 'wins') {
+    redirect('/records/longest-winning-streak');
+  }
+  if (slug[0] === 'longest-win-streak') {
+    redirect('/records/longest-winning-streak');
+  }
+  const aliasEntry = resolveAliasPath(slug);
+  const effectiveSearchParams = aliasEntry
+    ? { ...sp, ...filtersToSearchParams(aliasEntry.filters) }
+    : sp;
+  const record = aliasEntry ? aliasEntry.slug[0] : (slug[0] === 'rounds' ? 'count' : slug[0] ?? null);
+  const displayRecord = (record === 'count' || slug[0] === 'rounds') ? 'rounds' : record;
+  const sub = aliasEntry ? aliasEntry.slug[1] ?? null : slug[1] ?? null;
 
   const toArray = (v?: string | string[]) => v === undefined ? [] : Array.isArray(v) ? v : [v];
 
-  const selectedSurfaces = new Set(toArray(sp.surface ?? sp['surface[]']).map(
+  const selectedSurfaces = new Set(toArray(effectiveSearchParams.surface ?? effectiveSearchParams['surface[]']).map(
     s => typeof s === 'string'
       ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()
       : s
   ));
-  const selectedLevels = new Set(toArray(sp.level ?? sp['level[]']));
-  const selectedRounds = typeof sp.round === 'string' ? sp.round : '';
-  const selectedBestOf = sp.bestOf ? Number(sp.bestOf) : null;
+  const selectedLevels = new Set(toArray(effectiveSearchParams.level ?? effectiveSearchParams['level[]']));
+  const selectedRounds = typeof effectiveSearchParams.round === 'string' ? effectiveSearchParams.round : '';
+  const selectedBestOf = effectiveSearchParams.bestOf ? Number(effectiveSearchParams.bestOf) : null;
 
   const topParam = (() => {
     const v = sp.top;
@@ -257,12 +326,12 @@ export async function generateMetadata(
   })();
 
   // Use the subtab from URL if present, otherwise use default
-  const activeSubResolved = sub ? kebabToKey(sub) : (typeof sp.subtab === 'string' ? kebabToKey(sp.subtab) : undefined);
+  const activeSubResolved = sub ? kebabToKey(sub) : (typeof effectiveSearchParams.subtab === 'string' ? kebabToKey(effectiveSearchParams.subtab) : undefined);
   const activeSubTabsWithUrl = record && activeSubResolved 
     ? { ...activeSubTabsDefault, [record]: activeSubResolved }
     : activeSubTabsDefault;
 
-  const desc = generateRecordDescription(
+  const desc = aliasEntry?.title ?? generateRecordDescription(
     record,
     activeSubTabsWithUrl,
     selectedSurfaces,
@@ -308,19 +377,80 @@ export default async function SlugPage({ params, searchParams }: Props) {
   const p = await params;
   const sp = (await searchParams) ?? {};
   const slug = p.slug ?? [];
-  const record = slug[0] ?? null;
-  const sub = slug[1] ? kebabToKey(slug[1]) : null;
+  const aliasEntry = resolveAliasPath(slug);
+  const effectiveSearchParams = aliasEntry
+    ? { ...sp, ...filtersToSearchParams(aliasEntry.filters) }
+    : sp;
+  const rawRecord = aliasEntry ? aliasEntry.slug[0] : slug[0] ?? null;
+  const record = rawRecord === 'rounds' ? 'count' : rawRecord;
+  const displayRecord = (record === 'count' || slug[0] === 'rounds') ? 'rounds' : record;
+  const sub = aliasEntry ? aliasEntry.slug[1] ?? null : (slug[1] ? kebabToKey(slug[1]) : null);
+  const normalizedSlug = record ? [record, ...normalizeSlugSegments(slug.slice(1))] : [];
+  const navigationSlug = aliasEntry ? aliasEntry.slug : normalizedSlug;
+  const filtersForNavigation = searchParamsToRecordFilters(effectiveSearchParams);
+
+  // Debug logging
+  console.log('[SlugPage] slug:', slug, 'aliasEntry:', aliasEntry, 'record:', record, 'sub:', sub, 'effectiveSearchParams:', effectiveSearchParams);
+
+  // Redirect whitelist-based /records query URLs to their canonical path-based alias.
+  if (record) {
+    // Use normalized record (first segment) so 'rounds' → 'count' resolves to the correct alias.
+    const resolvedPath = resolveRecordHref(navigationSlug, filtersForNavigation);
+    const preservedParams = buildPreservedParams(sp);
+    const resolvedUrl = `${resolvedPath}${preservedParams ? `${resolvedPath.includes('?') ? '&' : '?'}${preservedParams}` : ''}`;
+    const currentPath = `/records/${normalizeSlugSegments(slug).join('/')}`;
+    const currentQuery = canonicalizeParamsObj(sp);
+    const targetQuery = canonicalizeParamsObj(
+      Object.fromEntries(new URLSearchParams(resolvedUrl.split('?')[1] ?? '').entries()),
+    );
+    // Extract just the path portion from resolvedPath for comparison (resolvedPath includes query string)
+    const resolvedPathOnly = resolvedPath.split('?')[0];
+    // Prevent redirect loop: only redirect if resolved URL is different from current URL
+    if (resolvedPathOnly !== currentPath || currentQuery !== targetQuery) {
+      // Additional safeguard: don't redirect if the resolved URL is the same as current
+      const currentFullUrl = `${currentPath}${currentQuery ? `?${currentQuery}` : ''}`;
+      if (resolvedUrl !== currentFullUrl) {
+        redirect(resolvedUrl);
+      }
+    }
+  }
 
   const hasQueryParams = Object.keys(sp || {}).length > 0;
 
-  // Redirect streak/round to default round=F if no round param is set
-  if (record === 'streak' && (sub === 'round') && !sp.round) {
-    const otherParams = Object.entries(sp)
-      .filter(([k]) => k !== 'round')
-      .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`)
-      .join('&');
+  // Redirect streak/round to default round=F if no round param is set.
+  // Skip when aliasEntry already supplies the round filter (e.g. /records/longest-streak-of-consecutive-finals).
+  if (!aliasEntry && record === 'streak' && (sub === 'round') && !sp.round) {
+    const otherParams = buildPreservedParams(sp, ['round']);
     const qs = otherParams ? `round=F&${otherParams}` : 'round=F';
     redirect(`/records/streak/round?${qs}`);
+  }
+
+  // Redirect roundsonentries/round to default round=F if no round param is set.
+  if (!aliasEntry && record === 'roundsonentries' && sub === 'round' && !sp.round) {
+    const otherParams = buildPreservedParams(sp, ['round']);
+    const qs = otherParams ? `round=F&${otherParams}` : 'round=F';
+    redirect(`/records/roundsonentries/round?${qs}`);
+  }
+
+  // Redirect /records/rounds (no round param) to /records/rounds?round=F.
+  if (!aliasEntry && rawRecord === 'rounds' && !sp.round) {
+    const otherParams = buildPreservedParams(sp, ['round']);
+    const qs = otherParams ? `round=F&${otherParams}` : 'round=F';
+    redirect(`/records/rounds?${qs}`);
+  }
+
+  // Redirect same/round to default round=F if no round param is set.
+  if (!aliasEntry && record === 'same' && sub === 'round' && !sp.round) {
+    const otherParams = buildPreservedParams(sp, ['round']);
+    const qs = otherParams ? `round=F&${otherParams}` : 'round=F';
+    redirect(`/records/same/round?${qs}`);
+  }
+
+  // Redirect seasons/round to default round=F if no round param is set.
+  if (!aliasEntry && record === 'seasons' && sub === 'round' && !sp.round) {
+    const otherParams = buildPreservedParams(sp, ['round']);
+    const qs = otherParams ? `round=F&${otherParams}` : 'round=F';
+    redirect(`/records/seasons/round?${qs}`);
   }
 
   const activeSubTabsDefault: Record<string,string> = {
@@ -337,19 +467,8 @@ export default async function SlugPage({ params, searchParams }: Props) {
     h2h: 'count',
   };
 
-  // Redirect query-based subtab URLs to canonical path-based routes.
-  if (record && record in activeSubTabsDefault && !sub && typeof sp.subtab === 'string') {
-    const subtab = kebabToKey(sp.subtab as string);
-    const otherParams = Object.entries(sp)
-      .filter(([k]) => k !== 'subtab')
-      .flatMap(([k, v]) =>
-        Array.isArray(v)
-          ? v.map(val => `${encodeURIComponent(k)}=${encodeURIComponent(String(val))}`)
-          : [`${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`]
-      )
-      .join('&');
-    const qs = otherParams ? `${otherParams}` : '';
-    redirect(`/records/${record}/${subtab}${qs ? `?${qs}` : ''}`);
+  if (!aliasEntry && slug[0] === 'streak' && slug[1] === 'wins') {
+    redirect('/records/longest-winning-streak');
   }
 
   // Records that have subtabs must not be navigable at the root level — redirect to the default subtab
@@ -362,12 +481,12 @@ export default async function SlugPage({ params, searchParams }: Props) {
   // this record/sub, the combination doesn't exist → return 404.
   if (record) {
     const toArr = (v?: string | string[]) => v === undefined ? [] : Array.isArray(v) ? v : [v];
-    const effectiveSubForValidation = sub ?? (typeof sp.subtab === 'string' ? kebabToKey(sp.subtab) : undefined);
+    const effectiveSubForValidation = sub ?? (typeof effectiveSearchParams.subtab === 'string' ? kebabToKey(effectiveSearchParams.subtab) : undefined);
 
-    const hasLevel   = toArr(sp.level   ?? sp['level[]']).filter(Boolean).length > 0;
-    const hasSurface = toArr(sp.surface ?? sp['surface[]']).filter(Boolean).length > 0;
-    const hasRound   = typeof sp.round  === 'string' && sp.round  !== '';
-    const hasBestOf  = typeof sp.bestOf === 'string' && sp.bestOf !== '';
+    const hasLevel   = toArr(effectiveSearchParams.level   ?? effectiveSearchParams['level[]']).filter(Boolean).length > 0;
+    const hasSurface = toArr(effectiveSearchParams.surface ?? effectiveSearchParams['surface[]']).filter(Boolean).length > 0;
+    const hasRound   = typeof effectiveSearchParams.round  === 'string' && effectiveSearchParams.round  !== '';
+    const hasBestOf  = typeof effectiveSearchParams.bestOf === 'string' && effectiveSearchParams.bestOf !== '';
 
     if (
       (hasLevel   && !shouldShowRecordFilter('levels',   record, effectiveSubForValidation)) ||
@@ -436,6 +555,7 @@ export default async function SlugPage({ params, searchParams }: Props) {
     titles: TitlesServer,
     counterseasons: CounterSeasonsServer,
     count: CountServer,
+    rounds: CountServer,
     played: PlayedServer,
     entries: EntriesServer,
     percentage: PercentageServer,
@@ -449,11 +569,11 @@ export default async function SlugPage({ params, searchParams }: Props) {
   if (ServerComponent) {
     const toArray = (v?: string | string[]) => v === undefined ? [] : Array.isArray(v) ? v : [v];
 
-    const selectedSurfaces = new Set(toArray(sp.surface ?? sp['surface[]']));
-    const selectedLevels = new Set(toArray(sp.level ?? sp['level[]']));
-    const selectedRounds = typeof sp.round === 'string' ? sp.round : '';
-    const selectedBestOf = sp.bestOf ? Number(sp.bestOf) : null;
-    const activeSubResolved = sub ?? (typeof sp.subtab === 'string' ? kebabToKey(sp.subtab) : undefined);
+    const selectedSurfaces = new Set(toArray(effectiveSearchParams.surface ?? effectiveSearchParams['surface[]']));
+    const selectedLevels = new Set(toArray(effectiveSearchParams.level ?? effectiveSearchParams['level[]']));
+    const selectedRounds = typeof effectiveSearchParams.round === 'string' ? effectiveSearchParams.round : '';
+    const selectedBestOf = effectiveSearchParams.bestOf ? Number(effectiveSearchParams.bestOf) : null;
+    const activeSubResolved = sub ?? (typeof effectiveSearchParams.subtab === 'string' ? kebabToKey(effectiveSearchParams.subtab) : undefined);
 
     // Default the displayed round to Finals (F) when visiting CounterSeasons → round or Streak → round without explicit round param
     const selectedRoundsForDesc =
@@ -462,18 +582,18 @@ export default async function SlugPage({ params, searchParams }: Props) {
         : selectedRounds;
 
     const nParam = (() => {
-      const v = (sp.n ?? sp.seasons);
+      const v = (effectiveSearchParams.n ?? effectiveSearchParams.seasons);
       const parsed = v !== undefined ? Number(Array.isArray(v) ? v[0] : v) : undefined;
       return Number.isFinite(parsed) ? parsed : undefined;
     })();
 
     const topParam = (() => {
-      const v = sp.top;
+      const v = effectiveSearchParams.top;
       const parsed = v !== undefined ? Number(Array.isArray(v) ? v[0] : v) : undefined;
       return Number.isFinite(parsed) ? parsed : undefined;
     })();
 
-    const description = generateRecordDescription(
+    const description = aliasEntry?.title ?? generateRecordDescription(
       record,
       { ...activeSubTabsDefault, [record || '']: activeSubResolved || activeSubTabsDefault[record || ''] },
       selectedSurfaces,
@@ -504,12 +624,9 @@ export default async function SlugPage({ params, searchParams }: Props) {
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', metadataBase).toString() },
         { '@type': 'ListItem', position: 2, name: 'Records', item: new URL('/records', metadataBase).toString() },
-        // Se c'è un subtab, il livello intermedio /records/${record} è un redirect: si salta e il subtab va in position 3
-        ...(record && activeSubResolved
-          ? [{ '@type': 'ListItem', position: 3, name: subLabelResolved ?? activeSubResolved, item: new URL(`/records/${record}/${activeSubResolved}`, metadataBase).toString() }]
-          : record
-            ? [{ '@type': 'ListItem', position: 3, name: RECORD_LABELS[record] ?? record, item: new URL(`/records/${record}`, metadataBase).toString() }]
-            : []),
+        ...(record
+          ? [{ '@type': 'ListItem', position: 3, name: (activeSubResolved ? subLabelResolved ?? activeSubResolved : RECORD_LABELS[record] ?? record), item: new URL(canonicalFull, metadataBase).toString() }]
+          : []),
       ],
     };
 
@@ -540,16 +657,9 @@ export default async function SlugPage({ params, searchParams }: Props) {
             {record && (
               <>
                 <span aria-hidden="true" className="mx-1 text-gray-600">/</span>
-                {activeSubResolved
-                  ? <Link href={`/records/${record}`} className="hover:text-white transition-colors">{RECORD_LABELS[record] ?? record}</Link>
-                  : <span className="text-white" aria-current="page">{RECORD_LABELS[record] ?? record}</span>
-                }
-              </>
-            )}
-            {record && activeSubResolved && (
-              <>
-                <span aria-hidden="true" className="mx-1 text-gray-600">/</span>
-                <span className="text-white" aria-current="page">{subLabelResolved}</span>
+                <span className="text-white" aria-current="page">
+                  {activeSubResolved ? (subLabelResolved ?? activeSubResolved) : (RECORD_LABELS[displayRecord] ?? displayRecord)}
+                </span>
               </>
             )}
           </nav>
@@ -561,15 +671,21 @@ export default async function SlugPage({ params, searchParams }: Props) {
                 filtersForPolicy,
                 description,
               ).replace(/ \| TennisMyLife$/, '').replace(/ \| Tennis Records$/, '');
+              const HeadingTag = record === 'h2h' ? 'h2' : 'h1';
               return h1 ? (
-                <h1 className="mb-10 text-center text-3xl sm:text-4xl font-semibold text-white">
+                <HeadingTag className="mb-10 text-center text-3xl sm:text-4xl font-semibold text-white">
                   {h1}
-                </h1>
+                </HeadingTag>
               ) : null;
             })()}
-            <RecordsTabs activeTab={record} activeSubTab={activeSubResolved || null} />
-            <RecordsFilters activeTab={record} activeSubTab={activeSubResolved || null} searchParams={sp} />
-            <ServerComponent searchParams={sp} record={record} sub={activeSubResolved} canonicalUrl={canonicalFull} description={description} />
+            <RecordsTabs activeTab={displayRecord} activeSubTab={activeSubResolved || null} />
+            <RecordsFilters
+              activeTab={record}
+              activeSubTab={activeSubResolved || null}
+              currentPath={`/records/${slug.map((segment) => encodeURIComponent(segment)).join('/')}`}
+              searchParams={effectiveSearchParams}
+            />
+            <ServerComponent searchParams={effectiveSearchParams} record={record} sub={activeSubResolved} canonicalUrl={canonicalFull} description={description} />
             <RelatedRecordsLinks
               currentTab={record}
               currentSub={activeSubResolved || null}

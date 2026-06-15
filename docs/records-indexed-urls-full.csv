@@ -27,7 +27,7 @@ url,tipo,filtri,index,in_sitemap
 /records/seasons,base,0,true,true
 /records/seasons/wins,base,0,true,true
 /records/seasons/played,base,0,true,true
-/records/seasons/entries,base,0,true,true
+/records/most-tournament-appearances-single-season,base,0,true,true
 /records/seasons/titles,base,0,true,true
 /records/seasons/round,base,0,true,true
 /records/seasons/percentage,base,0,true,true
@@ -177,11 +177,11 @@ url,tipo,filtri,index,in_sitemap
 /records/seasons/played?level=250,1-filtro,1,true,false
 /records/seasons/played?level=500,1-filtro,1,true,false
 /records/seasons/played?level=D,1-filtro,1,true,false
-/records/seasons/entries?level=G,1-filtro,1,true,false
-/records/seasons/entries?level=M,1-filtro,1,true,false
-/records/seasons/entries?level=F,1-filtro,1,true,false
-/records/seasons/entries?level=250,1-filtro,1,true,false
-/records/seasons/entries?level=500,1-filtro,1,true,false
+/records/most-tournament-appearances-single-season?level=G,1-filtro,1,true,false
+/records/most-tournament-appearances-single-season?level=M,1-filtro,1,true,false
+/records/most-tournament-appearances-single-season?level=F,1-filtro,1,true,false
+/records/most-tournament-appearances-single-season?level=250,1-filtro,1,true,false
+/records/most-tournament-appearances-single-season?level=500,1-filtro,1,true,false
 /records/seasons/titles?level=G,whitelist-1f,1,true,true
 /records/seasons/titles?level=M,1-filtro,1,true,false
 /records/seasons/titles?level=F,1-filtro,1,true,false
@@ -340,10 +340,10 @@ url,tipo,filtri,index,in_sitemap
 /records/seasons/played?surface=Clay,1-filtro,1,true,false
 /records/seasons/played?surface=Grass,1-filtro,1,true,false
 /records/seasons/played?surface=Carpet,1-filtro,1,true,false
-/records/seasons/entries?surface=Hard,1-filtro,1,true,false
-/records/seasons/entries?surface=Clay,1-filtro,1,true,false
-/records/seasons/entries?surface=Grass,1-filtro,1,true,false
-/records/seasons/entries?surface=Carpet,1-filtro,1,true,false
+/records/most-tournament-appearances-single-season?surface=Hard,1-filtro,1,true,false
+/records/most-tournament-appearances-single-season?surface=Clay,1-filtro,1,true,false
+/records/most-tournament-appearances-single-season?surface=Grass,1-filtro,1,true,false
+/records/most-tournament-appearances-single-season?surface=Carpet,1-filtro,1,true,false
 /records/seasons/titles?surface=Hard,1-filtro,1,true,false
 /records/seasons/titles?surface=Clay,1-filtro,1,true,false
 /records/seasons/titles?surface=Grass,1-filtro,1,true,false
@@ -463,8 +463,8 @@ url,tipo,filtri,index,in_sitemap
 /records/seasons/wins?bestOf=5,1-filtro,1,true,false
 /records/seasons/played?bestOf=3,1-filtro,1,true,false
 /records/seasons/played?bestOf=5,1-filtro,1,true,false
-/records/seasons/entries?bestOf=3,1-filtro,1,true,false
-/records/seasons/entries?bestOf=5,1-filtro,1,true,false
+/records/most-tournament-appearances-single-season?bestOf=3,1-filtro,1,true,false
+/records/most-tournament-appearances-single-season?bestOf=5,1-filtro,1,true,false
 /records/seasons/percentage?bestOf=3,1-filtro,1,true,false
 /records/seasons/percentage?bestOf=5,1-filtro,1,true,false
 /records/atage/wins?bestOf=3,1-filtro,1,true,false
@@ -531,6 +531,7 @@ https://stats.tennismylife.org/records/entries?level=G&surface=Clay
 https://stats.tennismylife.org/records/entries?level=G&surface=Grass
 https://stats.tennismylife.org/records/entries?level=M&surface=Hard
 https://stats.tennismylife.org/records/entries?level=M&surface=Carpet
+
 
 
 

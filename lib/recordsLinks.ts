@@ -1,3 +1,6 @@
+import { type RecordFilters } from './seo/records-policy';
+import { resolveRecordHref } from '../app/records/record-links';
+
 type FilterValue = string | string[];
 
 export interface RecordLink {
@@ -12,18 +15,18 @@ export function generateRecordLink(
   sub?: string,
   filters?: Record<string, FilterValue>
 ): string {
-  let path = `/records/${encodeURIComponent(record)}`;
-  if (sub) path += `/${encodeURIComponent(sub)}`;
-  if (filters && Object.keys(filters).length > 0) {
-    const params = new URLSearchParams();
-    for (const [k, v] of Object.entries(filters)) {
-      if (v == null) continue;
-      if (Array.isArray(v)) v.forEach(x => params.append(k, x));
-      else params.append(k, String(v));
-    }
-    path += `?${params.toString()}`;
+  const recordFilters: RecordFilters = {};
+  for (const [k, v] of Object.entries(filters ?? {})) {
+    if (v == null) continue;
+    const values = Array.isArray(v) ? v.map(String) : [String(v)];
+    if (k === 'level') recordFilters.level = values;
+    if (k === 'surface') recordFilters.surface = values;
+    if (k === 'round') recordFilters.round = values[0];
+    if (k === 'bestOf') recordFilters.bestOf = Number(values[0]);
+    if (k === 'subtab') recordFilters.subtab = values[0];
   }
-  return path;
+
+  return resolveRecordHref([record, ...(sub ? [sub] : [])], recordFilters);
 }
 
 export function generateAllRecordLinks(

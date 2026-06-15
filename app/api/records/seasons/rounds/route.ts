@@ -43,10 +43,13 @@ export async function GET(request: NextRequest) {
 
     // --- Caso 1: 0 o 1 filtro → usa MV ---
     if (selectedSurfaces.length + selectedLevels.length + selectedRounds.length <= 1) {
-      const rounds = await prisma.mVSameSeasonRounds.findMany({
-        orderBy: { total_rounds: 'desc' },
-        take: limit,
-      });
+      const useFilteredSort = selectedSurfaces.length + selectedLevels.length + selectedRounds.length === 1;
+      const rounds = useFilteredSort
+        ? await prisma.mVSameSeasonRounds.findMany()
+        : await prisma.mVSameSeasonRounds.findMany({
+            orderBy: { total_rounds: 'desc' },
+            take: limit,
+          });
 
       if (!rounds.length) return jsonResponse([]);
 
@@ -89,6 +92,11 @@ export async function GET(request: NextRequest) {
           });
         }
       });
+
+      if (useFilteredSort) {
+        finalRounds.sort((a, b) => b.total_rounds - a.total_rounds);
+        finalRounds = finalRounds.slice(0, limit);
+      }
     }
 
     // --- Caso 2: ≥2 filtri → query diretta su Match ---

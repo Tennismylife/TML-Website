@@ -27,7 +27,7 @@ url,tipo,filtri,index,in_sitemap,titolo_seo
 /records/seasons,base,0,true,true,Most wins in same season | Tennis Records
 /records/seasons/wins,base,0,true,true,Most wins in same season | Tennis Records
 /records/seasons/played,base,0,true,true,Most matches played in same season | Tennis Records
-/records/seasons/entries,base,0,true,true,Most entries in same season | Tennis Records
+/records/most-tournament-appearances-single-season,base,0,true,true,Most entries in same season | Tennis Records
 /records/seasons/titles,base,0,true,true,Most titles in same season | Tennis Records
 /records/seasons/round,base,0,true,true,Most round in same season | Tennis Records
 /records/seasons/percentage,base,0,true,true,Best percentage in a season | Tennis Records
@@ -112,3 +112,4 @@ url,tipo,filtri,index,in_sitemap,titolo_seo
 /records/timespan/titles?level=G,whitelist,1,true,true,Longest Gap Between Two Grand Slam Titles – All-Time ATP Records | Tennis Records
 /records/seasons/titles?level=G,whitelist,1,true,true,Most Grand Slam Titles in a Single Season – All-Time ATP Records | Tennis Records
 /records/seasons/wins?level=G,whitelist,1,true,true,Most Grand Slam Match Wins in a Single Season – All-Time ATP Records | Tennis Records
+

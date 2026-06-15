@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateRecordDescription } from '@/lib/generateRecordDescription';
 import { keyFromParamLabel } from '@/lib/levels';
+import { buildContextualRecordsPath, resolveCanonicalRecordHref, resolveRecordHref } from './record-links';
 
 type Tab = { key: string; label: string };
 
@@ -36,15 +37,15 @@ const kebabToKey = (s: string | undefined) => {
 const tabs: Tab[] = [
   { key: 'wins', label: 'Wins' },
   { key: 'played', label: 'Played' },
-  { key: 'count', label: 'Count' },
+  { key: 'rounds', label: 'Rounds' },
   { key: 'titles', label: 'Titles' },
-  { key: 'entries', label: 'Entries' },
+  { key: 'entries', label: 'Appearances' },
   { key: 'ages', label: 'Ages' },
   { key: 'timespan', label: 'Timespan' },
   { key: 'percentage', label: 'Percentage' },
-  { key: 'roundsonentries', label: 'Rounds on Entries' },
-  { key: 'same', label: 'Same' },
-  { key: 'seasons', label: 'Seasons' },
+  { key: 'roundsonentries', label: 'Results by Appearances' },
+  { key: 'same', label: 'Single Tournament' },
+  { key: 'seasons', label: 'Single Season' },
   { key: 'atage', label: 'At Age' },
   { key: 'ageofnth', label: 'Age at Nth' },
   { key: 'neededto', label: 'Needed To' },
@@ -52,6 +53,37 @@ const tabs: Tab[] = [
   { key: 'h2h', label: 'H2H' },
   { key: 'streak', label: 'Streak' },
 ];
+
+const TAB_CANONICAL_HREF: Record<string, string> = {
+  wins: '/records/most-career-wins',
+  played: '/records/most-matches-played',
+  rounds: '/records/most-finals-reached',
+  titles: '/records/most-atp-titles',
+  entries: '/records/most-appearances',
+  percentage: '/records/best-winning-percentage',
+  ages: '/records/oldest-players-in-main-draw',
+  timespan: '/records/longest-appearance-timespan',
+  roundsonentries: '/records/most-titles-per-appearance',
+  same: '/records/most-wins-at-single-tournament',
+  seasons: '/records/most-wins-in-single-season',
+  counterseasons: resolveCanonicalRecordHref(['counterseasons', 'round'], { round: 'F' }) ?? resolveRecordHref(['counterseasons', 'round'], { round: 'F' }),
+  streak: '/records/longest-winning-streak',
+  h2h: '/records/most-played-h2h',
+};
+
+const ACTIVE_SUBTAB_DEFAULTS: Record<string, string> = {
+  ages: 'oldest',
+  timespan: 'entries',
+  roundsonentries: 'titles',
+  same: 'wins',
+  seasons: 'wins',
+  atage: 'wins',
+  ageofnth: 'wins',
+  neededto: 'titles',
+  counterseasons: 'round',
+  streak: 'wins',
+  h2h: 'count',
+};
 
 const subTabs: Record<string, Tab[]> = {
   ages: [
@@ -61,7 +93,7 @@ const subTabs: Record<string, Tab[]> = {
     { key: 'youngest-winners', label: 'Youngest Title Winners' },
   ],
   timespan: [
-    { key: 'entries', label: '2 entries' },
+    { key: 'entries', label: '2 appearances' },
     { key: 'titles', label: '2 titles' },
     { key: 'rounds', label: '2 rounds' },
   ],
@@ -72,14 +104,14 @@ const subTabs: Record<string, Tab[]> = {
   same: [
     { key: 'wins', label: 'Wins' },
     { key: 'played', label: 'Played' },
-    { key: 'entries', label: 'Entries' },
+    { key: 'entries', label: 'Appearances' },
     { key: 'titles', label: 'Titles' },
     { key: 'round', label: 'Round' },
   ],
   seasons: [
     { key: 'wins', label: 'Wins' },
     { key: 'played', label: 'Played' },
-    { key: 'entries', label: 'Entries' },
+    { key: 'entries', label: 'Appearances' },
     { key: 'titles', label: 'Titles' },
     { key: 'round', label: 'Round' },
     { key: 'percentage', label: 'Percentage' },
@@ -144,20 +176,7 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
       const camel = kebabToKey(activeSubTab || undefined);
       const active = activeTabProp || null;
       if (active) {
-        const activeSubTabsDefault: Record<string,string> = {
-          ages: 'oldest',
-          timespan: 'entries',
-          roundsonentries: 'titles',
-          same: 'wins',
-          seasons: 'wins',
-          atage: 'wins',
-          ageofnth: 'wins',
-          neededto: 'titles',
-          counterseasons: 'round',
-          streak: 'wins',
-          h2h: 'count',
-        };
-        const merged = { ...activeSubTabsDefault, [active]: camel };
+        const merged = { ...ACTIVE_SUBTAB_DEFAULTS, [active]: camel };
         const mergedClean = Object.fromEntries(Object.entries(merged).map(([k, v]) => [k, v ?? ''])) as Record<string, string>;
         const desc = generateRecordDescription(active, mergedClean, selectedSurfaces, selectedLevels as any, selectedRounds as any, selectedBestOf as any);
         if (desc && typeof document !== 'undefined') {
@@ -165,8 +184,8 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
           const currentIsSiteSeo = typeof currentTitle === 'string' && /\| Tennis/.test(currentTitle);
           if (!currentIsSiteSeo) {
             document.title = `${desc} | Tennis Records`;
-            // reapply after short delay to avoid being overwritten by other flows
-            t = setTimeout(() => { if (typeof document !== 'undefined') document.title = `${desc} | Tennis Records`; }, 200);
+            // reapply after short delay only if the server hasn't already set a proper SEO title
+            t = setTimeout(() => { if (typeof document !== 'undefined' && !/\| Tennis Records/.test(document.title || '')) document.title = `${desc} | Tennis Records`; }, 200);
           }
         }
       }
@@ -188,12 +207,28 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
   }, []);
 
   const tabClass = (key: string) =>
-    `px-4 py-2 rounded-xl font-medium transition-colors duration-200 ${key === activeTab ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700'}`;
+    `px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${key === activeTab ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700'}`;
 
   const subTabClass = (key: string) => {
     const camel = kebabToKey(key);
     return `px-3 py-1 rounded transition-colors duration-150 ${camel === activeSubTab ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}`;
   }
+
+  const getSubTabHref = (tabKey: string, subKey: string) => {
+    const filters =
+      (tabKey === 'timespan' && subKey === 'rounds') ||
+      (tabKey === 'seasons' && subKey === 'round')
+        ? { round: 'F' }
+        : {};
+    return resolveRecordHref([tabKey, subKey], filters);
+  };
+
+  const getMenuTooltip = (tabKey: string, subKey?: string) => {
+    const effectiveSub = kebabToKey(subKey || (subTabs[tabKey]?.[0]?.key ?? ACTIVE_SUBTAB_DEFAULTS[tabKey] ?? ''));
+    const merged = { ...ACTIVE_SUBTAB_DEFAULTS, [tabKey]: effectiveSub || '' };
+    const selectedRounds = tabKey === 'timespan' && subKey === 'rounds' ? 'F' : '';
+    return generateRecordDescription(tabKey, merged, new Set(), new Set(), selectedRounds, null) || tabKey;
+  };
 
   // When a subtab is clicked, update the browser title immediately to match the description
   function handleSubtabClick(tabKey: string, subKey: string) {
@@ -235,7 +270,7 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
   }
 
   return (
-    <nav ref={navRef} className="mb-4 flex flex-wrap gap-3 bg-gray-800/40 rounded-2xl p-4 shadow-lg w-full justify-center" aria-label="Record tabs">
+    <nav ref={navRef} className="mb-4 flex flex-wrap gap-2 bg-gray-800/40 rounded-2xl p-3 shadow-lg w-full justify-center" aria-label="Record tabs">
       {tabs.map(tab => {
         const firstSub = subTabs[tab.key]?.[0]?.key;
         const isActive = tab.key === activeTab;
@@ -247,7 +282,12 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
           onMouseLeave={() => setHoveredTab(null)}
         >
           <Link
-            href={firstSub ? `/records/${encodeURIComponent(tab.key)}/${encodeURIComponent(firstSub)}` : `/records/${encodeURIComponent(tab.key)}`}
+            href={TAB_CANONICAL_HREF[tab.key] ?? (
+              firstSub
+                ? getSubTabHref(tab.key, firstSub)
+                : buildContextualRecordsPath(tab.key)
+            )}
+            title={getMenuTooltip(tab.key, firstSub)}
             onClick={(e) => {
               setHoveredTab(null);
               if (firstSub) {
@@ -261,7 +301,7 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
                 handleSubtabClick(tab.key, firstSub);
               }
             }}
-            className={`px-4 py-2 rounded-xl font-medium transition-colors duration-200 ${isActive ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700'}`}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${isActive ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700'}`}
           >
             {tab.label}
           </Link>
@@ -278,7 +318,8 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
                   {subTabs[tab.key].map(st => (
                     <Link
                       key={st.key}
-                      href={`/records/${encodeURIComponent(tab.key)}/${encodeURIComponent(st.key)}`}
+                      href={getSubTabHref(tab.key, st.key)}
+                      title={getMenuTooltip(tab.key, st.key)}
                       onClick={() => { setActiveTab(null); setHoveredTab(null); handleSubtabClick(tab.key, st.key); }}
                       className={subTabClass(st.key)}
                     >

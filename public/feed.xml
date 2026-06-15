@@ -4,13 +4,13 @@
   <title>Tennis My Life — Blog</title>
   <link>https://stats.tennismylife.org/blog</link>
   <description>Articles and commentary on tennis statistics.</description>
-  <lastBuildDate>Fri, 10 Apr 2026 16:53:37 GMT</lastBuildDate>
+  <lastBuildDate>Sun, 14 Jun 2026 22:24:12 GMT</lastBuildDate>
   <item>
-    <title>2026-02-04-alcaraz-wins-australian-open-youngest-career-grand-slam</title>
+    <title>Carlos Alcaraz Wins Australian Open 2026: Youngest Career Grand Slam at 22</title>
     <link>https://stats.tennismylife.org/blog/2026-02-04-alcaraz-wins-australian-open-youngest-career-grand-slam</link>
     <guid isPermaLink="true">https://stats.tennismylife.org/blog/2026-02-04-alcaraz-wins-australian-open-youngest-career-grand-slam</guid>
-    <pubDate>Fri, 10 Apr 2026 16:53:37 GMT</pubDate>
-    <description></description>
+    <pubDate>Wed, 04 Feb 2026 00:00:00 GMT</pubDate>
+    <description>Carlos Alcaraz defeats Novak Djokovic to win the 2026 Australian Open, becoming the youngest man to complete a Career Grand Slam at 22.</description>
     <content:encoded><![CDATA[<p>import Callout from '@/components/mdx/Callout' import Chart from '@/components/mdx/Chart'</p>
 <p>&lt;div className="text-center"&gt; &lt;picture&gt; &lt;source srcSet="/blog/img/alcaraz-ao-2026-400.webp" media="(max-width:640px)" type="image/webp" /&gt; &lt;source srcSet="/blog/img/alcaraz-ao-2026-800.webp" type="image/webp" /&gt; &lt;img src="/blog/img/alcaraz-ao-2026-400.jpg" alt="Illustration of Carlos Alcaraz celebrating his Australian Open 2026 victory" className="mx-auto max-w-xs rounded-md mb-6" loading="lazy" /&gt; &lt;/picture&gt; &lt;/div&gt;</p>
 <p>&lt;p&gt; At &lt;strong&gt;22 years and 272 days&lt;/strong&gt;, &lt;a href="/players/carlos-alcaraz"&gt;Carlos Alcaraz&lt;/a&gt; captured the &lt;a href="/tournaments/australian-open/2026"&gt;Australian Open 2026&lt;/a&gt;, defeating &lt;a href="/players/novak-djokovic"&gt;Novak Djokovic&lt;/a&gt;. After dropping the first set, Alcaraz elevated his game, dominated key rallies, and controlled the pivotal moments of the match. For reference, the full &lt;strong&gt;Alcaraz Australian Open 2026 result&lt;/strong&gt; and the specific &lt;a href="/h2h/novak-djokovic-vs-carlos-alcaraz"&gt;&lt;strong&gt;Alcaraz vs Djokovic 2026 final score&lt;/strong&gt;&lt;/a&gt; were 2–6, 6–2, 6–3, 7–5. &lt;/p&gt;</p>
@@ -31,11 +31,11 @@
 <p>&lt;p&gt; *Discover more insights and analysis in the &lt;a href="/blog"&gt;Blog index&lt;/a&gt;.* &lt;/p&gt;</p>]]></content:encoded>
   </item>
   <item>
-    <title>championship-points-saved-win-title</title>
+    <title>Championship points saved to win an ATP Title</title>
     <link>https://stats.tennismylife.org/blog/championship-points-saved-win-title</link>
     <guid isPermaLink="true">https://stats.tennismylife.org/blog/championship-points-saved-win-title</guid>
-    <pubDate>Fri, 10 Apr 2026 16:53:37 GMT</pubDate>
-    <description></description>
+    <pubDate>Mon, 16 Feb 2026 00:00:00 GMT</pubDate>
+    <description>Complete list of ATP players who saved championship points to win a title. Historical tennis statistics and analysis.</description>
     <content:encoded><![CDATA[<h2>Chronological list</h2>
 <p>&lt;style&gt;{` .overflow-x-auto span.inline-block::after { content: ""; display: inline-block; width: .35rem; } .overflow-x-auto span.inline-block + a { margin-left: .15rem; } .overflow-x-auto td:first-child a { font-weight: 700; } `}&lt;/style&gt;</p>
 <p>&lt;p className="text-sm text-gray-300 mb-4"&gt;Chronological list of finals where the champion saved match points.&lt;/p&gt;</p>

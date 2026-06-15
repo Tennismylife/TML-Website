@@ -1,10 +1,11 @@
 import React from 'react';
-import { metadataBase } from '../../lib/site';
 import { keyFromParamLabel } from '@/lib/levels';
+import { buildRecordFilters, resolveRecordHref } from './record-links';
 
 interface Props {
   activeTab: string | null | undefined;
   activeSubTab?: string | null | undefined;
+  currentPath?: string;
   searchParams?: Record<string, string | string[] | undefined>;
 }
 
@@ -12,39 +13,27 @@ const SURFACE_LIST = ["Hard", "Clay", "Grass", "Carpet"];
 const ROUND_LIST = ["R128", "R64", "R32", "R16", "QF", "SF", "F"];
 const BEST_OF_LIST = [3, 5, 1];
 
-// small helpers ported from the client version so the server component renders
-// identical link URLs and visibility rules.
-function buildCanonicalPath(tab: string | null | undefined, sub?: string | null | undefined) {
-  if (sub) return `/records/${encodeURIComponent(tab || '')}/${encodeURIComponent(sub)}`;
-  return `/records/${encodeURIComponent(tab || '')}`;
+function buildRecordHref(
+  tab: string | null | undefined,
+  sub: string | null | undefined,
+  selectedSurfaces: string[],
+  selectedLevels: string[],
+  selectedRounds?: string,
+  selectedBestOf?: number | null,
+  currentPath?: string,
+) {
+  const filters = buildRecordFilters(selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf);
+  const slug = tab ? [tab, ...(sub ? [sub] : [])] : [];
+  return resolveRecordHref(slug, filters, { currentPath });
 }
 
-function canonicalizeParams(params: URLSearchParams) {
-  const map = new Map<string, string[]>();
-  for (const [k, v] of params.entries()) {
-    if (!map.has(k)) map.set(k, []);
-    map.get(k)!.push(v);
-  }
-  const parts: string[] = [];
-  const keys = Array.from(map.keys()).sort();
-  for (const k of keys) {
-    const vals = map.get(k)!.slice().sort();
-    for (const v of vals) parts.push(`${encodeURIComponent(k)}=${encodeURIComponent(v)}`);
-  }
-  return parts.join("&");
+function getLinkRel(href: string) {
+  return href.includes('?') ? 'nofollow' : undefined;
 }
 
-function buildSearch(selectedSurfaces: string[], selectedLevels: string[], selectedRounds?: string, selectedBestOf?: number | null) {
-  // Canonical param order: level → surface → round → bestOf
-  const parts: string[] = [];
-  selectedLevels.forEach(l => parts.push(`level=${encodeURIComponent(String(l).toUpperCase())}`))
-  selectedSurfaces.forEach(s => parts.push(`surface=${encodeURIComponent(String(s).charAt(0).toUpperCase() + String(s).slice(1).toLowerCase())}`));
-  if (selectedRounds) parts.push(`round=${encodeURIComponent(String(selectedRounds).toUpperCase())}`);
-  if (selectedBestOf !== null && selectedBestOf !== undefined) parts.push(`bestOf=${encodeURIComponent(String(selectedBestOf))}`);
-  return parts.join('&');
-}
-
-export default function RecordsFilters({ activeTab, activeSubTab, searchParams = {} }: Props) {
+export default function RecordsFilters({ activeTab, activeSubTab, currentPath, searchParams = {} }: Props) {
+  // Temporary debug to see what values are being passed
+  console.log('[RecordsFilters] activeTab:', activeTab, 'activeSubTab:', activeSubTab, 'searchParams:', searchParams);
   const toArray = (v?: string | string[]) => (v === undefined ? [] : (Array.isArray(v) ? v : [v]));
 
   // Normalize subtab: accept prop (camelCase) or fallback to query param (kebab-case -> camelCase)
@@ -70,8 +59,12 @@ export default function RecordsFilters({ activeTab, activeSubTab, searchParams =
   const selectedRounds = typeof searchParams.round === 'string' ? String(searchParams.round) : '';
   const selectedBestOf = searchParams.bestOf ? Number(searchParams.bestOf as string) : null;
 
-  // When activeTab is counterseasons and effectiveSub is 'round', default round for display to 'F' (Finals)
-  const effectiveRoundForDisplay = selectedRounds || ((activeTab === 'counterseasons' || activeTab === 'streak') && effectiveSub === 'round' ? 'F' : '');
+  // When activeTab is counterseasons/streak/rounds and effectiveSub is 'round', default round for display to 'F' (Finals)
+  const effectiveRoundForDisplay = selectedRounds || (
+    ((activeTab === 'counterseasons' || activeTab === 'streak') && effectiveSub === 'round') ||
+    (activeTab === 'timespan' && effectiveSub === 'rounds') ||
+    activeTab === 'rounds'
+      ? 'F' : '');
 
   const surfaceEmojis: Record<string, string> = {
     Hard: "🟦",
@@ -80,20 +73,19 @@ export default function RecordsFilters({ activeTab, activeSubTab, searchParams =
     Carpet: "🟪",
   };
 
-  const levelList = ['G','M','F','A','250','500','D'];
+  const levelList = ['G','M','F','250','500','D'];
   const levelNames: Record<string, string> = {
     G: 'Grand Slam',
     M: 'Masters 1000',
     F: 'ATP Finals',
     500: '500',
     250: '250',
-    A: 'Others',
     D: 'Davis Cup',
   };
 
   const isSeasonsOrSame = activeTab === 'same' || activeTab === 'seasons';
   const isAtAgeLike = activeTab === 'atage' || activeTab === 'ageofnth';
-  const hideRoundAndBestOfSubtabs = ['oldest','youngest','oldestWinners','youngestWinners'];
+  const hideRoundAndBestOfSubtabs = ['oldest','youngest','oldestWinners','youngestWinners','oldestTitleWinners','youngestTitleWinners','oldest-winners','youngest-winners','oldest-title-winners','youngest-title-winners'];
 
   const shouldShowFilter = (filter: 'levels' | 'rounds' | 'bestOf' | 'surfaces') => {
     // Percentage → tutti i filtri attivi
@@ -139,8 +131,8 @@ export default function RecordsFilters({ activeTab, activeSubTab, searchParams =
       return ['levels','surfaces'].includes(filter);
     }
 
-    // Count → Level, Surface, Round
-    if (activeTab === 'count') {
+    // Count / Rounds → Level, Surface, Round
+    if (activeTab === 'count' || activeTab === 'rounds') {
       return ['levels','surfaces','rounds'].includes(filter);
     }
 
@@ -201,7 +193,8 @@ export default function RecordsFilters({ activeTab, activeSubTab, searchParams =
     (activeTab === 'roundsonentries' && activeSubTab === 'round') ||
     (activeTab === 'counterseasons' && activeSubTab === 'round') ||
     (activeTab === 'streak' && activeSubTab === 'round') ||
-    activeTab === 'count'
+    activeTab === 'count' ||
+    activeTab === 'rounds'
   );
 
   const filteredLevelList = levelList.filter(l => {
@@ -224,17 +217,24 @@ export default function RecordsFilters({ activeTab, activeSubTab, searchParams =
           <legend className="text-lg font-semibold mb-3 text-white px-2">Surface</legend>
           <div className="flex flex-wrap gap-3">
             <a
-              href={(() => { const qs = buildSearch([], Array.from(selectedLevels), selectedRounds, selectedBestOf); return buildCanonicalPath(activeTab, effectiveSub) + (qs ? `?${qs}` : ''); })()}
+              href={buildRecordHref(activeTab, effectiveSub, [], Array.from(selectedLevels), selectedRounds, selectedBestOf, currentPath)}
+              rel={getLinkRel(buildRecordHref(activeTab, effectiveSub, [], Array.from(selectedLevels), selectedRounds, selectedBestOf, currentPath))}
               className={`px-5 py-2 rounded-full font-medium ${selectedSurfaces.size === 0 ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
               All
             </a>
             {SURFACE_LIST.map(surface => (
+              (() => {
+                const href = buildRecordHref(activeTab, effectiveSub, [surface], Array.from(selectedLevels), selectedRounds, selectedBestOf, currentPath);
+                return (
               <a
                 key={surface}
-                href={(() => { const qs = buildSearch([surface], Array.from(selectedLevels), selectedRounds, selectedBestOf); return buildCanonicalPath(activeTab, effectiveSub) + (qs ? `?${qs}` : ''); })()}
+                href={href}
+                rel={getLinkRel(href)}
                 className={`px-5 py-2 rounded-full font-medium ${selectedSurfaces.has(surface) ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
                 {surfaceEmojis[surface]} {surface}
               </a>
+                );
+              })()
             ))}
           </div>
         </fieldset>
@@ -246,17 +246,24 @@ export default function RecordsFilters({ activeTab, activeSubTab, searchParams =
           <legend className="text-lg font-semibold mb-3 text-white px-2">Level</legend>
           <div className="flex flex-wrap gap-3">
             <a
-              href={(() => { const qs = buildSearch(Array.from(selectedSurfaces), [], selectedRounds, selectedBestOf); return buildCanonicalPath(activeTab, effectiveSub) + (qs ? `?${qs}` : ''); })()}
+              href={buildRecordHref(activeTab, effectiveSub, Array.from(selectedSurfaces), [], selectedRounds, selectedBestOf, currentPath)}
+              rel={getLinkRel(buildRecordHref(activeTab, effectiveSub, Array.from(selectedSurfaces), [], selectedRounds, selectedBestOf, currentPath))}
               className={`px-5 py-2 rounded-full font-medium ${selectedLevels.size === 0 ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
               All
             </a>
             {filteredLevelList.map(level => (
+              (() => {
+                const href = buildRecordHref(activeTab, effectiveSub, Array.from(selectedSurfaces), [level], selectedRounds, selectedBestOf, currentPath);
+                return (
               <a
                 key={level}
-                href={(() => { const qs = buildSearch(Array.from(selectedSurfaces), [level], selectedRounds, selectedBestOf); return buildCanonicalPath(activeTab, effectiveSub) + (qs ? `?${qs}` : ''); })()}
+                href={href}
+                rel={getLinkRel(href)}
                 className={`px-5 py-2 rounded-full font-medium ${selectedLevels.has(level) ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
                 {levelNames[level] || level}
               </a>
+                );
+              })()
             ))}
           </div>
         </fieldset>
@@ -267,20 +274,32 @@ export default function RecordsFilters({ activeTab, activeSubTab, searchParams =
         <fieldset className="mb-4 p-4 rounded-xl border border-gray-600 bg-gray-900">
           <legend className="text-lg font-semibold mb-3 text-white px-2">Rounds</legend>
           <div className="flex flex-wrap gap-3">
-            {!(activeTab === 'counterseasons' && effectiveSub === 'round') && (
+            {showAllRounds && (
+              (() => {
+                const href = buildRecordHref(activeTab, effectiveSub, Array.from(selectedSurfaces), Array.from(selectedLevels), undefined, selectedBestOf, currentPath);
+                return (
               <a
-                href={(() => { const qs = buildSearch(Array.from(selectedSurfaces), Array.from(selectedLevels), undefined, selectedBestOf); return buildCanonicalPath(activeTab, effectiveSub) + (qs ? `?${qs}` : ''); })()}
+                href={href}
+                rel={getLinkRel(href)}
                 className={`px-5 py-2 rounded-full font-medium ${selectedRounds === '' ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
                 All
               </a>
+                );
+              })()
             )}
             {ROUND_LIST.map(r => (
+              (() => {
+                const href = buildRecordHref(activeTab, effectiveSub, Array.from(selectedSurfaces), Array.from(selectedLevels), r, selectedBestOf, currentPath);
+                return (
               <a
                 key={r}
-                href={(() => { const qs = buildSearch(Array.from(selectedSurfaces), Array.from(selectedLevels), r, selectedBestOf); return buildCanonicalPath(activeTab, effectiveSub) + (qs ? `?${qs}` : ''); })()}
+                href={href}
+                rel={getLinkRel(href)}
                 className={`px-5 py-2 rounded-full font-medium ${effectiveRoundForDisplay === r ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
                 {r}
               </a>
+                );
+              })()
             ))}
           </div>
         </fieldset>
@@ -292,17 +311,24 @@ export default function RecordsFilters({ activeTab, activeSubTab, searchParams =
           <legend className="text-lg font-semibold mb-3 text-white px-2">Best Of</legend>
           <div className="flex flex-wrap gap-3">
             <a
-              href={(() => { const qs = buildSearch(Array.from(selectedSurfaces), Array.from(selectedLevels), selectedRounds, null); return buildCanonicalPath(activeTab, effectiveSub) + (qs ? `?${qs}` : ''); })()}
+              href={buildRecordHref(activeTab, effectiveSub, Array.from(selectedSurfaces), Array.from(selectedLevels), selectedRounds, null, currentPath)}
+              rel={getLinkRel(buildRecordHref(activeTab, effectiveSub, Array.from(selectedSurfaces), Array.from(selectedLevels), selectedRounds, null, currentPath))}
               className={`px-5 py-2 rounded-full font-medium ${selectedBestOf === null ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
               All
             </a>
             {BEST_OF_LIST.map(b => (
+              (() => {
+                const href = buildRecordHref(activeTab, effectiveSub, Array.from(selectedSurfaces), Array.from(selectedLevels), selectedRounds, b, currentPath);
+                return (
               <a
                 key={b}
-                href={(() => { const qs = buildSearch(Array.from(selectedSurfaces), Array.from(selectedLevels), selectedRounds, b); return buildCanonicalPath(activeTab, effectiveSub) + (qs ? `?${qs}` : ''); })()}
+                href={href}
+                rel={getLinkRel(href)}
                 className={`px-5 py-2 rounded-full font-medium ${selectedBestOf === b ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
                 {b}
               </a>
+                );
+              })()
             ))}
           </div>
         </fieldset>

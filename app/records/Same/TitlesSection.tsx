@@ -83,8 +83,9 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
   const totalPages = Math.ceil(allTitles.length / perPage);
   const start = (page - 1) * perPage;
   const currentData = allTitles.slice(start, start + perPage);
-
-
+  const isMostTitlesAtSingleTournament = description === 'Most Titles at Single Tournament';
+  const isMostTitlesAtSingleGrandSlamTournament = description === 'Most Titles at Single Grand Slam Tournament';
+  const isMostTitlesAtSingleMasters1000Tournament = description === 'Most Titles at Single Masters 1000 Tournament';
 
   const renderTable = (data: TitleRecord[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
@@ -125,6 +126,63 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
         <h2 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
         </h2>
+      )}
+
+      {isMostTitlesAtSingleTournament && (
+        <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
+          <p>
+            At the top of the Open Era list for Most Titles at a Single Tournament stands 🇪🇸 Rafael Nadal, who won <Link href={getTourneyHref({ slug: 'roland-garros' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros</Link> <strong className="!text-amber-300">14</strong> times — the most singles titles won by any man at one tournament, and the most by any player at a single Grand Slam event. His French Open titles came in 2005–08, 2010–14, 2017–20 and 2022. Nadal’s <Link href={getTourneyHref({ slug: 'roland-garros' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros</Link> record is the ultimate single-event dominance case: he went 14-0 in finals, finished with a 112-4 career record in Paris, and won his final title in 2022 by beating 🇳🇴 Casper Ruud 6-3, 6-3, 6-0.
+          </p>
+          <p>
+            Behind him, Nadal also owns the strongest non-Slam ATP tournament marks: <strong className="!text-amber-300">12</strong> titles at <Link href={getTourneyHref({ slug: 'barcelona' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Barcelona</Link>, <strong className="!text-amber-300">11</strong> titles at <Link href={getTourneyHref({ slug: 'monte-carlo-masters' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Monte-Carlo</Link>, and <strong className="!text-amber-300">10</strong> titles at <Link href={getTourneyHref({ slug: 'rome-masters' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Rome</Link>. ATP highlights that Nadal is the only men’s player to reach 10 or more titles at four different tournaments: <Link href={getTourneyHref({ slug: 'roland-garros' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros</Link>, <Link href={getTourneyHref({ slug: 'barcelona' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Barcelona</Link>, <Link href={getTourneyHref({ slug: 'monte-carlo-masters' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Monte-Carlo</Link> and <Link href={getTourneyHref({ slug: 'rome-masters' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Rome</Link>.
+          </p>
+          <p>
+            The closest men’s Grand Slam challenger is 🇷🇸 Novak Djokovic, with <strong className="!text-amber-300">10</strong> <Link href={getTourneyHref({ slug: 'australian-open' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Australian Open</Link> titles, while 🇨🇭 Roger Federer owns the major grass-court benchmark with <strong className="!text-amber-300">8</strong> <Link href={getTourneyHref({ slug: 'wimbledon' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Wimbledon</Link> titles. Nadal’s <strong className="!text-amber-300">14</strong> at <Link href={getTourneyHref({ slug: 'roland-garros' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros</Link> therefore stands four clear of the next men’s single-major record.
+          </p>
+          <p>
+            A separate regular ATP Tour reference point is Federer, who won <strong className="!text-amber-300">10</strong> titles at <Link href={getTourneyHref({ slug: 'halle' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Halle</Link> and <strong className="!text-amber-300">10</strong> at <Link href={getTourneyHref({ slug: 'basel' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Basel</Link>, giving him the strongest non-clay single-event title profile among modern men’s players. But overall, the ceiling remains Nadal’s <strong className="!text-amber-300">14</strong> <Link href={getTourneyHref({ slug: 'roland-garros' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros</Link> titles.
+          </p>
+          <p>
+            In this record, the milestone is not simply repeated success, but turning one tournament into a personal empire: Nadal set the all-time Open Era men’s ceiling with <strong className="!text-amber-300">14</strong> <Link href={getTourneyHref({ slug: 'roland-garros' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros</Link> titles, then reinforced the same dominance model with <Link href={getTourneyHref({ slug: 'barcelona' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Barcelona</Link>, <Link href={getTourneyHref({ slug: 'monte-carlo-masters' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Monte-Carlo</Link> and <Link href={getTourneyHref({ slug: 'rome-masters' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Rome</Link>.
+          </p>
+        </div>
+      )}
+
+      {isMostTitlesAtSingleGrandSlamTournament && (
+        <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
+          <p>
+            At the top of the Open Era list for Most Titles at a Single Grand Slam Tournament stands 🇪🇸 Rafael Nadal, who won <Link href={getTourneyHref({ slug: 'roland-garros' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros</Link> <strong className="!text-amber-300">14</strong> times — the most singles titles won by any man at one Grand Slam event. His French Open titles came in 2005–08, 2010–14, 2017–20 and 2022. Nadal’s <Link href={getTourneyHref({ slug: 'roland-garros' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros</Link> record is the ultimate single-major dominance case: he went 14-0 in finals, finished with a 112-4 career record in Paris, and won his final title in 2022 by beating 🇳🇴 Casper Ruud 6-3, 6-3, 6-0.
+          </p>
+          <p>
+            Behind him comes 🇷🇸 Novak Djokovic, with <strong className="!text-amber-300">10</strong> <Link href={getTourneyHref({ slug: 'australian-open' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Australian Open</Link> titles, the second-highest men’s total at a single Grand Slam tournament. ATP highlights that Djokovic is Nadal’s closest challenger in this category, four titles behind Nadal’s <Link href={getTourneyHref({ slug: 'roland-garros' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros</Link> benchmark.
+          </p>
+          <p>
+            The next major benchmark is 🇨🇭 Roger Federer, who won <Link href={getTourneyHref({ slug: 'wimbledon' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Wimbledon</Link> <strong className="!text-amber-300">8</strong> times, the men’s record at the All England Club. Federer’s <Link href={getTourneyHref({ slug: 'wimbledon' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Wimbledon</Link> total remains the grass-court Grand Slam standard, while Djokovic’s <Link href={getTourneyHref({ slug: 'australian-open' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Australian Open</Link> dominance is the hard-court equivalent among men.
+          </p>
+          <p>
+            The gap at the top is therefore clear: Nadal’s <strong className="!text-amber-300">14</strong> titles at <Link href={getTourneyHref({ slug: 'roland-garros' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros</Link> stand four ahead of Djokovic’s <strong className="!text-amber-300">10</strong> at <Link href={getTourneyHref({ slug: 'australian-open' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Australian Open</Link> and six ahead of Federer’s <strong className="!text-amber-300">8</strong> at <Link href={getTourneyHref({ slug: 'wimbledon' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Wimbledon</Link>, making <Link href={getTourneyHref({ slug: 'roland-garros' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros</Link> the highest single-major peak in men’s Open Era history.
+          </p>
+          <p>
+            In this record, the milestone is not simply repeated Slam success, but turning one major into a personal empire: Nadal set the ceiling with <strong className="!text-amber-300">14</strong> <Link href={getTourneyHref({ slug: 'roland-garros' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros</Link> titles, with Djokovic and Federer providing the closest hard-court and grass equivalents.
+          </p>
+        </div>
+      )}
+
+      {isMostTitlesAtSingleMasters1000Tournament && (
+        <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
+          <p>
+            At the top of the Open Era list for Most Titles at a Single Masters 1000 Tournament stands 🇪🇸 Rafael Nadal, who won <Link href={getTourneyHref({ slug: 'monte-carlo-masters' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Monte-Carlo</Link> <strong className="!text-amber-300">11</strong> times — the highest title total by any man at one Masters 1000 event. His <Link href={getTourneyHref({ slug: 'monte-carlo-masters' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Monte-Carlo</Link> titles came in 2005–12 and 2016–18, creating the strongest single-event résumé in Masters history. Nadal’s Monte-Carlo dominance was built on scale and continuity: eight consecutive titles from 2005 to 2012, then three more in his second phase, alongside a 73-6 tournament record and a 46-match winning streak at the event.
+          </p>
+          <p>
+            Behind him comes Nadal again, with <strong className="!text-amber-300">10</strong> titles at <Link href={getTourneyHref({ slug: 'rome-masters' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Rome</Link>, the second-highest single-tournament Masters total. That gives him both of the top two men’s single-event marks at Masters 1000 level: <Link href={getTourneyHref({ slug: 'monte-carlo-masters' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Monte-Carlo</Link> at <strong className="!text-amber-300">11</strong> and <Link href={getTourneyHref({ slug: 'rome-masters' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Rome</Link> at <strong className="!text-amber-300">10</strong>.
+          </p>
+          <p>
+            The closest non-Nadal benchmark is 🇷🇸 Novak Djokovic, who owns <strong className="!text-amber-300">7</strong> titles in <Link href={getTourneyHref({ slug: 'paris-masters' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Paris</Link> and <strong className="!text-amber-300">6</strong> each in <Link href={getTourneyHref({ slug: 'miami-masters' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Miami</Link> and <Link href={getTourneyHref({ slug: 'rome-masters' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Rome</Link>, while 🇨🇭 Roger Federer set the classic hard-court single-event standard with <strong className="!text-amber-300">7</strong> <Link href={getTourneyHref({ slug: 'cincinnati-masters' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Cincinnati</Link> titles.
+          </p>
+          <p>
+            In this record, the milestone is not simply collecting many Masters trophies, but turning one elite event into a personal stronghold: Nadal set the ceiling with <strong className="!text-amber-300">11</strong> <Link href={getTourneyHref({ slug: 'monte-carlo-masters' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Monte-Carlo</Link> titles and reinforced it with <strong className="!text-amber-300">10</strong> in <Link href={getTourneyHref({ slug: 'rome-masters' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Rome</Link>, with Djokovic and Federer providing the main hard-court and indoor equivalents.
+          </p>
+        </div>
       )}
 
       <div className="flex justify-end mb-4">

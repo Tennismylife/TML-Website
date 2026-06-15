@@ -81,6 +81,9 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
   const totalPages = Math.ceil(allEntries.length / perPage);
   const start = (page - 1) * perPage;
   const currentData = allEntries.slice(start, start + perPage);
+  const isMostAppearancesAtSingleTournament = description === 'Most Appearances at Single Tournament';
+  const isMostAppearancesAtSingleGrandSlamTournament = description === 'Most Appearances at Single Grand Slam Tournament';
+  const isMostAppearancesAtSingleMasters1000Tournament = description === 'Most Appearances at Single Masters 1000 Tournament';
 
  
 
@@ -123,6 +126,57 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
         <h2 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
         </h2>
+      )}
+
+      {isMostAppearancesAtSingleTournament && (
+        <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
+          <p>
+            The current Open Era leaderboard for Most Appearances at a Single Tournament is headed by a five-way tie at <strong className="!text-amber-300">22</strong>: 🇨🇭 Roger Federer at <Link href={getTourneyHref({ slug: 'wimbledon' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Wimbledon</Link>, 🇷🇸 Novak Djokovic at <Link href={getTourneyHref({ slug: 'roland-garros' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros</Link>, 🇫🇷 Richard Gasquet at <Link href={getTourneyHref({ slug: 'roland-garros' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros</Link>, 🇺🇸 Jimmy Connors at the <Link href={getTourneyHref({ slug: 'us-open' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">US Open</Link>, and 🇪🇸 Feliciano Lopez at <Link href={getTourneyHref({ slug: 'barcelona' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Barcelona</Link>.
+          </p>
+          <p>
+            This tie shows five different longevity profiles in one record: Federer’s sustained Wimbledon presence, Djokovic and Gasquet’s Roland Garros continuity, Connors’ multi-era US Open durability, and Lopez’s extended run at Barcelona.
+          </p>
+          <p>
+            Just behind the leaders, a large group sits at <strong className="!text-amber-300">21</strong> appearances, including Novak Djokovic at the <Link href={getTourneyHref({ slug: 'australian-open' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Australian Open</Link>, Andre Agassi at the <Link href={getTourneyHref({ slug: 'us-open' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">US Open</Link>, Jimmy Connors at <Link href={getTourneyHref({ slug: 'wimbledon' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Wimbledon</Link>, Roger Federer at the <Link href={getTourneyHref({ slug: 'australian-open' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Australian Open</Link>, and Feliciano Lopez at <Link href={getTourneyHref({ slug: 'roland-garros' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros</Link>.
+          </p>
+          <p>
+            In this category, the key milestone is repeated main-draw presence at the same event across many seasons: the ceiling is now <strong className="!text-amber-300">22</strong> appearances, with a deep chasing pack already at <strong className="!text-amber-300">21</strong>.
+          </p>
+        </div>
+      )}
+
+      {isMostAppearancesAtSingleGrandSlamTournament && (
+        <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
+          <p>
+            The current Open Era leaderboard for Most Appearances at a Single Grand Slam Tournament is headed by a three-way tie at <strong className="!text-amber-300">22</strong>: 🇨🇭 Roger Federer at <Link href={getTourneyHref({ slug: 'wimbledon' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Wimbledon</Link>, 🇫🇷 Richard Gasquet at <Link href={getTourneyHref({ slug: 'roland-garros' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros</Link>, and 🇺🇸 Jimmy Connors at the <Link href={getTourneyHref({ slug: 'us-open' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">US Open</Link>.
+          </p>
+          <p>
+            Each of those <strong className="!text-amber-300">22</strong>-appearance records represents a different Grand Slam longevity profile: Federer's sustained dominance and yearly return at Wimbledon, Gasquet's exceptional long-span presence at Roland Garros, and Connors' multi-era durability at the US Open.
+          </p>
+          <p>
+            Just behind the leaders, several players already sit at <strong className="!text-amber-300">21</strong> appearances, including 🇷🇸 Novak Djokovic at the <Link href={getTourneyHref({ slug: 'australian-open' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Australian Open</Link>, 🇨🇭 Roger Federer at the <Link href={getTourneyHref({ slug: 'australian-open' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Australian Open</Link>, 🇺🇸 Andre Agassi at the <Link href={getTourneyHref({ slug: 'us-open' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">US Open</Link>, and 🇺🇸 Jimmy Connors at <Link href={getTourneyHref({ slug: 'wimbledon' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Wimbledon</Link>.
+          </p>
+          <p>
+            In this category, the milestone is repeated main-draw presence at the same major over many seasons: the ceiling is now <strong className="!text-amber-300">22</strong> appearances, with a strong group already at <strong className="!text-amber-300">21</strong> and still defining the modern chase behind it.
+          </p>
+        </div>
+      )}
+
+      {isMostAppearancesAtSingleMasters1000Tournament && (
+        <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
+          <p>
+              The current leaderboard for Most Appearances at a Single Masters 1000 Tournament is led by 🇪🇸 Rafael Nadal at the <Link href={getTourneyHref({ slug: 'madrid-masters' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Madrid Masters</Link>, where he reached <strong className="!text-amber-300">20</strong> appearances. Nadal first played Madrid in 2003 and last played it in 2024.
+          </p>
+          <p>
+              Just behind that mark is Nadal again at the <Link href={getTourneyHref({ slug: 'rome-masters' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Rome Masters</Link> with <strong className="!text-amber-300">19</strong> appearances, tied with 🇷🇸 Novak Djokovic on the same number. In Rome, Nadal’s first appearance came in 2005 and his last in 2024, while Djokovic’s run there also places him on <strong className="!text-amber-300">19</strong>.
+          </p>
+          <p>
+            The next tier is crowded at <strong className="!text-amber-300">18</strong> appearances: 🇨🇭 Roger Federer at <Link href={getTourneyHref({ slug: 'indian-wells-masters' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Indian Wells Masters</Link> and <Link href={getTourneyHref({ slug: 'miami-masters' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Miami Masters</Link>, 🇪🇸 Feliciano Lopez at Indian Wells and Miami, 🇪🇸 Fernando Verdasco at Miami, 🇷🇸 Novak Djokovic at the <Link href={getTourneyHref({ slug: 'monte-carlo-masters' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Monte Carlo Masters</Link> and Rome, and 🇨🇭 Stan Wawrinka at Rome.
+          </p>
+          <p>
+            In this record, the milestone is repeated main-draw presence at the same Masters 1000 stop over many seasons: Nadal currently sets the ceiling at <strong className="!text-amber-300">20</strong> in Madrid, while Rome is now tied on <strong className="!text-amber-300">19</strong> between Nadal and Djokovic, and a broad chasing group is already clustered on <strong className="!text-amber-300">18</strong> across several flagship events.
+          </p>
+        </div>
       )}
 
       <div className="flex justify-end mb-4">

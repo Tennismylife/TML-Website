@@ -42,10 +42,13 @@ export async function GET(request: NextRequest) {
 
     // --- Caso 1: zero o un solo filtro (usa MV) ---
     if (selectedSurfaces.length + selectedLevels.length <= 1) {
-      const matches = await prisma.mVSameSeasonEntries.findMany({
-        orderBy: { total_entries: 'desc' },
-        take: limit,
-      });
+      const useFilteredSort = selectedSurfaces.length + selectedLevels.length === 1;
+      const matches = useFilteredSort
+        ? await prisma.mVSameSeasonEntries.findMany()
+        : await prisma.mVSameSeasonEntries.findMany({
+            orderBy: { total_entries: 'desc' },
+            take: limit,
+          });
       if (!matches.length) return jsonResponse([]);
 
       const playerIds = matches.map(e => e.player_id);
@@ -81,6 +84,11 @@ export async function GET(request: NextRequest) {
           });
         }
       });
+
+      if (useFilteredSort) {
+        finalEntries.sort((a, b) => b.total_entries - a.total_entries);
+        finalEntries = finalEntries.slice(0, limit);
+      }
     }
 
 // --- Caso 2: due filtri contemporanei → calcolo same year entries con triple uniche ---

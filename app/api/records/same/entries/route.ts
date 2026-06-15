@@ -43,8 +43,46 @@ export async function GET(request: NextRequest) {
 
     let finalEntries: EntryRecord[] = [];
 
-    // --- Caso 1: zero o un solo filtro (usa MV) ---
-    if (selectedSurfaces.length + selectedLevels.length <= 1) {
+    // --- Caso 1: zero o un solo filtro (usa MV o query diretta per livello solo) ---
+    if (selectedSurfaces.length === 0 && selectedLevels.length === 1) {
+      const levelFilter = selectedLevels[0];
+      const events = await prisma.playerTournament.findMany({
+        where: { tourney_level: levelFilter },
+        select: { player_id: true, tourney_id: true, event_id: true, tourney_name: true },
+        distinct: ['player_id', 'tourney_id', 'event_id'],
+      });
+
+      const groupedMap: Record<string, { player_id: string; tourney_id: string; tourney_name: string; total_entries: number }> = {};
+      events.forEach(e => {
+        const key = `${e.player_id}_${e.tourney_id}`;
+        if (!groupedMap[key]) groupedMap[key] = { player_id: String(e.player_id), tourney_id: String(e.tourney_id), tourney_name: e.tourney_name, total_entries: 0 };
+        groupedMap[key].total_entries += 1;
+      });
+
+      const grouped = Object.values(groupedMap).sort((a, b) => b.total_entries - a.total_entries).slice(0, limit);
+      const playerMap = Object.fromEntries(
+        (await prisma.player.findMany({
+          where: { id: { in: grouped.map(g => g.player_id) } },
+          select: { id: true, atpname: true, ioc: true },
+        })).map(p => [String(p.id), { player_name: p.atpname ?? 'Unknown', ioc: p.ioc ?? null }])
+      );
+
+      finalEntries.push(
+        ...grouped.map(g => {
+          const mapEntry = playerMap[String(g.player_id)];
+          return {
+            tourney_id: g.tourney_id,
+            tourney_name: g.tourney_name,
+            player_id: g.player_id,
+            player_name: mapEntry?.player_name ?? 'Unknown',
+            ioc: mapEntry?.ioc ?? null,
+            total_entries: g.total_entries,
+            surface: null,
+            tourney_level: levelFilter,
+          };
+        })
+      );
+    } else if (selectedSurfaces.length + selectedLevels.length <= 1) {
       let matches: Awaited<ReturnType<typeof prisma.mVSameTournamentEntries.findMany>> = [];
       try {
         matches = await prisma.mVSameTournamentEntries.findMany({

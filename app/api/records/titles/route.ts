@@ -1,13 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+function normalizeSurfaceValue(surface: string) {
+  const value = surface.trim();
+  if (!value) return value;
+  return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+}
+
+function normalizeLevelValue(level: string) {
+  return level.trim().toUpperCase();
+}
+
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const selectedSurfaces = searchParams.getAll("surface");
-    const selectedLevels = searchParams.getAll("level");
+    const selectedSurfaces = searchParams.getAll("surface").map(normalizeSurfaceValue).filter(Boolean);
+    const selectedLevels = searchParams.getAll("level").map(normalizeLevelValue).filter(Boolean);
 
     // Contiamo i titoli usando findMany e aggregazione
     const topTitles = await prisma.match.groupBy({

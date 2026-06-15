@@ -40,7 +40,7 @@ const BASE_PATHS = [
   '/records/seasons',
   '/records/seasons/wins',
   '/records/seasons/played',
-  '/records/seasons/entries',
+  '/records/most-tournament-appearances-single-season',
   '/records/seasons/titles',
   '/records/seasons/round',
   '/records/seasons/percentage',

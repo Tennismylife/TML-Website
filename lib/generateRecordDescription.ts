@@ -264,7 +264,7 @@ export function generateRecordDescription(
       }
     } else {
       const streakLabel = sub === 'wins' ? '' : (subTabLabels.streak[sub] || sub);
-      description = streakLabel ? `Longest winning ${streakLabel} streak` : `Longest winning streak`;
+      description = streakLabel ? `Longest Winning ${streakLabel} Streak` : `Longest Winning Streak`;
     }
   } else if (selectedRecord === 'h2h') {
     const sub = activeSubTabs.h2h;

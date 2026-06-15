@@ -16,6 +16,7 @@ WITH player_rounds AS (
         WHEN 'R16' THEN 4
         WHEN 'R32' THEN 3
         WHEN 'R64' THEN 2
+        WHEN 'R128' THEN 1
         ELSE 0
       END
     ) AS max_round_value
@@ -25,7 +26,7 @@ WITH player_rounds AS (
     SELECT loser_id, loser_name, loser_ioc, id AS match_id FROM "Match"
   ) p
   JOIN "Match" m ON p.match_id = m.id
-  WHERE m.team_event = FALSE AND m.round NOT IN ('RR', 'R128')
+  WHERE m.team_event = FALSE
   GROUP BY player_id, player_name, player_ioc, m.event_id
 ),
 
