@@ -1,5 +1,3 @@
-'use client'
-
 import WinsSection from './WinsSection';
 import PlayedSection from './PlayedSection';
 import EntriesSection from './EntriesSection';
@@ -12,6 +10,7 @@ interface SeasonsProps {
   selectedLevels: Set<string>;
   selectedRounds: string;
   selectedBestOf: number | null;
+  searchParams?: Record<string, string | string[] | undefined>;
   activeSubTab?: string;
   fetchEnabled?: boolean;
   setFetchEnabled?: (v: boolean) => void;
@@ -20,7 +19,7 @@ interface SeasonsProps {
   prefetchedData?: Record<string, any[] | undefined>;
 }
 
-export default function Seasons({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeSubTab, fetchEnabled, setFetchEnabled, fetchRequestId, description, prefetchedData }: SeasonsProps) {
+export default function Seasons({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, searchParams, activeSubTab, fetchEnabled, setFetchEnabled, fetchRequestId, description, prefetchedData }: SeasonsProps) {
   return (
     <section className="mb-8">
       {activeSubTab === 'wins' && (
@@ -29,6 +28,7 @@ export default function Seasons({ selectedSurfaces, selectedLevels, selectedRoun
           selectedLevels={Array.from(selectedLevels)}
           selectedRounds={selectedRounds}
           selectedBestOf={selectedBestOf}
+          searchParams={searchParams}
           fetchEnabled={fetchEnabled}
           setFetchEnabled={setFetchEnabled}
           fetchRequestId={fetchRequestId}

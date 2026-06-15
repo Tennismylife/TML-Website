@@ -5,7 +5,6 @@ import Link from 'next/link';
 import Flag from '@/components/Flag';
 import { getPlayerHref, getTourneyHref } from '@/lib/utils';
 import { playerSurfaceOrMatchesUrl } from '../nav';
-import { useSearchParams } from 'next/navigation';
 import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
 
@@ -17,6 +16,7 @@ interface WinsSectionProps {
   fetchEnabled?: boolean;
   setFetchEnabled?: (v: boolean) => void;
   fetchRequestId?: string | null;
+  searchParams?: Record<string, string | string[] | undefined>;
   description?: string;
   initialData?: WinRecord[];
 }
@@ -29,15 +29,24 @@ type WinRecord = {
   year: number;
 };
 
-export default function WinsSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId, description, initialData }: WinsSectionProps) {
+function buildPlayerQueryParams(sp?: Record<string, string | string[] | undefined>) {
+  const params: Record<string, string | string[]> = {};
+  for (const [key, value] of Object.entries(sp || {})) {
+    if (!value || key === 'tab') continue;
+    params[key] = value;
+  }
+  return params;
+}
+
+export default function WinsSection({ selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, fetchEnabled, setFetchEnabled, fetchRequestId, searchParams, description, initialData }: WinsSectionProps) {
   const enabled = !!fetchEnabled;
   const [topSameTournamentWins, setTopSameTournamentWins] = useState<WinRecord[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const perPage = 20;
-  const searchParams = useSearchParams();
   const lastRequestRef = useRef<string | null>(null);
+  const playerLinkParams = buildPlayerQueryParams(searchParams);
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
 
@@ -140,7 +149,7 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-grayy-400 font-semibold">{rank}</td>
                 <td className="border border-white/10 px-4 py-2 flex items-center justify-center gap-2 text-lg text-gray-200">
                   <Flag ioc={p.ioc ?? undefined} className="w-4 h-3" />
-                  <Link href={playerSurfaceOrMatchesUrl((p as any).winner_slug ?? String(p.winner_id), (() => { const params: Record<string, string | string[]> = {}; for (const [key, value] of (searchParams?.entries() ?? [])) { if (!value || key === 'tab') continue; if (params[key]) { if (Array.isArray(params[key])) (params[key] as string[]).push(value); else params[key] = [params[key] as string, value]; } else { params[key] = value; } } return params; })())} className="hover:underline">{p.player_name}</Link>
+                  <Link href={playerSurfaceOrMatchesUrl((p as any).winner_slug ?? String(p.winner_id), playerLinkParams)} className="hover:underline">{p.player_name}</Link>
                 </td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">{p.total_wins}</td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-300">
