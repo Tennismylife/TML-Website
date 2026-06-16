@@ -4,13 +4,52 @@ import DataFileListClient from '@/components/DataFileListClient';
 import fs from 'fs';
 import path from 'path';
 
+export const dynamic = 'force-dynamic';
+
 type DataFile = { name: string; url: string; size?: number; mtime?: string };
+function getCurrentAtpTourneys(limit = 2): string[] {
+  const livePath = path.join(process.cwd(), 'data', 'ongoing_tourneys.csv');
+  if (!fs.existsSync(livePath)) return [];
+
+  try {
+    const raw = fs.readFileSync(livePath, 'utf8');
+    if (!raw.trim()) return [];
+
+    const lines = raw.split(/\r?\n/);
+    if (lines.length < 2) return [];
+
+    const headers = lines[0].split(',');
+    const nameIdx = headers.indexOf('tourney_name');
+    if (nameIdx < 0) return [];
+
+    const seen = new Set<string>();
+    const names: string[] = [];
+
+    for (let i = 1; i < lines.length && names.length < limit; i += 1) {
+      const line = lines[i];
+      if (!line) continue;
+      const cols = line.split(',');
+      const name = (cols[nameIdx] ?? '').trim();
+      if (!name || seen.has(name)) continue;
+      seen.add(name);
+      names.push(name);
+    }
+
+    return names;
+  } catch {
+    return [];
+  }
+}
 
 export default function Page() {
   const dataDir = path.join(process.cwd(), 'data');
   let minYear = 1968;
   let maxYear = 2026;
   let initialFiles: DataFile[] = [];
+  const currentTourneys = getCurrentAtpTourneys();
+  const liveTournamentSentence = currentTourneys.length
+    ? `${currentTourneys.join(' and ')} are currently in progress — live results and stats are being updated in real-time.`
+    : 'The current ATP Tour week is being updated — live results and stats are being refreshed as soon as they are available.';
 
   try {
     if (fs.existsSync(dataDir)) {
@@ -88,10 +127,23 @@ export default function Page() {
 </section>
 
 <section className="mb-8 w-full px-6 text-center bg-gray-800/70 py-6">
+  <style>{`.live-tourney-names{color:#4ade80 !important;}`}</style>
   <div className="mx-auto max-w-3xl">
-    <h2 className="text-3xl sm:text-4xl font-bold mb-3 bg-gradient-to-r from-sky-400 via-emerald-400 to-yellow-300 text-transparent bg-clip-text">Live Tournaments</h2>
-    <p className="text-lg sm:text-xl font-medium text-gray-100">
-      <span className="!text-green-400 font-semibold">Stuttgart</span> and <span className="!text-green-400 font-semibold">&apos;s-Hertogenbosch</span> are currently in progress — live results and stats are being updated in real-time.
+    <h2 className="text-2xl sm:text-3xl font-semibold mb-2 text-slate-100">Live Tournaments</h2>
+    <p className="text-base sm:text-lg text-gray-300">
+      {currentTourneys.length > 0 ? (
+        <>
+          {currentTourneys.map((name, idx) => (
+            <span key={name}>
+              <span className="live-tourney-names">{name}</span>
+              {idx < currentTourneys.length - 1 ? <span className="text-white"> and </span> : null}
+            </span>
+          ))}
+          {' are currently in progress — live results and stats are being updated in real-time.'}
+        </>
+      ) : (
+        liveTournamentSentence
+      )}
     </p>
   </div>
 </section>
