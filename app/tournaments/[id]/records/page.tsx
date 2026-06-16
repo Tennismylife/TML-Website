@@ -78,6 +78,7 @@ export default async function RecordsPage({ params, initialTournament, initialAc
     'rome-masters': 'Rome_Records.md',
     'madrid-masters': 'Madrid_Records.md',
     'roland-garros': 'RolandGarros_Records.md',
+    'wimbledon': 'Wimbledon_Records.md',
   };
   const markdownFileName = markdownFiles[slugId] || markdownFiles[id];
   if (markdownFileName) {
