@@ -407,11 +407,12 @@ export async function generateMetadata(
   if (slug[0] === 'seasons' && slug[1] === 'entries') {
     redirect('/records/most-tournament-appearances-in-single-season');
   }
-  if (slug[0] === 'streak' && slug[1] === 'wins') {
+  if (slug[0] === 'streak' && slug[1] === 'wins' && !canonicalizeParamsObj(sp)) {
     redirect('/records/longest-winning-streak');
   }
   if (slug[0] === 'longest-win-streak') {
-    redirect('/records/longest-winning-streak');
+    const query = canonicalizeParamsObj(sp);
+    redirect(`/records/longest-winning-streak${query ? `?${query}` : ''}`);
   }
   const aliasEntry = resolveAliasPath(slug);
   const effectiveSearchParams = aliasEntry
@@ -600,7 +601,7 @@ export default async function SlugPage({ params, searchParams }: Props) {
     h2h: 'count',
   };
 
-  if (!aliasEntry && slug[0] === 'streak' && slug[1] === 'wins') {
+  if (!aliasEntry && slug[0] === 'streak' && slug[1] === 'wins' && !canonicalizeParamsObj(sp)) {
     redirect('/records/longest-winning-streak');
   }
 

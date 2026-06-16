@@ -168,6 +168,9 @@ function resolvePageRecordAndSub(pathname: string) {
   const seg = pathname.split('/').filter(Boolean);
   // /records/:record/:sub?
   if (seg.length < 2 || seg[0] !== 'records') return { record: null as string | null, sub: undefined as string | undefined };
+  if (seg[1] === 'longest-winning-streak' || seg[1] === 'longest-win-streak') {
+    return { record: 'streak', sub: 'wins' };
+  }
   const record = seg[1] || null;
   const sub = kebabToKey(seg[2]);
   return { record, sub };
