@@ -377,12 +377,12 @@ export default function SurfaceStatsClient({
   const overviewStats = useMemo(() => {
     if (selectedYear || loading || !allMatches.length) return null;
     const pid = String(playerId);
-    // roundMatches: tutti i match inclusi W/O — per round raggiunti e titoli
-    const roundMatches = allMatches.filter((m: any) => m.team_event !== true);
+    // roundMatches: tutti i match utili all'overview — per round raggiunti e titoli
+    const roundMatches = allMatches;
     // matches: solo match realmente giocati — per W/L, top10, bo3/bo5, best year, form
     const matches = allMatches.filter((m: any) => {
       const score = String((m as any).score ?? '').toUpperCase();
-      return m.status === true && !score.includes('W/O') && !score.includes('WEA') && m.team_event !== true;
+      return m.status === true && !score.includes('W/O') && !score.includes('WEA');
     });
     if (!roundMatches.length) return null;
 
