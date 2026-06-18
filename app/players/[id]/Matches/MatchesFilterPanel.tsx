@@ -92,6 +92,8 @@ interface Props {
 const TOURNEY_LEVELS = [
   { code: "G", label: "Grand Slam" },
   { code: "M", label: "Masters 1000" },
+  { code: "500", label: "ATP 500" },
+  { code: "250", label: "ATP 250" },
   { code: "A", label: "Others" },
   { code: "F", label: "Finals" },
   { code: "D", label: "Davis Cup" },

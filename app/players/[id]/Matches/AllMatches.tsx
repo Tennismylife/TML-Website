@@ -76,6 +76,8 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
     const levelMap: Record<string, string> = {
       G: 'Grand Slams',
       M: 'Masters 1000',
+      '500': 'ATP 500',
+      '250': 'ATP 250',
       A: 'Other',
       F: 'Finals',
       D: 'Davis Cup',

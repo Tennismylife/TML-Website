@@ -11,6 +11,7 @@
  */
 
 const postgres = require('postgres');
+const fs = require('fs/promises');
 
 const MV_NAMES = [
   'mv_top_winners',
@@ -39,12 +40,12 @@ const MV_NAMES = [
 
 const DEBOUNCE_MS = Number(process.env.MV_REFRESH_DEBOUNCE_MS) || 5000;
 const { createClient } = require('redis');
-const { execSync } = require('child_process');
 
 async function clearNginxCache() {
   const dir = process.env.NGINX_CACHE_DIR || '/var/cache/nginx/ssr';
   try {
-    execSync(`rm -rf ${dir}/*`, { stdio: 'pipe' });
+    await fs.rm(dir, { recursive: true, force: true });
+    await fs.mkdir(dir, { recursive: true });
     console.log('Cleared Nginx micro-cache:', dir);
   } catch (err) {
     // Non-fatal: dir may not exist or no permission
@@ -82,8 +83,12 @@ async function clearRedisCache(clientFactory) {
     await client.connect();
     let deleted = 0;
     for await (const k of client.scanIterator({ MATCH: 'tennismylife:*' })) {
-      await client.del(k);
-      deleted++;
+      const keys = Array.isArray(k) ? k : [k];
+      const filtered = keys.filter(Boolean);
+      if (filtered.length > 0) {
+        await client.del(filtered);
+        deleted += filtered.length;
+      }
     }
     console.log('Cleared Redis cache keys:', deleted);
   } catch (err) {
