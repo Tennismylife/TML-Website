@@ -156,12 +156,11 @@ export async function GET(request: NextRequest) {
       const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
       const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
       finalRounds = finalRounds.map(p => ({ ...p, slug: slugMap.get(String(p.player_id)) ?? null }));
-      return jsonResponse(finalRounds.slice(0, limit));
     }
 
     return jsonResponse(finalRounds.slice(0, limit));
   } catch (error) {
-    console.error('GET /records/same/season-rounds error:', error);
+    console.error('GET /records/seasons/rounds error:', error);
     return jsonResponse({ error: 'Internal Server Error' }, 500);
   }
 }

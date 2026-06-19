@@ -56,7 +56,9 @@ export async function GET(request: NextRequest) {
     if (
       selectedSurfaces.length + selectedLevels.length + selectedBestOf.length + selectedRounds.length === 0
     ) {
-      const played = await prisma.mVSameSeasonPlayed.findMany();
+      const played = await prisma.mVSameSeasonPlayed.findMany({
+        orderBy: { total_played: 'desc' },
+      });
 
       if (!played.length) return jsonResponse([]);
 
@@ -152,7 +154,7 @@ export async function GET(request: NextRequest) {
 
     return jsonResponse(finalPlayed.slice(0, limit));
   } catch (error) {
-    console.error('GET /records/same/year-played error:', error);
+    console.error('GET /records/seasons/played error:', error);
     return jsonResponse({ error: 'Internal Server Error' }, 500);
   }
 }

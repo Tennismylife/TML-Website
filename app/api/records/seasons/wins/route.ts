@@ -142,7 +142,7 @@ export async function GET(request: NextRequest) {
 
     return jsonResponse(finalWins.slice(0, limit));
   } catch (error) {
-    console.error('GET /records/same/year-wins error:', error);
+    console.error('GET /records/seasons/wins error:', error);
     return jsonResponse({ error: 'Internal Server Error' }, 500);
   }
 }

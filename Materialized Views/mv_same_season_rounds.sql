@@ -12,11 +12,13 @@ WITH surface_json AS (
             SELECT year, winner_id::text AS player_id, surface, COUNT(*) AS cnt
             FROM "Match"
             WHERE status = true
+              AND winner_id IS NOT NULL
             GROUP BY year, winner_id, surface
             UNION ALL
             SELECT year, loser_id::text AS player_id, surface, COUNT(*) AS cnt
             FROM "Match"
             WHERE status = true
+              AND loser_id IS NOT NULL
             GROUP BY year, loser_id, surface
         ) raw
         GROUP BY year, player_id, surface
@@ -34,11 +36,13 @@ level_json AS (
             SELECT year, winner_id::text AS player_id, tourney_level, COUNT(*) AS cnt
             FROM "Match"
             WHERE status = true
+              AND winner_id IS NOT NULL
             GROUP BY year, winner_id, tourney_level
             UNION ALL
             SELECT year, loser_id::text AS player_id, tourney_level, COUNT(*) AS cnt
             FROM "Match"
             WHERE status = true
+              AND loser_id IS NOT NULL
             GROUP BY year, loser_id, tourney_level
         ) raw
         GROUP BY year, player_id, tourney_level
@@ -56,11 +60,13 @@ round_json AS (
             SELECT year, winner_id::text AS player_id, round, COUNT(*) AS cnt
             FROM "Match"
             WHERE status = true
+              AND winner_id IS NOT NULL
             GROUP BY year, winner_id, round
             UNION ALL
             SELECT year, loser_id::text AS player_id, round, COUNT(*) AS cnt
             FROM "Match"
             WHERE status = true
+              AND loser_id IS NOT NULL
             GROUP BY year, loser_id, round
         ) raw
         GROUP BY year, player_id, round
@@ -73,9 +79,9 @@ total_rounds AS (
         year,
         COUNT(*) AS total_rounds
     FROM (
-        SELECT year, winner_id::text AS player_id FROM "Match" WHERE status = true
+        SELECT year, winner_id::text AS player_id FROM "Match" WHERE status = true AND winner_id IS NOT NULL
         UNION ALL
-        SELECT year, loser_id::text AS player_id FROM "Match" WHERE status = true
+        SELECT year, loser_id::text AS player_id FROM "Match" WHERE status = true AND loser_id IS NOT NULL
     ) sub
     GROUP BY year, player_id
 )

@@ -12,6 +12,7 @@ WITH unique_wins AS (
     FROM "Match"
     WHERE team_event = false
       AND round = 'F'
+      AND winner_id IS NOT NULL
 )
 , surface_totals AS (
     SELECT 

@@ -13,6 +13,7 @@ WITH surface_json AS (
             surface,
             COUNT(DISTINCT event_id) AS cnt
         FROM "PlayerTournament"
+        WHERE player_id IS NOT NULL
         GROUP BY year, player_id, surface
     ) sub
     GROUP BY year, player_id
@@ -29,6 +30,7 @@ level_json AS (
             tourney_level,
             COUNT(DISTINCT event_id) AS cnt
         FROM "PlayerTournament"
+        WHERE player_id IS NOT NULL
         GROUP BY year, player_id, tourney_level
     ) sub
     GROUP BY year, player_id
@@ -39,6 +41,7 @@ total_entries AS (
         player_id::text,
         COUNT(DISTINCT event_id) AS total_entries
     FROM "PlayerTournament"
+    WHERE player_id IS NOT NULL
     GROUP BY year, player_id
 )
 SELECT

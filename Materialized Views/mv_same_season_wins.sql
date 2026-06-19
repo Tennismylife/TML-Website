@@ -14,6 +14,7 @@ WITH surface_json AS (
             COUNT(*) AS cnt
         FROM "Match"
         WHERE status = true
+          AND winner_id IS NOT NULL
         GROUP BY year, winner_id, surface
     ) sub
     GROUP BY year, winner_id
@@ -31,6 +32,7 @@ level_json AS (
             COUNT(*) AS cnt
         FROM "Match"
         WHERE status = true
+          AND winner_id IS NOT NULL
         GROUP BY year, winner_id, tourney_level
     ) sub
     GROUP BY year, winner_id
@@ -48,6 +50,7 @@ best_of_json AS (
             COUNT(*) AS cnt
         FROM "Match"
         WHERE status = true
+          AND winner_id IS NOT NULL
         GROUP BY year, winner_id, best_of
     ) sub
     GROUP BY year, winner_id
@@ -65,6 +68,7 @@ round_json AS (
             COUNT(*) AS cnt
         FROM "Match"
         WHERE status = true
+          AND winner_id IS NOT NULL
         GROUP BY year, winner_id, round
     ) sub
     GROUP BY year, winner_id
@@ -76,6 +80,7 @@ total_wins AS (
         COUNT(*) AS total_wins
     FROM "Match"
     WHERE status = true
+      AND winner_id IS NOT NULL
     GROUP BY year, winner_id
 )
 SELECT
