@@ -153,12 +153,7 @@ const Percentage = ({ selectedSurfaces, selectedLevels, selectedRounds, selected
   const becker = findPlayer('Boris Becker');
   const edberg = findPlayer('Stefan Edberg');
   const sinner = findPlayer('Jannik Sinner');
-
-
-
-  if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
-  if (error) return <div className="text-center py-8 text-gray-300">Error loading data</div>;
-  if (!filteredData.length) return <div className="text-center py-8 text-gray-300">No data available.</div>;
+  const hasRows = filteredData.length > 0;
 
   const renderTable = (rows: PlayerPercentage[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
@@ -346,7 +341,15 @@ const Percentage = ({ selectedSurfaces, selectedLevels, selectedRounds, selected
         </button>
       </div>
 
-      {renderTable(currentData, start)}
+      {error ? (
+        <div className="text-center py-8 text-gray-300">Error loading data</div>
+      ) : loading && !hasRows ? (
+        <div className="text-center py-8 text-gray-300">Loading...</div>
+      ) : hasRows ? (
+        renderTable(currentData, start)
+      ) : (
+        <div className="text-center py-8 text-gray-300">No data available.</div>
+      )}
 
       {totalPages > 1 && <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />}
 
