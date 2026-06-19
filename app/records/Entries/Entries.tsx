@@ -34,6 +34,7 @@ export default function Entries({
   const [allEntries, setAllEntries] = useState<Entry[]>(Array.isArray(topEntries) ? topEntries : []);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -56,6 +57,7 @@ export default function Entries({
       setLoading(true);
 
       try {
+        setError(null);
         const params = new URLSearchParams();
 
         if (selectedSurfaces !== undefined) {
@@ -79,7 +81,10 @@ export default function Entries({
         if (!controller.signal.aborted) setAllEntries(rows);
       } catch (err: any) {
         if (err?.name !== 'AbortError') console.error(err);
-        if (!controller.signal.aborted) setAllEntries([]);
+        if (!controller.signal.aborted) {
+          setAllEntries([]);
+          setError('Error loading data');
+        }
       } finally {
         if (!controller.signal.aborted) setLoading(false);
       }
@@ -90,18 +95,11 @@ export default function Entries({
     return () => controller.abort();
   }, [selectedSurfaces, selectedLevels, showModal]);
 
-  if (loading) {
-    return <div className="text-center py-8 text-gray-300">Loading...</div>;
-  }
-
-  if (!allEntries.length) {
-    return <div className="text-center py-8 text-gray-300">No data available.</div>;
-  }
-
   const totalCount = allEntries.length;
   const totalPages = Math.ceil(totalCount / perPage);
   const start = (page - 1) * perPage;
   const currentEntries = allEntries.slice(start, start + perPage);
+  const hasRows = allEntries.length > 0;
 
   const renderTable = (entriesList: Entry[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-gray-800 bg-gray-900 shadow">
@@ -183,7 +181,7 @@ export default function Entries({
       )}
 
       {pathname === '/records/most-appearances' && selectedSurfaces?.size === 0 && selectedLevels?.size === 0 && (
-        <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
+        <article className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the Open Era list for most ATP singles main-draw appearances stands <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Feliciano Lopez</span></span>, with <strong className="!text-amber-300">486</strong> ATP main draws, the highest total recorded in men’s tennis.
           </p>
@@ -199,7 +197,7 @@ export default function Entries({
           <p>
             Behind him stands a group of players whose careers were also defined by repeated ATP main-draw presence across many seasons: <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Fernando Verdasco</span></span>, <span className="inline-flex items-center gap-2"><Flag ioc="FRA" className="w-4 h-3" /><span>Fabrice Santoro</span></span>, <span className="inline-flex items-center gap-2"><Flag ioc="FRA" className="w-4 h-3" /><span>Richard Gasquet</span></span>, <span className="inline-flex items-center gap-2"><Flag ioc="RUS" className="w-4 h-3" /><span>Mikhail Youzhny</span></span>, <span className="inline-flex items-center gap-2"><Flag ioc="AUS" className="w-4 h-3" /><span>John Alexander</span></span>, <span className="inline-flex items-center gap-2"><Flag ioc="ITA" className="w-4 h-3" /><span>Andreas Seppi</span></span> and <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Jimmy Connors</span></span>. Their place in this ranking comes from longevity, calendar consistency and the ability to keep qualifying directly — or returning repeatedly — to ATP singles main draws year after year.
           </p>
-        </div>
+        </article>
       )}
 
 {pathname === '/records/most-grand-slam-appearances' && selectedSurfaces?.size === 0 && selectedLevels?.has('G') && (
@@ -233,7 +231,7 @@ export default function Entries({
 
 
       {pathname === '/records/most-masters-1000-appearances' && selectedSurfaces?.size === 0 && selectedLevels?.has('M') && (
-        <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
+        <article className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the ATP Masters 1000 list for most main draw appearances stands <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Feliciano Lopez</span></span>, with <strong className="!text-amber-300">139</strong> Masters 1000 events played, the highest total since the series began in <strong className="!text-amber-300">1990</strong>.             Lopez set the record at <Link href={getTourneyHref({ slug: 'indian-wells-masters', year: 2021 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Indian Wells 2021</Link>, where his first-round match against <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Tommy Paul</span></span> marked his <strong className="!text-amber-300">139th</strong> Masters 1000 appearance, moving him past Roger Federer’s previous benchmark of <strong className="!text-amber-300">138</strong>.
           </p>
@@ -252,11 +250,11 @@ export default function Entries({
           <p>
             In this record, the milestone is not winning the tournament or even reaching the later rounds: it is simply entering another Masters 1000 main draw, year after year. Lopez set the ceiling at <strong className="!text-amber-300">139</strong>, Federer became the first Big Three benchmark at <strong className="!text-amber-300">138</strong>, and Djokovic — still active — is the only player in position to move the record further.
           </p>
-        </div>
+        </article>
       )}
 
       {pathname === '/records/most-appearances-on-hard-court' && selectedSurfaces?.has('Hard') && selectedLevels?.size === 0 && (
-        <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
+        <article className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the Open Era list for most ATP main-draw appearances in hard-court tournaments stands <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Feliciano Lopez</span></span>, with <strong className="!text-amber-300">279</strong> hard-court main draws, the highest total recorded in this category.
           </p>
@@ -280,11 +278,11 @@ export default function Entries({
           <p>
             Then come <span className="inline-flex items-center gap-2"><Flag ioc="FRA" className="w-4 h-3" /><span>Gaël Monfils</span></span> with <strong className="!text-amber-300">223</strong> and <span className="inline-flex items-center gap-2"><Flag ioc="HRV" className="w-4 h-3" /><span>Marin Cilic</span></span> with <strong className="!text-amber-300">221</strong>, two players whose totals place them just ahead of <span className="inline-flex items-center gap-2"><Flag ioc="CHE" className="w-4 h-3" /><span>Roger Federer</span></span>, ninth on the list with <strong className="!text-amber-300">220</strong> hard-court main draws. Federer’s final hard-court ATP main draw came at <Link href={getTourneyHref({ slug: createSlug('Doha'), year: 2021 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Doha 2021</Link>, where he faced <span className="inline-flex items-center gap-2"><Flag ioc="GBR" className="w-4 h-3" /><span>Daniel Evans</span></span> and <span className="inline-flex items-center gap-2"><Flag ioc="GEO" className="w-4 h-3" /><span>Nikoloz Basilashvili</span></span>.
           </p>
-        </div>
+        </article>
       )}
 
       {pathname === '/records/most-appearances-on-clay-court' && selectedSurfaces?.has('Clay') && selectedLevels?.size === 0 && (
-        <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
+        <article className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the Open Era list for most ATP main-draw appearances in clay-court tournaments stands <span className="inline-flex items-center gap-2"><Flag ioc="ARG" className="w-4 h-3" /><span>Guillermo Vilas</span></span>, with <strong className="!text-amber-300">212</strong> clay-court main draws. Vilas’ last recorded ATP clay-court main draw came at <Link href={getTourneyHref({ slug: createSlug('Bordeaux'), year: 1992 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Bordeaux 1992</Link>, where he faced <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>German Lopez</span></span> in the first round. His total of 212 clay main draws remains the highest mark in this category.
           
@@ -304,11 +302,11 @@ export default function Entries({
           <p>
             Seventh is <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Javier Sanchez</span></span>, with <strong className="!text-amber-300">184</strong> clay-court main draws. His last recorded ATP clay main draw came at <Link href={getTourneyHref({ slug: createSlug('Barcelona'), year: 1999 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Barcelona 1999</Link>, where he faced <span className="inline-flex items-center gap-2"><Flag ioc="ARG" className="w-4 h-3" /><span>Franco Squillari</span></span> in the first round.
           </p>
-        </div>
+        </article>
       )}
 
       {pathname === '/records/most-appearances-on-carpet-court' && selectedSurfaces?.has('Carpet') && selectedLevels?.size === 0 && (
-        <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
+        <article className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the Open Era list for most ATP carpet-court main-draw appearances stands <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Jimmy Connors</span></span>, with <strong className="!text-amber-300">126</strong> carpet main draws.             Connors leads a ranking built around the indoor-carpet era of the 1970s and 1980s, when carpet was one of the main surfaces on the ATP calendar, especially in North America and Europe. His 126 appearances are the highest total recorded in this category.
           </p>
@@ -327,7 +325,7 @@ export default function Entries({
           <p>
             The record number is <strong className="!text-amber-300">126</strong>: Jimmy Connors leads the Open Era ranking for ATP carpet-court main-draw appearances. The top four are Connors 126, Năstase 117, Riessen 115 and Gottfried 109.
           </p>
-        </div>
+        </article>
       )}
 
       {pathname === '/records/most-appearances-on-grass-court' && selectedSurfaces?.has('Grass') && selectedLevels?.size === 0 && (
@@ -363,19 +361,29 @@ export default function Entries({
         </button>
       </div>
 
-      {renderTable(currentEntries, start)}
+      {error ? (
+        <div className="text-center py-8 text-gray-300">{error}</div>
+      ) : loading && !hasRows ? (
+        <div className="text-center py-8 text-gray-300">Loading...</div>
+      ) : hasRows ? (
+        <>
+          {renderTable(currentEntries, start)}
 
-      {totalPages > 1 && (
-        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+          {totalPages > 1 && (
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+          )}
+
+          <Modal
+            show={showModal}
+            onClose={() => setShowModal(false)}
+            title="Players with Most Entries"
+          >
+            {renderTable(allEntries)}
+          </Modal>
+        </>
+      ) : (
+        <div className="text-center py-8 text-gray-300">No data available.</div>
       )}
-
-      <Modal
-        show={showModal}
-        onClose={() => setShowModal(false)}
-        title="Players with Most Entries"
-      >
-        {renderTable(allEntries)}
-      </Modal>
     </section>
   );
 }

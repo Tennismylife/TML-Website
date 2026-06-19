@@ -32,6 +32,7 @@ export default function Count({ selectedRounds, selectedSurfaces, selectedLevels
   const [allPlayers, setAllPlayers] = useState<PlayerData[]>(Array.isArray(topCount) ? topCount : []);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const pathname = usePathname();
   // Derive the narrative path from the canonical URL prop (same on server and client)
@@ -57,6 +58,7 @@ export default function Count({ selectedRounds, selectedSurfaces, selectedLevels
     const fetchData = async () => {
       setLoading(true);
       try {
+        setError(null);
         const params = new URLSearchParams();
         if (selectedSurfaces !== undefined) Array.from(selectedSurfaces).forEach(s => params.append('surface', s));
         if (selectedLevels !== undefined) Array.from(selectedLevels).forEach(l => params.append('level', l));
@@ -71,7 +73,10 @@ export default function Count({ selectedRounds, selectedSurfaces, selectedLevels
         if (!controller.signal.aborted) setAllPlayers(rows);
       } catch (err: any) {
         if (err?.name !== 'AbortError') console.error(err);
-        if (!controller.signal.aborted) setAllPlayers([]);
+        if (!controller.signal.aborted) {
+          setAllPlayers([]);
+          setError('Error loading data');
+        }
       } finally {
         if (!controller.signal.aborted) setLoading(false);
       }
@@ -80,6 +85,7 @@ export default function Count({ selectedRounds, selectedSurfaces, selectedLevels
     return () => controller.abort();
   }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, showModal]);
 
+  const hasRows = allPlayers.length > 0;
   const totalPages = loading || !allPlayers.length ? 0 : Math.ceil(allPlayers.length / perPage);
   const start = (page - 1) * perPage;
   const currentData = loading || !allPlayers.length ? [] : allPlayers.slice(start, start + perPage);
@@ -192,7 +198,7 @@ export default function Count({ selectedRounds, selectedSurfaces, selectedLevels
       )}
 
       {narrativePath === '/records/most-grand-slam-finals-reached' && selectedRounds === 'F' && selectedLevels?.has('G') && (!selectedSurfaces || selectedSurfaces.size === 0) && selectedBestOf == null && (
-        <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
+        <article className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the all-time men’s list for most Grand Slam singles finals reached stands <span className="inline-flex items-center gap-2"><Flag ioc="SRB" className="w-4 h-3" /><span>Novak Djokovic</span></span>, with <strong className="!text-amber-300">38</strong> major finals, the highest total ever recorded in men’s tennis.
           </p>
@@ -214,7 +220,7 @@ export default function Count({ selectedRounds, selectedSurfaces, selectedLevels
           <p>
             In this record, reaching a Grand Slam final represents the ultimate durability checkpoint. Winning a major defines a peak; returning to major finals again and again defines an era. Djokovic has pushed the ceiling to 38, Federer stands next at 31, Nadal follows at 30, while Lendl and Sampras remain the great historical reference points behind the Big Three.
           </p>
-        </div>
+        </article>
       )}
 
       {narrativePath === '/records/most-semifinals-reached' && selectedRounds === 'SF' && (!selectedSurfaces || selectedSurfaces.size === 0) && (!selectedLevels || selectedLevels.size === 0) && selectedBestOf == null && (
@@ -477,11 +483,11 @@ export default function Count({ selectedRounds, selectedSurfaces, selectedLevels
         </div>
       )}
 
-      {loading ? (
+      {error ? (
+        <div className="text-center py-8 text-gray-300">{error}</div>
+      ) : loading && !hasRows ? (
         <div className="text-center py-8 text-gray-300">Loading...</div>
-      ) : !allPlayers.length ? (
-        <div className="text-center py-8 text-gray-300">No data available.</div>
-      ) : (
+      ) : hasRows ? (
         <>
           {renderTable(currentData, start)}
           {totalPages > 1 && !showModal && (
@@ -495,6 +501,8 @@ export default function Count({ selectedRounds, selectedSurfaces, selectedLevels
             {renderTable(allPlayers)}
           </Modal>
         </>
+      ) : (
+        <div className="text-center py-8 text-gray-300">No data available.</div>
       )}
     </section>
   );

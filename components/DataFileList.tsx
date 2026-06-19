@@ -106,8 +106,8 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
   return (
     <div className="relative">
       {/* header row with notice; mailbox placed absolutely at top-right */}
-      <div className="flex justify-center mb-4 mt-4">
-        <div className="bg-yellow-300 font-semibold text-3xl px-8 py-4 rounded-lg shadow-md changelog">
+      <div className="flex justify-center mb-4 mt-4 px-4">
+        <div className="bg-yellow-300 font-semibold text-lg sm:text-3xl px-4 sm:px-8 py-3 sm:py-4 rounded-lg shadow-md changelog text-center">
           <span className="uppercase">🔔 New:</span> ATP Tour Qualifying added!
         </div>
       </div>
@@ -118,40 +118,40 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
       <h3 className="text-2xl sm:text-3xl font-extrabold text-center text-gray-100" style={{ marginTop: 0, marginBottom: 12 }}>Historical Matches (1968–2026)</h3>
 
       <div style={{ marginBottom: 12 }}>
-        <div className="rounded-md bg-gray-800 border border-white/20 p-4 mb-4">
-          <div className="flex items-start justify-between gap-4">
+        <div className="rounded-md bg-gray-800 border border-white/20 p-3 sm:p-4 mb-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
-              <div className="font-semibold text-lg text-gray-100 mb-1">Quick commands</div>
+              <div className="font-semibold text-base sm:text-lg text-gray-100 mb-1">Quick commands</div>
               <div className="text-sm text-gray-400 mb-2">Copy & paste one of these commands to download all CSVs <strong>as they are</strong> into a <code>tml-data</code> folder. Choose the one matching your shell.</div>
               <div className="grid gap-3">
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0">
                     <div className="text-sm font-medium text-gray-200 mb-1">CMD (Windows - cmd.exe)</div>
-                    <pre className="bg-gray-900 text-sm p-3 rounded overflow-auto whitespace-pre-wrap break-words"><code>{cmdCmd}</code></pre>
+                    <pre className="bg-gray-900 text-xs sm:text-sm p-3 rounded overflow-auto whitespace-pre-wrap break-words"><code>{cmdCmd}</code></pre>
                   </div>
                   <div className="flex-shrink-0">
-                    <button onClick={async () => { try { await navigator.clipboard.writeText(cmdCmd); setCopyStatus('Copied CMD'); setTimeout(()=>setCopyStatus(null),2000); } catch (e) { setCopyStatus('Copy failed'); setTimeout(()=>setCopyStatus(null),2000); } }} className="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow">Copy</button>
+                    <button onClick={async () => { try { await navigator.clipboard.writeText(cmdCmd); setCopyStatus('Copied CMD'); setTimeout(()=>setCopyStatus(null),2000); } catch (e) { setCopyStatus('Copy failed'); setTimeout(()=>setCopyStatus(null),2000); } }} className="inline-flex w-full items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500 sm:w-auto">Copy</button>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0">
                     <div className="text-sm font-medium text-gray-200 mb-1">PowerShell (Windows)</div>
-                    <pre className="bg-gray-900 text-sm p-3 rounded overflow-auto whitespace-pre-wrap break-words"><code>{psCmd}</code></pre>
+                    <pre className="bg-gray-900 text-xs sm:text-sm p-3 rounded overflow-auto whitespace-pre-wrap break-words"><code>{psCmd}</code></pre>
                   </div>
                   <div className="flex-shrink-0">
-                    <button onClick={async () => { try { await navigator.clipboard.writeText(psCmd); setCopyStatus('Copied PowerShell'); setTimeout(()=>setCopyStatus(null),2000); } catch (e) { setCopyStatus('Copy failed'); setTimeout(()=>setCopyStatus(null),2000); } }} className="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow">Copy</button>
+                    <button onClick={async () => { try { await navigator.clipboard.writeText(psCmd); setCopyStatus('Copied PowerShell'); setTimeout(()=>setCopyStatus(null),2000); } catch (e) { setCopyStatus('Copy failed'); setTimeout(()=>setCopyStatus(null),2000); } }} className="inline-flex w-full items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500 sm:w-auto">Copy</button>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0">
                     <div className="text-sm font-medium text-gray-200 mb-1">Bash / Linux / macOS</div>
-                    <pre className="bg-gray-900 text-sm p-3 rounded overflow-auto whitespace-pre-wrap break-words"><code>{bashCmd}</code></pre>
+                    <pre className="bg-gray-900 text-xs sm:text-sm p-3 rounded overflow-auto whitespace-pre-wrap break-words"><code>{bashCmd}</code></pre>
                     <div className="text-xs text-gray-400 mt-1">Requires <code>curl</code> and <code>jq</code> (or Python fallback script available in <code>scripts/download_all.sh</code>).</div>
                   </div>
                   <div className="flex-shrink-0">
-                    <button onClick={async () => { try { await navigator.clipboard.writeText(bashCmd); setCopyStatus('Copied Bash'); setTimeout(()=>setCopyStatus(null),2000); } catch (e) { setCopyStatus('Copy failed'); setTimeout(()=>setCopyStatus(null),2000); } }} className="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow">Copy</button>
+                    <button onClick={async () => { try { await navigator.clipboard.writeText(bashCmd); setCopyStatus('Copied Bash'); setTimeout(()=>setCopyStatus(null),2000); } catch (e) { setCopyStatus('Copy failed'); setTimeout(()=>setCopyStatus(null),2000); } }} className="inline-flex w-full items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500 sm:w-auto">Copy</button>
                   </div>
                 </div>
               </div>
@@ -159,8 +159,8 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
           </div>
         </div>
 
-        <div style={{ textAlign: 'center', marginBottom: 12 }}>
-          <a href="/api/download-all" className="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold py-4 px-10 rounded-xl text-xl sm:text-2xl shadow-xl">
+        <div className="mb-3 text-center">
+          <a href="/api/download-all" className="inline-flex w-full items-center justify-center rounded-xl bg-indigo-600 px-6 py-3 text-lg font-extrabold text-white shadow-xl hover:bg-indigo-500 sm:w-auto sm:px-10 sm:py-4 sm:text-2xl">
             <svg className="w-6 h-6 mr-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path d="M12 3v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               <path d="M5 11l7 7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -168,20 +168,20 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
             </svg>
             Download All
           </a>
-          <div className="text-sm text-gray-400 mt-2">Download all CSV files in a single ZIP file. This may take a few seconds.</div>
+          <div className="mt-2 text-sm text-gray-400">Download all CSV files in a single ZIP file. This may take a few seconds.</div>
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full min-w-0">
+      <div className="grid w-full min-w-0 grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="w-full" style={{ minWidth: 0 }}>
-          <div className="text-center text-2xl sm:text-3xl font-extrabold !text-blue-400 mb-2">ATP Tour</div>
+          <div className="mb-2 text-center text-2xl font-extrabold !text-blue-400 sm:text-3xl">ATP Tour</div>
           <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow mt-0" style={{ marginBottom: 8 }}>
-            <table className="table-fixed w-full border-collapse" aria-label="Historical Matches">
+            <table className="table-fixed min-w-[640px] sm:min-w-full w-full border-collapse" aria-label="Historical Matches">
           <thead>
             <tr className="bg-black">
               <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200 w-24">Year</th>
               <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200 w-36 sm:w-56">File</th>
-              <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200 w-28">Size</th>
-              <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200 w-48">Last modified</th>
+              <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200 w-28 hidden sm:table-cell">Size</th>
+              <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200 w-48 hidden sm:table-cell">Last modified</th>
               <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200 w-auto sm:w-80"> </th>
             </tr>
           </thead>
@@ -193,10 +193,10 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
                 <tr key={f.name} className="hover:bg-gray-800 border-b border-white/10">
                   <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-24 whitespace-nowrap">{yearLabel}</td>
                   <td className="border border-white/10 px-4 py-2 text-lg text-gray-200 whitespace-nowrap"><a href={f.url} download className="text-indigo-300 hover:underline whitespace-nowrap">{f.name}</a></td>
-                  <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-28 whitespace-nowrap">{f.size ? humanSize(f.size) : ''}</td>
-                  <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-48 whitespace-nowrap">{f.mtime ? new Date(f.mtime).toLocaleString('it-IT') : ''}</td>
+                  <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-28 whitespace-nowrap hidden sm:table-cell">{f.size ? humanSize(f.size) : ''}</td>
+                  <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-48 whitespace-nowrap hidden sm:table-cell">{f.mtime ? new Date(f.mtime).toLocaleString('it-IT') : ''}</td>
                   <td className="border border-white/10 px-4 py-2 whitespace-nowrap w-auto sm:w-80 flex items-center justify-center">
-                    <a href={f.url} download aria-label={`Download ${f.name}`} className="inline-flex items-center px-3 sm:px-4 py-1 text-sm sm:text-base bg-indigo-600 text-white rounded hover:bg-indigo-500 whitespace-nowrap">
+                    <a href={f.url} download aria-label={`Download ${f.name}`} className="inline-flex items-center px-3 py-1 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-500 whitespace-nowrap sm:px-4 sm:text-base">
                       <svg className="w-4 h-4 sm:mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                         <path d="M12 3v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         <path d="M5 11l7 7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -239,9 +239,9 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
 
         {/* Right column: challenger files 1978–2026 */}
         <div className="w-full" style={{ minWidth: 0 }}>
-          <div className="text-center text-2xl sm:text-3xl font-extrabold !text-green-400 mb-2">ATP Challenger Tour</div>
+          <div className="mb-2 text-center text-2xl font-extrabold !text-green-400 sm:text-3xl">ATP Challenger Tour</div>
           <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow mt-0" style={{ marginBottom: 8 }}>
-            <table className="table-fixed w-full border-collapse" aria-label="Challenger files">
+            <table className="table-fixed min-w-[640px] sm:min-w-full w-full border-collapse" aria-label="Challenger files">
               <thead>
                 <tr className="bg-black">
                   <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200 w-24">Year</th>
@@ -262,7 +262,7 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
                       <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-28 whitespace-nowrap hidden sm:table-cell">{f.size ? humanSize(f.size) : ''}</td>
                       <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-48 whitespace-nowrap hidden sm:table-cell">{f.mtime ? new Date(f.mtime).toLocaleString('it-IT') : ''}</td>
                       <td className="border border-white/10 px-4 py-2 whitespace-nowrap w-auto sm:w-80 flex items-center justify-center">
-                        <a href={f.url} download aria-label={`Download ${f.name}`} className="inline-flex items-center px-3 sm:px-4 py-1 text-sm sm:text-base bg-indigo-600 text-white rounded hover:bg-indigo-500 whitespace-nowrap">
+                    <a href={f.url} download aria-label={`Download ${f.name}`} className="inline-flex items-center px-3 py-1 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-500 whitespace-nowrap sm:px-4 sm:text-base">
                           <svg className="w-4 h-4 sm:mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <path d="M12 3v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                             <path d="M5 11l7 7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -287,9 +287,9 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
 
       {/* ATP Tour Qualifying files */}
       <div className="mt-10">
-        <div className="text-center text-2xl sm:text-3xl font-extrabold !text-yellow-400 mb-2">ATP Tour Qualifying</div>
+        <div className="mb-2 text-center text-2xl font-extrabold !text-yellow-400 sm:text-3xl">ATP Tour Qualifying</div>
         <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow mt-0" style={{ marginBottom: 8 }}>
-          <table className="table-fixed w-full border-collapse" aria-label="ATP Tour Qualifying files">
+          <table className="table-fixed min-w-[640px] sm:min-w-full w-full border-collapse" aria-label="ATP Tour Qualifying files">
             <thead>
               <tr className="bg-black">
                 <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200 w-24">Year</th>
@@ -309,7 +309,7 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
                     <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-28 whitespace-nowrap hidden sm:table-cell">{f.size ? humanSize(f.size) : ''}</td>
                     <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-48 whitespace-nowrap hidden sm:table-cell">{f.mtime ? new Date(f.mtime).toLocaleString('it-IT') : ''}</td>
                     <td className="border border-white/10 px-4 py-2 whitespace-nowrap w-auto sm:w-80 flex items-center justify-center">
-                      <a href={f.url} download aria-label={`Download ${f.name}`} className="inline-flex items-center px-3 sm:px-4 py-1 text-sm sm:text-base bg-indigo-600 text-white rounded hover:bg-indigo-500 whitespace-nowrap">
+                    <a href={f.url} download aria-label={`Download ${f.name}`} className="inline-flex items-center px-3 py-1 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-500 whitespace-nowrap sm:px-4 sm:text-base">
                         <svg className="w-4 h-4 sm:mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                           <path d="M12 3v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                           <path d="M5 11l7 7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

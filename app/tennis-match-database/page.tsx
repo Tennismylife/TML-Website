@@ -94,27 +94,27 @@ export default function Page() {
 
   return (
     <main>
-      <div className="flex flex-col items-center mt-6 gap-4 px-4">
-        <div className="flex items-center justify-center gap-4">
-          <h1 className="text-4xl sm:text-5xl font-bold !text-white text-center">
+      <div className="flex flex-col items-center gap-4 px-4 pt-6 sm:px-6">
+        <div className="flex flex-col items-center justify-center gap-2 text-center sm:flex-row sm:gap-4">
+          <h1 className="text-3xl font-bold !text-white sm:text-5xl">
             Tennis Match Database
           </h1>
-          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-red-600 text-white font-bold animate-pulse shadow-lg">
+          <div className="inline-flex items-center gap-2 rounded-full bg-red-600 px-3 py-1 font-bold text-white shadow-lg animate-pulse">
             <span className="inline-block w-2 h-2 bg-white rounded-full animate-pulse" aria-hidden="true"></span>
             <span className="uppercase tracking-widest">LIVE</span>
           </div>
         </div>
         {/* mailbox below heading on all screens */}
-        <div className="bg-blue-600 text-white rounded-lg px-6 py-3 text-base shadow-lg text-center">
+        <div className="w-full max-w-md rounded-lg bg-blue-600 px-4 py-3 text-center text-sm text-white shadow-lg sm:px-6 sm:text-base">
           📬 <a href="mailto:infotennismylife@gmail.com" className="underline">infotennismylife@gmail.com</a><br/>
           info, reports, debugging, sponsorship
         </div>
       </div>
 
       {/* Primo box: intro – ora occupa tutto lo spazio */}
-<section className="mb-10 w-full px-6 text-center bg-gray-900/80 py-10">
-  <div className="mx-auto text-center">
-    <p className="text-lg sm:text-xl font-medium !text-gray-200 leading-relaxed">
+<section className="mb-10 w-full bg-gray-900/80 px-4 py-8 text-center sm:px-6 sm:py-10">
+  <div className="mx-auto max-w-4xl text-center">
+    <p className="text-base font-medium !text-gray-200 leading-relaxed sm:text-xl">
       <span className="!text-sky-400 font-semibold">TennisMyLife</span> hosts a highly reliable  
       <span className="!text-emerald-400 font-semibold"> Tennis Match Database</span>. 
       All <span className="!text-yellow-300 font-semibold"> historical match data</span>, 
@@ -126,11 +126,11 @@ export default function Page() {
   </div>
 </section>
 
-<section className="mb-8 w-full px-6 text-center bg-gray-800/70 py-6">
+<section className="mb-8 w-full bg-gray-800/70 px-4 py-6 text-center sm:px-6">
   <style>{`.live-tourney-names{color:#4ade80 !important;}`}</style>
   <div className="mx-auto max-w-3xl">
-    <h2 className="text-2xl sm:text-3xl font-semibold mb-2 text-slate-100">Live Tournaments</h2>
-    <p className="text-base sm:text-lg text-gray-300">
+    <h2 className="mb-2 text-2xl font-semibold text-slate-100 sm:text-3xl">Live Tournaments</h2>
+    <p className="text-sm text-gray-300 sm:text-lg">
       {currentTourneys.length > 0 ? (
         <>
           {currentTourneys.map((name, idx) => (
@@ -150,53 +150,53 @@ export default function Page() {
 
 
       {/* Show full file list — pre-populated from server-side filesystem read (no client fetch = no CLS) */}
-      <div style={{ marginTop: 18 }}>
+      <div className="mt-4 sm:mt-5">
         <DataFileListClient full={true} initialFiles={initialFiles} />
       </div>
 
       {/* Sponsored banner */}
-      <div className="mt-12 mb-2 mx-6">
+      <div className="mx-4 mb-2 mt-10 sm:mx-6">
         <a
           href="https://app.brckt.io"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex flex-col sm:flex-row items-center gap-4 w-full bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border border-yellow-500/40 rounded-xl px-6 py-4 shadow-lg hover:border-yellow-400 transition-colors group"
+          className="flex w-full flex-col items-center gap-4 rounded-xl border border-yellow-500/40 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 px-4 py-4 shadow-lg transition-colors group hover:border-yellow-400 sm:flex-row sm:px-6"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/Brckt.png"
             alt="Brckt – Tournament bracket software"
-            className="h-14 w-auto object-contain flex-shrink-0"
+            className="h-10 w-auto flex-shrink-0 object-contain sm:h-14"
           />
           <div className="flex-1 text-center sm:text-left">
             <p className="text-xs font-semibold uppercase tracking-widest text-yellow-400 mb-0.5">Sponsored</p>
-            <p className="text-base font-bold text-white group-hover:text-yellow-300 transition-colors">
+            <p className="text-sm font-bold text-white transition-colors group-hover:text-yellow-300 sm:text-base">
               Brckt — Predict ATP & WTA tournament brackets
             </p>
-            <p className="text-sm text-gray-400 mt-0.5">
+            <p className="mt-0.5 text-xs text-gray-400 sm:text-sm">
               Pick your winners round by round and compete against friends. Who will lift the trophy? Make your predictions on ATP and WTA draws and find out!
             </p>
           </div>
-          <span className="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-yellow-400 group-hover:text-yellow-300 flex-shrink-0">
+          <span className="hidden flex-shrink-0 items-center gap-1 text-sm font-semibold text-yellow-400 group-hover:text-yellow-300 sm:inline-flex">
             Try it free →
           </span>
         </a>
       </div>
 
       {/* Documentation section (full-width background, content centered) */}
-      <section className="mt-4 w-full bg-gray-800/40 py-10">
-        <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-xl font-semibold text-gray-100 mb-3 text-center">Documentation</h2>
+      <section className="mt-4 w-full bg-gray-800/40 py-8 sm:py-10">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <h2 className="mb-3 text-center text-xl font-semibold text-gray-100 sm:text-2xl">Documentation</h2>
         </div>
-        <div className="w-full px-6 text-sm text-gray-300 leading-relaxed text-left">
+        <div className="w-full px-4 text-sm text-gray-300 leading-relaxed text-left sm:px-6 sm:text-base">
           <p className="mb-3">
             TennisMyLife hosts a comprehensive tennis match database, including all historical match data, ATP player stats, and ongoing tournament results. All datasets are available as CSV downloads, making it easy for analysts, fans, and developers to explore tennis statistics.
           </p>
           <p>
             There are many other tennis databases out there, but TennisMyLife stands out. Unlike Sackmann’s database, we use ATP player IDs, providing a more convenient way to calculate player records and cross-reference data directly on the official ATP website.
           </p>
-          <h3 className="text-lg font-medium mt-4 mb-2">Database Columns Include:</h3>
-<ul className="list-disc list-inside space-y-1 text-sm">
+          <h3 className="mt-4 mb-2 text-lg font-medium">Database Columns Include:</h3>
+<ul className="list-disc list-inside space-y-1 text-sm sm:text-base">
   <li><strong className="!text-sky-300">tourney_id:</strong> Tournament ID based on ATP database</li>
   <li><strong className="!text-sky-300">tourney_name:</strong> City where the tournament was played</li>
   <li><strong className="!text-sky-300">surface:</strong> Hard, clay, grass, carpet</li>
@@ -260,7 +260,7 @@ export default function Page() {
           <p className="mt-4">
             We welcome collaborations and bug reports. Help us improve the quality of this tennis database and make it the most reliable source for ATP stats, match history, and player analytics.
           </p>
-          <div className="mt-6 text-sm text-gray-300">
+          <div className="mt-6 text-sm text-gray-300 sm:text-base">
             <strong className="!text-white">Creator:</strong> Tennis My Life<br/>
             <strong className="!text-white">License:</strong> <a className="underline !text-sky-400" href="https://opensource.org/licenses/MIT">MIT License</a><br/>
             <strong className="!text-white">Temporal coverage:</strong> <span className="!text-yellow-300 font-semibold">{minYear}–{maxYear}</span><br/>
