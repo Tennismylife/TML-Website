@@ -73,12 +73,14 @@ export default function Titles({ selectedSurfaces, selectedLevels, topTitles, fe
     return () => controller.abort();
   }, [selectedSurfaces, selectedLevels, showModal]);
 
-  if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
-  if (!allTitles.length) return <div className="text-center py-8 text-gray-300">No data available.</div>;
-
   const totalPages = Math.ceil(allTitles.length / perPage);
   const start = (page - 1) * perPage;
   const currentData = allTitles.slice(start, start + perPage);
+  const hasRows = allTitles.length > 0;
+  const showGrassNarrative =
+    selectedSurfaces?.size === 1 &&
+    selectedSurfaces.has('Grass') &&
+    selectedLevels?.size === 0;
 
 
 
@@ -255,7 +257,7 @@ export default function Titles({ selectedSurfaces, selectedLevels, topTitles, fe
         </div>
       )}
 
-      {pathname === '/records/most-titles-won-on-grass' && selectedSurfaces?.has('Grass') && selectedLevels?.size === 0 && (
+      {showGrassNarrative && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the Open Era list for most ATP titles won on grass stands <span className="inline-flex items-center gap-2"><Flag ioc="CHE" className="w-4 h-3" /><span>Roger Federer</span></span>, with a record <strong className="!text-amber-300">19</strong> grass-court singles titles, far ahead of every other man in the Open Era. His first title on the surface came at <Link href={getTourneyHref({ slug: createSlug('Halle'), year: 2003 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Halle 2003</Link>, where he defeated <span className="inline-flex items-center gap-2"><Flag ioc="DEU" className="w-4 h-3" /><span>Nicolas Kiefer</span></span> 6-1, 6-3, while his final grass-court title also came at <Link href={getTourneyHref({ slug: createSlug('Halle'), year: 2019 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Halle 2019</Link>, against <span className="inline-flex items-center gap-2"><Flag ioc="BEL" className="w-4 h-3" /><span>David Goffin</span></span>, giving him a record 10 titles at the same grass-court event. Federer’s total is built around two historic strongholds: <Link href={getTourneyHref({ slug: createSlug('Wimbledon') })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Wimbledon</Link>, where he won a men’s record eight titles, and <Link href={getTourneyHref({ slug: createSlug('Halle') })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Halle</Link>, where he won 10, plus one further grass title at <Link href={getTourneyHref({ slug: createSlug('Stuttgart'), year: 2018 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Stuttgart 2018</Link>.
@@ -307,7 +309,13 @@ export default function Titles({ selectedSurfaces, selectedLevels, topTitles, fe
         </button>
       </div>
 
-      {renderTable(currentData, start)}
+      {loading && !hasRows ? (
+        <div className="text-center py-8 text-gray-300">Loading...</div>
+      ) : hasRows ? (
+        renderTable(currentData, start)
+      ) : (
+        <div className="text-center py-8 text-gray-300">No data available.</div>
+      )}
 
       {totalPages > 1 && !showModal && (
         <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
