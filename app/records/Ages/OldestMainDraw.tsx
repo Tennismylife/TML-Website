@@ -39,7 +39,6 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
-  const pathname = currentPath ?? "";
   const perPage = 20;
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds]);
@@ -141,7 +140,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
         <div className="text-center py-8 text-gray-300">{error}</div>
       ) : loading && !hasRows ? (
         <div className="text-center py-8 text-gray-300">Loading...</div>
-      ) : hasRows ? (
+      ) : (
         <>
       {description && (
         <h2 className="mb-6 text-center text-2xl font-semibold text-white">
@@ -149,7 +148,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
         </h2>
       )}
 
-      {pathname === '/records/oldest-players-in-main-draw' && selectedSurfaces?.size === 0 && selectedLevels?.size === 0 && (
+      {selectedSurfaces?.size === 0 && selectedLevels?.size === 0 && selectedRounds === '' && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the Open Era list for oldest players in an ATP main draw stands <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Gardnar Mulloy</span></span>, who appeared at <Link href={getTourneyHref({ slug: createSlug('Miami'), year: 1977 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Miami 1977</Link> aged <strong className="!text-amber-300">63 years and 77 days</strong>, the oldest recorded men’s singles main-draw appearance of the Open Era.             In that match, Mulloy faced <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>John Whitlinger</span></span> in the opening round, losing 6-0, 6-1 on clay — a result that turned <Link href={getTourneyHref({ slug: createSlug('Miami'), year: 1977 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Miami 1977</Link> into the ultimate longevity milestone rather than a competitive benchmark.             Mulloy dominates the very top of this record: he also appears at <Link href={getTourneyHref({ slug: createSlug('Fort Lauderdale'), year: 1971 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Fort Lauderdale 1971</Link> aged <strong className="!text-amber-300">57 years and 56 days</strong>, <Link href={getTourneyHref({ slug: createSlug('Jacksonville'), year: 1970 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Jacksonville 1970</Link> aged <strong className="!text-amber-300">56 years and 123 days</strong>, and several other late-career main draws in <strong className="!text-amber-300">1968–69</strong>.
@@ -167,7 +166,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
         </div>
       )}
 
-      {pathname === '/records/oldest-players-in-main-draw-at-grand-slam' && selectedSurfaces?.size === 0 && selectedLevels?.has('G') && (
+      {selectedSurfaces?.size === 0 && selectedLevels?.has('G') && selectedRounds === '' && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the Open Era list for oldest players in a men’s singles Grand Slam main draw stands <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Frank Parker</span></span>, who appeared at the <Link href={getTourneyHref({ slug: createSlug('US Open'), year: 1968 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">1968 US Open</Link> aged <strong className="!text-amber-300">52 years and 211 days</strong> — the oldest recorded men’s singles main-draw appearance at a major in the Open Era.             The first US Open of the Open Era was played on grass at Forest Hills. Parker entered the main draw and later faced <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Arthur Ashe</span></span>, the eventual champion, losing in the second round — a run remembered far more as an extraordinary longevity marker than as a competitive benchmark.
@@ -185,7 +184,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
         </div>
       )}
 
-      {pathname === '/records/oldest-grand-slam-quarterfinalists' && selectedSurfaces?.size === 0 && selectedLevels?.has('G') && selectedRounds === 'QF' && (
+      {selectedSurfaces?.size === 0 && selectedLevels?.has('G') && selectedRounds === 'QF' && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the Open Era list for oldest Grand Slam quarterfinalists stands <span className="inline-flex items-center gap-2"><Flag ioc="AUS" className="w-4 h-3" /><span>Ken Rosewall</span></span>, who reached the <Link href={getTourneyHref({ slug: createSlug('Australian Open 2'), year: 1977 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">December 1977 Australian Open</Link> quarterfinals aged <strong className="!text-amber-300">43 years 47 days</strong> — the oldest recorded men’s singles Grand Slam quarterfinal appearance of the Open Era. Rosewall was born on 2 November 1934, and that Australian Open was played from 19–31 December 1977 on grass in Australia.             In that tournament, Rosewall was seeded No. 4 and reached the last eight before losing to <span className="inline-flex items-center gap-2"><Flag ioc="AUS" className="w-4 h-3" /><span>John Alexander</span></span> in the quarterfinals, 7-6, 7-6, 4-6, 6-1. That run came in the second Australian Open staged in 1977 — the December edition won by <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Vitas Gerulaitis</span></span> — and turned Rosewall’s late-career Slam presence into one of the most extreme longevity records in men’s tennis.             Rosewall dominates the very top of this record: earlier in the same year, at the <Link href={getTourneyHref({ slug: createSlug('Australian Open'), year: 1977 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">January 1977 Australian Open</Link>, he went even further by reaching the semifinals, beating defending champion <span className="inline-flex items-center gap-2"><Flag ioc="AUS" className="w-4 h-3" /><span>Mark Edmondson</span></span> in the quarterfinals before losing to <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Roscoe Tanner</span></span>.
@@ -202,7 +201,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
         </div>
       )}
 
-      {pathname === '/records/oldest-grand-slam-semifinalists' && selectedSurfaces?.size === 0 && selectedLevels?.has('G') && selectedRounds === 'SF' && (
+      {selectedSurfaces?.size === 0 && selectedLevels?.has('G') && selectedRounds === 'SF' && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the Open Era list for oldest Grand Slam men’s singles semifinalists stands <span className="inline-flex items-center gap-2"><Flag ioc="AUS" className="w-4 h-3" /><span>Ken Rosewall</span></span>, who reached the semifinals of the <Link href={getTourneyHref({ slug: createSlug('Australian Open'), year: 1977 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">January 1977 Australian Open</Link> at age 42 years and 60 days. Rosewall was seeded No. 4 and lost in the semifinals to <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Roscoe Tanner</span></span>, 6-4, 3-6, 6-4, 6-1. The tournament was played at Kooyong from 3 to 9 January 1977, and Rosewall’s run ended one round before the final.
@@ -225,7 +224,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
         </div>
       )}
 
-      {pathname === '/records/oldest-masters-1000-semifinalists' && selectedSurfaces?.size === 0 && selectedLevels?.has('M') && selectedRounds === 'SF' && (
+      {selectedSurfaces?.size === 0 && selectedLevels?.has('M') && selectedRounds === 'SF' && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the list for oldest Masters 1000 semifinalists stands <span className="inline-flex items-center gap-2"><Flag ioc="SRB" className="w-4 h-3" /><span>Novak Djokovic</span></span>, who reached the semifinals of the 2025 Shanghai Masters aged <strong className="!text-amber-300">38 years and 125 days</strong>, becoming the oldest men’s singles semifinalist in ATP Masters 1000 history — a category that formally begins with the series’ launch in 1990.            In Shanghai, Djokovic defeated <span className="inline-flex items-center gap-2"><Flag ioc="BEL" className="w-4 h-3" /><span>Zizou Bergs</span></span> in the quarterfinals, 6-3, 6-4, to reach his 80th career Masters 1000 semifinal, extending his own record at that level. That run pushed the longevity ceiling beyond the mark he had set earlier in the same season at the 2025 Miami Open, where he had become the oldest Masters 1000 semifinalist at 37 years and 10 months after beating <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Sebastian Korda</span></span> 6-3, 7-6(4). 
@@ -239,7 +238,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
         </div>
       )}
 
-      {pathname === '/records/oldest-masters-1000-quarterfinalists' && selectedSurfaces?.size === 0 && selectedLevels?.has('M') && selectedRounds === 'QF' && (
+      {selectedSurfaces?.size === 0 && selectedLevels?.has('M') && selectedRounds === 'QF' && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the list for oldest Masters 1000 quarterfinalists stands <span className="inline-flex items-center gap-2"><Flag ioc="SRB" className="w-4 h-3" /><span>Novak Djokovic</span></span>, who reached the quarterfinals of the <Link href="/tournaments/shanghai/2025" className="!text-orange-300 hover:!text-orange-100 font-semibold">2025 Shanghai Masters</Link> aged <strong className="!text-amber-300">38 years and 4 months</strong>, becoming the oldest men’s singles quarterfinalist in ATP Masters 1000 history — a category that formally begins with the series’ launch in 1990.             Djokovic reached that milestone by surviving a demanding fourth-round match against <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Jaume Munar</span></span>, winning 6-3, 5-7, 6-2 in heavy Shanghai humidity and after receiving medical attention during the match. The win sent him into the Shanghai quarterfinals for the 11th time and made him the oldest player ever to reach the last eight of a Masters 1000 event.
@@ -256,7 +255,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
         </div>
       )}
 
-      {pathname === '/records/oldest-grand-slam-finalists' && selectedSurfaces?.size === 0 && selectedLevels?.has('G') && selectedRounds === 'F' && (
+      {selectedSurfaces?.size === 0 && selectedLevels?.has('G') && selectedRounds === 'F' && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the Open Era list for oldest men’s singles Grand Slam finalists stands <span className="inline-flex items-center gap-2"><Flag ioc="AUS" className="w-4 h-3" /><span>Ken Rosewall</span></span>, who reached the <Link href={getTourneyHref({ slug: createSlug('US Open'), year: 1974 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">1974 US Open</Link> final aged <strong className="!text-amber-300">39 years, 10 months and 6 days</strong> — the oldest recorded men’s singles finalist at a major in the Open Era.             Born on 2 November 1934, Rosewall was beaten by <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Jimmy Connors</span></span> in the Forest Hills final, 6-1, 6-0, 6-1, on grass.
@@ -278,7 +277,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
         </div>
       )}
 
-      {pathname === '/records/oldest-masters-1000-finalists' && selectedSurfaces?.size === 0 && selectedLevels?.has('M') && selectedRounds === 'F' && (
+      {selectedSurfaces?.size === 0 && selectedLevels?.has('M') && selectedRounds === 'F' && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             For the strict ATP Masters 1000 era, which begins with the series’ launch in 1990, the benchmark for oldest Masters 1000 finalists now belongs to <span className="inline-flex items-center gap-2"><Flag ioc="SRB" className="w-4 h-3" /><span>Novak Djokovic</span></span>, who reached the <Link href={getTourneyHref({ slug: createSlug('Miami Masters'), year: 2025 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">2025 Miami Masters</Link> final aged <strong className="!text-amber-300">37 years and 10 months</strong>, becoming the oldest Masters 1000 finalist in series history and overtaking Roger Federer’s 2019 Miami mark.
@@ -295,7 +294,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
         </div>
       )}
 
-      {pathname === '/records/oldest-players-in-main-draw-at-masters-1000' && selectedSurfaces?.size === 0 && selectedLevels?.has('M') && (
+      {selectedSurfaces?.size === 0 && selectedLevels?.has('M') && selectedRounds === '' && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the list for oldest players in a Masters 1000 main draw stands <span className="inline-flex items-center gap-2"><Flag ioc="CHE" className="w-4 h-3" /><span>Stan Wawrinka</span></span>, who appeared at the <Link href={getTourneyHref({ slug: createSlug('Monte-Carlo Masters'), year: 2026 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">2026 Monte-Carlo Masters</Link> aged <strong className="!text-amber-300">41 years and 9 days</strong>, becoming the oldest recorded men’s singles main-draw player at Masters 1000 level.             In that opening-round match Wawrinka faced <span className="inline-flex items-center gap-2"><Flag ioc="ARG" className="w-4 h-3" /><span>Sebastian Baez</span></span> on clay and lost <strong className="!text-amber-300">7-5, 7-5</strong>. It was his final appearance at Monte-Carlo, the tournament where he had won his lone Masters 1000 title in 2014, and the result turned Monte-Carlo 2026 into a pure longevity milestone rather than a competitive benchmark.
@@ -312,7 +311,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
         </div>
       )}
 
-      {pathname === '/records/oldest-players-in-main-draw-on-hard-court' && selectedSurfaces?.has('Hard') && selectedLevels?.size === 0 && (
+      {selectedSurfaces?.has('Hard') && selectedLevels?.size === 0 && selectedRounds === '' && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the Open Era list for oldest players in an ATP men’s singles main draw on hard court stands <span className="inline-flex items-center gap-2"><Flag ioc="IRL" className="w-4 h-3" /><span>James McArdle</span></span>, who appeared at <Link href={getTourneyHref({ slug: createSlug('Dublin'), year: 1974 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Dublin 1974</Link> aged <strong className="!text-amber-300">54 years and 67 days</strong>, the oldest recorded hard-court main-draw appearance in this surface-specific ranking.             McArdle also holds second place on the same list, having played <Link href={getTourneyHref({ slug: createSlug('Dublin'), year: 1973 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Dublin 1973</Link> aged <strong className="!text-amber-300">53 years and 68 days</strong>, making him the dominant figure at the very top of the hard-court longevity table.
@@ -326,7 +325,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
         </div>
       )}
 
-      {pathname === '/records/oldest-players-in-main-draw-on-clay-court' && selectedSurfaces?.has('Clay') && selectedLevels?.size === 0 && (
+      {selectedSurfaces?.has('Clay') && selectedLevels?.size === 0 && selectedRounds === '' && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the Open Era list for oldest players in an ATP men’s singles main draw on clay court stands <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Gardnar Mulloy</span></span>, who appeared at <Link href={getTourneyHref({ slug: createSlug('Miami'), year: 1977 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Miami 1977</Link> aged <strong className="!text-amber-300">63 years and 77 days</strong>, the oldest recorded clay-court main-draw appearance of the Open Era. In that match, Mulloy faced <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>John Whitlinger</span></span> in the Round of 32, losing 6-0, 6-1 on outdoor clay — a result that makes <Link href={getTourneyHref({ slug: createSlug('Miami'), year: 1977 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Miami 1977</Link> the ultimate clay-court longevity milestone rather than a competitive benchmark. Mulloy dominates the very top of this surface-specific record: he also appears at <Link href={getTourneyHref({ slug: createSlug('Fort Lauderdale'), year: 1971 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Fort Lauderdale 1971</Link> aged <strong className="!text-amber-300">57 years and 56 days</strong>, <Link href={getTourneyHref({ slug: createSlug('Jacksonville'), year: 1970 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Jacksonville 1970</Link> aged <strong className="!text-amber-300">56 years and 123 days</strong>, <Link href={getTourneyHref({ slug: createSlug('Monte-Carlo'), year: 1969 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Monte-Carlo 1969</Link> aged <strong className="!text-amber-300">55 years and 143 days</strong>, <Link href={getTourneyHref({ slug: createSlug('Jacksonville'), year: 1969 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Jacksonville 1969</Link> aged <strong className="!text-amber-300">55 years and 131 days</strong>, and <Link href={getTourneyHref({ slug: createSlug('St. Petersburg'), year: 1969 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">St. Petersburg 1969</Link> aged <strong className="!text-amber-300">55 years and 115 days</strong>.
@@ -340,7 +339,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
         </div>
       )}
 
-      {pathname === '/records/oldest-players-in-main-draw-on-grass-court' && selectedSurfaces?.has('Grass') && selectedLevels?.size === 0 && (
+      {selectedSurfaces?.has('Grass') && selectedLevels?.size === 0 && selectedRounds === '' && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the grass-court list for oldest ATP men’s singles main-draw appearances stands <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Frank Parker</span></span>, who played the <Link href={getTourneyHref({ slug: createSlug('US Open'), year: 1968 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">US Open 1968</Link> aged <strong className="!text-amber-300">52 years and 211 days</strong>. Parker’s grass-court milestone is the oldest recorded men’s main-draw appearance on this surface in the Open Era. His record leads a list dominated by early grass specialists and late-career veterans whose competitive windows extended into their fifties.
@@ -357,7 +356,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
         </div>
       )}
 
-      {pathname === '/records/oldest-players-in-main-draw-on-carpet-court' && selectedSurfaces?.has('Carpet') && selectedLevels?.size === 0 && (
+      {selectedSurfaces?.has('Carpet') && selectedLevels?.size === 0 && selectedRounds === '' && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the carpet-court list for oldest ATP men’s singles main-draw appearances stands <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Frank Parker</span></span>, who played <Link href={getTourneyHref({ slug: createSlug('Hampton'), year: 1971 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Hampton 1971</Link> aged <strong className="!text-amber-300">55 years and 30 days</strong>. 
@@ -373,24 +372,26 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
         </div>
       )}
 
-      <div className="mb-4 flex justify-end">
-        <button
-          onClick={() => setShowModal(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
-        >
-          View All
-        </button>
-      </div>
+      {hasRows ? (
+        <>
+          <div className="mb-4 flex justify-end">
+            <button
+              onClick={() => setShowModal(true)}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
+            >
+              View All
+            </button>
+          </div>
 
-      {renderTable(currentPlayers, start)}
+          {renderTable(currentPlayers, start)}
 
-      {totalPages > 1 && (
-        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
-      )}
+          {totalPages > 1 && (
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+          )}
 
-      <Modal show={showModal} onClose={() => setShowModal(false)} title="Oldest Player in Main Draw">
-        {renderTable(data)}
-      </Modal>
+          <Modal show={showModal} onClose={() => setShowModal(false)} title="Oldest Player in Main Draw">
+            {renderTable(data)}
+          </Modal>
         </>
       ) : (
         <div className="text-center py-8 text-gray-300">No data available.</div>

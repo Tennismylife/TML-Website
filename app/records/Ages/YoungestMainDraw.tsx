@@ -38,7 +38,6 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
-  const pathname = currentPath ?? "";
   const perPage = 20;
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds]);
@@ -133,7 +132,7 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
     <section className="mb-8">
       {description && <div className="text-3xl font-bold text-white mb-6 text-center">{description}</div>}
 
-      {pathname?.includes('/records/youngest-players-in-main-draw-at-grand-slam') && (
+      {selectedSurfaces?.size === 0 && selectedLevels?.has('G') && selectedRounds === '' && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the Open Era list for youngest players in a men’s singles Grand Slam main draw stands <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Tommy Ho</span></span>, who appeared at the <Link href="/tournaments/us-open/1988" className="!text-orange-300 hover:!text-orange-100 font-semibold">1988 US Open</Link> aged <strong className="!text-amber-300">15 years, 2 months and 12 days</strong> — the youngest recorded men’s singles main-draw appearance at a Grand Slam in the Open Era.             In that opening-round match, Ho faced <span className="inline-flex items-center gap-2"><Flag ioc="RSA" className="w-4 h-3" /><span>Johan Kriek</span></span>, a former Australian Open champion, and lost 6-4, 7-6, 7-6. The result turned the 1988 US Open into a pure precocity milestone rather than a competitive benchmark: Ho was still only 15, but already entering one of the sport’s biggest main draws
@@ -153,7 +152,7 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
         </div>
       )}
 
-      {pathname?.includes('/records/youngest-grand-slam-finalists') && (
+      {selectedSurfaces?.size === 0 && selectedLevels?.has('G') && selectedRounds === 'F' && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the Open Era list for youngest Grand Slam finalists stands <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Michael Chang</span></span>, who reached — and won — the <Link href="/tournaments/roland-garros/1989" className="!text-orange-300 hover:!text-orange-100 font-semibold">1989 Roland Garros</Link> final aged <strong className="!text-amber-300">17 years, 3 months and 20 days</strong>, the youngest recorded men’s singles Grand Slam finalist of the Open Era.
@@ -169,7 +168,7 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
         </div>
       )}
 
-      {pathname?.includes('/records/youngest-grand-slam-quarterfinalists') && (
+      {selectedSurfaces?.size === 0 && selectedLevels?.has('G') && selectedRounds === 'QF' && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the Open Era list for youngest Grand Slam quarterfinalists stands <span className="inline-flex items-center gap-2"><Flag ioc="DEU" className="w-4 h-3" /><span>Boris Becker</span></span>, who reached the quarterfinals of the <Link href="/tournaments/australian-open/1984" className="!text-orange-300 hover:!text-orange-100 font-semibold">1984 Australian Open</Link> aged <strong className="!text-amber-300">17 years and 13 days</strong> — the youngest recorded men’s singles Grand Slam quarterfinalist of the Open Era.             In that tournament, played on grass at Kooyong, Becker reached the last eight before losing to <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Ben Testerman</span></span> 6-4, 6-3, 6-4. The result was not yet the title-winning breakthrough that would come a few months later at <Link href="/tournaments/wimbledon/1985" className="!text-orange-300 hover:!text-orange-100 font-semibold">Wimbledon 1985</Link>, but it was the first major sign that Becker was already physically and competitively ready for Grand Slam tennis at 17.
@@ -192,7 +191,7 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
         </div>
       )}
 
-      {pathname?.includes('/records/youngest-grand-slam-semifinalists') && (
+      {selectedSurfaces?.size === 0 && selectedLevels?.has('G') && selectedRounds === 'SF' && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Michael Chang</span></span> is the youngest Slam semifinalist in Open Era at 17 years and 96 days, but he did not stop at the semifinal milestone: he beat Chesnokov 6-1, 5-7, 7-6(4), 7-5, then defeated <span className="inline-flex items-center gap-2"><Flag ioc="SWE" className="w-4 h-3" /><span>Stefan Edberg</span></span> in the final 6-1, 3-6, 4-6, 6-4, 6-2, becoming the youngest men’s Grand Slam champion in history at <strong className="!text-amber-300">17 years, 3 months and 20 days</strong>. His run also included the famous fourth-round comeback against world No. 1 <span className="inline-flex items-center gap-2"><Flag ioc="CZE" className="w-4 h-3" /><span>Ivan Lendl</span></span>, turning <Link href="/tournaments/roland-garros/1989" className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros 1989</Link> into the ultimate teenage breakthrough rather than just a semifinal record,
@@ -209,7 +208,7 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
         </div>
       )}
 
-      {pathname?.includes('/records/youngest-masters-1000-finalists') && (
+      {selectedSurfaces?.size === 0 && selectedLevels?.has('M') && selectedRounds === 'F' && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the list for Youngest Masters 1000 Finalists stands <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Michael Chang</span></span>, who reached the <Link href="/tournaments/canada-masters/1990" className="!text-orange-300 hover:!text-orange-100 font-semibold">1990 Canada Masters / Canadian Open</Link> final in Toronto aged <strong className="!text-amber-300">18 years, 5 months and 8 days</strong> — the youngest recorded men’s singles finalist in Masters 1000 history, with the category beginning in 1990.
@@ -229,7 +228,7 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
         </div>
       )}
 
-      {pathname?.includes('/records/youngest-masters-1000-semifinalists') && (
+      {selectedSurfaces?.size === 0 && selectedLevels?.has('M') && selectedRounds === 'SF' && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the list for youngest ATP Masters 1000 semifinalists stands <span className="inline-flex items-center gap-2"><Flag ioc="CAN" className="w-4 h-3" /><span>Denis Shapovalov</span></span>, who reached the semifinals at the <Link href="/tournaments/canada-masters/2017" className="!text-orange-300 hover:!text-orange-100 font-semibold">2017 Canadian Open in Montreal</Link> at <strong className="!text-amber-300">18 years and 119 days</strong>.             Shapovalov entered the tournament ranked No. 143 and became the youngest Masters 1000 semifinalist since the series began in 1990. His run included wins over <span className="inline-flex items-center gap-2"><Flag ioc="ARG" className="w-4 h-3" /><span>Juan Martín del Potro</span></span>, <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Rafael Nadal</span></span> and <span className="inline-flex items-center gap-2"><Flag ioc="FRA" className="w-4 h-3" /><span>Adrian Mannarino</span></span> before he lost in the semifinals to <span className="inline-flex items-center gap-2"><Flag ioc="DEU" className="w-4 h-3" /><span>Alexander Zverev</span></span>.
@@ -256,7 +255,7 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
         </div>
       )}
 
-      {pathname?.includes('/records/youngest-masters-1000-quarterfinalists') && (
+      {selectedSurfaces?.size === 0 && selectedLevels?.has('M') && selectedRounds === 'QF' && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the list for youngest ATP Masters 1000 quarterfinalists stands <span className="inline-flex items-center gap-2"><Flag ioc="CAN" className="w-4 h-3" /><span>Denis Shapovalov</span></span>, who reached the quarter-finals at the <Link href="/tournaments/canada-masters/2017" className="!text-orange-300 hover:!text-orange-100 font-semibold">2017 Canada Masters</Link> in Montreal at <strong className="!text-amber-300">18 years and 114 days</strong>. Shapovalov is the youngest player to reach a Masters 1000 quarter-final since the category began in 1990. His run in <Link href="/tournaments/canada-masters/2017" className="!text-orange-300 hover:!text-orange-100 font-semibold">Canada 2017</Link> later continued into the semifinals, making him also the youngest Masters 1000 semifinalist at <strong className="!text-amber-300">18 years and 119 days</strong>.
@@ -279,7 +278,7 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
         </div>
       )}
 
-      {pathname?.includes('/records/youngest-players-in-main-draw-at-masters-1000') && (
+      {selectedSurfaces?.size === 0 && selectedLevels?.has('M') && selectedRounds === '' && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the list for youngest players in a Masters 1000 main draw stands <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Donald Young</span></span>, who appeared at the <Link href="/tournaments/indian-wells-masters/2005" className="!text-orange-300 hover:!text-orange-100 font-semibold">2005 Indian Wells Masters</Link> aged <strong className="!text-amber-300">15 years and 227 days</strong>, the youngest recorded men’s singles main-draw appearance in Masters 1000 history. Indian Wells 2005 was an ATP Masters 1000 event played from 7–20 March 2005, and Young, still only 15, entered the main draw as a wildcard before losing in the opening round to <span className="inline-flex items-center gap-2"><Flag ioc="FRA" className="w-4 h-3" /><span>Arnaud Clément</span></span>, 6-3, 6-2.
