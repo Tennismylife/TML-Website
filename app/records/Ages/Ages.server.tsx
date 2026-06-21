@@ -2,6 +2,7 @@ import React from 'react'
 import ServerWrapper from '../../../components/ServerWrapper'
 import Ages from './Ages'
 import { metadataBase } from '../../../lib/site'
+import { isRecordsSsrPrefetchEnabled } from '../../../lib/recordsSsrPrefetch'
 import { rateLimitedFetch } from '../../../lib/recordsPrefetchThrottle'
 
 type SearchParams = Record<string, string | string[] | undefined>
@@ -26,22 +27,23 @@ export default async function AgesServer({ searchParams, ...serverProps }: { sea
 
   // Prefetch ages data for the active subtab using selected filters so SSR includes the filtered table.
   // This is intentionally always on for ages pages so crawler-facing URLs render content server-side.
-  const prefetchEnabled = true
-  const prefetchedData: Record<string, any[] | undefined> = {}
+  const prefetchEnabled = isRecordsSsrPrefetchEnabled()
+  const prefetchedData: Record<string, any> = {}
   if (prefetchEnabled) {
     try {
-    const params = new URLSearchParams()
-    for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
-    for (const l of Array.from(selectedLevels)) params.append('level', l)
-    if (selectedRounds) params.set('round', selectedRounds)
-    params.set('limit', '10')
-    const type = activeSubTab?.toLowerCase().includes('youngest') ? 'youngest' : 'oldest'
-    params.set('type', type)
+      const params = new URLSearchParams()
+      for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
+      for (const l of Array.from(selectedLevels)) params.append('level', l)
+      if (selectedRounds) params.set('round', selectedRounds)
+      params.set('limit', '10')
+      const subtabKey = activeSubTab?.toLowerCase() ?? ''
+      const type = subtabKey.includes('youngest') ? 'youngest' : 'oldest'
+      params.set('type', type)
 
-    const isWinners = activeSubTab?.toLowerCase().includes('winner')
-    const endpoint = isWinners ? '/api/records/ages/winners' : '/api/records/ages/maindraw'
-    const apiUrl = new URL(`${endpoint}${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
-    const res = await rateLimitedFetch(apiUrl, { next: { tags: ['records'] } })
+      const isWinners = subtabKey.includes('winner')
+      const endpoint = isWinners ? '/api/records/ages/winners' : '/api/records/ages/maindraw'
+      const apiUrl = new URL(`${endpoint}${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
+      const res = await rateLimitedFetch(apiUrl, { next: { tags: ['records'] } })
       if (res.ok) {
         const data = await res.json()
         const key = isWinners ? (type === 'youngest' ? 'youngestWinners' : 'oldestWinners') : (type === 'youngest' ? 'youngestPlayers' : 'oldestPlayers')
@@ -54,7 +56,10 @@ export default async function AgesServer({ searchParams, ...serverProps }: { sea
 
   // If SSR prefetch was enabled but returned no data for the active subtab,
   // fall back to client-side fetch so the table is never left empty.
-  const prefetchSucceeded = Array.isArray(prefetchedData[activeSubTab]) && (prefetchedData[activeSubTab]?.length ?? 0) > 0
+  const activePrefetch = prefetchedData[activeSubTab]
+  const prefetchSucceeded = Array.isArray(activePrefetch)
+    ? activePrefetch.length > 0
+    : false
   const fetchEnabled = serverProps.fetchEnabled ?? (!prefetchEnabled || !prefetchSucceeded)
   const fetchRequestId = serverProps.fetchRequestId ?? (fetchEnabled ? String(Date.now()) : null)
 

@@ -297,32 +297,24 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
         </div>
       )}
 
-      {loading ? (
-        <div className="text-center py-8 text-gray-300">Loading...</div>
-      ) : !data.length ? (
-        <div className="text-center py-8 text-gray-300">No data available.</div>
-      ) : (
-        <>
-          <div className="mb-4 flex justify-end">
-            <button
-              onClick={() => setShowModal(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
-            >
-              View All
-            </button>
-          </div>
+      <div className="mb-4 flex justify-end">
+        <button
+          onClick={() => setShowModal(true)}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
+        >
+          View All
+        </button>
+      </div>
 
-          {renderTable(currentPlayers, start)}
+      {renderTable(currentPlayers, start)}
 
-          {totalPages > 1 && (
-            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
-          )}
-
-          <Modal show={showModal} onClose={() => setShowModal(false)} title="Youngest Player in Main Draw">
-            {renderTable(data)}
-          </Modal>
-        </>
+      {totalPages > 1 && (
+        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       )}
+
+      <Modal show={showModal} onClose={() => setShowModal(false)} title="Youngest Player in Main Draw">
+        {renderTable(data)}
+      </Modal>
         </>
       ) : (
         <div className="text-center py-8 text-gray-300">No data available.</div>
