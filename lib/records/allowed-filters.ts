@@ -23,7 +23,7 @@ export function shouldShowRecordFilter(
 ): boolean {
   const isSeasonsOrSame = activeTab === 'same' || activeTab === 'seasons';
   const isAtAgeLike = activeTab === 'atage' || activeTab === 'ageofnth';
-  const hideRoundAndBestOfSubtabs = ['oldest', 'youngest', 'oldestWinners', 'youngestWinners', 'oldestTitleWinners', 'youngestTitleWinners', 'oldest-winners', 'youngest-winners', 'oldest-title-winners', 'youngest-title-winners'];
+  const hideRoundAndBestOfSubtabs = ['oldest', 'youngest', 'oldestWinners', 'youngestWinners', 'oldestTitleWinners', 'youngestTitleWinners', 'oldestMainDraw', 'youngestMainDraw', 'oldest-winners', 'youngest-winners', 'oldest-title-winners', 'youngest-title-winners'];
 
   // Percentage → all filters active
   if (activeTab === 'percentage') return true;
@@ -43,7 +43,7 @@ export function shouldShowRecordFilter(
   }
 
   // Ages → oldest / youngest (main draw – round filter applies)
-  if (activeTab === 'ages' && (activeSubTab === 'oldest' || activeSubTab === 'youngest')) {
+  if (activeTab === 'ages' && (activeSubTab === 'oldest' || activeSubTab === 'youngest' || activeSubTab === 'oldestMainDraw' || activeSubTab === 'youngestMainDraw')) {
     return ['levels', 'surfaces', 'rounds'].includes(filter);
   }
 

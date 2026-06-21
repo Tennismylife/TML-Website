@@ -101,7 +101,7 @@ export default function FiltersComponent({
     }
 
     // Ages → oldest / youngest
-    if (activeTab === "ages" && (activeSubTab === "oldest" || activeSubTab === "youngest")) {
+    if (activeTab === "ages" && (activeSubTab === "oldest" || activeSubTab === "youngest" || activeSubTab === "oldestMainDraw" || activeSubTab === "youngestMainDraw")) {
       return ["levels", "surfaces", "rounds"].includes(filter);
     }
 

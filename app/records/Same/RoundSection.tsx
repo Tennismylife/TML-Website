@@ -81,7 +81,9 @@ export default function SameRoundSection({ selectedSurfaces, selectedLevels, sel
         setPage(1);
       } catch (err) {
         console.error(err);
-        setEntries([]);
+        if (!Array.isArray(initialData) || initialData.length === 0) {
+          setEntries([]);
+        }
       } finally {
         setLoading(false);
         if (enabled) setFetchEnabled?.(false);

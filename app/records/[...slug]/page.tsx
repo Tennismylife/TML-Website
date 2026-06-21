@@ -97,10 +97,15 @@ type Props = {
 function kebabToKey(s?: string) {
   if (!s) return s;
   if (s.includes('-')) {
-    return s
+    const normalized = s
       .split('-')
       .map((part, idx) => (idx === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1)))
       .join('');
+    if (normalized === 'oldestMainDraw') return 'oldest';
+    if (normalized === 'youngestMainDraw') return 'youngest';
+    if (normalized === 'oldestTitleWinners') return 'oldestWinners';
+    if (normalized === 'youngestTitleWinners') return 'youngestWinners';
+    return normalized;
   }
 
   const suffixMap: Record<string, string> = { winners: 'Winners', maindraw: 'MainDraw' };
@@ -108,9 +113,19 @@ function kebabToKey(s?: string) {
   for (const [suffix, camel] of Object.entries(suffixMap)) {
     if (lower.endsWith(suffix)) {
       const prefix = s.slice(0, s.length - suffix.length);
-      return prefix + camel;
+      const normalized = prefix + camel;
+      if (normalized === 'oldestMainDraw') return 'oldest';
+      if (normalized === 'youngestMainDraw') return 'youngest';
+      if (normalized === 'oldestTitleWinners') return 'oldestWinners';
+      if (normalized === 'youngestTitleWinners') return 'youngestWinners';
+      return normalized;
     }
   }
+
+  if (s === 'oldestMainDraw') return 'oldest';
+  if (s === 'youngestMainDraw') return 'youngest';
+  if (s === 'oldestTitleWinners') return 'oldestWinners';
+  if (s === 'youngestTitleWinners') return 'youngestWinners';
 
   return s;
 }

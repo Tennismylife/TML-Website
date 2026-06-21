@@ -66,8 +66,10 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
       setPage(1);
     } catch (err) {
       console.error(err);
-      setSeasonPercentageData([]);
+      if (!Array.isArray(initialData) || initialData.length === 0) {
+        setSeasonPercentageData([]);
         setError('Failed to load records.');
+      }
     } finally {
       setLoading(false);
       if (enabled) setFetchEnabled?.(false);

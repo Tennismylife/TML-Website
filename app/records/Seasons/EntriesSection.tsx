@@ -67,8 +67,10 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
         setPage(1);
       } catch (err) {
         console.error(err);
-        setTopSeasonEntries([]);
-        setError('Failed to load records.');
+        if (!Array.isArray(initialData) || initialData.length === 0) {
+          setTopSeasonEntries([]);
+          setError('Failed to load records.');
+        }
       } finally {
         setLoading(false);
         if (enabled) setFetchEnabled?.(false);

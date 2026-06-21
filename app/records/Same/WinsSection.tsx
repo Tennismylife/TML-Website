@@ -73,8 +73,10 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
         setPage(1);
       } catch (err) {
         console.error(err);
-        setAllWinners([]);
-        setError('Failed to load records.');
+        if (!Array.isArray(initialData) || initialData.length === 0) {
+          setAllWinners([]);
+          setError('Failed to load records.');
+        }
       } finally {
         setLoading(false);
         if (enabled) setFetchEnabled?.(false);

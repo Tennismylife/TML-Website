@@ -18,7 +18,16 @@ interface AgesProps {
 }
 
 export default function Ages({ selectedSurfaces, selectedLevels, selectedRounds, activeSubTab, fetchEnabled, fetchRequestId, description, prefetchedData, currentPath }: AgesProps) {
-  const subTab = activeSubTab || "oldest";
+  const normalizeSubTab = (value?: string) => {
+    if (!value) return "oldest";
+    if (value === "oldestMainDraw") return "oldest";
+    if (value === "youngestMainDraw") return "youngest";
+    if (value === "oldestTitleWinners" || value === "oldestWinners") return "oldestWinners";
+    if (value === "youngestTitleWinners" || value === "youngestWinners") return "youngestWinners";
+    return value;
+  };
+
+  const subTab = normalizeSubTab(activeSubTab);
 
   switch (subTab) {
     case "oldest":
@@ -49,6 +58,7 @@ export default function Ages({ selectedSurfaces, selectedLevels, selectedRounds,
       );
     case "oldest-winners":
     case "oldestWinners":
+    case "oldestTitleWinners":
       return (
         <OldestWinners
           selectedSurfaces={selectedSurfaces}
@@ -61,6 +71,7 @@ export default function Ages({ selectedSurfaces, selectedLevels, selectedRounds,
       );
     case "youngest-winners":
     case "youngestWinners":
+    case "youngestTitleWinners":
       return (
         <YoungestWinners
           selectedSurfaces={selectedSurfaces}

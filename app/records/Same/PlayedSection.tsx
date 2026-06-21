@@ -72,8 +72,10 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
         setPage(1);
       } catch (err) {
         console.error(err);
-        setAllPlayed([]);
-        setError('Failed to load records.');
+        if (!Array.isArray(initialData) || initialData.length === 0) {
+          setAllPlayed([]);
+          setError('Failed to load records.');
+        }
       } finally {
         setLoading(false);
         if (enabled) setFetchEnabled?.(false);

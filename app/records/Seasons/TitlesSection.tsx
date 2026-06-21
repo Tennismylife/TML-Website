@@ -68,8 +68,10 @@ export default function TitlesSection({ selectedSurfaces, selectedLevels, fetchE
         setPage(1);
       } catch (err) {
         console.error(err);
-        setTopSeasonTitles([]);
-        setError('Failed to load records.');
+        if (!Array.isArray(initialData) || initialData.length === 0) {
+          setTopSeasonTitles([]);
+          setError('Failed to load records.');
+        }
       } finally {
         setLoading(false);
         if (enabled) setFetchEnabled?.(false);

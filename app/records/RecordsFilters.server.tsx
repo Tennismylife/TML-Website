@@ -39,15 +39,31 @@ export default function RecordsFilters({ activeTab, activeSubTab, currentPath, s
   // Normalize subtab: accept prop (camelCase) or fallback to query param (kebab-case -> camelCase)
   const kebabToKey = (s: string | undefined) => {
     if (!s) return s;
-    if (s.includes('-')) return s.split('-').map((part, idx) => idx === 0 ? part : (part.charAt(0).toUpperCase() + part.slice(1))).join('');
+    if (s.includes('-')) {
+      const normalized = s.split('-').map((part, idx) => idx === 0 ? part : (part.charAt(0).toUpperCase() + part.slice(1))).join('');
+      if (normalized === 'oldestMainDraw') return 'oldest';
+      if (normalized === 'youngestMainDraw') return 'youngest';
+      if (normalized === 'oldestTitleWinners') return 'oldestWinners';
+      if (normalized === 'youngestTitleWinners') return 'youngestWinners';
+      return normalized;
+    }
     const suffixMap: Record<string, string> = { winners: 'Winners', maindraw: 'MainDraw' };
     const lower = s.toLowerCase();
     for (const [suffix, camel] of Object.entries(suffixMap)) {
       if (lower.endsWith(suffix)) {
         const prefix = s.slice(0, s.length - suffix.length);
-        return prefix + camel;
+        const normalized = prefix + camel;
+        if (normalized === 'oldestMainDraw') return 'oldest';
+        if (normalized === 'youngestMainDraw') return 'youngest';
+        if (normalized === 'oldestTitleWinners') return 'oldestWinners';
+        if (normalized === 'youngestTitleWinners') return 'youngestWinners';
+        return normalized;
       }
     }
+    if (s === 'oldestMainDraw') return 'oldest';
+    if (s === 'youngestMainDraw') return 'youngest';
+    if (s === 'oldestTitleWinners') return 'oldestWinners';
+    if (s === 'youngestTitleWinners') return 'youngestWinners';
     return s;
   };
   const effectiveSub = activeSubTab || (typeof searchParams.subtab === 'string' ? kebabToKey(String(searchParams.subtab)) : undefined);
@@ -85,7 +101,7 @@ export default function RecordsFilters({ activeTab, activeSubTab, currentPath, s
 
   const isSeasonsOrSame = activeTab === 'same' || activeTab === 'seasons';
   const isAtAgeLike = activeTab === 'atage' || activeTab === 'ageofnth';
-  const hideRoundAndBestOfSubtabs = ['oldest','youngest','oldestWinners','youngestWinners','oldestTitleWinners','youngestTitleWinners','oldest-winners','youngest-winners','oldest-title-winners','youngest-title-winners'];
+  const hideRoundAndBestOfSubtabs = ['oldest','youngest','oldestWinners','youngestWinners','oldestTitleWinners','youngestTitleWinners','oldestMainDraw','youngestMainDraw','oldest-winners','youngest-winners','oldest-title-winners','youngest-title-winners'];
 
   const shouldShowFilter = (filter: 'levels' | 'rounds' | 'bestOf' | 'surfaces') => {
     // Percentage → tutti i filtri attivi
@@ -106,7 +122,7 @@ export default function RecordsFilters({ activeTab, activeSubTab, currentPath, s
     }
 
     // Ages → oldest / youngest
-    if (activeTab === 'ages' && (activeSubTab === 'oldest' || activeSubTab === 'youngest')) {
+    if (activeTab === 'ages' && (activeSubTab === 'oldest' || activeSubTab === 'youngest' || activeSubTab === 'oldestMainDraw' || activeSubTab === 'youngestMainDraw')) {
       return ['levels', 'surfaces', 'rounds'].includes(filter);
     }
 

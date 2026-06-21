@@ -79,7 +79,9 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
         setPage(1);
       } catch (err) {
         console.error(err);
-        setTopSeasonRounds([]);
+        if (!Array.isArray(initialData) || initialData.length === 0) {
+          setTopSeasonRounds([]);
+        }
       } finally {
         setLoading(false);
         if (enabled) setFetchEnabled?.(false);
