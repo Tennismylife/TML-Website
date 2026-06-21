@@ -519,6 +519,7 @@ export default async function SlugPage({ params, searchParams }: Props) {
   const record = rawRecord === 'rounds' ? 'count' : rawRecord;
   const displayRecord = (record === 'count' || slug[0] === 'rounds') ? 'rounds' : record;
   const sub = aliasEntry ? aliasEntry.slug[1] ?? null : (slug[1] ? kebabToKey(slug[1]) : null);
+  const currentPath = aliasEntry?.canonicalPath ?? `/records/${slug.map((segment) => encodeURIComponent(segment)).join('/')}`;
   const normalizedSlug = record ? [record, ...normalizeSlugSegments(slug.slice(1))] : [];
   const navigationSlug = aliasEntry ? aliasEntry.slug : normalizedSlug;
   const filtersForNavigation = searchParamsToRecordFilters(effectiveSearchParams);
@@ -841,10 +842,10 @@ export default async function SlugPage({ params, searchParams }: Props) {
           <RecordsFilters
             activeTab={record}
             activeSubTab={activeSubResolved || null}
-            currentPath={`/records/${slug.map((segment) => encodeURIComponent(segment)).join('/')}`}
+            currentPath={currentPath}
             searchParams={effectiveSearchParams}
           />
-          <ServerComponent searchParams={effectiveSearchParams} record={record} sub={activeSubResolved} canonicalUrl={canonicalFull} description={description} />
+          <ServerComponent searchParams={effectiveSearchParams} record={record} sub={activeSubResolved} canonicalUrl={canonicalFull} description={description} currentPath={currentPath} />
           <RelatedRecordsLinks
             currentTab={record}
             currentSub={activeSubResolved || null}

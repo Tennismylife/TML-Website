@@ -14,9 +14,10 @@ interface AgesProps {
   fetchRequestId?: string | null;
   description?: string;
   prefetchedData?: Record<string, any[] | undefined>;
+  currentPath?: string;
 }
 
-export default function Ages({ selectedSurfaces, selectedLevels, selectedRounds, activeSubTab, fetchEnabled, fetchRequestId, description, prefetchedData }: AgesProps) {
+export default function Ages({ selectedSurfaces, selectedLevels, selectedRounds, activeSubTab, fetchEnabled, fetchRequestId, description, prefetchedData, currentPath }: AgesProps) {
   const subTab = activeSubTab || "oldest";
 
   switch (subTab) {
@@ -30,6 +31,7 @@ export default function Ages({ selectedSurfaces, selectedLevels, selectedRounds,
           fetchRequestId={fetchRequestId}
           description={description}
           initialData={prefetchedData?.["oldest"] as any[]}
+          currentPath={currentPath}
         />
       );
     case "youngest":
@@ -42,6 +44,7 @@ export default function Ages({ selectedSurfaces, selectedLevels, selectedRounds,
           fetchRequestId={fetchRequestId}
           description={description}
           initialData={prefetchedData?.["youngest"] as any[]}
+          currentPath={currentPath}
         />
       );
     case "oldest-winners":

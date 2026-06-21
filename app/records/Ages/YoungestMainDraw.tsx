@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useSearchParams, usePathname } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Flag from '@/components/Flag';
 import { getTourneyHref } from "@/lib/utils";
 import { playerSurfaceOrMatchesUrl } from "../nav";
@@ -28,16 +28,17 @@ interface YoungestMainDrawProps {
   fetchRequestId?: string | null;
   description?: string;
   initialData?: Player[];
+  currentPath?: string;
 }
 
-export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, fetchRequestId, description, initialData }: YoungestMainDrawProps) {
+export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled, fetchRequestId, description, initialData, currentPath }: YoungestMainDrawProps) {
   const enabled = !!fetchEnabled;
   const [data, setData] = useState<Player[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
-  const pathname = usePathname();
+  const pathname = currentPath ?? "";
   const perPage = 20;
 
   useEffect(() => setPage(1), [selectedSurfaces, selectedLevels, selectedRounds]);
@@ -321,4 +322,3 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
     </section>
   );
 }
- 
