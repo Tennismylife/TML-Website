@@ -241,10 +241,43 @@ function buildPreservedParams(
     .join('&');
 }
 
-async function fetchRecordData(record: string | null, sub?: string | null) {
+async function fetchRecordData(
+  record: string | null,
+  sub?: string | null,
+  searchParams?: Record<string, string | string[] | undefined>,
+) {
   if (!record) return [];
-  const path = `/api/records/${encodeURIComponent(record)}${sub ? '/' + encodeURIComponent(sub) : ''}`;
-  const url = resolveUrl(path);
+  const params = new URLSearchParams();
+  const pushParams = (key: string, value?: string | string[]) => {
+    if (value === undefined) return;
+    if (Array.isArray(value)) {
+      for (const v of value) params.append(key, String(v));
+    } else {
+      params.set(key, String(value));
+    }
+  };
+
+  if (searchParams) {
+    pushParams('surface', searchParams.surface ?? searchParams['surface[]']);
+    pushParams('level', searchParams.level ?? searchParams['level[]']);
+    pushParams('round', searchParams.round);
+    pushParams('bestOf', searchParams.bestOf);
+  }
+
+  let path = '';
+  if (record === 'ages') {
+    const normalizedSub = (sub ?? '').toLowerCase();
+    const isWinners = normalizedSub.includes('winner');
+    const type = normalizedSub.includes('youngest') ? 'youngest' : 'oldest';
+    path = isWinners ? '/api/records/ages/winners' : '/api/records/ages/maindraw';
+    params.set('type', type);
+    params.set('limit', '10');
+  } else {
+    path = `/api/records/${encodeURIComponent(record)}${sub ? '/' + encodeURIComponent(sub) : ''}`;
+  }
+
+  const pathWithQuery = params.toString() ? `${path}?${params.toString()}` : path;
+  const url = resolveUrl(pathWithQuery);
 
   try {
     const res = await fetch(url, { cache: 'force-cache' });
@@ -634,7 +667,7 @@ export default async function SlugPage({ params, searchParams }: Props) {
   }
 
   if (!hasQueryParams && !record) {
-    const data = await fetchRecordData(record, sub);
+    const data = await fetchRecordData(record, sub, effectiveSearchParams);
 
     return (
       <main className="w-full min-h-screen p-4 bg-gray-900 text-white">
@@ -787,7 +820,7 @@ export default async function SlugPage({ params, searchParams }: Props) {
 
     const pageTitle = getRecordsPageTitle(policySlugRender, filtersForPolicy, description);
 
-    const tableRows = await fetchRecordData(record, sub);
+    const tableRows = await fetchRecordData(record, sub, effectiveSearchParams);
     const itemListEntries = buildItemListEntries(tableRows, surfaceFromSelection(selectedSurfaces));
 
     const faqEntries = buildFaqEntries(
