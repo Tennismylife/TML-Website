@@ -2,7 +2,6 @@ import React from 'react'
 import ServerWrapper from '../../../components/ServerWrapper'
 import Ages from './Ages'
 import { metadataBase } from '../../../lib/site'
-import { isRecordsSsrPrefetchEnabled } from '../../../lib/recordsSsrPrefetch'
 import { rateLimitedFetch } from '../../../lib/recordsPrefetchThrottle'
 
 type SearchParams = Record<string, string | string[] | undefined>
@@ -25,8 +24,9 @@ export default async function AgesServer({ searchParams, ...serverProps }: { sea
 
   const hasFilters = (selectedSurfaces.size > 0) || (selectedLevels.size > 0) || (selectedRounds ? true : false)
 
-  const prefetchEnabled = isRecordsSsrPrefetchEnabled()
-  // Prefetch ages data for the active subtab using selected filters so SSR includes the filtered table
+  // Prefetch ages data for the active subtab using selected filters so SSR includes the filtered table.
+  // This is intentionally always on for ages pages so crawler-facing URLs render content server-side.
+  const prefetchEnabled = true
   const prefetchedData: Record<string, any[] | undefined> = {}
   if (prefetchEnabled) {
     try {
