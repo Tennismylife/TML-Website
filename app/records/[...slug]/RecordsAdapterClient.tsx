@@ -62,6 +62,7 @@ export default function RecordsAdapterClient({ record, sub, filters = {}, topDat
   const selectedRounds = filters.round || '';
   const selectedBestOf = filters.bestOf ? Number(filters.bestOf) : null;
   const fetchEnabled = Boolean(params.toString());
+  const resolvedCurrentPath = currentPath ?? pathname ?? undefined;
 
   // Synchronize search params in the URL without reloading the page (so client components using useSearchParams see them)
   useEffect(() => {
@@ -101,7 +102,7 @@ export default function RecordsAdapterClient({ record, sub, filters = {}, topDat
     case 'timespan':
       return <Timespan selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedTab={sub || 'entries'} fetchEnabled={fetchEnabled} description={description} />;
     case 'ages':
-      return <Ages selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={sub || undefined} fetchEnabled={fetchEnabled} fetchRequestId={params.toString() || null} description={description} currentPath={currentPath ?? pathname} />;
+      return <Ages selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} activeSubTab={sub || undefined} fetchEnabled={fetchEnabled} fetchRequestId={params.toString() || null} description={description} currentPath={resolvedCurrentPath} />;
     case 'percentage':
       return <Percentage selectedSurfaces={selectedSurfaces} selectedLevels={selectedLevels} selectedRounds={selectedRounds} selectedBestOf={selectedBestOf} fetchEnabled={fetchEnabled} description={description} />;
     case 'roundsonentries':
