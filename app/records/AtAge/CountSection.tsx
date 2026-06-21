@@ -74,6 +74,7 @@ export default function CountSection({ selectedSurfaces, selectedLevels }: Count
   if (error) return <div>Error loading data</div>;
   if (loading) return <div>Loading...</div>;
   if (!data) return null;
+  const hasRows = true;
 
   const { playerAgeWins, playerAgePlayed, playerAgeEntries, playerAgeTitles, playerInfo } = data;
   const playerInfoMap = new Map(playerInfo);
