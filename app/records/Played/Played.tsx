@@ -21,6 +21,7 @@ export default function Played({ topPlayed, fetchEnabled, description, selectedS
   const [allPlayers, setAllPlayers] = useState<Player[]>(topPlayed || []);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -41,6 +42,7 @@ export default function Played({ topPlayed, fetchEnabled, description, selectedS
     const controller = new AbortController();
     const fetchPlayers = async () => {
       setLoading(true);
+      setError(null);
       try {
         const params = new URLSearchParams();
         if (selectedSurfaces !== undefined) Array.from(selectedSurfaces).forEach(s => params.append('surface', s));
@@ -54,7 +56,10 @@ export default function Played({ topPlayed, fetchEnabled, description, selectedS
         const data = await res.json();
         if (!controller.signal.aborted) setAllPlayers(data.players || []);
       } catch (err: any) {
-        if (err?.name !== 'AbortError') console.error(err);
+        if (err?.name !== 'AbortError') {
+          console.error(err);
+          if (!controller.signal.aborted) setError('Failed to load records.');
+        }
         if (!controller.signal.aborted) setAllPlayers([]);
       } finally {
         if (!controller.signal.aborted) setLoading(false);
@@ -64,11 +69,7 @@ export default function Played({ topPlayed, fetchEnabled, description, selectedS
     return () => controller.abort();
   }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, showModal]);
 
-  if (loading)
-    return <div className="text-center py-8 text-gray-300">Loading...</div>;
-  if (!allPlayers.length)
-    return <div className="text-center py-8 text-gray-300">No data available.</div>;
-
+  const hasRows = allPlayers.length > 0;
   const totalCount = allPlayers.length;
   const totalPages = Math.ceil(totalCount / perPage);
   const start = (page - 1) * perPage;
@@ -167,11 +168,17 @@ export default function Played({ topPlayed, fetchEnabled, description, selectedS
 
   return (
     <section className="mb-8">
-      {description && (
-        <h2 className="mb-6 text-center text-2xl font-semibold text-white">
-          {description}
-        </h2>
-      )}
+      {error ? (
+        <div className="text-center py-8 text-gray-300">{error}</div>
+      ) : loading && !hasRows ? (
+        <div className="text-center py-8 text-gray-300">Loading...</div>
+      ) : hasRows ? (
+        <>
+          {description && (
+            <h2 className="mb-6 text-center text-2xl font-semibold text-white">
+              {description}
+            </h2>
+          )}
 
       <div className="mb-4 flex justify-end">
         <button
@@ -427,19 +434,23 @@ export default function Played({ topPlayed, fetchEnabled, description, selectedS
         </div>
       )}
 
-      {renderTable(players, start)}
+          {renderTable(players, start)}
 
-      {totalPages > 1 && (
-        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+          {totalPages > 1 && (
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+          )}
+
+          <Modal
+            show={showModal}
+            onClose={() => setShowModal(false)}
+            title="Players with Most Career Games Played"
+          >
+            {renderTable(allPlayers)}
+          </Modal>
+        </>
+      ) : (
+        <div className="text-center py-8 text-gray-300">No data available.</div>
       )}
-
-      <Modal
-        show={showModal}
-        onClose={() => setShowModal(false)}
-        title="Players with Most Career Games Played"
-      >
-        {renderTable(allPlayers)}
-      </Modal>
     </section>
   );
 }

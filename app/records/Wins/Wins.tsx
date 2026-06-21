@@ -62,6 +62,7 @@ export default function Wins({ topWinners, grandSlamContext: initialGrandSlamCon
   const [allWinners, setAllWinners] = useState<Winner[]>(topWinners || []);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(!(topWinners && topWinners.length > 0));
+  const [error, setError] = useState<string | null>(null);
   const [grandSlamContext, setGrandSlamContext] = useState<GrandSlamContext | null>(initialGrandSlamContext ?? null);
   const [masters1000Context, setMasters1000Context] = useState<Masters1000Context | null>(initialMasters1000Context ?? null);
   const [careerContextState, setCareerContextState] = useState<CareerContext | null>(careerContext ?? null);
@@ -113,6 +114,7 @@ export default function Wins({ topWinners, grandSlamContext: initialGrandSlamCon
           setAllWinners([]);
           setGrandSlamContext(null);
           setMasters1000Context(null);
+          setError(err?.message || 'Error loading data');
         }
       } finally {
         if (!controller.signal.aborted) setLoading(false);
@@ -136,6 +138,7 @@ export default function Wins({ topWinners, grandSlamContext: initialGrandSlamCon
   const start = (page - 1) * perPage;
   const end = start + perPage;
   const winners = allWinners.slice(start, end);
+  const hasRows = allWinners.length > 0;
 
   const renderTable = (winnersList: Winner[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow mt-0">
@@ -489,59 +492,68 @@ export default function Wins({ topWinners, grandSlamContext: initialGrandSlamCon
 
   return (
     <section className="mb-0">
-      {description && (
-        <h2 className="mb-6 text-center text-2xl font-semibold text-white">
-          {description}
-        </h2>
-      )}
-      {renderIntro()}
-      <div className="flex justify-between mb-4">
-        <div className="flex items-center justify-center gap-2">
-          <label htmlFor="topn" className="text-gray-300">Wins against Top X:</label>
-          <select
-            id="topn"
-            className="bg-gray-800 text-white rounded px-2 py-1"
-            value={selectedTopN ?? ''}
-            onChange={(e) => {
-              const v = e.target.value;
-              const n = v === '' ? null : Number(v);
-              setSelectedTopN(n);
-              // sync URL
-              const newParams = new URLSearchParams(searchParams?.toString() ?? '');
-              if (n === null) newParams.delete('top');
-              else newParams.set('top', String(n));
-              router.replace(`${window.location.pathname}?${newParams.toString()}`);
-            }}
+      {error ? (
+        <div className="text-center py-8 text-gray-300">{error}</div>
+      ) : loading && !hasRows ? (
+        <div className="text-center py-8 text-gray-300">Loading...</div>
+      ) : hasRows ? (
+        <>
+          {description && (
+            <h2 className="mb-6 text-center text-2xl font-semibold text-white">
+              {description}
+            </h2>
+          )}
+          {renderIntro()}
+          <div className="flex justify-between mb-4">
+            <div className="flex items-center justify-center gap-2">
+              <label htmlFor="topn" className="text-gray-300">Wins against Top X:</label>
+              <select
+                id="topn"
+                className="bg-gray-800 text-white rounded px-2 py-1"
+                value={selectedTopN ?? ''}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  const n = v === '' ? null : Number(v);
+                  setSelectedTopN(n);
+                  const newParams = new URLSearchParams(searchParams?.toString() ?? '');
+                  if (n === null) newParams.delete('top');
+                  else newParams.set('top', String(n));
+                  router.replace(`${window.location.pathname}?${newParams.toString()}`);
+                }}
+              >
+                <option value="">All opponents</option>
+                <option value="10">Top 10</option>
+                <option value="5">Top 5</option>
+                <option value="3">Top 3</option>
+                <option value="2">Top 2</option>
+                <option value="1">Top 1</option>
+              </select>
+            </div>
+            <button
+              onClick={() => setShowModal(true)}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
+            >
+              View All
+            </button>
+          </div>
+
+          {renderTable(winners, start)}
+
+          {totalPages > 1 && (
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+          )}
+
+          <Modal
+            show={showModal}
+            onClose={() => setShowModal(false)}
+            title="Players with Most Career Wins"
           >
-            <option value="">All opponents</option>
-            <option value="10">Top 10</option>
-            <option value="5">Top 5</option>
-            <option value="3">Top 3</option>
-            <option value="2">Top 2</option>
-            <option value="1">Top 1</option>
-          </select>
-        </div>
-        <button
-          onClick={() => setShowModal(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
-        >
-          View All
-        </button>
-      </div>
-
-      {renderTable(winners, start)}
-
-      {totalPages > 1 && (
-        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+            {renderTable(allWinners)}
+          </Modal>
+        </>
+      ) : (
+        <div className="text-center py-8 text-gray-300">No data available.</div>
       )}
-
-      <Modal
-        show={showModal}
-        onClose={() => setShowModal(false)}
-        title="Players with Most Career Wins"
-      >
-        {renderTable(allWinners)}
-      </Modal>
     </section>
   );
 }

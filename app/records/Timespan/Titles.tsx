@@ -49,6 +49,7 @@ export default function Titles({
 }: TitlesProps) {
   const [data, setData] = useState<any[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [page, setPage] = useState(1);
   const perPage = 20;
@@ -84,6 +85,7 @@ export default function Titles({
       } catch (err) {
         console.error(err);
         setData([]);
+        setError(err instanceof Error ? err.message : 'Error loading data');
       } finally {
         setLoading(false);
       }
@@ -91,32 +93,10 @@ export default function Titles({
     fetchData();
   }, [selectedSurfaces, selectedLevels, enabled, showModal, initialData]);
 
-  if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
-
-  // If prefetch provided data, render it even when fetch is disabled.
-  if (!data.length) {
-    if (!enabled && !showModal) {
-      return (
-        <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-4 text-gray-200">Biggest Timespan Between 2 Titles</h2>
-          <div className="mb-4 flex justify-end">
-            <button
-              onClick={() => setShowModal(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
-            >
-              View All
-            </button>
-          </div>
-          <div className="text-center py-8 text-gray-300">Clicca "View All" per caricare i dati.</div>
-        </section>
-      );
-    }
-    return <div className="text-center py-8 text-gray-300">No data available.</div>;
-  }
-
   const totalPages = Math.ceil(data.length / perPage);
   const start = (page - 1) * perPage;
   const currentData = data.slice(start, start + perPage);
+  const hasRows = data.length > 0;
 
   const selectedSurfacesArray = Array.isArray(selectedSurfaces)
     ? selectedSurfaces
@@ -178,6 +158,12 @@ export default function Titles({
 
   return (
     <section className="mb-8">
+      {error ? (
+        <div className="text-center py-8 text-gray-300">{error}</div>
+      ) : loading && !hasRows ? (
+        <div className="text-center py-8 text-gray-300">Loading...</div>
+      ) : hasRows ? (
+        <>
       {description && (
         <h2 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
@@ -307,6 +293,10 @@ export default function Titles({
       <Modal show={showModal} onClose={() => setShowModal(false)} title={description ?? 'Biggest Timespan Between 2 Titles'}>
         {renderTable(data)}
       </Modal>
+        </>
+      ) : (
+        <div className="text-center py-8 text-gray-300">No data available.</div>
+      )}
     </section>
   );
 }

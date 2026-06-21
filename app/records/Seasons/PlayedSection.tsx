@@ -33,6 +33,7 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
   const enabled = !!fetchEnabled;
   const [topSeasonMatches, setTopSeasonMatches] = useState<PlayedRecord[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [showModalMatches, setShowModalMatches] = useState(false);
   const [page, setPage] = useState(1);
   const perPage = 20;
@@ -55,6 +56,7 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
 
     const fetchData = async () => {
       setLoading(true);
+      setError(null);
       try {
         const query = new URLSearchParams();
         selectedSurfaces.forEach(s => query.append('surface', s));
@@ -78,8 +80,7 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
     fetchData();
   }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, enabled, fetchRequestId, showModalMatches, initialData, setFetchEnabled]);
 
-  if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
-  if (!topSeasonMatches.length) return <div className="text-center py-8 text-gray-300 text-lg">No matches found.</div>;
+  const hasRows = topSeasonMatches.length > 0;
 
   const totalPages = Math.ceil(topSeasonMatches.length / perPage);
   const start = (page - 1) * perPage;
@@ -175,6 +176,12 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
 
   return (
     <section className="mb-8">
+      {error ? (
+        <div className="text-center py-8 text-gray-300">Failed to load records.</div>
+      ) : loading && !hasRows ? (
+        <div className="text-center py-8 text-gray-300">Loading...</div>
+      ) : hasRows ? (
+        <>
       {description && (
         <h2 className="mb-6 text-center text-2xl font-semibold text-gray-200">
           {description}
@@ -434,6 +441,10 @@ export default function PlayedSection({ selectedSurfaces, selectedLevels, select
       >
         {renderTable(topSeasonMatches)}
       </Modal>
+            </>
+      ) : (
+        <div className="text-center py-8 text-gray-300">No data available.</div>
+      )}
     </section>
   );
 }

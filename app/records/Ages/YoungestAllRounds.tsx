@@ -27,6 +27,7 @@ export default function YoungestAllRounds({ selectedSurfaces, selectedLevels, fe
   const enabled = !!fetchEnabled;
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [modalData, setModalData] = useState<{ title: string; list: any[] } | null>(null);
   const [page, setPage] = useState(1);
   const [showAll, setShowAll] = useState(false);
@@ -41,6 +42,7 @@ export default function YoungestAllRounds({ selectedSurfaces, selectedLevels, fe
       }
 
       setLoading(true);
+      setError(null);
       try {
         const query = new URLSearchParams();
         selectedSurfaces.forEach(s => query.append('surface', s));
@@ -61,6 +63,7 @@ export default function YoungestAllRounds({ selectedSurfaces, selectedLevels, fe
   }, [selectedSurfaces, selectedLevels, enabled, showAll, fetchRequestId]);
 
   const { allYoungestItems } = data || {};
+  const hasRows = !!allYoungestItems?.length;
   const perPage = 10;
   const totalPages = Math.ceil((allYoungestItems?.length || 0) / perPage);
   const start = (page - 1) * perPage;
@@ -108,6 +111,12 @@ export default function YoungestAllRounds({ selectedSurfaces, selectedLevels, fe
 
   return (
     <section className="mb-8 text-gray-200">
+      {error ? (
+        <div className="text-center py-8 text-gray-300">Failed to load records.</div>
+      ) : loading && !hasRows ? (
+        <div className="text-center py-8 text-gray-300">Loading...</div>
+      ) : hasRows ? (
+        <>
       <h2 className="text-xl font-semibold mb-4">Youngest Players per Round</h2>
 
       <div className="mb-4 flex justify-end">
@@ -191,6 +200,10 @@ export default function YoungestAllRounds({ selectedSurfaces, selectedLevels, fe
             </table>
           </div>
         </Modal>
+      )}
+            </>
+      ) : (
+        <div className="text-center py-8 text-gray-300">No data available.</div>
       )}
     </section>
   );

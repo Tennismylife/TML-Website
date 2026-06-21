@@ -31,6 +31,7 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries, f
   const enabled = !!fetchEnabled;
   const [data, setData] = useState<PlayerStat[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(!initialData?.length);
+  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const perPage = 20;
@@ -49,6 +50,7 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries, f
 
     const fetchData = async () => {
       setLoading(true);
+      setError(null);
       try {
         const query = new URLSearchParams();
         selectedSurfaces.forEach((s) => query.append("surface", s));
@@ -65,6 +67,7 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries, f
       } catch (err) {
         console.error(err);
         setData([]);
+        setError('Failed to load records.');
       } finally {
         setLoading(false);
       }
@@ -75,8 +78,7 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries, f
 
   const filteredData = data.filter((p) => p.entries >= minEntries);
 
-  if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
-  if (!filteredData.length) return <div className="text-center py-8 text-gray-300">No data available.</div>;
+  const hasRows = filteredData.length > 0;
 
   const totalCount = filteredData.length;
   const totalPages = Math.ceil(totalCount / perPage);
@@ -125,6 +127,12 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries, f
 
   return (
     <section className="mb-8">
+      {error ? (
+        <div className="text-center py-8 text-gray-300">Failed to load records.</div>
+      ) : loading && !hasRows ? (
+        <div className="text-center py-8 text-gray-300">Loading...</div>
+      ) : hasRows ? (
+        <>
       <div className="mb-4 flex justify-end">
         <button
           type="button"
@@ -151,6 +159,10 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries, f
       )}
 
 
+            </>
+      ) : (
+        <div className="text-center py-8 text-gray-300">No data available.</div>
+      )}
     </section>
   );
 }

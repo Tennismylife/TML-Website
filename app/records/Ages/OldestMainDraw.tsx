@@ -34,6 +34,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
   const enabled = !!fetchEnabled;
   const [data, setData] = useState<Player[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
@@ -55,6 +56,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
       }
 
       setLoading(true);
+      setError(null);
       try {
         const query = new URLSearchParams();
         query.append("type", "oldest");
@@ -70,6 +72,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
       } catch (err: any) {
         if (err.name !== "AbortError") console.error(err);
         setData([]);
+        setError("Failed to load records.");
       } finally {
         setLoading(false);
       }
@@ -126,15 +129,19 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
     </div>
   );
 
-  if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
-  if (!data.length) return <div className="text-center py-8 text-gray-300">No data available.</div>;
-
+  const hasRows = data.length > 0;
   const totalPages = Math.ceil(data.length / perPage);
   const start = (page - 1) * perPage;
   const currentPlayers = data.slice(start, start + perPage);
 
   return (
     <section className="mb-8">
+      {error ? (
+        <div className="text-center py-8 text-gray-300">{error}</div>
+      ) : loading && !hasRows ? (
+        <div className="text-center py-8 text-gray-300">Loading...</div>
+      ) : hasRows ? (
+        <>
       {description && (
         <h2 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
@@ -383,6 +390,10 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
       <Modal show={showModal} onClose={() => setShowModal(false)} title="Oldest Player in Main Draw">
         {renderTable(data)}
       </Modal>
+        </>
+      ) : (
+        <div className="text-center py-8 text-gray-300">No data available.</div>
+      )}
     </section>
   );
 }

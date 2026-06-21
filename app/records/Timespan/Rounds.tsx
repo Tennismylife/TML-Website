@@ -27,6 +27,7 @@ const Rounds = ({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled
   const enabled = !!fetchEnabled;
   const [data, setData] = useState<any[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [page, setPage] = useState(1);
   const perPage = 20;
@@ -53,6 +54,7 @@ const Rounds = ({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled
       }
 
       setLoading(true);
+      setError(null);
       try {
         const query = new URLSearchParams();
         selectedSurfaces.forEach(s => query.append('surface', s));
@@ -68,6 +70,7 @@ const Rounds = ({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled
       } catch (err) {
         console.error(err);
         setData([]);
+        setError('Failed to load records.');
       } finally {
         setLoading(false);
       }
@@ -76,10 +79,7 @@ const Rounds = ({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled
     fetchData();
   }, [selectedSurfaces, selectedLevels, selectedRounds, enabled, fetchRequestId, showModal, initialData]);
 
-  if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
-  if (!selectedRounds) return <div className="text-center py-8 text-gray-300">Please select rounds in the filters to view results.</div>;
-  if (!data.length) return <div className="text-center py-8 text-gray-300">No data available.</div>;
-
+  const hasRows = data.length > 0;
   const totalPages = Math.ceil(data.length / perPage);
   const start = (page - 1) * perPage;
   const currentData = data.slice(start, start + perPage);
@@ -127,28 +127,40 @@ const Rounds = ({ selectedSurfaces, selectedLevels, selectedRounds, fetchEnabled
 
   return (
     <section className="mb-8">
-      {description && (
-        <h2 className="mb-6 text-center text-2xl font-semibold text-white">
-          {description}
-        </h2>
+      {error ? (
+        <div className="text-center py-8 text-gray-300">{error}</div>
+      ) : loading && !hasRows ? (
+        <div className="text-center py-8 text-gray-300">Loading...</div>
+      ) : !selectedRounds ? (
+        <div className="text-center py-8 text-gray-300">Please select rounds in the filters to view results.</div>
+      ) : hasRows ? (
+        <>
+          {description && (
+            <h2 className="mb-6 text-center text-2xl font-semibold text-white">
+              {description}
+            </h2>
+          )}
+
+          <div className="mb-4 flex justify-end">
+            <button
+              onClick={() => setShowModal(true)}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
+            >
+              View All
+            </button>
+          </div>
+
+          {renderTable(currentData, start)}
+
+          {totalPages > 1 && <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />}
+
+          <Modal show={showModal} onClose={() => setShowModal(false)} title={description || "All Timespans"}>
+            {renderTable(data)}
+          </Modal>
+        </>
+      ) : (
+        <div className="text-center py-8 text-gray-300">No data available.</div>
       )}
-
-      <div className="mb-4 flex justify-end">
-        <button
-          onClick={() => setShowModal(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
-        >
-          View All
-        </button>
-      </div>
-
-      {renderTable(currentData, start)}
-
-      {totalPages > 1 && <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />}
-
-      <Modal show={showModal} onClose={() => setShowModal(false)} title={description || "All Timespans"}>
-        {renderTable(data)}
-      </Modal>
     </section>
   );
 };

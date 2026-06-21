@@ -36,6 +36,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
   const enabled = !!fetchEnabled;
   const [entries, setEntries] = useState<TimespanEntry[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const perPage = 20;
@@ -56,6 +57,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
         return;
       }
       setLoading(true);
+      setError(null);
       try {
         const query = new URLSearchParams();
         selectedSurfaces.forEach(s => query.append('surface', s));
@@ -70,6 +72,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
       } catch (err) {
         console.error(err);
         setEntries([]);
+        setError('Failed to load records.');
       } finally {
         setLoading(false);
       }
@@ -77,8 +80,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
     fetchData();
   }, [selectedSurfaces, selectedLevels, enabled, fetchRequestId, showModal, initialData]);
 
-  if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
-  if (!entries.length) return <div className="text-center py-8 text-gray-300">No data available.</div>;
+  const hasRows = entries.length > 0;
 
   const totalPages = Math.ceil(entries.length / perPage);
   const start = (page - 1) * perPage;
@@ -139,6 +141,12 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
 
   return (
     <section className="mb-8">
+      {error ? (
+        <div className="text-center py-8 text-gray-300">Failed to load records.</div>
+      ) : loading && !hasRows ? (
+        <div className="text-center py-8 text-gray-300">Loading...</div>
+      ) : hasRows ? (
+        <>
       {description && (
         <h2 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
@@ -237,6 +245,10 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
       <Modal show={showModal} onClose={() => setShowModal(false)} title="Top 100 Timespans">
         {renderTable(entries)}
       </Modal>
+            </>
+      ) : (
+        <div className="text-center py-8 text-gray-300">No data available.</div>
+      )}
     </section>
   );
 }

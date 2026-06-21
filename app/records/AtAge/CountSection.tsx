@@ -63,6 +63,7 @@ export default function CountSection({ selectedSurfaces, selectedLevels }: Count
     Array.from(selectedLevels).forEach(l => query.append('level', l));
     const url = `/api/records/atage/count${query.toString() ? '?' + query.toString() : ''}`;
     setLoading(true);
+      setError(null);
     fetch(url)
       .then(res => res.json())
       .then(setData)
@@ -144,6 +145,12 @@ export default function CountSection({ selectedSurfaces, selectedLevels }: Count
 
   return (
     <section className="rounded border bg-white p-4">
+      {error ? (
+        <div className="text-center py-8 text-gray-300">Failed to load records.</div>
+      ) : loading && !hasRows ? (
+        <div className="text-center py-8 text-gray-300">Loading...</div>
+      ) : hasRows ? (
+        <>
       <div className="grid grid-cols-1 gap-4">
         {[
           { label: 'Wins', selectedAgeDays: selectedWinsAgeDays, setSelectedAgeDays: setSelectedWinsAgeDays, filteredData: filteredWins, modalKey: 'wins' },
@@ -196,6 +203,10 @@ export default function CountSection({ selectedSurfaces, selectedLevels }: Count
       <Modal show={showModal === 'titles'} onClose={() => setShowModal(null)} title={`Titles at ${formatAgeDays(selectedTitlesAgeDays)}`}>
         {renderTable(filteredTitles, 'Titles')}
       </Modal>
+            </>
+      ) : (
+        <div className="text-center py-8 text-gray-300">No data available.</div>
+      )}
     </section>
   );
 }

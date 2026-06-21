@@ -34,6 +34,7 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
   const enabled = !!fetchEnabled;
   const [seasonPercentageData, setSeasonPercentageData] = useState<PercentageRecord[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [page, setPage] = useState(1);
   const perPage = 20;
@@ -47,6 +48,7 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
   const lastRequestRefLocal = lastRequestRef; // keep name used below
   const doFetch = async (forceLimit?: number) => {
     setLoading(true);
+      setError(null);
     try {
       const query = new URLSearchParams();
       selectedSurfaces.forEach(s => query.append('surface', s));
@@ -65,6 +67,7 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
     } catch (err) {
       console.error(err);
       setSeasonPercentageData([]);
+        setError('Failed to load records.');
     } finally {
       setLoading(false);
       if (enabled) setFetchEnabled?.(false);
@@ -101,8 +104,7 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
     }
   }, [loading, seasonPercentageData]);
 
-  if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
-  if (!seasonPercentageData.length) return <div className="text-center py-8 text-gray-300 text-lg">No data found.</div>;
+  const hasRows = seasonPercentageData.length > 0;
 
   const totalPages = Math.ceil(seasonPercentageData.length / perPage);
   const start = (page - 1) * perPage;
@@ -152,6 +154,12 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
 
   return (
     <section className="mb-8">
+      {error ? (
+        <div className="text-center py-8 text-gray-300">Failed to load records.</div>
+      ) : loading && !hasRows ? (
+        <div className="text-center py-8 text-gray-300">Loading...</div>
+      ) : hasRows ? (
+        <>
       {description && (
         <h2 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
@@ -204,6 +212,10 @@ export default function PercentageSection({ selectedSurfaces, selectedLevels, se
       >
         {renderTable(seasonPercentageData)}
       </Modal>
+            </>
+      ) : (
+        <div className="text-center py-8 text-gray-300">No data available.</div>
+      )}
     </section>
   );
 }

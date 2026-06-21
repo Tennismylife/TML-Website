@@ -32,6 +32,7 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
   const enabled = !!fetchEnabled;
   const [topSeasonRounds, setTopSeasonRounds] = useState<SeasonRoundRecord[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [showModalRounds, setShowModalRounds] = useState(false);
   const perPage = 20;
@@ -44,6 +45,7 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
   useEffect(() => {
     if (!selectedRounds) {
       setTopSeasonRounds([]);
+        setError('Failed to load records.');
       setLoading(false);
       return;
     }
@@ -61,6 +63,7 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
 
     const fetchData = async () => {
       setLoading(true);
+      setError(null);
       try {
         const query = new URLSearchParams();
         selectedSurfaces.forEach(s => query.append('surface', s));
@@ -86,8 +89,7 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
   }, [selectedSurfaces, selectedLevels, selectedRounds, enabled, fetchRequestId, showModalRounds, initialData, setFetchEnabled]);
 
   if (!selectedRounds) return <div className="text-center py-8 text-gray-300 text-lg">Please select a round to view results.</div>;
-  if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
-  if (!topSeasonRounds.length) return <div className="text-center py-8 text-gray-300 text-lg">No rounds found.</div>;
+  const hasRows = topSeasonRounds.length > 0;
 
   const totalPages = Math.ceil(topSeasonRounds.length / perPage);
   const start = (page - 1) * perPage;
@@ -130,6 +132,12 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
 
   return (
     <section className="mb-8">
+      {error ? (
+        <div className="text-center py-8 text-gray-300">Failed to load records.</div>
+      ) : loading && !hasRows ? (
+        <div className="text-center py-8 text-gray-300">Loading...</div>
+      ) : hasRows ? (
+        <>
       {description && (
         <h2 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
@@ -180,6 +188,10 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
       >
         {renderTable(topSeasonRounds)}
       </Modal>
+            </>
+      ) : (
+        <div className="text-center py-8 text-gray-300">No data available.</div>
+      )}
     </section>
   );
 }

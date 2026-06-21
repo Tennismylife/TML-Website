@@ -30,6 +30,7 @@ export default function Titles({ selectedSurfaces, selectedLevels, topTitles, fe
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const perPage = 20;
@@ -64,7 +65,10 @@ export default function Titles({ selectedSurfaces, selectedLevels, topTitles, fe
         if (!controller.signal.aborted) setAllTitles(rows);
       } catch (err: any) {
         if (err?.name !== 'AbortError') console.error(err);
-        if (!controller.signal.aborted) setAllTitles([]);
+        if (!controller.signal.aborted) {
+          setAllTitles([]);
+          setError(err?.message || 'Error loading data');
+        }
       } finally {
         if (!controller.signal.aborted) setLoading(false);
       }
@@ -300,34 +304,38 @@ export default function Titles({ selectedSurfaces, selectedLevels, topTitles, fe
         </div>
       )}
 
-      <div className="mb-4 flex justify-end">
-        <button
-          onClick={() => setShowModal(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
-        >
-          View All
-        </button>
-      </div>
-
-      {loading && !hasRows ? (
+      {error ? (
+        <div className="text-center py-8 text-gray-300">{error}</div>
+      ) : loading && !hasRows ? (
         <div className="text-center py-8 text-gray-300">Loading...</div>
       ) : hasRows ? (
-        renderTable(currentData, start)
+        <>
+          <div className="mb-4 flex justify-end">
+            <button
+              onClick={() => setShowModal(true)}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
+            >
+              View All
+            </button>
+          </div>
+
+          {renderTable(currentData, start)}
+
+          {totalPages > 1 && !showModal && (
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+          )}
+
+          <Modal
+            show={showModal}
+            onClose={() => setShowModal(false)}
+            title="Players with Most Titles"
+          >
+            {renderTable(allTitles)}
+          </Modal>
+        </>
       ) : (
         <div className="text-center py-8 text-gray-300">No data available.</div>
       )}
-
-      {totalPages > 1 && !showModal && (
-        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
-      )}
-
-      <Modal
-        show={showModal}
-        onClose={() => setShowModal(false)}
-        title="Players with Most Titles"
-      >
-        {renderTable(allTitles)}
-      </Modal>
     </section>
   );
 }

@@ -30,6 +30,7 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
   const enabled = !!fetchEnabled;
   const [data, setData] = useState<PlayerStat[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   
@@ -38,6 +39,7 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
   useEffect(() => {
     if (!selectedRounds) {
       setData([]);
+        setError('Failed to load records.');
       setLoading(false);
       return;
     }
@@ -52,6 +54,7 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
         return;
       }
       setLoading(true);
+      setError(null);
       try {
         const query = new URLSearchParams();
         selectedSurfaces.forEach((s) => query.append("surface", s));
@@ -82,8 +85,7 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
   const filteredData = data.filter(p => p.entries >= minEntries);
 
   if (!selectedRounds) return <div className="text-center py-8 text-gray-300">Please select a round to view results.</div>;
-  if (loading) return <div className="text-center py-8 text-gray-300">Loading...</div>;
-  if (!filteredData.length) return <div className="text-center py-8 text-gray-300">No data available.</div>;
+  const hasRows = filteredData.length > 0;
 
   const totalCount = filteredData.length;
   const totalPages = Math.ceil(totalCount / perPage);
@@ -132,6 +134,12 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
 
   return (
     <section className="mb-8">
+      {error ? (
+        <div className="text-center py-8 text-gray-300">Failed to load records.</div>
+      ) : loading && !hasRows ? (
+        <div className="text-center py-8 text-gray-300">Loading...</div>
+      ) : hasRows ? (
+        <>
       {/* VIEW ALL BUTTON */}
       <div className="mb-4 flex justify-end">
         <button
@@ -162,6 +170,10 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
       <Modal show={showModal} onClose={() => setShowModal(false)} title="All Players">
         {renderTable(filteredData)}
       </Modal>
+            </>
+      ) : (
+        <div className="text-center py-8 text-gray-300">No data available.</div>
+      )}
     </section>
   );
 }

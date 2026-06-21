@@ -31,6 +31,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
   const [allEntries, setAllEntries] = useState<EntryRecord[]>(Array.isArray(initialData) ? initialData : []);
   // Show loading immediately when SSR didn't provide any data (prefetch failed or returned empty)
   const [loading, setLoading] = useState(!initialData?.length);
+  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const perPage = 20;
@@ -53,6 +54,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
 
     const fetchData = async () => {
       setLoading(true);
+      setError(null);
       try {
         const query = new URLSearchParams();
         selectedSurfaces.forEach(s => query.append('surface', s));
@@ -67,6 +69,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
       } catch (err) {
         console.error(err);
         setAllEntries([]);
+        setError('Failed to load records.');
       } finally {
         setLoading(false);
         if (enabled) setFetchEnabled?.(false);
@@ -75,8 +78,7 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
     fetchData();
   }, [selectedSurfaces, selectedLevels, enabled, fetchRequestId, showModal, initialData, setFetchEnabled]);
 
-  if (loading) return <div className="text-center py-8 text-gray-300 text-lg">Loading...</div>;
-  if (!allEntries.length) return <div className="text-center py-8 text-gray-300 text-lg">No entries found.</div>;
+  const hasRows = allEntries.length > 0;
 
   const totalPages = Math.ceil(allEntries.length / perPage);
   const start = (page - 1) * perPage;
@@ -122,6 +124,12 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
 
   return (
     <section className="mb-8">
+      {error ? (
+        <div className="text-center py-8 text-gray-300">Failed to load records.</div>
+      ) : loading && !hasRows ? (
+        <div className="text-center py-8 text-gray-300">Loading...</div>
+      ) : hasRows ? (
+        <>
       {description && (
         <h2 className="mb-6 text-center text-2xl font-semibold text-white">
           {description}
@@ -195,6 +203,10 @@ export default function EntriesSection({ selectedSurfaces, selectedLevels, fetch
       <Modal show={showModal} onClose={() => setShowModal(false)} title="Top Entries in the Same Tournament">
         {renderTable(allEntries)}
       </Modal>
+            </>
+      ) : (
+        <div className="text-center py-8 text-gray-300">No data available.</div>
+      )}
     </section>
   );
 }

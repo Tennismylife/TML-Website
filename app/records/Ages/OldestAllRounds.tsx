@@ -27,6 +27,7 @@ export default function OldestAllRounds({ selectedSurfaces, selectedLevels, fetc
   const enabled = !!fetchEnabled;
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [modalData, setModalData] = useState<{ title: string; list: any[] } | null>(null);
   const [page, setPage] = useState(1);
   const [showAll, setShowAll] = useState(false);
@@ -41,6 +42,7 @@ export default function OldestAllRounds({ selectedSurfaces, selectedLevels, fetc
       }
 
       setLoading(true);
+      setError(null);
       try {
         const query = new URLSearchParams();
         selectedSurfaces.forEach(s => query.append('surface', s));
@@ -61,6 +63,7 @@ export default function OldestAllRounds({ selectedSurfaces, selectedLevels, fetc
   }, [selectedSurfaces, selectedLevels, enabled, showAll, fetchRequestId]);
 
   const { allOldestItems } = data || {};
+  const hasRows = !!allOldestItems?.length;
 
   const renderTable = (data: any[]) => (
     <div className="overflow-x-auto rounded border border-gray-700 bg-gray-900 shadow">
@@ -109,6 +112,12 @@ export default function OldestAllRounds({ selectedSurfaces, selectedLevels, fetc
 
   return (
     <section className="border border-gray-700 rounded p-4 bg-gray-900 text-gray-200 shadow">
+      {error ? (
+        <div className="text-center py-8 text-gray-300">Failed to load records.</div>
+      ) : loading && !hasRows ? (
+        <div className="text-center py-8 text-gray-300">Loading...</div>
+      ) : hasRows ? (
+        <>
       <h3 className="text-xl font-semibold mb-4 text-gray-100">Top 10 Oldest Players per Round</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -191,6 +200,10 @@ export default function OldestAllRounds({ selectedSurfaces, selectedLevels, fetc
             </table>
           </div>
         </Modal>
+      )}
+            </>
+      ) : (
+        <div className="text-center py-8 text-gray-300">No data available.</div>
       )}
     </section>
   );

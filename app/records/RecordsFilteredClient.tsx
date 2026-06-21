@@ -71,6 +71,7 @@ export default function RecordsFilteredClient({ record, sub, filters = {}, canon
           setData(found || []);
         } else {
           setData([]);
+        setError('Failed to load records.');
         }
       } catch (err: any) {
         setError(err?.message || 'Error fetching data');
@@ -85,13 +86,17 @@ export default function RecordsFilteredClient({ record, sub, filters = {}, canon
     // cleanup: optionally remove injected meta/canonical when unmounting? keep as is
   }, [record, sub, JSON.stringify(filters), canonicalUrl]);
 
-  if (loading) return <div className="text-gray-300">Loading filtered results…</div>;
-  if (error) return <div className="text-red-400">{error}</div>;
+  const hasRows = Array.isArray(data) && data.length > 0;
 
   return (
     <section className="bg-gray-800/40 rounded-2xl p-4 shadow-lg">
-      {data && data.length > 0 ? (
-        <table className="w-full table-auto text-center text-sm">
+      {error ? (
+        <div className="text-center py-8 text-gray-300">{error}</div>
+      ) : loading && !hasRows ? (
+        <div className="text-center py-8 text-gray-300">Loading...</div>
+      ) : hasRows ? (
+        <>
+          <table className="w-full table-auto text-center text-sm">
           <thead>
             <tr className="text-gray-300">
               {Object.keys(data[0]).map((k) => (
@@ -109,8 +114,9 @@ export default function RecordsFilteredClient({ record, sub, filters = {}, canon
             ))}
           </tbody>
         </table>
+        </>
       ) : (
-        <div className="text-center text-gray-400">No data available</div>
+        <div className="text-center py-8 text-gray-300">No data available.</div>
       )}
     </section>
   );
