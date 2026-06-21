@@ -136,11 +136,8 @@ const OldestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRe
 
   const totalPages = Math.ceil(data.length / perPage);
   const start = (page - 1) * perPage;
-  const currentPlayers = data.slice(start, start + perPage);
-
-  return (
-    <section className="mb-8">
-      {description && <h2 className="mb-6 text-center text-2xl font-semibold text-white">{description}</h2>} 
+  const currentPlayers = data.slice(start, start + perPage);`r`n  const hasRows = data.length > 0;`r`n
+  return (`r`n    <section className="mb-8">`r`n      {loading && !hasRows ? (`r`n        <div className="text-center py-8 text-gray-300">Loading...</div>`r`n      ) : hasRows ? (`r`n        <>`r`n      {description && <h2 className="mb-6 text-center text-2xl font-semibold text-white">{description}</h2>} 
 
       {selectedLevels?.has('G') && selectedSurfaces?.size === 0 ? (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
@@ -287,3 +284,4 @@ const OldestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRe
 };
 
 export default OldestWinners;
+

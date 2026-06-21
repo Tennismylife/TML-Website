@@ -127,9 +127,14 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
   const totalPages = Math.ceil(data.length / perPage);
   const start = (page - 1) * perPage;
   const currentPlayers = data.slice(start, start + perPage);
+  const hasRows = data.length > 0;
 
   return (
     <section className="mb-8">
+      {loading && !hasRows ? (
+        <div className="text-center py-8 text-gray-300">Loading...</div>
+      ) : hasRows ? (
+        <>
       {description && <div className="text-3xl font-bold text-white mb-6 text-center">{description}</div>}
 
       {selectedSurfaces?.size === 0 && selectedLevels?.has('G') && selectedRounds === '' && (
@@ -317,6 +322,10 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
             {renderTable(data)}
           </Modal>
         </>
+      )}
+        </>
+      ) : (
+        <div className="text-center py-8 text-gray-300">No data available.</div>
       )}
     </section>
   );

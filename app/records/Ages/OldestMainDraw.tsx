@@ -140,7 +140,7 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
         <div className="text-center py-8 text-gray-300">{error}</div>
       ) : loading && !hasRows ? (
         <div className="text-center py-8 text-gray-300">Loading...</div>
-      ) : (
+      ) : hasRows ? (
         <>
       {description && (
         <h2 className="mb-6 text-center text-2xl font-semibold text-white">
@@ -372,26 +372,24 @@ export default function OldestMainDraw({ selectedSurfaces, selectedLevels, selec
         </div>
       )}
 
-      {hasRows ? (
-        <>
-          <div className="mb-4 flex justify-end">
-            <button
-              onClick={() => setShowModal(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
-            >
-              View All
-            </button>
-          </div>
+      <div className="mb-4 flex justify-end">
+        <button
+          onClick={() => setShowModal(true)}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
+        >
+          View All
+        </button>
+      </div>
 
-          {renderTable(currentPlayers, start)}
+      {renderTable(currentPlayers, start)}
 
-          {totalPages > 1 && (
-            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
-          )}
+      {totalPages > 1 && (
+        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+      )}
 
-          <Modal show={showModal} onClose={() => setShowModal(false)} title="Oldest Player in Main Draw">
-            {renderTable(data)}
-          </Modal>
+      <Modal show={showModal} onClose={() => setShowModal(false)} title="Oldest Player in Main Draw">
+        {renderTable(data)}
+      </Modal>
         </>
       ) : (
         <div className="text-center py-8 text-gray-300">No data available.</div>
