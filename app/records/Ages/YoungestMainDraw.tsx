@@ -69,7 +69,9 @@ export default function YoungestMainDraw({ selectedSurfaces, selectedLevels, sel
         setData(fetchedData.youngestPlayers || []);
       } catch (err: any) {
         if (err.name !== "AbortError") console.error(err);
-        setData([]);
+        if (!Array.isArray(initialData) || initialData.length === 0) {
+          setData([]);
+        }
       } finally {
         setLoading(false);
       }

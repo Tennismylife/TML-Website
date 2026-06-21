@@ -15,7 +15,7 @@ const PREFETCHABLE_RECORDS_API_BASE = new Set([
 ]);
 
 const PREFETCHABLE_RECORDS_API_SUBPATHS: Record<string, Set<string>> = {
-  ages: new Set(['winners', 'allrounds', 'maindraw']),
+  ages: new Set(['winners', 'maindraw']),
   atage: new Set(['wins', 'played', 'entries', 'titles', 'inslams', 'rounds', 'count']),
   ageofnth: new Set(['wins', 'played', 'entries', 'titles', 'inslams', 'rounds']),
   counterseasons: new Set(['wins', 'titles', 'rounds']),

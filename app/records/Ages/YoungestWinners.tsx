@@ -70,8 +70,10 @@ const YoungestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetch
         setData(fetchedData.youngestWinners || []);
       } catch (err: any) {
         if (err.name !== "AbortError") console.error(err);
-        setData([]);
-        setError("Failed to load records.");
+        if (!Array.isArray(initialData) || initialData.length === 0) {
+          setData([]);
+          setError("Failed to load records.");
+        }
       } finally {
         setLoading(false);
       }

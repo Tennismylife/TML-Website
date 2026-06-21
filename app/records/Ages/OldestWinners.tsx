@@ -68,7 +68,9 @@ const OldestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRe
         setData(fetchedData.oldestWinners || []);
       } catch (err: any) {
         if (err.name !== "AbortError") console.error(err);
-        setData([]);
+        if (!Array.isArray(initialData) || initialData.length === 0) {
+          setData([]);
+        }
       } finally {
         setLoading(false);
       }
