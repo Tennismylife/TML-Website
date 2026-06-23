@@ -32,7 +32,6 @@ export async function GET(req: Request) {
         weeks: r._count.rankingDateId,
       }))
       .sort((a, b) => b.weeks - a.weeks);
-
     return NextResponse.json(result);
   } catch (error) {
     console.error("Error fetching Top X data:", error);

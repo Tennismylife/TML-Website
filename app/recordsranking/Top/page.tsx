@@ -72,7 +72,6 @@ export default async function RecordsTopX({ searchParams }: { searchParams?: Pro
       slug: slugMap[r.playerId] ?? null,
     }))
     .sort((a, b) => b.weeks - a.weeks);
-
   const cappedResult = result.slice(0, 100);
   const totalCount = cappedResult.length;
   const totalPages = Math.ceil(totalCount / perPage);

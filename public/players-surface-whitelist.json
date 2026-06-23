@@ -36,10 +36,12 @@
     "stefan-edberg",
     "thomas-muster",
     "yevgeny-kafelnikov",
-    "guillermo-vilas"
+    "guillermo-vilas",
+    "grigor-dimitrov",
+    "jack-pinnington-jones"
   ],
   "top100Count": 100,
-  "totalSlugs": 128,
+  "totalSlugs": 130,
   "slugs": [
     "adam-walton",
     "adolfo-daniel-vallejo",
@@ -168,7 +170,9 @@
     "yibing-wu",
     "zachary-svajda",
     "zizou-bergs",
-    "guillermo-vilas"
+    "guillermo-vilas",
+    "grigor-dimitrov",
+    "jack-pinnington-jones"
   ],
   "surfacePages": [
     "/players/adam-walton/clay",
@@ -548,6 +552,12 @@
     "/players/zachary-svajda/grass",
     "/players/zizou-bergs/clay",
     "/players/zizou-bergs/hard",
-    "/players/zizou-bergs/grass"
+    "/players/zizou-bergs/grass",
+    "/players/grigor-dimitrov/clay",
+    "/players/grigor-dimitrov/hard",
+    "/players/grigor-dimitrov/grass",
+    "/players/jack-pinnington-jones/clay",
+    "/players/jack-pinnington-jones/hard",
+    "/players/jack-pinnington-jones/grass"
   ]
 }
