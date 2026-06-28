@@ -242,6 +242,16 @@ function searchParamsToRecordFilters(sp: Record<string, string | string[] | unde
   };
 }
 
+function aliasMatchesCurrentFilters(
+  aliasEntry: { filters: RecordFilters } | null,
+  searchParams: Record<string, string | string[] | undefined>,
+) {
+  if (!aliasEntry) return false;
+  const aliasQuery = canonicalizeParamsObj(filtersToSearchParams(aliasEntry.filters));
+  const currentQuery = canonicalizeParamsObj(searchParamsToRecordFilters(searchParams));
+  return aliasQuery === currentQuery;
+}
+
 function buildPreservedParams(
   sp: Record<string, string | string[] | undefined>,
   excludedKeys: string[] = ['level', 'surface', 'round', 'bestOf', 'subtab'],
@@ -513,7 +523,7 @@ export async function generateMetadata(
     ? { ...activeSubTabsDefault, [record]: activeSubResolved }
     : activeSubTabsDefault;
 
-  const desc = aliasEntry?.title ?? generateRecordDescription(
+  const desc = aliasEntry?.title && aliasMatchesCurrentFilters(aliasEntry, sp) ? aliasEntry.title : generateRecordDescription(
     record,
     activeSubTabsWithUrl,
     selectedSurfaces,
@@ -776,7 +786,7 @@ export default async function SlugPage({ params, searchParams }: Props) {
       return Number.isFinite(parsed) ? parsed : undefined;
     })();
 
-    const description = aliasEntry?.title ?? generateRecordDescription(
+    const description = aliasEntry?.title && aliasMatchesCurrentFilters(aliasEntry, sp) ? aliasEntry.title : generateRecordDescription(
       record,
       { ...activeSubTabsDefault, [record || '']: activeSubResolved || activeSubTabsDefault[record || ''] },
       selectedSurfaces,
@@ -800,6 +810,10 @@ export default async function SlugPage({ params, searchParams }: Props) {
     const subLabelResolved = record && activeSubResolved
       ? (SUB_LABELS[record]?.[activeSubResolved] ?? SUB_LABELS[record]?.[kebabToKey(activeSubResolved) ?? ''] ?? activeSubResolved)
       : null;
+    const breadcrumbLabel =
+      record === 'count' && selectedRounds && description
+        ? description
+        : (activeSubResolved ? (subLabelResolved ?? activeSubResolved) : (RECORD_LABELS[displayRecord] ?? displayRecord));
 
     const breadcrumbJsonLd = {
       '@context': 'https://schema.org',
@@ -867,7 +881,7 @@ export default async function SlugPage({ params, searchParams }: Props) {
               <>
                 <span aria-hidden="true" className="mx-1 text-gray-600">/</span>
                 <span className="text-white" aria-current="page">
-                  {activeSubResolved ? (subLabelResolved ?? activeSubResolved) : (RECORD_LABELS[displayRecord] ?? displayRecord)}
+                  {breadcrumbLabel}
                 </span>
               </>
             )}

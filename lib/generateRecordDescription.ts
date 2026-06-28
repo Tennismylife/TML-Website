@@ -272,6 +272,17 @@ export function generateRecordDescription(
     // If a mapping exists but is empty string, prefer empty (no label); only use the key when no mapping at all
     const label = rawLabel === undefined ? sub : rawLabel;
     description = label ? `Most H2Hs ${label}` : `Most H2Hs`;
+  } else if (selectedRecord === 'count') {
+    const levelLabel = selectedLevels.size > 0
+      ? Array.from(selectedLevels).map(l => levelNames[l] || l).join(' or ') + ' '
+      : '';
+
+    if (selectedRounds) {
+      const roundLabel = roundNames[selectedRounds] || selectedRounds;
+      description = `Most ${levelLabel}${roundLabel} Reached`;
+    } else {
+      description = 'Most matches';
+    }
   } else if (selectedRecord === 'percentage') {
     description = `Best percentage`;
   } else {
@@ -287,7 +298,9 @@ export function generateRecordDescription(
 
   if (selectedLevels.size > 0) {
     const levels = Array.from(selectedLevels).map(l => levelNames[l] || l);
-    filters.push(`in ${levels.join(' or ')}`);
+    if (selectedRecord !== 'count' || !selectedRounds) {
+      filters.push(`in ${levels.join(' or ')}`);
+    }
   }
 
   if (selectedSurfaces.size > 0) {
@@ -295,7 +308,7 @@ export function generateRecordDescription(
     filters.push(`on ${surfaces.join(' or ')}`);
   }
 
-  if (selectedRounds && !(selectedRecord === 'timespan' && activeSubTabs.timespan === 'rounds') && !(selectedRecord === 'roundsonentries' && activeSubTabs.roundsonentries === 'round') && !(selectedRecord === 'same' && activeSubTabs.same === 'round') && !(selectedRecord === 'seasons' && activeSubTabs.seasons === 'round') && !(selectedRecord === 'streak' && activeSubTabs.streak === 'round') && !(selectedRecord === 'counterseasons' && activeSubTabs.counterseasons === 'round')) {
+  if (selectedRounds && !(selectedRecord === 'timespan' && activeSubTabs.timespan === 'rounds') && !(selectedRecord === 'roundsonentries' && activeSubTabs.roundsonentries === 'round') && !(selectedRecord === 'same' && activeSubTabs.same === 'round') && !(selectedRecord === 'seasons' && activeSubTabs.seasons === 'round') && !(selectedRecord === 'streak' && activeSubTabs.streak === 'round') && !(selectedRecord === 'counterseasons' && activeSubTabs.counterseasons === 'round') && selectedRecord !== 'count') {
     filters.push(`in ${roundNames[selectedRounds] || selectedRounds}`);
   }
 
