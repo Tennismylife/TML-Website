@@ -27,9 +27,10 @@ interface OldestWinnersProps {
   fetchRequestId?: string | null;
   description?: string;
   initialData?: Player[];
+  currentPath?: string;
 }
 
-const OldestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRequestId, description, initialData }: OldestWinnersProps) => {
+const OldestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRequestId, description, initialData, currentPath }: OldestWinnersProps) => {
   const enabled = !!fetchEnabled;
   const [data, setData] = useState<Player[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
@@ -37,6 +38,34 @@ const OldestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRe
   const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
   const perPage = 20;
+
+  const titleHeading = (() => {
+    const level = Array.from(selectedLevels)[0];
+    const surface = Array.from(selectedSurfaces)[0];
+
+    const levelLabel =
+      level === 'G' ? 'Grand Slam' :
+      level === 'M' ? 'Masters 1000' :
+      level === 'F' ? 'ATP Finals' :
+      level === '250' ? 'ATP 250' :
+      level === '500' ? 'ATP 500' :
+      level === 'D' ? 'Davis Cup' :
+      null;
+
+    const surfaceLabel =
+      surface === 'Hard' ? 'Hard Court' :
+      surface === 'Clay' ? 'Clay Court' :
+      surface === 'Grass' ? 'Grass Court' :
+      surface === 'Carpet' ? 'Carpet Court' :
+      null;
+
+    if (levelLabel && surfaceLabel) return `Oldest ${levelLabel} ${surfaceLabel} Title Winners`;
+    if (levelLabel) return `Oldest ${levelLabel} Title Winners`;
+    if (surfaceLabel) return `Oldest ${surfaceLabel} Title Winners`;
+    return 'Oldest Title Winners';
+  })();
+
+  const isPath = (path: string) => currentPath === path;
 
   useEffect(() => {
     setPage(1);
@@ -142,9 +171,9 @@ const OldestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRe
         <div className="text-center py-8 text-gray-300">Loading...</div>
       ) : hasRows ? (
         <>
-      {description && <h2 className="mb-6 text-center text-2xl font-semibold text-white">{description}</h2>} 
+      <h3 className="mb-6 text-center text-2xl font-semibold text-white">{titleHeading}</h3>
 
-      {selectedLevels?.has('G') && selectedSurfaces?.size === 0 ? (
+      {isPath('/records/oldest-grand-slam-title-winners') && selectedLevels?.has('G') && selectedSurfaces?.size === 0 ? (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the Open Era list for Oldest Grand Slam Title Winners stands <span className="inline-flex items-center gap-2"><Flag ioc="AUS" className="w-4 h-3" /><span>Ken Rosewall</span></span>, who won the <Link href="/tournaments/australian-open/1972" className="!text-orange-300 hover:!text-orange-100 font-semibold">1972 Australian Open</Link> aged <strong className="!text-amber-300">37 years and 62 days</strong> — the oldest recorded men’s singles Grand Slam champion of the Open Era. Rosewall defeated <span className="inline-flex items-center gap-2"><Flag ioc="AUS" className="w-4 h-3" /><span>Mal Anderson</span></span> in the final at Kooyong, 7-6, 6-3, 7-5, claiming his eighth and final Grand Slam singles title.
@@ -156,7 +185,7 @@ const OldestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRe
             Behind him, the modern benchmark is <span className="inline-flex items-center gap-2"><Flag ioc="CHE" className="w-4 h-3" /><span>Roger Federer</span></span>, who won the <Link href="/tournaments/australian-open/2018" className="!text-orange-300 hover:!text-orange-100 font-semibold">2018 Australian Open</Link> aged <strong className="!text-amber-300">36 years and 5 months</strong>, beating <span className="inline-flex items-center gap-2"><Flag ioc="HRV" className="w-4 h-3" /><span>Marin Cilic</span></span> in five sets to claim his 20th and final Grand Slam singles title. Close behind come <span className="inline-flex items-center gap-2"><Flag ioc="SRB" className="w-4 h-3" /><span>Novak Djokovic</span></span>, champion at the <Link href="/tournaments/us-open/2023" className="!text-orange-300 hover:!text-orange-100 font-semibold">2023 US Open</Link> aged <strong className="!text-amber-300">36 years and 97 days</strong>, and <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Rafael Nadal</span></span>, champion at <Link href="/tournaments/roland-garros/2022" className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros 2022</Link> aged <strong className="!text-amber-300">35 years and 354 days</strong>, where he became the oldest men’s champion in French Open history.
           </p>
         </div>
-      ) : selectedLevels?.has('M') && selectedSurfaces?.size === 0 ? (
+      ) : isPath('/records/oldest-masters-1000-title-winners') && selectedLevels?.has('M') && selectedSurfaces?.size === 0 ? (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the Open Era list for Oldest Masters 1000 Title Winners stands <span className="inline-flex items-center gap-2"><Flag ioc="CHE" className="w-4 h-3" /><span>Roger Federer</span></span>, who won the <Link href="/tournaments/miami-masters/2019" className="!text-orange-300 hover:!text-orange-100 font-semibold">2019 Miami Open</Link> aged <strong className="!text-amber-300">37 years and 235 days</strong> — the oldest recorded men’s singles champion in ATP Masters 1000 history, with the series formally beginning in 1990. In that final, Federer defeated <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>John Isner</span></span> 6-1, 6-4, producing one of the cleanest title-match performances of his late career; ATP described it as Federer’s fourth Miami title, his 101st tour-level title, and his 28th and final Masters 1000 crown.
@@ -171,7 +200,7 @@ const OldestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRe
             In this record, the milestone is not simply reaching the final, but actually lifting one of the tour’s biggest non-Slam trophies: Federer set the current Masters 1000 title-winning ceiling at <strong className="!text-amber-300">37 years and 235 days</strong>, Djokovic represents the closest challenger in the post-35 era, and Nadal, Agassi and Isner show how rare it is to win at this level even beyond the early-to-mid thirties.
           </p>
         </div>
-      ) : selectedSurfaces?.has('Grass') ? (
+      ) : isPath('/records/oldest-grass-court-title-winners') && selectedSurfaces?.has('Grass') ? (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             This record tracks the oldest grass-court title winners in the Open Era, focusing on the men who were still able to win on grass at ages that usually mark the final stretch of a career. At the top of the list stands <span className="inline-flex items-center gap-2"><Flag ioc="AUS" className="w-4 h-3" /><span>Ken Rosewall</span></span>, whose <Link href="/tournaments/brisbane/1972" className="!text-orange-300 hover:!text-orange-100 font-semibold">Brisbane 1972</Link> title came at <strong className="!text-amber-300">38 years and 25 days</strong>.
@@ -192,7 +221,7 @@ const OldestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRe
             The record number is still <strong className="!text-amber-300">38 years and 25 days</strong>: Ken Rosewall's <Link href="/tournaments/brisbane/1972" className="!text-orange-300 hover:!text-orange-100 font-semibold">Brisbane 1972</Link> title remains the oldest ATP grass-court title-winning performance in the Open Era, and the top five are Rosewall <strong className="!text-amber-300">38y 25d</strong>, Federer <strong className="!text-amber-300">37y 312d</strong>, Anderson <strong className="!text-amber-300">37y 304d</strong>, López <strong className="!text-amber-300">37y 269d</strong> and Karlović <strong className="!text-amber-300">37y 133d</strong>.
           </p>
         </div>
-      ) : selectedSurfaces?.has('Clay') ? (
+      ) : isPath('/records/oldest-clay-court-title-winners') && selectedSurfaces?.has('Clay') ? (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             This record tracks the oldest clay-court title winners in the Open Era, focusing on the men’s singles champions who won on clay court at the oldest ages and set the standard for longevity on one of tennis’s most demanding surfaces.
@@ -207,7 +236,7 @@ const OldestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRe
             Beyond those two, the rest of the top 20 shows how unusual the record is. <span className="inline-flex items-center gap-2"><Flag ioc="DOM" className="w-4 h-3" /><span>Victor Estrella Burgos</span></span> reached <Link href="/tournaments/quito/2017" className="!text-orange-300 hover:!text-orange-100 font-semibold">Quito 2017</Link> at <strong className="!text-amber-300">36 years and 188 days</strong>; <span className="inline-flex items-center gap-2"><Flag ioc="AUS" className="w-4 h-3" /><span>Rod Laver</span></span> won <Link href="/tournaments/san-juan-wct/1975" className="!text-orange-300 hover:!text-orange-100 font-semibold">San Juan WCT 1975</Link> at <strong className="!text-amber-300">36 years and 157 days</strong>; <span className="inline-flex items-center gap-2"><Flag ioc="CRO" className="w-4 h-3" /><span>Nikola Pilić</span></span> took <Link href="/tournaments/aviles/1975" className="!text-orange-300 hover:!text-orange-100 font-semibold">Aviles 1975</Link> at <strong className="!text-amber-300">36 years and 32 days</strong>; and <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Rafael Nadal</span></span> appears later with <Link href="/tournaments/roland-garros/2022" className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros 2022</Link> at <strong className="!text-amber-300">35 years and 354 days</strong>. In this record, clay longevity is not a single-name story: it is Rosewall at the ceiling, Djokovic as the modern exception, and a long tail of champions whose clay titles still clustered well into their mid-to-late thirties.
           </p>
         </div>
-      ) : selectedSurfaces?.has('Carpet') ? (
+      ) : isPath('/records/oldest-carpet-court-title-winners') && selectedSurfaces?.has('Carpet') ? (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the Open Era list for Oldest Carpet-Court Title Winners stands <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Pancho Gonzales</span></span>, who won <Link href="/tournaments/des-moines/1972" className="!text-orange-300 hover:!text-orange-100 font-semibold">Des Moines 1972</Link> aged <strong className="!text-amber-300">43 years and 268 days</strong> — the oldest recorded men's singles tour-level title on carpet. TennisMyLife lists Gonzales at No. 1 for carpet-court title winners, while the 1972 Des Moines event is recorded as an indoor carpet tournament.
@@ -228,7 +257,7 @@ const OldestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRe
             In this record, the milestone is not simply surviving on a fast indoor surface, but actually lifting the trophy on carpet: Gonzales set the carpet-court ceiling at 43, Rosewall represents the other great early Open Era benchmark, and the record remains almost untouchable because carpet no longer exists at ATP Tour level.
           </p>
         </div>
-      ) : selectedSurfaces?.has('Hard') ? (
+      ) : isPath('/records/oldest-hard-court-title-winners') && selectedSurfaces?.has('Hard') ? (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             Hard courts provide the clearest stage for the Open Era's oldest title winners, and the benchmark belongs to <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Pancho Gonzales</span></span>, who captured <Link href="/tournaments/kingston/1972" className="!text-orange-300 hover:!text-orange-100 font-semibold">Kingston 1972</Link> aged <strong className="!text-amber-300">44 years and 218 days</strong> — the oldest recorded men's singles tour-level title winner of the Open Era. He closed out <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Clark Graebner</span></span> 6-3, 6-4 in that final, giving Kingston 1972 a place at the very top of the hard-court longevity table.
@@ -246,7 +275,7 @@ const OldestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRe
             In other words, this record is about more than longevity alone: it tracks the players who stayed sharp enough to finish the job on hard courts long after their peak years. Gonzales supplies the Open Era ceiling at 44, Rosewall is the other great pre-modern benchmark, and Djokovic shows how that same standard looks in the modern ATP Tour era.
           </p>
         </div>
-      ) : (
+      ) : isPath('/records/oldest-title-winners') ? (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the Open Era list for Oldest ATP Title Winners stands <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Pancho Gonzales</span></span>, who won <Link href="/tournaments/kingston/1972" className="!text-orange-300 hover:!text-orange-100 font-semibold">Kingston 1972</Link> aged <strong className="!text-amber-300">44 years and 218 days</strong> — the oldest recorded men’s singles tour-level title winner of the Open Era. In that final, Gonzales defeated <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Clark Graebner</span></span> 6-3, 6-4 on hard court, turning Kingston 1972 into the ultimate title-winning longevity milestone rather than just another late-career run. 
@@ -264,7 +293,7 @@ const OldestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRe
             In this record, the milestone is not simply surviving on tour, but actually lifting the trophy: Gonzales set the extreme Open Era ceiling at 44, Rosewall represents the other great pre-modern longevity benchmark, while Djokovic is the elite-career version of the modern ATP Tour record — a former No. 1 and 24-time major champion still winning tour-level titles well past 38.
           </p>
         </div>
-      )}
+      ) : null}
 
       <div className="mb-4 flex justify-end">
         <button

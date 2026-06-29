@@ -67,6 +67,7 @@ export default function Ages({ selectedSurfaces, selectedLevels, selectedRounds,
           fetchRequestId={fetchRequestId}
           description={description}
           initialData={prefetchedData?.["oldestWinners"] as any[]}
+          currentPath={currentPath}
         />
       );
     case "youngest-winners":
@@ -80,6 +81,7 @@ export default function Ages({ selectedSurfaces, selectedLevels, selectedRounds,
           fetchRequestId={fetchRequestId}
           description={description}
           initialData={prefetchedData?.["youngestWinners"] as any[]}
+          currentPath={currentPath}
         />
       );
     default:

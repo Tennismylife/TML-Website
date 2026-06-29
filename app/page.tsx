@@ -191,6 +191,59 @@ export default async function HomePage() {
 
       {/* Client Components */}
       <SearchPlayerLoader />
+      {/* Wimbledon LIVE Card — featured */}
+      <a
+        href="/tournaments/wimbledon/records"
+        className="group relative w-full mb-8 flex overflow-hidden rounded-2xl border border-emerald-400/25 shadow-2xl hover:shadow-emerald-500/20 transition-all duration-300 hover:scale-[1.01]"
+        style={{ background: 'linear-gradient(135deg, #0f1720 0%, #10251c 40%, #251809 100%)' }}
+      >
+        {/* Glow background */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity duration-500"
+          style={{ background: 'radial-gradient(ellipse at 70% 50%, #4ade80 0%, transparent 70%)' }}
+        />
+
+        {/* Left accent bar */}
+        <div className="w-1.5 flex-shrink-0" style={{ background: 'linear-gradient(to bottom, #4ade80, #facc15)' }} />
+
+        <div className="flex flex-col sm:flex-row items-center gap-6 w-full px-6 py-8 sm:px-10">
+          {/* Icon */}
+          <div className="flex-shrink-0 flex items-center justify-center w-20 h-20 rounded-full border-2 border-emerald-300/40 bg-emerald-300/10 shadow-lg shadow-emerald-500/20 text-4xl select-none">
+            🍓
+          </div>
+
+          {/* Text */}
+          <div className="flex-1 text-center sm:text-left">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight"
+                style={{ color: '#facc15', WebkitTextFillColor: '#facc15' }}>
+                Wimbledon
+                <span className="ml-2" style={{ color: '#4ade80', WebkitTextFillColor: '#4ade80' }}>Records</span>
+              </h2>
+              {/* LIVE badge */}
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold self-start sm:self-auto"
+                style={{ background: '#dc2626', color: '#fff', WebkitTextFillColor: '#fff' }}>
+                <span className="relative flex w-2 h-2">
+                  <span className="absolute inline-flex w-full h-full rounded-full bg-red-300 opacity-75 animate-ping" />
+                  <span className="relative inline-flex w-2 h-2 rounded-full bg-white" />
+                </span>
+                <span className="animate-pulse">LIVE</span>
+              </span>
+            </div>
+            <p className="text-sm sm:text-base text-gray-300 max-w-lg">
+              All-time stats, milestones and history from one of the most iconic Grand Slam events - updated in real time.
+            </p>
+          </div>
+
+          {/* CTA arrow */}
+          <div className="flex-shrink-0 hidden sm:flex items-center justify-center w-10 h-10 rounded-full border border-emerald-300/30 group-hover:border-emerald-300 group-hover:bg-emerald-300/10 transition-all duration-300">
+            <svg viewBox="0 0 24 24" className="w-5 h-5 text-emerald-300" fill="none" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        </div>
+      </a>
+
       {/* Featured Records Card */}
       <div className="w-full mb-8">
         <Card href="/records" title="Records" subtitle="All-Time Achievements & Milestones" large colorClass="text-yellow-400 group-hover:text-yellow-300" accentColor="#facc15">
@@ -260,4 +313,3 @@ export default async function HomePage() {
     </main>
   );
 }
-

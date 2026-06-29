@@ -523,7 +523,7 @@ export async function generateMetadata(
     ? { ...activeSubTabsDefault, [record]: activeSubResolved }
     : activeSubTabsDefault;
 
-  const desc = aliasEntry?.title && aliasMatchesCurrentFilters(aliasEntry, sp) ? aliasEntry.title : generateRecordDescription(
+  const desc = aliasEntry?.title && aliasMatchesCurrentFilters(aliasEntry, effectiveSearchParams) ? aliasEntry.title : generateRecordDescription(
     record,
     activeSubTabsWithUrl,
     selectedSurfaces,
@@ -786,7 +786,7 @@ export default async function SlugPage({ params, searchParams }: Props) {
       return Number.isFinite(parsed) ? parsed : undefined;
     })();
 
-    const description = aliasEntry?.title && aliasMatchesCurrentFilters(aliasEntry, sp) ? aliasEntry.title : generateRecordDescription(
+    const description = aliasEntry?.title && aliasMatchesCurrentFilters(aliasEntry, effectiveSearchParams) ? aliasEntry.title : generateRecordDescription(
       record,
       { ...activeSubTabsDefault, [record || '']: activeSubResolved || activeSubTabsDefault[record || ''] },
       selectedSurfaces,

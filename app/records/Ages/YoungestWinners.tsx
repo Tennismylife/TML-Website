@@ -27,9 +27,10 @@ interface YoungestWinnersProps {
   fetchRequestId?: string | null;
   description?: string;
   initialData?: Player[];
+  currentPath?: string;
 }
 
-const YoungestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRequestId, description, initialData }: YoungestWinnersProps) => {
+const YoungestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetchRequestId, description, initialData, currentPath }: YoungestWinnersProps) => {
   const enabled = !!fetchEnabled;
   const [data, setData] = useState<Player[]>(Array.isArray(initialData) ? initialData : []);
   const [loading, setLoading] = useState(false);
@@ -38,6 +39,7 @@ const YoungestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetch
   const [showModal, setShowModal] = useState(false);
   const searchParams = useSearchParams();
   const perPage = 20;
+  const isPath = (path: string) => currentPath === path;
 
   useEffect(() => {
     setPage(1);
@@ -149,7 +151,7 @@ const YoungestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetch
         <>
       {description && <h2 className="mb-6 text-center text-2xl font-semibold text-white">{description}</h2>} 
 
-      {!!description && selectedLevels?.size === 0 && selectedSurfaces?.has('Hard') && (
+      {isPath('/records/youngest-hard-court-title-winners') && !!description && selectedLevels?.size === 0 && selectedSurfaces?.has('Hard') && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             This record tracks the youngest hard-court title winners in the Open Era, and the benchmark is still <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Aaron Krickstein</span></span>, who won Tel Aviv 1983 aged <strong className="!text-amber-300">16 years and 69 days</strong>. It remains the youngest recorded men’s singles tour-level title on hard court.
@@ -165,7 +167,7 @@ const YoungestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetch
           </p>
         </div>
       )}
-      {!!description && selectedLevels?.size === 0 && selectedSurfaces?.has('Clay') && (
+      {isPath('/records/youngest-clay-court-title-winners') && !!description && selectedLevels?.size === 0 && selectedSurfaces?.has('Clay') && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the Open Era list for Youngest Clay-Court Title Winners stands <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Aaron Krickstein</span></span>, who won Boston 1984 aged <strong className="!text-amber-300">16 years and 349 days</strong> using tournament-week age — the youngest recorded men’s singles tour-level title on clay. Krickstein is at No. 1 for youngest clay-court title winners, while Ultimate Tennis Statistics records Boston 1984 as a clay-court event held from 16 July 1984, with Krickstein as champion.             In that final, Krickstein defeated <span className="inline-flex items-center gap-2"><Flag ioc="ARG" className="w-4 h-3" /><span>José Luis Clerc</span></span> 7-6, 3-6, 6-4 on the green clay of the Longwood Cricket Club, coming back from 3-0 down in the deciding set to win the title. That made <Link href="/tournaments/boston/1984" className="!text-orange-300 hover:!text-orange-100 font-semibold">Boston 1984</Link> not just a teenage title milestone, but the extreme clay-court version of the record: a 16-year-old beating an established clay specialist in a tour-level final.             Krickstein also appears again near the very top of this record: he won Geneva 1984 aged <strong className="!text-amber-300">17 years and 46 days</strong>, defeating <span className="inline-flex items-center gap-2"><Flag ioc="SWE" className="w-4 h-3" /><span>Henrik Sundström</span></span> 6-7, 6-1, 6-4. Between Boston and Geneva, Krickstein’s 1984 season became one of the strongest teenage clay-court title bursts of the Open Era.
@@ -178,7 +180,7 @@ const YoungestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetch
           </p>
         </div>
       )}
-      {!!description && selectedLevels?.size === 0 && selectedSurfaces?.has('Grass') && (
+      {isPath('/records/youngest-grass-court-title-winners') && !!description && selectedLevels?.size === 0 && selectedSurfaces?.has('Grass') && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             <span className="inline-flex items-center gap-2"><Flag ioc="DEU" className="w-4 h-3" /><span>Boris Becker</span></span> leads the Open Era list for Youngest Grass-Court Title Winners after winning Queen's Club 1985 at <strong className="!text-amber-300">17 years and 200 days</strong> using tournament-week age. TennisMyLife also lists his Queen's Club title at <strong className="!text-amber-300">17 years and 200 days</strong>, and Ultimate Tennis Statistics records the event as an ATP 500 grass-court tournament beginning on 10 June 1985.             In that final, Becker defeated <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Johan Kriek</span></span> 6-2, 6-3, capturing the first Grand Prix title of his career just three weeks before his historic Wimbledon breakthrough. Contemporary reports note that the 17-year-old produced 11 aces and finished the match in just over an hour.             Becker then backed it up at <Link href="/tournaments/wimbledon/1985" className="!text-orange-300 hover:!text-orange-100 font-semibold">Wimbledon 1985</Link>, where he won at <strong className="!text-amber-300">17 years and 214 days</strong>, defeating <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Kevin Curren</span></span> 6-3, 6-7, 7-6, 6-4. That made him the youngest men's Wimbledon champion in history, as well as the first unseeded player and first German man to win the title.
@@ -191,7 +193,7 @@ const YoungestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetch
           </p>
         </div>
       )}
-      {!!description && selectedLevels?.has('G') && selectedSurfaces?.size === 0 && (
+      {isPath('/records/youngest-grand-slam-title-winners') && !!description && selectedLevels?.has('G') && selectedSurfaces?.size === 0 && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the Open Era list for Youngest Grand Slam Title Winners stands <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Michael Chang</span></span>, who won Roland Garros 1989 aged <strong className="!text-amber-300">17 years and 109 days</strong> — the youngest recorded men’s singles Grand Slam champion of the Open Era. Guinness lists Chang as the youngest male Open Era Grand Slam singles winner at 17 years, 109 days, while other tennis references often round/report it as 17 years and 110 days.             In that final, Chang defeated <span className="inline-flex items-center gap-2"><Flag ioc="SWE" className="w-4 h-3" /><span>Stefan Edberg</span></span> 6-1, 3-6, 4-6, 6-4, 6-2, completing one of the most famous teenage title runs in tennis history. His path included the iconic fourth-round victory over world No. 1 <span className="inline-flex items-center gap-2"><Flag ioc="CZE" className="w-4 h-3" /><span>Ivan Lendl</span></span>, remembered for Chang’s cramps, moonballs and underarm serve — turning Roland Garros 1989 into the ultimate Grand Slam precocity milestone.
@@ -207,7 +209,7 @@ const YoungestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetch
           </p>
         </div>
       )}
-      {!!description && selectedLevels?.size === 0 && selectedSurfaces?.has('Carpet') && (
+      {isPath('/records/youngest-carpet-court-title-winners') && !!description && selectedLevels?.size === 0 && selectedSurfaces?.has('Carpet') && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
                     <p>
             At the top of the Open Era list for Youngest Carpet-Court Title Winners stands <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Michael Chang</span></span>, who won <Link href="/tournaments/san-francisco/1988" className="!text-orange-300 hover:!text-orange-100 font-semibold">San Francisco 1988</Link> aged <strong className="!text-amber-300">16 years and 216 days</strong> — the youngest recorded men’s singles title winner on carpet. <span className="inline-flex items-center gap-2"><Flag ioc="SWE" className="w-4 h-3" /><span>Bjorn Borg</span></span>’s <Link href={getTourneyHref({ slug: "london-wct", year: 1974 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">London WCT 1974</Link> title also sits near the top, at about <strong className="!text-amber-300">17 years and 253-257 days</strong> depending on whether the record uses tournament-week or event-date calculation.
@@ -223,7 +225,7 @@ const YoungestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetch
           </p>
         </div>
       )}
-      {!!description && selectedLevels?.has('M') && selectedSurfaces?.size === 0 && (
+      {isPath('/records/youngest-masters-1000-title-winners') && !!description && selectedLevels?.has('M') && selectedSurfaces?.size === 0 && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the Open Era list for Youngest Masters 1000 Title Winners stands <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Michael Chang</span></span>, who won the 1990 Canada Masters / Canadian Open in Toronto aged <strong className="!text-amber-300">18 years and 151 days</strong> by tournament-week age — the youngest recorded men’s singles champion in Masters 1000 history, with the category beginning in 1990. In that final, Chang defeated <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Jay Berger</span></span> 4-6, 6-3, 7-6(3), becoming the first great teenage champion of the Masters 1000 era. His run was not just a youth-record milestone: ATP highlights that the 18-year-old beat <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Andre Agassi</span></span> and <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Pete Sampras</span></span> back-to-back before taking the title against Berger, making Toronto 1990 a genuine elite-level breakthrough.
@@ -242,7 +244,7 @@ const YoungestWinners = ({ selectedSurfaces, selectedLevels, fetchEnabled, fetch
           </p>
         </div>
       )}
-      {!!description && selectedLevels?.size === 0 && selectedSurfaces?.size === 0 && (
+      {isPath('/records/youngest-title-winners') && !!description && selectedLevels?.size === 0 && selectedSurfaces?.size === 0 && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
             At the top of the Open Era list for Youngest ATP Title Winners stands <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Aaron Krickstein</span></span>, who won <Link href="/tournaments/tel-aviv/1983" className="!text-orange-300 hover:!text-orange-100 font-semibold">Tel Aviv 1983</Link> aged <strong className="!text-amber-300">16 years and 69 days</strong> in tournament-week age terms — the youngest recorded men's singles tour-level title winner of the Open Era. Krickstein is No. 1 at <strong className="!text-amber-300">16y 69d</strong>, while ATP's own bio notes that he became the youngest player ever to win a Grand Prix event at 16 years, 2 months and 13 days.  In that final, Krickstein defeated <span className="inline-flex items-center gap-2"><Flag ioc="DEU" className="w-4 h-3" /><span>Christoph Zipf</span></span> 7-6, 6-3, turning <Link href="/tournaments/tel-aviv/1983" className="!text-orange-300 hover:!text-orange-100 font-semibold">Tel Aviv 1983</Link> into the ultimate teenage title-winning milestone. He was not merely making an early appearance on tour: he actually finished the week as champion, setting a record that still stands as one of the most extreme age marks in men's tennis.
