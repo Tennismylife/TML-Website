@@ -7,7 +7,7 @@ The all-time record for titles at Wimbledon belongs to [🇨🇭 Roger Federer](
 
 ## [Wins & Matches played](/tournaments/wimbledon/records/count/wins)
 
-In terms of total match wins, [🇨🇭 Roger Federer](/players/roger-federer/matches) is in a class of his own with <span class="mc-gold mc-bold">105 victories</span> — ahead of [🇷🇸 Novak Djokovic](/players/novak-djokovic/matches) (<span class="mc-emerald mc-bold">{{WIMBLEDON_DJOKOVIC_WINS}}</span>). The same holds for total matches played: Federer has taken the court <span class="mc-gold mc-bold">119 times</span>, ahead of Djokovic (<span class="mc-emerald">{{WIMBLEDON_DJOKOVIC_MATCHES_PLAYED}}</span>). → [Full wins leaderboard](/tournaments/wimbledon/records/count/wins) · [Most matches played](/tournaments/wimbledon/records/count/played)
+In terms of total match wins, [🇨🇭 Roger Federer](/players/roger-federer/matches) is in a class of his own with <span class="mc-gold mc-bold">{{WIMBLEDON_FEDERER_WINS}} victories</span> — ahead of [🇷🇸 Novak Djokovic](/players/novak-djokovic/matches) (<span class="mc-emerald mc-bold">{{WIMBLEDON_DJOKOVIC_WINS}}</span>). The same holds for total matches played: Federer has taken the court <span class="mc-gold mc-bold">{{WIMBLEDON_FEDERER_MATCHES_PLAYED}} times</span>, ahead of Djokovic (<span class="mc-emerald">{{WIMBLEDON_DJOKOVIC_MATCHES_PLAYED}}</span>). → [Full wins leaderboard](/tournaments/wimbledon/records/count/wins) · [Most matches played](/tournaments/wimbledon/records/count/played)
 
 ## [Editions entered](/tournaments/wimbledon/records/count/entries)
 
