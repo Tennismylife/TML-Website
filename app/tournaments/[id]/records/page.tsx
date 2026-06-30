@@ -87,9 +87,10 @@ export default async function RecordsPage({ params, initialTournament, initialAc
   let topWins: RecordRow[] = [];
   let topPlayed: RecordRow[] = [];
   let topEntries: RecordRow[] = [];
-  let djokovicTitles = 7;
-  let djokovicWins = 102;
-  let djokovicMatchesPlayed = 115;
+  // Wimbledon-specific placeholders are overwritten from the database below.
+  let djokovicTitles = 0;
+  let djokovicWins = 0;
+  let djokovicMatchesPlayed = 0;
   let djokovicStreak = 34;
   try {
     const { resolveTourneyIds } = await import('@/lib/tournament');
