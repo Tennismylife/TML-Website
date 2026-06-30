@@ -179,6 +179,7 @@ export default async function RecordsPage({ params, initialTournament, initialAc
               AND: [
                 { OR: tFilters },
                 { winner_name: djokovicName },
+                { status: true },
               ],
             },
           }),
@@ -187,6 +188,7 @@ export default async function RecordsPage({ params, initialTournament, initialAc
               AND: [
                 { OR: tFilters },
                 { OR: [{ winner_name: djokovicName }, { loser_name: djokovicName }] },
+                { status: true },
               ],
             },
           }),
