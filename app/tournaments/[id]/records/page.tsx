@@ -70,9 +70,7 @@ export default async function RecordsPage({ params, initialTournament, initialAc
     getTournamentName(id).catch(() => String(id).replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())),
   ]);
   const idPromise = Promise.resolve({ id });
-
-  // Read tournament-specific markdown content (server-side, SSR)
-  let markdownHtml: string | undefined;
+  const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
   const markdownFiles: Record<string, string> = {
     'monte-carlo-masters': 'MonteCarlo_Records.md',
     'rome-masters': 'Rome_Records.md',
@@ -81,13 +79,6 @@ export default async function RecordsPage({ params, initialTournament, initialAc
     'wimbledon': 'Wimbledon_Records.md',
   };
   const markdownFileName = markdownFiles[slugId] || markdownFiles[id];
-  if (markdownFileName) {
-    const mdPath = path.join(process.cwd(), 'public', markdownFileName);
-    if (fs.existsSync(mdPath)) {
-      const today = new Date().toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
-      markdownHtml = await marked(fs.readFileSync(mdPath, 'utf-8').replace('{{TODAY}}', today), { gfm: true }) as string;
-    }
-  }
 
   // Fetch top records server-side so Googlebot sees real data in the first HTML pass
   // (RecordsPageClient below is client-rendered and requires JS execution)
@@ -96,6 +87,10 @@ export default async function RecordsPage({ params, initialTournament, initialAc
   let topWins: RecordRow[] = [];
   let topPlayed: RecordRow[] = [];
   let topEntries: RecordRow[] = [];
+  let djokovicTitles = 7;
+  let djokovicWins = 102;
+  let djokovicMatchesPlayed = 115;
+  let djokovicStreak = 34;
   try {
     const { resolveTourneyIds } = await import('@/lib/tournament');
     const tIds = await resolveTourneyIds(id);
@@ -166,6 +161,53 @@ export default async function RecordsPage({ params, initialTournament, initialAc
         .sort((a, b) => b[1].size - a[1].size)
         .slice(0, 10)
         .map(([name, yrs]) => ({ name, count: yrs.size }));
+
+      if (slugId === 'wimbledon') {
+        const djokovicName = 'Novak Djokovic';
+        const [titlesCount, winsCount, playedCount] = await Promise.all([
+          prisma.match.count({
+            where: {
+              AND: [
+                { OR: tFilters },
+                { round: 'F' },
+                { winner_name: djokovicName },
+              ],
+            },
+          }),
+          prisma.match.count({
+            where: {
+              AND: [
+                { OR: tFilters },
+                { winner_name: djokovicName },
+              ],
+            },
+          }),
+          prisma.match.count({
+            where: {
+              AND: [
+                { OR: tFilters },
+                { OR: [{ winner_name: djokovicName }, { loser_name: djokovicName }] },
+              ],
+            },
+          }),
+        ]);
+
+        djokovicTitles = titlesCount;
+        djokovicWins = winsCount;
+        djokovicMatchesPlayed = playedCount;
+
+        const streakRes = await fetch(`${site}/api/tournaments/${encodeURIComponent(id)}/records/streak`, { cache: 'no-store' });
+        if (streakRes.ok) {
+          const streakJson = await streakRes.json();
+          const djokovic = Array.isArray(streakJson?.streaks)
+            ? streakJson.streaks.find((row: any) => String(row?.name ?? '').toLowerCase().includes('djokovic'))
+            : null;
+          if (typeof djokovic?.streak === 'number' && Number.isFinite(djokovic.streak)) {
+            djokovicStreak = djokovic.streak;
+          }
+        }
+      }
+
     }
   } catch {
     // fail open — SSR stats are optional; client component will still load
@@ -192,7 +234,6 @@ export default async function RecordsPage({ params, initialTournament, initialAc
     { href: `/tournaments/${slugId}/records/roundsonentries/rounds/W`, label: 'Rounds on Entries' },
   ];
 
-  const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
   const canonical = `${site}/tournaments/${slugId}/records`;
   const pageTitle = `${tournamentName} Records: wins, titles, matches, ages, streak, stats`;
   const topTitleHolder = topTitles[0];
@@ -200,6 +241,23 @@ export default async function RecordsPage({ params, initialTournament, initialAc
     ? `Open Era men's singles records for ${tournamentName}. ${topTitleHolder.name} leads with ${topTitleHolder.count} title${topTitleHolder.count !== 1 ? 's' : ''}. Explore most wins, age records, winning streaks, win percentages and more.`
     : `Open Era men's singles records for ${tournamentName}: most titles, match wins, age records, winning streaks, win percentages, and more historical statistics.`;
   const keywords = `${tournamentName}, tennis records, most titles, most wins, matches played, age records, winning streaks, open era stats`;
+
+  // Read tournament-specific markdown content (server-side, SSR)
+  let markdownHtml: string | undefined;
+  if (markdownFileName) {
+    const mdPath = path.join(process.cwd(), 'public', markdownFileName);
+    if (fs.existsSync(mdPath)) {
+      const today = new Date().toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
+      const rawMarkdown = fs.readFileSync(mdPath, 'utf-8');
+      const renderedMarkdown = rawMarkdown
+        .replaceAll('{{TODAY}}', today)
+        .replaceAll('{{WIMBLEDON_DJOKOVIC_TITLES}}', String(djokovicTitles))
+        .replaceAll('{{WIMBLEDON_DJOKOVIC_WINS}}', String(djokovicWins))
+        .replaceAll('{{WIMBLEDON_DJOKOVIC_MATCHES_PLAYED}}', String(djokovicMatchesPlayed))
+        .replaceAll('{{WIMBLEDON_DJOKOVIC_STREAK}}', String(djokovicStreak));
+      markdownHtml = await marked(renderedMarkdown, { gfm: true }) as string;
+    }
+  }
 
   // FAQ Schema specifically for the top-level tournament hub
   const faqSchema = {
