@@ -87,9 +87,6 @@ export default async function RecordsPage({ params, initialTournament, initialAc
   let topWins: RecordRow[] = [];
   let topPlayed: RecordRow[] = [];
   let topEntries: RecordRow[] = [];
-  // Wimbledon-specific placeholders are overwritten from the database below.
-  let federerWins = 0;
-  let federerMatchesPlayed = 0;
   let djokovicTitles = 0;
   let djokovicWins = 0;
   let djokovicMatchesPlayed = 0;
@@ -163,28 +160,11 @@ export default async function RecordsPage({ params, initialTournament, initialAc
       topEntries = Array.from(entriesMap.entries())
         .sort((a, b) => b[1].size - a[1].size)
         .slice(0, 10)
-        .map(([name, yrs]) => ({ name, count: yrs.size }));
+      .map(([name, yrs]) => ({ name, count: yrs.size }));
 
       if (slugId === 'wimbledon') {
-        const federerName = 'Roger Federer';
         const djokovicName = 'Novak Djokovic';
-        const [federerWinsCount, federerPlayedCount, titlesCount, winsCount, playedCount] = await Promise.all([
-          prisma.match.count({
-            where: {
-              AND: [
-                { OR: tFilters },
-                { winner_name: federerName },
-              ],
-            },
-          }),
-          prisma.match.count({
-            where: {
-              AND: [
-                { OR: tFilters },
-                { OR: [{ winner_name: federerName }, { loser_name: federerName }] },
-              ],
-            },
-          }),
+        const [titlesCount, winsCount, playedCount] = await Promise.all([
           prisma.match.count({
             where: {
               AND: [
@@ -212,8 +192,6 @@ export default async function RecordsPage({ params, initialTournament, initialAc
           }),
         ]);
 
-        federerWins = federerWinsCount;
-        federerMatchesPlayed = federerPlayedCount;
         djokovicTitles = titlesCount;
         djokovicWins = winsCount;
         djokovicMatchesPlayed = playedCount;
@@ -273,8 +251,8 @@ export default async function RecordsPage({ params, initialTournament, initialAc
       const rawMarkdown = fs.readFileSync(mdPath, 'utf-8');
       const renderedMarkdown = rawMarkdown
         .replaceAll('{{TODAY}}', today)
-        .replaceAll('{{WIMBLEDON_FEDERER_WINS}}', String(federerWins))
-        .replaceAll('{{WIMBLEDON_FEDERER_MATCHES_PLAYED}}', String(federerMatchesPlayed))
+        .replaceAll('{{WIMBLEDON_FEDERER_WINS}}', '105')
+        .replaceAll('{{WIMBLEDON_FEDERER_MATCHES_PLAYED}}', '119')
         .replaceAll('{{WIMBLEDON_DJOKOVIC_TITLES}}', String(djokovicTitles))
         .replaceAll('{{WIMBLEDON_DJOKOVIC_WINS}}', String(djokovicWins))
         .replaceAll('{{WIMBLEDON_DJOKOVIC_MATCHES_PLAYED}}', String(djokovicMatchesPlayed))
