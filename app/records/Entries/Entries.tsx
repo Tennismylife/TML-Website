@@ -100,6 +100,19 @@ export default function Entries({
   const start = (page - 1) * perPage;
   const currentEntries = allEntries.slice(start, start + perPage);
   const hasRows = allEntries.length > 0;
+  const ordinal = (value: number) => {
+    const mod10 = value % 10;
+    const mod100 = value % 100;
+    if (mod10 === 1 && mod100 !== 11) return `${value}st`;
+    if (mod10 === 2 && mod100 !== 12) return `${value}nd`;
+    if (mod10 === 3 && mod100 !== 13) return `${value}rd`;
+    return `${value}th`;
+  };
+  const getPlayerEntries = (name: string, fallback: number) =>
+    allEntries.find((player) => player.name === name)?.entries ?? fallback;
+  const djokovicGrandSlamEntries = getPlayerEntries('Novak Djokovic', 82);
+  const federerGrandSlamEntries = getPlayerEntries('Roger Federer', 81);
+  const lopezGrandSlamEntries = getPlayerEntries('Feliciano Lopez', 81);
 
   const renderTable = (entriesList: Entry[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-gray-800 bg-gray-900 shadow">
@@ -203,7 +216,7 @@ export default function Entries({
 {pathname === '/records/most-grand-slam-appearances' && selectedSurfaces?.size === 0 && selectedLevels?.has('G') && (
   <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
     <p>
-      At the top of the men’s Grand Slam list for most main draw appearances stands <span className="inline-flex items-center gap-2"><Flag ioc="SRB" className="w-4 h-3" /><span>Novak Djokovic</span></span>, now the outright record holder with <strong className="!text-amber-300">82</strong> Grand Slam singles main draws. Behind him, <span className="inline-flex items-center gap-2"><Flag ioc="CHE" className="w-4 h-3" /><span>Roger Federer</span></span> and <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Feliciano Lopez</span></span> remain tied in second place on <strong className="!text-amber-300">81</strong>.
+      At the top of the men’s Grand Slam list for most main draw appearances stands <span className="inline-flex items-center gap-2"><Flag ioc="SRB" className="w-4 h-3" /><span>Novak Djokovic</span></span>, now the outright record holder with <strong className="!text-amber-300">{djokovicGrandSlamEntries}</strong> Grand Slam singles main draws. Behind him, <span className="inline-flex items-center gap-2"><Flag ioc="CHE" className="w-4 h-3" /><span>Roger Federer</span></span> and <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Feliciano Lopez</span></span> remain tied in second place on <strong className="!text-amber-300">{federerGrandSlamEntries}</strong>.
     </p>
 
     <p>
@@ -211,11 +224,11 @@ export default function Entries({
     </p>
 
     <p>
-      Lopez joined Federer on <strong className="!text-amber-300">81</strong> at <Link href={getTourneyHref({ slug: createSlug('Wimbledon'), year: 2022 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Wimbledon 2022</Link>, after receiving a place in the main draw; his major career had begun at <Link href={getTourneyHref({ slug: createSlug('Roland Garros'), year: 2001 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros 2001</Link> against <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Carlos Moyá</span></span>, and included a men’s record 79 consecutive Grand Slam main draws from <Link href={getTourneyHref({ slug: createSlug('Roland Garros'), year: 2002 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros 2002</Link> to the <Link href={getTourneyHref({ slug: createSlug('Australian Open'), year: 2022 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Australian Open 2022</Link>.
+      Lopez joined Federer on <strong className="!text-amber-300">{lopezGrandSlamEntries}</strong> at <Link href={getTourneyHref({ slug: createSlug('Wimbledon'), year: 2022 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Wimbledon 2022</Link>, after receiving a place in the main draw; his major career had begun at <Link href={getTourneyHref({ slug: createSlug('Roland Garros'), year: 2001 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros 2001</Link> against <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Carlos Moyá</span></span>, and included a men’s record 79 consecutive Grand Slam main draws from <Link href={getTourneyHref({ slug: createSlug('Roland Garros'), year: 2002 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros 2002</Link> to the <Link href={getTourneyHref({ slug: createSlug('Australian Open'), year: 2022 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Australian Open 2022</Link>.
     </p>
 
     <p>
-      Djokovic first tied Federer and Lopez at the <Link href={getTourneyHref({ slug: createSlug('Australian Open'), year: 2026 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Australian Open 2026</Link>, where his first-round match against <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Pedro Martínez</span></span> marked his 81st Grand Slam main draw appearance. He then moved ahead of both to take the outright record with <strong className="!text-amber-300">82</strong> appearances; his first Grand Slam main draw had come twenty-one years earlier at the <Link href={getTourneyHref({ slug: createSlug('Australian Open'), year: 2005 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Australian Open 2005</Link>, against <span className="inline-flex items-center gap-2"><Flag ioc="RUS" className="w-4 h-3" /><span>Marat Safin</span></span>.
+      Djokovic first tied Federer and Lopez at the <Link href={getTourneyHref({ slug: createSlug('Australian Open'), year: 2026 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Australian Open 2026</Link>, where his first-round match against <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Pedro Martínez</span></span> marked his {ordinal(federerGrandSlamEntries)} Grand Slam main draw appearance. He then moved ahead of both to take the outright record with <strong className="!text-amber-300">{djokovicGrandSlamEntries}</strong> appearances; his first Grand Slam main draw had come twenty-one years earlier at the <Link href={getTourneyHref({ slug: createSlug('Australian Open'), year: 2005 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Australian Open 2005</Link>, against <span className="inline-flex items-center gap-2"><Flag ioc="RUS" className="w-4 h-3" /><span>Marat Safin</span></span>.
     </p>
 
     <p>
@@ -223,7 +236,7 @@ export default function Entries({
     </p>
 
     <p>
-      In this record, the milestone is not winning matches, but simply returning to the main draw again and again: Djokovic has now set the ceiling at <strong className="!text-amber-300">82</strong>, moving one clear of Federer and Lopez, each of whom stopped at <strong className="!text-amber-300">81</strong>.
+      In this record, the milestone is not winning matches, but simply returning to the main draw again and again: Djokovic has now set the ceiling at <strong className="!text-amber-300">{djokovicGrandSlamEntries}</strong>, moving one clear of Federer and Lopez, each of whom stopped at <strong className="!text-amber-300">{federerGrandSlamEntries}</strong>.
     </p>
   </div>
 )}
