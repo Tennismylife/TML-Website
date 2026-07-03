@@ -31,10 +31,10 @@ export const RECORDS_NOINDEX_ENABLED = true;
 
 /** The SEO-relevant filter params extracted from a URL */
 export interface RecordFilters {
-  /** e.g. ['M', 'G'] */
-  level?: string[];
-  /** e.g. ['Hard', 'Clay'] */
-  surface?: string[];
+  /** e.g. ['M', 'G'] or 'G' */
+  level?: string[] | string;
+  /** e.g. ['Hard', 'Clay'] or 'Grass' */
+  surface?: string[] | string;
   /** e.g. 'QF' */
   round?: string;
   /** e.g. 3 */
@@ -62,6 +62,11 @@ export interface PolicyResult {
 
 const CANONICAL_PARAM_ORDER = ['level', 'surface', 'round', 'bestOf', 'subtab'] as const;
 
+function asArray(value?: string[] | string): string[] {
+  if (value == null) return [];
+  return Array.isArray(value) ? value : [value];
+}
+
 /**
  * Normalise + sort query params into canonical order.
  * Values are uppercase for level/round, title-case for surface, lowercase for subtab.
@@ -77,11 +82,17 @@ export function buildCanonicalQueryString(filters: RecordFilters): string {
   for (const key of CANONICAL_PARAM_ORDER) {
     switch (key) {
       case 'level':
-        if (filters.level?.length) push('level', filters.level.map(v => v.toUpperCase()));
+        {
+          const values = asArray(filters.level);
+          if (values.length) push('level', values.map(v => v.toUpperCase()));
+        }
         break;
       case 'surface':
-        if (filters.surface?.length)
-          push('surface', filters.surface.map(v => v.charAt(0).toUpperCase() + v.slice(1).toLowerCase()));
+        {
+          const values = asArray(filters.surface);
+          if (values.length)
+            push('surface', values.map(v => v.charAt(0).toUpperCase() + v.slice(1).toLowerCase()));
+        }
         break;
       case 'round':
         if (filters.round) parts.push(`round=${encodeURIComponent(filters.round.toUpperCase())}`);
@@ -186,12 +197,12 @@ function buildFilterPathSegments(filters: RecordFilters): string {
   const parts: string[] = [];
 
   if (filters.level?.length) {
-    const values = Array.from(new Set(filters.level.map(v => normalizeFilterValue('level', v)))).sort();
+    const values = Array.from(new Set(asArray(filters.level).map(v => normalizeFilterValue('level', v)))).sort();
     values.forEach(value => parts.push(`level/${value}`));
   }
 
   if (filters.surface?.length) {
-    const values = Array.from(new Set(filters.surface.map(v => normalizeFilterValue('surface', v)))).sort();
+    const values = Array.from(new Set(asArray(filters.surface).map(v => normalizeFilterValue('surface', v)))).sort();
     values.forEach(value => parts.push(`surface/${value}`));
   }
 
@@ -1420,8 +1431,8 @@ export const WHITELIST_ENTRIES: readonly WhitelistEntry[] = WHITELIST;
  */
 export function countFilters(filters: RecordFilters): number {
   let n = 0;
-  if (filters.level?.length) n++;
-  if (filters.surface?.length) n++;
+  if (asArray(filters.level).length) n++;
+  if (asArray(filters.surface).length) n++;
   if (filters.round) n++;
   if (filters.bestOf != null) n++;
   return n;
