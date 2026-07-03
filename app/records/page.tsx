@@ -172,6 +172,7 @@ const categories: Category[] = [
     emoji: '🏟️',
     children: [
       { label: 'Wins', href: recordHref(['same', 'wins']) },
+      { label: 'Grand Slam Wins', href: recordHref(['same', 'wins'], { level: 'G' }) },
       { label: 'Titles', href: recordHref(['same', 'titles']) },
       { label: 'Entries', href: recordHref(['same', 'entries']) },
       { label: 'Rounds', href: recordHref(['same', 'round'], { round: 'F' }) },
