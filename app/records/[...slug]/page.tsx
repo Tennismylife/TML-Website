@@ -139,10 +139,17 @@ function normalizeSlugSegments(slug: string[]) {
   return slug.map((segment) => camelToKebab(segment) ?? segment);
 }
 
+function asArray(value?: string[] | string): string[] {
+  if (value == null) return [];
+  return Array.isArray(value) ? value : [value];
+}
+
 function filtersToSearchParams(filters: RecordFilters): Record<string, string | string[]> {
   const params: Record<string, string | string[]> = {};
-  if (filters.level?.length) params.level = filters.level.map(v => v.toUpperCase());
-  if (filters.surface?.length) params.surface = filters.surface.map(v => v.charAt(0).toUpperCase() + v.slice(1).toLowerCase());
+  const levels = asArray(filters.level);
+  const surfaces = asArray(filters.surface);
+  if (levels.length) params.level = levels.map(v => v.toUpperCase());
+  if (surfaces.length) params.surface = surfaces.map(v => v.charAt(0).toUpperCase() + v.slice(1).toLowerCase());
   if (filters.round) params.round = filters.round.toUpperCase();
   if (filters.bestOf != null) params.bestOf = String(filters.bestOf);
   if (filters.subtab) params.subtab = filters.subtab.toLowerCase();
