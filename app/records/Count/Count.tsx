@@ -43,6 +43,9 @@ export default function Count({ selectedRounds, selectedSurfaces, selectedLevels
   const searchParams = useSearchParams();
   const perPage = 20;
   const surfaceLink = surfaceFromSelection(selectedSurfaces);
+  const djokovicGrandSlamQuarterfinals = allPlayers.find(
+    (p) => p.id === 'D643' || p.slug === 'novak-djokovic' || p.name === 'Novak Djokovic'
+  )?.count;
   useEffect(() => {
     const handler = (e: Event) => { if ((e as CustomEvent)?.detail?.resetPage) setPage(1); };
     window.addEventListener('records:reset', handler as EventListener);
@@ -275,7 +278,7 @@ export default function Count({ selectedRounds, selectedSurfaces, selectedLevels
       {narrativePath === '/records/most-grand-slam-quarterfinals-reached' && selectedRounds === 'QF' && selectedLevels?.has('G') && (!selectedSurfaces || selectedSurfaces.size === 0) && selectedBestOf == null && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
-            At the top of the men’s Grand Slam “most quarter-finals reached” list stands <span className="inline-flex items-center gap-2"><Flag ioc="SRB" className="w-4 h-3" /><span>Novak Djokovic</span></span>, with <strong className="!text-amber-300">64</strong> Grand Slam quarter-finals or better, the highest total in men’s tennis when counting every major run that reached at least the last eight.
+            At the top of the men’s Grand Slam “most quarter-finals reached” list stands <span className="inline-flex items-center gap-2"><Flag ioc="SRB" className="w-4 h-3" /><span>Novak Djokovic</span></span>, {djokovicGrandSlamQuarterfinals != null ? <>with <strong className="!text-amber-300">{djokovicGrandSlamQuarterfinals}</strong> Grand Slam quarter-finals or better, the highest total in men’s tennis when counting every major run that reached at least the last eight.</> : <>owner of the highest Grand Slam quarter-final total in men’s tennis when counting every major run that reached at least the last eight.</>}
           </p>
           <p>
             His first Grand Slam quarter-final came at <Link href={getTourneyHref({ slug: createSlug('Roland Garros'), year: 2006 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros 2006</Link>, where he faced <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Rafael Nadal</span></span> in what became the first chapter of their rivalry. Djokovic first tied Roger Federer’s Open Era record at the <Link href={getTourneyHref({ slug: createSlug('Australian Open'), year: 2024 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Australian Open 2024</Link> by reaching his 58th major quarter-final, then broke it at <Link href={getTourneyHref({ slug: createSlug('Roland Garros'), year: 2024 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros 2024</Link> after defeating <span className="inline-flex items-center gap-2"><Flag ioc="ARG" className="w-4 h-3" /><span>Francisco Cerundolo</span></span>, and reached the 60-quarter-final milestone a few weeks later at <Link href={getTourneyHref({ slug: createSlug('Wimbledon'), year: 2024 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Wimbledon 2024</Link> against <span className="inline-flex items-center gap-2"><Flag ioc="DNK" className="w-4 h-3" /><span>Holger Rune</span></span>.
