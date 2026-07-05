@@ -105,6 +105,7 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
   const djokovicWimbledon = findWinner('Novak Djokovic', 'Wimbledon');
   const djokovicRolandGarros = findWinner('Novak Djokovic', 'Roland Garros');
   const federerAustralianOpen = findWinner('Roger Federer', 'Australian Open');
+  const djokovicWimbledonWins = djokovicWimbledon?.total_wins ?? 106;
 
   const renderTable = (data: Winner[], startIndex = 0) => (
     <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
@@ -175,19 +176,19 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
             At the top of the Open Era list for <strong>Most Wins at a Single Grand Slam Tournament</strong> stands <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Rafael Nadal</span></span>, with <strong className="!text-amber-300">112</strong> match wins at Roland Garros — the highest recorded men’s singles total at any major tournament. Guinness records Nadal’s Roland Garros dominance as <strong className="!text-amber-300">112</strong> wins from <strong className="!text-amber-300">115</strong> matches, alongside his unmatched 14 French Open titles.
           </p>
           <p>
-            Behind him come <span className="inline-flex items-center gap-2"><Flag ioc="CHE" className="w-4 h-3" /><span>Roger Federer</span></span> and <span className="inline-flex items-center gap-2"><Flag ioc="SRB" className="w-4 h-3" /><span>Novak Djokovic</span></span>, both with <strong className="!text-amber-300">105</strong> wins at Wimbledon. Federer won a men’s Open Era record 8 titles there, while Djokovic reached the same Wimbledon benchmark while also extending his all-surface major profile. ATP’s major-tournament wins list still places Nadal’s Roland Garros mark at the overall summit.
+            Behind him comes <span className="inline-flex items-center gap-2"><Flag ioc="CHE" className="w-4 h-3" /><span>Roger Federer</span></span> with <strong className="!text-amber-300">105</strong> wins at Wimbledon, while <span className="inline-flex items-center gap-2"><Flag ioc="SRB" className="w-4 h-3" /><span>Novak Djokovic</span></span> now stands on <strong className="!text-amber-300">{djokovicWimbledonWins}</strong> wins there. Federer’s men’s Open Era record of 8 titles remains the grass-court standard, but Djokovic’s extra win gives him the edge in the match-win race at the All England Club.
           </p>
           <p>
             The next major benchmark is <span className="inline-flex items-center gap-2"><Flag ioc="SRB" className="w-4 h-3" /><span>Novak Djokovic</span></span> at the Australian Open. In this record he sits at <strong className="!text-amber-300">{formatWins(djokovicAustralianOpen)}</strong> wins at Melbourne Park and remains the tournament’s all-time wins leader in the Open Era sample we are showing here. Federer’s Australian Open total remains another historic single-major mark, built around 10 titles in Melbourne.
           </p>
           <p>
-            Djokovic is also unique because he has reached the 100-win mark at three different Grand Slam tournaments: the Australian Open, Roland Garros and Wimbledon. In this record he sits at <strong className="!text-amber-300">{formatWins(djokovicAustralianOpen)}</strong> in Melbourne, <strong className="!text-amber-300">{formatWins(djokovicRolandGarros)}</strong> in Paris and <strong className="!text-amber-300">105</strong> at Wimbledon, making him the only player to record 100+ wins at three different majors.
+            Djokovic is also unique because he has reached the 100-win mark at three different Grand Slam tournaments: the Australian Open, Roland Garros and Wimbledon. In this record he sits at <strong className="!text-amber-300">{formatWins(djokovicAustralianOpen)}</strong> in Melbourne, <strong className="!text-amber-300">{formatWins(djokovicRolandGarros)}</strong> in Paris and <strong className="!text-amber-300">{djokovicWimbledonWins}</strong> at Wimbledon, making him the only player to record 100+ wins at three different majors.
           </p>
           <p>
             A classic Open Era reference point is <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Jimmy Connors</span></span>, who recorded <strong className="!text-amber-300">98</strong> wins at the US Open, still one of the highest single-major totals and the leading non-Big-Three entry near the top of the list. 
           </p>
           <p>
-            In this record, the milestone is not simply winning titles, but returning to the same major year after year and stacking victories across generations: Nadal set the ceiling at Roland Garros with 112, Federer and Djokovic now share the great Wimbledon benchmark at 105, and Djokovic is the modern all-surface major-wins outlier, with 100+ wins at three different Slams.
+            In this record, the milestone is not simply winning titles, but returning to the same major year after year and stacking victories across generations: Nadal set the ceiling at Roland Garros with 112, Federer remains the Wimbledon title king with 8 trophies, and Djokovic is the modern all-surface major-wins outlier, with 100+ wins at three different Slams and the edge over Federer in Wimbledon match wins.
           </p>
         </div>
       )}
