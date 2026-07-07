@@ -43,6 +43,9 @@ export default function Count({ selectedRounds, selectedSurfaces, selectedLevels
   const searchParams = useSearchParams();
   const perPage = 20;
   const surfaceLink = surfaceFromSelection(selectedSurfaces);
+  const djokovicGrandSlamQuarterfinals = allPlayers.find(
+    (p) => p.id === 'D643' || p.slug === 'novak-djokovic' || p.name === 'Novak Djokovic'
+  )?.count;
   const djokovicGrandSlamSemifinals = Math.max(
     allPlayers.find(
       (p) => p.id === 'D643' || p.slug === 'novak-djokovic' || p.name === 'Novak Djokovic'
