@@ -4,7 +4,6 @@ import type { ReactNode } from 'react';
 import { useMemo, useState, useEffect } from "react";
 import { Match } from "@/types";
 import Flag from '@/components/Flag';
-import EditionNavigator from '@/components/EditionNavigator';
 import { getRoundColor, getTextColorForRound } from '@/lib/colors';
 import Link from 'next/link';
 import { getPlayerHrefWithTab } from '@/lib/utils';
@@ -160,27 +159,6 @@ export default function Seeds({ id, year, matches }: SeedsProps) {
     requestAnimationFrame(() => setMounted(true));
   }, [matches]);
 
-  const [editionsList, setEditionsList] = useState<any[]>([]);
-
-  useEffect(() => {
-    let cancelled = false;
-    async function loadHeader() {
-      try {
-        const res = await fetch(`/api/tournaments/${id}/header`);
-        if (!res.ok) return;
-        const d = await res.json();
-        if (cancelled) return;
-        const raw = d.editions || [];
-        const normalized = Array.isArray(raw) ? raw.map((x: any) => (typeof x === 'number' ? { year: x } : (x && x.year ? x : { year: x }))) : [];
-        setEditionsList(normalized);
-      } catch (e) {
-        // ignore
-      }
-    }
-    loadHeader();
-    return () => { cancelled = true; };
-  }, [id]);
-
   if (!mounted) return null;
 
   return (
@@ -220,11 +198,6 @@ export default function Seeds({ id, year, matches }: SeedsProps) {
             </div>
           ))}
         </div>
-      </div>
-
-      {/* Navigator under Seeds table (desktop) */}
-      <div className="mt-4">
-        <EditionNavigator id={id} slug={null} editions={editionsList} currentYear={year} />
       </div>
     </div>
   );

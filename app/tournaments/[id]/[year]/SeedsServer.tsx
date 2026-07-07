@@ -1,9 +1,6 @@
 import Flag from '@/components/Flag';
 import Link from 'next/link';
-import EditionNavigatorServer from '@/components/EditionNavigatorServer';
 import type { Match } from '@/types';
-import { prisma } from '@/lib/prisma';
-import { resolveTourneyIds } from '@/lib/tournament';
 import { getRoundColor, getTextColorForRound } from '@/lib/colors';
 import React from 'react';
 
@@ -103,24 +100,6 @@ export default async function SeedsServer(props: any) {
   const leftColumn = seedOutcomes.slice(0, mid);
   const rightColumn = seedOutcomes.slice(mid);
 
-  // Compute full years range for server-side navigator (min..max)
-  let serverEditions: any[] = [];
-  try {
-    const resolved = await resolveTourneyIds(String(id));
-    if (resolved && Array.isArray(resolved) && resolved.length) {
-      const tourneyIdFilters = resolved.flatMap((tid: string) => [{ tourney_id: tid }, { tourney_id: { endsWith: `-${tid}` } }]);
-      const edRows = await prisma.match.findMany({ where: { OR: tourneyIdFilters }, distinct: ['year'], select: { year: true }, orderBy: { year: 'desc' } });
-      const rawYears = edRows.map((e: any) => Number(e.year)).filter(Boolean);
-      if (rawYears.length) {
-        const minYear = Math.min(...rawYears);
-        const maxYear = Math.max(...rawYears);
-        for (let y = maxYear; y >= minYear; y--) serverEditions.push({ year: y });
-      }
-    }
-  } catch (e) {
-    serverEditions = [];
-  }
-
   return (
     <div id="server-seeds" className="p-4 text-white">
       <h2 className="text-2xl font-bold mb-4">Seeds Performance</h2>
@@ -148,11 +127,6 @@ export default async function SeedsServer(props: any) {
             </div>
           ))}
         </div>
-      </div>
-
-      {/* Server-side navigator under Seeds table */}
-      <div className="mt-4">
-        <EditionNavigatorServer id={id} slug={null} editions={serverEditions} currentYear={year} idSuffix="seeds-top" />
       </div>
     </div>
   );

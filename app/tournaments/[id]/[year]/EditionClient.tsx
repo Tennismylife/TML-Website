@@ -10,6 +10,7 @@ import type { Match, SortKey, SortDirection } from "@/types";
 import MatchTable from "./EditionMatchesTable";
 import EditionHeader from "./EditionHeader";
 import Seeds from "./Seeds";
+import EditionAggregateStatsServer from "./EditionAggregateStatsServer";
 
 // 👉 NON usare PageProps (in Next.js 15 params è Promise)
 type Params = {
@@ -102,32 +103,7 @@ export default function TournamentEditionClient(props: any) {
   const [error, setError] = useState<string | null>(null);
   const [sortKey, setSortKey] = useState<SortKey>("round");
   const [sortDir, setSortDir] = useState<SortDirection>("asc");
-  // Ensure we don't render the client table until we've removed the server table
-  const [mounted, setMounted] = useState<boolean>(!props?.initialMatches);
-
-  useEffect(() => {
-    if (!props?.initialMatches) {
-      setMounted(true);
-      return;
-    }
-
-    // When server rendered table exists, remove it on first mount then allow
-    // the client table to render. This prevents having two tables at once.
-    const el = typeof document !== 'undefined' ? document.getElementById('server-matches') : null;
-    try {
-      // Instead of removing nodes (which in some environments may throw),
-      // hide the server-rendered element so the client table can render in
-      // its place without visual duplication.
-      if (el) {
-        (el as any).style = (el as any).style || {};
-        (el as any).style.display = 'none';
-      }
-    } catch (e) {
-      // ignore
-    }
-    // Allow a tick for the DOM to settle before rendering client table
-    requestAnimationFrame(() => setMounted(true));
-  }, [props?.initialMatches]);
+  const [mounted] = useState<boolean>(true);
 
   useEffect(() => {
     if (props?.initialMatches) return; // already have initial data from SSR
@@ -244,6 +220,18 @@ export default function TournamentEditionClient(props: any) {
           <Seeds id={id} year={year} matches={matches} />
         </div>
       )}
+
+      {matches.length > 0 && (
+        <EditionAggregateStatsServer
+          matches={matches}
+          tournamentName={displayName}
+          year={first?.year?.toString() ?? year}
+        />
+      )}
+
+      <div className="w-full max-w-7xl mx-auto px-0 mt-4">
+        <EditionNavigator id={id} slug={slug} editions={editionsList} currentYear={year} />
+      </div>
     </main>
   );
 }

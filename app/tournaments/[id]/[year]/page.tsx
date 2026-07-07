@@ -1,9 +1,6 @@
 import TournamentEditionClient from './EditionClient';
 import { buildTournamentJsonLdFromDb, fetchEditionInfo, getEditionValue } from './layout';
 import Breadcrumbs from './Breadcrumbs';
-import EditionMatchesServer from './EditionMatchesServer';
-import SeedsServer from './SeedsServer';
-import EditionNavigatorServer from '@/components/EditionNavigatorServer';
 import { prisma } from '@/lib/prisma';
 import { redirect, permanentRedirect } from 'next/navigation';
 
@@ -280,24 +277,9 @@ export default async function Page(props: any) {
       {/* SEO-only link: visually hidden for users, present in the DOM for crawlers */}
       <a href={`/tournaments/${slug}/${year}/records`} className="sr-only">View Records of the Tournament</a>
 
-      {/* Top server-side navigator — provides identical nav above server-rendered matches when client isn't active */}
-      <EditionNavigatorServer id={id} slug={slug} editions={serverEditions} currentYear={year} idSuffix="top" />
-
-      {/* Server-rendered matches table for SSR (visible in HTML when data exists) */}
-      {initialMatches && initialMatches.length ? (
-        <EditionMatchesServer matches={initialMatches} />
-      ) : null}
-
-      {/* Server-rendered seeds (SSR) */}
-      {initialMatches && initialMatches.length ? (
-        <SeedsServer id={id} year={year} matches={initialMatches} />
-      ) : null}
-
       {/* Client interactive edition (receives initialMatches so it can skip fetching) */}
       <TournamentEditionClient params={resolvedParams} initialMatches={initialMatches ?? undefined} />
 
-      {/* Bottom server-side navigator fallback — compact version after content */}
-      <EditionNavigatorServer id={id} slug={slug} editions={serverEditions} currentYear={year} idSuffix="bottom" compact />
     </>
   );
 }
