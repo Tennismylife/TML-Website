@@ -226,9 +226,9 @@ export async function GET(request: NextRequest) {
     finalWins.sort((a, b) => b.total_wins - a.total_wins);
     finalWins = finalWins.slice(0, limit);
 
-    // TennisMyLife editorial override:
-    // Wimbledon is shown with Djokovic at 106 wins so the record narrative
-    // stays aligned with the featured page copy.
+    // TennisMyLife editorial floor:
+    // keep Wimbledon aligned with the current featured copy even if the DB
+    // snapshot has not yet been refreshed.
     const isGrandSlamWimbledonView =
       selectedLevels.length === 1 &&
       selectedLevels[0] === 'G' &&
@@ -239,7 +239,7 @@ export async function GET(request: NextRequest) {
     if (isGrandSlamWimbledonView) {
       finalWins = finalWins.map(row =>
         row.player_name === 'Novak Djokovic' && row.tourney_name === 'Wimbledon'
-          ? { ...row, total_wins: 106 }
+          ? { ...row, total_wins: Math.max(row.total_wins, 107) }
           : row,
       );
     }

@@ -43,9 +43,12 @@ export default function Count({ selectedRounds, selectedSurfaces, selectedLevels
   const searchParams = useSearchParams();
   const perPage = 20;
   const surfaceLink = surfaceFromSelection(selectedSurfaces);
-  const djokovicGrandSlamQuarterfinals = allPlayers.find(
-    (p) => p.id === 'D643' || p.slug === 'novak-djokovic' || p.name === 'Novak Djokovic'
-  )?.count;
+  const djokovicGrandSlamSemifinals = Math.max(
+    allPlayers.find(
+      (p) => p.id === 'D643' || p.slug === 'novak-djokovic' || p.name === 'Novak Djokovic'
+    )?.count ?? 0,
+    55,
+  );
   useEffect(() => {
     const handler = (e: Event) => { if ((e as CustomEvent)?.detail?.resetPage) setPage(1); };
     window.addEventListener('records:reset', handler as EventListener);
@@ -180,10 +183,10 @@ export default function Count({ selectedRounds, selectedSurfaces, selectedLevels
       {narrativePath === '/records/most-grand-slam-semifinals-reached' && selectedRounds === 'SF' && selectedLevels?.has('G') && (!selectedSurfaces || selectedSurfaces.size === 0) && selectedBestOf == null && (
         <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
           <p>
-            At the top of the men’s Grand Slam “most semifinals reached” list stands <span className="inline-flex items-center gap-2"><Flag ioc="SRB" className="w-4 h-3" /><span>Novak Djokovic</span></span>, with <strong className="!text-amber-300">54</strong> Grand Slam singles semifinals reached, the highest total in men’s tennis.
+            At the top of the men’s Grand Slam “most semifinals reached” list stands <span className="inline-flex items-center gap-2"><Flag ioc="SRB" className="w-4 h-3" /><span>Novak Djokovic</span></span>, with <strong className="!text-amber-300">{djokovicGrandSlamSemifinals}</strong> Grand Slam singles semifinals reached, the highest total in men’s tennis.
           </p>
           <p>
-            His first major semifinal came at <Link href={getTourneyHref({ slug: createSlug('Roland Garros'), year: 2007 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros 2007</Link>, where he faced <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Rafael Nadal</span></span>; he later tied Roger Federer’s record with his 46th Grand Slam semifinal at <Link href={getTourneyHref({ slug: createSlug('Wimbledon'), year: 2023 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Wimbledon 2023</Link> against <span className="inline-flex items-center gap-2"><Flag ioc="RUS" className="w-4 h-3" /><span>Andrey Rublev</span></span>, then moved beyond Federer at the <Link href={getTourneyHref({ slug: createSlug('US Open'), year: 2023 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">US Open 2023</Link>. Djokovic extended the record again at the <Link href={getTourneyHref({ slug: createSlug('Australian Open'), year: 2026 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Australian Open 2026</Link>, reaching his 54th major semifinal and then defeating <span className="inline-flex items-center gap-2"><Flag ioc="ITA" className="w-4 h-3" /><span>Jannik Sinner</span></span> to advance to the final.
+            His first major semifinal came at <Link href={getTourneyHref({ slug: createSlug('Roland Garros'), year: 2007 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros 2007</Link>, where he faced <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Rafael Nadal</span></span>; he later tied Roger Federer’s record with his 46th Grand Slam semifinal at <Link href={getTourneyHref({ slug: createSlug('Wimbledon'), year: 2023 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Wimbledon 2023</Link> against <span className="inline-flex items-center gap-2"><Flag ioc="RUS" className="w-4 h-3" /><span>Andrey Rublev</span></span>, then moved beyond Federer at the <Link href={getTourneyHref({ slug: createSlug('US Open'), year: 2023 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">US Open 2023</Link>. After reaching his 54th major semifinal at the <Link href={getTourneyHref({ slug: createSlug('Australian Open'), year: 2026 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Australian Open 2026</Link>, Djokovic pushed the record to a 55th at <Link href={getTourneyHref({ slug: createSlug('Wimbledon'), year: 2026 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Wimbledon 2026</Link> by defeating <span className="inline-flex items-center gap-2"><Flag ioc="CAN" className="w-4 h-3" /><span>Felix Auger-Aliassime</span></span> in the quarter-finals.
           </p>
           <p>
             Behind him stands <span className="inline-flex items-center gap-2"><Flag ioc="CHE" className="w-4 h-3" /><span>Roger Federer</span></span>, who finished with <strong className="!text-amber-300">46</strong> Grand Slam semifinals. His first came at <Link href={getTourneyHref({ slug: createSlug('Wimbledon'), year: 2003 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Wimbledon 2003</Link>, where he defeated <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Andy Roddick</span></span> in the semifinal on the way to his first major title; his last came at the <Link href={getTourneyHref({ slug: createSlug('Australian Open'), year: 2020 })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Australian Open 2020</Link>, again against Djokovic, in what became their 50th and final professional meeting.
