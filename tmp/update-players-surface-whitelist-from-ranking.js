@@ -12,7 +12,23 @@ const path = require('path');
     }
     const top100 = data.rankings.filter((r) => Number(r.rank) <= 100).slice(0, 100);
     const slugs = top100.map((r) => String(r.slug).trim().toLowerCase()).filter(Boolean);
-    const manual = ['alex-molcan', 'grigor-dimitrov', 'jack-pinnington-jones'];
+    const manual = [
+      'alex-molcan',
+      'andrea-pellegrino',
+      'clement-tabur',
+      'dominic-stricker',
+      'federico-agustin-gomez',
+      'grigor-dimitrov',
+      'jack-pinnington-jones',
+      'jaime-faria',
+      'jerome-kym',
+      'jesper-de-jong',
+      'juan-carlos-prado-angelo',
+      'lautaro-midon',
+      'nikoloz-basilashvili',
+      'stefano-travaglia',
+      'titouan-droguet',
+    ];
     const uniqueSlugs = Array.from(new Set([...slugs, ...manual]));
     const surfacePages = uniqueSlugs.flatMap((slug) => [
       `/players/${slug}/clay`,
