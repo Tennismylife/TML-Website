@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Estoril 2026 | 24 giocatori noti | 4 qualificati TBD esclusi | 276 URL | generata 2026-07-19 -->
+<!-- Estoril 2026 | 28 giocatori | 4 qualificati inclusi | 378 URL | generata 2026-07-19 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://stats.tennismylife.org/h2h/alejandro-tabilo-vs-alexander-blockx</loc>
@@ -39,6 +39,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/alejandro-tabilo-vs-frederico-ferreira-silva</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/alejandro-tabilo-vs-gonzalo-bueno</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -98,7 +104,19 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/alejandro-tabilo-vs-orlando-luz</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/alejandro-tabilo-vs-pablo-carreno-busta</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/alejandro-tabilo-vs-pedro-martinez</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -111,6 +129,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/alejandro-tabilo-vs-stan-wawrinka</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/alejandro-tabilo-vs-taro-daniel</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -176,6 +200,12 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/alexander-blockx-vs-gonzalo-bueno</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/alexander-blockx-vs-henrique-rocha</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
@@ -230,7 +260,19 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/alexander-blockx-vs-orlando-luz</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/alexander-blockx-vs-pablo-carreno-busta</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/alexander-blockx-vs-pedro-martinez</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -243,6 +285,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/alexander-blockx-vs-stan-wawrinka</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/alexander-blockx-vs-taro-daniel</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -302,6 +350,12 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/andrey-rublev-vs-gonzalo-bueno</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/andrey-rublev-vs-henrique-rocha</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
@@ -356,7 +410,19 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/andrey-rublev-vs-orlando-luz</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/andrey-rublev-vs-pablo-carreno-busta</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/andrey-rublev-vs-pedro-martinez</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -369,6 +435,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/andrey-rublev-vs-stan-wawrinka</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/andrey-rublev-vs-taro-daniel</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -417,6 +489,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/botic-van-de-zandschulp-vs-frederico-ferreira-silva</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/botic-van-de-zandschulp-vs-gonzalo-bueno</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -476,7 +554,19 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/botic-van-de-zandschulp-vs-orlando-luz</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/botic-van-de-zandschulp-vs-pablo-carreno-busta</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/botic-van-de-zandschulp-vs-pedro-martinez</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -489,6 +579,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/botic-van-de-zandschulp-vs-stan-wawrinka</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/botic-van-de-zandschulp-vs-taro-daniel</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -531,6 +627,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/camilo-ugo-carabelli-vs-frederico-ferreira-silva</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/camilo-ugo-carabelli-vs-gonzalo-bueno</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -590,7 +692,19 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/camilo-ugo-carabelli-vs-orlando-luz</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/camilo-ugo-carabelli-vs-pablo-carreno-busta</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/camilo-ugo-carabelli-vs-pedro-martinez</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -603,6 +717,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/camilo-ugo-carabelli-vs-stan-wawrinka</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/camilo-ugo-carabelli-vs-taro-daniel</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -639,6 +759,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/damir-dzumhur-vs-frederico-ferreira-silva</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/damir-dzumhur-vs-gonzalo-bueno</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -698,7 +824,19 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/damir-dzumhur-vs-orlando-luz</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/damir-dzumhur-vs-pablo-carreno-busta</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/damir-dzumhur-vs-pedro-martinez</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -711,6 +849,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/damir-dzumhur-vs-stan-wawrinka</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/damir-dzumhur-vs-taro-daniel</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -741,6 +885,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/daniel-merida-vs-frederico-ferreira-silva</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/daniel-merida-vs-gonzalo-bueno</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -800,7 +950,19 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/daniel-merida-vs-orlando-luz</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/daniel-merida-vs-pablo-carreno-busta</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/daniel-merida-vs-pedro-martinez</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -813,6 +975,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/daniel-merida-vs-stan-wawrinka</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/daniel-merida-vs-taro-daniel</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -837,6 +1005,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/daniel-merida-vs-vilius-gaubas</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/frederico-ferreira-silva-vs-gonzalo-bueno</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -896,7 +1070,19 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/frederico-ferreira-silva-vs-orlando-luz</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/frederico-ferreira-silva-vs-pablo-carreno-busta</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/frederico-ferreira-silva-vs-pedro-martinez</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -909,6 +1095,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/frederico-ferreira-silva-vs-stan-wawrinka</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/frederico-ferreira-silva-vs-taro-daniel</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -933,6 +1125,120 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/frederico-ferreira-silva-vs-vilius-gaubas</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/gonzalo-bueno-vs-henrique-rocha</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/gonzalo-bueno-vs-hugo-gaston</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/gonzalo-bueno-vs-jaime-faria</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/gonzalo-bueno-vs-jan-choinski</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/gonzalo-bueno-vs-jesper-de-jong</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/gonzalo-bueno-vs-luca-van-assche</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/gonzalo-bueno-vs-luciano-darderi</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/gonzalo-bueno-vs-nikoloz-basilashvili</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/gonzalo-bueno-vs-nuno-borges</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/gonzalo-bueno-vs-orlando-luz</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/gonzalo-bueno-vs-pablo-carreno-busta</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/gonzalo-bueno-vs-pedro-martinez</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/gonzalo-bueno-vs-roman-andres-burruchaga</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/gonzalo-bueno-vs-stan-wawrinka</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/gonzalo-bueno-vs-taro-daniel</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/gonzalo-bueno-vs-tiago-pereira</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/gonzalo-bueno-vs-tiago-torres</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/gonzalo-bueno-vs-titouan-droguet</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/gonzalo-bueno-vs-vilius-gaubas</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -986,7 +1292,19 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/henrique-rocha-vs-orlando-luz</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/henrique-rocha-vs-pablo-carreno-busta</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/henrique-rocha-vs-pedro-martinez</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -999,6 +1317,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/henrique-rocha-vs-stan-wawrinka</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/henrique-rocha-vs-taro-daniel</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -1070,7 +1394,19 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/hugo-gaston-vs-orlando-luz</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/hugo-gaston-vs-pablo-carreno-busta</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/hugo-gaston-vs-pedro-martinez</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -1083,6 +1419,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/hugo-gaston-vs-stan-wawrinka</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/hugo-gaston-vs-taro-daniel</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -1148,7 +1490,19 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/jaime-faria-vs-orlando-luz</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/jaime-faria-vs-pablo-carreno-busta</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jaime-faria-vs-pedro-martinez</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -1161,6 +1515,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/jaime-faria-vs-stan-wawrinka</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jaime-faria-vs-taro-daniel</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -1220,7 +1580,19 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/jan-choinski-vs-orlando-luz</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/jan-choinski-vs-pablo-carreno-busta</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jan-choinski-vs-pedro-martinez</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -1233,6 +1605,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/jan-choinski-vs-stan-wawrinka</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jan-choinski-vs-taro-daniel</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -1286,7 +1664,19 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/jesper-de-jong-vs-orlando-luz</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/jesper-de-jong-vs-pablo-carreno-busta</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jesper-de-jong-vs-pedro-martinez</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -1299,6 +1689,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/jesper-de-jong-vs-stan-wawrinka</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jesper-de-jong-vs-taro-daniel</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -1346,7 +1742,19 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/luca-van-assche-vs-orlando-luz</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/luca-van-assche-vs-pablo-carreno-busta</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/luca-van-assche-vs-pedro-martinez</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -1359,6 +1767,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/luca-van-assche-vs-stan-wawrinka</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/luca-van-assche-vs-taro-daniel</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -1400,7 +1814,19 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/luciano-darderi-vs-orlando-luz</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/luciano-darderi-vs-pablo-carreno-busta</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/luciano-darderi-vs-pedro-martinez</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -1413,6 +1839,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/luciano-darderi-vs-stan-wawrinka</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/luciano-darderi-vs-taro-daniel</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -1448,7 +1880,19 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/nikoloz-basilashvili-vs-orlando-luz</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/nikoloz-basilashvili-vs-pablo-carreno-busta</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/nikoloz-basilashvili-vs-pedro-martinez</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -1461,6 +1905,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/nikoloz-basilashvili-vs-stan-wawrinka</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/nikoloz-basilashvili-vs-taro-daniel</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -1490,7 +1940,19 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/nuno-borges-vs-orlando-luz</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/nuno-borges-vs-pablo-carreno-busta</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/nuno-borges-vs-pedro-martinez</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -1503,6 +1965,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/nuno-borges-vs-stan-wawrinka</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/nuno-borges-vs-taro-daniel</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -1532,6 +2000,66 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/orlando-luz-vs-pablo-carreno-busta</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/orlando-luz-vs-pedro-martinez</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/orlando-luz-vs-roman-andres-burruchaga</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/orlando-luz-vs-stan-wawrinka</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/orlando-luz-vs-taro-daniel</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/orlando-luz-vs-tiago-pereira</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/orlando-luz-vs-tiago-torres</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/orlando-luz-vs-titouan-droguet</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/orlando-luz-vs-vilius-gaubas</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/pablo-carreno-busta-vs-pedro-martinez</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/pablo-carreno-busta-vs-roman-andres-burruchaga</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
@@ -1539,6 +2067,12 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/pablo-carreno-busta-vs-stan-wawrinka</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/pablo-carreno-busta-vs-taro-daniel</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -1568,7 +2102,55 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/pedro-martinez-vs-roman-andres-burruchaga</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/pedro-martinez-vs-stan-wawrinka</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/pedro-martinez-vs-taro-daniel</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/pedro-martinez-vs-tiago-pereira</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/pedro-martinez-vs-tiago-torres</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/pedro-martinez-vs-titouan-droguet</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/pedro-martinez-vs-vilius-gaubas</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/roman-andres-burruchaga-vs-stan-wawrinka</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/roman-andres-burruchaga-vs-taro-daniel</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -1598,6 +2180,12 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/stan-wawrinka-vs-taro-daniel</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/stan-wawrinka-vs-tiago-pereira</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
@@ -1617,6 +2205,30 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/stan-wawrinka-vs-vilius-gaubas</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/taro-daniel-vs-tiago-pereira</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/taro-daniel-vs-tiago-torres</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/taro-daniel-vs-titouan-droguet</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/taro-daniel-vs-vilius-gaubas</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>

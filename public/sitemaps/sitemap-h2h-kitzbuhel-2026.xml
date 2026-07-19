@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Kitzbuhel 2026 | 24 giocatori noti | 4 qualificati TBD esclusi | 276 URL | generata 2026-07-19 -->
+<!-- Kitzbuhel 2026 | 28 giocatori | 4 qualificati inclusi | 378 URL | generata 2026-07-19 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://stats.tennismylife.org/h2h/adolfo-daniel-vallejo-vs-alex-molcan</loc>
@@ -44,6 +44,12 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/adolfo-daniel-vallejo-vs-federico-cina</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/adolfo-daniel-vallejo-vs-ignacio-buse</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
@@ -63,6 +69,24 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/adolfo-daniel-vallejo-vs-juan-manuel-cerundolo</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/adolfo-daniel-vallejo-vs-jurij-rodionov</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/adolfo-daniel-vallejo-vs-kilian-feldbausch</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/adolfo-daniel-vallejo-vs-laslo-djere</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -176,6 +200,12 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/alex-molcan-vs-federico-cina</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/alex-molcan-vs-ignacio-buse</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
@@ -195,6 +225,24 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/alex-molcan-vs-juan-manuel-cerundolo</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/alex-molcan-vs-jurij-rodionov</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/alex-molcan-vs-kilian-feldbausch</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/alex-molcan-vs-laslo-djere</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -302,6 +350,12 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/alexander-bublik-vs-federico-cina</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/alexander-bublik-vs-ignacio-buse</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
@@ -321,6 +375,24 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/alexander-bublik-vs-juan-manuel-cerundolo</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/alexander-bublik-vs-jurij-rodionov</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/alexander-bublik-vs-kilian-feldbausch</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/alexander-bublik-vs-laslo-djere</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -422,6 +494,12 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/alexander-shevchenko-vs-federico-cina</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/alexander-shevchenko-vs-ignacio-buse</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
@@ -441,6 +519,24 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/alexander-shevchenko-vs-juan-manuel-cerundolo</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/alexander-shevchenko-vs-jurij-rodionov</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/alexander-shevchenko-vs-kilian-feldbausch</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/alexander-shevchenko-vs-laslo-djere</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -536,6 +632,12 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/alexandre-muller-vs-federico-cina</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/alexandre-muller-vs-ignacio-buse</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
@@ -555,6 +657,24 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/alexandre-muller-vs-juan-manuel-cerundolo</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/alexandre-muller-vs-jurij-rodionov</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/alexandre-muller-vs-kilian-feldbausch</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/alexandre-muller-vs-laslo-djere</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -644,6 +764,12 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/arthur-rinderknech-vs-federico-cina</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/arthur-rinderknech-vs-ignacio-buse</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
@@ -663,6 +789,24 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/arthur-rinderknech-vs-juan-manuel-cerundolo</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/arthur-rinderknech-vs-jurij-rodionov</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/arthur-rinderknech-vs-kilian-feldbausch</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/arthur-rinderknech-vs-laslo-djere</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -746,6 +890,12 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/daniel-altmaier-vs-federico-cina</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/daniel-altmaier-vs-ignacio-buse</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
@@ -765,6 +915,24 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/daniel-altmaier-vs-juan-manuel-cerundolo</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/daniel-altmaier-vs-jurij-rodionov</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/daniel-altmaier-vs-kilian-feldbausch</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/daniel-altmaier-vs-laslo-djere</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -842,6 +1010,12 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/facundo-diaz-acosta-vs-federico-cina</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/facundo-diaz-acosta-vs-ignacio-buse</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
@@ -861,6 +1035,24 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/facundo-diaz-acosta-vs-juan-manuel-cerundolo</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/facundo-diaz-acosta-vs-jurij-rodionov</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/facundo-diaz-acosta-vs-kilian-feldbausch</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/facundo-diaz-acosta-vs-laslo-djere</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -938,6 +1130,120 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/federico-cina-vs-ignacio-buse</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/federico-cina-vs-jan-lennard-struff</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/federico-cina-vs-joel-schwaerzler</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/federico-cina-vs-juan-manuel-cerundolo</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/federico-cina-vs-jurij-rodionov</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/federico-cina-vs-kilian-feldbausch</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/federico-cina-vs-laslo-djere</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/federico-cina-vs-lukas-neumayer</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/federico-cina-vs-marco-trungelliti</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/federico-cina-vs-mariano-navone</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/federico-cina-vs-miomir-kecmanovic</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/federico-cina-vs-quentin-halys</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/federico-cina-vs-raphael-collignon</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/federico-cina-vs-sebastian-baez</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/federico-cina-vs-sebastian-ofner</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/federico-cina-vs-tomas-martin-etcheverry</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/federico-cina-vs-valentin-vacherot</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/federico-cina-vs-vit-kopriva</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/federico-cina-vs-yannick-hanfmann</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/ignacio-buse-vs-jan-lennard-struff</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
@@ -951,6 +1257,24 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/ignacio-buse-vs-juan-manuel-cerundolo</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/ignacio-buse-vs-jurij-rodionov</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/ignacio-buse-vs-kilian-feldbausch</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/ignacio-buse-vs-laslo-djere</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -1040,6 +1364,24 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/jan-lennard-struff-vs-jurij-rodionov</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jan-lennard-struff-vs-kilian-feldbausch</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jan-lennard-struff-vs-laslo-djere</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/jan-lennard-struff-vs-lukas-neumayer</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
@@ -1118,6 +1460,24 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/joel-schwaerzler-vs-jurij-rodionov</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/joel-schwaerzler-vs-kilian-feldbausch</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/joel-schwaerzler-vs-laslo-djere</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/joel-schwaerzler-vs-lukas-neumayer</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
@@ -1190,6 +1550,24 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://stats.tennismylife.org/h2h/juan-manuel-cerundolo-vs-jurij-rodionov</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/juan-manuel-cerundolo-vs-kilian-feldbausch</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/juan-manuel-cerundolo-vs-laslo-djere</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://stats.tennismylife.org/h2h/juan-manuel-cerundolo-vs-lukas-neumayer</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
@@ -1257,6 +1635,240 @@
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/juan-manuel-cerundolo-vs-yannick-hanfmann</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jurij-rodionov-vs-kilian-feldbausch</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jurij-rodionov-vs-laslo-djere</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jurij-rodionov-vs-lukas-neumayer</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jurij-rodionov-vs-marco-trungelliti</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jurij-rodionov-vs-mariano-navone</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jurij-rodionov-vs-miomir-kecmanovic</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jurij-rodionov-vs-quentin-halys</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jurij-rodionov-vs-raphael-collignon</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jurij-rodionov-vs-sebastian-baez</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jurij-rodionov-vs-sebastian-ofner</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jurij-rodionov-vs-tomas-martin-etcheverry</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jurij-rodionov-vs-valentin-vacherot</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jurij-rodionov-vs-vit-kopriva</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jurij-rodionov-vs-yannick-hanfmann</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/kilian-feldbausch-vs-laslo-djere</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/kilian-feldbausch-vs-lukas-neumayer</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/kilian-feldbausch-vs-marco-trungelliti</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/kilian-feldbausch-vs-mariano-navone</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/kilian-feldbausch-vs-miomir-kecmanovic</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/kilian-feldbausch-vs-quentin-halys</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/kilian-feldbausch-vs-raphael-collignon</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/kilian-feldbausch-vs-sebastian-baez</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/kilian-feldbausch-vs-sebastian-ofner</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/kilian-feldbausch-vs-tomas-martin-etcheverry</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/kilian-feldbausch-vs-valentin-vacherot</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/kilian-feldbausch-vs-vit-kopriva</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/kilian-feldbausch-vs-yannick-hanfmann</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/laslo-djere-vs-lukas-neumayer</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/laslo-djere-vs-marco-trungelliti</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/laslo-djere-vs-mariano-navone</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/laslo-djere-vs-miomir-kecmanovic</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/laslo-djere-vs-quentin-halys</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/laslo-djere-vs-raphael-collignon</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/laslo-djere-vs-sebastian-baez</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/laslo-djere-vs-sebastian-ofner</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/laslo-djere-vs-tomas-martin-etcheverry</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/laslo-djere-vs-valentin-vacherot</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/laslo-djere-vs-vit-kopriva</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/laslo-djere-vs-yannick-hanfmann</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
