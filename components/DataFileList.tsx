@@ -94,8 +94,10 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
     });
 
   const wtaFiles = files
-    .filter((f) => /^\d{4}_wta\.csv$/i.test(f.name))
+    .filter((f) => /^\d{4}_wta\.csv$/i.test(f.name) || f.name.toLowerCase() === 'wta_ongoing_tourneys.csv')
     .sort((a, b) => {
+      if (a.name.toLowerCase() === 'wta_ongoing_tourneys.csv') return -1;
+      if (b.name.toLowerCase() === 'wta_ongoing_tourneys.csv') return 1;
       const ya = extractYear(a.name) ?? 0;
       const yb = extractYear(b.name) ?? 0;
       if (ya !== yb) return yb - ya;
@@ -331,7 +333,9 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
             </thead>
             <tbody>
               {wtaFiles.slice(0, visibleWta).map((f) => {
-                const yearLabel = extractYear(f.name)?.toString() ?? '';
+                const yearLabel = f.name.toLowerCase() === 'wta_ongoing_tourneys.csv'
+                  ? 'Ongoing'
+                  : extractYear(f.name)?.toString() ?? '';
                 return (
                   <tr key={f.name} className="hover:bg-gray-800 border-b border-white/10">
                     <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-24 whitespace-nowrap">{yearLabel}</td>
