@@ -118,7 +118,7 @@ export default function Page() {
       <span className="!text-sky-400 font-semibold">TennisMyLife</span> hosts a highly reliable  
       <span className="!text-emerald-400 font-semibold"> Tennis Match Database</span>. 
       All <span className="!text-yellow-300 font-semibold"> historical match data</span>, 
-      <span className="!text-pink-400 font-semibold"> ATP stats</span>, and ongoing tournaments are available as 
+      <span className="!text-pink-400 font-semibold"> ATP and WTA stats</span>, and ongoing tournaments are available as 
       <span className="!text-orange-400 font-semibold"> CSV downloads</span>. Built and tested over years using 
       purpose-built software, this database is a truly 
       <span className="!text-red-400 font-semibold"> dependable resource</span>.
@@ -190,7 +190,7 @@ export default function Page() {
         </div>
         <div className="w-full px-4 text-sm text-gray-300 leading-relaxed text-left sm:px-6 sm:text-base">
           <p className="mb-3">
-            TennisMyLife hosts a comprehensive tennis match database, including all historical match data, ATP player stats, and ongoing tournament results. All datasets are available as CSV downloads, making it easy for analysts, fans, and developers to explore tennis statistics.
+            TennisMyLife hosts a comprehensive tennis match database, including all historical match data, ATP and WTA player stats, and ongoing tournament results. All datasets are available as CSV downloads, making it easy for analysts, fans, and developers to explore tennis statistics.
           </p>
           <p>
             There are many other tennis databases out there, but TennisMyLife stands out. Unlike Sackmann’s database, we use ATP player IDs, providing a more convenient way to calculate player records and cross-reference data directly on the official ATP website.
@@ -251,14 +251,14 @@ export default function Page() {
 
 
           <p className="mt-4">
-            We continuously monitor ATP updates, including additions, corrections, and removals from historical records. Our database is also enriched with verified data from newspapers, tennis blogs, and other statistics websites.
+            We continuously monitor ATP and WTA updates, including additions, corrections, and removals from historical records. Our database is also enriched with verified data from newspapers, tennis blogs, and other statistics websites.
           </p>
           <h3 className="text-lg font-medium mt-4 mb-2">Frequent Updates & Live Results</h3>
           <p>
             TennisMyLife is updated daily, and ideally in real-time, following live ATP match results. We aim to provide fresh tennis statistics without waiting for weekly summaries.
           </p>
           <p className="mt-4">
-            We welcome collaborations and bug reports. Help us improve the quality of this tennis database and make it the most reliable source for ATP stats, match history, and player analytics.
+            We welcome collaborations and bug reports. Help us improve the quality of this tennis database and make it the most reliable source for ATP and WTA stats, match history, and player analytics.
           </p>
           <div className="mt-6 text-sm text-gray-300 sm:text-base">
             <strong className="!text-white">Creator:</strong> Tennis My Life<br/>
