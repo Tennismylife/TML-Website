@@ -1,825 +1,1045 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- R2: possibili incontri Cincinnati ATP 2026 -->
+  <!-- R2: tutti i possibili incontri Cincinnati ATP 2026 -->
   <url>
     <loc>https://stats.tennismylife.org/h2h/alexander-zverev-vs-cameron-norrie</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/alexander-zverev-vs-dino-prizmic</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/marton-fucsovics-vs-tomas-martin-etcheverry</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/terence-atmane-vs-tomas-martin-etcheverry</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/corentin-moutet-vs-tommy-paul</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/tommy-paul-vs-sho-shimabukuro</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/hubert-hurkacz-vs-tommy-paul</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/tommy-paul-vs-hubert-hurkacz</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/kyrian-jacquet-vs-valentin-vacherot</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/adolfo-daniel-vallejo-vs-valentin-vacherot</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/adrian-mannarino-vs-rafael-jodar</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/rafael-jodar-vs-denis-shapovalov</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/denis-shapovalov-vs-rafael-jodar</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/rafael-jodar-vs-adrian-mannarino</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/alejandro-tabilo-vs-jan-lennard-struff</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/roman-andres-burruchaga-vs-alejandro-tabilo</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/alejandro-tabilo-vs-roman-andres-burruchaga</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/jan-lennard-struff-vs-alejandro-tabilo</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/alexander-blockx-vs-mariano-navone</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/alexander-blockx-vs-raphael-collignon</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/camilo-ugo-carabelli-vs-flavio-cobolli</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/flavio-cobolli-vs-miomir-kecmanovic</loc>
-    <lastmod>2026-08-12</lastmod>
-    <changefreq>daily</changefreq>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/h2h/jan-choinski-vs-novak-djokovic</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/miomir-kecmanovic-vs-flavio-cobolli</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/novak-djokovic-vs-thiago-agustin-tirante</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/jack-draper-vs-matteo-arnaldi</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/novak-djokovic-vs-jan-choinski</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/martin-landaluce-vs-matteo-arnaldi</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/gael-monfils-vs-luciano-darderi</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/jack-draper-vs-matteo-arnaldi</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/luciano-darderi-vs-rinky-hijikata</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/jakub-mensik-vs-mattia-bellucci</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/luciano-darderi-vs-gael-monfils</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/jakub-mensik-vs-zachary-svajda</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/zachary-svajda-vs-jakub-mensik</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/mattia-bellucci-vs-jakub-mensik</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jiri-lehecka-vs-titouan-droguet</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/jiri-lehecka-vs-matteo-berrettini</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/arthur-fils-vs-yannick-hanfmann</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/yannick-hanfmann-vs-arthur-fils</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/luca-van-assche-vs-arthur-fils</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/arthur-fery-vs-jj-wolf</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/arthur-fery-vs-james-duckworth</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/alex-de-minaur-vs-vit-kopriva</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/vit-kopriva-vs-alex-de-minaur</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/alex-michelsen-vs-taylor-fritz</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/quentin-halys-vs-alex-de-minaur</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/jesper-de-jong-vs-taylor-fritz</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/taylor-fritz-vs-alex-michelsen</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/taylor-fritz-vs-jesper-de-jong</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/daniel-merida-vs-zizou-bergs</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/marin-cilic-vs-zizou-bergs</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/botic-van-de-zandschulp-vs-joao-fonseca</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/joao-fonseca-vs-botic-van-de-zandschulp</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/joao-fonseca-vs-tallon-griekspoor</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/casper-ruud-vs-kamil-majchrzak</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/christopher-oconnell-vs-casper-ruud</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/andrey-rublev-vs-pablo-carreno-busta</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/kamil-majchrzak-vs-casper-ruud</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/andrey-rublev-vs-tomas-machac</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/francisco-cerundolo-vs-nuno-borges</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/andrey-rublev-vs-pablo-carreno-busta</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/francisco-cerundolo-vs-thanasi-kokkinakis</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/nuno-borges-vs-francisco-cerundolo</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/aleksandar-kovacevic-vs-brandon-nakashima</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/thanasi-kokkinakis-vs-francisco-cerundolo</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/brandon-nakashima-vs-aleksandar-kovacevic</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/brandon-nakashima-vs-karen-khachanov</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/daniil-medvedev-vs-hamad-medjedovic</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/hamad-medjedovic-vs-daniil-medvedev</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/marco-trungelliti-vs-daniil-medvedev</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/ben-shelton-vs-jaime-faria</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/ben-shelton-vs-jenson-brooksby</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/adam-walton-vs-ignacio-buse</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/fabian-marozsan-vs-ugo-humbert</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/nicolas-mejia-vs-ignacio-buse</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/ugo-humbert-vs-fabian-marozsan</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/ugo-humbert-vs-michael-zheng</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/coleman-wong-vs-lorenzo-musetti</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/daniel-altmaier-vs-lorenzo-musetti</loc>
-    <lastmod>2026-08-12</lastmod>
-    <changefreq>daily</changefreq>
-  </url>
-  <url>
-    <loc>https://stats.tennismylife.org/h2h/grigor-dimitrov-vs-learner-tien</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/learner-tien-vs-sebastian-baez</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/frances-tiafoe-vs-juncheng-shang</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/learner-tien-vs-grigor-dimitrov</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/frances-tiafoe-vs-lorenzo-sonego</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/juncheng-shang-vs-frances-tiafoe</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/lorenzo-sonego-vs-frances-tiafoe</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/arthur-rinderknech-vs-mark-lajal</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/arthur-rinderknech-vs-juan-manuel-cerundolo</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/felix-auger-aliassime-vs-stefanos-tsitsipas</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/valentin-royer-vs-felix-auger-aliassime</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/felix-auger-aliassime-vs-valentin-royer</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/stefanos-tsitsipas-vs-felix-auger-aliassime</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
-  <!-- R3: possibili incontri Cincinnati ATP 2026 -->
+  <!-- R3: tutti i possibili incontri Cincinnati ATP 2026 -->
   <url>
     <loc>https://stats.tennismylife.org/h2h/alexander-zverev-vs-marton-fucsovics</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/alexander-zverev-vs-terence-atmane</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/alexander-zverev-vs-tomas-martin-etcheverry</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/cameron-norrie-vs-marton-fucsovics</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/cameron-norrie-vs-terence-atmane</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/cameron-norrie-vs-tomas-martin-etcheverry</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/dino-prizmic-vs-marton-fucsovics</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/dino-prizmic-vs-terence-atmane</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/dino-prizmic-vs-tomas-martin-etcheverry</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/adolfo-daniel-vallejo-vs-tommy-paul</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/tommy-paul-vs-kyrian-jacquet</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/tommy-paul-vs-adolfo-daniel-vallejo</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/tommy-paul-vs-valentin-vacherot</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/adolfo-daniel-vallejo-vs-corentin-moutet</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/sho-shimabukuro-vs-kyrian-jacquet</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/corentin-moutet-vs-valentin-vacherot</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/sho-shimabukuro-vs-adolfo-daniel-vallejo</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/adolfo-daniel-vallejo-vs-hubert-hurkacz</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/sho-shimabukuro-vs-valentin-vacherot</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/hubert-hurkacz-vs-kyrian-jacquet</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/hubert-hurkacz-vs-adolfo-daniel-vallejo</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/hubert-hurkacz-vs-valentin-vacherot</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/rafael-jodar-vs-roman-andres-burruchaga</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/jan-lennard-struff-vs-rafael-jodar</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/rafael-jodar-vs-jan-lennard-struff</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/alejandro-tabilo-vs-rafael-jodar</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/rafael-jodar-vs-alejandro-tabilo</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/denis-shapovalov-vs-roman-andres-burruchaga</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/denis-shapovalov-vs-jan-lennard-struff</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/alejandro-tabilo-vs-denis-shapovalov</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/denis-shapovalov-vs-alejandro-tabilo</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/adrian-mannarino-vs-roman-andres-burruchaga</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/adrian-mannarino-vs-jan-lennard-struff</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/adrian-mannarino-vs-alejandro-tabilo</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/alexander-blockx-vs-camilo-ugo-carabelli</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/alexander-blockx-vs-miomir-kecmanovic</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/alexander-blockx-vs-flavio-cobolli</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/camilo-ugo-carabelli-vs-mariano-navone</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/mariano-navone-vs-camilo-ugo-carabelli</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/mariano-navone-vs-miomir-kecmanovic</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/flavio-cobolli-vs-mariano-navone</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/mariano-navone-vs-flavio-cobolli</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/camilo-ugo-carabelli-vs-raphael-collignon</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/raphael-collignon-vs-camilo-ugo-carabelli</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/miomir-kecmanovic-vs-raphael-collignon</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/raphael-collignon-vs-miomir-kecmanovic</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/flavio-cobolli-vs-raphael-collignon</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/raphael-collignon-vs-flavio-cobolli</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/martin-landaluce-vs-novak-djokovic</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/novak-djokovic-vs-martin-landaluce</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/jack-draper-vs-novak-djokovic</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/novak-djokovic-vs-jack-draper</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/matteo-arnaldi-vs-novak-djokovic</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/novak-djokovic-vs-matteo-arnaldi</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/martin-landaluce-vs-thiago-agustin-tirante</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/thiago-agustin-tirante-vs-martin-landaluce</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/jack-draper-vs-thiago-agustin-tirante</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/thiago-agustin-tirante-vs-jack-draper</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/matteo-arnaldi-vs-thiago-agustin-tirante</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/thiago-agustin-tirante-vs-matteo-arnaldi</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/jan-choinski-vs-martin-landaluce</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/jack-draper-vs-jan-choinski</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/jan-choinski-vs-jack-draper</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/jan-choinski-vs-matteo-arnaldi</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/luciano-darderi-vs-zachary-svajda</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/luciano-darderi-vs-mattia-bellucci</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/jakub-mensik-vs-luciano-darderi</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/luciano-darderi-vs-jakub-mensik</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/rinky-hijikata-vs-zachary-svajda</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/mattia-bellucci-vs-rinky-hijikata</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/rinky-hijikata-vs-mattia-bellucci</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/jakub-mensik-vs-rinky-hijikata</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/rinky-hijikata-vs-jakub-mensik</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/gael-monfils-vs-zachary-svajda</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/gael-monfils-vs-mattia-bellucci</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/gael-monfils-vs-jakub-mensik</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/jiri-lehecka-vs-yannick-hanfmann</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/arthur-fils-vs-jiri-lehecka</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/jiri-lehecka-vs-luca-van-assche</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jiri-lehecka-vs-arthur-fils</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/titouan-droguet-vs-yannick-hanfmann</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/titouan-droguet-vs-luca-van-assche</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/titouan-droguet-vs-arthur-fils</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/matteo-berrettini-vs-yannick-hanfmann</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/arthur-fils-vs-matteo-berrettini</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/matteo-berrettini-vs-luca-van-assche</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/matteo-berrettini-vs-arthur-fils</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/arthur-fery-vs-vit-kopriva</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/alex-de-minaur-vs-arthur-fery</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/arthur-fery-vs-quentin-halys</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/arthur-fery-vs-alex-de-minaur</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jj-wolf-vs-vit-kopriva</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jj-wolf-vs-quentin-halys</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jj-wolf-vs-alex-de-minaur</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/james-duckworth-vs-vit-kopriva</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/alex-de-minaur-vs-james-duckworth</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/james-duckworth-vs-quentin-halys</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/daniel-merida-vs-taylor-fritz</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/james-duckworth-vs-alex-de-minaur</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/marin-cilic-vs-taylor-fritz</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/taylor-fritz-vs-daniel-merida</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/taylor-fritz-vs-marin-cilic</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/taylor-fritz-vs-zizou-bergs</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/alex-michelsen-vs-daniel-merida</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/alex-michelsen-vs-marin-cilic</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/alex-michelsen-vs-zizou-bergs</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/daniel-merida-vs-jesper-de-jong</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/jesper-de-jong-vs-daniel-merida</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/jesper-de-jong-vs-marin-cilic</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/jesper-de-jong-vs-zizou-bergs</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/joao-fonseca-vs-christopher-oconnell</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/joao-fonseca-vs-kamil-majchrzak</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/casper-ruud-vs-joao-fonseca</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/joao-fonseca-vs-casper-ruud</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/botic-van-de-zandschulp-vs-christopher-oconnell</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/botic-van-de-zandschulp-vs-kamil-majchrzak</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/botic-van-de-zandschulp-vs-casper-ruud</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/kamil-majchrzak-vs-tallon-griekspoor</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/tallon-griekspoor-vs-christopher-oconnell</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/casper-ruud-vs-tallon-griekspoor</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/tallon-griekspoor-vs-kamil-majchrzak</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/tallon-griekspoor-vs-casper-ruud</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/andrey-rublev-vs-nuno-borges</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/andrey-rublev-vs-thanasi-kokkinakis</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/andrey-rublev-vs-francisco-cerundolo</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/nuno-borges-vs-tomas-machac</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/tomas-machac-vs-nuno-borges</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/thanasi-kokkinakis-vs-tomas-machac</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/tomas-machac-vs-thanasi-kokkinakis</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/francisco-cerundolo-vs-tomas-machac</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/tomas-machac-vs-francisco-cerundolo</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/nuno-borges-vs-pablo-carreno-busta</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/pablo-carreno-busta-vs-nuno-borges</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/pablo-carreno-busta-vs-thanasi-kokkinakis</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/francisco-cerundolo-vs-pablo-carreno-busta</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/pablo-carreno-busta-vs-francisco-cerundolo</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/brandon-nakashima-vs-hamad-medjedovic</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/brandon-nakashima-vs-marco-trungelliti</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/brandon-nakashima-vs-daniil-medvedev</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/aleksandar-kovacevic-vs-hamad-medjedovic</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/aleksandar-kovacevic-vs-marco-trungelliti</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/aleksandar-kovacevic-vs-daniil-medvedev</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/hamad-medjedovic-vs-karen-khachanov</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/karen-khachanov-vs-hamad-medjedovic</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/daniil-medvedev-vs-karen-khachanov</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/karen-khachanov-vs-marco-trungelliti</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/adam-walton-vs-ben-shelton</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/karen-khachanov-vs-daniil-medvedev</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/ben-shelton-vs-adam-walton</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/ben-shelton-vs-nicolas-mejia</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/ben-shelton-vs-ignacio-buse</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/adam-walton-vs-jenson-brooksby</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/jaime-faria-vs-adam-walton</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/ignacio-buse-vs-jenson-brooksby</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/jaime-faria-vs-nicolas-mejia</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/daniel-altmaier-vs-ugo-humbert</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/jaime-faria-vs-ignacio-buse</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/lorenzo-musetti-vs-ugo-humbert</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/jenson-brooksby-vs-adam-walton</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/daniel-altmaier-vs-fabian-marozsan</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/jenson-brooksby-vs-nicolas-mejia</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/jenson-brooksby-vs-ignacio-buse</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/ugo-humbert-vs-coleman-wong</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/ugo-humbert-vs-daniel-altmaier</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/ugo-humbert-vs-lorenzo-musetti</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/fabian-marozsan-vs-coleman-wong</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/fabian-marozsan-vs-daniel-altmaier</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/fabian-marozsan-vs-lorenzo-musetti</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/juncheng-shang-vs-learner-tien</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/michael-zheng-vs-coleman-wong</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/michael-zheng-vs-daniel-altmaier</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/michael-zheng-vs-lorenzo-musetti</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/learner-tien-vs-juncheng-shang</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/learner-tien-vs-lorenzo-sonego</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/frances-tiafoe-vs-learner-tien</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/learner-tien-vs-frances-tiafoe</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/juncheng-shang-vs-sebastian-baez</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/sebastian-baez-vs-juncheng-shang</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/lorenzo-sonego-vs-sebastian-baez</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/sebastian-baez-vs-lorenzo-sonego</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/frances-tiafoe-vs-sebastian-baez</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/sebastian-baez-vs-frances-tiafoe</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/grigor-dimitrov-vs-juncheng-shang</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/grigor-dimitrov-vs-lorenzo-sonego</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/frances-tiafoe-vs-grigor-dimitrov</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/grigor-dimitrov-vs-frances-tiafoe</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/arthur-rinderknech-vs-valentin-royer</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/arthur-rinderknech-vs-stefanos-tsitsipas</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/arthur-rinderknech-vs-felix-auger-aliassime</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/mark-lajal-vs-valentin-royer</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/mark-lajal-vs-stefanos-tsitsipas</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://stats.tennismylife.org/h2h/mark-lajal-vs-felix-auger-aliassime</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/juan-manuel-cerundolo-vs-valentin-royer</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://stats.tennismylife.org/h2h/juan-manuel-cerundolo-vs-stefanos-tsitsipas</loc>
-    <lastmod>2026-08-12</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://stats.tennismylife.org/h2h/felix-auger-aliassime-vs-juan-manuel-cerundolo</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://stats.tennismylife.org/h2h/juan-manuel-cerundolo-vs-felix-auger-aliassime</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
   </url>
 </urlset>
