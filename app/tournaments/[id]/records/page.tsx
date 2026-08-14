@@ -75,6 +75,8 @@ export default async function RecordsPage({ params, initialTournament, initialAc
     'monte-carlo-masters': 'MonteCarlo_Records.md',
     'rome-masters': 'Rome_Records.md',
     'madrid-masters': 'Madrid_Records.md',
+    'canada-masters': 'Canada_Records.md',
+    'cincinnati-masters': 'Cincinnati_Records.md',
     'roland-garros': 'RolandGarros_Records.md',
     'wimbledon': 'Wimbledon_Records.md',
   };
