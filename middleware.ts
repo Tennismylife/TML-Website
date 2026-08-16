@@ -324,13 +324,13 @@ export async function middleware(req: NextRequest) {
     const nextResponse = () => {
       const res = NextResponse.next();
       if (isPlayersMatchesPath(requestPath)) {
-        res.headers.set('X-Robots-Tag', 'noindex, follow');
+        res.headers.set('X-Robots-Tag', req.nextUrl.search ? 'noindex, nofollow' : 'noindex, follow');
       }
       return res;
     };
 
-    // Allow only whitelisted /players/<slug>/matches query params.
-    // These are produced by season/surface links and should remain valid.
+    // Keep valid match filters available to users. Crawlers are kept out of
+    // every query combination by robots.txt and receive nofollow above.
     if (isPlayersMatchesPath(requestPath) && req.nextUrl.search) {
       const MATCH_QUERY_WHITELIST = new Set(['year', 'surface']);
       const hasOnlyWhitelisted = Array.from(query.keys()).every((key) => MATCH_QUERY_WHITELIST.has(key));

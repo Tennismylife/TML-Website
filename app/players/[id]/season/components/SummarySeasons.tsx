@@ -257,7 +257,7 @@ export default function SummarySeasons({ years, allMatches, playerId, playerSlug
                 {(() => {
                   const input = playerSlug ? { slug: playerSlug } : { id: playerId };
                   return (
-                    <Link href={`${getPlayerHrefWithTab(input, 'matches')}?year=${r.year}`} className="text-blue-400 hover:underline">View All Matches</Link>
+                    <Link href={`${getPlayerHrefWithTab(input, 'matches')}?year=${r.year}`} rel="nofollow" className="text-blue-400 hover:underline">View All Matches</Link>
                   );
                 })()}
               </td>

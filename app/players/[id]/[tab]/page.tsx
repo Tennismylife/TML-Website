@@ -118,7 +118,8 @@ export async function generateMetadata(
   const slug = player?.slug ?? String(id);
   const isTop100Allowed = await isPlayerInTop100IndexAllowlist(String(id));
 
-  // Build canonical URL using path segments and include query params for matches when filters are active
+  // Build canonical URL from path segments. Match-filter query combinations
+  // consolidate onto the player landing page below.
   const base = 'https://stats.tennismylife.org';
   const isOverview = !tab || tab === 'overview';
   let canonical = isOverview ? `${base}/players/${encodeURIComponent(slug)}` : `${base}/players/${encodeURIComponent(slug)}/${encodeURIComponent(tab as string)}`;
@@ -130,6 +131,9 @@ export async function generateMetadata(
         ? Object.fromEntries(resolvedSearchParamsForCanonical.entries())
         : resolvedSearchParamsForCanonical)
     : {};
+  const hasMatchFilters = tab === 'matches' && Object.entries(spForCanonical).some(
+    ([key, value]) => key !== 'tab' && value != null && String(value) !== '' && String(value) !== 'All',
+  );
 
   // If on season tab, include year segment in canonical when available and meaningful
   if (tab === 'season') {
@@ -275,8 +279,7 @@ export async function generateMetadata(
       creator: '@TennisMyLife68',
     },
     // Noindex rules:
-    // - matches tab: always noindex (all URLs, with or without filters).
-    // - matches tab: indexed (canonical points to player landing).
+    // - matches tab: always noindex; filtered combinations are also nofollow.
     // - tournaments / statistics / performance: always noindex.
     // - ranking tab: only index players in the allowlist.
     // - surface tabs (clay/hard/grass): only index top-100 players.
@@ -284,7 +287,7 @@ export async function generateMetadata(
       const VALID_TABS = new Set(['overview', 'matches', 'season', 'tournaments', 'h2h', 'performance', 'statistics', 'ranking', 'clay', 'hard', 'grass']);
       const isSurfaceTab = tab === 'clay' || tab === 'hard' || tab === 'grass';
       if (tab === 'matches') {
-        return { index: false, follow: true };
+        return { index: false, follow: !hasMatchFilters };
       }
       if (isSurfaceTab && !isTop100Allowed) {
         return { index: false, follow: true };

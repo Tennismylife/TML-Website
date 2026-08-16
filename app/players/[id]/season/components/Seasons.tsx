@@ -411,6 +411,7 @@ export default function Seasons({ playerId, playerSlug, playerName, initialYears
               return (
                 <Link
                   href={`${getPlayerHrefWithTab(input, 'matches')}?year=${selectedYear}`}
+                  rel="nofollow"
                   className="inline-block bg-blue-600 hover:bg-blue-700 shadow-lg text-white font-bold text-2xl py-3 px-8 rounded-full transition-all duration-200"
                 >
                   View All Matches
@@ -449,6 +450,7 @@ export default function Seasons({ playerId, playerSlug, playerName, initialYears
                   return (
                     <Link
                       href={`${getPlayerHrefWithTab(input, 'matches')}?year=${selectedYear}`}
+                      rel="nofollow"
                       className="inline-block bg-blue-600 hover:bg-blue-700 shadow-lg text-white font-bold text-sm py-1.5 px-4 rounded-full transition-all duration-200"
                     >
                       View All Matches ↗

@@ -6,9 +6,9 @@
  * Rules
  * --------------------------------------------------------------------------
  * 1. /records/*  with NO filter params  ? index, follow
- * 2. 1+ filters, NOT in whitelist       ? noindex, follow
+ * 2. 1+ filters, NOT in whitelist       ? noindex, nofollow
  * 3. Whitelist entries (any filter count) ? index, follow
- * 4. noindex pages remain crawlable     (follow is always true, never disallow)
+ * 4. Crawlers follow canonical slug URLs only, not arbitrary filter combinations
  * 5. Whitelist entries get:
  *    • robots index, follow
  *    • self-referencing canonical (with canonical param order)
@@ -46,8 +46,8 @@ export interface RecordFilters {
 export interface PolicyResult {
   /** true ? index, false ? noindex */
   index: boolean;
-  /** always true — noindex pages remain crawlable so Google can follow links to whitelisted pages */
-  follow: true;
+  /** false for non-canonical filter combinations */
+  follow: boolean;
   /** whether this URL belongs to the whitelist */
   isWhitelisted: boolean;
   /** canonical URL (absolute) */
@@ -128,8 +128,9 @@ export function buildCanonicalUrl(
   }
 
   const path = `/records/${slug.map(encodeURIComponent).join('/')}`;
-  const qs = buildCanonicalQueryString(filters);
-  return `${base}${path}${qs ? `?${qs}` : ''}`;
+  // Filter combinations are UI state. Only curated entries above receive a
+  // dedicated canonical slug; every other combination consolidates here.
+  return `${base}${path}`;
 }
 
 export function getCanonicalPathForWhitelistEntry(slug: string[], filters: RecordFilters): string | null {
@@ -1467,7 +1468,7 @@ export function evaluateRecordsPolicy(
   if (RECORDS_NOINDEX_ENABLED && subIsRound && !filters.round) {
     return {
       index: false,
-      follow: true,
+      follow: false,
       isWhitelisted: false,
       canonical,
       filterCount,
@@ -1483,7 +1484,7 @@ export function evaluateRecordsPolicy(
 
   return {
     index: shouldIndex,
-    follow: true,
+    follow: shouldIndex,
     isWhitelisted,
     canonical,
     filterCount,
@@ -1510,7 +1511,8 @@ export function getRecordsPageTitle(
 
 /**
  * Returns the Next.js `robots` metadata object for a /records page.
- * noindex pages keep follow=true so Googlebot can still follow links to whitelisted/canonical pages.
+ * Non-canonical filtered pages are noindex,nofollow; canonical slug pages are
+ * index,follow.
  */
 export function getRecordsRobotsMeta(policy: PolicyResult): {
   index: boolean;

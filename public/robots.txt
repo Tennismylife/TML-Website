@@ -1,14 +1,17 @@
 User-agent: *
 Allow: /
 
-# 1. Permetti esplicitamente i parametri sui matches (Eccezione)
-Allow: /players/*/matches?
-
-# 2. Blocca i parametri su tutto il resto sotto /players/
+# I crawler possono visitare le pagine dei giocatori, ma non le combinazioni
+# di filtri espresse nella query string, incluse quelle di /matches.
 Disallow: /players/*?
+Disallow: /players/*/matches?*
 
 Disallow: /api/
 Disallow: /tournaments/*/*/records
+
+# Crawl only canonical /records slug URLs, never filter query combinations.
+Disallow: /records?*
+Disallow: /records/*?*
 
 # Sitemap
 Sitemap: https://stats.tennismylife.org/sitemap_index.xml

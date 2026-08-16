@@ -1,4 +1,18 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+
+vi.mock('@/lib/prisma', () => ({
+  prisma: {
+    player: {
+      findUnique: vi.fn().mockResolvedValue({
+        id: 'L018',
+        slug: 'ivan-lendl',
+        player: 'Ivan Lendl',
+        atpname: 'Ivan Lendl',
+      }),
+    },
+  },
+}));
+
 import { generateMetadata } from '../app/players/[id]/[tab]/page';
 
 describe('generateMetadata for player tab page', () => {
@@ -14,10 +28,14 @@ describe('generateMetadata for player tab page', () => {
     expect(meta.openGraph?.url).toBe('https://stats.tennismylife.org/players/ivan-lendl');
   });
 
-  it('matches tab is indexable (no noindex)', async () => {
-    const searchParams = { year: '1994', level: 'G', surface: 'Clay', round: 'F' } as any;
-    const meta = await generateMetadata({ params: { id: 'ivan-lendl', tab: 'matches' }, searchParams } as any);
-    expect(meta.robots).toMatchObject({ index: true, follow: true });
+  it('keeps the unfiltered matches page noindex, follow', async () => {
+    const meta = await generateMetadata({ params: { id: 'ivan-lendl', tab: 'matches' }, searchParams: {} as any } as any);
+    expect(meta.robots).toMatchObject({ index: false, follow: true });
   });
 
+  it('marks filtered matches combinations noindex, nofollow', async () => {
+    const searchParams = { year: '1994', level: 'G', surface: 'Clay', round: 'F' } as any;
+    const meta = await generateMetadata({ params: { id: 'ivan-lendl', tab: 'matches' }, searchParams } as any);
+    expect(meta.robots).toMatchObject({ index: false, follow: false });
+  });
 });

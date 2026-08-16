@@ -1,7 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { generateRecordLink } from '../lib/recordsLinks';
 import { resolveRecordHref } from '../app/records/record-links';
-import { getWhitelistEntryByCanonicalPath } from '../lib/seo/records-policy';
+import {
+  evaluateRecordsPolicy,
+  getRecordsRobotsMeta,
+  getWhitelistedSitemapPaths,
+  getWhitelistEntryByCanonicalPath,
+} from '../lib/seo/records-policy';
 
 describe('generateRecordLink', () => {
   it('resolves canonical path with subtab and filters', () => {
@@ -81,5 +86,42 @@ describe('resolveRecordHref', () => {
   it('maps roundsonentries titles on carpet court to the direct canonical page without whitelisting it', () => {
     expect(resolveRecordHref(['roundsonentries', 'titles'], { surface: ['Carpet'] })).toBe('/records/most-appearances-at-single-carpet-court-tournament');
     expect(getWhitelistEntryByCanonicalPath('/records/most-appearances-at-single-carpet-court-tournament')).toBeUndefined();
+  });
+});
+
+describe('records crawler policy', () => {
+  it('publishes only slug URLs in the records sitemap set', () => {
+    expect(getWhitelistedSitemapPaths('https://stats.tennismylife.org'))
+      .not.toContainEqual(expect.stringContaining('?'));
+  });
+
+  it('keeps a curated filter combination on its canonical slug', () => {
+    const policy = evaluateRecordsPolicy(
+      'https://stats.tennismylife.org',
+      ['wins'],
+      { surface: ['Hard'] },
+    );
+
+    expect(policy.canonical).toBe('https://stats.tennismylife.org/records/most-wins-on-hard-court');
+    expect(getRecordsRobotsMeta(policy)).toMatchObject({
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true },
+    });
+  });
+
+  it('does not let crawlers traverse an arbitrary filter combination', () => {
+    const policy = evaluateRecordsPolicy(
+      'https://stats.tennismylife.org',
+      ['wins'],
+      { level: ['G'], surface: ['Hard'], bestOf: 1 },
+    );
+
+    expect(policy.canonical).toBe('https://stats.tennismylife.org/records/wins');
+    expect(getRecordsRobotsMeta(policy)).toMatchObject({
+      index: false,
+      follow: false,
+      googleBot: { index: false, follow: false },
+    });
   });
 });

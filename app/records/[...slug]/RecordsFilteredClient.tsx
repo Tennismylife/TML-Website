@@ -64,11 +64,11 @@ export default function RecordsFilteredClient({ record, sub, filters = {}, canon
       if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') console.debug('[RecordsFilteredClient] skipping title update (no description)');
     }
 
-    // meta robots noindex,follow (only when the master switch is on)
+    // Filter combinations are UI state: crawlers must not index or follow them.
     if (RECORDS_NOINDEX_ENABLED) {
       const metaRobots = document.querySelector('meta[name="robots"]') || document.createElement('meta');
       metaRobots.setAttribute('name', 'robots');
-      metaRobots.setAttribute('content', 'noindex, follow');
+      metaRobots.setAttribute('content', 'noindex, nofollow');
       if (!document.querySelector('meta[name="robots"]')) document.head.appendChild(metaRobots);
     }
 

@@ -26,7 +26,7 @@ export default function RecordsFilteredClient({ record, sub, filters = {}, canon
     if (RECORDS_NOINDEX_ENABLED) {
       const metaRobots = document.querySelector('meta[name="robots"]') || document.createElement('meta');
       metaRobots.setAttribute('name', 'robots');
-      metaRobots.setAttribute('content', 'noindex, follow');
+      metaRobots.setAttribute('content', 'noindex, nofollow');
       if (!document.querySelector('meta[name="robots"]')) document.head.appendChild(metaRobots);
     }
 
