@@ -1,161 +1,98 @@
-// app/api/recordsranking/timespan/route.ts
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextResponse } from 'next/server';
+import { Prisma } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 
 function diffYMD(a: Date, b: Date) {
-  // differenza calendario (a -> b) in Y/M/D, UTC-safe
   let y = b.getUTCFullYear() - a.getUTCFullYear();
   let m = b.getUTCMonth() - a.getUTCMonth();
   let d = b.getUTCDate() - a.getUTCDate();
   if (d < 0) {
-    const prevMonth = new Date(Date.UTC(b.getUTCFullYear(), b.getUTCMonth(), 0));
-    d += prevMonth.getUTCDate();
+    d += new Date(Date.UTC(b.getUTCFullYear(), b.getUTCMonth(), 0)).getUTCDate();
     m -= 1;
   }
-  if (m < 0) {
-    m += 12;
-    y -= 1;
-  }
+  if (m < 0) { m += 12; y -= 1; }
   return { y, m, d };
 }
 
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
-    const rank = Number(url.searchParams.get("rank") ?? NaN);
+    const rank = Number(url.searchParams.get('rank'));
     if (!Number.isInteger(rank) || rank < 1) {
       return NextResponse.json({ error: "Param 'rank' non valido (>=1)" }, { status: 400 });
     }
+    const eoy = url.searchParams.get('eoy') === '1';
 
-    const eoy = url.searchParams.get("eoy") === "1";
-    const limit = 100;
-
-    // Filtri periodo (opzionali)
-    const fromYearParam = url.searchParams.get("fromYear");
-    const toYearParam = url.searchParams.get("toYear");
-    const fromYear = fromYearParam ? Number(fromYearParam) : null;
-    const toYear   = toYearParam   ? Number(toYearParam)   : null;
-    if (
-      (fromYear !== null && (!Number.isInteger(fromYear) || fromYear < 1900)) ||
-      (toYear !== null && (!Number.isInteger(toYear) || toYear < 1900)) ||
-      (fromYear !== null && toYear !== null && fromYear > toYear)
-    ) {
+    const fromYearRaw = url.searchParams.get('fromYear');
+    const toYearRaw = url.searchParams.get('toYear');
+    const fromYear = fromYearRaw ? Number(fromYearRaw) : null;
+    const toYear = toYearRaw ? Number(toYearRaw) : null;
+    if ((fromYear !== null && (!Number.isInteger(fromYear) || fromYear < 1900)) ||
+        (toYear !== null && (!Number.isInteger(toYear) || toYear < 1900)) ||
+        (fromYear !== null && toYear !== null && fromYear > toYear)) {
       return NextResponse.json({ error: "Parametri 'fromYear'/'toYear' non validi." }, { status: 400 });
     }
 
-    const dateBounds: any = {};
-    if (fromYear !== null) dateBounds.gte = new Date(Date.UTC(fromYear, 0, 1));
-    if (toYear !== null)   dateBounds.lt  = new Date(Date.UTC(toYear + 1, 0, 1));
+    const dateFilters: Prisma.Sql[] = [];
+    if (fromYear !== null) dateFilters.push(Prisma.sql`rd.date >= ${new Date(Date.UTC(fromYear, 0, 1))}`);
+    if (toYear !== null) dateFilters.push(Prisma.sql`rd.date < ${new Date(Date.UTC(toYear + 1, 0, 1))}`);
+    const dateWhere = dateFilters.length ? Prisma.sql`WHERE ${Prisma.join(dateFilters, ' AND ')}` : Prisma.empty;
+    const eoyWhere = eoy ? Prisma.sql`WHERE rn = 1` : Prisma.empty;
 
-    // 1) Recupera le date rilevanti
-    let targetRankingDateIds: number[] | null = null;
-    if (eoy) {
-      // Solo last ranking date per anno (EOY)
-      const allDates = await prisma.rankingDate.findMany({
-        where: Object.keys(dateBounds).length ? { date: dateBounds } : undefined,
-        select: { date: true },
-        orderBy: { date: "asc" },
-      });
-      const years = Array.from(new Set(allDates.map(d => d.date.getUTCFullYear())));
-      if (years.length === 0) return NextResponse.json([]);
+    type Row = {
+      id: string;
+      name: string;
+      ioc: string | null;
+      first_date: Date;
+      last_date: Date;
+    };
 
-      const lastPerYear = await Promise.all(
-        years.map(async (year) => {
-          const last = await prisma.rankingDate.findFirst({
-            where: {
-              date: {
-                gte: new Date(Date.UTC(year, 0, 1)),
-                lt:  new Date(Date.UTC(year + 1, 0, 1)),
-              },
-            },
-            orderBy: { date: "desc" },
-            select: { id: true },
-          });
-          return last?.id ?? null;
-        })
-      );
-      targetRankingDateIds = lastPerYear.filter((x): x is number => x !== null);
-      if (targetRankingDateIds.length === 0) return NextResponse.json([]);
-    }
-
-    // 2) Prendi tutti i record con rank esatto X sulle date target
-    const rows = await prisma.ranking.findMany({
-      where: {
-        rank,
-        ...(targetRankingDateIds
-          ? { rankingDateId: { in: targetRankingDateIds } }
-          : (Object.keys(dateBounds).length
-              ? { rankingDate: { date: dateBounds } }
-              : {})),
-      },
-      select: {
-        playerId: true,
-        player: { select: { atpname: true, ioc: true } },
-        rankingDate: { select: { date: true } },
-      },
-      // Nessun orderBy necessario; riduciamo il payload ai soli campi utili
-    });
-
-    if (rows.length === 0) return NextResponse.json([]);
-
-    // 3) Aggrega: per ogni player trova prima e ultima data
-    // Recupera i dettagli dalla tabella `player` come fallback
-    const allPlayerIds = Array.from(new Set(rows.map(r => String(r.playerId))));
-    const players = await prisma.player.findMany({ where: { id: { in: allPlayerIds } }, select: { id: true, atpname: true, ioc: true } });
-    const playerMap = Object.fromEntries(players.map(p => [p.id, p]));
-
-    type Agg = { name: string; ioc: string | null; min: Date; max: Date };
-    const byPlayer = new Map<string, Agg>();
-
-    for (const r of rows) {
-      const id = String(r.playerId);
-      const d = r.rankingDate.date;
-
-      // preferisci il nome dalla join `r.player`, altrimenti fallback alla tabella `player`
-      const name = r.player?.atpname ?? playerMap[id]?.atpname ?? null;
-      if (!name) {
-        // Non abbiamo un nome reale: salta l'entry per evitare placeholder "Player <id>"
-        console.warn("Timespan Count: missing player name for id", id);
-        continue;
-      }
-      const ioc = r.player?.ioc ?? playerMap[id]?.ioc ?? null;
-
-      const prev = byPlayer.get(id);
-      if (!prev) {
-        byPlayer.set(id, { name, ioc, min: d, max: d });
-      } else {
-        if (d < prev.min) prev.min = d;
-        if (d > prev.max) prev.max = d;
-      }
-    }
-
-    // 4) Costruisci output e ordina per timespan desc
-    const MS_PER_DAY = 1000 * 60 * 60 * 24;
-    const data = Array.from(byPlayer.entries())
-      .map(([id, v]) => {
-        const timespanDays = Math.max(0, Math.floor((v.max.getTime() - v.min.getTime()) / MS_PER_DAY));
-        const { y, m, d } = diffYMD(v.min, v.max);
-        return {
-          id,
-          name: v.name,
-          ioc: v.ioc,
-          firstDate: v.min.toISOString().slice(0, 10),
-          lastDate:  v.max.toISOString().slice(0, 10),
-          timespanDays,
-          timespanLabel: `${y}y ${m}m ${d}d`,
-        };
-      })
-      .sort(
-        (a, b) =>
-          b.timespanDays - a.timespanDays ||
-          b.lastDate.localeCompare(a.lastDate) ||
-          a.name.localeCompare(b.name, "en", { sensitivity: "base" })
+    const rows = await prisma.$queryRaw<Row[]>(Prisma.sql`
+      WITH ranked_dates AS (
+        SELECT rd.id, rd.date,
+               ROW_NUMBER() OVER (
+                 PARTITION BY EXTRACT(YEAR FROM rd.date)
+                 ORDER BY rd.date DESC
+               ) AS rn
+        FROM "RankingDate" rd
+        ${dateWhere}
+      ), dates AS (
+        SELECT id, date FROM ranked_dates
+        ${eoyWhere}
+      ), agg AS (
+        SELECT r."playerId" AS player_id,
+               MIN(d.date) AS first_date,
+               MAX(d.date) AS last_date
+        FROM "Ranking" r
+        JOIN dates d ON d.id = r."rankingDateId"
+        WHERE r.rank = ${rank}
+        GROUP BY r."playerId"
       )
-      .slice(0, limit);
+      SELECT a.player_id AS id,
+             COALESCE(p.atpname, a.player_id) AS name,
+             p.ioc, a.first_date, a.last_date
+      FROM agg a
+      LEFT JOIN "Player" p ON p.id = a.player_id
+      ORDER BY (a.last_date - a.first_date) DESC, a.last_date DESC, name ASC
+      LIMIT 100
+    `);
 
-    return NextResponse.json(data);
+    const MS_PER_DAY = 86400000;
+    return NextResponse.json(rows.map(r => {
+      const timespanDays = Math.max(0, Math.floor((r.last_date.getTime() - r.first_date.getTime()) / MS_PER_DAY));
+      const { y, m, d } = diffYMD(r.first_date, r.last_date);
+      return {
+        id: String(r.id),
+        name: r.name,
+        ioc: r.ioc,
+        firstDate: r.first_date.toISOString().slice(0, 10),
+        lastDate: r.last_date.toISOString().slice(0, 10),
+        timespanDays,
+        timespanLabel: `${y}y ${m}m ${d}d`,
+      };
+    }));
   } catch (error) {
-    console.error("Error computing rank-timespan:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.error('Error computing rank-timespan:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

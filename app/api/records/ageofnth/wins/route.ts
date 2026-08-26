@@ -1,225 +1,85 @@
-import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { NextRequest, NextResponse } from 'next/server';
+import { Prisma } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
-const prisma = globalForPrisma.prisma || new PrismaClient();
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
-
-// -----------------------------------------------------------------------------
-// Ritorna l’età alla X-esima vittoria usando la MV
-// -----------------------------------------------------------------------------
-function getAgeForNthWin(cumulative: Record<string, number>, n: number): number | null {
-  const entries = Object.entries(cumulative)
-    .map(([winNumber, age]) => [parseInt(winNumber), age] as [number, number])
-    .sort((a, b) => a[0] - b[0]);
-  const entry = entries.find(([winNumber]) => winNumber >= n);
-  return entry ? entry[1] : null;
-}
-
-// -----------------------------------------------------------------------------
-// Formatta l’età in "XXy YYd"
-// -----------------------------------------------------------------------------
 function formatAge(age: number | null): string {
-  if (age == null) return "-";
+  if (age == null) return '-';
   const years = Math.floor(age);
   const days = Math.round((age - years) * 365);
   return `${years}y ${days}d`;
 }
 
-// -----------------------------------------------------------------------------
-// GET handler
-// -----------------------------------------------------------------------------
 export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url);
+    const n = Number(url.searchParams.get('n'));
+    if (!Number.isInteger(n) || n <= 0) return NextResponse.json({ error: 'Invalid n parameter' }, { status: 400 });
+    const limitRaw = Number(url.searchParams.get('limit'));
+    const limit = Number.isInteger(limitRaw) ? Math.min(Math.max(limitRaw, 1), 100) : 100;
 
-    const n = Number(url.searchParams.get("n"));
-    if (!Number.isInteger(n) || n <= 0) {
-      return NextResponse.json({ error: "Invalid n parameter" }, { status: 400 });
-    }
+    const surfaces = url.searchParams.getAll('surface').filter(Boolean);
+    const levels = url.searchParams.getAll('level').filter(Boolean);
+    const rounds = url.searchParams.getAll('round').filter(Boolean);
+    const bestOf = url.searchParams.getAll('best_of').map(Number).filter(Number.isInteger);
+    const filtersCount = Number(!!surfaces.length) + Number(!!levels.length) + Number(!!rounds.length) + Number(!!bestOf.length);
 
-    const limitParam = Number(url.searchParams.get("limit"));
-    const limit = Number.isInteger(limitParam) ? Math.min(Math.max(limitParam, 1), 100) : 100;
+    type Row = { id: string; name: string; ioc: string; slug: string | null; age_at_win: number };
+    let rows: Row[];
 
-    const getFiltered = (key: string) => url.searchParams.getAll(key).filter(Boolean);
-
-    const selectedSurfaces = getFiltered("surface");
-    const selectedLevels = getFiltered("level");
-    const selectedRounds = getFiltered("round");
-    const selectedBestOf = url.searchParams
-      .getAll("best_of")
-      .map(Number)
-      .filter(Number.isInteger);
-
-    const filtersCount =
-      Number(selectedSurfaces.length > 0) +
-      Number(selectedLevels.length > 0) +
-      Number(selectedRounds.length > 0) +
-      Number(selectedBestOf.length > 0);
-
-    console.time("Total API");
-
-    // =========================================================================
-    // CASE 1: 0 o 1 filtro → usa MATERIALIZED VIEW
-    // =========================================================================
     if (filtersCount <= 1) {
-      console.time("Use MV mv_wins_ages");
+      let ageJson: Prisma.Sql = Prisma.sql`m.ages_json`;
+      if (surfaces.length === 1) ageJson = Prisma.sql`m.ages_by_surface_json -> ${surfaces[0]}`;
+      else if (levels.length === 1) ageJson = Prisma.sql`m.ages_by_level_json -> ${levels[0]}`;
+      else if (rounds.length === 1) ageJson = Prisma.sql`m.ages_by_round_json -> ${rounds[0]}`;
+      else if (bestOf.length === 1) ageJson = Prisma.sql`m.ages_by_best_of_json -> ${String(bestOf[0])}`;
 
-      const data = await prisma.mvWinsAges.findMany({
-        select: {
-          winner_id: true,
-          ages_json: true,
-          ages_by_surface_json: true,
-          ages_by_level_json: true,
-          ages_by_round_json: true,
-          ages_by_best_of_json: true,
-        },
-      });
+      rows = await prisma.$queryRaw<Row[]>(Prisma.sql`
+        SELECT m.winner_id AS id, COALESCE(p.player, '') AS name, COALESCE(p.ioc, '') AS ioc,
+               p.slug, nth.age_at_win
+        FROM mv_ages_wins m
+        JOIN "Player" p ON p.id = m.winner_id
+        CROSS JOIN LATERAL (
+          SELECT j.value::double precision AS age_at_win
+          FROM jsonb_each_text(COALESCE(${ageJson}, '{}'::jsonb)) AS j(key, value)
+          WHERE j.key ~ '^[0-9]+$' AND j.key::integer >= ${n}
+          ORDER BY j.key::integer ASC
+          LIMIT 1
+        ) nth
+        ORDER BY nth.age_at_win ASC, name ASC
+        LIMIT ${limit}
+      `);
+    } else {
+      const filters: Prisma.Sql[] = [
+        Prisma.sql`m.status = true`, Prisma.sql`m.winner_id IS NOT NULL`, Prisma.sql`m.winner_age IS NOT NULL`,
+      ];
+      if (surfaces.length) filters.push(Prisma.sql`m.surface IN (${Prisma.join(surfaces)})`);
+      if (levels.length) filters.push(Prisma.sql`m.tourney_level IN (${Prisma.join(levels)})`);
+      if (rounds.length) filters.push(Prisma.sql`m.round IN (${Prisma.join(rounds)})`);
+      if (bestOf.length) filters.push(Prisma.sql`m.best_of IN (${Prisma.join(bestOf)})`);
 
-      const players = await prisma.player.findMany({
-        where: { id: { in: data.map((d) => d.winner_id) } },
-        select: { id: true, player: true, ioc: true },
-      });
-
-      const dataMap = Object.fromEntries(data.map((d) => [d.winner_id, d]));
-
-      let finalResult = players
-        .map((p) => {
-          const d = dataMap[p.id];
-          if (!d) return null;
-
-          let selectedAges: Record<string, number> = d.ages_json as any;
-
-          if (selectedSurfaces.length === 1) {
-            selectedAges = (d.ages_by_surface_json as any)?.[selectedSurfaces[0]] ?? {};
-          } else if (selectedLevels.length === 1) {
-            selectedAges = (d.ages_by_level_json as any)?.[selectedLevels[0]] ?? {};
-          } else if (selectedRounds.length === 1) {
-            selectedAges = (d.ages_by_round_json as any)?.[selectedRounds[0]] ?? {};
-          } else if (selectedBestOf.length === 1) {
-            selectedAges = (d.ages_by_best_of_json as any)?.[String(selectedBestOf[0])] ?? {};
-          }
-
-          const ageAtN = getAgeForNthWin(selectedAges, n);
-          if (ageAtN == null) return null; // 🔹 Escludi se età nulla
-
-          return {
-            id: p.id,
-            name: p.player,
-            ioc: p.ioc || "",
-            age_at_win: ageAtN,
-          };
-        })
-        .filter(Boolean) as { id: string; name: string; ioc: string; age_at_win: number }[];
-
-      // Ordina crescente per età
-      finalResult.sort((a, b) => a.age_at_win - b.age_at_win);
-
-      // Prendi i primi 100
-      finalResult = finalResult.slice(0, limit);
-
-      // Formatta età
-      const formattedResult = finalResult.map((p) => ({
-        ...p,
-        age_at_win: formatAge(p.age_at_win),
-      }));
-
-      // Attach slugs when available
-      const ids = formattedResult.map(p => String(p.id));
-      if (ids.length > 0) {
-        const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
-        const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
-        const withSlugs = formattedResult.map(p => ({ ...p, slug: slugMap.get(String(p.id)) ?? null }));
-
-        console.timeEnd("Use MV mv_wins_ages");
-        console.timeEnd("Total API");
-        return NextResponse.json(withSlugs);
-      }
-
-      console.timeEnd("Use MV mv_wins_ages");
-      console.timeEnd("Total API");
-      return NextResponse.json(formattedResult);
+      rows = await prisma.$queryRaw<Row[]>(Prisma.sql`
+        WITH ranked AS (
+          SELECT m.winner_id, m.winner_age,
+                 ROW_NUMBER() OVER (
+                   PARTITION BY m.winner_id
+                   ORDER BY m.winner_age ASC, m.tourney_date ASC NULLS LAST, m.match_num ASC NULLS LAST, m.id ASC
+                 ) AS rn
+          FROM "Match" m
+          WHERE ${Prisma.join(filters, ' AND ')}
+        )
+        SELECT r.winner_id AS id, COALESCE(p.player, '') AS name, COALESCE(p.ioc, '') AS ioc,
+               p.slug, r.winner_age::double precision AS age_at_win
+        FROM ranked r
+        JOIN "Player" p ON p.id = r.winner_id
+        WHERE r.rn = ${n}
+        ORDER BY r.winner_age ASC, name ASC
+        LIMIT ${limit}
+      `);
     }
 
-    // =========================================================================
-    // CASE 2: 2+ filtri → calcolo dinamico
-    // =========================================================================
-    console.time("Use dynamic filtered algorithm");
-
-    const where: any = {
-      status: true,
-      ...(selectedSurfaces.length > 0 && { surface: { in: selectedSurfaces } }),
-      ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),
-      ...(selectedRounds.length > 0 && { round: { in: selectedRounds } }),
-      ...(selectedBestOf.length > 0 && { best_of: { in: selectedBestOf } }),
-    };
-
-    const matches = await prisma.match.findMany({
-      where,
-      select: { winner_id: true, winner_age: true },
-    });
-
-    if (matches.length === 0) return NextResponse.json([]);
-
-    const map = new Map<string, number[]>();
-    for (const m of matches) {
-      if (!m.winner_id || m.winner_age == null) continue;
-      const age = Number(m.winner_age);
-      if (!map.has(m.winner_id)) map.set(m.winner_id, []);
-      map.get(m.winner_id)!.push(age);
-    }
-
-    let finalResult2: { id: string; name: string; ioc: string; age_at_win: number }[] = [];
-
-    for (const [id, ages] of map) {
-      ages.sort((a, b) => a - b);
-      const ageAtN = ages.length < n ? null : ages[n - 1];
-      if (ageAtN == null) continue; // 🔹 Escludi se età nulla
-      const player = await prisma.player.findUnique({
-        where: { id },
-        select: { id: true, player: true, ioc: true },
-      });
-      if (player) {
-        finalResult2.push({
-          id: player.id,
-          name: player.player,
-          ioc: player.ioc || "",
-          age_at_win: ageAtN,
-        });
-      }
-    }
-
-    // Ordina crescente
-    finalResult2.sort((a, b) => a.age_at_win - b.age_at_win);
-
-    // Prendi i primi 100
-    finalResult2 = finalResult2.slice(0, limit);
-
-    // Formatta età
-    const formattedResult2 = finalResult2.map((p) => ({
-      ...p,
-      age_at_win: formatAge(p.age_at_win),
-    }));
-
-    // Attach slugs when available
-    const ids2 = formattedResult2.map(p => String(p.id));
-    if (ids2.length > 0) {
-      const rows2 = await prisma.player.findMany({ where: { id: { in: ids2 } }, select: { id: true, slug: true } });
-      const slugMap2 = new Map(rows2.map(r => [r.id, r.slug] as [string, string | null]));
-      const withSlugs2 = formattedResult2.map(p => ({ ...p, slug: slugMap2.get(String(p.id)) ?? null }));
-
-      console.timeEnd("Use dynamic filtered algorithm");
-      console.timeEnd("Total API");
-
-      return NextResponse.json(withSlugs2);
-    }
-
-    console.timeEnd("Use dynamic filtered algorithm");
-    console.timeEnd("Total API");
-
-    return NextResponse.json(formattedResult2);
+    return NextResponse.json(rows.map(r => ({ ...r, id: String(r.id), age_at_win: formatAge(Number(r.age_at_win)) })));
   } catch (error) {
-    console.error("API Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.error('[GET /api/records/ageofnth/wins] Error:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

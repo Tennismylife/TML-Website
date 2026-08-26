@@ -1,97 +1,76 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-
-type PlayerInfo = { id?: string; name: string; ioc?: string };
-type Streak = PlayerInfo & { weeks: number; startDate: string; endDate: string };
+import { NextResponse } from 'next/server';
+import { Prisma } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 
 function formatDate(date: Date): string {
-  return date.toISOString().slice(0, 10); // YYYY-MM-DD
+  return date.toISOString().slice(0, 10);
 }
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const topParam = searchParams.get("top");
-
-    if (!topParam) {
-      return NextResponse.json({ error: "Top parameter is required" }, { status: 400 });
+    const top = Number(searchParams.get('top'));
+    if (!Number.isInteger(top) || top < 1) {
+      return NextResponse.json({ error: 'Invalid top parameter' }, { status: 400 });
     }
 
-    const top = Number(topParam);
-    if (isNaN(top) || top < 1) {
-      return NextResponse.json({ error: "Invalid top parameter" }, { status: 400 });
-    }
-
-    const allRankings = await prisma.ranking.findMany({
-      where: { rank: { lte: top } },
-      orderBy: [{ playerId: "asc" }, { rankingDateId: "asc" }],
-      select: {
-        playerId: true,
-        rankingDateId: true,
-        rankingDate: { select: { date: true } },
-        player: { select: { id: true, atpname: true, ioc: true } },
-      },
-    });
-
-    const result: Streak[] = [];
-
-    let currentPlayerId: string | null = null;
-    let currentPlayerInfo: PlayerInfo | null = null;
-    let streakStart: Date | null = null;
-    let streakEnd: Date | null = null;
-    let prevRankingDateId: number | null = null;
-    let currentStreak = 0;
-
-    const commitStreak = () => {
-      if (!currentPlayerId || !currentPlayerInfo || !streakStart || !streakEnd || currentStreak < 1) return;
-      result.push({
-        id: currentPlayerInfo.id,
-        name: currentPlayerInfo.name,
-        ioc: currentPlayerInfo.ioc,
-        weeks: currentStreak,
-        startDate: formatDate(streakStart),
-        endDate: formatDate(streakEnd),
-      });
+    type Row = {
+      id: string;
+      name: string;
+      ioc: string | null;
+      weeks: bigint;
+      start_date: Date;
+      end_date: Date;
     };
 
-    for (const r of allRankings) {
-      const currentDate = new Date(r.rankingDate.date);
+    const rows = await prisma.$queryRaw<Row[]>(Prisma.sql`
+      WITH filtered AS (
+        SELECT
+          r."playerId" AS player_id,
+          r."rankingDateId" AS ranking_date_id,
+          rd.date,
+          r."rankingDateId" -
+            (ROW_NUMBER() OVER (
+              PARTITION BY r."playerId"
+              ORDER BY r."rankingDateId"
+            ))::integer AS grp
+        FROM "Ranking" r
+        JOIN "RankingDate" rd ON rd.id = r."rankingDateId"
+        WHERE r.rank <= ${top}
+      ), streaks AS (
+        SELECT
+          player_id,
+          grp,
+          COUNT(*) AS weeks,
+          MIN(date) AS start_date,
+          MAX(date) AS end_date
+        FROM filtered
+        GROUP BY player_id, grp
+      )
 
-      if (r.playerId !== currentPlayerId) {
-        commitStreak();
-        currentPlayerId = r.playerId;
-        currentPlayerInfo = {
-          id: r.player?.id,
-          name: r.player?.atpname ?? r.playerId,
-          ioc: r.player?.ioc ?? undefined,
-        };
-        streakStart = currentDate;
-        streakEnd = currentDate;
-        prevRankingDateId = r.rankingDateId;
-        currentStreak = 1;
-        continue;
-      }
+      SELECT
+        s.player_id AS id,
+        COALESCE(p.atpname, s.player_id) AS name,
+        p.ioc,
+        s.weeks,
+        s.start_date,
+        s.end_date
+      FROM streaks s
+      LEFT JOIN "Player" p ON p.id = s.player_id
+      ORDER BY s.weeks DESC, s.end_date DESC, name ASC
+      LIMIT 100
+    `);
 
-      if (r.rankingDateId === (prevRankingDateId ?? 0) + 1) {
-        currentStreak += 1;
-        streakEnd = currentDate;
-      } else {
-        commitStreak();
-        currentStreak = 1;
-        streakStart = currentDate;
-        streakEnd = currentDate;
-      }
-
-      prevRankingDateId = r.rankingDateId;
-    }
-
-    commitStreak(); // commit finale
-
-    result.sort((a, b) => b.weeks - a.weeks);
-
-    return NextResponse.json(result.slice(0, 100));
+    return NextResponse.json(rows.map(r => ({
+      id: String(r.id),
+      name: r.name,
+      ioc: r.ioc ?? undefined,
+      weeks: Number(r.weeks),
+      startDate: formatDate(r.start_date),
+      endDate: formatDate(r.end_date),
+    })));
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

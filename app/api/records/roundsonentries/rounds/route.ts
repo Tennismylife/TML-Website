@@ -1,132 +1,104 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = globalThis.prisma ?? new PrismaClient();
-if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma;
+import { Prisma } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url);
-    const selectedSurfaces = url.searchParams.getAll('surface');
-    const selectedLevels = url.searchParams.getAll('level');
-    const targetRound = url.searchParams.get('round');
-    const limitParam = Math.max(1, Math.min(100, Number(url.searchParams.get('limit') ?? 100)));
-
-    if (!targetRound) {
-      return NextResponse.json({ error: 'Missing round parameter' }, { status: 400 });
-    }
-
-    // Filtri comuni
-    const baseFilters = {
-      ...(selectedSurfaces.length > 0 && { surface: { in: selectedSurfaces } }),
-      ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),
-    };
-
-    // Conteggio entries uniche player_id-event_id (una sola entry per event_id)
-    const uniqueEntries = await prisma.playerTournament.groupBy({
-      by: ['player_id', 'event_id'],
-      where: baseFilters,
-    });
-
-    // Defensive dedupe: in case DB returns duplicate pairs, count only unique (player,event)
-    const seen = new Set<string>();
-    const entriesCountMap = new Map<string, number>();
-    // optional debug map listing event ids per player
-    const entriesEventsMap = new Map<string, Set<string>>();
-    uniqueEntries.forEach(e => {
-      const pid = String((e as any).player_id);
-      const eid = String((e as any).event_id);
-      const key = `${pid}::${eid}`;
-      if (seen.has(key)) return;
-      seen.add(key);
-      entriesCountMap.set(pid, (entriesCountMap.get(pid) || 0) + 1);
-      if (!entriesEventsMap.has(pid)) entriesEventsMap.set(pid, new Set());
-      entriesEventsMap.get(pid)!.add(eid);
-    });
-
-    // Conteggio round raggiunto filtrato (eventi distinti)
-    // Raggruppiamo per player_id ed event_id per assicurarci di contare ciascun torneo
-    // una sola volta anche se ci sono più righe per lo stesso evento.
-    const roundPairs = await prisma.playerTournament.groupBy({
-      by: ['player_id', 'event_id'],
-      where: { ...baseFilters, round: targetRound },
-    });
-    const roundMap: Map<string, number> = new Map<string, number>();
-    // optional debug map listing event ids where the round was reached
-    const roundEventsMap = new Map<string, Set<string>>();
-    roundPairs.forEach(r => {
-      const pid = String(r.player_id);
-      const eid = String(r.event_id);
-      roundMap.set(pid, (roundMap.get(pid) || 0) + 1);
-      if (!roundEventsMap.has(pid)) roundEventsMap.set(pid, new Set());
-      roundEventsMap.get(pid)!.add(eid);
-    });
-
-    const playerIds: string[] = Array.from(
-      new Set<string>([...entriesCountMap.keys(), ...roundMap.keys()].map(String))
-    );
-
-    // Recupera info giocatori
-    const playersData = await prisma.player.findMany({
-      where: { id: { in: playerIds } },
-      select: { id: true, atpname: true, ioc: true },
-    });
-
-    type PlayerInfo = { name: string; ioc: string };
-    const playerInfoMap = new Map<string, PlayerInfo>(playersData.map(p => [
-      String(p.id),
-      { name: p.atpname || '(Unknown)', ioc: p.ioc || '' }
-    ]));
-
+    const surfaces = url.searchParams.getAll('surface').filter(Boolean);
+    const levels = url.searchParams.getAll('level').filter(Boolean);
+    const targetRound = String(url.searchParams.get('round') ?? '').toUpperCase();
+    const limitRaw = Number(url.searchParams.get('limit') ?? '100');
+    const limit = Number.isFinite(limitRaw) ? Math.min(100, Math.max(1, Math.floor(limitRaw))) : 100;
     const debugMode = url.searchParams.get('debug') === '1' || url.searchParams.get('debug') === 'true';
 
-    // Costruisci array finale
-    const allPlayers = playerIds.map(player_id => {
-      const entries: number = entriesCountMap.get(player_id) || 0;
-      const wins: number = roundMap.get(player_id) || 0;
-      const rawPercentage = entries > 0 ? Math.round((wins / entries) * 1000) / 10 : 0;
-      const percentage = Math.min(100, rawPercentage);
-      if (rawPercentage > 100) console.warn(`[roundsonentries] percentage > 100 for player ${player_id}: ${rawPercentage} (capped to 100)`);
-      const info = playerInfoMap.get(player_id) || { name: '(Unknown)', ioc: '' };
-      const base = { id: player_id, name: info.name, ioc: info.ioc, entries, wins, percentage } as any;
-      if (debugMode) {
-        base.entryEventIds = Array.from(entriesEventsMap.get(player_id) || []);
-        base.winEventIds = Array.from(roundEventsMap.get(player_id) || []);
-      }
-      return base;
-    });
+    if (!targetRound) return NextResponse.json({ error: 'Missing round parameter' }, { status: 400 });
 
-    // Ordina per percentuale, poi per wins, poi per entries
-    const result = allPlayers
-      .sort((a, b) => b.percentage - a.percentage || b.wins - a.wins || b.entries - a.entries)
-      .slice(0, limitParam);
+    const filters: Prisma.Sql[] = [];
+    if (surfaces.length) filters.push(Prisma.sql`pt.surface IN (${Prisma.join(surfaces)})`);
+    if (levels.length) filters.push(Prisma.sql`pt.tourney_level IN (${Prisma.join(levels)})`);
+    const whereSql = filters.length ? Prisma.sql`WHERE ${Prisma.join(filters, ' AND ')}` : Prisma.empty;
 
-    // Attach slugs when available
-    const ids = result.map(r => String(r.id)).filter(Boolean);
-    let finalResultWithSlugs = result;
-    if (ids.length > 0) {
-      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
-      const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
-      finalResultWithSlugs = result.map(r => ({ ...r, slug: slugMap.get(String(r.id)) ?? null }));
-    }
+    type Row = {
+      id: string; name: string; ioc: string; slug: string | null;
+      entries: bigint; wins: bigint; percentage: number;
+    };
+
+    const rows = await prisma.$queryRaw<Row[]>(Prisma.sql`
+      WITH agg AS (
+        SELECT
+          pt.player_id,
+          COUNT(*) AS entries,
+          COUNT(*) FILTER (WHERE UPPER(pt.round) = ${targetRound}) AS wins
+        FROM "PlayerTournament" pt
+        ${whereSql}
+        GROUP BY pt.player_id
+      )
+      SELECT
+        a.player_id AS id,
+        COALESCE(p.atpname, p.player, '(Unknown)') AS name,
+        COALESCE(p.ioc, '') AS ioc,
+        p.slug,
+        a.entries,
+        a.wins,
+        CASE WHEN a.entries > 0
+          THEN LEAST(100, (ROUND((a.wins::numeric / a.entries::numeric) * 1000) / 10)::double precision)
+          ELSE 0
+        END AS percentage
+      FROM agg a
+      LEFT JOIN "Player" p ON p.id = a.player_id
+      WHERE a.wins > 0
+      ORDER BY percentage DESC, a.wins DESC, a.entries DESC, name ASC
+      LIMIT ${limit}
+    `);
+
+    const finalRows = rows.map(r => ({
+      id: String(r.id),
+      name: r.name,
+      ioc: r.ioc,
+      slug: r.slug,
+      entries: Number(r.entries),
+      wins: Number(r.wins),
+      percentage: Number(r.percentage),
+    }));
 
     const payload: any = {
       targetRound,
-      FinalWins: finalResultWithSlugs,
+      FinalWins: finalRows,
       definition: `entries = unique tournaments played, wins = tournaments where player reached ${targetRound}, percentage = 100 × (wins / entries)`,
     };
-    if (debugMode) {
-      // attach map of events per player for debugging
-      payload.debug = {
-        entries: Object.fromEntries(Array.from(entriesEventsMap.entries()).map(([k, s]) => [k, Array.from(s)])),
-        wins: Object.fromEntries(Array.from(roundEventsMap.entries()).map(([k, s]) => [k, Array.from(s)])),
-      };
+
+    if (debugMode && finalRows.length) {
+      const ids = finalRows.map(r => r.id);
+      const debugFilters: Prisma.Sql[] = [Prisma.sql`pt.player_id IN (${Prisma.join(ids)})`];
+      if (surfaces.length) debugFilters.push(Prisma.sql`pt.surface IN (${Prisma.join(surfaces)})`);
+      if (levels.length) debugFilters.push(Prisma.sql`pt.tourney_level IN (${Prisma.join(levels)})`);
+      type DebugRow = { player_id: string; event_id: string; round: string };
+      const debugRows = await prisma.$queryRaw<DebugRow[]>(Prisma.sql`
+        SELECT pt.player_id, pt.event_id, pt.round
+        FROM "PlayerTournament" pt
+        WHERE ${Prisma.join(debugFilters, ' AND ')}
+      `);
+      const entries: Record<string, string[]> = {};
+      const wins: Record<string, string[]> = {};
+      for (const row of debugRows) {
+        const id = String(row.player_id);
+        (entries[id] ??= []).push(String(row.event_id));
+        if (String(row.round).toUpperCase() === targetRound) {
+          (wins[id] ??= []).push(String(row.event_id));
+        }
+      }
+      payload.debug = { entries, wins };
+      payload.FinalWins = finalRows.map(r => ({
+        ...r,
+        entryEventIds: entries[r.id] ?? [],
+        winEventIds: wins[r.id] ?? [],
+      }));
     }
 
     return NextResponse.json(payload);
-
   } catch (error) {
-    console.error('[GET /api/roundsonentries/rounds] Error:', error);
+    console.error('[GET /api/records/roundsonentries/rounds] Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

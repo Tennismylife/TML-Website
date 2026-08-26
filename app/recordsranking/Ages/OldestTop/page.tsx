@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from '@prisma/client';
 import ServerPagination from '@/components/ServerPagination';
 import Flag from '@/components/Flag';
 import Link from 'next/link';
@@ -75,11 +76,35 @@ export default async function OldestAtTopX({ searchParams }: { searchParams?: Pr
     });
     fromMV = true;
   } else {
-    // fallback: fetch ALL ranking entries for rank ≤ top (no take here — limit applied after per-player aggregation)
-    rowsData = await prisma.ranking.findMany({
-      where: { rank: { lte: top } },
-      select: { playerId: true, player: { select: { atpname: true, ioc: true, birthdate: true } }, rankingDate: { select: { date: true } } },
-    });
+    type OldestGroupedRow = {
+      player_id: string;
+      atpname: string | null;
+      ioc: string | null;
+      birthdate: Date;
+      last_date: Date;
+    };
+    const grouped = await prisma.$queryRaw<OldestGroupedRow[]>(Prisma.sql`
+      SELECT
+        r."playerId" AS player_id,
+        p.atpname,
+        p.ioc,
+        p.birthdate,
+        MAX(rd.date) AS last_date
+      FROM "Ranking" r
+      JOIN "RankingDate" rd ON rd.id = r."rankingDateId"
+      JOIN "Player" p ON p.id = r."playerId"
+      WHERE r.rank <= ${top}
+        AND p.birthdate IS NOT NULL
+        AND rd.date >= p.birthdate
+      GROUP BY r."playerId", p.atpname, p.ioc, p.birthdate
+      ORDER BY (MAX(rd.date) - p.birthdate) DESC, p.atpname ASC
+      LIMIT ${limit}
+    `);
+    rowsData = grouped.map(r => ({
+      playerId: r.player_id,
+      player: { atpname: r.atpname, ioc: r.ioc, birthdate: r.birthdate },
+      rankingDate: { date: r.last_date },
+    }));
   }
 
   let data: OldestTopItem[];

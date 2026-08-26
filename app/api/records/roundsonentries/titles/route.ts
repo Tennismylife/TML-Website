@@ -1,98 +1,76 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = globalThis.prisma ?? new PrismaClient();
-if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma;
+import { Prisma } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url);
-    const selectedSurfaces = url.searchParams.getAll('surface');
-    const selectedLevels = url.searchParams.getAll('level');
+    const selectedSurfaces = url.searchParams.getAll('surface').filter(Boolean);
+    const selectedLevels = url.searchParams.getAll('level').filter(Boolean);
     const limitParam = Math.max(1, Math.min(100, Number(url.searchParams.get('limit') ?? 100)));
 
-    // 1️⃣ Costruzione filtri dinamici
-    const filters: any = {};
-    if (selectedSurfaces.length) filters.surface = { in: selectedSurfaces };
-    if (selectedLevels.length) filters.tourney_level = { in: selectedLevels };
-
-    // 2️⃣ Recupero entries uniche per player
-    const entriesRaw = await prisma.playerTournament.findMany({
-      where: filters,
-      distinct: ['player_id', 'event_id'], // ogni coppia unica
-      select: { player_id: true },
-    });
-
-    const entriesMap = new Map<string, number>();
-    for (const e of entriesRaw) {
-      entriesMap.set(e.player_id, (entriesMap.get(e.player_id) || 0) + 1);
+    const filters: Prisma.Sql[] = [];
+    if (selectedSurfaces.length) {
+      filters.push(Prisma.sql`pt.surface IN (${Prisma.join(selectedSurfaces)})`);
     }
-
-    // 3️⃣ Recupero wins uniche per player
-    const winsRaw = await prisma.playerTournament.findMany({
-      where: { ...filters, round: 'W' },
-      distinct: ['player_id', 'event_id'], // ogni torneo vinto unico
-      select: { player_id: true },
-    });
-
-    const winsMap = new Map<string, number>();
-    for (const w of winsRaw) {
-      winsMap.set(w.player_id, (winsMap.get(w.player_id) || 0) + 1);
+    if (selectedLevels.length) {
+      filters.push(Prisma.sql`pt.tourney_level IN (${Prisma.join(selectedLevels)})`);
     }
+    const whereSql = filters.length ? Prisma.sql`WHERE ${Prisma.join(filters, ' AND ')}` : Prisma.empty;
 
-    // 4️⃣ Recupero info giocatori
-    const playerIds = Array.from(new Set([...entriesMap.keys(), ...winsMap.keys()]));
-    const playersData = await prisma.player.findMany({
-      where: { id: { in: playerIds } },
-      select: { id: true, atpname: true, ioc: true },
-    });
+    type Row = {
+      id: string;
+      name: string;
+      ioc: string;
+      slug: string | null;
+      entries: bigint;
+      wins: bigint;
+      percentage: number;
+    };
 
-    const playerInfoMap = new Map<string, { name: string; ioc: string }>(
-      playersData.map(p => [
-        p.id,
-        { name: p.atpname || '(Unknown)', ioc: p.ioc || '' }
-      ])
-    );
+    const rows = await prisma.$queryRaw<Row[]>(Prisma.sql`
+      WITH agg AS (
+        SELECT
+          pt.player_id,
+          COUNT(*) AS entries,
+          COUNT(*) FILTER (WHERE pt.round = 'W') AS wins
+        FROM "PlayerTournament" pt
+        ${whereSql}
+        GROUP BY pt.player_id
+      )
+      SELECT
+        a.player_id AS id,
+        COALESCE(p.atpname, p.player, '(Unknown)') AS name,
+        COALESCE(p.ioc, '') AS ioc,
+        p.slug,
+        a.entries,
+        a.wins,
+        CASE WHEN a.entries > 0
+          THEN ROUND((a.wins::numeric / a.entries::numeric) * 1000) / 10
+          ELSE 0
+        END::double precision AS percentage
+      FROM agg a
+      LEFT JOIN "Player" p ON p.id = a.player_id
+      ORDER BY percentage DESC, a.wins DESC, name ASC
+      LIMIT ${limitParam}
+    `);
 
-    // 5️⃣ Costruzione array finale
-    const allPlayers = Array.from(entriesMap.entries()).map(([player_id, entries]) => {
-      const wins = winsMap.get(player_id) || 0;
-      const percentage = entries > 0 ? Math.round((wins / entries) * 1000) / 10 : 0;
-      const info = playerInfoMap.get(player_id) ?? { name: '(Unknown)', ioc: '' };
-      return {
-        id: player_id,
-        name: info.name,
-        ioc: info.ioc,
-        entries,
-        wins,
-        percentage,
-      };
-    });
-
-    // 6️⃣ Ordinamento top N
-    const result = allPlayers
-      .sort((a, b) => b.percentage - a.percentage || b.wins - a.wins)
-      .slice(0, limitParam);
-
-    // Attach slugs when available
-    const ids = result.map(r => String(r.id)).filter(Boolean);
-    let finalResultWithSlugs = result;
-    if (ids.length > 0) {
-      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
-      const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
-      finalResultWithSlugs = result.map(r => ({ ...r, slug: slugMap.get(String(r.id)) ?? null }));
-    }
+    const result = rows.map(r => ({
+      id: String(r.id),
+      name: r.name,
+      ioc: r.ioc,
+      slug: r.slug,
+      entries: Number(r.entries),
+      wins: Number(r.wins),
+      percentage: Number(r.percentage),
+    }));
 
     return NextResponse.json({
-      FinalWins: finalResultWithSlugs,
+      FinalWins: result,
       definition: 'entries = unique tournaments played, wins = tournaments won, percentage = (wins / entries) * 100',
     });
-
   } catch (error) {
-    console.error('[GET /api/final-wins] Error:', error);
-    return NextResponse.json(
-      { error: process.env.NODE_ENV !== 'production' ? error.message : 'Internal Server Error' },
-      { status: 500 }
-    );
+    console.error('[GET /api/records/roundsonentries/titles] Error:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

@@ -1,97 +1,68 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
-
-interface Player {
-  id: string;
-  name: string;
-  ioc: string;
-  totalSeasons: number;
-  seasonsList: string[];
-}
+import { Prisma } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url);
-    const selectedSurfaces = url.searchParams.getAll('surface');
-    const selectedLevels = url.searchParams.getAll('level');
-    const selectedRound = url.searchParams.get('round');
-    const minWinsPerSeason = parseInt(url.searchParams.get('minWinsPerSeason') || '1', 10);
-    const bestOf = url.searchParams.get('best_of');
-    const limitParam = Number(url.searchParams.get('limit') || '100');
-    const limit = Math.min(100, Math.max(1, Number.isFinite(limitParam) ? limitParam : 100));
+    const surfaces = url.searchParams.getAll('surface').filter(Boolean);
+    const levels = url.searchParams.getAll('level').filter(Boolean);
+    const round = url.searchParams.get('round');
+    const minWins = Math.max(1, Number.parseInt(url.searchParams.get('minWinsPerSeason') || '1', 10) || 1);
+    const bestOfRaw = url.searchParams.get('best_of');
+    const bestOf = bestOfRaw ? Number(bestOfRaw) : null;
+    const limitRaw = Number(url.searchParams.get('limit') || '100');
+    const limit = Math.min(100, Math.max(1, Number.isFinite(limitRaw) ? Math.floor(limitRaw) : 100));
 
-    // --- Fetch matches where there is a winner ---
-    const matches = await prisma.match.findMany({
-      where: {
-        winner_id: { not: null },
-        status: true,
-        ...(selectedSurfaces.length > 0 && { surface: { in: selectedSurfaces } }),
-        ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),
-        ...(selectedRound ? { round: selectedRound } : {}),
-        ...(bestOf ? { best_of: Number(bestOf) } : {}),
-      },
-      select: {
-        winner_id: true,
-        winner_name: true,
-        winner_ioc: true,
-        year: true,
-      },
+    const filters: Prisma.Sql[] = [Prisma.sql`m.winner_id IS NOT NULL`, Prisma.sql`m.year IS NOT NULL`, Prisma.sql`m.status = true`];
+    if (surfaces.length) filters.push(Prisma.sql`m.surface IN (${Prisma.join(surfaces)})`);
+    if (levels.length) filters.push(Prisma.sql`m.tourney_level IN (${Prisma.join(levels)})`);
+    if (round) filters.push(Prisma.sql`m.round = ${round}`);
+    if (bestOf !== null && Number.isFinite(bestOf)) filters.push(Prisma.sql`m.best_of = ${bestOf}`);
+
+    type Row = {
+      id: string;
+      name: string;
+      ioc: string;
+      slug: string | null;
+      total_seasons: bigint;
+      seasons_list: number[];
+    };
+
+    const rows = await prisma.$queryRaw<Row[]>(Prisma.sql`
+      WITH season_counts AS (
+        SELECT m.winner_id, m.year, COUNT(*) AS wins
+        FROM "Match" m
+        WHERE ${Prisma.join(filters, ' AND ')}
+        GROUP BY m.winner_id, m.year
+        HAVING COUNT(*) >= ${minWins}
+      )
+      SELECT
+        sc.winner_id AS id,
+        COALESCE(p.atpname, p.player, '') AS name,
+        COALESCE(p.ioc, '') AS ioc,
+        p.slug,
+        COUNT(*) AS total_seasons,
+        ARRAY_AGG(sc.year ORDER BY sc.year) AS seasons_list
+      FROM season_counts sc
+      LEFT JOIN "Player" p ON p.id = sc.winner_id
+      GROUP BY sc.winner_id, p.atpname, p.player, p.ioc, p.slug
+      ORDER BY total_seasons DESC, name ASC
+      LIMIT ${limit}
+    `);
+
+    return NextResponse.json({
+      players: rows.map(r => ({
+        id: String(r.id),
+        name: r.name,
+        ioc: r.ioc,
+        slug: r.slug,
+        totalSeasons: Number(r.total_seasons),
+        seasonsList: (r.seasons_list || []).map(String),
+      })),
     });
-
-    // --- Compute wins per season per player ---
-    const seasonsMap = new Map<
-      string,
-      { name: string; ioc: string; seasonsCount: Record<string, number> }
-    >();
-
-    matches.forEach(m => {
-      if (m.winner_id && m.year) {
-        if (!seasonsMap.has(m.winner_id)) {
-          seasonsMap.set(m.winner_id, { name: m.winner_name ?? '', ioc: m.winner_ioc ?? '', seasonsCount: {} });
-        }
-        const player = seasonsMap.get(m.winner_id)!;
-        player.seasonsCount[m.year] = (player.seasonsCount[m.year] || 0) + 1;
-      }
-    });
-
-    const players: Player[] = [];
-    for (const [id, info] of seasonsMap.entries()) {
-      const seasonsList = Object.entries(info.seasonsCount)
-        .filter(([_, count]) => count >= minWinsPerSeason)
-        .map(([year]) => year)
-        .sort((a, b) => parseInt(a) - parseInt(b));
-
-      if (seasonsList.length > 0) {
-        players.push({
-          id,
-          name: info.name,
-          ioc: info.ioc,
-          totalSeasons: seasonsList.length,
-          seasonsList,
-        });
-      }
-    }
-
-    // Sort players by totalSeasons descending, then name ascending
-    players.sort((a, b) => b.totalSeasons - a.totalSeasons || a.name.localeCompare(b.name));
-
-    // Attach slugs when available
-    const ids = players.map(p => String(p.id));
-    if (ids.length > 0) {
-      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
-      const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
-      const enriched = players.map(p => ({ ...p, slug: slugMap.get(String(p.id)) ?? null }));
-      return NextResponse.json({ players: enriched.slice(0, limit) });
-    }
-
-    return NextResponse.json({ players: players.slice(0, limit) });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
+    console.error('[GET /api/records/counterseasons/wins] Error:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

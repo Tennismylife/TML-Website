@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Flag from '@/components/Flag';
 import Link from 'next/link';
 import { prisma } from "@/lib/prisma";
+import { Prisma } from '@prisma/client';
 import RecordsTopControls from '../../Top/RecordsTopControls';
 import ServerPagination from '@/components/ServerPagination';
 import { notFound } from 'next/navigation';
@@ -74,7 +75,45 @@ export default async function TopXTimespan({ searchParams }: { searchParams?: Pr
     if (targetRankingDateIds.length === 0) return (<section className="mb-8"><div className="text-gray-400 py-4 text-center">No data available.</div></section>);
   }
 
-  const rows = await prisma.ranking.findMany({ where: { rank: { lte: top }, ...(targetRankingDateIds ? { rankingDateId: { in: targetRankingDateIds } } : (Object.keys(dateBounds).length ? { rankingDate: { date: dateBounds } } : {})) }, select: { playerId: true, player: { select: { atpname: true, ioc: true } }, rankingDate: { select: { date: true } } } });
+  const filters: Prisma.Sql[] = [Prisma.sql`r.rank <= ${top}`];
+  if (targetRankingDateIds) {
+    filters.push(Prisma.sql`r."rankingDateId" IN (${Prisma.join(targetRankingDateIds)})`);
+  } else {
+    if (dateBounds.gte) filters.push(Prisma.sql`rd.date >= ${dateBounds.gte}`);
+    if (dateBounds.lt) filters.push(Prisma.sql`rd.date < ${dateBounds.lt}`);
+  }
+
+  type GroupedRankingRow = {
+    player_id: string;
+    atpname: string | null;
+    ioc: string | null;
+    first_date: Date;
+    last_date: Date;
+  };
+
+  const groupedRows = await prisma.$queryRaw<GroupedRankingRow[]>(Prisma.sql`
+    SELECT
+      r."playerId" AS player_id,
+      p.atpname,
+      p.ioc,
+      MIN(rd.date) AS first_date,
+      MAX(rd.date) AS last_date
+    FROM "Ranking" r
+    JOIN "RankingDate" rd ON rd.id = r."rankingDateId"
+    LEFT JOIN "Player" p ON p.id = r."playerId"
+    WHERE ${Prisma.join(filters, ' AND ')}
+      AND p.atpname IS NOT NULL
+    GROUP BY r."playerId", p.atpname, p.ioc
+    ORDER BY (MAX(rd.date) - MIN(rd.date)) DESC, MAX(rd.date) DESC, p.atpname ASC
+    LIMIT ${limit}
+  `);
+
+  const rows = groupedRows.flatMap(r => {
+    const base = { playerId: r.player_id, player: { atpname: r.atpname, ioc: r.ioc } };
+    return r.first_date.getTime() === r.last_date.getTime()
+      ? [{ ...base, rankingDate: { date: r.first_date } }]
+      : [{ ...base, rankingDate: { date: r.first_date } }, { ...base, rankingDate: { date: r.last_date } }];
+  });
 
   if (rows.length === 0) return (<section className="mb-8"><div className="text-gray-400 py-4 text-center">No data available.</div></section>);
 

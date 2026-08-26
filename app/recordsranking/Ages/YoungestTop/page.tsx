@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import Flag from '@/components/Flag';
 import Link from 'next/link';
 import DropdownNavSelect from '../../../../components/DropdownNavSelect';
@@ -78,11 +79,21 @@ export default async function YoungestAtTopX({ searchParams }: { searchParams?: 
     });
     fromMV = true;
   } else {
-    // fallback: fetch ALL ranking entries for rank ≤ top (no take here — limit applied after per-player aggregation)
-    rowsData = await prisma.ranking.findMany({
-      where: { rank: { lte: top } },
-      select: { playerId: true, player: { select: { atpname: true, ioc: true, birthdate: true } }, rankingDate: { select: { date: true } } }
-    });
+    rowsData = await prisma.$queryRaw<any[]>(Prisma.sql`
+      WITH best AS (
+        SELECT DISTINCT ON (r."playerId")
+          r."playerId" AS player_id, p.atpname, p.ioc, p.birthdate, rd.date,
+          FLOOR(EXTRACT(EPOCH FROM (rd.date - p.birthdate)) / 86400)::integer AS age_days
+        FROM "Ranking" r
+        JOIN "RankingDate" rd ON rd.id = r."rankingDateId"
+        JOIN "Player" p ON p.id = r."playerId"
+        WHERE r.rank <= ${top} AND p.birthdate IS NOT NULL AND rd.date >= p.birthdate
+        ORDER BY r."playerId", age_days ASC, rd.date ASC
+      )
+      SELECT player_id, atpname, ioc, birthdate, date, age_days
+      FROM best ORDER BY age_days ASC, atpname ASC NULLS LAST LIMIT ${limit}
+    `);
+    fromMV = true;
   }
 
   let data: YoungestTopItem[];

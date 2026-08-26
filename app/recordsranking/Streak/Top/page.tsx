@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 import Flag from '@/components/Flag';
 import DropdownNavSelect from '@/components/DropdownNavSelect';
 import ServerPagination from '@/components/ServerPagination';
@@ -36,42 +37,52 @@ export default async function StreakTop({ searchParams }: { searchParams?: Promi
   const page = Number((sp.page as string) ?? 1);
   if (!Number.isInteger(page) || page < 1) notFound();
 
-  // replicate API logic server-side
-  const allRankings = await prisma.ranking.findMany({
-    where: { rank: { lte: top } },
-    orderBy: [{ playerId: 'asc' }, { rankingDateId: 'asc' }],
-    select: { playerId: true, rankingDateId: true, rankingDate: { select: { date: true } }, player: { select: { id: true, atpname: true, ioc: true } } },
-  });
-
-  let currentPlayerId: string | null = null;
-  let currentPlayerInfo: { id?: string; name: string; ioc?: string } | null = null;
-  let streakStart: Date | null = null;
-  let streakEnd: Date | null = null;
-  let prevRankingDateId: number | null = null;
-  let currentStreak = 0;
-  const result: Array<{id?:string; name:string; ioc?:string; weeks:number; startDate?:string; endDate?:string}> = [];
-
-  const commitStreak = () => {
-    if (!currentPlayerId || !currentPlayerInfo || !streakStart || !streakEnd || currentStreak < 1) return;
-    result.push({ id: currentPlayerInfo.id, name: currentPlayerInfo.name, ioc: currentPlayerInfo.ioc, weeks: currentStreak, startDate: formatDate(streakStart), endDate: formatDate(streakEnd) });
+  // Compute consecutive ranking streaks in PostgreSQL; never materialize the full ranking history in Node.
+  type StreakRow = {
+    id: string;
+    name: string;
+    ioc: string | null;
+    weeks: bigint;
+    start_date: Date;
+    end_date: Date;
   };
 
-  for (const r of allRankings) {
-    const currentDate = new Date(r.rankingDate.date);
-    if (r.playerId !== currentPlayerId) {
-      commitStreak();
-      currentPlayerId = r.playerId;
-      currentPlayerInfo = { id: r.player?.id, name: r.player?.atpname ?? r.playerId, ioc: r.player?.ioc ?? undefined };
-      streakStart = currentDate; streakEnd = currentDate; prevRankingDateId = r.rankingDateId; currentStreak = 1; continue;
-    }
-    if (r.rankingDateId === (prevRankingDateId ?? 0) + 1) { currentStreak += 1; streakEnd = currentDate; }
-    else { commitStreak(); currentStreak = 1; streakStart = currentDate; streakEnd = currentDate; }
-    prevRankingDateId = r.rankingDateId;
-  }
-  commitStreak();
+  const streakRows = await prisma.$queryRaw<StreakRow[]>(Prisma.sql`
+    WITH filtered AS (
+      SELECT
+        r."playerId" AS player_id,
+        r."rankingDateId" AS ranking_date_id,
+        rd.date,
+        r."rankingDateId" - (ROW_NUMBER() OVER (PARTITION BY r."playerId" ORDER BY r."rankingDateId"))::integer AS grp
+      FROM "Ranking" r
+      JOIN "RankingDate" rd ON rd.id = r."rankingDateId"
+      WHERE r.rank <= ${top}
+    ), streaks AS (
+      SELECT player_id, grp, COUNT(*) AS weeks, MIN(date) AS start_date, MAX(date) AS end_date
+      FROM filtered
+      GROUP BY player_id, grp
+    )
+    SELECT
+      s.player_id AS id,
+      COALESCE(p.atpname, s.player_id) AS name,
+      p.ioc,
+      s.weeks,
+      s.start_date,
+      s.end_date
+    FROM streaks s
+    LEFT JOIN "Player" p ON p.id = s.player_id
+    ORDER BY s.weeks DESC, s.end_date DESC, name ASC
+    LIMIT 100
+  `);
 
-  result.sort((a,b)=> b.weeks - a.weeks);
-  const cappedResult = result.slice(0, 100);
+  const cappedResult = streakRows.map(r => ({
+    id: String(r.id),
+    name: r.name,
+    ioc: r.ioc ?? undefined,
+    weeks: Number(r.weeks),
+    startDate: formatDate(r.start_date),
+    endDate: formatDate(r.end_date),
+  }));
 
   // Enrich with slugs for JSON-LD
   const slugIds = cappedResult.slice(0, 10).map(r => r.id).filter(Boolean) as string[];

@@ -1,112 +1,88 @@
-// app/api/recordsranking/youngest-top/route.ts
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextResponse } from 'next/server';
+import { Prisma } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 
 function diffYMD(birth: Date, ref: Date) {
   let y = ref.getUTCFullYear() - birth.getUTCFullYear();
   let m = ref.getUTCMonth() - birth.getUTCMonth();
   let d = ref.getUTCDate() - birth.getUTCDate();
   if (d < 0) {
-    const prevMonth = new Date(Date.UTC(ref.getUTCFullYear(), ref.getUTCMonth(), 0));
-    d += prevMonth.getUTCDate();
+    d += new Date(Date.UTC(ref.getUTCFullYear(), ref.getUTCMonth(), 0)).getUTCDate();
     m -= 1;
   }
-  if (m < 0) {
-    m += 12;
-    y -= 1;
-  }
+  if (m < 0) { m += 12; y -= 1; }
   return { y, m, d };
 }
+
+type Row = {
+  player_id: string;
+  atpname: string | null;
+  ioc: string | null;
+  birthdate: Date;
+  date: Date;
+  age_days: number;
+};
 
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
-    const topParam = url.searchParams.get("top");
+    const topParam = url.searchParams.get('top');
     const top = topParam === null ? 100 : Number(topParam);
-    // compute ranking using the requested top value
-    const effectiveTop = top;
-    const limit = 100;
-
-    if (topParam !== null && (!Number.isInteger(top) || top < 1)) {
+    if (!Number.isInteger(top) || top < 1) {
       return NextResponse.json({ error: "Param 'top' non valido" }, { status: 400 });
     }
 
-    // fetch rows either from materialized view or raw table
-    let rows: any[];
-    let fromMV = false;
-    const clientAny: any = prisma;
-    if (top === 100 && clientAny.mv_ages_youngesttop_100) {
-      rows = await clientAny.mv_ages_youngesttop_100.findMany({
+    let rows: Row[];
+    if (top === 100) {
+      rows = await prisma.mv_ages_youngesttop_100.findMany({
         orderBy: { age_days: 'asc' },
-        take: limit,
+        take: 100,
       });
-      fromMV = true;
-    } else if (top === 50 && clientAny.mv_ages_youngesttop_50) {
-      rows = await clientAny.mv_ages_youngesttop_50.findMany({
+    } else if (top === 50) {
+      rows = await prisma.mv_ages_youngesttop_50.findMany({
         orderBy: { age_days: 'asc' },
-        take: limit,
+        take: 100,
       });
-      fromMV = true;
     } else {
-      // no take — limit is applied after per-player aggregation
-      rows = await prisma.ranking.findMany({
-        where: { rank: { lte: top } },
-        select: {
-          playerId: true,
-          player: { select: { atpname: true, ioc: true, birthdate: true } },
-          rankingDate: { select: { date: true } },
-        },
-      });
+      rows = await prisma.$queryRaw<Row[]>(Prisma.sql`
+        WITH best AS (
+          SELECT DISTINCT ON (r."playerId")
+            r."playerId" AS player_id,
+            p.atpname,
+            p.ioc,
+            p.birthdate,
+            rd.date,
+            FLOOR(EXTRACT(EPOCH FROM (rd.date - p.birthdate)) / 86400)::integer AS age_days
+          FROM "Ranking" r
+          JOIN "RankingDate" rd ON rd.id = r."rankingDateId"
+          JOIN "Player" p ON p.id = r."playerId"
+          WHERE r.rank <= ${top}
+            AND p.birthdate IS NOT NULL
+            AND rd.date >= p.birthdate
+          ORDER BY r."playerId", age_days ASC, rd.date ASC
+        )
+        SELECT player_id, atpname, ioc, birthdate, date, age_days
+        FROM best
+        ORDER BY age_days ASC, atpname ASC NULLS LAST
+        LIMIT 100
+      `);
     }
 
-    let data: any[];
-
-    if (fromMV) {
-      // MV rows are flat: { player_id, rank, atpname, ioc, birthdate, date, age_days }
-      data = rows.map((r: any) => {
-        const birth = r.birthdate instanceof Date ? r.birthdate : new Date(r.birthdate);
-        const ref   = r.date     instanceof Date ? r.date     : new Date(r.date);
-        const { y, m, d } = diffYMD(birth, ref);
-        return {
-          id:       String(r.player_id),
-          name:     r.atpname ?? '',
-          ioc:      r.ioc ?? null,
-          ageDays:  Number(r.age_days),
-          ageLabel: `${y}y ${m}m ${d}d`,
-          date:     ref.toISOString().slice(0, 10),
-        };
-      }).slice(0, limit);
-    } else {
-      // build best-per-player from raw ranking rows
-      const bestByPlayer = new Map<
-        string,
-        { name: string; ioc: string | null; date: Date; birth: Date; ageDays: number }
-      >();
-      for (const r of rows) {
-        if (!r.player || r.playerId == null) continue;
-        const id = String(r.playerId);
-        const birth = r.player.birthdate;
-        if (!birth) continue;
-        const date = r.rankingDate.date;
-        if (date < birth) continue;
-        const ageDays = Math.floor((date.getTime() - birth.getTime()) / (1000 * 60 * 60 * 24));
-        const prev = bestByPlayer.get(id);
-        if (!prev || ageDays < prev.ageDays) {
-          bestByPlayer.set(id, { name: r.player.atpname ?? '', ioc: r.player.ioc, date, birth, ageDays });
-        }
-      }
-      data = Array.from(bestByPlayer.entries())
-        .map(([id, v]) => {
-          const { y, m, d } = diffYMD(v.birth, v.date);
-          return { id, name: v.name, ioc: v.ioc, ageDays: v.ageDays, ageLabel: `${y}y ${m}m ${d}d`, date: v.date.toISOString().slice(0, 10) };
-        })
-        .sort((a, b) => a.ageDays - b.ageDays)
-        .slice(0, limit);
-    }
-
-    return NextResponse.json(data);
+    return NextResponse.json(rows.map(r => {
+      const birth = r.birthdate instanceof Date ? r.birthdate : new Date(r.birthdate);
+      const date = r.date instanceof Date ? r.date : new Date(r.date);
+      const { y, m, d } = diffYMD(birth, date);
+      return {
+        id: String(r.player_id),
+        name: r.atpname ?? '',
+        ioc: r.ioc ?? null,
+        ageDays: Number(r.age_days),
+        ageLabel: `${y}y ${m}m ${d}d`,
+        date: date.toISOString().slice(0, 10),
+      };
+    }));
   } catch (error) {
-    console.error("Error fetching youngest at Top X:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.error('Error fetching youngest at Top X:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
