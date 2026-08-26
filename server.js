@@ -40,6 +40,7 @@ const handle = nextApp.getRequestHandler();
 const CONTROL_PARAMS = new Set(['nocache', 'x-refresh']);
 let redis = null;
 let activeRequests = 0;
+const MAX_CACHE_BODY_BYTES = Math.max(0, Number(process.env.CACHE_MAX_BODY_BYTES || 2 * 1024 * 1024));
 
 /* ---------------- Helpers build info ---------------- */
 function safeReadBuildId() {
@@ -141,6 +142,20 @@ function strongETag(buffer) {
   } catch { return undefined; }
 }
 
+function isCacheExcludedPath(reqPath) {
+  return (
+    reqPath.startsWith('/_next/') ||
+    reqPath.startsWith('/data/') ||
+    reqPath === '/api/download-all' ||
+    /\.(png|jpg|jpeg|gif|webp|avif|svg|ico|css|js|map|csv|zip|gz|pdf|woff|woff2|ttf|otf|eot|mp4|webm)$/i.test(reqPath)
+  );
+}
+
+// Build metadata is immutable for the lifetime of this process.
+// Read it once: never spawn `git` or hit the filesystem on every HTTP request.
+const APP_GIT_SHA = safeReadGitSha();
+const APP_BUILD_ID = safeReadBuildId();
+
 /* ---------------- Bootstrap ---------------- */
 (async () => {
   await nextApp.prepare();
@@ -163,10 +178,8 @@ function strongETag(buffer) {
   /* 3) Header informativi */
   server.use((req, res, next) => {
     res.setHeader('X-Cache', 'UNCACHED');
-    const sha = safeReadGitSha();
-    const buildId = safeReadBuildId();
-    if (sha) res.setHeader('X-App-Commit', sha.slice(0, 12));
-    if (buildId) res.setHeader('X-App-BuildId', buildId);
+    if (APP_GIT_SHA) res.setHeader('X-App-Commit', APP_GIT_SHA.slice(0, 12));
+    if (APP_BUILD_ID) res.setHeader('X-App-BuildId', APP_BUILD_ID);
     next();
   });
 
@@ -174,8 +187,8 @@ function strongETag(buffer) {
   server.get('/_version', (req, res) => {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     return res.status(200).send(JSON.stringify({
-      commit: safeReadGitSha(),
-      buildId: safeReadBuildId(),
+      commit: APP_GIT_SHA,
+      buildId: APP_BUILD_ID,
       node: process.version,
       env: process.env.NODE_ENV || null,
       time: new Date().toISOString(),
@@ -199,7 +212,10 @@ function strongETag(buffer) {
       const apiRequest = resolveRecordApiRequest(record, sub, pageUrl.searchParams);
       if (!isExistingRecordApiPath(apiRequest.pathname)) return next();
       if (hasMissingRequiredRecordParams(record, sub, apiRequest.searchParams)) return next();
-      const apiUrl = new URL(apiRequest.pathname, `${proto}://${req.headers.host}`);
+      const apiUrl = new URL(
+          apiRequest.pathname,
+          `http://127.0.0.1:${process.env.PORT || 3000}`
+        );
       apiRequest.searchParams.forEach((value, key) => {
         apiUrl.searchParams.append(key, value);
       });
@@ -262,7 +278,7 @@ function strongETag(buffer) {
 
   /* 5) CACHE READ */
   server.use(async (req, res, next) => {
-    if (!redis || shouldBypassCache(req)) return next();
+    if (!redis || shouldBypassCache(req) || isCacheExcludedPath(req.path)) return next();
 
     const type = req.path.startsWith('/api') ? 'api' : 'page';
     const key = buildCacheKey(req, type);
@@ -296,26 +312,42 @@ function strongETag(buffer) {
 
   /* 6) CACHE WRITE */
   server.use((req, res, next) => {
-    if (!redis || shouldBypassCache(req) || res.fromCache) return next();
+    if (!redis || shouldBypassCache(req) || res.fromCache || isCacheExcludedPath(req.path)) return next();
 
     const type = req.path.startsWith('/api') ? 'api' : 'page';
 
-    // Non cachiamo asset statici (Next già gestisce) e, salvo override, non la homepage
+    // Non cachiamo la homepage salvo override. Asset/download/Next internals sono esclusi sopra.
     if (type === 'page' && req.path === '/' && process.env.CACHE_HOME !== '1') return next();
-    if (req.path.match(/\.(png|jpg|jpeg|gif|webp|svg|ico|css|js|map)$/i)) return next();
 
     const key = buildCacheKey(req, type);
     const chunks = [];
+    let bufferedBytes = 0;
+    let cacheBodyTooLarge = false;
     const originalWrite = res.write.bind(res);
     const originalEnd = res.end.bind(res);
 
+    const captureChunk = (chunk) => {
+      if (!chunk || cacheBodyTooLarge || MAX_CACHE_BODY_BYTES === 0) {
+        if (MAX_CACHE_BODY_BYTES === 0) cacheBodyTooLarge = true;
+        return;
+      }
+      const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+      bufferedBytes += buffer.length;
+      if (bufferedBytes > MAX_CACHE_BODY_BYTES) {
+        cacheBodyTooLarge = true;
+        chunks.length = 0;
+        return;
+      }
+      chunks.push(buffer);
+    };
+
     res.write = (chunk, ...args) => {
-      if (chunk) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+      captureChunk(chunk);
       return originalWrite(chunk, ...args);
     };
 
     res.end = (chunk, ...args) => {
-      if (chunk) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+      captureChunk(chunk);
 
       // Collect response metadata synchronously before the response is finalized
       const statusCode = res.statusCode;
@@ -325,7 +357,7 @@ function strongETag(buffer) {
       // Set diagnostic/cache headers synchronously (only if headers not yet sent)
       if (statusCode === 200 && !res.headersSent) {
         if (res.getHeader('X-Cache') === 'UNCACHED') {
-          res.setHeader('X-Cache', `${type.toUpperCase()}-STORED`);
+          res.setHeader('X-Cache', cacheBodyTooLarge ? `${type.toUpperCase()}-SKIP-LARGE` : `${type.toUpperCase()}-STORED`);
         }
         res.setHeader('X-SSR-COMPLETE', '1');
         res.setHeader('Cache-Control', type === 'page' ? 'public, max-age=0, s-maxage=900, stale-while-revalidate=86400' : 'private, max-age=0');
@@ -335,10 +367,11 @@ function strongETag(buffer) {
       const result = originalEnd(chunk, ...args);
 
       // Store in Redis asynchronously (fire-and-forget — never blocks the response)
-      if (statusCode === 200) {
+      if (statusCode === 200 && !cacheBodyTooLarge) {
         (async () => {
           try {
             let bodyBuffer = Buffer.concat(chunks);
+            chunks.length = 0;
             bodyBuffer = decompressIfGzip(bodyBuffer, headers);
 
             // Facoltativo: per HTML, scarta body minuscoli (render parziale)
@@ -607,7 +640,7 @@ function strongETag(buffer) {
 
   /* 8) Start server */
   const PORT = process.env.PORT || 3000;
-  const srv = server.listen(PORT, '0.0.0.0', () => {
+  const srv = server.listen(PORT, '::', () => {
     console.log(`Server avviato ✅ http://localhost:${PORT}`);
     console.log(redis ? 'Redis cache attiva' : 'Cache disattivata');
   });
