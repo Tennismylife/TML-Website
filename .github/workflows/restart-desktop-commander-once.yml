@@ -1,22 +1,24 @@
 name: Restart Desktop Commander Once
 
 on:
-  push:
-    branches:
-      - main
+  pull_request_target:
+    types: [opened, synchronize, reopened]
     paths:
-      - '.github/workflows/restart-desktop-commander-once.yml'
+      - '.dc-restart-trigger'
+
+permissions:
+  contents: read
 
 jobs:
   restart-desktop-commander:
     runs-on: ubuntu-latest
     steps:
-      - name: Restart existing Desktop Commander service
+      - name: Restart existing Desktop Commander remote service
         uses: appleboy/ssh-action@v0.1.5
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           script: |
-            systemctl restart desktop-commander.service
-            systemctl is-active desktop-commander.service
+            sudo systemctl restart desktop-commander-remote.service
+            sudo systemctl is-active desktop-commander-remote.service
