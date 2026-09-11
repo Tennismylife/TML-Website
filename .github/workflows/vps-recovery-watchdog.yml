@@ -23,31 +23,30 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      WATCHDOG_ARMED: ${{ secrets.WATCHDOG_ARMED }}
-      WATCHDOG_HOST: ${{ secrets.WATCHDOG_HOST }}
-      WATCHDOG_PORT: ${{ secrets.WATCHDOG_PORT }}
+      WATCHDOG_ARMED: 'false'
+      WATCHDOG_HOST: '82.165.11.122'
+      WATCHDOG_PORT: '2222'
       IONOS_USER: ${{ secrets.IONOS_USER }}
       IONOS_PASSWORD: ${{ secrets.IONOS_PASSWORD }}
       IONOS_TOTP_SECRET: ${{ secrets.IONOS_TOTP_SECRET }}
-      IONOS_SERVER_MATCH: ${{ secrets.IONOS_SERVER_MATCH }}
+      IONOS_SERVER_MATCH: '82.165.11.122'
     steps:
       - name: Validate configuration
         id: config
         shell: bash
         run: |
-          armed="$(printf '%s' "${WATCHDOG_ARMED:-}" | tr '[:upper:]' '[:lower:]')"
           missing=0
-          for v in WATCHDOG_HOST WATCHDOG_PORT IONOS_USER IONOS_PASSWORD; do
+          for v in IONOS_USER IONOS_PASSWORD; do
             if [ -z "${!v:-}" ]; then echo "Missing GitHub Secret: $v"; missing=1; fi
           done
           if [ "$missing" -eq 1 ]; then
             echo 'configured=false' >> "$GITHUB_OUTPUT"
             if [ "${{ github.event_name }}" = 'workflow_dispatch' ]; then exit 2; fi
-            echo 'Scheduled run exits safely because required secrets are missing.'
+            echo 'Scheduled run exits safely because IONOS credentials are not configured.'
             exit 0
           fi
           echo 'configured=true' >> "$GITHUB_OUTPUT"
-          if [ "$armed" != 'true' ] && [ "${{ github.event_name }}" = 'schedule' ]; then
+          if [ "$WATCHDOG_ARMED" != 'true' ] && [ "${{ github.event_name }}" = 'schedule' ]; then
             echo 'Watchdog configured but DISARMED; scheduled run exits safely.'
           fi
 
