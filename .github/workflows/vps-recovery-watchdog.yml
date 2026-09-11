@@ -23,6 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
+      WATCHDOG_ARMED: ${{ secrets.WATCHDOG_ARMED }}
       WATCHDOG_HOST: ${{ secrets.WATCHDOG_HOST }}
       WATCHDOG_PORT: ${{ secrets.WATCHDOG_PORT }}
       IONOS_CP_USER: ${{ secrets.IONOS_CP_USER }}
@@ -33,6 +34,17 @@ jobs:
         id: config
         shell: bash
         run: |
+          armed="$(printf '%s' "${WATCHDOG_ARMED:-}" | tr '[:upper:]' '[:lower:]')"
+          if [ "$armed" != 'true' ]; then
+            echo 'configured=false' >> "$GITHUB_OUTPUT"
+            echo 'Watchdog installed but DISARMED. Set WATCHDOG_ARMED=true only after the dry-run login test succeeds.'
+            if [ "${{ github.event_name }}" = 'workflow_dispatch' ]; then
+              echo 'Manual dry-run may still continue when credentials are configured.'
+            else
+              exit 0
+            fi
+          fi
+
           missing=0
           for v in WATCHDOG_HOST WATCHDOG_PORT IONOS_CP_USER IONOS_CP_PASSWORD IONOS_SERVER_LABEL; do
             if [ -z "${!v:-}" ]; then echo "Missing GitHub Secret: $v"; missing=1; fi
@@ -40,14 +52,14 @@ jobs:
           if [ "$missing" -eq 1 ]; then
             echo 'configured=false' >> "$GITHUB_OUTPUT"
             if [ "${{ github.event_name }}" = 'workflow_dispatch' ]; then exit 2; fi
-            echo 'Watchdog is installed but not armed yet; scheduled run exits safely.'
+            echo 'Scheduled run exits safely because required secrets are missing.'
           else
             echo 'configured=true' >> "$GITHUB_OUTPUT"
           fi
 
       - name: Check VPS reachability
         id: health
-        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'schedule' || inputs.login_test != true) }}
+        if: ${{ steps.config.outputs.configured == 'true' && env.WATCHDOG_ARMED == 'true' && (github.event_name == 'schedule' || inputs.login_test != true) }}
         shell: bash
         run: |
           python3 - <<'PY'
@@ -70,21 +82,21 @@ jobs:
           PY
 
       - name: Stop when healthy
-        if: ${{ steps.config.outputs.configured == 'true' && github.event_name == 'schedule' && steps.health.outputs.down == 'false' }}
+        if: ${{ steps.config.outputs.configured == 'true' && env.WATCHDOG_ARMED == 'true' && github.event_name == 'schedule' && steps.health.outputs.down == 'false' }}
         run: echo 'VPS is reachable; no action required.'
 
       - name: Checkout recovery code
-        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || steps.health.outputs.down == 'true') }}
+        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || (env.WATCHDOG_ARMED == 'true' && steps.health.outputs.down == 'true')) }}
         uses: actions/checkout@v4
 
       - name: Set up Node.js
-        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || steps.health.outputs.down == 'true') }}
+        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || (env.WATCHDOG_ARMED == 'true' && steps.health.outputs.down == 'true')) }}
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
       - name: Install Playwright
-        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || steps.health.outputs.down == 'true') }}
+        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || (env.WATCHDOG_ARMED == 'true' && steps.health.outputs.down == 'true')) }}
         shell: bash
         run: |
           npm install --no-save playwright@1.55.0
@@ -98,7 +110,7 @@ jobs:
 
       - name: Re-check before restart
         id: recheck
-        if: ${{ steps.config.outputs.configured == 'true' && github.event_name == 'schedule' && steps.health.outputs.down == 'true' }}
+        if: ${{ steps.config.outputs.configured == 'true' && env.WATCHDOG_ARMED == 'true' && github.event_name == 'schedule' && steps.health.outputs.down == 'true' }}
         shell: bash
         run: |
           python3 - <<'PY'
@@ -115,13 +127,13 @@ jobs:
           PY
 
       - name: Restart VPS from IONOS Cloud Panel
-        if: ${{ steps.config.outputs.configured == 'true' && github.event_name == 'schedule' && steps.health.outputs.down == 'true' && steps.recheck.outputs.still_down == 'true' }}
+        if: ${{ steps.config.outputs.configured == 'true' && env.WATCHDOG_ARMED == 'true' && github.event_name == 'schedule' && steps.health.outputs.down == 'true' && steps.recheck.outputs.still_down == 'true' }}
         env:
           DRY_RUN: 'false'
         run: node ops/vps-recovery/restart-ionos.mjs
 
       - name: Wait for VPS to return
-        if: ${{ steps.config.outputs.configured == 'true' && github.event_name == 'schedule' && steps.health.outputs.down == 'true' && steps.recheck.outputs.still_down == 'true' }}
+        if: ${{ steps.config.outputs.configured == 'true' && env.WATCHDOG_ARMED == 'true' && github.event_name == 'schedule' && steps.health.outputs.down == 'true' && steps.recheck.outputs.still_down == 'true' }}
         shell: bash
         run: |
           sleep 60
