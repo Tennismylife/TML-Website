@@ -1,0 +1,132 @@
+name: VPS Recovery Watchdog
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+    inputs:
+      login_test:
+        description: 'Test IONOS login/server selection without confirming restart'
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vps-recovery-watchdog
+  cancel-in-progress: false
+
+jobs:
+  watchdog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      WATCHDOG_HOST: ${{ secrets.WATCHDOG_HOST }}
+      WATCHDOG_PORT: ${{ secrets.WATCHDOG_PORT }}
+      IONOS_CP_USER: ${{ secrets.IONOS_CP_USER }}
+      IONOS_CP_PASSWORD: ${{ secrets.IONOS_CP_PASSWORD }}
+      IONOS_SERVER_LABEL: ${{ secrets.IONOS_SERVER_LABEL }}
+    steps:
+      - name: Validate configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          for v in WATCHDOG_HOST WATCHDOG_PORT IONOS_CP_USER IONOS_CP_PASSWORD IONOS_SERVER_LABEL; do
+            if [ -z "${!v:-}" ]; then echo "Missing GitHub Secret: $v" >&2; exit 2; fi
+          done
+
+      - name: Check VPS reachability
+        id: health
+        if: ${{ github.event_name == 'schedule' || inputs.login_test != true }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import os, socket, time
+          host=os.environ['WATCHDOG_HOST']
+          port=int(os.environ['WATCHDOG_PORT'])
+          attempts=5
+          ok=False
+          for i in range(1, attempts+1):
+              try:
+                  with socket.create_connection((host,port),timeout=5):
+                      print(f'Health check {i}/{attempts}: reachable')
+                      ok=True
+                      break
+              except OSError as e:
+                  print(f'Health check {i}/{attempts}: unreachable ({type(e).__name__})')
+                  if i < attempts: time.sleep(15)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+              f.write('down=' + ('false' if ok else 'true') + '\n')
+          PY
+
+      - name: Stop when healthy
+        if: ${{ github.event_name == 'schedule' && steps.health.outputs.down == 'false' }}
+        run: echo 'VPS is reachable; no action required.'
+
+      - name: Checkout recovery code
+        if: ${{ github.event_name == 'workflow_dispatch' || steps.health.outputs.down == 'true' }}
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        if: ${{ github.event_name == 'workflow_dispatch' || steps.health.outputs.down == 'true' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Playwright
+        if: ${{ github.event_name == 'workflow_dispatch' || steps.health.outputs.down == 'true' }}
+        shell: bash
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Test IONOS login only
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.login_test == true }}
+        env:
+          DRY_RUN: 'true'
+        run: node ops/vps-recovery/restart-ionos.mjs
+
+      - name: Re-check before restart
+        id: recheck
+        if: ${{ github.event_name == 'schedule' && steps.health.outputs.down == 'true' }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import os,socket,time
+          host=os.environ['WATCHDOG_HOST']; port=int(os.environ['WATCHDOG_PORT'])
+          ok=False
+          for i in range(3):
+              try:
+                  with socket.create_connection((host,port),timeout=5): ok=True; break
+              except OSError:
+                  if i<2: time.sleep(10)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f: f.write('still_down=' + ('false' if ok else 'true') + '\n')
+          print('Second-stage check:', 'still down' if not ok else 'reachable again')
+          PY
+
+      - name: Restart VPS from IONOS Cloud Panel
+        if: ${{ github.event_name == 'schedule' && steps.health.outputs.down == 'true' && steps.recheck.outputs.still_down == 'true' }}
+        env:
+          DRY_RUN: 'false'
+        run: node ops/vps-recovery/restart-ionos.mjs
+
+      - name: Wait for VPS to return
+        if: ${{ github.event_name == 'schedule' && steps.health.outputs.down == 'true' && steps.recheck.outputs.still_down == 'true' }}
+        shell: bash
+        run: |
+          sleep 60
+          python3 - <<'PY'
+          import os,socket,time,sys
+          host=os.environ['WATCHDOG_HOST']; port=int(os.environ['WATCHDOG_PORT'])
+          for i in range(1,17):
+              try:
+                  with socket.create_connection((host,port),timeout=5):
+                      print(f'VPS reachable again on recovery check {i}/16')
+                      sys.exit(0)
+              except OSError:
+                  print(f'Recovery check {i}/16: still unreachable')
+                  if i<16: time.sleep(30)
+          raise SystemExit('VPS did not return within the recovery window')
+          PY
