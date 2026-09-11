@@ -85,12 +85,12 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install Playwright
+      - name: Install Playwright library
         if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (env.WATCHDOG_ARMED == 'true' && steps.health.outputs.down == 'true')) }}
         run: |
           cd ops/vps-recovery
           npm install --no-audit --no-fund
-          npx playwright install --with-deps chromium
+          google-chrome --version
 
       - name: Test IONOS login only
         if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.login_test == true)) }}
