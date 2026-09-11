@@ -88,7 +88,8 @@ jobs:
       - name: Install Playwright
         if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (env.WATCHDOG_ARMED == 'true' && steps.health.outputs.down == 'true')) }}
         run: |
-          npm install --no-save playwright@1.55.0
+          cd ops/vps-recovery
+          npm install --no-audit --no-fund
           npx playwright install --with-deps chromium
 
       - name: Test IONOS login only
