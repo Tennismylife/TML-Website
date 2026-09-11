@@ -26,35 +26,29 @@ jobs:
       WATCHDOG_ARMED: ${{ secrets.WATCHDOG_ARMED }}
       WATCHDOG_HOST: ${{ secrets.WATCHDOG_HOST }}
       WATCHDOG_PORT: ${{ secrets.WATCHDOG_PORT }}
-      IONOS_CP_USER: ${{ secrets.IONOS_CP_USER }}
-      IONOS_CP_PASSWORD: ${{ secrets.IONOS_CP_PASSWORD }}
-      IONOS_SERVER_LABEL: ${{ secrets.IONOS_SERVER_LABEL }}
+      IONOS_USER: ${{ secrets.IONOS_USER }}
+      IONOS_PASSWORD: ${{ secrets.IONOS_PASSWORD }}
+      IONOS_TOTP_SECRET: ${{ secrets.IONOS_TOTP_SECRET }}
+      IONOS_SERVER_MATCH: ${{ secrets.IONOS_SERVER_MATCH }}
     steps:
       - name: Validate configuration
         id: config
         shell: bash
         run: |
           armed="$(printf '%s' "${WATCHDOG_ARMED:-}" | tr '[:upper:]' '[:lower:]')"
-          if [ "$armed" != 'true' ]; then
-            echo 'configured=false' >> "$GITHUB_OUTPUT"
-            echo 'Watchdog installed but DISARMED. Set WATCHDOG_ARMED=true only after the dry-run login test succeeds.'
-            if [ "${{ github.event_name }}" = 'workflow_dispatch' ]; then
-              echo 'Manual dry-run may still continue when credentials are configured.'
-            else
-              exit 0
-            fi
-          fi
-
           missing=0
-          for v in WATCHDOG_HOST WATCHDOG_PORT IONOS_CP_USER IONOS_CP_PASSWORD IONOS_SERVER_LABEL; do
+          for v in WATCHDOG_HOST WATCHDOG_PORT IONOS_USER IONOS_PASSWORD; do
             if [ -z "${!v:-}" ]; then echo "Missing GitHub Secret: $v"; missing=1; fi
           done
           if [ "$missing" -eq 1 ]; then
             echo 'configured=false' >> "$GITHUB_OUTPUT"
             if [ "${{ github.event_name }}" = 'workflow_dispatch' ]; then exit 2; fi
             echo 'Scheduled run exits safely because required secrets are missing.'
-          else
-            echo 'configured=true' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo 'configured=true' >> "$GITHUB_OUTPUT"
+          if [ "$armed" != 'true' ] && [ "${{ github.event_name }}" = 'schedule' ]; then
+            echo 'Watchdog configured but DISARMED; scheduled run exits safely.'
           fi
 
       - name: Check VPS reachability
@@ -64,21 +58,15 @@ jobs:
         run: |
           python3 - <<'PY'
           import os, socket, time
-          host=os.environ['WATCHDOG_HOST']
-          port=int(os.environ['WATCHDOG_PORT'])
-          attempts=5
-          ok=False
-          for i in range(1, attempts+1):
+          host=os.environ['WATCHDOG_HOST']; port=int(os.environ['WATCHDOG_PORT']); ok=False
+          for i in range(1,6):
               try:
                   with socket.create_connection((host,port),timeout=5):
-                      print(f'Health check {i}/{attempts}: reachable')
-                      ok=True
-                      break
+                      print(f'Health check {i}/5: reachable'); ok=True; break
               except OSError as e:
-                  print(f'Health check {i}/{attempts}: unreachable ({type(e).__name__})')
-                  if i < attempts: time.sleep(15)
-          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
-              f.write('down=' + ('false' if ok else 'true') + '\n')
+                  print(f'Health check {i}/5: unreachable ({type(e).__name__})')
+                  if i<5: time.sleep(15)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f: f.write('down=' + ('false' if ok else 'true') + '\n')
           PY
 
       - name: Stop when healthy
@@ -97,7 +85,6 @@ jobs:
 
       - name: Install Playwright
         if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || (env.WATCHDOG_ARMED == 'true' && steps.health.outputs.down == 'true')) }}
-        shell: bash
         run: |
           npm install --no-save playwright@1.55.0
           npx playwright install --with-deps chromium
@@ -111,12 +98,10 @@ jobs:
       - name: Re-check before restart
         id: recheck
         if: ${{ steps.config.outputs.configured == 'true' && env.WATCHDOG_ARMED == 'true' && github.event_name == 'schedule' && steps.health.outputs.down == 'true' }}
-        shell: bash
         run: |
           python3 - <<'PY'
           import os,socket,time
-          host=os.environ['WATCHDOG_HOST']; port=int(os.environ['WATCHDOG_PORT'])
-          ok=False
+          host=os.environ['WATCHDOG_HOST']; port=int(os.environ['WATCHDOG_PORT']); ok=False
           for i in range(3):
               try:
                   with socket.create_connection((host,port),timeout=5): ok=True; break
@@ -134,7 +119,6 @@ jobs:
 
       - name: Wait for VPS to return
         if: ${{ steps.config.outputs.configured == 'true' && env.WATCHDOG_ARMED == 'true' && github.event_name == 'schedule' && steps.health.outputs.down == 'true' && steps.recheck.outputs.still_down == 'true' }}
-        shell: bash
         run: |
           sleep 60
           python3 - <<'PY'
@@ -142,9 +126,7 @@ jobs:
           host=os.environ['WATCHDOG_HOST']; port=int(os.environ['WATCHDOG_PORT'])
           for i in range(1,17):
               try:
-                  with socket.create_connection((host,port),timeout=5):
-                      print(f'VPS reachable again on recovery check {i}/16')
-                      sys.exit(0)
+                  with socket.create_connection((host,port),timeout=5): print(f'VPS reachable again on recovery check {i}/16'); sys.exit(0)
               except OSError:
                   print(f'Recovery check {i}/16: still unreachable')
                   if i<16: time.sleep(30)
