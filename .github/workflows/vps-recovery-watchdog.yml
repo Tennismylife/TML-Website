@@ -50,7 +50,7 @@ jobs:
           fi
           echo 'configured=true' >> "$GITHUB_OUTPUT"
           if [ "$WATCHDOG_ARMED" != 'true' ] && [ "${{ github.event_name }}" = 'schedule' ]; then
-            echo 'Watchdog configured but DISARMED; scheduled run exits safely.'
+            echo 'Watchdog DISARMED; this scheduled run performs SAFE IONOS dry-run only.'
           fi
 
       - name: Check VPS reachability
@@ -76,24 +76,24 @@ jobs:
         run: echo 'VPS is reachable; no action required.'
 
       - name: Checkout recovery code
-        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (env.WATCHDOG_ARMED == 'true' && steps.health.outputs.down == 'true')) }}
+        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'schedule' && env.WATCHDOG_ARMED != 'true') || (env.WATCHDOG_ARMED == 'true' && steps.health.outputs.down == 'true')) }}
         uses: actions/checkout@v4
 
       - name: Set up Node.js
-        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (env.WATCHDOG_ARMED == 'true' && steps.health.outputs.down == 'true')) }}
+        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'schedule' && env.WATCHDOG_ARMED != 'true') || (env.WATCHDOG_ARMED == 'true' && steps.health.outputs.down == 'true')) }}
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
       - name: Install Playwright library
-        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (env.WATCHDOG_ARMED == 'true' && steps.health.outputs.down == 'true')) }}
+        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'schedule' && env.WATCHDOG_ARMED != 'true') || (env.WATCHDOG_ARMED == 'true' && steps.health.outputs.down == 'true')) }}
         run: |
           cd ops/vps-recovery
           npm install --no-audit --no-fund
           google-chrome --version
 
       - name: Test IONOS login only
-        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.login_test == true)) }}
+        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.login_test == true) || (github.event_name == 'schedule' && env.WATCHDOG_ARMED != 'true')) }}
         env:
           DRY_RUN: 'true'
         run: node ops/vps-recovery/restart-ionos.mjs
