@@ -10,6 +10,9 @@ on:
         required: false
         default: true
         type: boolean
+  push:
+    paths:
+      - 'ops/vps-recovery/test-trigger.txt'
 
 permissions:
   contents: read
@@ -41,7 +44,7 @@ jobs:
           done
           if [ "$missing" -eq 1 ]; then
             echo 'configured=false' >> "$GITHUB_OUTPUT"
-            if [ "${{ github.event_name }}" = 'workflow_dispatch' ]; then exit 2; fi
+            if [ "${{ github.event_name }}" = 'workflow_dispatch' ] || [ "${{ github.event_name }}" = 'push' ]; then exit 2; fi
             echo 'Scheduled run exits safely because IONOS credentials are not configured.'
             exit 0
           fi
@@ -73,23 +76,23 @@ jobs:
         run: echo 'VPS is reachable; no action required.'
 
       - name: Checkout recovery code
-        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || (env.WATCHDOG_ARMED == 'true' && steps.health.outputs.down == 'true')) }}
+        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (env.WATCHDOG_ARMED == 'true' && steps.health.outputs.down == 'true')) }}
         uses: actions/checkout@v4
 
       - name: Set up Node.js
-        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || (env.WATCHDOG_ARMED == 'true' && steps.health.outputs.down == 'true')) }}
+        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (env.WATCHDOG_ARMED == 'true' && steps.health.outputs.down == 'true')) }}
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
       - name: Install Playwright
-        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || (env.WATCHDOG_ARMED == 'true' && steps.health.outputs.down == 'true')) }}
+        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (env.WATCHDOG_ARMED == 'true' && steps.health.outputs.down == 'true')) }}
         run: |
           npm install --no-save playwright@1.55.0
           npx playwright install --with-deps chromium
 
       - name: Test IONOS login only
-        if: ${{ steps.config.outputs.configured == 'true' && github.event_name == 'workflow_dispatch' && inputs.login_test == true }}
+        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.login_test == true)) }}
         env:
           DRY_RUN: 'true'
         run: node ops/vps-recovery/restart-ionos.mjs
