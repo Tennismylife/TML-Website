@@ -30,16 +30,24 @@ jobs:
       IONOS_SERVER_LABEL: ${{ secrets.IONOS_SERVER_LABEL }}
     steps:
       - name: Validate configuration
+        id: config
         shell: bash
         run: |
-          set -euo pipefail
+          missing=0
           for v in WATCHDOG_HOST WATCHDOG_PORT IONOS_CP_USER IONOS_CP_PASSWORD IONOS_SERVER_LABEL; do
-            if [ -z "${!v:-}" ]; then echo "Missing GitHub Secret: $v" >&2; exit 2; fi
+            if [ -z "${!v:-}" ]; then echo "Missing GitHub Secret: $v"; missing=1; fi
           done
+          if [ "$missing" -eq 1 ]; then
+            echo 'configured=false' >> "$GITHUB_OUTPUT"
+            if [ "${{ github.event_name }}" = 'workflow_dispatch' ]; then exit 2; fi
+            echo 'Watchdog is installed but not armed yet; scheduled run exits safely.'
+          else
+            echo 'configured=true' >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Check VPS reachability
         id: health
-        if: ${{ github.event_name == 'schedule' || inputs.login_test != true }}
+        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'schedule' || inputs.login_test != true) }}
         shell: bash
         run: |
           python3 - <<'PY'
@@ -62,35 +70,35 @@ jobs:
           PY
 
       - name: Stop when healthy
-        if: ${{ github.event_name == 'schedule' && steps.health.outputs.down == 'false' }}
+        if: ${{ steps.config.outputs.configured == 'true' && github.event_name == 'schedule' && steps.health.outputs.down == 'false' }}
         run: echo 'VPS is reachable; no action required.'
 
       - name: Checkout recovery code
-        if: ${{ github.event_name == 'workflow_dispatch' || steps.health.outputs.down == 'true' }}
+        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || steps.health.outputs.down == 'true') }}
         uses: actions/checkout@v4
 
       - name: Set up Node.js
-        if: ${{ github.event_name == 'workflow_dispatch' || steps.health.outputs.down == 'true' }}
+        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || steps.health.outputs.down == 'true') }}
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
       - name: Install Playwright
-        if: ${{ github.event_name == 'workflow_dispatch' || steps.health.outputs.down == 'true' }}
+        if: ${{ steps.config.outputs.configured == 'true' && (github.event_name == 'workflow_dispatch' || steps.health.outputs.down == 'true') }}
         shell: bash
         run: |
           npm install --no-save playwright@1.55.0
           npx playwright install --with-deps chromium
 
       - name: Test IONOS login only
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.login_test == true }}
+        if: ${{ steps.config.outputs.configured == 'true' && github.event_name == 'workflow_dispatch' && inputs.login_test == true }}
         env:
           DRY_RUN: 'true'
         run: node ops/vps-recovery/restart-ionos.mjs
 
       - name: Re-check before restart
         id: recheck
-        if: ${{ github.event_name == 'schedule' && steps.health.outputs.down == 'true' }}
+        if: ${{ steps.config.outputs.configured == 'true' && github.event_name == 'schedule' && steps.health.outputs.down == 'true' }}
         shell: bash
         run: |
           python3 - <<'PY'
@@ -107,13 +115,13 @@ jobs:
           PY
 
       - name: Restart VPS from IONOS Cloud Panel
-        if: ${{ github.event_name == 'schedule' && steps.health.outputs.down == 'true' && steps.recheck.outputs.still_down == 'true' }}
+        if: ${{ steps.config.outputs.configured == 'true' && github.event_name == 'schedule' && steps.health.outputs.down == 'true' && steps.recheck.outputs.still_down == 'true' }}
         env:
           DRY_RUN: 'false'
         run: node ops/vps-recovery/restart-ionos.mjs
 
       - name: Wait for VPS to return
-        if: ${{ github.event_name == 'schedule' && steps.health.outputs.down == 'true' && steps.recheck.outputs.still_down == 'true' }}
+        if: ${{ steps.config.outputs.configured == 'true' && github.event_name == 'schedule' && steps.health.outputs.down == 'true' && steps.recheck.outputs.still_down == 'true' }}
         shell: bash
         run: |
           sleep 60
