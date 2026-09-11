@@ -11,7 +11,7 @@ const dryRun = String(process.env.DRY_RUN || '').toLowerCase() === 'true';
 function base32Decode(s){const a='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';let bits='';for(const c of s.replace(/=+$/,'')){const n=a.indexOf(c);if(n<0)throw new Error('Invalid IONOS_TOTP_SECRET');bits+=n.toString(2).padStart(5,'0')}const out=[];for(let i=0;i+8<=bits.length;i+=8)out.push(parseInt(bits.slice(i,i+8),2));return Buffer.from(out)}
 function totp(secret){const key=base32Decode(secret),counter=Math.floor(Date.now()/1000/30),b=Buffer.alloc(8);b.writeBigUInt64BE(BigInt(counter));const h=crypto.createHmac('sha1',key).update(b).digest(),o=h[h.length-1]&15,n=(h.readUInt32BE(o)&0x7fffffff)%1000000;return String(n).padStart(6,'0')}
 
-const browser=await chromium.launch({headless:true});
+const browser=await chromium.launch({headless:true,channel:'chrome'});
 const context=await browser.newContext({locale:'en-US',timezoneId:'Europe/Rome'});
 let page=await context.newPage(); page.setDefaultTimeout(20000);
 async function firstVisible(locator){for(let i=0;i<await locator.count();i++)if(await locator.nth(i).isVisible().catch(()=>false))return locator.nth(i);return null}
@@ -29,8 +29,6 @@ try{
  await u.fill(user);
  if(!(await clickSubmit(page))&&!(await clickText([/^next$/i,/^continue$/i,/^weiter$/i,/^avanti$/i])))await u.press('Enter');
  await page.waitForTimeout(1200);
-
- // IONOS may request TOTP before the password on a new GitHub runner.
  await fillTotpIfNeeded(page);
  let p=await waitForPassword(page,5000);
  if(p){
