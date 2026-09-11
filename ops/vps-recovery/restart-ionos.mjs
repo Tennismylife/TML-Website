@@ -11,53 +11,72 @@ const serverLabel = process.env.IONOS_SERVER_LABEL;
 const dryRun = String(process.env.DRY_RUN || '').toLowerCase() === 'true';
 
 const browser = await chromium.launch({ headless: true });
-const context = await browser.newContext({
-  locale: 'en-US',
-  timezoneId: 'Europe/Rome',
-});
+const context = await browser.newContext({ locale: 'en-US', timezoneId: 'Europe/Rome' });
 const page = await context.newPage();
 page.setDefaultTimeout(20000);
 
-const clickText = async (patterns) => {
+async function firstVisible(locator) {
+  const count = await locator.count();
+  for (let i = 0; i < count; i++) {
+    const item = locator.nth(i);
+    if (await item.isVisible().catch(() => false)) return item;
+  }
+  return null;
+}
+
+async function clickText(patterns) {
   for (const pattern of patterns) {
-    const loc = page.getByText(pattern, { exact: false }).filter({ visible: true }).first();
-    if (await loc.count()) {
-      try { await loc.click(); return true; } catch {}
+    const item = await firstVisible(page.getByText(pattern, { exact: false }));
+    if (item) {
+      try { await item.click(); return true; } catch {}
     }
   }
   return false;
-};
+}
+
+async function bodyText() {
+  return (await page.locator('body').innerText().catch(() => '')).toLowerCase();
+}
 
 try {
   console.log('Opening IONOS Cloud Panel login');
   await page.goto('https://cloudpanel.ionos.com/login.php', { waitUntil: 'domcontentloaded', timeout: 45000 });
 
-  const textInput = page.locator('input[type="text"], input[type="email"], input:not([type])').filter({ visible: true }).first();
-  const passInput = page.locator('input[type="password"]').filter({ visible: true }).first();
-  await textInput.fill(user);
+  const userInput = await firstVisible(page.locator('input[type="text"], input[type="email"], input:not([type])'));
+  if (!userInput) throw new Error('IONOS username field not found.');
+  await userInput.fill(user);
+
+  let passInput = await firstVisible(page.locator('input[type="password"]'));
+  if (!passInput) {
+    const nextClicked = await clickText([/^next$/i, /^continue$/i, /^weiter$/i, /^continua$/i, /^suivant$/i, /^continuar$/i]);
+    if (!nextClicked) await userInput.press('Enter');
+    await page.waitForTimeout(1200);
+    passInput = await firstVisible(page.locator('input[type="password"]'));
+  }
+  if (!passInput) throw new Error('IONOS password field not found.');
   await passInput.fill(password);
 
   const loginClicked = await clickText([/log\s*in/i, /sign\s*in/i, /anmelden/i, /accedi/i, /connexion/i, /iniciar/i]);
   if (!loginClicked) await passInput.press('Enter');
-  await page.waitForLoadState('domcontentloaded');
+  await page.waitForLoadState('domcontentloaded').catch(() => {});
   await page.waitForTimeout(2500);
 
-  const bodyText = (await page.locator('body').innerText()).toLowerCase();
-  if (/two[- ]factor|2fa|verification code|authenticator|bestätigungscode|codice di verifica/.test(bodyText)) {
-    throw new Error('Cloud Panel login requires an interactive second factor; use a dedicated restricted Cloud Panel user without 2FA.');
+  const loginBody = await bodyText();
+  if (/two[- ]factor|2fa|verification code|authenticator|bestätigungscode|codice di verifica|security code/.test(loginBody)) {
+    throw new Error('Cloud Panel login requires an interactive second factor. Use a dedicated restricted Cloud Panel user without 2FA.');
   }
-  if (/invalid|incorrect|wrong password|login failed|anmeldung fehlgeschlagen/.test(bodyText)) {
+  if (/invalid|incorrect|wrong password|login failed|anmeldung fehlgeschlagen|credenziali.*non valide/.test(loginBody)) {
     throw new Error('IONOS Cloud Panel login failed.');
   }
 
   console.log('Cloud Panel login accepted; locating target server');
-  let server = page.getByText(serverLabel, { exact: false }).filter({ visible: true }).first();
-  if (!(await server.count())) {
-    await clickText([/^servers$/i, /server/i, /servidores/i]);
+  let server = await firstVisible(page.getByText(serverLabel, { exact: false }));
+  if (!server) {
+    await clickText([/^servers$/i, /^server$/i, /^servidores$/i]);
     await page.waitForTimeout(1500);
-    server = page.getByText(serverLabel, { exact: false }).filter({ visible: true }).first();
+    server = await firstVisible(page.getByText(serverLabel, { exact: false }));
   }
-  if (!(await server.count())) throw new Error('Target server label not found in Cloud Panel.');
+  if (!server) throw new Error('Target server label not found in Cloud Panel.');
   await server.click();
   await page.waitForTimeout(1200);
 
@@ -69,12 +88,10 @@ try {
   await page.waitForTimeout(700);
 
   if (dryRun) {
-    console.log('DRY RUN: login, server selection and Restart action all succeeded; confirmation was not clicked.');
-    process.exitCode = 0;
+    console.log('DRY RUN: login, server selection and Restart action succeeded; restart confirmation was NOT clicked.');
   } else {
-    // Prefer hardware restart if IONOS offers a method selector.
-    const hardware = page.getByText(/hardware/i, { exact: false }).filter({ visible: true }).first();
-    if (await hardware.count()) {
+    const hardware = await firstVisible(page.getByText(/hardware/i, { exact: false }));
+    if (hardware) {
       try { await hardware.click(); console.log('Hardware restart selected'); } catch {}
     }
     const confirmed = await clickText([/^yes$/i, /^ja$/i, /^sì$/i, /^si$/i, /^oui$/i, /^sí$/i, /^confirm$/i, /^conferma$/i]);
