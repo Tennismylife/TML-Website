@@ -19,7 +19,7 @@ async function clickText(patterns,target=page){for(const p of patterns){const lo
 async function clickSubmit(target=page){const el=await firstVisible(target.locator('button[type="submit"],input[type="submit"]'));if(!el)return false;try{await el.click();return true}catch{return false}}
 async function body(target=page){return (await target.locator('body').innerText().catch(()=>'' )).toLowerCase()}
 async function waitForPassword(target=page,ms=6000){const end=Date.now()+ms;while(Date.now()<end){const p=await firstVisible(target.locator('input[type="password"]'));if(p)return p;for(const f of target.frames()){const q=await firstVisible(f.locator('input[type="password"]')).catch(()=>null);if(q)return q}await target.waitForTimeout(350)}return null}
-async function safeDiag(target=page){const title=await target.title().catch(()=>''),url=target.url();let txt=(await target.locator('body').innerText().catch(()=>'' )).replaceAll(user,'***').replace(/\s+/g,' ').slice(0,1000);const inputs=await target.locator('input').evaluateAll(es=>es.map(e=>({type:e.type,name:e.name,id:e.id,autocomplete:e.autocomplete,placeholder:e.placeholder}))).catch(()=>[]);const buttons=await target.locator('button').allInnerTexts().catch(()=>[]);console.log('LOGIN_DIAG url='+url);console.log('LOGIN_DIAG title='+title);console.log('LOGIN_DIAG inputs='+JSON.stringify(inputs));console.log('LOGIN_DIAG buttons='+JSON.stringify(buttons.slice(0,15)));console.log('LOGIN_DIAG body='+txt)}
+async function safeDiag(target=page){const title=await target.title().catch(()=>''),url=target.url();let txt=(await target.locator('body').innerText().catch(()=>'' )).replaceAll(user,'***').replace(/\s+/g,' ').slice(0,1400);const inputs=await target.locator('input').evaluateAll(es=>es.map(e=>({type:e.type,name:e.name,id:e.id,autocomplete:e.autocomplete,placeholder:e.placeholder}))).catch(()=>[]);const buttons=await target.locator('button').allInnerTexts().catch(()=>[]);console.log('LOGIN_DIAG url='+url);console.log('LOGIN_DIAG title='+title);console.log('LOGIN_DIAG inputs='+JSON.stringify(inputs));console.log('LOGIN_DIAG buttons='+JSON.stringify(buttons.slice(0,20)));console.log('LOGIN_DIAG body='+txt)}
 async function fillTotpIfNeeded(target=page){const t=await body(target);const otp=await firstVisible(target.locator('input[autocomplete="one-time-code"],input[name="passcode"],input[inputmode="numeric"],input[type="tel"]'));if(!otp && !/authenticator|two[- ]factor|2fa|codice di verifica|security code|bestätigungscode|6-digit code/.test(t))return false;if(!totpSecret)throw new Error('IONOS requested Authenticator code; add IONOS_TOTP_SECRET to GitHub Secrets');if(!otp)throw new Error('IONOS Authenticator field not found');await otp.fill(totp(totpSecret));if(!(await clickSubmit(target))&&!(await clickText([/^next$/i,/^continue$/i,/^verify$/i,/^confirm$/i,/^bestätigen$/i,/^conferma$/i],target)))await otp.press('Enter');await target.waitForTimeout(2500);return true}
 
 try{
@@ -45,14 +45,16 @@ try{
  console.log(`IONOS account login accepted; current host=${new URL(page.url()).host}`);
 
  console.log('Opening Server & Cloud from IONOS account');
- let opened=await clickText([/server\s*&\s*cloud/i,/servers\s*&\s*cloud/i]);
- if(!opened){await clickText([/^menu$/i,/menu/i]);await page.waitForTimeout(700);opened=await clickText([/server\s*&\s*cloud/i,/servers\s*&\s*cloud/i])}
- if(!opened){await page.goto('https://my.ionos.com/',{waitUntil:'domcontentloaded',timeout:45000}).catch(()=>{});await page.waitForTimeout(1800);opened=await clickText([/server\s*&\s*cloud/i,/servers\s*&\s*cloud/i]);if(!opened){await clickText([/^menu$/i,/menu/i]);await page.waitForTimeout(500);opened=await clickText([/server\s*&\s*cloud/i,/servers\s*&\s*cloud/i])}}
- if(!opened){await safeDiag(page);throw new Error(`Server & Cloud entry not found after account login; host=${new URL(page.url()).host}`)}
- await page.waitForTimeout(5000);const pages=context.pages();if(pages.length>1)page=pages[pages.length-1];page.setDefaultTimeout(20000);console.log(`Server & Cloud opened; current host=${new URL(page.url()).host}`);
+ const loginHost=new URL(page.url()).host;
+ const country=loginHost.endsWith('.it')?'it':'com';
+ const serverPortfolio=`https://my.ionos.${country}/server-portfolio?skipIntcpts=true`;
+ await page.goto(serverPortfolio,{waitUntil:'domcontentloaded',timeout:45000});
+ await page.waitForTimeout(5000);
+ if(/^login\.ionos\./.test(new URL(page.url()).host)){await safeDiag(page);throw new Error(`Server & Cloud deep link returned to login; host=${new URL(page.url()).host}`)}
+ const pages=context.pages();if(pages.length>1)page=pages[pages.length-1];page.setDefaultTimeout(20000);console.log(`Server & Cloud opened; current host=${new URL(page.url()).host}`);
 
  let server=await firstVisible(page.getByText(serverMatch,{exact:false}));
- if(!server){await clickText([/^servers$/i,/^server$/i,/infrastructure/i],page);await page.waitForTimeout(1800);server=await firstVisible(page.getByText(serverMatch,{exact:false}))}
+ if(!server){await clickText([/^servers$/i,/^server$/i,/infrastructure/i,/infrastruttura/i],page);await page.waitForTimeout(1800);server=await firstVisible(page.getByText(serverMatch,{exact:false}))}
  if(!server){await safeDiag(page);throw new Error(`Target server not found using IP match ${serverMatch}; host=${new URL(page.url()).host}`)}
  await server.click();await page.waitForTimeout(1200);
  if(!(await clickText([/^actions$/i,/^aktionen$/i,/^azioni$/i],page)))throw new Error('Actions menu not found');
