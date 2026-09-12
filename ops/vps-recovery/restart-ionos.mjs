@@ -110,15 +110,9 @@ try{
  if(!(await body(page)).includes(serverMatch.toLowerCase())){await safeDiag(page);throw new Error(`Selected VPS did not verify target IP ${serverMatch}`)}
  console.log('NAV_STEP target VPS verified by IP');
 
- const restartPatterns=[/^riavvia$/i,/^restart$/i,/^reboot$/i,/^neustart$/i];
- let restartClicked=await clickTextAcross(restartPatterns);
- if(!restartClicked){
-   if(await clickTextAcross([/^actions$/i,/^aktionen$/i,/^azioni$/i])){
-     await page.waitForTimeout(500);
-     restartClicked=await clickTextAcross(restartPatterns);
-   }
- }
- if(!restartClicked){await safeDiag(page);throw new Error('Restart action not found')}
+ const restart=await firstPatternAcross([/^riavvia$/i,/^restart$/i,/^reboot$/i,/^neustart$/i]);
+ if(!restart){await safeDiag(page);throw new Error('Restart action not found')}
+ await restart.evaluate(el=>el.click());
  console.log('NAV_STEP restart action opened');
  await page.waitForTimeout(900);
  const confirm=await firstPatternAcross([/^s.$/i,/^si$/i,/^yes$/i,/^ja$/i,/^confirm$/i,/^conferma$/i]);
