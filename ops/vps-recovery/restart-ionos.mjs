@@ -9,7 +9,8 @@ const totpSecret = (process.env.IONOS_TOTP_SECRET || '').replace(/\s+/g, '').toU
 const dryRun = String(process.env.DRY_RUN || '').toLowerCase() === 'true';
 
 function base32Decode(s){const a='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';let bits='';for(const c of s.replace(/=+$/,'')){const n=a.indexOf(c);if(n<0)throw new Error('Invalid IONOS_TOTP_SECRET');bits+=n.toString(2).padStart(5,'0')}const out=[];for(let i=0;i+8<=bits.length;i+=8)out.push(parseInt(bits.slice(i,i+8),2));return Buffer.from(out)}
-function totp(secret){const key=base32Decode(secret),counter=Math.floor(Date.now()/1000/30),b=Buffer.alloc(8);b.writeBigUInt64BE(BigInt(counter));const h=crypto.createHmac('sha1',key).update(b).digest(),o=h[h.length-1]&15,n=(h.readUInt32BE(o)&0x7fffffff)%1000000;return String(n).padStart(6,'0')}
+function totp(secret,offsetSteps=0){const key=base32Decode(secret),counter=Math.floor(Date.now()/1000/30)+offsetSteps,b=Buffer.alloc(8);b.writeBigUInt64BE(BigInt(counter));const h=crypto.createHmac('sha1',key).update(b).digest(),o=h[h.length-1]&15,n=(h.readUInt32BE(o)&0x7fffffff)%1000000;return String(n).padStart(6,'0')}
+function secretFingerprint(secret){return crypto.createHash('sha256').update(secret).digest('hex').slice(0,12)}
 
 const browser=await chromium.launch({headless:true,channel:'chrome'});
 const context=await browser.newContext({locale:'it-IT',timezoneId:'Europe/Rome'});
@@ -20,6 +21,21 @@ async function clickSubmit(target=page){const el=await firstVisible(target.locat
 async function body(target=page){return (await target.locator('body').innerText().catch(()=>'' )).toLowerCase()}
 async function safeDiag(target=page){const title=await target.title().catch(()=>''),url=target.url();let txt=(await target.locator('body').innerText().catch(()=>'' )).replaceAll(user,'***').replace(/\s+/g,' ').slice(0,1400);const inputs=await target.locator('input').evaluateAll(es=>es.map(e=>({type:e.type,name:e.name,id:e.id,autocomplete:e.autocomplete,placeholder:e.placeholder}))).catch(()=>[]);const buttons=await target.locator('button').allInnerTexts().catch(()=>[]);console.log('LOGIN_DIAG url='+url);console.log('LOGIN_DIAG title='+title);console.log('LOGIN_DIAG inputs='+JSON.stringify(inputs));console.log('LOGIN_DIAG buttons='+JSON.stringify(buttons.slice(0,20)));console.log('LOGIN_DIAG body='+txt)}
 async function submitCurrent(target=page){if(await clickSubmit(target))return true;return clickText([/^continua$/i,/^continue$/i,/^next$/i,/^avanti$/i,/^weiter$/i,/^verify$/i,/^confirm$/i,/^conferma$/i,/^bestätigen$/i,/^accedi$/i,/^sign\s*in$/i,/^log\s*in$/i],target)}
+async function tryTotpWindow(target){
+ if(!totpSecret)throw new Error('IONOS requested Authenticator code; add IONOS_TOTP_SECRET to GitHub Secrets');
+ const candidates=[0,-1,1];
+ for(const offset of candidates){
+   const otp=await firstVisible(target.locator('input[autocomplete="one-time-code"],input[name="passcode"],input[inputmode="numeric"],input[type="tel"],input[name="token"]'));
+   if(!otp)return true;
+   await otp.fill(totp(totpSecret,offset));
+   if(!(await submitCurrent(target)))await otp.press('Enter');
+   await target.waitForTimeout(1400);
+   if(!/^login\.ionos\./i.test(new URL(target.url()).host))return true;
+   const txt=await body(target);
+   if(!/codice non valido|invalid code|ungültig|incorrect code|try again|prova con uno nuovo/i.test(txt))return true;
+ }
+ return false;
+}
 async function finishIonosLogin(target=page,timeoutMs=35000){
  const end=Date.now()+timeoutMs; let lastAction='';
  while(Date.now()<end){
@@ -32,10 +48,9 @@ async function finishIonosLogin(target=page,timeoutMs=35000){
    const txt=await body(target);
    const otp=await firstVisible(target.locator('input[autocomplete="one-time-code"],input[name="passcode"],input[inputmode="numeric"],input[type="tel"],input[name="token"]'));
    if(otp && /authenticator|two[- ]factor|2fa|codice|verification|security code|bestätigungscode|6-digit/i.test(txt)){
-     if(!totpSecret)throw new Error('IONOS requested Authenticator code; add IONOS_TOTP_SECRET to GitHub Secrets');
-     await otp.fill(totp(totpSecret));
-     if(!(await submitCurrent(target)))await otp.press('Enter');
-     lastAction='TOTP'; await target.waitForTimeout(1800); continue;
+     lastAction='TOTP';
+     if(await tryTotpWindow(target)){await target.waitForTimeout(800);continue}
+     await safeDiag(target);throw new Error('IONOS rejected current/previous/next TOTP window');
    }
    const pass=await firstVisible(target.locator('input[type="password"]'));
    if(pass){await pass.fill(password);if(!(await submitCurrent(target)))await pass.press('Enter');lastAction='password';await target.waitForTimeout(1600);continue}
@@ -47,6 +62,7 @@ async function finishIonosLogin(target=page,timeoutMs=35000){
 }
 
 try{
+ if(totpSecret)console.log('TOTP secret fingerprint='+secretFingerprint(totpSecret));
  console.log('Opening IONOS Server & Cloud directly');
  const serverPortfolio='https://my.ionos.it/server-portfolio?skipIntcpts=true';
  await page.goto(serverPortfolio,{waitUntil:'domcontentloaded',timeout:45000});
