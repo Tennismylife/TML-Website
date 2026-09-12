@@ -70,7 +70,7 @@ async function selectSoleServerRadio(){
  }
  console.log(`NAV_DIAG server_radio_count=${radios.length}`);
  if(radios.length!==1)return false;
- await radios[0].check({force:true});
+ await radios[0].evaluate(el=>el.click());
  return true;
 }
 
