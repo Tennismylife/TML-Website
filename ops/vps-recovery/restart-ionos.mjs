@@ -27,6 +27,7 @@ async function tryTotpWindow(target){
  for(const offset of candidates){
    const otp=await firstVisible(target.locator('input[autocomplete="one-time-code"],input[name="passcode"],input[inputmode="numeric"],input[type="tel"],input[name="token"]'));
    if(!otp)return true;
+   console.log(`LOGIN_STEP TOTP window=${offset}`);
    await otp.fill(totp(totpSecret,offset));
    if(!(await submitCurrent(target)))await otp.press('Enter');
    await target.waitForTimeout(1400);
@@ -36,7 +37,7 @@ async function tryTotpWindow(target){
  }
  return false;
 }
-async function finishIonosLogin(target=page,timeoutMs=35000){
+async function finishIonosLogin(target=page,timeoutMs=180000){
  const end=Date.now()+timeoutMs; let lastAction='';
  while(Date.now()<end){
    const url=target.url(); const host=new URL(url).host;
@@ -53,9 +54,9 @@ async function finishIonosLogin(target=page,timeoutMs=35000){
      await safeDiag(target);throw new Error('IONOS rejected current/previous/next TOTP window');
    }
    const pass=await firstVisible(target.locator('input[type="password"]'));
-   if(pass){await pass.fill(password);if(!(await submitCurrent(target)))await pass.press('Enter');lastAction='password';await target.waitForTimeout(1600);continue}
+   if(pass){console.log('LOGIN_STEP password');await pass.fill(password);if(!(await submitCurrent(target)))await pass.press('Enter');lastAction='password';await target.waitForTimeout(1600);continue}
    const username=await firstVisible(target.locator('input#username,input[name="identifier"],input[type="email"]'));
-   if(username){await username.fill(user);if(!(await submitCurrent(target)))await username.press('Enter');lastAction='username';await target.waitForTimeout(1500);continue}
+   if(username){console.log('LOGIN_STEP username');await username.fill(user);if(!(await submitCurrent(target)))await username.press('Enter');lastAction='username';await target.waitForTimeout(1500);continue}
    await target.waitForTimeout(500);
  }
  await safeDiag(target);throw new Error(`IONOS login did not leave login host after ${lastAction || 'no recognized step'}`);
