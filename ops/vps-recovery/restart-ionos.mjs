@@ -20,7 +20,7 @@ async function clickText(patterns,target=page){for(const p of patterns){const lo
 async function clickTextAcross(patterns){for(const f of page.frames()){if(await clickText(patterns,f))return true}return false}
 async function firstTextAcross(text){for(const f of page.frames()){const el=await firstVisible(f.getByText(text,{exact:false}));if(el)return el}return null}
 async function body(target=page){return (await target.locator('body').innerText().catch(()=>'' )).toLowerCase()}
-async function safeDiag(target=page){const title=await target.title().catch(()=>''),url=target.url();let txt=(await target.locator('body').innerText().catch(()=>'' )).replaceAll(user,'***').replace(/\s+/g,' ').slice(0,1400);const inputs=await target.locator('input').evaluateAll(es=>es.map(e=>({type:e.type,name:e.name,id:e.id,autocomplete:e.autocomplete,placeholder:e.placeholder}))).catch(()=>[]);const buttons=await target.locator('button').allInnerTexts().catch(()=>[]);const links=await target.locator('a').evaluateAll(es=>es.slice(0,50).map(e=>({text:(e.innerText||'').trim().replace(/\s+/g,' ').slice(0,100),href:e.href}))).catch(()=>[]);console.log('LOGIN_DIAG url='+url);console.log('LOGIN_DIAG title='+title);console.log('LOGIN_DIAG inputs='+JSON.stringify(inputs));console.log('LOGIN_DIAG buttons='+JSON.stringify(buttons.slice(0,20)));console.log('LOGIN_DIAG links='+JSON.stringify(links));console.log('LOGIN_DIAG body='+txt);console.log('FRAME_DIAG '+JSON.stringify(target.frames().map(f=>f.url())))}
+async function safeDiag(target=page){const title=await target.title().catch(()=>''),url=target.url();let txt=(await target.locator('body').innerText().catch(()=>'' )).replaceAll(user,'***').replace(/\s+/g,' ').slice(0,1800);const inputs=await target.locator('input').evaluateAll(es=>es.map(e=>({type:e.type,name:e.name,id:e.id,autocomplete:e.autocomplete,placeholder:e.placeholder}))).catch(()=>[]);const buttons=await target.locator('button').allInnerTexts().catch(()=>[]);const links=await target.locator('a').evaluateAll(es=>es.slice(0,60).map(e=>({text:(e.innerText||'').trim().replace(/\s+/g,' ').slice(0,100),href:e.href}))).catch(()=>[]);console.log('LOGIN_DIAG url='+url);console.log('LOGIN_DIAG title='+title);console.log('LOGIN_DIAG inputs='+JSON.stringify(inputs));console.log('LOGIN_DIAG buttons='+JSON.stringify(buttons.slice(0,30)));console.log('LOGIN_DIAG links='+JSON.stringify(links));console.log('LOGIN_DIAG body='+txt);console.log('FRAME_DIAG '+JSON.stringify(target.frames().map(f=>f.url())))}
 async function tryTotpWindow(target){
  if(!totpSecret)throw new Error('IONOS requested Authenticator code; add IONOS_TOTP_SECRET to GitHub Secrets');
  const candidates=[0,-1,1];
@@ -62,6 +62,17 @@ async function finishIonosLogin(target=page,timeoutMs=120000){
  }
  await safeDiag(target);throw new Error(`IONOS login did not leave login host after ${lastAction || 'no recognized step'}`);
 }
+async function selectSoleServerRadio(){
+ const radios=[];
+ for(const f of page.frames()){
+   const loc=f.locator('input[type="radio"][name="server"]');
+   for(let i=0;i<await loc.count();i++)radios.push(loc.nth(i));
+ }
+ console.log(`NAV_DIAG server_radio_count=${radios.length}`);
+ if(radios.length!==1)return false;
+ await radios[0].check({force:true});
+ return true;
+}
 
 try{
  if(totpSecret)console.log('TOTP secret fingerprint='+secretFingerprint(totpSecret));
@@ -88,11 +99,14 @@ try{
    await page.waitForTimeout(4000);
    server=await firstTextAcross(serverMatch);
  }
- if(!server){await safeDiag(page);throw new Error(`Target server not found using IP match ${serverMatch}; host=${new URL(page.url()).host}`)}
- console.log('NAV_STEP target server found');
- await server.click({timeout:8000});await page.waitForTimeout(1800);
- if(!(await clickTextAcross([/^actions$/i,/^aktionen$/i,/^azioni$/i])))throw new Error('Actions menu not found');
- if(!(await clickTextAcross([/^restart$/i,/^reboot$/i,/^riavvia/i,/^neustart/i])))throw new Error('Restart action not found');
+ let selected=false;
+ if(server){console.log('NAV_STEP target server found by IP');await server.click({timeout:8000});selected=true}
+ else if(await selectSoleServerRadio()){console.log('NAV_STEP selected sole VPS row');selected=true}
+ if(!selected){await safeDiag(page);throw new Error(`Target server could not be uniquely selected; host=${new URL(page.url()).host}`)}
+ await page.waitForTimeout(1000);
+ if(!(await clickTextAcross([/^actions$/i,/^aktionen$/i,/^azioni$/i]))){await safeDiag(page);throw new Error('Actions menu not found')}
+ await page.waitForTimeout(500);
+ if(!(await clickTextAcross([/^restart$/i,/^reboot$/i,/^riavvia/i,/^neustart/i]))){await safeDiag(page);throw new Error('Restart action not found')}
  await page.waitForTimeout(700);
  if(dryRun)console.log('DRY RUN OK: reached Restart confirmation; no reboot sent.');
  else{if(!(await clickTextAcross([/^yes$/i,/^ja$/i,/^sì$/i,/^si$/i,/^confirm$/i,/^conferma$/i])))throw new Error('Restart confirmation not found');console.log('IONOS restart request submitted.')}
