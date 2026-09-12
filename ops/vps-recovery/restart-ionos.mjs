@@ -34,7 +34,7 @@ async function tryTotpWindow(target){
    await target.waitForTimeout(1800);
    if(!/^login\.ionos\./i.test(new URL(target.url()).host))return true;
    const txt=await body(target);
-   if(!/codice non valido|invalid code|ung├╝ltig|incorrect code|try again|prova con uno nuovo/i.test(txt))return true;
+   if(!/codice non valido|invalid code|ungâ”œâ•ltig|incorrect code|try again|prova con uno nuovo/i.test(txt))return true;
  }
  return false;
 }
@@ -50,7 +50,7 @@ async function finishIonosLogin(target=page,timeoutMs=120000){
    }
    const txt=await body(target);
    const otp=await firstVisible(target.locator('input[autocomplete="one-time-code"],input[name="passcode"],input[inputmode="numeric"],input[type="tel"],input[name="token"]'));
-   if(otp && /authenticator|two[- ]factor|2fa|codice|verification|security code|best├ñtigungscode|6-digit/i.test(txt)){
+   if(otp && /authenticator|two[- ]factor|2fa|codice|verification|security code|bestâ”œÃ±tigungscode|6-digit/i.test(txt)){
      lastAction='TOTP';
      if(await tryTotpWindow(target)){await target.waitForTimeout(500);continue}
      await safeDiag(target);throw new Error('IONOS rejected current/previous/next TOTP window');
@@ -110,9 +110,10 @@ try{
  if(!(await body(page)).includes(serverMatch.toLowerCase())){await safeDiag(page);throw new Error(`Selected VPS did not verify target IP ${serverMatch}`)}
  console.log('NAV_STEP target VPS verified by IP');
 
- const restart=await firstPatternAcross([/^riavvia$/i,/^restart$/i,/^reboot$/i,/^neustart$/i]);
- if(!restart){await safeDiag(page);throw new Error('Restart action not found')}
- await restart.evaluate(el=>el.click());
+ const restartCount=await page.locator('a,button').evaluateAll(es=>es.filter(el=>/^(riavvia|restart|reboot|neustart)$/i.test((el.textContent||'').trim())).length);
+ console.log('NAV_STEP restart_dom_count='+restartCount);
+ if(restartCount<1){await safeDiag(page);throw new Error('Restart action not found')}
+ await page.locator('a,button').evaluateAll(es=>{const el=es.find(x=>/^(riavvia|restart|reboot|neustart)$/i.test((x.textContent||'').trim()));if(el)el.click();});
  console.log('NAV_STEP restart action opened');
  await page.waitForTimeout(900);
  const confirm=await firstPatternAcross([/^s.$/i,/^si$/i,/^yes$/i,/^ja$/i,/^confirm$/i,/^conferma$/i]);
