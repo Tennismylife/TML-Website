@@ -92,11 +92,15 @@ try{
 
  console.log('NAV_STEP servers list');
  let serversLink=null;
- for(const f of page.frames()){
-   serversLink=await firstVisible(f.locator('a[href*="/panel/corevps/servers"]'));
-   if(serversLink)break;
+ const linkDeadline=Date.now()+20000;
+ while(!serversLink && Date.now()<linkDeadline){
+   for(const f of page.frames()){
+     serversLink=await firstVisible(f.locator('a[href*="/panel/corevps/servers"]'));
+     if(serversLink)break;
+   }
+   if(!serversLink)await page.waitForTimeout(500);
  }
- if(!serversLink){await safeDiag(page);throw new Error('Servers link not found')}
+ if(!serversLink){await safeDiag(page);throw new Error('Servers link not found after Cloud Panel load wait')}
  await serversLink.evaluate(el=>el.click());
  await page.waitForTimeout(4500);
 
