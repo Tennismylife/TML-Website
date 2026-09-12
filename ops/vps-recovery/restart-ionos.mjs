@@ -19,6 +19,7 @@ async function firstVisible(locator){for(let i=0;i<await locator.count();i++)if(
 async function clickText(patterns,target=page){for(const p of patterns){const loc=target.getByText(p,{exact:false});for(let i=0;i<await loc.count();i++){const el=loc.nth(i);if(await el.isVisible().catch(()=>false)){try{await el.click({timeout:5000});return true}catch{}}}}return false}
 async function clickTextAcross(patterns){for(const f of page.frames()){if(await clickText(patterns,f))return true}return false}
 async function firstTextAcross(text){for(const f of page.frames()){const el=await firstVisible(f.getByText(text,{exact:false}));if(el)return el}return null}
+async function firstPatternAcross(patterns){for(const f of page.frames()){for(const p of patterns){const loc=f.getByText(p,{exact:true});const el=await firstVisible(loc);if(el)return el}}return null}
 async function body(target=page){return (await target.locator('body').innerText().catch(()=>'' )).toLowerCase()}
 async function safeDiag(target=page){const title=await target.title().catch(()=>''),url=target.url();let txt=(await target.locator('body').innerText().catch(()=>'' )).replaceAll(user,'***').replace(/\s+/g,' ').slice(0,1800);const inputs=await target.locator('input').evaluateAll(es=>es.map(e=>({type:e.type,name:e.name,id:e.id,autocomplete:e.autocomplete,placeholder:e.placeholder}))).catch(()=>[]);const buttons=await target.locator('button').allInnerTexts().catch(()=>[]);const links=await target.locator('a').evaluateAll(es=>es.slice(0,60).map(e=>({text:(e.innerText||'').trim().replace(/\s+/g,' ').slice(0,100),href:e.href}))).catch(()=>[]);console.log('LOGIN_DIAG url='+url);console.log('LOGIN_DIAG title='+title);console.log('LOGIN_DIAG inputs='+JSON.stringify(inputs));console.log('LOGIN_DIAG buttons='+JSON.stringify(buttons.slice(0,30)));console.log('LOGIN_DIAG links='+JSON.stringify(links));console.log('LOGIN_DIAG body='+txt);console.log('FRAME_DIAG '+JSON.stringify(target.frames().map(f=>f.url())))}
 async function tryTotpWindow(target){
@@ -103,11 +104,21 @@ try{
  if(server){console.log('NAV_STEP target server found by IP');await server.click({timeout:8000});selected=true}
  else if(await selectSoleServerRadio()){console.log('NAV_STEP selected sole VPS row');selected=true}
  if(!selected){await safeDiag(page);throw new Error(`Target server could not be uniquely selected; host=${new URL(page.url()).host}`)}
- await page.waitForTimeout(1000);
- if(!(await clickTextAcross([/^actions$/i,/^aktionen$/i,/^azioni$/i]))){await safeDiag(page);throw new Error('Actions menu not found')}
- await page.waitForTimeout(500);
- if(!(await clickTextAcross([/^restart$/i,/^reboot$/i,/^riavvia/i,/^neustart/i]))){await safeDiag(page);throw new Error('Restart action not found')}
- await page.waitForTimeout(700);
- if(dryRun)console.log('DRY RUN OK: reached Restart confirmation; no reboot sent.');
- else{if(!(await clickTextAcross([/^yes$/i,/^ja$/i,/^sì$/i,/^si$/i,/^confirm$/i,/^conferma$/i])))throw new Error('Restart confirmation not found');console.log('IONOS restart request submitted.')}
+ await page.waitForTimeout(1200);
+
+ const restartPatterns=[/^riavvia$/i,/^restart$/i,/^reboot$/i,/^neustart$/i];
+ let restartClicked=await clickTextAcross(restartPatterns);
+ if(!restartClicked){
+   if(await clickTextAcross([/^actions$/i,/^aktionen$/i,/^azioni$/i])){
+     await page.waitForTimeout(500);
+     restartClicked=await clickTextAcross(restartPatterns);
+   }
+ }
+ if(!restartClicked){await safeDiag(page);throw new Error('Restart action not found')}
+ console.log('NAV_STEP restart action opened');
+ await page.waitForTimeout(900);
+ const confirm=await firstPatternAcross([/^sì$/i,/^si$/i,/^yes$/i,/^ja$/i,/^confirm$/i,/^conferma$/i]);
+ if(!confirm){await safeDiag(page);throw new Error('Restart confirmation dialog not detected')}
+ if(dryRun){console.log('DRY RUN OK: reached Restart confirmation; no reboot sent.');}
+ else{await confirm.click({timeout:5000});console.log('IONOS restart request submitted.')}
 }finally{await browser.close()}
