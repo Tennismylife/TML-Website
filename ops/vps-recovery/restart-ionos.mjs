@@ -14,13 +14,11 @@ function secretFingerprint(secret){return crypto.createHash('sha256').update(sec
 
 const browser=await chromium.launch({headless:true,channel:'chrome'});
 const context=await browser.newContext({locale:'it-IT',timezoneId:'Europe/Rome'});
-let page=await context.newPage(); page.setDefaultTimeout(20000);
+let page=await context.newPage(); page.setDefaultTimeout(12000);
 async function firstVisible(locator){for(let i=0;i<await locator.count();i++)if(await locator.nth(i).isVisible().catch(()=>false))return locator.nth(i);return null}
-async function clickText(patterns,target=page){for(const p of patterns){const loc=target.getByText(p,{exact:false});for(let i=0;i<await loc.count();i++){const el=loc.nth(i);if(await el.isVisible().catch(()=>false)){try{await el.click();return true}catch{}}}}return false}
-async function clickSubmit(target=page){const el=await firstVisible(target.locator('button[type="submit"],input[type="submit"]'));if(!el)return false;try{await el.click();return true}catch{return false}}
+async function clickText(patterns,target=page){for(const p of patterns){const loc=target.getByText(p,{exact:false});for(let i=0;i<await loc.count();i++){const el=loc.nth(i);if(await el.isVisible().catch(()=>false)){try{await el.click({timeout:5000});return true}catch{}}}}return false}
 async function body(target=page){return (await target.locator('body').innerText().catch(()=>'' )).toLowerCase()}
 async function safeDiag(target=page){const title=await target.title().catch(()=>''),url=target.url();let txt=(await target.locator('body').innerText().catch(()=>'' )).replaceAll(user,'***').replace(/\s+/g,' ').slice(0,1400);const inputs=await target.locator('input').evaluateAll(es=>es.map(e=>({type:e.type,name:e.name,id:e.id,autocomplete:e.autocomplete,placeholder:e.placeholder}))).catch(()=>[]);const buttons=await target.locator('button').allInnerTexts().catch(()=>[]);console.log('LOGIN_DIAG url='+url);console.log('LOGIN_DIAG title='+title);console.log('LOGIN_DIAG inputs='+JSON.stringify(inputs));console.log('LOGIN_DIAG buttons='+JSON.stringify(buttons.slice(0,20)));console.log('LOGIN_DIAG body='+txt)}
-async function submitCurrent(target=page){if(await clickSubmit(target))return true;return clickText([/^continua$/i,/^continue$/i,/^next$/i,/^avanti$/i,/^weiter$/i,/^verify$/i,/^confirm$/i,/^conferma$/i,/^bestätigen$/i,/^accedi$/i,/^sign\s*in$/i,/^log\s*in$/i],target)}
 async function tryTotpWindow(target){
  if(!totpSecret)throw new Error('IONOS requested Authenticator code; add IONOS_TOTP_SECRET to GitHub Secrets');
  const candidates=[0,-1,1];
@@ -29,35 +27,36 @@ async function tryTotpWindow(target){
    if(!otp)return true;
    console.log(`LOGIN_STEP TOTP window=${offset}`);
    await otp.fill(totp(totpSecret,offset));
-   if(!(await submitCurrent(target)))await otp.press('Enter');
-   await target.waitForTimeout(1400);
+   await otp.press('Enter');
+   await target.waitForTimeout(1800);
    if(!/^login\.ionos\./i.test(new URL(target.url()).host))return true;
    const txt=await body(target);
    if(!/codice non valido|invalid code|ungültig|incorrect code|try again|prova con uno nuovo/i.test(txt))return true;
  }
  return false;
 }
-async function finishIonosLogin(target=page,timeoutMs=180000){
+async function finishIonosLogin(target=page,timeoutMs=120000){
  const end=Date.now()+timeoutMs; let lastAction='';
  while(Date.now()<end){
    const url=target.url(); const host=new URL(url).host;
    if(/emailconfirmation/i.test(url)){await safeDiag(target);throw new Error('IONOS requested email confirmation instead of Authenticator')}
    if(!/^login\.ionos\./i.test(host)){
      if(/^auth\.ionos\./i.test(host)){await target.waitForTimeout(700);continue}
+     console.log(`LOGIN_STEP completed host=${host}`);
      return;
    }
    const txt=await body(target);
    const otp=await firstVisible(target.locator('input[autocomplete="one-time-code"],input[name="passcode"],input[inputmode="numeric"],input[type="tel"],input[name="token"]'));
    if(otp && /authenticator|two[- ]factor|2fa|codice|verification|security code|bestätigungscode|6-digit/i.test(txt)){
      lastAction='TOTP';
-     if(await tryTotpWindow(target)){await target.waitForTimeout(800);continue}
+     if(await tryTotpWindow(target)){await target.waitForTimeout(500);continue}
      await safeDiag(target);throw new Error('IONOS rejected current/previous/next TOTP window');
    }
    const pass=await firstVisible(target.locator('input[type="password"]'));
-   if(pass){console.log('LOGIN_STEP password');await pass.fill(password);if(!(await submitCurrent(target)))await pass.press('Enter');lastAction='password';await target.waitForTimeout(1600);continue}
+   if(pass){console.log('LOGIN_STEP password');await pass.fill(password);await pass.press('Enter');lastAction='password';await target.waitForTimeout(1800);continue}
    const username=await firstVisible(target.locator('input#username,input[name="identifier"],input[type="email"]'));
-   if(username){console.log('LOGIN_STEP username');await username.fill(user);if(!(await submitCurrent(target)))await username.press('Enter');lastAction='username';await target.waitForTimeout(1500);continue}
-   await target.waitForTimeout(500);
+   if(username){console.log('LOGIN_STEP username');await username.fill(user);await username.press('Enter');lastAction='username';await target.waitForTimeout(1600);continue}
+   await target.waitForTimeout(400);
  }
  await safeDiag(target);throw new Error(`IONOS login did not leave login host after ${lastAction || 'no recognized step'}`);
 }
@@ -69,12 +68,12 @@ try{
  await page.goto(serverPortfolio,{waitUntil:'domcontentloaded',timeout:45000});
  await page.waitForTimeout(900);
  await finishIonosLogin(page);
- await page.waitForTimeout(4500);
+ await page.waitForTimeout(5000);
  if(/^login\.ionos\./i.test(new URL(page.url()).host)){await safeDiag(page);throw new Error(`Server & Cloud login returned to login host=${new URL(page.url()).host}`)}
  if(/^auth\.ionos\./i.test(new URL(page.url()).host)){
    const end=Date.now()+12000;while(Date.now()<end && /^auth\.ionos\./i.test(new URL(page.url()).host))await page.waitForTimeout(500);
  }
- const pages=context.pages();if(pages.length>1)page=pages[pages.length-1];page.setDefaultTimeout(20000);
+ const pages=context.pages();if(pages.length>1)page=pages[pages.length-1];page.setDefaultTimeout(12000);
  console.log(`Server & Cloud opened; current host=${new URL(page.url()).host}`);
 
  let server=await firstVisible(page.getByText(serverMatch,{exact:false}));
