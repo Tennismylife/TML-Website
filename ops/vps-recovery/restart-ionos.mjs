@@ -117,7 +117,7 @@ try{
  if(!restartClicked){await safeDiag(page);throw new Error('Restart action not found')}
  console.log('NAV_STEP restart action opened');
  await page.waitForTimeout(900);
- const confirm=await firstPatternAcross([/^s\\u00ec$/i,/^si$/i,/^yes$/i,/^ja$/i,/^confirm$/i,/^conferma$/i]);
+ const confirm=await firstPatternAcross([/^s.$/i,/^si$/i,/^yes$/i,/^ja$/i,/^confirm$/i,/^conferma$/i]);
  if(!confirm){await safeDiag(page);throw new Error('Restart confirmation dialog not detected')}
  if(dryRun){console.log('DRY RUN OK: reached Restart confirmation; no reboot sent.');}
  else{await confirm.click({timeout:5000});console.log('IONOS restart request submitted.')}
