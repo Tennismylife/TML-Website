@@ -17,8 +17,10 @@ const context=await browser.newContext({locale:'it-IT',timezoneId:'Europe/Rome'}
 let page=await context.newPage(); page.setDefaultTimeout(12000);
 async function firstVisible(locator){for(let i=0;i<await locator.count();i++)if(await locator.nth(i).isVisible().catch(()=>false))return locator.nth(i);return null}
 async function clickText(patterns,target=page){for(const p of patterns){const loc=target.getByText(p,{exact:false});for(let i=0;i<await loc.count();i++){const el=loc.nth(i);if(await el.isVisible().catch(()=>false)){try{await el.click({timeout:5000});return true}catch{}}}}return false}
+async function clickTextAcross(patterns){for(const f of page.frames()){if(await clickText(patterns,f))return true}return false}
+async function firstTextAcross(text){for(const f of page.frames()){const el=await firstVisible(f.getByText(text,{exact:false}));if(el)return el}return null}
 async function body(target=page){return (await target.locator('body').innerText().catch(()=>'' )).toLowerCase()}
-async function safeDiag(target=page){const title=await target.title().catch(()=>''),url=target.url();let txt=(await target.locator('body').innerText().catch(()=>'' )).replaceAll(user,'***').replace(/\s+/g,' ').slice(0,1400);const inputs=await target.locator('input').evaluateAll(es=>es.map(e=>({type:e.type,name:e.name,id:e.id,autocomplete:e.autocomplete,placeholder:e.placeholder}))).catch(()=>[]);const buttons=await target.locator('button').allInnerTexts().catch(()=>[]);console.log('LOGIN_DIAG url='+url);console.log('LOGIN_DIAG title='+title);console.log('LOGIN_DIAG inputs='+JSON.stringify(inputs));console.log('LOGIN_DIAG buttons='+JSON.stringify(buttons.slice(0,20)));console.log('LOGIN_DIAG body='+txt)}
+async function safeDiag(target=page){const title=await target.title().catch(()=>''),url=target.url();let txt=(await target.locator('body').innerText().catch(()=>'' )).replaceAll(user,'***').replace(/\s+/g,' ').slice(0,1400);const inputs=await target.locator('input').evaluateAll(es=>es.map(e=>({type:e.type,name:e.name,id:e.id,autocomplete:e.autocomplete,placeholder:e.placeholder}))).catch(()=>[]);const buttons=await target.locator('button').allInnerTexts().catch(()=>[]);const links=await target.locator('a').evaluateAll(es=>es.slice(0,50).map(e=>({text:(e.innerText||'').trim().replace(/\s+/g,' ').slice(0,100),href:e.href}))).catch(()=>[]);console.log('LOGIN_DIAG url='+url);console.log('LOGIN_DIAG title='+title);console.log('LOGIN_DIAG inputs='+JSON.stringify(inputs));console.log('LOGIN_DIAG buttons='+JSON.stringify(buttons.slice(0,20)));console.log('LOGIN_DIAG links='+JSON.stringify(links));console.log('LOGIN_DIAG body='+txt);console.log('FRAME_DIAG '+JSON.stringify(target.frames().map(f=>f.url())))}
 async function tryTotpWindow(target){
  if(!totpSecret)throw new Error('IONOS requested Authenticator code; add IONOS_TOTP_SECRET to GitHub Secrets');
  const candidates=[0,-1,1];
@@ -76,13 +78,22 @@ try{
  const pages=context.pages();if(pages.length>1)page=pages[pages.length-1];page.setDefaultTimeout(12000);
  console.log(`Server & Cloud opened; current host=${new URL(page.url()).host}`);
 
- let server=await firstVisible(page.getByText(serverMatch,{exact:false}));
- if(!server){await clickText([/^servers$/i,/^server$/i,/infrastructure/i,/infrastruttura/i],page);await page.waitForTimeout(1800);server=await firstVisible(page.getByText(serverMatch,{exact:false}))}
+ let server=await firstTextAcross(serverMatch);
+ if(!server){
+   console.log('NAV_STEP infrastructure');
+   await clickTextAcross([/^infrastruttura$/i,/^infrastructure$/i]);
+   await page.waitForTimeout(1800);
+   console.log('NAV_STEP servers');
+   await clickTextAcross([/^server$/i,/^servers$/i]);
+   await page.waitForTimeout(4000);
+   server=await firstTextAcross(serverMatch);
+ }
  if(!server){await safeDiag(page);throw new Error(`Target server not found using IP match ${serverMatch}; host=${new URL(page.url()).host}`)}
- await server.click();await page.waitForTimeout(1200);
- if(!(await clickText([/^actions$/i,/^aktionen$/i,/^azioni$/i],page)))throw new Error('Actions menu not found');
- if(!(await clickText([/^restart$/i,/^reboot$/i,/^riavvia/i,/^neustart/i],page)))throw new Error('Restart action not found');
+ console.log('NAV_STEP target server found');
+ await server.click({timeout:8000});await page.waitForTimeout(1800);
+ if(!(await clickTextAcross([/^actions$/i,/^aktionen$/i,/^azioni$/i])))throw new Error('Actions menu not found');
+ if(!(await clickTextAcross([/^restart$/i,/^reboot$/i,/^riavvia/i,/^neustart/i])))throw new Error('Restart action not found');
  await page.waitForTimeout(700);
  if(dryRun)console.log('DRY RUN OK: reached Restart confirmation; no reboot sent.');
- else{if(!(await clickText([/^yes$/i,/^ja$/i,/^sì$/i,/^si$/i,/^confirm$/i,/^conferma$/i],page)))throw new Error('Restart confirmation not found');console.log('IONOS restart request submitted.')}
+ else{if(!(await clickTextAcross([/^yes$/i,/^ja$/i,/^sì$/i,/^si$/i,/^confirm$/i,/^conferma$/i])))throw new Error('Restart confirmation not found');console.log('IONOS restart request submitted.')}
 }finally{await browser.close()}
