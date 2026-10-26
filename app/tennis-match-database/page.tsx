@@ -260,11 +260,11 @@ export default function Page() {
           <p className="mt-4">
             We welcome collaborations and bug reports. Help us improve the quality of this tennis database and make it the most reliable source for ATP and WTA stats, match history, and player analytics.
           </p>
-          <div className="mt-6 text-sm text-gray-300 sm:text-base">
+          <div id="usage-terms" className="mt-6 text-sm text-gray-300 sm:text-base">
             <strong className="!text-white">Creator:</strong> Tennis My Life<br/>
-            <strong className="!text-white">License:</strong> <a className="underline !text-sky-400" href="https://opensource.org/licenses/MIT">MIT License</a><br/>
+            <strong className="!text-white">Data usage terms:</strong> Personal, educational and non-commercial research use only. No commercial use of the TennisMyLife ATP/WTA datasets is authorized by these public terms. Prior express written permission from TennisMyLife is required for any commercial use, including training or validating prediction models for commercial services, publishing model-generated probabilities on advertising-supported websites, or offering paid features. Redistribution or resale of the raw CSV files is not authorized. Third-party rights and terms may also apply.<br/>
             <strong className="!text-white">Temporal coverage:</strong> <span className="!text-yellow-300 font-semibold">{minYear}–{maxYear}</span><br/>
-            <strong className="!text-white">Access:</strong> <span className="!text-emerald-400 font-semibold">Free to use (isAccessibleForFree)</span>
+            <strong className="!text-white">Access:</strong> <span className="!text-emerald-400 font-semibold">Free CSV downloads (not a commercial-use license)</span>
           </div>
         </div>
       </section>
