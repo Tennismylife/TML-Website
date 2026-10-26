@@ -111,7 +111,8 @@ async function getDatasetMetadata() {
     description:
       'A curated, continuously-updated collection of professional tennis match results (singles) with extensive metadata and CSV exports. Includes historical and ongoing tournament data, match scores, player identifiers, surfaces, and basic event-level metadata for analysis and research. Download the files directly as CSV or use the provided API for programmatic access.',
     isAccessibleForFree: true,
-    license: 'https://opensource.org/licenses/MIT',
+    license: `${site}/tennis-match-database#usage-terms`,
+    usageInfo: 'Free downloads do not grant commercial-use rights. TennisMyLife ATP/WTA data may be used for personal, educational and non-commercial research purposes only. Commercial applications, including prediction-model training and monetized predictions, require prior express written permission from TennisMyLife. Third-party terms may also apply.',
     identifier: {
       '@type': 'PropertyValue',
       propertyID: 'url',
