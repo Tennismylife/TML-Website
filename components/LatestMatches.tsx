@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import Link from "@/components/TourLink";
 import Flag from '@/components/Flag';
 import { getTourneyHref, getPlayerHref, formatDateISO, createH2HUrl } from "@/lib/utils";
 

@@ -15,4 +15,5 @@ Disallow: /records/*?*
 
 # Sitemap
 Sitemap: https://stats.tennismylife.org/sitemaps/sitemap_index.xml
+Sitemap: https://stats.tennismylife.org/sitemap-wta-records.xml
 Sitemap: https://stats.tennismylife.org/sitemaps/sitemap-h2h-shanghai-2026.xml

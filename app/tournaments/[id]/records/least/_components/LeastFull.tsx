@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import Flag from '@/components/Flag';
 import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
 import { makeLeastLabel } from '@/lib/recordMetadata';

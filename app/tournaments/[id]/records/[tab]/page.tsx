@@ -1,3 +1,5 @@
+import { tourMetadata } from "@/lib/tour-metadata";
+import { fetchForTour } from "@/lib/tour";
 import React from 'react';
 import RecordsPageClient from "../RecordsClient";
 import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
@@ -38,109 +40,109 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   // Special-case: when viewing the 'rounds' tab root, return the requested title
   if (tab === 'rounds') {
     const siteTitle = `${displayFromParam} Records by Round | Tennis Records`;
-    return {
+    return tourMetadata({
       title: siteTitle,
       openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Rounds`, width: 1200, height: 630, type: 'image/png' }] },
       twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
       alternates: { canonical: ogUrlFromParam },
-    };
+    });
   }
 
   // Special-case: when viewing the 'count' tab root, return the site-specific SEO title
   if (tab === 'count') {
     const siteTitle = `${displayFromParam} Open Era Records | Tennis My Life`;
-    return {
+    return tourMetadata({
       title: siteTitle,
       openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Counts`, width: 1200, height: 630, type: 'image/png' }] },
       twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
       alternates: { canonical: ogUrlFromParam },
-    };
+    });
   }
 
   // Special-case: when viewing the 'rounds-on-entries' or 'roundsonentries' tab root, return the canonical "Rounds on Entries" title
   if (tab === 'rounds-on-entries' || tab === 'roundsonentries') {
     const siteTitle = `${displayFromParam} Rounds on Entries | Tennis Records`;
-    return {
+    return tourMetadata({
       title: siteTitle,
       openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Rounds on Entries`, width: 1200, height: 630, type: 'image/png' }] },
       twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
       alternates: { canonical: ogUrlFromParam },
-    };
+    });
   }
 
   // Special-case: when viewing the 'titles' tab root, return the site-specific Titles title
   if (tab === 'titles') {
     const siteTitle = `${displayFromParam} Titles | Tennis Records`;
-    return {
+    return tourMetadata({
       title: siteTitle,
       openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Titles`, width: 1200, height: 630, type: 'image/png' }] },
       twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
       alternates: { canonical: ogUrlFromParam },
-    };
+    });
   }
 
   // Special-case: when viewing the 'least' tab root, return the site-specific Least Games title
   if (tab === 'least') {
     const siteTitle = `${displayFromParam} Least Games Lost to Reach a Round | Tennis Records`;
-    return {
+    return tourMetadata({
       title: siteTitle,
       openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Least Games`, width: 1200, height: 630, type: 'image/png' }] },
       twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
       alternates: { canonical: ogUrlFromParam },
-    };
+    });
   }
 
   // Special-case: when viewing the 'average-age' tab root, return the site-specific Average Age title
   if (tab === 'average-age') {
     const siteTitle = `${displayFromParam} Average Age Records | Tennis Statistics`;
-    return {
+    return tourMetadata({
       title: siteTitle,
       openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Average Age`, width: 1200, height: 630, type: 'image/png' }] },
       twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
       alternates: { canonical: ogUrlFromParam },
-    };
+    });
   }
 
   // Special-case: when viewing the 'percentage' tab root, return the site-specific Percentages title
   if (tab === 'percentage') {
     const siteTitle = `${displayFromParam} Percentages | Tennis Records`;
-    return {
+    return tourMetadata({
       title: siteTitle,
       openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Percentages`, width: 1200, height: 630, type: 'image/png' }] },
       twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
       alternates: { canonical: ogUrlFromParam },
-    };
+    });
   }
 
   // Special-case: when viewing the 'streak' tab root, return the site-specific Longest Winning Streaks title
   if (tab === 'streak') {
     const siteTitle = `${displayFromParam} Longest Winning Streaks | Tennis Records`;
-    return {
+    return tourMetadata({
       title: siteTitle,
       openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Longest Winning Streaks`, width: 1200, height: 630, type: 'image/png' }] },
       twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
       alternates: { canonical: ogUrlFromParam },
-    };
+    });
   }
 
   // Special-case: when viewing the 'timespan' tab root, return the site-specific Timespans title
   if (tab === 'timespan') {
     const siteTitle = `${displayFromParam} Timespans | Tennis Records`;
-    return {
+    return tourMetadata({
       title: siteTitle,
       openGraph: { title: siteTitle, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - Timespans`, width: 1200, height: 630, type: 'image/png' }] },
       twitter: { card: 'summary_large_image', title: siteTitle, images: [ogImageFromParam] },
       alternates: { canonical: ogUrlFromParam },
-    };
+    });
   }
 
   // Return deterministic metadata based on the path (fast and reliable)
-  return {
+  return tourMetadata({
     title: titleFromParam,
     openGraph: { title: titleFromParam, url: ogUrlFromParam, siteName: 'TennisMyLife', images: [{ url: ogImageFromParam, alt: `${displayFromParam} - ${typeLabelFromParam}`, width: 1200, height: 630, type: 'image/png' }] },
     twitter: { card: 'summary_large_image', title: titleFromParam, images: [ogImageFromParam] },
     alternates: { canonical: ogUrlFromParam },
-  };
+  });
 }
 
 export default async function RecordsTabPage({ params }: { params: Promise<{ id: string; tab?: string }> }) {
@@ -235,7 +237,7 @@ export default async function RecordsTabPage({ params }: { params: Promise<{ id:
     const path = apiMap[tabName];
     if (!path) return null;
     try {
-      const res = await fetch(`${base}${path}`, { cache: 'no-store' });
+      const res = await fetchForTour(`${base}${path}`, { cache: 'no-store' });
       if (!res.ok) return null;
       return await res.json();
     } catch {

@@ -1,7 +1,9 @@
 'use client'
 
+import RecordH3 from "@/app/records/RecordH3";
+
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import Link from '@/app/records/RecordLink';
 import Flag from '@/components/Flag';
 import { getPlayerHrefWithTab } from "@/lib/utils";
 import { playerSurfaceHref, surfaceFromSelection } from "../nav";
@@ -240,8 +242,8 @@ export default function Sets({ selectedSurfaces, selectedLevels, selectedRounds,
         <div>Loading...</div>
       ) : (
         <div>
-          <h3 className="text-md font-semibold mb-2">
-            {activeTab === 'win' ? 'Win Percentage' :
+          <RecordH3 className="text-md font-semibold mb-2"
+            label={activeTab === 'win' ? 'Win Percentage' :
              activeTab === 'straight' ? 'Straight Sets Win Percentage' :
              activeTab === 'decider' ? 'Deciders Win Percentage' :
              activeTab === 'won1st' ? 'After Winning 1st Set Win Percentage' :
@@ -251,7 +253,7 @@ export default function Sets({ selectedSurfaces, selectedLevels, selectedRounds,
              activeTab === 'split1st2nd' ? 'After Splitting 1st&2nd Sets Win Percentage' :
              activeTab === 'up2to1' ? 'Up 2 to 1 Win Percentage' :
              'Down 1 to 2 Win Percentage'}
-          </h3>
+          />
           {renderTable()}
         </div>
       )}

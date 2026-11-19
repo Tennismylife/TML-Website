@@ -1,3 +1,5 @@
+import { getTour } from "@/lib/tour";
+import { tourPath, type Tour } from "@/lib/tour-path";
 // app/players/[id]/SEOPlayer.tsx
 import React from 'react';
 
@@ -74,7 +76,8 @@ interface SEOPlayerProps {
   };
 }
 
-export default function SEOPlayer({ playerId, slug, name, atpname, tab = 'overview', birthdate, ioc, birthplace, matches, summary }: SEOPlayerProps) {
+export default async function SEOPlayer({ playerId, slug, name, atpname, tab = 'overview', birthdate, ioc, birthplace, matches, summary }: SEOPlayerProps) {
+  const tour = await getTour();
   // Prefer server-provided summary when available to avoid scanning large match arrays
   const total = summary?.total ?? (matches || []).filter((m) => m?.status !== false).length;
   const wins = summary?.wins ?? (matches || []).filter((m) => String(m.winner_id) === String(playerId)).length;
@@ -96,9 +99,9 @@ export default function SEOPlayer({ playerId, slug, name, atpname, tab = 'overvi
   const base = 'https://stats.tennismylife.org';
   const isOverview = !tab || tab === 'overview';
   const path = isOverview ? `/players/${encodeURIComponent(slug)}` : `/players/${encodeURIComponent(slug)}/${encodeURIComponent(tab as string)}`;
-  const url = new URL(path, base).toString();
+  const url = new URL(tourPath(path, tour), base).toString();
   // canonical (tab-independent) player @id used to avoid duplicate entities across tabs
-  const personId = `${base}/players/${encodeURIComponent(slug)}#person`;
+  const personId = `${base}${tourPath(`/players/${encodeURIComponent(slug)}`, tour)}#person`;
 
   // build JSON-LD as requested
   const nameForWiki = (atpname || name || '').replace(/\s+/g, '_');
@@ -109,13 +112,13 @@ export default function SEOPlayer({ playerId, slug, name, atpname, tab = 'overvi
     name: atpname || name,
     url,
     mainEntityOfPage: url,
-    description: `Complete statistics for ${name}: ATP results, matches in ${new Date().getFullYear()}, career records, ranking, titles, head-to-head records and surface performance. Updated to ${new Date().getFullYear()}.`,
+    description: `Complete statistics for ${name}: ${tour} results, matches in ${new Date().getFullYear()}, career records, ranking, titles, head-to-head records and surface performance. Updated to ${new Date().getFullYear()}.`,
     additionalProperty: [],
     sameAs: [
       `https://en.wikipedia.org/wiki/${encodeURIComponent(nameForWiki)}`,
-      `https://www.atptour.com/en/players/${encodeURIComponent(slug)}/${String(playerId).toLowerCase()}/overview`,
+      ...(tour === "ATP" ? [`https://www.atptour.com/en/players/${encodeURIComponent(slug)}/${String(playerId).toLowerCase()}/overview`] : []),
     ],
-    memberOf: { '@type': 'Organization', name: 'ATP Tour', url: 'https://www.atptour.com' },
+    memberOf: { '@type': 'Organization', name: `${tour} Tour`, url: tour === "WTA" ? "https://www.wtatennis.com" : "https://www.atptour.com" },
   };
 
   // Optional rich fields
@@ -157,18 +160,18 @@ export default function SEOPlayer({ playerId, slug, name, atpname, tab = 'overvi
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(buildDatasetLd({ name: atpname || name, slug, playerId, url, personId, wins, losses, total, hardWR, clayWR, grassWR, hardWins, hardLosses, clayWins, clayLosses, grassWins, grassLosses })) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(buildDatasetLd({ tour, name: atpname || name, slug, playerId, url, personId, wins, losses, total, hardWR, clayWR, grassWR, hardWins, hardLosses, clayWins, clayLosses, grassWins, grassLosses })) }} />
     </>
   );
 }
 
 function buildDatasetLd({
-  name, slug, playerId, url, personId,
+  tour, name, slug, playerId, url, personId,
   wins, losses, total,
   hardWR, clayWR, grassWR,
   hardWins, hardLosses, clayWins, clayLosses, grassWins, grassLosses,
 }: {
-  name: string; slug: string; playerId: string | number; url: string; personId: string;
+  tour: Tour; name: string; slug: string; playerId: string | number; url: string; personId: string;
   wins: number; losses: number; total: number;
   hardWR: number; clayWR: number; grassWR: number;
   hardWins: number; hardLosses: number; clayWins: number; clayLosses: number; grassWins: number; grassLosses: number;
@@ -201,8 +204,8 @@ function buildDatasetLd({
     '@context': 'https://schema.org',
     '@type': 'Dataset',
     '@id': `${url}#dataset`,
-    name: `${name} – ATP Tennis Statistics Dataset`,
-    description: `Complete ATP match results and career statistics for ${name}: win-loss records, surface performance (hard, clay, grass), ranking history, tournament results and head-to-head data. Source: TennisMyLife.`,
+    name: `${name} – ${tour} Tennis Statistics Dataset`,
+    description: `Complete ${tour} match results and career statistics for ${name}: win-loss records, surface performance (hard, clay, grass), ranking history, tournament results and head-to-head data. Source: TennisMyLife.`,
     url,
     inLanguage: 'en-US',
     creator: org,
@@ -213,8 +216,8 @@ function buildDatasetLd({
       `${name} career stats`,
       `${name} win loss record`,
       `${name} surface stats`,
-      `${name} ATP match results`,
-      'ATP tennis data',
+      `${name} ${tour} match results`,
+      `${tour} tennis data`,
       'tennis statistics dataset',
     ],
     variableMeasured,

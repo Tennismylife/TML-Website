@@ -1,3 +1,4 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import path from 'path';
 import fs from 'fs';
 import React from 'react';
@@ -139,7 +140,7 @@ function JsonLdScript({ json }: { json: any }) {
 export async function generateMetadata() {
   const { site, title, description, minYear, maxYear, keywords } = await getDatasetMetadata();
 
-  return {
+  return tourMetadata({
     title: { absolute: title },
     description,
     metadataBase: new URL(site),
@@ -161,7 +162,7 @@ export async function generateMetadata() {
       images: [`${site}/og/site-preview.png`],
     },
     // Icons and manifest are provided by the global app layout to avoid duplicates
-  };
+  });
 }
 
 export default async function Layout({ children }: { children: React.ReactNode }) {

@@ -1,3 +1,4 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import RecordsPageClient from '../RecordsClient';
 import { getTournamentName, getTournamentSlug, shouldIndexRecords } from '@/lib/getTournamentName';
 import { prisma } from '@/lib/prisma';
@@ -20,14 +21,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       const description = `The longest winning streaks in men's singles at ${tournamentName}. Historical streak records from Open Era editions.`;
       const siteTitle = `${tournamentName} Longest Winning Streaks | Tennis Records`;
       const ogUrl = `${site}/tournaments/${canonicalSlug}/records/streak`;
-      return {
+      return tourMetadata({
         title: siteTitle,
         description,
         openGraph: { title: siteTitle, description, url: ogUrl, siteName: 'Tennis My Life', images: [{ url: `${site}/og/site-preview.png`, alt: `${tournamentName} - Longest Winning Streaks`, width: 1200, height: 630, type: 'image/png' }] },
         twitter: { card: 'summary_large_image', title: siteTitle, description, images: [`${site}/og/site-preview.png`] },
         alternates: { canonical: ogUrl },
         robots: { index: shouldIndexRecords(t?.category, t?.years ?? null), follow: true },
-      } as any;
+      } as any);
     }
   } else {
     const t = await prisma.tournament.findUnique({ where: { slug: String(p.id) }, select: { slug: true, category: true, years: true } });
@@ -36,14 +37,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const description = `The longest winning streaks in men's singles at ${tournamentName}. Historical streak records from Open Era editions.`;
     const siteTitle = `${tournamentName} Longest Winning Streaks | Tennis Records`;
     const ogUrl = `${site}/tournaments/${canonicalSlug}/records/streak`;
-    return {
+    return tourMetadata({
       title: siteTitle,
       description,
       openGraph: { title: siteTitle, description, url: ogUrl, siteName: 'Tennis My Life', images: [{ url: `${site}/og/site-preview.png`, alt: `${tournamentName} - Longest Winning Streaks`, width: 1200, height: 630, type: 'image/png' }] },
       twitter: { card: 'summary_large_image', title: siteTitle, description, images: [`${site}/og/site-preview.png`] },
       alternates: { canonical: ogUrl },
       robots: { index: shouldIndexRecords(t?.category, t?.years ?? null), follow: true },
-    } as any;
+    } as any);
   }
 
   // Fallback (slug not resolved)
@@ -51,13 +52,13 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const description = `The longest winning streaks in men's singles at ${tournamentName}. Historical streak records from Open Era editions.`;
   const siteTitle = `${tournamentName} Longest Winning Streaks | Tennis Records`;
   const ogUrl = `${site}/tournaments/${canonicalSlug}/records/streak`;
-  return {
+  return tourMetadata({
     title: siteTitle,
     description,
     openGraph: { title: siteTitle, description, url: ogUrl, siteName: 'Tennis My Life', images: [{ url: `${site}/og/site-preview.png`, alt: `${tournamentName} - Longest Winning Streaks`, width: 1200, height: 630, type: 'image/png' }] },
     twitter: { card: 'summary_large_image', title: siteTitle, description, images: [`${site}/og/site-preview.png`] },
     alternates: { canonical: ogUrl },
-  } as any;
+  } as any);
 } 
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {

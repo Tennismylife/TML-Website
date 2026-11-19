@@ -1,3 +1,4 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import React from 'react';
 import RecordsPageClient from '@/app/tournaments/[id]/records/RecordsClient';
 import { getTournamentName, getTournamentSlug, shouldIndexRecords } from '@/lib/getTournamentName';
@@ -34,7 +35,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const ogUrl = `${site}/tournaments/${canonicalSlug}/records/ages/main`;
   const ogImage = `${site}/og/site-preview.png`;
 
-  return {
+  return tourMetadata({
     title,
     description,
     openGraph: {
@@ -50,7 +51,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       index: shouldIndexRecords(tournamentCategory, tournamentYears),
       follow: true,
     },
-  };
+  });
 }
 
 export default async function Page({ params }: any) {

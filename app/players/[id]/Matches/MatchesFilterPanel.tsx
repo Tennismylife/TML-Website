@@ -1,4 +1,7 @@
 "use client";
+import { usePlayerLevel } from "@/lib/use-player-level";
+import { useLinkTour } from "@/components/TourLink";
+import { sortPlayerLevels } from "@/lib/player-levels";
 
 import React, { useEffect, useState, useRef, useMemo } from "react";
 import { usePathname } from "next/navigation";
@@ -89,16 +92,6 @@ interface Props {
 
 // ... later in the file, after filteredMatches and wins/losses state, add effect to notify parent when filters change
 
-const TOURNEY_LEVELS = [
-  { code: "G", label: "Grand Slam" },
-  { code: "M", label: "Masters 1000" },
-  { code: "500", label: "ATP 500" },
-  { code: "250", label: "ATP 250" },
-  { code: "A", label: "Others" },
-  { code: "F", label: "Finals" },
-  { code: "D", label: "Davis Cup" },
-  { code: "O", label: "Olympics" },
-];
 
 /**
  * Reads filter params from the URL hash fragment (#year=2026&surface=Hard).
@@ -120,6 +113,8 @@ function useHashParams(): URLSearchParams {
 }
 
 export default function MatchesFilterPanel({ playerId, matches, allMatches, displayedMatches, onFiltersChange, allMatchesFetched, serverFacets }: Props) {
+  const levelNameFor = usePlayerLevel();
+  const tour = useLinkTour();
   const hashParams = useHashParams();
   const urlYear = hashParams.get("year");
   const urlTourney = hashParams.get("tourney");
@@ -232,8 +227,6 @@ export default function MatchesFilterPanel({ playerId, matches, allMatches, disp
       return;
     }
 
-    if (!allMatches || allMatches.length === 0) return;
-
     // Compute the available options from the full (or partial) match set
     const years = Array.from(new Set(allMatches.map(m => m.year).filter((y): y is number => y != null)))
                        .sort((a,b) => b-a)
@@ -253,9 +246,9 @@ export default function MatchesFilterPanel({ playerId, matches, allMatches, disp
     }
 
     if (!facetsLoaded) {
-      const availableLevels = TOURNEY_LEVELS.filter(l => allMatches.some(m => m.tourney_level === l.code));
+      const availableLevels = sortPlayerLevels(new Set(allMatches.map(match => match.tourney_level ?? "Unknown")));
       setTourneyLevels(prev => {
-        const codes = availableLevels.map(l => l.code);
+        const codes = availableLevels;
         if (urlLevel && !codes.includes(urlLevel)) return [urlLevel, ...codes];
         return codes;
       });
@@ -363,7 +356,7 @@ export default function MatchesFilterPanel({ playerId, matches, allMatches, disp
       fullOptionsPopulatedRef.current = true;
     }
 
-  }, [allMatches, urlYear, urlTourney, urlLevel, hashParams, allMatchesFetched]);
+  }, [allMatches, urlYear, urlTourney, urlLevel, hashParams, allMatchesFetched, facetsLoaded, facets]);
 
   // We intentionally do not mutate the browser URL when filters change.
   // Filter state remains client-only to prevent indexed query-string URLs.
@@ -468,10 +461,10 @@ useEffect(() => {
 
   const winPercentage = (wins + losses > 0 ? ((wins / (wins + losses)) * 100).toFixed(2) : "0.00");
 
-  const tourneyLevelLabels = TOURNEY_LEVELS.reduce((acc, l) => {
-    acc[l.code] = l.label;
-    return acc;
-  }, {} as Record<string,string>);
+  const tourneyLevelLabels = Object.fromEntries(tourneyLevels.map(code => [code, levelNameFor(code)]));
+  const hasBestOfFive = tour === "ATP"
+    || Boolean((facets ?? serverFacets)?.bestOf?.some((format: { value: number }) => Number(format.value) === 5))
+    || allMatches.some(match => match.best_of === 5);
 
   // Final safety: ensure tourney_name is unique in the rendered filter list
   const uniqueTourneyList = useMemo(() => {
@@ -517,10 +510,12 @@ useEffect(() => {
       {tourneyIds.length > 0 && (
         <div className="mt-0 pr-0">
           <FilterBar
+            onExplicitChange={() => { initializedRef.current = true; }}
             years={availableYears}
             selectedYear={selectedYear}
             setSelectedYear={setSelectedYear}
             tourneyLevels={tourneyLevels}
+            hasBestOfFive={hasBestOfFive}
             tourneyLevelLabels={tourneyLevelLabels}
             selectedLevel={tourneyLevelFilter}
             setSelectedLevel={setTourneyLevelFilter}

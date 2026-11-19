@@ -1,5 +1,7 @@
+import { TourAnchor } from "@/components/TourLink";
+import { fetchForTour } from "@/lib/tour";
 import React from 'react';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import Flag from '@/components/Flag';
 import { playerMatchesUrl } from '../../../../../records/nav';
 
@@ -22,7 +24,7 @@ async function fetchAgesApi(id: string, segment: string, full = true) {
     : (process.env.NODE_ENV === 'development' ? new URL('http://localhost:3000') : metadataBase);
   const url = new URL(`/api/tournaments/${id}/records/ages/${segment}${q}`, base).toString();
   try {
-    const res = await fetch(url, { cache: 'no-store' });
+    const res = await fetchForTour(url, { cache: 'no-store' });
     if (!res.ok) throw new Error(`Failed to fetch ${segment} (${res.status}) from ${url}`);
     return res.json();
   } catch (err: any) {
@@ -377,7 +379,7 @@ export default async function AgesFull({ id, section = 'titles', which, title }:
                   <h4 className="text-white font-medium mb-2">{getRoundFullName(String(item.title))}</h4>
                   {renderTable(item.list ?? [])}
                   <div className="mt-2">
-                    <a href={`/tournaments/${slugId}/records/ages/${safeSection}/${encodeURIComponent(String(item.title))}`} className="mt-2 inline-block px-4 py-2 bg-blue-500 text-white rounded">View All</a>
+                    <TourAnchor href={`/tournaments/${slugId}/records/ages/${safeSection}/${encodeURIComponent(String(item.title))}`} className="mt-2 inline-block px-4 py-2 bg-blue-500 text-white rounded">View All</TourAnchor>
                   </div>
                 </div>
               </div>

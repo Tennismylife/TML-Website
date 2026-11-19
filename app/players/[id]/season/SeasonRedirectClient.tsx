@@ -1,7 +1,9 @@
 "use client";
+import { useTourRouter as useRouter } from "@/lib/tour-navigation";
+import { TourAnchor } from "@/components/TourLink";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+
 
 interface Props { to: string }
 
@@ -14,7 +16,7 @@ export default function SeasonRedirectClient({ to }: Props) {
   return (
     <div className="p-6">
       <div className="text-lg">Redirecting…</div>
-      <div className="mt-2 text-sm text-gray-400">If you are not redirected automatically, <a className="underline" href={to}>click here</a>.</div>
+      <div className="mt-2 text-sm text-gray-400">If you are not redirected automatically, <TourAnchor className="underline" href={to}>click here</TourAnchor>.</div>
       {/* Meta refresh fallback for non-js users */}
       <noscript>
         <meta httpEquiv="refresh" content={`0;url=${to}`} />

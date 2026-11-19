@@ -1,3 +1,4 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import React from 'react';
 import { getTournamentName, getTournamentSlug, shouldIndexRecords } from '@/lib/getTournamentName';
 import { prisma } from '@/lib/prisma';
@@ -30,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   const ogUrl = `${site}/tournaments/${canonicalSlug}/records/percentage/overall`;
 
-  return {
+  return tourMetadata({
     title,
     description,
     openGraph: {
@@ -43,7 +44,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     twitter: { card: 'summary_large_image', title, description, images: [`${site}/og/site-preview.png`] },
     alternates: { canonical: ogUrl },
     robots: { index: indexPage, follow: true },
-  };
+  });
 }
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {

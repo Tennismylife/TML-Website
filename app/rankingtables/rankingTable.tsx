@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import Link from "next/link";
+import Link from "@/components/TourLink";
 import { Row, sortRows, getCategoryStyle, normalizeCategory, SortConfig } from "./rankingUtils";
 import { getTourneyHref } from "@/lib/utils";
 

@@ -1,11 +1,13 @@
 "use client";
+import { usePlayerLevel } from "@/lib/use-player-level";
+import { useTourRouter as useRouter, useBasePathname as usePathname } from "@/lib/tour-navigation";
 
 import React, { useEffect, useState, useMemo, useRef } from "react";
-import Link from "next/link";
+import Link from "@/components/TourLink";
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
 import type { Match } from "@/types";
 import Flag from "@/components/Flag";
-import { getLevelColors, getLevelFullName, getTourneyHref, getPlayerHref, getPlayerHrefWithTab, formatDateISO } from "@/lib/utils";
+import { getLevelColors, getTourneyHref, getPlayerHref, getPlayerHrefWithTab, formatDateISO } from "@/lib/utils";
 import { getSurfaceColor, palette } from "@/lib/colors";
 import SummarySeasons from './SummarySeasons';
 import TournamentGrid from "../../TournamentGrid";
@@ -14,7 +16,7 @@ const PlayerServiceSpider = dynamic(() => import('./PlayerServiceSpider'), { ssr
 const PlayerReturnSpider = dynamic(() => import('./PlayerReturnSpider'), { ssr: false });
 import { useYearStatsAsync } from "./useYearStatsAsync";
 import type { YearStatsResult } from "./computeYearStats";
-import { useRouter, usePathname, useSearchParams } from "next/navigation"; // <--- added
+import { useSearchParams } from "next/navigation"; // <--- added
 
 interface SeasonsProps {
   playerId: string;
@@ -111,6 +113,7 @@ const WLStatTable: React.FC<WLStatTableProps> = ({ title, rows }) => {
 
 // ===================== Seasons Component =====================
 export default function Seasons({ playerId, playerSlug, playerName, initialYears, initialAllMatches, initialSelectedYear, initialSeasonStats, initialSeasonYear }: SeasonsProps) {
+  const levelNameFor = usePlayerLevel();
   const router = useRouter(); // <--- added
   const pathname = usePathname(); // <--- added
   const searchParams = useSearchParams(); // <--- added
@@ -557,25 +560,25 @@ export default function Seasons({ playerId, playerSlug, playerName, initialYears
               <WLStatTable
                 title="Categories"
                 rows={levelsAgg.map((row, idx) => {
-                  const levelName = getLevelFullName(row.level).toLowerCase();
+                  const levelName = levelNameFor(row.level).toLowerCase();
                   let color: string;
                   switch (true) {
                     case levelName.includes("grand slam"):
                       color = "#A855F7";
                       break;
-                    case levelName.includes("atp 1000") || levelName.includes("masters 1000"):
+                    case levelName.includes("1000") || levelName.includes("masters 1000"):
                       color = "#06B6D4";
                       break;
-                    case levelName.includes("atp 500"):
+                    case levelName.includes("500"):
                       color = "#22C55E";
                       break;
-                    case levelName.includes("atp 250"):
+                    case levelName.includes("250"):
                       color = "#EF4444";
                       break;
                     default:
                       color = getLevelColors(row.level)?.bar || palette[idx % palette.length];
                   }
-                  return { label: getLevelFullName(row.level), wins: row.wins, losses: row.losses, color };
+                  return { label: levelNameFor(row.level), wins: row.wins, losses: row.losses, color };
                 })}
               />
             </div>

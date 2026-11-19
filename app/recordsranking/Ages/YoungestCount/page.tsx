@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import DropdownNavSelect from '@/components/DropdownNavSelect';
 import ServerPagination from '@/components/ServerPagination';
 import Flag from '@/components/Flag';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import { notFound } from 'next/navigation';
 
 interface YoungestItem {

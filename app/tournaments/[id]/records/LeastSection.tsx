@@ -1,9 +1,10 @@
-
 'use client'
+
+import { currentTourPath } from "@/lib/tour-navigation";
 
 import React, { useState, useEffect } from 'react';
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import Flag from '@/components/Flag';
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 import { playerMatchesUrl } from '../../../records/nav';
@@ -150,7 +151,7 @@ export default function LeastSection({ id, linkId, pathId, initialData }: { id: 
       try { (window as any).__lastOpenModalPayload = { section: 'least', title: round }; } catch (e) { /* ignore */ }
 
       // open modal via shared outlet and push history state so direct links work
-      try { window.history.pushState({ modal: true, background: `/tournaments/${baseId}/records`, section: 'least', title: round }, '', `/tournaments/${baseId}/records/least/rounds/${encodeURIComponent(String(round))}`); } catch (e) {}
+      try { window.history.pushState({ modal: true, background: `/tournaments/${baseId}/records`, section: 'least', title: round }, '', currentTourPath(`/tournaments/${baseId}/records/least/rounds/${encodeURIComponent(String(round))}`)); } catch (e) {}
       try { window.dispatchEvent(new CustomEvent('open-modal', { detail: { section: 'least', title: round } })); } catch (e) { /* lastOpenModalPayload is already set */ }
     } finally {
       setModalLoadingRound(null);

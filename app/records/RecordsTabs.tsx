@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
+import Link from '@/app/records/RecordLink';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateRecordDescription } from '@/lib/generateRecordDescription';
 import { keyFromParamLabel } from '@/lib/levels';
 import { buildContextualRecordsPath, resolveCanonicalRecordHref, resolveRecordHref } from './record-links';
+import { useRecordsTour } from './AtpRecordCommentary';
+import { recordHeading } from './tour-labels';
 
 type Tab = { key: string; label: string };
 
@@ -146,6 +148,7 @@ const subTabs: Record<string, Tab[]> = {
 };
 
 export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: RecordsTabsProps) {
+  const tour = useRecordsTour();
   const [activeTab, setActiveTab] = useState<string | null>(activeTabProp || null);
   const [hoveredTab, setHoveredTab] = useState<string | null>(null);
   const navRef = useRef<HTMLElement | null>(null);
@@ -158,7 +161,7 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
   // the active tab/subtab or search params change and set the document title again (with a short debounce)
   useEffect(() => {
     // Do not let tab logic override carefully crafted site SEO titles for Least records
-    if (activeTabProp === 'least') return;
+    if (tour === 'WTA' || activeTabProp === 'least') return;
 
     // If a server-provided SEO title is present, avoid overwriting it
     if (typeof document !== 'undefined' && /\| Tennis Records/.test(document.title || '')) return;
@@ -193,7 +196,7 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
       // ignore
     }
     return () => { if (t) clearTimeout(t); };
-  }, [activeTabProp, activeSubTab]);
+  }, [activeTabProp, activeSubTab, tour]);
 
   // Close opened subtab menus when clicking/tapping outside the nav (mobile friendly)
   useEffect(() => {
@@ -232,6 +235,7 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
 
   // When a subtab is clicked, update the browser title immediately to match the description
   function handleSubtabClick(tabKey: string, subKey: string) {
+    if (tour === 'WTA') return;
     try {
       const sp = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
       const toArray = (v?: string | string[]) => (v === undefined ? [] : (Array.isArray(v) ? v : [v]));
@@ -287,7 +291,7 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
                 ? getSubTabHref(tab.key, firstSub)
                 : buildContextualRecordsPath(tab.key)
             )}
-            title={getMenuTooltip(tab.key, firstSub)}
+            title={recordHeading(getMenuTooltip(tab.key, firstSub), tour)}
             onClick={(e) => {
               setHoveredTab(null);
               if (firstSub) {
@@ -319,7 +323,7 @@ export default function RecordsTabs({ activeTab: activeTabProp, activeSubTab }: 
                     <Link
                       key={st.key}
                       href={getSubTabHref(tab.key, st.key)}
-                      title={getMenuTooltip(tab.key, st.key)}
+                      title={recordHeading(getMenuTooltip(tab.key, st.key), tour)}
                       onClick={() => { setActiveTab(null); setHoveredTab(null); handleSubtabClick(tab.key, st.key); }}
                       className={subTabClass(st.key)}
                     >

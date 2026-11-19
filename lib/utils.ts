@@ -484,11 +484,11 @@ export function getTourneyHref({ id, name, slug, year }: { id?: string | number 
   // Fallback to ID links if slug not available
   if (id != null) {
     const sid = String(id);
-    const parts = sid.split('-');
-    if (parts.length === 2) {
+    const parts = /^(\d{4})-(.+)$/.exec(sid);
+    if (parts) {
       // legacy composite id like "2023-123" -> /tournaments/123/2023
-      const yearPart = parts[0];
-      const idPart = parts[1];
+      const yearPart = parts[1];
+      const idPart = parts[2];
       return `/tournaments/${idPart}/${yearPart}`;
     }
     return `/tournaments/${sid}${y}`;

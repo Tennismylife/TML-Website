@@ -1,7 +1,8 @@
+import { TourAnchor } from "@/components/TourLink";
 import React from 'react';
 import { prisma } from '@/lib/prisma';
 import Flag from '@/components/Flag';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import EndSeasonCountControls from '../../EndOfTheSeason/Count/EndSeasonCountControls';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
@@ -151,7 +152,7 @@ export default async function OldestEoyAtRank({ searchParams }: { searchParams?:
             const p = i + 1;
             const q = new URLSearchParams(); if (fromYear !== null) q.set('fromYear', String(fromYear)); if (toYear !== null) q.set('toYear', String(toYear)); if (p > 1) q.set('page', String(p));
             const href = `/recordsranking/agesendoftheseason/oldestsatno/${rank}${q.toString() ? `?${q.toString()}` : ''}`;
-            return <a key={p} href={href} className={`px-2 py-1 rounded ${p === page ? 'bg-blue-700 text-white' : 'bg-gray-800 text-gray-200'}`}>{p}</a>;
+            return <TourAnchor key={p} href={href} className={`px-2 py-1 rounded ${p === page ? 'bg-blue-700 text-white' : 'bg-gray-800 text-gray-200'}`}>{p}</TourAnchor>;
           })}
         </div>
       )} 

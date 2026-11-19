@@ -1,4 +1,5 @@
 "use client";
+import { currentTourPath } from "@/lib/tour-navigation";
 import { useEffect } from "react";
 
 export default function SyncUrlClient({ url }: { url?: string }) {
@@ -14,11 +15,11 @@ export default function SyncUrlClient({ url }: { url?: string }) {
       const currentOrigin = new URL(current).origin;
       const newOrigin = new URL(url).origin;
       if (currentOrigin === newOrigin) {
-        window.history.replaceState(null, '', url);
+        window.history.replaceState(null, '', currentTourPath(url));
       } else {
         // If origins don't match, only replace path+search
         const u = new URL(url);
-        window.history.replaceState(null, '', u.pathname + u.search + u.hash);
+        window.history.replaceState(null, '', currentTourPath(u.pathname + u.search + u.hash));
       }
     } catch (e) {
       // ignore

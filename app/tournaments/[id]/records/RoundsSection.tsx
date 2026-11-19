@@ -1,7 +1,8 @@
 'use client'
+import { currentTourPath } from "@/lib/tour-navigation";
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import Flag from '@/components/Flag';
 import { playerMatchesUrl } from '../../../records/nav';
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
@@ -126,7 +127,7 @@ export default function RoundsSection({ tournamentId, initialData }: { tournamen
     const target = `/tournaments/${tournamentId}/records/rounds/${encodeURIComponent(roundTitle)}`;
     const background = typeof window !== 'undefined' ? window.location.pathname + window.location.search : undefined;
     try {
-      window.history.pushState({ ...(window.history.state || {}), modal: true, background }, '', target);
+      window.history.pushState({ ...(window.history.state || {}), modal: true, background }, '', currentTourPath(target));
       window.dispatchEvent(new PopStateEvent('popstate'));
       window.dispatchEvent(new CustomEvent('modalchange'));
 

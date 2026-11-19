@@ -1,7 +1,9 @@
 ﻿'use client'
 
+import RecordH3 from "@/app/records/RecordH3";
+
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import Link from '@/app/records/RecordLink';
 import Flag from '@/components/Flag';
 import { getPlayerHrefWithTab } from '@/lib/utils';
 import { playerSurfaceHref, surfaceFromSelection } from '../nav';
@@ -176,7 +178,7 @@ export default function CountSection({ selectedSurfaces, selectedLevels }: Count
                   />
                 </label>
               </div>
-              <h3 className="font-medium mb-2">{label} at Age</h3>
+              <RecordH3 className="font-medium mb-2" label={`${label} at Age`} />
               {filteredData.length > 0 ? (
                 <>
                   {renderTable(filteredData.slice(0, 10), label)}

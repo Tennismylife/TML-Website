@@ -1,4 +1,5 @@
 'use client';
+import { TourAnchor } from "@/components/TourLink";
 import React from 'react';
 
 // DataFileList: fetches /api/data-files and renders per-file download links
@@ -208,18 +209,18 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
               return (
                 <tr key={f.name} className="hover:bg-gray-800 border-b border-white/10">
                   <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-24 whitespace-nowrap">{yearLabel}</td>
-                  <td className="border border-white/10 px-4 py-2 text-lg text-gray-200 whitespace-nowrap"><a href={f.url} download className="text-indigo-300 hover:underline whitespace-nowrap">{f.name}</a></td>
+                  <td className="border border-white/10 px-4 py-2 text-lg text-gray-200 whitespace-nowrap"><TourAnchor href={f.url} download className="text-indigo-300 hover:underline whitespace-nowrap">{f.name}</TourAnchor></td>
                   <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-28 whitespace-nowrap hidden sm:table-cell">{f.size ? humanSize(f.size) : ''}</td>
                   <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-48 whitespace-nowrap hidden sm:table-cell">{f.mtime ? new Date(f.mtime).toLocaleString('it-IT') : ''}</td>
                   <td className="border border-white/10 px-4 py-2 whitespace-nowrap w-auto sm:w-80 flex items-center justify-center">
-                    <a href={f.url} download aria-label={`Download ${f.name}`} className="inline-flex items-center px-3 py-1 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-500 whitespace-nowrap sm:px-4 sm:text-base">
+                    <TourAnchor href={f.url} download aria-label={`Download ${f.name}`} className="inline-flex items-center px-3 py-1 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-500 whitespace-nowrap sm:px-4 sm:text-base">
                       <svg className="w-4 h-4 sm:mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                         <path d="M12 3v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         <path d="M5 11l7 7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         <path d="M21 21H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                       <span className="hidden sm:inline">Download</span>
-                    </a>
+                    </TourAnchor>
                   </td>
                 </tr>
               );
@@ -228,18 +229,18 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
             {atpFile ? (
               <tr key={atpFile.name} className="hover:bg-gray-800 border-b border-white/10 font-semibold">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-24 whitespace-nowrap">ATP</td>
-                <td className="border border-white/10 px-4 py-2 text-lg text-gray-200 whitespace-nowrap"><a href={atpFile.url} download className="text-indigo-300 hover:underline whitespace-nowrap">{atpFile.name}</a></td>
+                <td className="border border-white/10 px-4 py-2 text-lg text-gray-200 whitespace-nowrap"><TourAnchor href={atpFile.url} download className="text-indigo-300 hover:underline whitespace-nowrap">{atpFile.name}</TourAnchor></td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-28 whitespace-nowrap">{atpFile.size ? humanSize(atpFile.size) : ''}</td>
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-48 whitespace-nowrap">{atpFile.mtime ? new Date(atpFile.mtime).toLocaleString('it-IT') : ''}</td>
                 <td className="border border-white/10 px-4 py-2 whitespace-nowrap w-auto sm:w-80 flex items-center justify-center">
-                  <a href={atpFile.url} download aria-label={`Download ${atpFile.name}`} className="inline-flex items-center px-3 sm:px-4 py-1 text-sm sm:text-base bg-indigo-600 text-white rounded hover:bg-indigo-500 whitespace-nowrap">
+                  <TourAnchor href={atpFile.url} download aria-label={`Download ${atpFile.name}`} className="inline-flex items-center px-3 sm:px-4 py-1 text-sm sm:text-base bg-indigo-600 text-white rounded hover:bg-indigo-500 whitespace-nowrap">
                     <svg className="w-4 h-4 sm:mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                       <path d="M12 3v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       <path d="M5 11l7 7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       <path d="M21 21H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                     <span className="hidden sm:inline">Download</span>
-                  </a>
+                  </TourAnchor>
                 </td>
               </tr>
             ) : null}
@@ -274,18 +275,18 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
                   return (
                     <tr key={f.name} className="hover:bg-gray-800 border-b border-white/10">
                       <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-24 whitespace-nowrap">{yearLabel}</td>
-                      <td className="border border-white/10 px-4 py-2 text-lg text-gray-200 whitespace-nowrap"><a href={f.url} download className="text-indigo-300 hover:underline whitespace-nowrap">{displayName}</a></td>
+                      <td className="border border-white/10 px-4 py-2 text-lg text-gray-200 whitespace-nowrap"><TourAnchor href={f.url} download className="text-indigo-300 hover:underline whitespace-nowrap">{displayName}</TourAnchor></td>
                       <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-28 whitespace-nowrap hidden sm:table-cell">{f.size ? humanSize(f.size) : ''}</td>
                       <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-48 whitespace-nowrap hidden sm:table-cell">{f.mtime ? new Date(f.mtime).toLocaleString('it-IT') : ''}</td>
                       <td className="border border-white/10 px-4 py-2 whitespace-nowrap w-auto sm:w-80 flex items-center justify-center">
-                    <a href={f.url} download aria-label={`Download ${f.name}`} className="inline-flex items-center px-3 py-1 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-500 whitespace-nowrap sm:px-4 sm:text-base">
+                    <TourAnchor href={f.url} download aria-label={`Download ${f.name}`} className="inline-flex items-center px-3 py-1 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-500 whitespace-nowrap sm:px-4 sm:text-base">
                           <svg className="w-4 h-4 sm:mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <path d="M12 3v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                             <path d="M5 11l7 7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                             <path d="M21 21H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                           </svg>
                           <span className="hidden sm:inline">Download</span>
-                        </a>
+                        </TourAnchor>
                       </td>
                     </tr>
                   );
@@ -339,18 +340,18 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
                 return (
                   <tr key={f.name} className="hover:bg-gray-800 border-b border-white/10">
                     <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-24 whitespace-nowrap">{yearLabel}</td>
-                    <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 whitespace-nowrap"><a href={f.url} download className="text-rose-300 hover:underline whitespace-nowrap">{f.name}</a></td>
+                    <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 whitespace-nowrap"><TourAnchor href={f.url} download className="text-rose-300 hover:underline whitespace-nowrap">{f.name}</TourAnchor></td>
                     <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-28 whitespace-nowrap hidden sm:table-cell">{f.size ? humanSize(f.size) : ''}</td>
                     <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-48 whitespace-nowrap hidden sm:table-cell">{f.mtime ? new Date(f.mtime).toLocaleString('it-IT') : ''}</td>
                     <td className="border border-white/10 px-4 py-2 whitespace-nowrap w-auto sm:w-80 flex items-center justify-center">
-                      <a href={f.url} download aria-label={`Download ${f.name}`} className="inline-flex items-center px-3 py-1 text-sm bg-rose-600 text-white rounded hover:bg-rose-500 whitespace-nowrap sm:px-4 sm:text-base">
+                      <TourAnchor href={f.url} download aria-label={`Download ${f.name}`} className="inline-flex items-center px-3 py-1 text-sm bg-rose-600 text-white rounded hover:bg-rose-500 whitespace-nowrap sm:px-4 sm:text-base">
                         <svg className="w-4 h-4 sm:mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                           <path d="M12 3v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                           <path d="M5 11l7 7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                           <path d="M21 21H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                         <span className="hidden sm:inline">Download</span>
-                      </a>
+                      </TourAnchor>
                     </td>
                   </tr>
                 );
@@ -385,18 +386,18 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
                 return (
                   <tr key={f.name} className="hover:bg-gray-800 border-b border-white/10">
                     <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-24 whitespace-nowrap">{yearLabel}</td>
-                    <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 whitespace-nowrap"><a href={f.url} download className="text-indigo-300 hover:underline whitespace-nowrap">{f.name}</a></td>
+                    <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 whitespace-nowrap"><TourAnchor href={f.url} download className="text-indigo-300 hover:underline whitespace-nowrap">{f.name}</TourAnchor></td>
                     <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-28 whitespace-nowrap hidden sm:table-cell">{f.size ? humanSize(f.size) : ''}</td>
                     <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200 w-48 whitespace-nowrap hidden sm:table-cell">{f.mtime ? new Date(f.mtime).toLocaleString('it-IT') : ''}</td>
                     <td className="border border-white/10 px-4 py-2 whitespace-nowrap w-auto sm:w-80 flex items-center justify-center">
-                    <a href={f.url} download aria-label={`Download ${f.name}`} className="inline-flex items-center px-3 py-1 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-500 whitespace-nowrap sm:px-4 sm:text-base">
+                    <TourAnchor href={f.url} download aria-label={`Download ${f.name}`} className="inline-flex items-center px-3 py-1 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-500 whitespace-nowrap sm:px-4 sm:text-base">
                         <svg className="w-4 h-4 sm:mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                           <path d="M12 3v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                           <path d="M5 11l7 7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                           <path d="M21 21H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                         <span className="hidden sm:inline">Download</span>
-                      </a>
+                      </TourAnchor>
                     </td>
                   </tr>
                 );

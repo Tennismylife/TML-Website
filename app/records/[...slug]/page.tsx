@@ -1,6 +1,9 @@
+import { recordTourPath, recordTourUrl } from "@/lib/record-tour-path";
+import { fetchForTour, getTour } from "@/lib/tour";
+import { recordBrowserTitle, recordHeading } from "../tour-labels";
 import React from 'react';
-import Link from 'next/link';
-import { redirect, notFound } from 'next/navigation';
+import Link from '@/app/records/RecordLink';
+import { redirect, permanentRedirect, notFound } from 'next/navigation';
 import { shouldShowRecordFilter } from '../../../lib/records/allowed-filters';
 import { Metadata } from 'next';
 import { metadataBase } from '../../../lib/site';
@@ -312,7 +315,7 @@ async function fetchRecordData(
   const url = resolveUrl(pathWithQuery);
 
   try {
-    const res = await fetch(url, { cache: 'force-cache' });
+    const res = await fetchForTour(url, { cache: 'force-cache' });
     if (!res.ok) return [];
     const data = await res.json();
 
@@ -448,7 +451,7 @@ function buildFaqEntries(
   return [
     {
       question: `Why does ${cleanTitle} matter?`,
-      answer: description || `${cleanTitle} tracks this ATP record ranking.`,
+      answer: description || `${cleanTitle} tracks this record ranking.`,
     },
     {
       question: `Who leads ${cleanTitle} right now?`,
@@ -466,18 +469,19 @@ function buildFaqEntries(
 export async function generateMetadata(
   { params, searchParams }: Props
 ): Promise<Metadata> {
+  const tour = await getTour();
   const p = await params;
   const sp = (await searchParams) ?? {};
   const slug = p.slug ?? [];
   if (slug[0] === 'seasons' && slug[1] === 'entries') {
-    redirect('/records/most-tournament-appearances-in-single-season');
+    redirect(recordTourPath('/records/most-tournament-appearances-in-single-season', tour));
   }
   if (slug[0] === 'streak' && slug[1] === 'wins' && !canonicalizeParamsObj(sp)) {
-    redirect('/records/longest-winning-streak');
+    redirect(recordTourPath('/records/longest-winning-streak', tour));
   }
   if (slug[0] === 'longest-win-streak') {
     const query = canonicalizeParamsObj(sp);
-    redirect(`/records/longest-winning-streak${query ? `?${query}` : ''}`);
+    redirect(recordTourPath(`/records/longest-winning-streak${query ? `?${query}` : ''}`, tour));
   }
   const aliasEntry = resolveAliasPath(slug);
   const effectiveSearchParams = aliasEntry
@@ -549,30 +553,36 @@ export async function generateMetadata(
   };
   const policySlug = record ? ((sub ?? activeSubResolved) ? [record, (sub ?? activeSubResolved)!] : [record]) : [];
   const policy = evaluateRecordsPolicy(metadataBase.origin, policySlug, filtersMeta);
-  const pageTitle = getRecordsPageTitle(policySlug, filtersMeta, desc);
-  const robotsMeta = getRecordsRobotsMeta(policy);
+  const pageTitle = tour === 'WTA'
+    ? recordBrowserTitle(desc || policySlug.map(segment => segment.replace(/-/g, ' ')).join(' '), tour)
+    : getRecordsPageTitle(policySlug, filtersMeta, desc);
+  const displayDescription = recordHeading(desc || 'Tennis Records and Statistics', tour);
+  const robotsMeta = getRecordsRobotsMeta(tour === 'WTA' && Object.keys(sp).length
+    ? { ...policy, index: false, follow: true }
+    : policy);
 
   return {
     title: { absolute: pageTitle },
-    description: desc || 'TML records and statistics',
+    description: displayDescription,
     openGraph: {
       title: pageTitle,
-      description: desc || 'TML records and statistics',
+      description: displayDescription,
       images: [new URL('/og/site-preview.png', metadataBase).toString()],
-      url: policy.canonical,
+      url: recordTourUrl(policy.canonical, tour),
       siteName: 'TennisMyLife',
     },
     twitter: {
       title: pageTitle,
-      description: desc || 'TML records and statistics',
+      description: displayDescription,
       images: [new URL('/og/site-preview.png', metadataBase).toString()],
     },
-    alternates: { canonical: policy.canonical },
+    alternates: { canonical: recordTourUrl(policy.canonical, tour) },
     robots: robotsMeta,
   };                                        
 }
 
 export default async function SlugPage({ params, searchParams }: Props) {
+  const tour = await getTour();
   const p = await params;
   const sp = (await searchParams) ?? {};
   const slug = p.slug ?? [];
@@ -610,7 +620,10 @@ export default async function SlugPage({ params, searchParams }: Props) {
       // Additional safeguard: don't redirect if the resolved URL is the same as current
       const currentFullUrl = `${currentPath}${currentQuery ? `?${currentQuery}` : ''}`;
       if (resolvedUrl !== currentFullUrl) {
-        redirect(resolvedUrl);
+        if (tour === 'WTA' && !resolvedUrl.includes('?')) {
+          permanentRedirect(recordTourPath(resolvedUrl, tour));
+        }
+        redirect(recordTourPath(resolvedUrl, tour));
       }
     }
   }
@@ -622,35 +635,35 @@ export default async function SlugPage({ params, searchParams }: Props) {
   if (!aliasEntry && record === 'streak' && (sub === 'round') && !sp.round) {
     const otherParams = buildPreservedParams(sp, ['round']);
     const qs = otherParams ? `round=F&${otherParams}` : 'round=F';
-    redirect(`/records/streak/round?${qs}`);
+    redirect(recordTourPath(`/records/streak/round?${qs}`, tour));
   }
 
   // Redirect roundsonentries/round to default round=F if no round param is set.
   if (!aliasEntry && record === 'roundsonentries' && sub === 'round' && !sp.round) {
     const otherParams = buildPreservedParams(sp, ['round']);
     const qs = otherParams ? `round=F&${otherParams}` : 'round=F';
-    redirect(`/records/roundsonentries/round?${qs}`);
+    redirect(recordTourPath(`/records/roundsonentries/round?${qs}`, tour));
   }
 
   // Redirect /records/rounds (no round param) to /records/rounds?round=F.
   if (!aliasEntry && rawRecord === 'rounds' && !sp.round) {
     const otherParams = buildPreservedParams(sp, ['round']);
     const qs = otherParams ? `round=F&${otherParams}` : 'round=F';
-    redirect(`/records/rounds?${qs}`);
+    redirect(recordTourPath(`/records/rounds?${qs}`, tour));
   }
 
   // Redirect same/round to default round=F if no round param is set.
   if (!aliasEntry && record === 'same' && sub === 'round' && !sp.round) {
     const otherParams = buildPreservedParams(sp, ['round']);
     const qs = otherParams ? `round=F&${otherParams}` : 'round=F';
-    redirect(`/records/same/round?${qs}`);
+    redirect(recordTourPath(`/records/same/round?${qs}`, tour));
   }
 
   // Redirect seasons/round to default round=F if no round param is set.
   if (!aliasEntry && record === 'seasons' && sub === 'round' && !sp.round) {
     const otherParams = buildPreservedParams(sp, ['round']);
     const qs = otherParams ? `round=F&${otherParams}` : 'round=F';
-    redirect(`/records/seasons/round?${qs}`);
+    redirect(recordTourPath(`/records/seasons/round?${qs}`, tour));
   }
 
   const activeSubTabsDefault: Record<string,string> = {
@@ -668,12 +681,12 @@ export default async function SlugPage({ params, searchParams }: Props) {
   };
 
   if (!aliasEntry && slug[0] === 'streak' && slug[1] === 'wins' && !canonicalizeParamsObj(sp)) {
-    redirect('/records/longest-winning-streak');
+    redirect(recordTourPath('/records/longest-winning-streak', tour));
   }
 
   // Records that have subtabs must not be navigable at the root level — redirect to the default subtab
   if (record && record in activeSubTabsDefault && !sub && typeof sp.subtab !== 'string') {
-    redirect(`/records/${record}/${activeSubTabsDefault[record]}`);
+    redirect(recordTourPath(`/records/${record}/${activeSubTabsDefault[record]}`, tour));
   }
 
   // ── Invalid filter combination → 404 ─────────────────────────────────────
@@ -793,7 +806,7 @@ export default async function SlugPage({ params, searchParams }: Props) {
       return Number.isFinite(parsed) ? parsed : undefined;
     })();
 
-    const description = aliasEntry?.title && aliasMatchesCurrentFilters(aliasEntry, effectiveSearchParams) ? aliasEntry.title : generateRecordDescription(
+    const rawDescription = aliasEntry?.title && aliasMatchesCurrentFilters(aliasEntry, effectiveSearchParams) ? aliasEntry.title : generateRecordDescription(
       record,
       { ...activeSubTabsDefault, [record || '']: activeSubResolved || activeSubTabsDefault[record || ''] },
       selectedSurfaces,
@@ -802,6 +815,7 @@ export default async function SlugPage({ params, searchParams }: Props) {
       selectedBestOf,
       { n: nParam, top: topParam }
     );
+    const description = recordHeading(rawDescription || '', tour);
 
     // ── SEO policy (render path) ──────────────────────────────────────────
     const filtersForPolicy: RecordFilters = {
@@ -812,7 +826,7 @@ export default async function SlugPage({ params, searchParams }: Props) {
     };
     const policySlugRender = (sub ?? activeSubResolved) ? [record, (sub ?? activeSubResolved)!] : [record];
     const renderPolicy = evaluateRecordsPolicy(metadataBase.origin, policySlugRender, filtersForPolicy);
-    const canonicalFull = renderPolicy.canonical;
+    const canonicalFull = recordTourUrl(renderPolicy.canonical, tour);
 
     const subLabelResolved = record && activeSubResolved
       ? (SUB_LABELS[record]?.[activeSubResolved] ?? SUB_LABELS[record]?.[kebabToKey(activeSubResolved) ?? ''] ?? activeSubResolved)
@@ -827,17 +841,21 @@ export default async function SlugPage({ params, searchParams }: Props) {
       '@type': 'BreadcrumbList',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', metadataBase).toString() },
-        { '@type': 'ListItem', position: 2, name: 'Records', item: new URL('/records', metadataBase).toString() },
+        { '@type': 'ListItem', position: 2, name: 'Records', item: new URL(recordTourPath('/records', tour), metadataBase).toString() },
         ...(record
           ? [{ '@type': 'ListItem', position: 3, name: (activeSubResolved ? subLabelResolved ?? activeSubResolved : RECORD_LABELS[record] ?? record), item: new URL(canonicalFull, metadataBase).toString() }]
           : []),
       ],
     };
 
+    const heading = description || recordHeading(policySlugRender.map(segment => segment.replace(/-/g, ' ')).join(' '), tour);
+    const pageTitle = tour === 'WTA'
+      ? recordBrowserTitle(heading, tour)
+      : getRecordsPageTitle(policySlugRender, filtersForPolicy, description);
     const webPageJsonLd = {
       '@context': 'https://schema.org',
       '@type': 'CollectionPage',
-      name: getRecordsPageTitle(policySlugRender, filtersForPolicy, description),
+      name: pageTitle,
       description: description || 'TML records and statistics',
       url: canonicalFull,
       inLanguage: 'en-US',
@@ -851,12 +869,10 @@ export default async function SlugPage({ params, searchParams }: Props) {
         name: 'TennisMyLife',
         url: metadataBase.toString(),
       },
-      dateModified: new Date().toISOString(),
+      ...(tour === 'ATP' && { dateModified: new Date().toISOString() }),
     };
 
-    const pageTitle = getRecordsPageTitle(policySlugRender, filtersForPolicy, description);
-
-    const tableRows = await fetchRecordData(record, sub, effectiveSearchParams);
+    const tableRows = tour === 'ATP' ? await fetchRecordData(record, sub, effectiveSearchParams) : [];
     const itemListEntries = buildItemListEntries(tableRows, surfaceFromSelection(selectedSurfaces));
 
     const faqEntries = buildFaqEntries(
@@ -878,7 +894,7 @@ export default async function SlugPage({ params, searchParams }: Props) {
           description="The first five rows shown in the current records table."
           items={itemListEntries}
         />
-        <RecordsFaqJsonLd items={faqEntries} />
+        {tour === "ATP" && <RecordsFaqJsonLd items={faqEntries} />}
         <main className="w-full min-h-screen p-4 bg-gray-900 text-white">
           <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1 text-sm text-gray-400 mb-4">
             <Link href="/" className="hover:text-white transition-colors">Home</Link>
@@ -893,14 +909,10 @@ export default async function SlugPage({ params, searchParams }: Props) {
               </>
             )}
           </nav>
-          <SyncUrlClient url={record === 'roundsonentries' && hasQueryParams ? undefined : canonicalFull} />
+          {tour === 'ATP' && <SyncUrlClient url={record === 'roundsonentries' && hasQueryParams ? undefined : canonicalFull} />}
           {(() => {
-            const h1 = getRecordsPageTitle(
-              policySlugRender,
-              filtersForPolicy,
-              description,
-            ).replace(/ \| TennisMyLife$/, '').replace(/ \| Tennis Records$/, '');
-            const HeadingTag = record === 'h2h' ? 'h2' : 'h1';
+            const h1 = tour === 'WTA' ? heading : pageTitle.replace(/ \| TennisMyLife$/, '').replace(/ \| Tennis Records$/, '');
+            const HeadingTag = record === 'h2h' && tour === 'ATP' ? 'h2' : 'h1';
             return h1 ? (
               <HeadingTag className="mb-10 text-center text-3xl sm:text-4xl font-semibold text-white">
                 {h1}
@@ -914,7 +926,17 @@ export default async function SlugPage({ params, searchParams }: Props) {
             currentPath={currentPath}
             searchParams={effectiveSearchParams}
           />
-          <ServerComponent searchParams={effectiveSearchParams} record={record} sub={activeSubResolved} canonicalUrl={canonicalFull} description={description} currentPath={currentPath} />
+          <ServerComponent
+            searchParams={effectiveSearchParams}
+            record={record}
+            sub={activeSubResolved}
+            canonicalUrl={canonicalFull}
+            description={description}
+            currentPath={currentPath}
+            wtaNarrative={tour === 'WTA' && record && record !== 'firstn'
+              ? { record, sub: activeSubResolved ?? null, heading, sourcePath: recordTourPath(new URL(canonicalFull).pathname, 'ATP') }
+              : undefined}
+          />
           <RelatedRecordsLinks
             currentTab={record}
             currentSub={activeSubResolved || null}
@@ -930,13 +952,19 @@ export default async function SlugPage({ params, searchParams }: Props) {
     );
   }
 
+  const fallbackMetadata = tour === 'WTA' ? await generateMetadata({ params, searchParams }) : null;
+  const fallbackTitle = fallbackMetadata?.title;
+  const fallbackHeading = typeof fallbackTitle === 'object' && fallbackTitle && 'absolute' in fallbackTitle
+    ? fallbackTitle.absolute?.replace(/ \| WTA Records$/, '')
+    : null;
   return (
     <main className="w-full min-h-screen p-4 bg-gray-900 text-white">
+      {fallbackHeading && <h1 className="mb-8 text-center text-3xl font-semibold">{fallbackHeading}</h1>}
       <RecordsFilteredClient
         record={record}
         sub={sub}
         filters={sp}
-        canonicalUrl={resolveUrl(`/records/${record ?? ''}`)}
+        canonicalUrl={resolveUrl(recordTourPath(`/records/${record ?? ''}`, tour))}
       />
     </main>
   );

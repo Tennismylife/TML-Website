@@ -1,5 +1,6 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import React from 'react';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import { ArrowLeft } from 'lucide-react';
 import RecordsPageClient from "../RecordsClient";
 import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
@@ -52,44 +53,44 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   // Special-case: when path is /records/count (no inner section), use the site-specific title required.
   if (segments && segments.length === 1 && segments[0] === 'count') {
-    return { title: `${tournamentName} Open Era Records | Tennis My Life` };
+    return tourMetadata({ title: `${tournamentName} Open Era Records | Tennis My Life` });
   }
 
   // Special-case: when path is /records/percentage/overall return a specific title
   if (segments && segments.length >= 2 && segments[0] === 'percentage' && segments[1] === 'overall') {
-    return { title: `${tournamentName} Percentage Records | Tennis Statistics` };
+    return tourMetadata({ title: `${tournamentName} Percentage Records | Tennis Statistics` });
   }
 
   // Special-case: when path is /records/percentage/per-round or /records/percentage/rounds
   if (segments && segments.length >= 2 && segments[0] === 'percentage' && (segments[1] === 'per-round' || segments[1] === 'rounds')) {
-    return { title: `${tournamentName} Percentage Records by Round | Tennis Statistics` };
+    return tourMetadata({ title: `${tournamentName} Percentage Records by Round | Tennis Statistics` });
   }
 
   // Special-case: when path is /records/timespan (root), return the site-specific Timespan title
   if (segments && segments.length === 1 && segments[0] === 'timespan') {
-    return { title: `${tournamentName} Timespan Records | Tennis My Life` };
+    return tourMetadata({ title: `${tournamentName} Timespan Records | Tennis My Life` });
   }
 
   // Special-case: ages titles youngest specific phrase
   if (segments && segments.length >= 3 && segments[0] === 'ages' && segments[1] === 'titles' && segments[2] === 'youngest') {
-    return { title: `Youngest Title Winners at ${tournamentName} | Tennis Records` };
+    return tourMetadata({ title: `Youngest Title Winners at ${tournamentName} | Tennis Records` });
   }
 
   // Special-case: ages titles oldest specific phrase
   if (segments && segments.length >= 3 && segments[0] === 'ages' && segments[1] === 'titles' && segments[2] === 'oldest') {
-    return { title: `Oldest Title Winners at ${tournamentName} | Tennis Records` };
+    return tourMetadata({ title: `Oldest Title Winners at ${tournamentName} | Tennis Records` });
   }
 
   // Special-case: ages youngest per-round deep path, e.g., /records/ages/youngestrounds/F
   if (segments && segments.length >= 3 && segments[0] === 'ages' && segments[1] === 'youngestrounds' && segments[2]) {
     const round = String(segments[2]);
-    return { title: `Youngest Players in ${round} at ${tournamentName} | Tennis Records` };
+    return tourMetadata({ title: `Youngest Players in ${round} at ${tournamentName} | Tennis Records` });
   }
 
   // Special-case: ages oldest per-round deep path
   if (segments && segments.length >= 3 && segments[0] === 'ages' && segments[1] === 'oldestrounds' && segments[2]) {
     const round = String(segments[2]);
-    return { title: `Oldest Players in ${round} at ${tournamentName} | Tennis Records` };
+    return tourMetadata({ title: `Oldest Players in ${round} at ${tournamentName} | Tennis Records` });
   }
 
   const recordLabel = chooseRecordLabel(segments);
@@ -98,10 +99,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   // keep titles reasonably short - if over 60 chars, fall back to a shorter form
   if (title.length > 60) {
     const shortLabel = recordLabel.split(' ').slice(0,2).join(' ');
-    return { title: `Most ${shortLabel} at the ${tournamentName} | Tennis Records` };
+    return tourMetadata({ title: `Most ${shortLabel} at the ${tournamentName} | Tennis Records` });
   }
 
-  return { title };
+  return tourMetadata({ title });
 }
 
 import { redirect } from 'next/navigation';

@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react';
-import { getLevelFullName, extractUniqueSurfaces, extractNames } from '@/lib/utils';
+import { extractNames } from '@/lib/utils';
+import { usePlayerLevel } from '@/lib/use-player-level';
 import { getSurfaceColor, getLevelColor, getTextColorForRound } from '@/lib/colors';
 
 interface TournamentHeaderProps {
@@ -32,6 +33,7 @@ function formatEditionRanges(years: number[]): string[] {
 }
 
 export default function TournamentHeader({ id }: TournamentHeaderProps) {
+  const levelName = usePlayerLevel();
   const [tournament, setTournament] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -59,7 +61,6 @@ export default function TournamentHeader({ id }: TournamentHeaderProps) {
   // Prepare display values
   const displayName = Array.isArray(tournament.name) ? (tournament.name as any[]).at(-1) || 'n/d' : (tournament.name as any) || 'n/d';
 
-  const levelLabels = (tournament.category || []).map((l: string) => getLevelFullName(l));
   const surfaces = tournament.surfaces || [];
   const editionRanges = tournament.editions && tournament.editions.length > 0 ? formatEditionRanges(tournament.editions) : [];
 
@@ -86,7 +87,7 @@ export default function TournamentHeader({ id }: TournamentHeaderProps) {
           }
 
           return cats.map((cat, i) => {
-            const label = getLevelFullName(cat);
+            const label = levelName(cat);
             const color = getLevelColor(cat) ?? '#555';
             const textColor = getTextColorForRound(color);
             return (

@@ -1,4 +1,6 @@
 "use client";
+import { useLinkTour } from "@/components/TourLink";
+import type { Tour } from "@/lib/tour-path";
 
 import React, { useMemo } from "react";
 
@@ -61,8 +63,9 @@ const GROUP_ORDER: NarrativeFact["group"][] = ["debut", "rise", "peak", "weeks",
 
 function buildNarrative(
   data: Entry[],
-  birthdate?: string | null,
-  playerName?: string,
+  birthdate: string | null | undefined,
+  playerName: string | undefined,
+  tour: Tour,
 ): NarrativeFact[] {
   const sorted = [...data]
     .filter((e) => e.date && !isNaN(new Date(e.date).getTime()) && e.rank > 0)
@@ -110,7 +113,7 @@ function buildNarrative(
       <>
         {name} entered the ATP rankings on {D(fmtDate(debut.date!))}, debuting at{" "}
         {R(`#${debut.rank}`)}
-        {debut.points > 0 && <> with {P(debut.points.toLocaleString())} ATP points</>}
+        {debut.points > 0 && <> with {P(debut.points.toLocaleString())} {tour} points</>}
         {debutAge && <>, aged {A(debutAge)}</>}
         {debutThreshold && <> — already inside the {T(debutThreshold)}</>}.
       </>
@@ -137,7 +140,7 @@ function buildNarrative(
       group: "rise",
       text: (
         <>
-          He first reached the {T(label)} on {D(fmtDate(entry.date))}{a ? <> (aged {A(a)})</> : null},{" "}
+          {name} first reached the {T(label)} on {D(fmtDate(entry.date))}{a ? <> (aged {A(a)})</> : null},{" "}
           ranked {R(`#${entry.rank}`)}{entry.points > 0 && <> with {P(entry.points.toLocaleString())} pts</>}.
         </>
       ),
@@ -156,7 +159,7 @@ function buildNarrative(
       group: "rise",
       text: (
         <>
-          He progressed through the rankings, successively breaking into{" "}
+          {name} progressed through the rankings, successively breaking into{" "}
           {parts.map((p, i) => (
             <React.Fragment key={i}>
               {i > 0 && i < parts.length - 1 ? ", " : ""}
@@ -181,10 +184,10 @@ function buildNarrative(
       group: "peak",
       text: (
         <>
-          His career-high ranking was {R(`#${bestEntry.rank}`)}, reached on{" "}
+          {name}&apos;s career-high ranking was {R(`#${bestEntry.rank}`)}, reached on{" "}
           {D(fmtDate(bestEntry.date!))}
           {bestAge && <> at the age of {A(bestAge)}</>}
-          {bestEntry.points > 0 && <>, with {P(bestEntry.points.toLocaleString())} ATP points</>}.
+          {bestEntry.points > 0 && <>, with {P(bestEntry.points.toLocaleString())} {tour} points</>}.
         </>
       ),
     });
@@ -245,7 +248,7 @@ function buildNarrative(
   } else {
     facts.push({
       group: "weeks",
-      text: <>He accumulated a total of {W(String(totalWeeks))} weeks in the ATP rankings.</>,
+      text: <>{name} accumulated a total of {W(String(totalWeeks))} weeks in the {tour} rankings.</>,
     });
   }
 
@@ -269,8 +272,8 @@ function buildNarrative(
       group: "weeks",
       text: (
         <>
-          His best end-of-year ranking was {R(`#${b.rank}`)}, recorded at the close of{" "}
-          {D(String(b.year))}{eoyAge && <> when he was {A(eoyAge)} old</>}.
+          {name}&apos;s best end-of-year ranking was {R(`#${b.rank}`)}, recorded at the close of{" "}
+          {D(String(b.year))}{eoyAge && <> at the age of {A(eoyAge)}</>}.
         </>
       ),
     });
@@ -345,7 +348,7 @@ function buildNarrative(
       group: "drop",
       text: (
         <>
-          Conversely, his biggest single-week climb was{" "}
+          Conversely, {name}&apos;s biggest single-week climb was{" "}
           {W(`${bigRise} places`)}, rising from {R(`#${prevEntry.rank}`)} to{" "}
           {R(`#${riseEntry.rank}`)} on {D(fmtDate(riseEntry.date!))}.
         </>
@@ -364,13 +367,13 @@ function buildNarrative(
       text: (
         <>
           {isRetired
-            ? <>The last recorded entry in his ranking history was on {D(fmtDate(last.date!))}
+            ? <>The last recorded entry in {name}&apos;s ranking history was on {D(fmtDate(last.date!))}
                 {lastAge && <>, aged {A(lastAge)},</>}{" "}
                 at {R(`#${last.rank}`)}</>
             : <>As of {D(fmtDate(last.date!))}{lastAge && <>, aged {A(lastAge)},</>}{" "}
                 he holds a ranking of {R(`#${last.rank}`)}</>
           }
-          {last.points > 0 && <> with {P(last.points.toLocaleString())} ATP points</>}.
+          {last.points > 0 && <> with {P(last.points.toLocaleString())} {tour} points</>}.
         </>
       ),
     });
@@ -388,9 +391,10 @@ export default function RankingHistoryNarrative({
   playerName,
   className = "",
 }: Props) {
+  const tour = useLinkTour();
   const facts = useMemo(
-    () => buildNarrative(data, birthdate, playerName),
-    [data, birthdate, playerName],
+    () => buildNarrative(data, birthdate, playerName, tour),
+    [data, birthdate, playerName, tour],
   );
 
   if (!facts.length) return null;

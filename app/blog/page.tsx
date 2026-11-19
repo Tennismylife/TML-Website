@@ -1,9 +1,10 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import { getAllPosts } from '@/lib/blog';
 import BlogCard from '@/components/BlogCard';
 
 const METADATA_BASE = process.env.NEXT_PUBLIC_SITE_ORIGIN ?? (process.env.NODE_ENV === 'production' ? 'https://stats.tennismylife.org' : 'http://localhost:3000');
 
-export const metadata = {
+const metadata = {
   title: 'Blog',
   description: 'Articles and analysis about tennis statistics and performance.',
   openGraph: {
@@ -16,6 +17,10 @@ export const metadata = {
   twitter: { card: 'summary_large_image', images: [new URL('/og/site-preview.png', METADATA_BASE).toString()] },
   alternates: { canonical: '/blog' }
 };
+
+export async function generateMetadata() {
+  return tourMetadata(metadata);
+}
 
 export default async function BlogPage() {
   const posts = await getAllPosts();

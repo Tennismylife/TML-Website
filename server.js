@@ -21,6 +21,23 @@ const { execSync } = require('child_process');
 const { parse } = require('csv-parse/sync');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+let wtaPrisma;
+
+function isWtaRequest(req) {
+  return /(?:^|;\s*)tml-tour=WTA(?:;|$)/.test(req.headers.cookie || '')
+    || /^\/wta(?:\/|$)/.test(req.path)
+    || (req.path.endsWith('/wta') && !req.path.startsWith('/api/'));
+}
+
+function prismaForRequest(req) {
+  if (!isWtaRequest(req)) return prisma;
+  if (!wtaPrisma) {
+    const url = new URL(process.env.DATABASE_URL);
+    url.searchParams.set('schema', 'wta');
+    wtaPrisma = new PrismaClient({ datasourceUrl: url.toString() });
+  }
+  return wtaPrisma;
+}
 // Archiver to stream ZIPs on-the-fly for bulk download endpoint
 const archiver = require('archiver');
 const { listPublicCsvFiles } = require('./lib/public-csv-files.cjs');
@@ -137,6 +154,7 @@ function shouldBypassCache(req) {
 
   return (
     req.method !== 'GET' ||
+    isWtaRequest(req) ||
     req.query?.nocache ||
     req.headers['x-refresh'] === '1' ||
     isRsc
@@ -364,6 +382,7 @@ const APP_BUILD_ID = safeReadBuildId();
   const legacyCodePattern = /^[A-Za-z]+\d+$/i;
   server.use(async (req, res, next) => {
     if (req.method !== 'GET') return next();
+    if (isWtaRequest(req)) return next();
     const segments = req.path.split('/').filter(Boolean);
     const resource = segments[0];
     if (resource !== 'players' && resource !== 'tournaments') return next();
@@ -509,9 +528,11 @@ const APP_BUILD_ID = safeReadBuildId();
       const statusCode = res.statusCode;
       const headers = res.getHeaders();
       const ct = String(headers['content-type'] || '');
+      const profileSetsTour = req.path.startsWith('/players/') &&
+        [headers['set-cookie']].flat().some(cookie => /^tml-tour=/i.test(String(cookie)));
 
       // Set diagnostic/cache headers synchronously (only if headers not yet sent)
-      if (statusCode === 200 && !res.headersSent) {
+      if (statusCode === 200 && !profileSetsTour && !res.headersSent) {
         if (res.getHeader('X-Cache') === 'UNCACHED') {
           res.setHeader('X-Cache', cacheBodyTooLarge ? `${type.toUpperCase()}-SKIP-LARGE` : `${type.toUpperCase()}-STORED`);
         }
@@ -523,7 +544,7 @@ const APP_BUILD_ID = safeReadBuildId();
       const result = originalEnd(chunk, ...args);
 
       // Store in Redis asynchronously (fire-and-forget — never blocks the response)
-      if (statusCode === 200 && !cacheBodyTooLarge) {
+      if (statusCode === 200 && !profileSetsTour && !cacheBodyTooLarge) {
         (async () => {
           try {
             let bodyBuffer = Buffer.concat(chunks);
@@ -600,6 +621,7 @@ const APP_BUILD_ID = safeReadBuildId();
   // API: /api/matches
   server.get('/api/matches', async (req, res) => {
     try {
+      const client = prismaForRequest(req);
       // Query parameters: player (substring, case-insensitive), player_id (exact id), year (YYYY), surface (case-insensitive), round
       const qPlayer = (req.query.player || '').toString().trim().toLowerCase();
       const qPlayerId = (req.query.player_id || '').toString().trim();
@@ -654,17 +676,17 @@ const APP_BUILD_ID = safeReadBuildId();
         tourney_date: true,
       };
 
-      const count = await prisma.match.count({ where });
+      const count = await client.match.count({ where });
       if (allFlag) {
         if (count > Number(process.env.MAX_MATCHES_JSON || 200000)) {
           return res.status(413).json({ error: `Result too large (${count}). Narrow filters or use pagination.` });
         }
-        const results = await prisma.match.findMany({ where, orderBy: { tourney_date: 'desc' }, select });
+        const results = await client.match.findMany({ where, orderBy: { tourney_date: 'desc' }, select });
         res.setHeader('Content-Type', 'application/json; charset=utf-8');
         return res.status(200).json({ count, results });
       }
 
-      const results = await prisma.match.findMany({ where, take: limit, skip: offset, orderBy: { tourney_date: 'desc' }, select });
+      const results = await client.match.findMany({ where, take: limit, skip: offset, orderBy: { tourney_date: 'desc' }, select });
       // continue to pagination handling below by creating a 'filtered-like' response
       const filtered = results;
       const totalCount = count;

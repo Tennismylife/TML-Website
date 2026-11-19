@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Flag from '@/components/Flag';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import React from 'react';
 import RecordsTopControls from '../../Top/RecordsTopControls';
 import ServerPagination from '@/components/ServerPagination';

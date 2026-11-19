@@ -1,10 +1,12 @@
 "use client";
+import { usePlayerLevel } from "@/lib/use-player-level";
+import { useLinkTour } from "@/components/TourLink";
 
 import React, { useEffect, useState, useMemo, useRef } from "react";
-import Link from "next/link";
+import Link from "@/components/TourLink";
 import useIncrementalCards from "@/lib/hooks/useIncrementalCards";
 import type { Match } from "@/types";
-import { getLevelColors, getLevelFullName, getTourneyHref, getPlayerHref, getPlayerHrefWithTab, formatDateISO, getRoundIndex } from "@/lib/utils";
+import { getLevelColors, getTourneyHref, getPlayerHref, getPlayerHrefWithTab, formatDateISO, getRoundIndex } from "@/lib/utils";
 import Flag from "@/components/Flag";
 import { getSurfaceColor, palette } from "@/lib/colors";
 import TournamentCompactList from "./TournamentCompactList";
@@ -56,6 +58,7 @@ const YearByYearBreakdownTable: React.FC<{
   playerId: string;
   surface: string;
 }> = ({ allMatches, playerId, surface }) => {
+  const levelNameFor = usePlayerLevel();
   const pid = String(playerId);
 
   const surfaceMatches = useMemo(() => {
@@ -146,7 +149,7 @@ const YearByYearBreakdownTable: React.FC<{
                   checked={selectedLevels.has(lvl)}
                   onChange={() => toggleLevel(lvl)}
                 />
-                {lvlLabels[lvl] ?? lvl}
+                {levelNameFor(lvl, lvlLabels[lvl])}
               </label>
             ))}
             {selectedLevels.size > 0 && (
@@ -292,6 +295,8 @@ export default function SurfaceStatsClient({
   overviewSlot,
   bottomSlot,
 }: SurfaceStatsClientProps) {
+  const levelNameFor = usePlayerLevel();
+  const tour = useLinkTour();
   const [allMatches, setAllMatches] = useState<Match[]>(initialMatches ?? []);
   const [loading, setLoading] = useState<boolean>(!initialMatches || initialMatches.length === 0);
   const [error, setError] = useState<string | null>(null);
@@ -541,7 +546,7 @@ export default function SurfaceStatsClient({
                     return (
                       <span key={lvl} className="text-xs bg-gray-700 border border-gray-600 rounded px-2 py-0.5 text-gray-200">
                         <span className="text-yellow-300 font-bold">{count}</span>
-                        <span className="text-gray-400 ml-1">{lvlLabels[lvl] ?? lvl}</span>
+                        <span className="text-gray-400 ml-1">{levelNameFor(lvl, lvlLabels[lvl])}</span>
                       </span>
                     );
                   })}
@@ -646,7 +651,7 @@ export default function SurfaceStatsClient({
               {rankingLoaded && (
                 <div className="flex items-center gap-3">
                   <span className="inline-flex flex-col items-center justify-center bg-yellow-500/15 border border-yellow-500/30 rounded px-2 py-1 min-w-[32px]">
-                    <span className="text-[9px] font-black text-yellow-400 tracking-[0.2em] uppercase leading-none">ATP</span>
+                    <span className="text-[9px] font-black text-yellow-400 tracking-[0.2em] uppercase leading-none">{tour}</span>
                   </span>
                   <div>
                     <div className="text-xl font-black text-yellow-300 leading-none">
@@ -665,7 +670,7 @@ export default function SurfaceStatsClient({
                     <div className="text-xl font-black text-blue-300 leading-none">
                       {rankingData?.currentPoints != null ? rankingData.currentPoints.toLocaleString() : '/'}
                     </div>
-                    <div className="text-[10px] text-gray-400 mt-0.5">Current ATP points</div>
+                    <div className="text-[10px] text-gray-400 mt-0.5">Current {tour} points</div>
                   </div>
                 </div>
               )}
@@ -768,7 +773,7 @@ export default function SurfaceStatsClient({
             {/* Masters 1000 */}
             {overviewStats.mastersTotal >= 3 && surface !== 'Grass' && (
               <p>
-                ATP Masters 1000{isSurfacePage ? ` on ${surfAdj}` : ''} ({surface === 'Clay' ? 'Monte Carlo, Madrid, Rome' : surface === 'Hard' ? 'Indian Wells, Miami, Canada, Cincinnati, Shanghai, Paris' : 'Indian Wells, Miami, Monte Carlo, Madrid, Rome, Canada, Cincinnati, Shanghai, Paris'}):{' '}
+                {levelNameFor("M", "ATP Masters 1000")}{isSurfacePage ? ` on ${surfAdj}` : ''}{' '}
                 {overviewStats.mastersWinPctN >= 65
                   ? <>{overviewStats.displayName} is elite here — <strong className="text-green-400">{overviewStats.mastersWins}</strong>–<strong className="text-red-400">{overviewStats.mastersLosses}</strong> (<strong className="text-blue-400">{overviewStats.mastersWinPctN.toFixed(1)}%</strong>) across <strong className="text-yellow-400">{overviewStats.mastersTotal}</strong> matches. Sustaining that win rate in the Tour's deepest regular-week draws is a defining quality of the very best.</>
                   : overviewStats.mastersWinPctN >= 50
@@ -1133,16 +1138,16 @@ export default function SurfaceStatsClient({
                   <WLStatTable
                     title="Categories"
                     rows={levelsAgg.map((row, idx) => {
-                      const levelName = getLevelFullName(row.level).toLowerCase();
+                      const levelName = levelNameFor(row.level).toLowerCase();
                       let color: string;
                       switch (true) {
                         case levelName.includes("grand slam"): color = "#A855F7"; break;
-                        case levelName.includes("atp 1000") || levelName.includes("masters 1000"): color = "#06B6D4"; break;
-                        case levelName.includes("atp 500"): color = "#22C55E"; break;
-                        case levelName.includes("atp 250"): color = "#EF4444"; break;
+                        case levelName.includes("1000") || levelName.includes("masters 1000"): color = "#06B6D4"; break;
+                        case levelName.includes("500"): color = "#22C55E"; break;
+                        case levelName.includes("250"): color = "#EF4444"; break;
                         default: color = getLevelColors(row.level)?.bar || palette[idx % palette.length];
                       }
-                      return { label: getLevelFullName(row.level), wins: row.wins, losses: row.losses, color };
+                      return { label: levelNameFor(row.level), wins: row.wins, losses: row.losses, color };
                     })}
                   />
                 </div>

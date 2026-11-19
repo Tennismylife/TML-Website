@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { getTourneyHref } from '@/lib/utils';
 

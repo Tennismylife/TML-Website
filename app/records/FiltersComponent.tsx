@@ -1,9 +1,12 @@
 "use client";
+import { useTourRouter as useRouter, currentTourPath } from "@/lib/tour-navigation";
 
 import React from 'react';
 import { Dispatch, SetStateAction, useEffect, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { keyFromParamLabel } from '@/lib/levels';
+import { recordTourPath } from '@/lib/record-tour-path';
+import { useRecordsTour } from './AtpRecordCommentary';
 
 const SURFACE_LIST = ["Hard", "Clay", "Grass", "Carpet"];
 const ROUND_LIST = ["R128", "R64", "R32", "R16", "QF", "SF", "F"];
@@ -56,6 +59,7 @@ export default function FiltersComponent({
   activeTab,
   activeSubTab,
 }: FiltersComponentProps) {
+  const tour = useRecordsTour();
   const router = useRouter();
   const searchParams = useSearchParams();
   const lastAppliedQS = useRef<string | null>(null);
@@ -282,7 +286,7 @@ export default function FiltersComponent({
     // Use the activeTab and activeSubTab props directly (they come from server-side canonical resolution)
     // instead of parsing the pathname, which can be a canonical alias
     const resolvedSubtab = activeSubTab || incomingSubtab || null;
-    const newPath = `/records/${encodeURIComponent(activeTab)}${resolvedSubtab ? `/${encodeURIComponent(resolvedSubtab)}` : ""}`;
+    const newPath = recordTourPath(`/records/${encodeURIComponent(activeTab)}${resolvedSubtab ? `/${encodeURIComponent(resolvedSubtab)}` : ""}`, tour);
 
     const desiredSearch = newCanon ? `?${newCanon}` : "";
     const desiredHref = `${window.location.origin}${newPath}${desiredSearch}`;
@@ -353,7 +357,7 @@ export default function FiltersComponent({
 
       lastAppliedQS.current = newCanon;
       try {
-        if (typeof window !== 'undefined') window.history.replaceState(null, '', newPath + desiredSearch);
+        if (typeof window !== 'undefined') window.history.replaceState(null, '', currentTourPath(newPath + desiredSearch));
       } catch (e) {
         try { router.replace(newPath + desiredSearch); } catch {}
       }
@@ -375,11 +379,11 @@ export default function FiltersComponent({
     lastAppliedQS.current = newCanon;
     if (debugMode) console.log("[filters-debug] performing replace ->", newPath + desiredSearch);
     try {
-      if (typeof window !== 'undefined') window.history.replaceState(null, '', newPath + desiredSearch);
+      if (typeof window !== 'undefined') window.history.replaceState(null, '', currentTourPath(newPath + desiredSearch));
     } catch (e) {
       try { router.replace(newPath + desiredSearch); } catch {}
     }
-  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeTab, activeSubTab, searchParams, router]);
+  }, [selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, activeTab, activeSubTab, searchParams, router, tour]);
 
   const selectSurface = (surface: string) => setSelectedSurfaces(new Set([surface]));
   const selectLevel = (level: string) => setSelectedLevels(new Set([level]));

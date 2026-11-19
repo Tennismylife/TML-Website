@@ -1,5 +1,5 @@
 import Flag from '@/components/Flag';
-import Link from "next/link";
+import Link from "@/components/TourLink";
 import { getPlayerHref } from "@/lib/utils";
 import { lastNMatches, playerResultsForMatches } from '@/lib/h2hUtils';
 import H2HHypotheticalMatchup from './H2HHypotheticalMatchup';

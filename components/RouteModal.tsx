@@ -1,7 +1,8 @@
 "use client";
+import { useTourRouter as useRouter, currentTourPath } from "@/lib/tour-navigation";
 
 import React, { useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function RouteModal({ children, onClose }: { children: React.ReactNode; onClose?: (e?: React.MouseEvent) => void }): React.ReactElement | null {
@@ -18,7 +19,7 @@ export default function RouteModal({ children, onClose }: { children: React.Reac
 
           // First ensure modal is hidden immediately by clearing state and dispatching close-modal
           try {
-            try { window.history.replaceState(null, '', storedBg); } catch (e) { /* ignore replaceState failure */ }
+            try { window.history.replaceState(null, '', currentTourPath(storedBg)); } catch (e) { /* ignore replaceState failure */ }
             window.dispatchEvent(new CustomEvent('close-modal'));
             try { delete (window as any).__modalBackgroundPath; } catch (e) {}
           } catch (e) { /* close dispatch failed */ }

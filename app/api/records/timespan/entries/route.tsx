@@ -10,10 +10,14 @@ export async function GET(req: NextRequest) {
     const limitRaw = Number(url.searchParams.get('perPage') ?? url.searchParams.get('limit') ?? 100);
     const limit = Number.isFinite(limitRaw) ? Math.min(100, Math.max(1, Math.floor(limitRaw))) : 100;
 
-    const filters: Prisma.Sql[] = [];
+    const filters: Prisma.Sql[] = [
+      Prisma.sql`pt.event_id NOT IN (
+        SELECT m.event_id FROM "Match" m WHERE m.team_event IS TRUE AND m.event_id IS NOT NULL
+      )`,
+    ];
     if (surfaces.length) filters.push(Prisma.sql`pt.surface IN (${Prisma.join(surfaces)})`);
     if (levels.length) filters.push(Prisma.sql`pt.tourney_level IN (${Prisma.join(levels)})`);
-    const whereSql = filters.length ? Prisma.sql`WHERE ${Prisma.join(filters, ' AND ')}` : Prisma.empty;
+    const whereSql = Prisma.sql`WHERE ${Prisma.join(filters, ' AND ')}`;
 
     type Row = {
       player_id: string;
@@ -126,6 +130,7 @@ export async function GET(req: NextRequest) {
             )) AS span_json,
             CEIL(EXTRACT(EPOCH FROM (MAX(pt.tourney_date) - MIN(pt.tourney_date))) / 86400.0)::int AS max_days_between
           FROM "PlayerTournament" pt
+          ${whereSql}
           GROUP BY pt.player_id
         )
         SELECT pp.player_id,

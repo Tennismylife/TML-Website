@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import RecordsRankingClient from '../RecordsRankingClient';
 import type { Metadata } from 'next';
 import { INDEX_FOLLOW_URLS_SET } from '../indexability';

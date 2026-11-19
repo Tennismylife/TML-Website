@@ -1,10 +1,10 @@
 "use client";
+import { usePlayerLevel } from "@/lib/use-player-level";
+import { sortPlayerLevels } from "@/lib/player-levels";
 
 import React, { useEffect, useMemo, useState } from "react";
 import type { Match } from "@/types";
-import { getLevelFullName } from "@/lib/utils";
 
-const LEVEL_ORDER = ["G", "M", "A", "O", "D", "Unknown"];
 const ROUND_ORDER = ["R128","R64","R32","R16","RR","QF","SF","F","W","BR","Unknown"];
 const SURFACE_ORDER = ["Hard","Clay","Grass","Carpet","Unknown"];
 
@@ -42,6 +42,7 @@ export default function PerformanceFilter({
   setFilters: controlledSetFilters,
   onFilteredChange = () => {},
 }: PerformanceFilterProps) {
+  const levelNameFor = usePlayerLevel();
   const [localFilters, setLocalFilters] = useState<PerformanceFilterProps['filters']>(DEFAULT_FILTERS);
 
   const filters = controlledFilters ?? localFilters;
@@ -58,7 +59,7 @@ export default function PerformanceFilter({
 
   const levelOptions = useMemo(() => {
     const s = new Set(allMatches.map(m => m.tourney_level ?? "Unknown"));
-    return LEVEL_ORDER.filter(l => s.has(l));
+    return sortPlayerLevels(s);
   }, [allMatches]);
 
   const surfaceOptions = useMemo(() => {
@@ -125,7 +126,7 @@ export default function PerformanceFilter({
           disabled={loading || !!error}
         >
           <option value="All">All</option>
-          {levelOptions.map(lv => <option key={lv} value={lv}>{getLevelFullName(lv)}</option>)}
+          {levelOptions.map(lv => <option key={lv} value={lv}>{levelNameFor(lv)}</option>)}
         </select>
       </div>
 

@@ -12,7 +12,10 @@ WITH base AS (
         tourney_date::date AS d
         -- Se tourney_date è timestamptz e vuoi normalizzare in UTC:
         -- date(timezone('UTC', tourney_date)) AS d
-    FROM "PlayerTournament"
+    FROM "PlayerTournament" pt
+    WHERE pt.event_id NOT IN (
+        SELECT m.event_id FROM "Match" m WHERE m.team_event IS TRUE AND m.event_id IS NOT NULL
+    )
 ),
 
 -- FIRST/LAST overall (deterministico su d e poi tourney_id)

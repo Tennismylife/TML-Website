@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
+import Link from "@/app/records/RecordLink";
 import Pagination from "../../../components/Pagination";
 import Modal from "@/components/Modal";
 import Flag from '@/components/Flag';

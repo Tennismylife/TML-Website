@@ -1,8 +1,7 @@
+import { prisma } from "@/lib/prisma";
 // app/api/records/counterseasons/titles/route.tsx
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
 
 interface Player {
   id: string;

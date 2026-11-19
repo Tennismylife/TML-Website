@@ -1,3 +1,4 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import AgesFull from '@/app/tournaments/[id]/records/ages/_components/AgesFull';
 import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
 import ViewRecordsCTA from '../../../ViewRecordsCTA';
@@ -11,7 +12,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
   const canonical = `${site}/tournaments/${slugId}/records/ages/main/oldest`;
   const description = `Oldest players to compete in the men's singles main draw at ${tournamentName}, ranked by age with historical tournament records.`;
-  return { title: `Oldest Players in Main Draw at ${tournamentName}`, description, alternates: { canonical } };
+  return tourMetadata({ title: `Oldest Players in Main Draw at ${tournamentName}`, description, alternates: { canonical } });
 }
 
 export default async function Page({ params }: any) {

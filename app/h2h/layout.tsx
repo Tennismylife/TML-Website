@@ -1,9 +1,10 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import type { Metadata } from 'next';
 import React from 'react';
 
 const site = 'https://stats.tennismylife.org';
 
-export const metadata: Metadata = {
+const metadata: Metadata = {
   title: { absolute: 'Head-to-Head - TennisMyLife' },
   description: 'Head-to-head statistics between players.',
   openGraph: {
@@ -16,6 +17,10 @@ export const metadata: Metadata = {
   // previously noindex; now we want H2H pages to be crawlable like players
   robots: { index: true, follow: true },
 };
+
+export async function generateMetadata() {
+  return tourMetadata(metadata);
+}
 
 export default function H2HLayout({ children }: { children: React.ReactNode }) {
   return <>{children}</>;

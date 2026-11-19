@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
-import Link from "next/link";
+import Link from "@/components/TourLink";
 import { Trophy, ArrowRight, RefreshCw } from "lucide-react";
 import Flag from '@/components/Flag';
 import EditionNavigator from '@/components/EditionNavigator';

@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '@/app/records/RecordLink';
 import { resolveRecordHref } from './record-links';
 
 type Node = { key: string; label: string; href?: string; children?: Node[] };

@@ -1,7 +1,9 @@
 "use client";
+import { useTourRouter as useRouter } from "@/lib/tour-navigation";
+import { TourAnchor } from "@/components/TourLink";
 
 import React, { useState, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import RankingTable, { Ranking } from "./RankingTable";
 
 interface DateItem {
@@ -239,9 +241,9 @@ export default function RankingPage() {
       </h1>
       <p className="text-center text-sm text-gray-400 -mt-4 mb-6">
         Looking for all-time records by ranking?{' '}
-        <a href="/recordsranking" className="text-yellow-400 hover:text-yellow-200 underline">Ranking Records →</a>
+        <TourAnchor href="/recordsranking" className="text-yellow-400 hover:text-yellow-200 underline">Ranking Records →</TourAnchor>
         {' '}·{' '}
-        <a href="/records" className="text-yellow-400 hover:text-yellow-200 underline">All Match Records →</a>
+        <TourAnchor href="/records" className="text-yellow-400 hover:text-yellow-200 underline">All Match Records →</TourAnchor>
       </p>
 
       {/* DISCLAIMER */}

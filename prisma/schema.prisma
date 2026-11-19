@@ -4,6 +4,7 @@ generator client {
 }
 
 datasource db {
+  // ATP uses public. The WTA client uses schema=wta with the same model mappings.
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }

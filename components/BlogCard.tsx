@@ -1,5 +1,5 @@
 "use client";
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 
 export default function BlogCard({ slug, title, date, summary, thumbnail }: { slug: string; title: string; date?: string | null; summary?: string; thumbnail?: string | null }) {
   const thumbPng = thumbnail ?? `/blog/thumbs/${slug}.png`;

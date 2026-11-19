@@ -1,6 +1,9 @@
+import { RecordAnchor } from "@/app/records/RecordLink";
 import React from 'react';
 import { keyFromParamLabel } from '@/lib/levels';
 import { buildRecordFilters, resolveRecordHref } from './record-links';
+import { getTour } from '@/lib/tour';
+import { recordTourLabel } from './tour-labels';
 
 interface Props {
   activeTab: string | null | undefined;
@@ -31,7 +34,8 @@ function getLinkRel(href: string) {
   return href.includes('?') ? 'nofollow' : undefined;
 }
 
-export default function RecordsFilters({ activeTab, activeSubTab, currentPath, searchParams = {} }: Props) {
+export default async function RecordsFilters({ activeTab, activeSubTab, currentPath, searchParams = {} }: Props) {
+  const tour = await getTour();
   // Temporary debug to see what values are being passed
   console.log('[RecordsFilters] activeTab:', activeTab, 'activeSubTab:', activeSubTab, 'searchParams:', searchParams);
   const toArray = (v?: string | string[]) => (v === undefined ? [] : (Array.isArray(v) ? v : [v]));
@@ -92,11 +96,11 @@ export default function RecordsFilters({ activeTab, activeSubTab, currentPath, s
   const levelList = ['G','M','F','250','500','D'];
   const levelNames: Record<string, string> = {
     G: 'Grand Slam',
-    M: 'Masters 1000',
-    F: 'ATP Finals',
+    M: recordTourLabel('Masters 1000', tour),
+    F: recordTourLabel('ATP Finals', tour),
     500: '500',
     250: '250',
-    D: 'Davis Cup',
+    D: recordTourLabel('Davis Cup', tour),
   };
 
   const isSeasonsOrSame = activeTab === 'same' || activeTab === 'seasons';
@@ -232,23 +236,23 @@ export default function RecordsFilters({ activeTab, activeSubTab, currentPath, s
         <fieldset className="mb-4 p-4 rounded-xl border border-gray-600 bg-gray-900">
           <legend className="text-lg font-semibold mb-3 text-white px-2">Surface</legend>
           <div className="flex flex-wrap gap-3">
-            <a
+            <RecordAnchor
               href={buildRecordHref(activeTab, effectiveSub, [], Array.from(selectedLevels), selectedRounds, selectedBestOf, currentPath)}
               rel={getLinkRel(buildRecordHref(activeTab, effectiveSub, [], Array.from(selectedLevels), selectedRounds, selectedBestOf, currentPath))}
               className={`px-5 py-2 rounded-full font-medium ${selectedSurfaces.size === 0 ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
               All
-            </a>
+            </RecordAnchor>
             {SURFACE_LIST.map(surface => (
               (() => {
                 const href = buildRecordHref(activeTab, effectiveSub, [surface], Array.from(selectedLevels), selectedRounds, selectedBestOf, currentPath);
                 return (
-              <a
+              <RecordAnchor
                 key={surface}
                 href={href}
                 rel={getLinkRel(href)}
                 className={`px-5 py-2 rounded-full font-medium ${selectedSurfaces.has(surface) ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
                 {surfaceEmojis[surface]} {surface}
-              </a>
+              </RecordAnchor>
                 );
               })()
             ))}
@@ -261,23 +265,23 @@ export default function RecordsFilters({ activeTab, activeSubTab, currentPath, s
         <fieldset className="mb-4 p-4 rounded-xl border border-gray-600 bg-gray-900">
           <legend className="text-lg font-semibold mb-3 text-white px-2">Level</legend>
           <div className="flex flex-wrap gap-3">
-            <a
+            <RecordAnchor
               href={buildRecordHref(activeTab, effectiveSub, Array.from(selectedSurfaces), [], selectedRounds, selectedBestOf, currentPath)}
               rel={getLinkRel(buildRecordHref(activeTab, effectiveSub, Array.from(selectedSurfaces), [], selectedRounds, selectedBestOf, currentPath))}
               className={`px-5 py-2 rounded-full font-medium ${selectedLevels.size === 0 ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
               All
-            </a>
+            </RecordAnchor>
             {filteredLevelList.map(level => (
               (() => {
                 const href = buildRecordHref(activeTab, effectiveSub, Array.from(selectedSurfaces), [level], selectedRounds, selectedBestOf, currentPath);
                 return (
-              <a
+              <RecordAnchor
                 key={level}
                 href={href}
                 rel={getLinkRel(href)}
                 className={`px-5 py-2 rounded-full font-medium ${selectedLevels.has(level) ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
                 {levelNames[level] || level}
-              </a>
+              </RecordAnchor>
                 );
               })()
             ))}
@@ -294,12 +298,12 @@ export default function RecordsFilters({ activeTab, activeSubTab, currentPath, s
               (() => {
                 const href = buildRecordHref(activeTab, effectiveSub, Array.from(selectedSurfaces), Array.from(selectedLevels), undefined, selectedBestOf, currentPath);
                 return (
-              <a
+              <RecordAnchor
                 href={href}
                 rel={getLinkRel(href)}
                 className={`px-5 py-2 rounded-full font-medium ${selectedRounds === '' ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
                 All
-              </a>
+              </RecordAnchor>
                 );
               })()
             )}
@@ -307,13 +311,13 @@ export default function RecordsFilters({ activeTab, activeSubTab, currentPath, s
               (() => {
                 const href = buildRecordHref(activeTab, effectiveSub, Array.from(selectedSurfaces), Array.from(selectedLevels), r, selectedBestOf, currentPath);
                 return (
-              <a
+              <RecordAnchor
                 key={r}
                 href={href}
                 rel={getLinkRel(href)}
                 className={`px-5 py-2 rounded-full font-medium ${effectiveRoundForDisplay === r ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
                 {r}
-              </a>
+              </RecordAnchor>
                 );
               })()
             ))}
@@ -326,23 +330,23 @@ export default function RecordsFilters({ activeTab, activeSubTab, currentPath, s
         <fieldset className="p-4 rounded-xl border border-gray-600 bg-gray-900">
           <legend className="text-lg font-semibold mb-3 text-white px-2">Best Of</legend>
           <div className="flex flex-wrap gap-3">
-            <a
+            <RecordAnchor
               href={buildRecordHref(activeTab, effectiveSub, Array.from(selectedSurfaces), Array.from(selectedLevels), selectedRounds, null, currentPath)}
               rel={getLinkRel(buildRecordHref(activeTab, effectiveSub, Array.from(selectedSurfaces), Array.from(selectedLevels), selectedRounds, null, currentPath))}
               className={`px-5 py-2 rounded-full font-medium ${selectedBestOf === null ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
               All
-            </a>
+            </RecordAnchor>
             {BEST_OF_LIST.map(b => (
               (() => {
                 const href = buildRecordHref(activeTab, effectiveSub, Array.from(selectedSurfaces), Array.from(selectedLevels), selectedRounds, b, currentPath);
                 return (
-              <a
+              <RecordAnchor
                 key={b}
                 href={href}
                 rel={getLinkRel(href)}
                 className={`px-5 py-2 rounded-full font-medium ${selectedBestOf === b ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300'}`}>
                 {b}
-              </a>
+              </RecordAnchor>
                 );
               })()
             ))}

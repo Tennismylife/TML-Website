@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import { getPlayerHref } from '@/lib/utils';
 import Flag from '@/components/Flag';
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';

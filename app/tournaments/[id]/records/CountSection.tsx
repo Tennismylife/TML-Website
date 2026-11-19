@@ -1,8 +1,9 @@
 'use client'
+import { useTourRouter as useRouter, currentTourPath } from "@/lib/tour-navigation";
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import Link from '@/components/TourLink';
+
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 import RouteModal from '@/components/RouteModal';
 import Flag from '@/components/Flag';
@@ -320,7 +321,7 @@ export default function CountSection({ tournamentId, initialData }: { tournament
     const background = typeof window !== 'undefined' ? window.location.pathname + window.location.search : undefined;
 
     try {
-      window.history.pushState({ ...(window.history.state || {}), modal: true, background }, '', target);
+      window.history.pushState({ ...(window.history.state || {}), modal: true, background }, '', currentTourPath(target));
       window.dispatchEvent(new PopStateEvent('popstate'));
       window.dispatchEvent(new CustomEvent('modalchange'));
       // notify outlet that we opened (with payload)

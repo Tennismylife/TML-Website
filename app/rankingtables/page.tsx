@@ -1,7 +1,8 @@
 "use client";
+import { useTourRouter as useRouter } from "@/lib/tour-navigation";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+
 
 import RankingTablesLayout from "./RankingTablesLayout";
 import System1973 from "./1973System";

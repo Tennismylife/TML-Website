@@ -1,4 +1,5 @@
 'use client';
+import { TourAnchor } from "@/components/TourLink";
 
 import React, { useEffect } from 'react';
 import dynamic from 'next/dynamic';
@@ -31,7 +32,7 @@ function StaticRoundTable({ rows, heading, nestedRenderTable = false }: any) {
                     {rows.map((r: any) => (
                       <tr key={r.id} className="border-b border-gray-700">
                         <td className="py-2 text-center">
-                          <div className="flex items-center justify-center gap-2"><Flag ioc={r.ioc} className="w-4 h-3" /><a href={playerMatchesUrl(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</a></div>
+                          <div className="flex items-center justify-center gap-2"><Flag ioc={r.ioc} className="w-4 h-3" /><TourAnchor href={playerMatchesUrl(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</TourAnchor></div>
                         </td>
                         <td className="py-2 text-center text-lg md:text-xl">{r.count}</td>
                       </tr>
@@ -55,7 +56,7 @@ function StaticRoundTable({ rows, heading, nestedRenderTable = false }: any) {
                   {rows.map((r: any) => (
                     <tr key={r.id} className="border-b border-gray-700">
                       <td className="py-2 text-center">
-                        <div className="flex items-center justify-center gap-2"><Flag ioc={r.ioc} className="w-4 h-3" /><a href={playerMatchesUrl(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</a></div>
+                        <div className="flex items-center justify-center gap-2"><Flag ioc={r.ioc} className="w-4 h-3" /><TourAnchor href={playerMatchesUrl(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</TourAnchor></div>
                       </td>
                       <td className="py-2 text-center text-lg md:text-xl">{r.count}</td>
                     </tr>
@@ -91,7 +92,7 @@ function InnerRoundContent({ rows, loading, error, heading, mode = 'interactive'
               <td className="py-2 text-center">
                 <div className="flex items-center justify-center gap-2">
                   <Flag ioc={item.ioc} className="w-4 h-3" />
-                  <a href={playerMatchesUrl(item.slug ?? String(item.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{item.name}</a>
+                  <TourAnchor href={playerMatchesUrl(item.slug ?? String(item.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{item.name}</TourAnchor>
                 </div>
               </td>
               <td className="py-2 text-center text-lg md:text-xl">{item.count}</td>

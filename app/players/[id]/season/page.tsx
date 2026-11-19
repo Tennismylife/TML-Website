@@ -57,9 +57,11 @@ export default async function SeasonIndexPage({ params, searchParams }: any) {
     const slug = player.slug || String(id);
     const to = `/players/${encodeURIComponent(slug)}/season/${latestYear}`;
     // Server-side redirect to canonical per-year path for SEO
-    redirect(to);
+    redirect(tourPath(to, await getTour()));
   }
 
   // Fallback: render season page without redirect
   return <PlayerTabPage params={Promise.resolve({ id, tab: 'season' })} searchParams={Promise.resolve(resolvedSearch ?? {})} />;
 }
+import { getTour } from "@/lib/tour";
+import { tourPath } from "@/lib/tour-path";

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import Link from "next/link";
+import Link from "@/components/TourLink";
 import Flag from "@/components/Flag";
 import { getPlayerHref, getPlayerHrefWithTab, getTourneyHref, formatDateISO } from "@/lib/utils";
 

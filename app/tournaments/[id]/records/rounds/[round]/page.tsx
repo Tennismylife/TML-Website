@@ -1,3 +1,4 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import RoundFull from '../_components/RoundFull';
 import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
 import { shouldIndexRecords } from '@/lib/getTournamentName';
@@ -27,14 +28,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       const description = `Players with the most ${getRoundFullName(String(round))} appearances at ${tournamentName}. Open Era records from all editions.`;
       const ogUrl = `${site}/tournaments/${canonicalSlug}/records/rounds/${encodeURIComponent(String(round))}`;
       const ogImage = `${site}/og/site-preview.png`;
-      return {
+      return tourMetadata({
         title: titleText,
         description,
         openGraph: { title: titleText, description, url: ogUrl, siteName: 'Tennis My Life', images: [{ url: ogImage, alt: `${tournamentName} - ${label}`, width: 1200, height: 630, type: 'image/png' }] },
         twitter: { card: 'summary_large_image', title: titleText, description, images: [ogImage] },
         alternates: { canonical: ogUrl },
         robots: { index: shouldIndexRecords(t?.category, t?.years ?? null), follow: true },
-      };
+      });
     }
   } else {
     const t = await prisma.tournament.findUnique({ where: { slug: String(id) }, select: { slug: true, category: true, years: true } });
@@ -42,27 +43,27 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const description = `Players with the most ${getRoundFullName(String(round))} appearances at ${tournamentName}. Open Era records from all editions.`;
     const ogUrl = `${site}/tournaments/${canonicalSlug}/records/rounds/${encodeURIComponent(String(round))}`;
     const ogImage = `${site}/og/site-preview.png`;
-    return {
+    return tourMetadata({
       title: titleText,
       description,
       openGraph: { title: titleText, description, url: ogUrl, siteName: 'Tennis My Life', images: [{ url: ogImage, alt: `${tournamentName} - ${label}`, width: 1200, height: 630, type: 'image/png' }] },
       twitter: { card: 'summary_large_image', title: titleText, description, images: [ogImage] },
       alternates: { canonical: ogUrl },
       robots: { index: shouldIndexRecords(t?.category, t?.years ?? null), follow: true },
-    };
+    });
   }
 
   // Fallback (slug not resolved)
   const description = `Players with the most ${getRoundFullName(String(round))} appearances at ${tournamentName}. Open Era records from all editions.`;
   const ogUrl = `${site}/tournaments/${canonicalSlug}/records/rounds/${encodeURIComponent(String(round))}`;
   const ogImage = `${site}/og/site-preview.png`;
-  return {
+  return tourMetadata({
     title: titleText,
     description,
     openGraph: { title: titleText, description, url: ogUrl, siteName: 'Tennis My Life', images: [{ url: ogImage, alt: `${tournamentName} - ${label}`, width: 1200, height: 630, type: 'image/png' }] },
     twitter: { card: 'summary_large_image', title: titleText, description, images: [ogImage] },
     alternates: { canonical: ogUrl },
-  };
+  });
 }
 
 export default async function Page({ params }: { params: Promise<{ id: string; round: string }> }) {

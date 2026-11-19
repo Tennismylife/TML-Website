@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import { prisma } from '@/lib/prisma';
 import { mapIdsToSlugs } from '@/lib/player-slugs';
 import { getTourneyHref, getPlayerHref, formatDateISO, createH2HUrl } from '@/lib/utils';
@@ -10,7 +10,7 @@ export default async function LatestMatchesServer() {
   try {
     const raw = await prisma.match.findMany({
       orderBy: [{ tourney_date: 'desc' }, { match_num: 'desc' }, { id: 'desc' }],
-      where: { score: { not: 'To play' } },
+      where: { score: { not: 'To play' }, tourney_date: { not: null } },
       take: 10,
       select: {
         id: true,
@@ -43,8 +43,7 @@ export default async function LatestMatchesServer() {
       new Set(
         raw.map((m) => {
           const s = String(m.tourney_id || '');
-          const parts = s.split('-').filter(Boolean);
-          return parts.length === 2 ? parts[1] : s;
+          return s.replace(/^\d{4}-/, '');
         }).filter(Boolean)
       )
     );
@@ -63,8 +62,7 @@ export default async function LatestMatchesServer() {
       const wSlug = m.winner_id ? (slugMap[String(m.winner_id)] ?? null) : null;
       const lSlug = m.loser_id ? (slugMap[String(m.loser_id)] ?? null) : null;
       const s = String(m.tourney_id || '');
-      const parts = s.split('-').filter(Boolean);
-      const idPart = parts.length === 2 ? parts[1] : s;
+      const idPart = s.replace(/^\d{4}-/, '');
       return {
         ...m,
         winner_slug: wSlug,

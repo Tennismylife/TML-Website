@@ -1,3 +1,4 @@
+import { fetchForTour } from "@/lib/tour";
 export type RecordRow = Record<string, any>;
 
 const SITE_URL = process.env.SITE_URL || 'https://stats.tennismylife.org';
@@ -18,7 +19,7 @@ export async function getRecords(tab: string, surface?: string, level?: string, 
 
   try {
     // Use force-cache to make pages SSG-friendly when pre-rendered
-    const res = await fetch(url, { cache: 'force-cache' });
+    const res = await fetchForTour(url, { cache: 'force-cache' });
     if (!res.ok) return [];
     const json = await res.json();
     return Array.isArray(json) ? json : [];

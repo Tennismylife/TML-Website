@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/TourLink";
 import { Match } from "@/types";
 import Flag from '@/components/Flag';
 import { getTourneyHref, extractUniqueSurfaces, getPlayerHref } from "@/lib/utils";

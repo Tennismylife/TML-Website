@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
+import Link from "@/app/records/RecordLink";
 import Flag from '@/components/Flag';
 import Modal from "@/components/Modal";
 import { playerMatchesUrl } from "../nav";

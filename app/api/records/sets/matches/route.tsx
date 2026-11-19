@@ -1,3 +1,4 @@
+import { getTour } from "@/lib/tour";
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -59,6 +60,7 @@ export async function GET(request: NextRequest) {
     console.log('Straight sets:', straightSets);
 
     const cacheKey = JSON.stringify({
+      tour: await getTour(),
       player_id: playerId,
       surface: selectedSurfaces.sort(),
       level: selectedLevels.sort(),

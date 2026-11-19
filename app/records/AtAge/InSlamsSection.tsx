@@ -1,8 +1,9 @@
 'use client'
+import { useTourRouter as useRouter, currentTourPath } from "@/lib/tour-navigation";
 
 import { useEffect, useState, useRef } from 'react';
-import Link from 'next/link';
-import { useRouter, useSearchParams } from "next/navigation";
+import Link from '@/app/records/RecordLink';
+import { useSearchParams } from "next/navigation";
 import Pagination from '../../../components/Pagination';
 import Modal from '@/components/Modal';
 import AgeInput from './AgeInput';
@@ -157,7 +158,7 @@ export default function InSlamsSection({ selectedSurfaces, selectedRounds, selec
             const current = window.location.pathname + window.location.search;
             if (current !== newUrl) {
               try {
-                window.history.replaceState(null, '', newUrl);
+                window.history.replaceState(null, '', currentTourPath(newUrl));
               } catch (e) {
                 try { router.replace(newUrl); } catch (e) { /* ignore */ }
               }

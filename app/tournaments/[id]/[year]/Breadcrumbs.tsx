@@ -1,3 +1,4 @@
+import { TourAnchor } from "@/components/TourLink";
 import React from 'react';
 
 export type BreadcrumbItem = {
@@ -17,12 +18,12 @@ export default function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
           return (
             <li key={idx} className="flex items-center">
               {it.href && !isLast ? (
-                <a
+                <TourAnchor
                   href={it.href}
                   className="text-blue-400 hover:underline focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded"
                 >
                   {it.name}
-                </a>
+                </TourAnchor>
               ) : (
                 <span {...(it.current ? { 'aria-current': 'page' } : {})} className="text-gray-100">
                   {it.name}

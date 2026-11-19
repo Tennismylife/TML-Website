@@ -1,9 +1,11 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import { Suspense } from "react";
 import { redirect } from 'next/navigation';
 import type { Metadata } from 'next'
 import StatisticsInner from "./StatisticsInner";
+import { getTour } from "@/lib/tour";
 
-export const metadata: Metadata = {
+const metadata: Metadata = {
   title: 'Statistics',
   description: 'Player and match statistics across seasons and tournaments.',
   alternates: { canonical: 'https://stats.tennismylife.org/statistics' },
@@ -23,10 +25,13 @@ export const metadata: Metadata = {
   },
 };
 
+export async function generateMetadata() {
+  return tourMetadata(metadata);
+}
+
 export default async function StatisticsPage({ searchParams }: { searchParams?: Promise<Record<string, string>> }) {
-  // If no stat is provided in query params, redirect to the canonical /statistics/aces
   const stat = (await searchParams)?.stat;
-  if (!stat) redirect('/statistics/aces');
+  if (!stat && await getTour() === 'ATP') redirect('/statistics/aces');
 
   return (
     <Suspense fallback={<div className="text-white p-4">Loading...</div>}>

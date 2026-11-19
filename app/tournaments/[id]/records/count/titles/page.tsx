@@ -1,7 +1,8 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 
 // app/tournaments/[id]/records/count/titles/page.tsx
 import React from 'react';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import ViewRecordsCTA from '../../ViewRecordsCTA';
 import CountFull from '../_components/CountFull';
 import TournamentHeader from '../../../TournamentHeader';
@@ -62,7 +63,7 @@ export async function generateMetadata({ params }: PageParams) {
     ],
   };
 
-  return {
+  return tourMetadata({
     title,
     description,
     openGraph: {
@@ -85,7 +86,7 @@ export async function generateMetadata({ params }: PageParams) {
     other: {
       'script[data-schema="faq"][type="application/ld+json"]': JSON.stringify(faq),
     },
-  };
+  });
 }
 
 // ---------- PAGE ----------

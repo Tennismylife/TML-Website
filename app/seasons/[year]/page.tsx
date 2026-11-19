@@ -1,7 +1,7 @@
 "use client";
 
 import { use, useState, useEffect } from "react";
-import Link from "next/link";
+import Link from "@/components/TourLink";
 import TourneyCard from "./TourneyCard";
 import SeasonFilters from "./SeasonFilters";
 

@@ -1,11 +1,7 @@
+import { prisma } from "@/lib/prisma";
+import { getTour } from "@/lib/tour";
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 
-let prisma: PrismaClient;
-if (!globalThis.prisma) {
-  globalThis.prisma = new PrismaClient();
-}
-prisma = globalThis.prisma;
 
 function getMultiParam(url: URL, key: string): string[] {
   return url.searchParams
@@ -39,12 +35,13 @@ export async function GET(request: NextRequest) {
     const url = request.nextUrl;
     const selectedSurfaces = getMultiParam(url, 'surface');
     const selectedLevels = getMultiParam(url, 'level');
+    const wta1000 = selectedLevels.length === 1 && selectedLevels[0] === 'M' && await getTour() === 'WTA';
     const limit = Math.max(1, Math.min(100, Number(url.searchParams.get('limit') ?? 100)));
 
     let finalTitles: TitleRecord[] = [];
 
     // --- Caso 1: zero o un solo filtro (usa MV) ---
-    if (selectedSurfaces.length + selectedLevels.length <= 1) {
+    if (!wta1000 && selectedSurfaces.length + selectedLevels.length <= 1) {
       // Wrap in local try-catch: if the MV doesn't exist yet it throws, treat as empty
       let titles: Awaited<ReturnType<typeof prisma.mVSameTournamentTitles.findMany>> = [];
       try {
@@ -161,12 +158,12 @@ export async function GET(request: NextRequest) {
     }
 
     // --- Caso 2: due filtri contemporanei → calcolo da PlayerTournament ---
-    if (selectedSurfaces.length === 1 && selectedLevels.length === 1) {
-      const surfaceFilter = selectedSurfaces[0];
+    if ((wta1000 && selectedSurfaces.length === 0) || (selectedSurfaces.length === 1 && selectedLevels.length === 1)) {
+      const surfaceFilter = selectedSurfaces[0] ?? null;
       const levelFilter = selectedLevels[0];
 
       const events = await prisma.playerTournament.findMany({
-        where: { surface: surfaceFilter, tourney_level: levelFilter, round: 'W' },
+        where: { ...(surfaceFilter && { surface: surfaceFilter }), tourney_level: levelFilter, round: 'W' },
         select: { player_id: true, tourney_id: true, event_id: true, tourney_name: true },
         distinct: ['player_id', 'tourney_id', 'event_id'],
       });

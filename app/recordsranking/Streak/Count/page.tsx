@@ -5,7 +5,7 @@ import { getPlayerHrefWithTab } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
 import RecordsCountControls from "../../Count/RecordsCountControls";
 import ServerPagination from '@/components/ServerPagination';
-import Link from "next/link";
+import Link from "@/components/TourLink";
 import { notFound } from 'next/navigation';
 
 export async function generateMetadata({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {

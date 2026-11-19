@@ -1,10 +1,8 @@
-﻿import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+﻿import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = 'force-dynamic';
 
-const prisma = globalThis.prisma || new PrismaClient();
-if (process.env.NODE_ENV !== "production") globalThis.prisma = prisma;
 
 export async function GET(request: NextRequest) {
   try {

@@ -1,9 +1,10 @@
 "use client";
+import { usePlayerLevel } from "@/lib/use-player-level";
+import { useTourRouter as useRouter } from "@/lib/tour-navigation";
 
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import type { Match } from "@/types";
-import { getLevelFullName } from "@/lib/utils";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 interface H2HFiltersProps {
   mainPlayer: string;
@@ -26,6 +27,7 @@ const ROUND_ORDER = ["R128","R64","R32","R16","RR","QF","SF","F","W","BR","Unkno
 const SURFACE_ORDER = ["Hard","Clay","Grass","Carpet","Unknown"];
 
 export default function H2HFilters({ mainPlayer, allMatches, loading, error, filters, setFilters }: H2HFiltersProps) {
+  const levelNameFor = usePlayerLevel();
   const [searchOpponent, setSearchOpponent] = useState(filters.opponent || "");
   const [debouncedOpponent, setDebouncedOpponent] = useState(searchOpponent);
 
@@ -181,7 +183,7 @@ export default function H2HFilters({ mainPlayer, allMatches, loading, error, fil
           disabled={loading || !!error}
         >
           <option value="All">All</option>
-          {levelOptions.map(lv => <option key={lv} value={lv}>{getLevelFullName(lv)}</option>)}
+          {levelOptions.map(lv => <option key={lv} value={lv}>{levelNameFor(lv)}</option>)}
         </select>
       </div>
 

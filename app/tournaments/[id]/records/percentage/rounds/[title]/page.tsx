@@ -1,3 +1,4 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import PercentageFull from '@/app/tournaments/[id]/records/percentage/_components/PercentageFull';
 import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
 import { makeTitle } from '@/lib/recordMetadata';
@@ -31,7 +32,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   const ogUrl = `${site}/tournaments/${canonicalSlug}/records/percentage/rounds/${encodeURIComponent(String(title))}`;
   const ogImage = `${site}/og/site-preview.png`;
-  return {
+  return tourMetadata({
     title: titleText,
     openGraph: {
       title: titleText,
@@ -42,7 +43,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     },
     twitter: { card: 'summary_large_image', title: titleText, images: [ogImage] },
     alternates: { canonical: ogUrl },
-  };
+  });
 }
 
 export default async function Page({ params }: any) {

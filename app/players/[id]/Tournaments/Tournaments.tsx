@@ -1,4 +1,6 @@
 "use client";
+import { usePlayerLevel } from "@/lib/use-player-level";
+import { sortPlayerLevels } from "@/lib/player-levels";
 
 import { useEffect, useMemo, useState } from "react";
 import type { Match } from "@/types";
@@ -8,7 +10,6 @@ import TournamentSummary from "./TournamentSummary";
 import { getTourneyHref } from "@/lib/utils";
 
 const ROUND_ORDER = ["R256","R128","R64","R32","R16","RR","QF","SF","BR","F","W"];
-const LEVEL_ORDER = ["G","M","500","250","A","O","D","F"];
 const SURFACE_ORDER = ["Hard","Clay","Grass","Carpet"];
 
 const LEVEL_LABELS: Record<string, string> = {
@@ -21,8 +22,6 @@ const LEVEL_LABELS: Record<string, string> = {
   "F": "Finals",
 };
 
-const CODE_TO_LABEL = LEVEL_LABELS;
-const LABEL_TO_CODE = Object.fromEntries(Object.entries(LEVEL_LABELS).map(([k, v]) => [v, k]));
 
 function toDate(d?: string | null): Date | null {
   if (!d) return null;
@@ -82,6 +81,7 @@ interface TournamentsProps {
 }
 
 export default function Tournaments({ playerId, filters = { tourney: "", level: "All", surface: "All", search: "", round: "All", season: "All", sub: "events" }, setFilters }: TournamentsProps) {
+  const levelNameFor = usePlayerLevel();
   const [allMatches, setAllMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -128,10 +128,9 @@ export default function Tournaments({ playerId, filters = { tourney: "", level: 
   }, [allMatches]);
 
   const levelOptions = useMemo(
-    () => Array.from(new Set(allMatches.map(m => CODE_TO_LABEL[m.tourney_level || "Unknown"] || "Unknown")))
-          .filter(label => label !== "Unknown")
-          .sort((a, b) => LEVEL_ORDER.indexOf(LABEL_TO_CODE[a]) - LEVEL_ORDER.indexOf(LABEL_TO_CODE[b])),
-    [allMatches]
+    () => sortPlayerLevels(new Set(allMatches.map(match => match.tourney_level).filter((level): level is string => Boolean(level) && level !== "D")))
+      .map(code => levelNameFor(code, LEVEL_LABELS[code])),
+    [allMatches, levelNameFor]
   );
 
   // 1️⃣ Tutte le surfaces (surfaceOptions)
@@ -207,7 +206,7 @@ export default function Tournaments({ playerId, filters = { tourney: "", level: 
       .filter(r => r.level !== "D")
       .filter(r =>
         (filters.tourney === "" ? true : r.tourney_id === filters.tourney) &&
-        (filters.level === "All" ? true : r.level === LABEL_TO_CODE[filters.level]) &&
+        (filters.level === "All" ? true : levelNameFor(r.level, LEVEL_LABELS[r.level]) === filters.level) &&
         (filters.surface === "All" ? true : r.surface === filters.surface) &&
         (filters.round === "All" ? true : filters.round === "W" ? r.champion : roundWeight(r.bestRound) >= roundWeight(filters.round)) &&
         (filters.season === "All" ? true : r.year.toString() === filters.season) &&
@@ -215,7 +214,7 @@ export default function Tournaments({ playerId, filters = { tourney: "", level: 
       )
       .sort((a, b) => b.year - a.year || a.order - b.order);
 
-  }, [allMatches, filters.tourney, filters.level, filters.surface, filters.round, filters.season, filters.search]);
+  }, [allMatches, filters.tourney, filters.level, filters.surface, filters.round, filters.season, filters.search, levelNameFor]);
 
   const roundOptions = ROUND_ORDER;
 
@@ -281,7 +280,7 @@ export default function Tournaments({ playerId, filters = { tourney: "", level: 
                 name: r.tourney_name,
                 date: r.tourney_date ?? new Date(0),
                 surface: r.surface,
-                level: CODE_TO_LABEL[r.level] || r.level,
+                level: levelNameFor(r.level, LEVEL_LABELS[r.level]),
                 tourney_id: r.tourney_id,                tourney_slug: (r as any).tourney_slug ?? null,                matches: r.matches,
                 wins: r.W,
                 losses: r.L,

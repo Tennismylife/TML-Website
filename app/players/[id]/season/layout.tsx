@@ -1,3 +1,4 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import React from 'react';
 import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
@@ -41,7 +42,7 @@ export async function generateMetadata({ params, searchParams }: any): Promise<M
   }
 
   const imageUrl = `https://stats.tennismylife.org/og/${encodeURIComponent(slug)}.png`;
-  return {
+  return tourMetadata({
     title,
     description,
     alternates: { canonical },
@@ -55,7 +56,7 @@ export async function generateMetadata({ params, searchParams }: any): Promise<M
     },
     twitter: { card: 'summary_large_image', title, description, images: [imageUrl] },
     robots: { index: true, follow: true },
-  } as Metadata;
+  } as Metadata);
 }
 
 export default async function SeasonLayout({ children, searchParams }: any) {

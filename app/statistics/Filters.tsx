@@ -1,7 +1,6 @@
 "use client";
-
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useLinkTour } from "@/components/TourLink";
+import { statisticsCategoryCodes, statisticsCategoryLabel } from "./categories";
 
 export default function Filters({
   surface,
@@ -18,6 +17,7 @@ export default function Filters({
   tourneyLevel: string;
   onTourneyLevelChange: (value: string) => void;
 }) {
+  const tour = useLinkTour();
   const START_YEAR = 1968;
   const CURRENT_YEAR = new Date().getFullYear();
 
@@ -69,11 +69,9 @@ export default function Filters({
               className="bg-gray-700 text-white border border-gray-600 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
             >
               <option value="all">All</option>
-              <option value="G">Grand Slam</option>
-              <option value="M">Masters 1000</option>
-              <option value="A">Others</option>
-              <option value="D">Davis Cup</option>
-              <option value="O">Olympics</option>
+              {statisticsCategoryCodes[tour].map((code) => (
+                <option key={code} value={code}>{statisticsCategoryLabel(code, tour)}</option>
+              ))}
             </select>
           </div>
         </div>

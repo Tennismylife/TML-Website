@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
 import { getRoundFullName } from '@/lib/utils';
 import HydrationDebugClient from '@/components/HydrationDebugClient';

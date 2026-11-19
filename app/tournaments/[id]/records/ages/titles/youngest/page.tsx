@@ -1,3 +1,4 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import AgesFull from '@/app/tournaments/[id]/records/ages/_components/AgesFull';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
 import ViewRecordsCTA from '../../../ViewRecordsCTA';
@@ -60,12 +61,12 @@ export async function generateMetadata({ params }: any) {
 
   const ogUrl = `${site}/tournaments/${canonicalSlug}/records/ages/titles/youngest`;
   const ogImage = `${site}/og/site-preview.png`;
-  return {
+  return tourMetadata({
     title,
     openGraph: { title, url: ogUrl, siteName: 'TennisMyLife', images: [{ url: ogImage, alt: `${tournamentName} - Youngest Title Winners`, width: 1200, height: 630, type: 'image/png' }] },
     twitter: { card: 'summary_large_image', title, images: [ogImage] },
     alternates: { canonical: ogUrl },
-  };
+  });
 }
 
 export default async function Page({ params }: any) {

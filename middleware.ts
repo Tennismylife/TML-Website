@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { shouldShowRecordFilter, type FilterName } from './lib/records/allowed-filters';
 import { evaluateRecordsPolicy, type RecordFilters } from './lib/seo/records-policy';
+import { isPlayerProfilePath, isTourPage, isWtaPath, tourPath, type Tour } from './lib/tour-path';
 
 /**
  * Local fallback mapping for player and tournament legacy codes -> slug.
@@ -314,6 +315,21 @@ function isPlayersMatchesPath(pathname: string) {
   return seg[0] === 'players' && String(seg[2] || '').toLowerCase() === 'matches';
 }
 
+async function resolvePlayerProfileTour(req: NextRequest, identifier: string, current: Tour): Promise<Tour> {
+  const internalBase = process.env.NEXT_PRIVATE_BASE_URL || `http://127.0.0.1:${process.env.PORT || req.nextUrl.port || 3000}`;
+  try {
+    const url = new URL('/api/players/tour', internalBase);
+    url.searchParams.set('id', decodeURIComponent(identifier));
+    const result = await fetch(url, { next: { revalidate: 300 }, signal: AbortSignal.timeout(8000) } as RequestInit);
+    if (!result.ok) return current;
+    const { tours } = await result.json();
+    if (Array.isArray(tours) && tours.length === 1 && (tours[0] === 'ATP' || tours[0] === 'WTA')) return tours[0];
+  } catch {
+    // Keep the current tour if identity lookup is unavailable.
+  }
+  return current;
+}
+
 export async function middleware(req: NextRequest) {
   try {
     // Debugging disabled: verbose middleware request logging removed
@@ -321,9 +337,62 @@ export async function middleware(req: NextRequest) {
     const requestPath = req.nextUrl.pathname;
     const query = req.nextUrl.searchParams;
     const ua = getUserAgent(req).toLowerCase();
-    const nextResponse = () => {
-      const res = NextResponse.next();
-      if (isPlayersMatchesPath(requestPath)) {
+    const wta = req.cookies?.get('tml-tour')?.value === 'WTA';
+    const wtaPage = isWtaPath(requestPath);
+    const pageRequest = (req.method === 'GET' || req.method === 'HEAD') && isTourPage(requestPath);
+    const basePath = pageRequest ? tourPath(requestPath, 'ATP') : requestPath;
+    const profileId = pageRequest && isPlayerProfilePath(basePath) ? basePath.split('/')[2] : undefined;
+    const tourCookieOptions = { httpOnly: true, sameSite: 'lax', path: '/', maxAge: 31536000 } as const;
+    const serveWtaPage = () => {
+      const destination = req.nextUrl.clone();
+      destination.pathname = basePath === '/statistics' && !query.get('stat')
+        ? '/statistics/aces'
+        : basePath;
+      req.cookies.set('tml-tour', 'WTA');
+      const response = NextResponse.rewrite(destination, { request: { headers: new Headers(req.headers) } });
+      if (!wta) response.cookies.set('tml-tour', 'WTA', tourCookieOptions);
+      return response;
+    };
+    if (pageRequest && wtaPage) {
+      const canonicalPath = /^\/player-vs-player(?:\/|$)/.test(basePath)
+        ? tourPath(basePath.replace(/^\/player-vs-player(?=\/|$)/, '/h2h'), 'WTA')
+        : tourPath(requestPath, 'WTA');
+      if (canonicalPath !== requestPath) {
+        const canonical = req.nextUrl.clone();
+        canonical.pathname = canonicalPath;
+        const response = NextResponse.redirect(canonical, 308);
+        if (profileId && !wta) {
+          response.cookies.set('tml-tour', 'WTA', tourCookieOptions);
+          response.headers.set('Cache-Control', 'private, no-store');
+        }
+        return response;
+      }
+      if (/^\/records(?:\/|$)/.test(basePath)) return serveWtaPage();
+    }
+    if (pageRequest && wta && !wtaPage && !profileId) {
+      const destination = req.nextUrl.clone();
+      destination.pathname = tourPath(requestPath, 'WTA');
+      const response = NextResponse.redirect(destination, 307);
+      response.headers.set('Cache-Control', 'private, no-store');
+      return response;
+    }
+    const nextResponse = async () => {
+      const currentTour = wta ? 'WTA' : 'ATP';
+      const profileTour = profileId ? await resolvePlayerProfileTour(req, profileId, currentTour) : currentTour;
+      let res: NextResponse;
+      if (profileTour !== currentTour) {
+        req.cookies.set('tml-tour', profileTour);
+        res = NextResponse.next({ request: { headers: new Headers(req.headers) } });
+        res.cookies.set('tml-tour', profileTour, tourCookieOptions);
+        res.headers.set('Cache-Control', 'private, no-store');
+      } else {
+        res = pageRequest && wtaPage ? serveWtaPage() : NextResponse.next();
+      }
+      if (requestPath.startsWith('/api/')) {
+        res.headers.append('Vary', 'Cookie');
+        if (wta) res.headers.set('Cache-Control', 'private, no-store');
+      }
+      if (isPlayersMatchesPath(wtaPage ? tourPath(requestPath, 'ATP') : requestPath)) {
         res.headers.set('X-Robots-Tag', req.nextUrl.search ? 'noindex, nofollow' : 'noindex, follow');
       }
       return res;
@@ -331,7 +400,7 @@ export async function middleware(req: NextRequest) {
 
     // Keep valid match filters available to users. Crawlers are kept out of
     // every query combination by robots.txt and receive nofollow above.
-    if (isPlayersMatchesPath(requestPath) && req.nextUrl.search) {
+    if (isPlayersMatchesPath(wtaPage ? tourPath(requestPath, 'ATP') : requestPath) && req.nextUrl.search) {
       const MATCH_QUERY_WHITELIST = new Set(['year', 'surface']);
       const hasOnlyWhitelisted = Array.from(query.keys()).every((key) => MATCH_QUERY_WHITELIST.has(key));
       if (!hasOnlyWhitelisted) {
@@ -405,7 +474,8 @@ export async function middleware(req: NextRequest) {
       }
     }
 
-    const { pathname, search } = req.nextUrl;
+    const pathname = wtaPage ? tourPath(requestPath, 'ATP') : requestPath;
+    const { search } = req.nextUrl;
     const segments = pathname.split('/').filter(Boolean);
     const origin = req.nextUrl.origin;
 
@@ -427,7 +497,7 @@ export async function middleware(req: NextRequest) {
       if (year && /^[0-9]{4}$/.test(year)) {
         const slug = segments[1];
         const dest = new URL(req.url);
-        dest.pathname = `/players/${slug}/season/${year}`;
+        dest.pathname = tourPath(`/players/${slug}/season/${year}`, wtaPage ? 'WTA' : 'ATP');
         // Remove 'year' from search when redirecting to the canonical path
         const newSearch = new URLSearchParams(req.nextUrl.searchParams as any);
         newSearch.delete('year');
@@ -443,7 +513,7 @@ export async function middleware(req: NextRequest) {
       const currentPath = req.nextUrl.pathname.replace(/\/$/, '');
       if (normalizedPath !== currentPath) {
         const dest = new URL(req.url);
-        dest.pathname = normalizedPath;
+        dest.pathname = tourPath(normalizedPath, wtaPage ? 'WTA' : 'ATP');
         dest.search = req.nextUrl.search;
         return new Response(null, { status: 308, headers: { Location: dest.toString() } });
       }
@@ -545,7 +615,7 @@ export async function middleware(req: NextRequest) {
       const tabParam = query.get('tab');
       if (tabParam && VALID_PLAYER_TABS.has(tabParam.toLowerCase())) {
         const dest = new URL(req.url);
-        dest.pathname = `/players/${idSegment}/${tabParam.toLowerCase()}`;
+        dest.pathname = tourPath(`/players/${idSegment}/${tabParam.toLowerCase()}`, wtaPage ? 'WTA' : 'ATP');
         const newSearch = new URLSearchParams(query as any);
         newSearch.delete('tab');
         dest.search = newSearch.toString();
@@ -563,6 +633,14 @@ export async function middleware(req: NextRequest) {
         return new Response(null, { status: 308, headers: { Location: dest.toString() } });
       }
     }
+
+    if (wta || wtaPage) return nextResponse();
+
+    // Canonical player paths only need the indexed tour lookup.
+    const canonicalSlugPattern = /^[a-z0-9-]+$/;
+    const isNumericId = /^[0-9]+$/.test(idSegment);
+    const isLegacyCode = legacyCodeRegex.test(idSegment);
+    if (profileId && !isNumericId && !isLegacyCode && canonicalSlugPattern.test(idSegment)) return nextResponse();
 
     // Resolve canonical slug for both numeric IDs and legacy codes via slug-map.
     // The slug-map includes numeric ID → slug mappings (e.g. 405 → houston),
@@ -612,12 +690,6 @@ export async function middleware(req: NextRequest) {
       } catch {}
     }
 
-    // Prevent redirect when the incoming path already matches the canonical slug exactly.
-    // This still allows redirects for case-only mismatches like /players/C022 -> /players/c022.
-    const canonicalSlugPattern = /^[a-z0-9-]+$/;
-    const isNumericId = /^[0-9]+$/.test(idSegment);
-    const isLegacyCode = legacyCodeRegex.test(idSegment);
-
     // If the path already contains a lowercase slug-looking segment, skip slug
     // resolution entirely to avoid extra middleware overhead on canonical pages.
     if (!isNumericId && !isLegacyCode && canonicalSlugPattern.test(idSegment)) {
@@ -645,7 +717,7 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/players/:path*', '/tournaments/:path*', '/records/:path*', '/recordsranking/:path*', '/api/records/:path*', '/player-vs-player', '/player-vs-player/:path*'],
+  matcher: ['/((?!api/|_next/|og/|.*\\..*).*)', '/api/records/:path*', '/api/statistics/:path*', '/api/players/:path*', '/api/seasons/:path*'],
 };
 
 // Note: don't re-export server-side DB helpers here to avoid pulling Prisma into the Edge middleware runtime.

@@ -1,10 +1,11 @@
 "use client";
+import { useBasePathname as usePathname } from "@/lib/tour-navigation";
 
 import React, { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
+
 import RouteModal from './RouteModal';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import Flag from '@/components/Flag';
 import { getPlayerHref, getTourneyHref } from '@/lib/utils';
 

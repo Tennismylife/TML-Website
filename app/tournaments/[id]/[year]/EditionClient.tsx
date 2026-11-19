@@ -1,10 +1,11 @@
 "use client";
+import { useTourRouter as useRouter } from "@/lib/tour-navigation";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import Link from "@/components/TourLink";
 import { ArrowLeft, ArrowRight, Trophy } from "lucide-react";
 import { getTourneyHref } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+
 import EditionNavigator from '@/components/EditionNavigator';
 import type { Match, SortKey, SortDirection } from "@/types";
 import MatchTable from "./EditionMatchesTable";

@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getTour } from '@/lib/tour';
 
 // Optional Redis cache key
 const REDIS_KEY = 'slug_map_v1';
@@ -20,16 +21,21 @@ async function getRedisClient() {
 }
 
 export async function GET(request: NextRequest) {
+  const tour = await getTour();
+  const cacheHeaders = {
+    'Cache-Control': tour === 'WTA' ? 'private, no-store' : 'public, s-maxage=3600, stale-while-revalidate=60',
+    Vary: 'Cookie',
+  };
   // Try Redis first
   let client: any = null;
   try {
-    client = await getRedisClient();
+    client = tour === 'WTA' ? null : await getRedisClient();
     if (client) {
       const cached = await client.get(REDIS_KEY);
       if (cached) {
         const parsed = JSON.parse(cached);
         return NextResponse.json(parsed, {
-          headers: { 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=60' },
+          headers: cacheHeaders,
         });
       }
     }
@@ -90,7 +96,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json(payload, {
-      headers: { 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=60' },
+      headers: cacheHeaders,
     });
   } catch (err) {
     if (client) try { await client.quit(); } catch {}

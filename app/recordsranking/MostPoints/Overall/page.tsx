@@ -2,7 +2,7 @@ import React from 'react';
 import type { Metadata } from 'next';
 import { prisma } from "@/lib/prisma";
 import Flag from '@/components/Flag';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import LastUpdateBanner from '@/components/LastUpdateBanner';
 import ComparisonTableClient from './ComparisonTableClient';
 

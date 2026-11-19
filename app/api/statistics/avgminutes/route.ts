@@ -1,3 +1,4 @@
+import { statisticsCategoryFilter } from "@/lib/statistics-category-filter";
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
@@ -25,7 +26,7 @@ function parseWhere(url: URL) {
 
   const where: any = {};
   if (surface !== "all") where.surface = surface;
-  if (tourneyLevel !== "all") where.tourney_level = tourneyLevel;
+  Object.assign(where, await statisticsCategoryFilter(tourneyLevel));
   if (yearParam !== "all") {
     const y = Number(yearParam);
     if (!Number.isNaN(y)) where.year = y;
@@ -45,7 +46,7 @@ export async function GET(request: NextRequest) {
     const decimals = decimalsParam && !Number.isNaN(Number(decimalsParam)) ? Number(decimalsParam) : 2;
     const minMatches = minMatchesParam && !Number.isNaN(Number(minMatchesParam)) ? Number(minMatchesParam) : 0;
 
-    const where = parseWhere(url);
+    const where = await parseWhere(url);
 
     // Aggregazione vincitori
     const winners = await prisma.match.groupBy({

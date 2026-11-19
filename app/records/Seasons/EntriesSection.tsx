@@ -1,7 +1,7 @@
 ﻿'use client'
 
 import { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
+import Link from '@/app/records/RecordLink';
 import Flag from '@/components/Flag';
 import { playerSurfaceOrMatchesUrl } from "../nav";
 import { useSearchParams } from "next/navigation";

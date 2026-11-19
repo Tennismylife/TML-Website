@@ -1,3 +1,4 @@
+import { statisticsCategoryFilter } from "@/lib/statistics-category-filter";
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
@@ -20,14 +21,14 @@ type PlayerAggResponse = {
   output: number; // sets won %
 };
 
-function parseWhere(url: URL): Prisma.mVStatsWhereInput {
+async function parseWhere(url: URL): Promise<Prisma.mVStatsWhereInput> {
   const surface = url.searchParams.get("surface") || "all";
   const yearParam = url.searchParams.get("year") || "all";
   const tourneyLevel = url.searchParams.get("tourneyLevel") || "all";
 
   const where: Prisma.mVStatsWhereInput = {};
   if (surface !== "all") where.surface = surface;
-  if (tourneyLevel !== "all") where.tourney_level = tourneyLevel;
+  Object.assign(where, await statisticsCategoryFilter(tourneyLevel));
   if (yearParam !== "all") {
     const y = Number(yearParam);
     if (!Number.isFinite(y)) throw new Error("Invalid 'year' parameter");
@@ -53,7 +54,7 @@ function clampDecimals(decimalsParam: string | null, fallback = 3) {
 export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url);
-    const where = parseWhere(url);
+    const where = await parseWhere(url);
     const top = clampTop(url.searchParams.get("top"), 100);
     const decimals = clampDecimals(url.searchParams.get("decimals"), 3);
     const minSetsPlayedParam = url.searchParams.get("minSetsPlayed");

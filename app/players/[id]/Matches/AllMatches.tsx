@@ -1,7 +1,9 @@
 "use client";
+import { usePlayerLevel } from "@/lib/use-player-level";
+import { useTourRouter as useRouter } from "@/lib/tour-navigation";
 
 import { useEffect, useState, useMemo, useRef } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useSearchParams, usePathname } from "next/navigation";
 import MatchesFilterPanel from "./MatchesFilterPanel";
 import MatchTable from "@/components/MatchTable";
 import { Match, SortKey, SortDirection } from "@/types";
@@ -17,6 +19,7 @@ interface AllMatchesProps {
 }
 
 export default function AllMatches({ playerId, playerSlug, initialMatches, initialHeading, initialTotals, initialFacets }: AllMatchesProps) {
+  const levelNameFor = usePlayerLevel();
   const search = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -130,7 +133,7 @@ export default function AllMatches({ playerId, playerSlug, initialMatches, initi
     const score = filters.score;
 
     if (!isAll(year)) parts.push(`Year: ${year}`);
-    if (!isAll(level)) parts.push(`Level: ${levelMap[level] ?? level}`);
+    if (!isAll(level)) parts.push(`Level: ${levelNameFor(level, levelMap[level])}`);
     if (!isAll(tourney)) {
       let tn = String(tourney);
       const m = (allMatches || []).find(x => String(x.tourney_id) === String(tourney) && x.tourney_name);

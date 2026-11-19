@@ -1,8 +1,9 @@
 ﻿'use client';
+import { useTourRouter as useRouter } from "@/lib/tour-navigation";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import Link from "@/app/records/RecordLink";
+import { useSearchParams } from "next/navigation";
 import Pagination from "../../../components/Pagination";
 import Modal from "@/components/Modal";
 import Flag from '@/components/Flag';

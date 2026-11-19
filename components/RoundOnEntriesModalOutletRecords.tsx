@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import RouteModal from './RouteModal';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import Flag from '@/components/Flag';
 import { getPlayerHref } from '@/lib/utils';
+import RecordH3 from '@/app/records/RecordH3';
 
 export default function RoundOnEntriesModalOutletRecords() {
   const [show, setShow] = useState(false);
@@ -101,10 +102,10 @@ export default function RoundOnEntriesModalOutletRecords() {
       <div className="text-white">
         <div className="mb-3 text-center">
           {(() => {
-            if (!title) return <h3 className="text-2xl font-semibold">Round on Entries</h3>;
+            if (!title) return <RecordH3 className="text-2xl font-semibold" label="Tournament Rounds Reached per Appearance" />;
             const normalized = String(title || '').trim();
             const displayTitle = normalized.toLowerCase() === 'winner' ? 'Titles' : `${normalized}s`;
-            return <h3 className="text-2xl font-semibold">Most {displayTitle} on Entries</h3>;
+            return <RecordH3 className="text-2xl font-semibold" label={`Most ${displayTitle} per Tournament Appearance`} />;
           })()}
         </div>
 

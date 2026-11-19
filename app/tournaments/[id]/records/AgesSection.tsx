@@ -1,12 +1,13 @@
 'use client'
+import { useTourRouter as useRouter, currentTourPath } from "@/lib/tour-navigation";
 
 import React, { useState, useEffect, useRef } from 'react';
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import Flag from '@/components/Flag';
 import { playerMatchesUrl } from '../../../records/nav';
 
-import { useRouter } from 'next/navigation';
+
 
 interface PlayerStatAge {
   id: string | number;
@@ -186,7 +187,7 @@ export default function AgesSection({ id, linkId, pathId, activeSubTab, initialD
 
     try {
       const payload = { section: `ages-${sectionKey}`, which: whichParam ?? null, title: titleParam ?? null, list: existing ?? null };
-      window.history.pushState({ ...(window.history.state || {}), modal: true, background }, '', target);
+      window.history.pushState({ ...(window.history.state || {}), modal: true, background }, '', currentTourPath(target));
       window.dispatchEvent(new PopStateEvent('popstate'));
       window.dispatchEvent(new CustomEvent('modalchange'));
       window.dispatchEvent(new CustomEvent('open-modal', { detail: payload }));

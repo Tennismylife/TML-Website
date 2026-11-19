@@ -1,10 +1,7 @@
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 
 // Singleton Prisma per evitare connessioni multiple in dev
-const globalForPrisma = global as unknown as { prisma?: PrismaClient };
-const prisma = globalForPrisma.prisma || new PrismaClient({ log: ['error', 'warn'] });
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 export async function GET(request: NextRequest) {
   try {

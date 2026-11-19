@@ -1,13 +1,14 @@
 "use client";
+import Link, { TourAnchor, useLinkTour } from "@/components/TourLink";
 
 import { useEffect, useState, useMemo } from "react";
-import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Globe, ChevronDown } from "lucide-react";
 import TournamentSearch from "./TournamentSearch";
 import type { Tournament as TournamentDTO, TournamentGroups } from "@/types/tournament";
 import { getSurfaceColor } from "@/lib/colors";
 import { getTourneyHref } from "@/lib/utils";
+import { recordTourPath } from "@/lib/record-tour-path";
 
 const EMPTY: TournamentGroups = { grandSlams: [], masters1000: [], finals: [], olympics: [], others: [] };
 
@@ -39,6 +40,7 @@ function Badge({ text, bgColor, textColor }: { text: string; bgColor?: string; t
 }
 
 export default function TournamentsPage() {
+  const tour = useLinkTour();
   const [data, setData] = useState<TournamentGroups>(EMPTY);
   const [loading, setLoading] = useState(true);
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -89,13 +91,20 @@ export default function TournamentsPage() {
   // Fetch data
   useEffect(() => {
     const controller = new AbortController();
+    setLoading(true);
     fetch("/api/tournaments", { signal: controller.signal, cache: "no-store" })
       .then(r => r.ok ? r.json() : Promise.reject())
-      .then(j => setData(j?.groups ?? EMPTY))
-      .catch(() => setData(EMPTY))
-      .finally(() => setLoading(false));
+      .then(j => {
+        if (!controller.signal.aborted) setData(j?.groups ?? EMPTY);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setData(EMPTY);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
     return () => controller.abort();
-  }, []);
+  }, [tour]);
 
 
   return (
@@ -106,26 +115,26 @@ export default function TournamentsPage() {
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
 
         <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
+          initial={tour === "WTA" ? false : { scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="relative z-10 text-center px-6 motion-reduce:scale-100 motion-reduce:opacity-100"
         >
           <h1 className="text-6xl md:text-8xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500">
-           OPEN ERA TOURNAMENTS
+           {tour} OPEN ERA TOURNAMENTS
           </h1>
-          <p className="mt-2 text-xs text-gray-500">
+          {tour === "ATP" && <p className="mt-2 text-xs text-gray-500">
             (Individual tournaments are identified by the IDs used by the official ATP website)
-          </p>
+          </p>}
           <p className="mt-4 text-sm text-gray-400">
             Explore records by tournament level:{' '}
-            <a href="/records/most-grand-slam-wins" className="text-cyan-400 hover:text-cyan-200 underline">Grand Slam</a>
+            <TourAnchor href={recordTourPath("/records/most-grand-slam-wins", tour)} className="text-cyan-400 hover:text-cyan-200 underline">Grand Slam</TourAnchor>
             {' · '}
-            <a href="/records/most-masters-1000-wins" className="text-cyan-400 hover:text-cyan-200 underline">Masters 1000</a>
+            <TourAnchor href={recordTourPath("/records/most-masters-1000-wins", tour)} className="text-cyan-400 hover:text-cyan-200 underline">{tour === "WTA" ? "WTA 1000" : "Masters 1000"}</TourAnchor>
             {' · '}
-            <a href="/records/most-wins-in-atp-finals" className="text-cyan-400 hover:text-cyan-200 underline">ATP Finals</a>
+            <TourAnchor href={recordTourPath("/records/most-wins-in-atp-finals", tour)} className="text-cyan-400 hover:text-cyan-200 underline">{tour} Finals</TourAnchor>
             {' · '}
-            <a href="/records" className="text-cyan-400 hover:text-cyan-200 underline">All Records →</a>
+            <TourAnchor href={recordTourPath("/records", tour)} className="text-cyan-400 hover:text-cyan-200 underline">All Records →</TourAnchor>
           </p>
         </motion.div>
       </div>
@@ -143,7 +152,7 @@ export default function TournamentsPage() {
               <TournamentGroup
                 key={key}
                 layoutId={`group-${key}`}
-                title={title}
+                title={tour === "WTA" && key === "masters1000" ? "WTA 1000" : tour === "WTA" && key === "finals" ? "WTA Finals" : title}
                 groupColor={GROUP_COLORS[key]}
                 items={filteredData[key]}
                 searchActive={!!debouncedSearch}
@@ -161,7 +170,7 @@ export default function TournamentsPage() {
                 <div className="flex items-center gap-4">
                   <div className="text-left">
                     <h3 className="text-xl font-bold">Other Tournaments</h3>
-                    <p className="text-sm text-gray-400">ATP 250, 500 and more</p>
+                    <p className="text-sm text-gray-400">{tour} 250, 500 and more</p>
                   </div>
                 </div>
                 <motion.div animate={{ rotate: showOthers ? 180 : 0 }}>

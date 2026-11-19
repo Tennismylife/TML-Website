@@ -1,7 +1,8 @@
 ﻿'use client'
+import AtpRecordCommentary from "@/app/records/AtpRecordCommentary";
 
 import { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
+import Link from '@/app/records/RecordLink';
 import Flag from '@/components/Flag';
 import { getPlayerHref } from '@/lib/utils';
 import { playerSurfaceOrMatchesUrl } from "../nav";
@@ -146,29 +147,29 @@ export default function RoundsSection({ selectedSurfaces, selectedLevels, select
         </h2>
       )}
 
-      {pathname === '/records/most-finals-in-a-single-season' && selectedRounds === 'F' && selectedSurfaces.length === 0 && selectedLevels.length === 0 && (
-        <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200">
-          <p>
-            At the top of the list stand two players from two very different kinds of seasons: <span className="inline-flex items-center gap-2"><Flag ioc="ARG" className="w-4 h-3" /><Link href="/players/guillermo-vilas" className="!text-cyan-300 hover:!text-cyan-100 font-semibold">Guillermo Vilas</Link></span> in <strong className="!text-sky-300">1977</strong> and <span className="inline-flex items-center gap-2"><Flag ioc="AUS" className="w-4 h-3" /><Link href="/players/rod-laver" className="!text-cyan-300 hover:!text-cyan-100 font-semibold">Rod Laver</Link></span> in <strong className="!text-sky-300">1969</strong>.
-          </p>
-          <p>
-            Both reached <strong className="!text-amber-300">21</strong> singles finals in a single season, setting the Open Era benchmark for week-to-week consistency at the very end of tournaments. Their non-Slam final volume was also exceptional, with Vilas reaching <strong className="!text-amber-300">18</strong> finals in "Others" events in 1977 and Laver reaching <strong className="!text-amber-300">17</strong> in 1969, before their Grand Slam finals are added to the season total.
-          </p>
-          <p>
-            <span className="inline-flex items-center gap-2"><Flag ioc="ARG" className="w-4 h-3" /><Link href="/players/guillermo-vilas" className="!text-cyan-300 hover:!text-cyan-100 font-semibold">Guillermo Vilas</Link></span> produced the great endurance version of this record in <strong className="!text-sky-300">1977</strong>. He reached <strong className="!text-amber-300">21</strong> finals, winning 16 titles and losing only five finals across one of the heaviest schedules ever played by an elite player. ATP's 1977 activity page records Vilas at 136-14 with 16 titles, while his Grand Slam season included three major finals: Australian Open, Roland Garros and US Open.
-            His 1977 was not just about winning trophies; it was about constantly being there on the final day, across surfaces, continents and calendar phases.
-          </p>
-          <p>
-            Behind them sits <span className="inline-flex items-center gap-2"><Flag ioc="CZE" className="w-4 h-3" /><Link href="/players/ivan-lendl" className="!text-cyan-300 hover:!text-cyan-100 font-semibold">Ivan Lendl</Link></span>, whose <strong className="!text-sky-300">1982</strong> season reached the next tier. Lendl made <strong className="!text-amber-300">20</strong> finals that year, converting most of them into titles during one of the most relentless campaigns of the early 1980s.
-          </p>
-          <p>
-            <span className="inline-flex items-center gap-2"><Flag ioc="ROU" className="w-4 h-3" /><Link href="/players/ilie-nastase" className="!text-cyan-300 hover:!text-cyan-100 font-semibold">Ilie Nastase</Link></span> also belongs close to the top of this record. His <strong className="!text-sky-300">1973</strong> season combined a huge title count with a heavy final-round presence, reflecting the dense early Open Era calendar when elite players often entered far more events than modern champions would attempt.
-          </p>
-          <p>
-            That is why <strong className="!text-amber-300">21</strong> finals in a single season remains such a difficult record to approach. It is not only about peak level; it is about availability, scheduling, recovery and the ability to turn tournament entries into final Sundays again and again.
-          </p>
-        </div>
-      )}
+      <AtpRecordCommentary className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 !text-gray-200" recordPath="/records/most-finals-in-a-single-season">
+        {pathname === '/records/most-finals-in-a-single-season' && selectedRounds === 'F' && selectedSurfaces.length === 0 && selectedLevels.length === 0 && (<>
+            <p>
+              At the top of the list stand two players from two very different kinds of seasons: <span className="inline-flex items-center gap-2"><Flag ioc="ARG" className="w-4 h-3" /><Link href="/players/guillermo-vilas" className="!text-cyan-300 hover:!text-cyan-100 font-semibold">Guillermo Vilas</Link></span> in <strong className="!text-sky-300">1977</strong> and <span className="inline-flex items-center gap-2"><Flag ioc="AUS" className="w-4 h-3" /><Link href="/players/rod-laver" className="!text-cyan-300 hover:!text-cyan-100 font-semibold">Rod Laver</Link></span> in <strong className="!text-sky-300">1969</strong>.
+            </p>
+            <p>
+              Both reached <strong className="!text-amber-300">21</strong> finals in a single season, setting the Open Era benchmark for week-to-week consistency at the very end of tournaments. Their non-Slam final volume was also exceptional, with Vilas reaching <strong className="!text-amber-300">18</strong> finals in "Others" events in 1977 and Laver reaching <strong className="!text-amber-300">17</strong> in 1969, before their Grand Slam finals are added to the season total.
+            </p>
+            <p>
+              <span className="inline-flex items-center gap-2"><Flag ioc="ARG" className="w-4 h-3" /><Link href="/players/guillermo-vilas" className="!text-cyan-300 hover:!text-cyan-100 font-semibold">Guillermo Vilas</Link></span> produced the great endurance version of this record in <strong className="!text-sky-300">1977</strong>. He reached <strong className="!text-amber-300">21</strong> finals, winning 16 titles and losing only five finals across one of the heaviest schedules ever played by an elite player. ATP's 1977 activity page records Vilas at 136-14 with 16 titles, while his Grand Slam season included three major finals: Australian Open, Roland Garros and US Open.
+              His 1977 was not just about winning trophies; it was about constantly being there on the final day, across surfaces, continents and calendar phases.
+            </p>
+            <p>
+              Behind them sits <span className="inline-flex items-center gap-2"><Flag ioc="CZE" className="w-4 h-3" /><Link href="/players/ivan-lendl" className="!text-cyan-300 hover:!text-cyan-100 font-semibold">Ivan Lendl</Link></span>, whose <strong className="!text-sky-300">1982</strong> season reached the next tier. Lendl made <strong className="!text-amber-300">20</strong> finals that year, converting most of them into titles during one of the most relentless campaigns of the early 1980s.
+            </p>
+            <p>
+              <span className="inline-flex items-center gap-2"><Flag ioc="ROU" className="w-4 h-3" /><Link href="/players/ilie-nastase" className="!text-cyan-300 hover:!text-cyan-100 font-semibold">Ilie Nastase</Link></span> also belongs close to the top of this record. His <strong className="!text-sky-300">1973</strong> season combined a huge title count with a heavy final-round presence, reflecting the dense early Open Era calendar when elite players often entered far more events than modern champions would attempt.
+            </p>
+            <p>
+              That is why <strong className="!text-amber-300">21</strong> finals in a single season remains such a difficult record to approach. It is not only about peak level; it is about availability, scheduling, recovery and the ability to turn tournament entries into final Sundays again and again.
+            </p>
+        </>)}
+      </AtpRecordCommentary>
 
       <div className="flex justify-end mb-4">
         <button

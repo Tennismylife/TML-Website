@@ -1,3 +1,4 @@
+import { fetchForTour, getTour } from "./tour";
 // Central rate-limited fetch used by SSR prefetch in `app/records`.
 // - Default delay: 250ms in development, 0ms otherwise
 // - Override with RECORDS_SSR_PREFETCH_DELAY_MS (ms)
@@ -206,6 +207,7 @@ export function clearInProcessRecordsCache(): void {
 }
 
 async function _fetchWithInProcessCache(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+  if (await getTour() === "WTA") return fetchForTour(input, init);
   const url = parseInputUrl(input);
   // Only cache API records requests; fall back for anything else.
   if (!url || !url.pathname.startsWith('/api/records/')) {

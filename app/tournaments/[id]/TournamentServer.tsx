@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import { Trophy, ArrowRight } from 'lucide-react';
 import Flag from '@/components/Flag';
 import EditionNavigator from '@/components/EditionNavigator';

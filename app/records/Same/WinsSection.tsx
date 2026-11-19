@@ -1,8 +1,9 @@
 ﻿'use client';
+import AtpRecordCommentary from "@/app/records/AtpRecordCommentary";
 
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import Link from "next/link";
+import Link from "@/app/records/RecordLink";
 import Pagination from "../../../components/Pagination";
 import Modal from "@/components/Modal";
 import Flag from "@/components/Flag";
@@ -156,64 +157,64 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
         </h2>
       )}
 
-      {isMostWinsAtSingleTournament && (
-        <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 text-gray-200">
-          <p>
-            At the top of the Open Era list for <strong>Most Wins at a Single Tournament</strong> stands <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Rafael Nadal</span></span>, with <strong className="!text-amber-300">112</strong> match wins at <Link href={getTourneyHref({ slug: 'roland-garros' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros</Link> and a <strong className="!text-amber-300">112-3</strong> record there - the highest recorded total by a man at any single tournament. His Paris résumé is inseparable from his <strong className="!text-amber-300">14</strong> titles at Roland Garros, the most by any player at one Grand Slam event.
-          </p>
-          <p>
-            Behind him, the next great single-tournament benchmarks are dominated by the Big Three. <span className="inline-flex items-center gap-2"><Flag ioc="CHE" className="w-4 h-3" /><span>Roger Federer</span></span> recorded <strong className="!text-amber-300">105</strong> wins at <Link href={getTourneyHref({ slug: 'wimbledon' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Wimbledon</Link> and <strong className="!text-amber-300">{federerAustralianOpen?.total_wins ?? 'n/a'}</strong> at the Australian Open, while <span className="inline-flex items-center gap-2"><Flag ioc="SRB" className="w-4 h-3" /><span>Novak Djokovic</span></span> reached <strong className="!text-amber-300">{formatWins(djokovicAustralianOpen)}</strong> wins at <Link href={getTourneyHref({ slug: 'australian-open' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Australian Open</Link> and now stands on <strong className="!text-amber-300">{djokovicWimbledonWins}</strong> wins at Wimbledon as well. <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Jimmy Connors</span></span> adds the classic American benchmark with <strong className="!text-amber-300">98</strong> wins at the US Open.
-          </p>
-          <p>
-            In this record, the milestone is not simply longevity, but repeated dominance at the same venue across many seasons: Nadal's <strong className="!text-amber-300">112</strong> Roland Garros wins set the overall ceiling, Djokovic now owns Wimbledon’s match-win lead with <strong className="!text-amber-300">{djokovicWimbledonWins}</strong>, Federer remains the Wimbledon title king with <strong className="!text-amber-300">8</strong> trophies, and Connors shows how the same tournament can become the stage for an entire career's best work.
-          </p>
-        </div>
-      )}
+      <AtpRecordCommentary className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 text-gray-200" recordPath="/records/most-wins-at-single-tournament">
+        {isMostWinsAtSingleTournament && (<>
+            <p>
+              At the top of the Open Era list for <strong>Most Wins at a Single Tournament</strong> stands <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Rafael Nadal</span></span>, with <strong className="!text-amber-300">112</strong> match wins at <Link href={getTourneyHref({ slug: 'roland-garros' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Roland Garros</Link> and a <strong className="!text-amber-300">112-3</strong> record there - the highest recorded total by a man at any single tournament. His Paris résumé is inseparable from his <strong className="!text-amber-300">14</strong> titles at Roland Garros, the most by any player at one Grand Slam event.
+            </p>
+            <p>
+              Behind him, the next great single-tournament benchmarks are dominated by the Big Three. <span className="inline-flex items-center gap-2"><Flag ioc="CHE" className="w-4 h-3" /><span>Roger Federer</span></span> recorded <strong className="!text-amber-300">105</strong> wins at <Link href={getTourneyHref({ slug: 'wimbledon' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Wimbledon</Link> and <strong className="!text-amber-300">{federerAustralianOpen?.total_wins ?? 'n/a'}</strong> at the Australian Open, while <span className="inline-flex items-center gap-2"><Flag ioc="SRB" className="w-4 h-3" /><span>Novak Djokovic</span></span> reached <strong className="!text-amber-300">{formatWins(djokovicAustralianOpen)}</strong> wins at <Link href={getTourneyHref({ slug: 'australian-open' })} className="!text-orange-300 hover:!text-orange-100 font-semibold">Australian Open</Link> and now stands on <strong className="!text-amber-300">{djokovicWimbledonWins}</strong> wins at Wimbledon as well. <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Jimmy Connors</span></span> adds the classic American benchmark with <strong className="!text-amber-300">98</strong> wins at the US Open.
+            </p>
+            <p>
+              In this record, the milestone is not simply longevity, but repeated dominance at the same venue across many seasons: Nadal's <strong className="!text-amber-300">112</strong> Roland Garros wins set the overall ceiling, Djokovic now owns Wimbledon’s match-win lead with <strong className="!text-amber-300">{djokovicWimbledonWins}</strong>, Federer remains the Wimbledon title king with <strong className="!text-amber-300">8</strong> trophies, and Connors shows how the same tournament can become the stage for an entire career's best work.
+            </p>
+        </>)}
+      </AtpRecordCommentary>
 
-      {isMostWinsAtSingleGrandSlamTournament && (
-        <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 text-gray-200">
-          <p>
-            At the top of the Open Era list for <strong>Most Wins at a Single Grand Slam Tournament</strong> stands <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Rafael Nadal</span></span>, with <strong className="!text-amber-300">112</strong> match wins at Roland Garros — the highest recorded men’s singles total at any major tournament. Guinness records Nadal’s Roland Garros dominance as <strong className="!text-amber-300">112</strong> wins from <strong className="!text-amber-300">115</strong> matches, alongside his unmatched 14 French Open titles.
-          </p>
-          <p>
-            The Wimbledon benchmark now belongs to <span className="inline-flex items-center gap-2"><Flag ioc="SRB" className="w-4 h-3" /><span>Novak Djokovic</span></span>, who has moved to <strong className="!text-amber-300">{djokovicWimbledonWins}</strong> wins there, ahead of <span className="inline-flex items-center gap-2"><Flag ioc="CHE" className="w-4 h-3" /><span>Roger Federer</span></span>'s <strong className="!text-amber-300">105</strong>. Federer’s 8 Wimbledon titles still stand as the men’s Open Era record at the All England Club, but Djokovic now owns the Wimbledon match-win lead.
-          </p>
-          <p>
-            Djokovic is also unique because he has reached the 100-win mark at three different Grand Slam tournaments: the Australian Open, Roland Garros and Wimbledon. In this record he sits at <strong className="!text-amber-300">104</strong> in Melbourne, <strong className="!text-amber-300">103</strong> in Paris and <strong className="!text-amber-300">{djokovicWimbledonWins}</strong> at Wimbledon, making him the only player to record 100+ wins at three different majors.
-          </p>
-          <p>
-            A classic Open Era reference point is <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Jimmy Connors</span></span>, who recorded <strong className="!text-amber-300">98</strong> wins at the US Open, still one of the highest single-major totals and the leading non-Big-Three entry near the top of the list. 
-          </p>
-          <p>
-            In this record, the milestone is not simply winning titles, but returning to the same major year after year and stacking victories across generations: Nadal set the ceiling at Roland Garros with 112, Djokovic now owns Wimbledon’s match-win lead with 106, Federer remains the Wimbledon title king with 8 trophies, and Connors keeps the US Open benchmark in the conversation.
-          </p>
-        </div>
-      )}
+      <AtpRecordCommentary className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 text-gray-200" recordPath="/records/most-wins-at-single-grand-slam-tournament">
+        {isMostWinsAtSingleGrandSlamTournament && (<>
+            <p>
+              At the top of the Open Era list for <strong>Most Wins at a Single Grand Slam Tournament</strong> stands <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Rafael Nadal</span></span>, with <strong className="!text-amber-300">112</strong> match wins at Roland Garros — the highest recorded men’s total at any major tournament. Guinness records Nadal’s Roland Garros dominance as <strong className="!text-amber-300">112</strong> wins from <strong className="!text-amber-300">115</strong> matches, alongside his unmatched 14 French Open titles.
+            </p>
+            <p>
+              The Wimbledon benchmark now belongs to <span className="inline-flex items-center gap-2"><Flag ioc="SRB" className="w-4 h-3" /><span>Novak Djokovic</span></span>, who has moved to <strong className="!text-amber-300">{djokovicWimbledonWins}</strong> wins there, ahead of <span className="inline-flex items-center gap-2"><Flag ioc="CHE" className="w-4 h-3" /><span>Roger Federer</span></span>'s <strong className="!text-amber-300">105</strong>. Federer’s 8 Wimbledon titles still stand as the men’s Open Era record at the All England Club, but Djokovic now owns the Wimbledon match-win lead.
+            </p>
+            <p>
+              Djokovic is also unique because he has reached the 100-win mark at three different Grand Slam tournaments: the Australian Open, Roland Garros and Wimbledon. In this record he sits at <strong className="!text-amber-300">104</strong> in Melbourne, <strong className="!text-amber-300">103</strong> in Paris and <strong className="!text-amber-300">{djokovicWimbledonWins}</strong> at Wimbledon, making him the only player to record 100+ wins at three different majors.
+            </p>
+            <p>
+              A classic Open Era reference point is <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Jimmy Connors</span></span>, who recorded <strong className="!text-amber-300">98</strong> wins at the US Open, still one of the highest single-major totals and the leading non-Big-Three entry near the top of the list.
+            </p>
+            <p>
+              In this record, the milestone is not simply winning titles, but returning to the same major year after year and stacking victories across generations: Nadal set the ceiling at Roland Garros with 112, Djokovic now owns Wimbledon’s match-win lead with 106, Federer remains the Wimbledon title king with 8 trophies, and Connors keeps the US Open benchmark in the conversation.
+            </p>
+        </>)}
+      </AtpRecordCommentary>
 
-      {isMostWinsAtSingleMasters1000Tournament && (
-        <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 text-gray-200">
-          <p>
-            At the top of the Open Era list for <strong>Most Wins at a Single Masters 1000 Tournament</strong> stands <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Rafael Nadal</span></span>, with <strong className="!text-amber-300">73</strong> wins at the Monte-Carlo Masters, the highest recorded match-win total by any man at one ATP Masters 1000 event. The Masters 1000 series formally began in 1990, and ATP’s Masters 1000 records list Nadal as the Monte-Carlo win leader with <strong className="!text-amber-300">73</strong> victories.
-          </p>
-          <p>
-            Nadal’s Monte-Carlo record is one of the most dominant single-tournament résumés in tennis history: he won the title 11 times, reached 12 finals, and produced an extraordinary run of 46 consecutive match wins at the event between 2005 and 2013. His dominance there was built on an unprecedented streak of 8 consecutive titles from 2005 to 2012, making Monte-Carlo the Masters 1000 equivalent of his Roland Garros supremacy.
-          </p>
-          <p>
-            Behind Nadal’s Monte-Carlo mark comes his other clay reference point, <strong className="!text-amber-300">70</strong> wins at the Rome Masters, where he also won 10 titles. Next is <span className="inline-flex items-center gap-2"><Flag ioc="CHE" className="w-4 h-3" /><span>Roger Federer</span></span> with <strong className="!text-amber-300">66</strong> wins at Indian Wells.
-          </p>
-          <p>
-            The next tier starts with the <strong className="!text-amber-300">59</strong>-win pair: <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Rafael Nadal</span></span> at Madrid and <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Andre Agassi</span></span> at Miami. Just behind them comes <span className="inline-flex items-center gap-2"><Flag ioc="SRB" className="w-4 h-3" /><span>Novak Djokovic</span></span>, with <strong className="!text-amber-300">68</strong> wins in Rome, then <strong className="!text-amber-300">51</strong> at Indian Wells, <strong className="!text-amber-300">50</strong> in Paris, and <strong className="!text-amber-300">49</strong> in Miami. The rest of the list continues with <span className="inline-flex items-center gap-2"><Flag ioc="CHE" className="w-4 h-3" /><span>Roger Federer</span></span> at Cincinnati with <strong className="!text-amber-300">47</strong>, Djokovic at Cincinnati with <strong className="!text-amber-300">45</strong>, Djokovic at Shanghai with <strong className="!text-amber-300">43</strong>, <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Pete Sampras</span></span> at Miami with <strong className="!text-amber-300">42</strong>, Nadal at Miami with <strong className="!text-amber-300">40</strong>, Djokovic at Monte Carlo with <strong className="!text-amber-300">39</strong>, and Nadal at Canada with <strong className="!text-amber-300">38</strong>.
-          </p>
-          <p>
-            In this record, the milestone is not simply winning titles, but returning to the same Masters 1000 event year after year and stacking victories across eras: Nadal sets the ceiling at Monte-Carlo with <strong className="!text-amber-300">73</strong>, Nadal follows with <strong className="!text-amber-300">70</strong> in Rome, Djokovic adds the Rome benchmark with <strong className="!text-amber-300">68</strong>, Federer gives the hard-court benchmark at Indian Wells with <strong className="!text-amber-300">66</strong>, and the rest of the list fills out the sport’s other key Masters stops from Madrid and Miami to Paris, Cincinnati, Shanghai and Canada.
-          </p>
-        </div>
-      )}
+      <AtpRecordCommentary className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 text-gray-200" recordPath="/records/most-wins-at-single-masters-1000-tournament">
+        {isMostWinsAtSingleMasters1000Tournament && (<>
+            <p>
+              At the top of the Open Era list for <strong>Most Wins at a Single Masters 1000 Tournament</strong> stands <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Rafael Nadal</span></span>, with <strong className="!text-amber-300">73</strong> wins at the Monte-Carlo Masters, the highest recorded match-win total by any man at one ATP Masters 1000 event. The Masters 1000 series formally began in 1990, and ATP’s Masters 1000 records list Nadal as the Monte-Carlo win leader with <strong className="!text-amber-300">73</strong> victories.
+            </p>
+            <p>
+              Nadal’s Monte-Carlo record is one of the most dominant single-tournament résumés in tennis history: he won the title 11 times, reached 12 finals, and produced an extraordinary run of 46 consecutive match wins at the event between 2005 and 2013. His dominance there was built on an unprecedented streak of 8 consecutive titles from 2005 to 2012, making Monte-Carlo the Masters 1000 equivalent of his Roland Garros supremacy.
+            </p>
+            <p>
+              Behind Nadal’s Monte-Carlo mark comes his other clay reference point, <strong className="!text-amber-300">70</strong> wins at the Rome Masters, where he also won 10 titles. Next is <span className="inline-flex items-center gap-2"><Flag ioc="CHE" className="w-4 h-3" /><span>Roger Federer</span></span> with <strong className="!text-amber-300">66</strong> wins at Indian Wells.
+            </p>
+            <p>
+              The next tier starts with the <strong className="!text-amber-300">59</strong>-win pair: <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Rafael Nadal</span></span> at Madrid and <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Andre Agassi</span></span> at Miami. Just behind them comes <span className="inline-flex items-center gap-2"><Flag ioc="SRB" className="w-4 h-3" /><span>Novak Djokovic</span></span>, with <strong className="!text-amber-300">68</strong> wins in Rome, then <strong className="!text-amber-300">51</strong> at Indian Wells, <strong className="!text-amber-300">50</strong> in Paris, and <strong className="!text-amber-300">49</strong> in Miami. The rest of the list continues with <span className="inline-flex items-center gap-2"><Flag ioc="CHE" className="w-4 h-3" /><span>Roger Federer</span></span> at Cincinnati with <strong className="!text-amber-300">47</strong>, Djokovic at Cincinnati with <strong className="!text-amber-300">45</strong>, Djokovic at Shanghai with <strong className="!text-amber-300">43</strong>, <span className="inline-flex items-center gap-2"><Flag ioc="USA" className="w-4 h-3" /><span>Pete Sampras</span></span> at Miami with <strong className="!text-amber-300">42</strong>, Nadal at Miami with <strong className="!text-amber-300">40</strong>, Djokovic at Monte Carlo with <strong className="!text-amber-300">39</strong>, and Nadal at Canada with <strong className="!text-amber-300">38</strong>.
+            </p>
+            <p>
+              In this record, the milestone is not simply winning titles, but returning to the same Masters 1000 event year after year and stacking victories across eras: Nadal sets the ceiling at Monte-Carlo with <strong className="!text-amber-300">73</strong>, Nadal follows with <strong className="!text-amber-300">70</strong> in Rome, Djokovic adds the Rome benchmark with <strong className="!text-amber-300">68</strong>, Federer gives the hard-court benchmark at Indian Wells with <strong className="!text-amber-300">66</strong>, and the rest of the list fills out the sport’s other key Masters stops from Madrid and Miami to Paris, Cincinnati, Shanghai and Canada.
+            </p>
+        </>)}
+      </AtpRecordCommentary>
 
       {isMostMatchesPlayedAtSingleTournament && (
-        <div className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 text-gray-200">
+        <AtpRecordCommentary className="mb-6 p-6 bg-gray-800 rounded-lg shadow-lg text-sm leading-relaxed space-y-3 text-gray-200">
           <p>
-            At the top of the Open Era list for <strong>Most Matches Played at a Single Tournament</strong> stands <span className="inline-flex items-center gap-2"><Flag ioc="CHE" className="w-4 h-3" /><span>Roger Federer</span></span>, who played 119 men’s singles matches at Wimbledon, finishing with a 105-14 record at the All England Club. That is the highest recorded total for any man at one tournament in the Open Era, built across a career that included 8 Wimbledon titles, 12 finals, and appearances from his debut in 1999 through his final Grand Slam match in 2021. [statistico.com], [rolandgarros.com]
+            At the top of the Open Era list for <strong>Most Matches Played at a Single Tournament</strong> stands <span className="inline-flex items-center gap-2"><Flag ioc="CHE" className="w-4 h-3" /><span>Roger Federer</span></span>, who played 119 men’s matches at Wimbledon, finishing with a 105-14 record at the All England Club. That is the highest recorded total for any man at one tournament in the Open Era, built across a career that included 8 Wimbledon titles, 12 finals, and appearances from his debut in 1999 through his final Grand Slam match in 2021. [statistico.com], [rolandgarros.com]
           </p>
           <p>
             Behind him comes <span className="inline-flex items-center gap-2"><Flag ioc="ESP" className="w-4 h-3" /><span>Rafael Nadal</span></span> at Roland Garros, with 116 matches played and a staggering 112-4 record. Nadal’s Paris total is slightly below Federer’s Wimbledon match volume, but it is the most dominant single-tournament résumé in tennis history: 14 titles, a 96.6% win rate, and only four losses across his entire Roland Garros career. [rolandgarros.com], [apnews.com]
@@ -230,7 +231,7 @@ export default function WinsSection({ selectedSurfaces, selectedLevels, selected
           <p>
             In this record, the milestone is not simply winning the most matches, but repeatedly returning to the same event and accumulating wins and losses across eras: Federer set the overall match-volume ceiling at Wimbledon with 119, Nadal owns the most dominant single-tournament record at Roland Garros, while Connors and Djokovic represent two different versions of extreme longevity at the US Open and Australian Open.
           </p>
-        </div>
+        </AtpRecordCommentary>
       )}
 
       <div className="flex justify-end mb-4">

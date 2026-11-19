@@ -1,9 +1,10 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import type { Metadata } from 'next';
 import React from 'react';
 
 const site = 'https://stats.tennismylife.org';
 
-export const metadata: Metadata = {
+const metadata: Metadata = {
   title: { absolute: 'Seasons - TennisMyLife' },
   description: 'Season summaries and statistics.',
   openGraph: {
@@ -14,6 +15,10 @@ export const metadata: Metadata = {
   },
   alternates: { canonical: `${site}/seasons` },
 };
+
+export async function generateMetadata() {
+  return tourMetadata(metadata);
+}
 
 export default function SeasonsLayout({ children }: { children: React.ReactNode }) {
   return <>{children}</>;

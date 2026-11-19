@@ -1,5 +1,6 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import React from 'react';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import { redirect, permanentRedirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import H2HClient from '../H2HClient';
@@ -8,6 +9,8 @@ import H2HPreviewServer from '../H2HPreviewServer';
 import H2HCareerOverviewServer from '../H2HCareerOverviewServer';
 import { prisma } from '@/lib/prisma';
 import { metadataBase } from '@/lib/site';
+import { getTour } from '@/lib/tour';
+import { tourPath } from '@/lib/tour-path';
 import { getPlayerHref, IOC_TO_ISO, createSlug, createH2HUrl } from '@/lib/utils';
 import { mapIdsToSlugs } from '@/lib/player-slugs';
 import countries from 'i18n-iso-countries';
@@ -171,6 +174,7 @@ async function hasEverBeenTop20(playerId: string) {
 }
 
 export async function generateMetadata({ params, searchParams: requestedSearchParams }: { params?: Promise<{ slugs?: string[] }>, searchParams?: Promise<Record<string, string | string[]>> }): Promise<Metadata> {
+  const tour = await getTour();
   const searchParams = requestedSearchParams ? await requestedSearchParams : undefined;
   // Next.js 16+ params can be a Promise
   const resolvedParams = params instanceof Promise ? await params : params;
@@ -210,7 +214,7 @@ export async function generateMetadata({ params, searchParams: requestedSearchPa
   }
 
   const siteTitle = player1Name && player2Name ? `${player1Name} vs ${player2Name} H2H - Tennis  Head to Head, Matches, Stats` : 'Head-to-Head - Tennis  Head to Head, Matches, Stats';
-  const description = player1Name && player2Name ? `${player1Name} vs ${player2Name} head-to-head: H2H record, match stats and analysis. Compare ATP players.` : 'Head-to-head statistics between players.'; 
+  const description = player1Name && player2Name ? `${player1Name} vs ${player2Name} head-to-head: H2H record, match stats and analysis. Compare ${tour} players.` : 'Head-to-head statistics between players.';
   const path = `/h2h/${slug}`;
   const canonicalPath = player1Name && player2Name ? createH2HUrl(player1Name, player2Name) : path;
   const ogImage = new URL('/og/site-preview.png', canonicalOrigin).toString();
@@ -220,7 +224,7 @@ export async function generateMetadata({ params, searchParams: requestedSearchPa
   const hasQuery = searchParams && Object.keys(searchParams).length > 0;
   const shouldIndex = !hasQuery && (ENABLE_H2H_NOINDEX_ALGORITHM ? indexable : true);
 
-  return {
+  return tourMetadata({
     title: siteTitle,
     description,
     authors: [{ name: 'TennisMyLife' }],
@@ -234,10 +238,11 @@ export async function generateMetadata({ params, searchParams: requestedSearchPa
     },
     twitter: { card: 'summary_large_image', title: siteTitle, description, images: [ogImage] },
     alternates: { canonical },
-  };
+  });
 }
 
 export default async function Page({ params, searchParams: requestedSearchParams }: { params?: Promise<{ slugs?: string[] }>, searchParams?: Promise<Record<string, string | string[]>> }) {
+  const tour = await getTour();
   const searchParams = requestedSearchParams ? await requestedSearchParams : undefined;
   // Next.js 16+ params can be a Promise
   const resolvedParams = params instanceof Promise ? await params : params;
@@ -295,7 +300,7 @@ export default async function Page({ params, searchParams: requestedSearchParams
                 )
               ).toString()
             : '';
-          permanentRedirect(queryString ? `${canonicalSlug}?${queryString}` : canonicalSlug);
+          permanentRedirect(tourPath(queryString ? `${canonicalSlug}?${queryString}` : canonicalSlug, tour));
         }
       }
 
@@ -434,10 +439,10 @@ export default async function Page({ params, searchParams: requestedSearchParams
 
   // Build JSON-LD structured data for the page
   const pageTitle = player1 && player2 ? `${player1.atpname} vs ${player2.atpname} H2H - Tennis  Head to Head, Matches, Stats` : 'Head-to-Head - Tennis  Head to Head, Matches, Stats';
-  const pageDescription = player1 && player2 ? `${player1.atpname} vs ${player2.atpname} head-to-head: H2H record, match stats and analysis. Compare ATP players.` : 'Head-to-head statistics between players.';
+  const pageDescription = player1 && player2 ? `${player1.atpname} vs ${player2.atpname} head-to-head: H2H record, match stats and analysis. Compare ${tour} players.` : 'Head-to-head statistics between players.';
   const path = slug ? `/h2h/${slug}` : '/h2h';
   const canonicalPath = player1 && player2 ? createH2HUrl(player1.atpname ?? '', player2.atpname ?? '') : path;
-  const canonical = new URL(canonicalPath, canonicalOrigin).toString();
+  const canonical = new URL(tourPath(canonicalPath, tour), canonicalOrigin).toString();
 
   const playersAsPersons = [] as any[];
   if (player1) {
@@ -463,7 +468,7 @@ export default async function Page({ params, searchParams: requestedSearchParams
       { "@id": (new URL(getPlayerHref(player1.slug ?? (player1.id ? String(player1.id) : String(player1.atpname))), canonicalOrigin).toString()) },
       { "@id": (new URL(getPlayerHref(player2.slug ?? (player2.id ? String(player2.id) : String(player2.atpname))), canonicalOrigin).toString()) },
     ];
-    keywords = `${player1.atpname} vs ${player2.atpname}, ${player1.atpname} ${player2.atpname} h2h, ${player1.atpname} ${player2.atpname} head to head, tennis h2h stats, ${player1.atpname} ${player2.atpname} matches, ${player1.atpname} ${player2.atpname} comparison, ATP h2h`;
+    keywords = `${player1.atpname} vs ${player2.atpname}, ${player1.atpname} ${player2.atpname} h2h, ${player1.atpname} ${player2.atpname} head to head, tennis h2h stats, ${player1.atpname} ${player2.atpname} matches, ${player1.atpname} ${player2.atpname} comparison, ${tour} h2h`;
   }
 
   const jsonLd: any = {
@@ -545,11 +550,11 @@ export default async function Page({ params, searchParams: requestedSearchParams
       ...(player.birthdate ? { birthDate: player.birthdate instanceof Date ? player.birthdate.toISOString().split('T')[0] : String(player.birthdate) } : {}),
       ...(player.birthplace ? { birthPlace: { '@type': 'Place', name: String(player.birthplace) } } : {}),
       ...(countryName ? { nationality: { '@type': 'Country', name: countryName } } : {}),
-      memberOf: { '@type': 'Organization', name: 'ATP Tour', url: 'https://www.atptour.com' },
+      memberOf: { '@type': 'Organization', name: `${tour} Tour`, url: tour === 'WTA' ? 'https://www.wtatennis.com' : 'https://www.atptour.com' },
       sameAs: [
         playerUrl,
         `https://en.wikipedia.org/wiki/${encodeURIComponent(nameForWiki)}`,
-        `https://www.atptour.com/en/players/${encodeURIComponent(slug)}/${String(player.id ?? '').toLowerCase()}/overview`,
+        ...(tour === 'ATP' ? [`https://www.atptour.com/en/players/${encodeURIComponent(slug)}/${String(player.id ?? '').toLowerCase()}/overview`] : []),
       ],
       ...(additionalProperty.length ? { additionalProperty } : {}),
     };
@@ -630,6 +635,7 @@ export default async function Page({ params, searchParams: requestedSearchParams
               player1={player1}
               player2={player2}
               matches={initialMatches}
+              tour={tour}
             />
           </H2HContentClient>
         </div>

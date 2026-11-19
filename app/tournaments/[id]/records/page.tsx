@@ -1,5 +1,6 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import React from 'react';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import type { Metadata } from 'next';
 import RecordsPageClient from './RecordsClient';
 import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
@@ -20,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const title = `${tournamentName} Records: wins, titles, matches, ages, streak, stats`;
   const description = `Open Era men's singles all-time records for ${tournamentName}: most titles, match wins, age records, winning streaks, win percentages, and more.`;
   const ogImage = `${site}/og/site-preview.png`;
-  return {
+  return tourMetadata({
     title,
     description,
     alternates: { canonical },
@@ -39,7 +40,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       images: [ogImage],
     },
     robots: { index: true, follow: true },
-  };
+  });
 }
 
 type AgeSubTab = 'main' | 'winners' | 'titles' | 'youngestrounds' | 'oldestrounds';

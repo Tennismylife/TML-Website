@@ -1,6 +1,7 @@
 ﻿'use client';
+import { TourAnchor } from "@/components/TourLink";
 import React, { useState, useMemo } from 'react';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 
 const RANK_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const TOP_VALUES  = [2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 50, 100];
@@ -128,14 +129,14 @@ export default function RecordsRankingLanding({ tabBar }: { tabBar?: React.React
         <div className="px-4 pb-2 max-w-4xl mx-auto">
           <div className="flex flex-wrap gap-2 justify-center">
             {CATEGORIES.map(({ label, meta }) => (
-              <a
+              <TourAnchor
                 key={label}
                 href={`#cat-${label.replace(/[^a-z0-9]/gi, '-').toLowerCase()}`}
                 className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${meta.bg} ${meta.border} ${meta.color} hover:brightness-125 transition-all`}
               >
                 <span>{meta.icon}</span>
                 {label}
-              </a>
+              </TourAnchor>
             ))}
           </div>
         </div>

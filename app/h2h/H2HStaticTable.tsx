@@ -1,9 +1,9 @@
 ﻿"use client";
 
 import React, { useMemo } from "react";
-import Link from "next/link";
+import Link from "@/components/TourLink";
 import Flag from '@/components/Flag';
-import { getPlayerHref } from '@/lib/utils';
+import { createH2HUrl, getPlayerHref } from '@/lib/utils';
 import { lastNMatches, playerResultsForMatches } from '@/lib/h2hUtils';
 
 interface Player {
@@ -96,11 +96,10 @@ export default function H2HStaticTable({ player1, player2, matches }: Props) {
   const leftResults = playerResultsForMatches(player2.id, player2.atpname, lastFive);
   const rightResults = playerResultsForMatches(player1.id, player1.atpname, lastFive);
 
-  // Derive the full H2H page slug dynamically from player slugs
-  const h2hSlug =
-    `${player2.slug ?? player2.atpname ?? 'player'}-vs-${player1.slug ?? player1.atpname ?? 'player'}`
-      .toLowerCase()
-      .replace(/\s+/g, '-');
+  const h2hHref = createH2HUrl(
+    player2.atpname ?? player2.slug ?? 'player',
+    player1.atpname ?? player1.slug ?? 'player',
+  );
 
   return (
     <div className="w-full overflow-x-auto">
@@ -220,7 +219,7 @@ export default function H2HStaticTable({ player1, player2, matches }: Props) {
           <tr className="border-t border-white/10">
             <td colSpan={2} className="p-3 text-center">
               <Link
-                href={`/h2h/${h2hSlug}`}
+                href={h2hHref}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 shadow-lg hover:opacity-90 active:scale-95"
                 style={{
                   background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',

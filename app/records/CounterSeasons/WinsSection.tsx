@@ -1,8 +1,9 @@
 "use client";
+import { useTourRouter as useRouter } from "@/lib/tour-navigation";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import Link from "@/app/records/RecordLink";
+
 import Modal from "@/components/Modal";
 import Flag from '@/components/Flag';
 import { getPlayerHrefWithTab } from "@/lib/utils";
@@ -179,7 +180,7 @@ export default function WinsSection({
         // Update title to reflect applied filters (do not overwrite server SEO titles)
         try {
           const currentTitle = typeof document !== 'undefined' ? document.title || '' : '';
-          const currentIsSiteSeo = typeof currentTitle === 'string' && /\| Tennis/.test(currentTitle);
+          const currentIsSiteSeo = typeof currentTitle === 'string' && /\| (?:Tennis|WTA Records)/.test(currentTitle);
           if (!currentIsSiteSeo && typeof document !== 'undefined') document.title = `${appliedHeader} | Tennis Records`; 
         } catch(e) { /* ignore */ }
 

@@ -1,7 +1,31 @@
 ﻿import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-import type { JsonValue } from "@prisma/client/runtime/library";
 import { prisma } from '@/lib/prisma';
+import { getTour } from '@/lib/tour';
+import { getWtaTeamTournamentIds } from "@/lib/wta-team-tournaments";
+
+const WTA_CALENDAR_YEAR = 2026;
+
+async function getWtaCalendar() {
+  const [editions, teamIds] = await Promise.all([
+    prisma.match.groupBy({
+      by: ["tourney_id", "tourney_level", "tourney_name"],
+      where: {
+        year: WTA_CALENDAR_YEAR,
+        tourney_id: { not: null },
+        tourney_date: { not: null },
+      },
+      _min: { tourney_date: true },
+      orderBy: [{ _min: { tourney_date: "asc" } }, { tourney_name: "asc" }],
+    }),
+    getWtaTeamTournamentIds(),
+  ]);
+
+  const byTournament = new Map<string | null, (typeof editions)[number]>();
+  for (const edition of editions) {
+    if (!byTournament.has(edition.tourney_id)) byTournament.set(edition.tourney_id, edition);
+  }
+  return { byTournament, teamIds };
+}
 
 // 🧩 Estrae la prima stringa valida (ricorsivamente) da vari formati (string, array, object)
 function extractFirstString(field: any): string {
@@ -80,9 +104,11 @@ function uniqueByName(tournaments: any[]): any[] {
 
 export async function GET() {
   try {
-    const tournaments = await prisma.tournament.findMany({
-      orderBy: { id: "asc" },
-    });
+    const tour = await getTour();
+    const [tournaments, calendar] = await Promise.all([
+      prisma.tournament.findMany({ orderBy: { id: "asc" } }),
+      tour === "WTA" ? getWtaCalendar() : null,
+    ]);
     
     const groups = {
       grandSlams: [] as any[],
@@ -105,16 +131,17 @@ export async function GET() {
     ];
 
     for (const t of tournaments) {
-      // ✅ Narrowing sicuro di category (supporta array/oggetti annidati)
-      let category: string;
       const catValues = extractNames(t.category);
-      const match = ["G", "M", "F", "O"].find(c => catValues.includes(c));
-      category = match ?? "Others";
-
-      // ✅ Name sempre in array e supporto per strutture annidate
-      const nameList = Array.isArray(t.name) ? t.name : [t.name];
-      const names = nameList.flatMap(n => extractNames(n));
-
+      if (calendar && (calendar.teamIds.has(String(t.id)) || catValues.includes("D"))) continue;
+      const edition = calendar?.byTournament.get(String(t.id));
+      const category = edition?.tourney_level ?? ["G", "M", "F", "O"].find(c => catValues.includes(c));
+      const names = extractNames(t.name);
+      const displayNames = names.map(normalizeName);
+      if (edition?.tourney_name) {
+        const editionName = normalizeName(edition.tourney_name);
+        displayNames.unshift(editionName);
+      }
+      const namesForDisplay = edition ? [...new Set(displayNames)] : displayNames;
 
       switch (category) {
         case "G": {
@@ -122,7 +149,7 @@ export async function GET() {
             const { indoor, ...base } = t as any;
             groups.grandSlams.push({
               ...base,
-              name: names.map(normalizeName),
+              name: namesForDisplay,
               surfaces: extractUniqueSurfaces(t.surfaces),
             });
           }
@@ -130,7 +157,7 @@ export async function GET() {
         }
 
         case "M": {
-          const mastersNames = names.filter(n => typeof n === "string" && n.endsWith("Masters") && mastersOrder.includes(n));
+          const mastersNames = calendar ? namesForDisplay : names.filter(n => n.endsWith("Masters") && mastersOrder.includes(n));
           if (mastersNames.length > 0) {
             const { indoor, ...base } = t as any;
             groups.masters1000.push({ ...base, name: mastersNames, surfaces: extractUniqueSurfaces(t.surfaces) });
@@ -140,25 +167,36 @@ export async function GET() {
 
         case "F": {
           const { indoor, ...base } = t as any;
-          groups.finals.push({ ...base, name: names.map(normalizeName), surfaces: extractUniqueSurfaces(t.surfaces) });
+          const group = calendar && t.slug !== "wta-finals" ? groups.others : groups.finals;
+          group.push({ ...base, name: namesForDisplay, surfaces: extractUniqueSurfaces(t.surfaces) });
           break;
         }
 
         case "O": {
           const { indoor, ...base } = t as any;
-          groups.olympics.push({ ...base, name: names.map(normalizeName), surfaces: extractUniqueSurfaces(t.surfaces) });
+          groups.olympics.push({ ...base, name: namesForDisplay, surfaces: extractUniqueSurfaces(t.surfaces) });
           break;
         }
 
         default: {
           const { indoor, ...base } = t as any;
-          groups.others.push({ ...base, name: names.map(normalizeName), surfaces: extractUniqueSurfaces(t.surfaces) });
+          groups.others.push({ ...base, name: namesForDisplay, surfaces: extractUniqueSurfaces(t.surfaces) });
           break;
         }
       }
     }
 
-    // ✅ Ordina e rimuove duplicati
+    if (calendar) {
+      const calendarDate = (id: number) =>
+        calendar.byTournament.get(String(id))?._min.tourney_date?.getTime() ?? Number.MAX_SAFE_INTEGER;
+      for (const key of Object.keys(groups) as (keyof typeof groups)[]) {
+        groups[key] = uniqueByName(groups[key].sort((a, b) =>
+          calendarDate(a.id) - calendarDate(b.id) || a.name[0]?.localeCompare(b.name[0] ?? "") || a.id - b.id,
+        ));
+      }
+      return NextResponse.json({ tour, groups });
+    }
+
     const slamOrder = ["Australian Open", "Roland Garros", "Wimbledon", "US Open"];
 
     groups.grandSlams = uniqueByName(groups.grandSlams).sort((a, b) => {
@@ -191,10 +229,10 @@ export async function GET() {
     const totalGroups = Object.values(counts).reduce((s, v) => s + v, 0);
     if (totalGroups === 0 || counts.others / Math.max(1, totalGroups) > 0.95) {
       const sampleCats = (tournaments || []).slice(0, 10).map(t => ({ id: t.id, atp_category: t.category, name: t.name }));
-      return NextResponse.json({ groups, debug: { counts, sample: (tournaments || []).slice(0, 10), sampleCategories: sampleCats } }, { status: 200 });
+      return NextResponse.json({ tour, groups, debug: { counts, sample: (tournaments || []).slice(0, 10), sampleCategories: sampleCats } }, { status: 200 });
     }
 
-    return NextResponse.json({ groups });
+    return NextResponse.json({ tour, groups });
   } catch (error) {
     console.error("❌ Errore nel recupero dei tornei:", error);
     return NextResponse.json(

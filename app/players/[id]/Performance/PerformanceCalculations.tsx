@@ -1,3 +1,6 @@
+import { usePlayerLevel } from "@/lib/use-player-level";
+import { useLinkTour } from "@/components/TourLink";
+import { sortPlayerLevels } from "@/lib/player-levels";
 import { useMemo } from "react";
 import type { Match } from "@/types";
 
@@ -42,22 +45,30 @@ export default function PerformanceCalculations({
   filtered,
   playerId,
 }: PerformanceCalculationsProps) {
+  const levelNameFor = usePlayerLevel();
+  const tour = useLinkTour();
   // --- Performance / Surface / Pressure ---
 
   const perfRows = useMemo(() => {
-    const defs = [
+    const categories = [
       { key: "overall", label: "Overall", filter: (m: Match) => true },
       { key: "gs", label: "Grand Slam", filter: (m: Match) => m.tourney_level === "G" },
-      { key: "tf", label: "Tour Finals", filter: (m: Match) => m.tourney_level === "F" },
-      { key: "masters", label: "Masters", filter: (m: Match) => m.tourney_level === "M" },
+      { key: "tf", label: levelNameFor("F", "Tour Finals"), filter: (m: Match) => m.tourney_level === "F" },
+      { key: "masters", label: levelNameFor("M", "Masters"), filter: (m: Match) => m.tourney_level === "M" },
       { key: "olympics", label: "Olympics", filter: (m: Match) => m.tourney_level === "O" },
     ] as const;
 
-    return defs.map((d) => {
+    const levels = sortPlayerLevels(new Set(filtered.map(match => match.tourney_level ?? "Unknown")));
+    const definitions = tour === "WTA" ? levels.map(level => ({
+      key: level,
+      label: levelNameFor(level),
+      filter: (match: Match) => (match.tourney_level ?? "Unknown") === level,
+    })) : categories;
+    return definitions.map((d) => {
       const list = filtered.filter(d.filter);
       return { ...d, ...wlFrom(list, playerId), matches: list.length };
     });
-  }, [filtered, playerId]);
+  }, [filtered, playerId, tour, levelNameFor]);
 
   const surfaceRows = useMemo(() => {
     const kinds = ["Hard", "Clay", "Grass", "Carpet"] as const;

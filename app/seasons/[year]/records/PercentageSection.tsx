@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import Flag from '@/components/Flag';
 import { getPlayerHref } from '@/lib/utils';
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';

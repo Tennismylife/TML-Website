@@ -1,3 +1,4 @@
+import { statisticsCategoryFilter } from "@/lib/statistics-category-filter";
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -254,7 +255,7 @@ export async function GET(request: NextRequest) {
     // --- Filtro principale ---
     const where: any = {};
     if (surface !== 'all') where.surface = surface;
-    if (tourneyLevel !== 'all') where.tourney_level = tourneyLevel;
+    Object.assign(where, await statisticsCategoryFilter(tourneyLevel));
 
     // ---- YEAR: usa direttamente il campo 'year' del DB ----
     if (yearParam !== 'all') {

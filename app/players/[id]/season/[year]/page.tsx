@@ -1,3 +1,6 @@
+import { getTour } from "@/lib/tour";
+import { tourUrl } from "@/lib/tour-path";
+import { playerLevelName } from "@/lib/player-levels";
 import React from 'react';
 import PlayerTabPage from '../../[tab]/page';
 
@@ -7,6 +10,7 @@ import { prisma } from '@/lib/prisma';
 import { getPlayerSeasonRobots } from '@/app/players/[id]/playerIndexing';
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const tour = await getTour();
   const { id, year } = await params;
   // Resolve player
   let player: any = null;
@@ -23,9 +27,9 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   const name = player ? (player.atpname || player.player) : String(id);
   const y = String(year);
   // Use requested SEO title format
-  const title = `${name} ${y} ATP Season – Match Results & Stats`;
+  const title = `${name} ${y} ${tour} Season – Match Results & Stats`;
   const description = `${name} ${y} season: match results, win-loss record, titles & surface breakdown (hard, clay, grass). Full season stats on TennisMyLife.`;
-  const canonical = `https://stats.tennismylife.org/players/${encodeURIComponent(player?.slug || String(id))}/season/${encodeURIComponent(y)}`;
+  const canonical = tourUrl(`https://stats.tennismylife.org/players/${encodeURIComponent(player?.slug || String(id))}/season/${encodeURIComponent(y)}`, tour);
   const imageUrl = `https://stats.tennismylife.org/og/${encodeURIComponent(player?.slug || String(id))}.png`;
 
   let robotsIndex = false;
@@ -56,6 +60,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 }
 
 export default async function SeasonYearPage({ params, searchParams }: any) {
+  const tour = await getTour();
 
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
@@ -129,8 +134,8 @@ export default async function SeasonYearPage({ params, searchParams }: any) {
     // ignore player fetch errors
   }
   const displayName = player ? (player.atpname || player.player) : String(id);
-  const heading = `${displayName} ${String(year)} ATP Season – Match Results & Stats`;
-  const canonical = `https://stats.tennismylife.org/players/${encodeURIComponent(player?.slug || String(id))}/season/${encodeURIComponent(String(year))}`;
+  const heading = `${displayName} ${String(year)} ${tour} Season – Match Results & Stats`;
+  const canonical = tourUrl(`https://stats.tennismylife.org/players/${encodeURIComponent(player?.slug || String(id))}/season/${encodeURIComponent(String(year))}`, tour);
 
   // Compute season stats for the paragraph summary
   let totalMatches = 0;
@@ -231,7 +236,7 @@ export default async function SeasonYearPage({ params, searchParams }: any) {
       : <>{' '}{displayName} did not win a title during the {String(year)} season.</>;
     narrativeParagraphs.push(
       <p key="overall">
-        In the <strong className="text-white">{String(year)} ATP season</strong>, {displayName} compiled a record of{' '}
+        In the <strong className="text-white">{String(year)} {tour} season</strong>, {displayName} compiled a record of{' '}
         <strong className="text-green-400">{wins}</strong>–<strong className="text-red-400">{losses}</strong>{' '}
         across <strong className="text-yellow-400">{totalMatches}</strong> matches, translating to a win rate of{' '}
         <strong className="text-yellow-400">{overallPct}</strong>.{titleClause}
@@ -282,7 +287,7 @@ export default async function SeasonYearPage({ params, searchParams }: any) {
   if ((mastersWins + mastersLosses) > 0) {
     narrativeParagraphs.push(
       <p key="masters">
-        In <strong className="text-white">ATP Masters 1000</strong> events, {displayName} posted a record of{' '}
+        In <strong className="text-white">{playerLevelName("M", tour)}</strong> events, {displayName} posted a record of{' '}
         <strong className="text-green-400">{mastersWins}</strong>–<strong className="text-red-400">{mastersLosses}</strong>{' '}
         (<strong className="text-yellow-400">{pct(mastersWins, mastersWins + mastersLosses)}</strong>),
         demonstrating {mastersWins > mastersLosses ? 'elite consistency at the highest level of the Tour' : "competitive play against the Tour\u2019s best"}.
@@ -314,7 +319,7 @@ export default async function SeasonYearPage({ params, searchParams }: any) {
   if ((top10Wins + top10Losses) > 0) {
     narrativeParagraphs.push(
       <p key="top10">
-        Against players ranked in the <strong className="text-white">ATP Top 10</strong>, {displayName}&apos;s record in {String(year)} stands at{' '}
+        Against players ranked in the <strong className="text-white">{tour} Top 10</strong>, {displayName}&apos;s record in {String(year)} stands at{' '}
         <strong className="text-green-400">{top10Wins}</strong>–<strong className="text-red-400">{top10Losses}</strong>{' '}
         (<strong className="text-yellow-400">{pct(top10Wins, top10Wins + top10Losses)}</strong>).
         {top10Wins > top10Losses
@@ -410,12 +415,12 @@ export default async function SeasonYearPage({ params, searchParams }: any) {
           {
             "@type": "Question",
             "name": `What are ${displayName}\u2019s ${year} season stats?`,
-            "acceptedAnswer": { "@type": "Answer", "text": `${displayName}\u2019s ${year} season stats include total wins, losses, titles, surface performance, and full ATP match results from the ${year} tennis season.` }
+            "acceptedAnswer": { "@type": "Answer", "text": `${displayName}\u2019s ${year} season stats include total wins, losses, titles, surface performance, and full ${tour} match results from the ${year} tennis season.` }
           },
           {
             "@type": "Question",
             "name": `How many titles did ${displayName} win in the ${year} season?`,
-            "acceptedAnswer": { "@type": "Answer", "text": `In ${year}, ${displayName} won ${titles.length} title${titles.length !== 1 ? 's' : ''} in official ATP events${titles.length ? (': ' + titles.join(', ')) : '.'}` }
+            "acceptedAnswer": { "@type": "Answer", "text": `In ${year}, ${displayName} won ${titles.length} title${titles.length !== 1 ? 's' : ''} in official ${tour} events${titles.length ? (': ' + titles.join(', ')) : '.'}` }
           },
           {
             "@type": "Question",
@@ -434,8 +439,8 @@ export default async function SeasonYearPage({ params, searchParams }: any) {
           },
           {
             "@type": "Question",
-            "name": "Are Davis Cup matches included in these stats?",
-            "acceptedAnswer": { "@type": "Answer", "text": "No. This season page focuses on official ATP Tour and Grand Slam matches, excluding Davis Cup and exhibition events." }
+            "name": `Are ${playerLevelName("D", tour)} matches included in these stats?`,
+            "acceptedAnswer": { "@type": "Answer", "text": `These stats cover official ${tour} Tour and Grand Slam matches and exclude ${playerLevelName("D", tour)} and exhibition events.` }
           }
         ]
       }) }} />

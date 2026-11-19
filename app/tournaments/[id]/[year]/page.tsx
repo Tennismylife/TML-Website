@@ -1,3 +1,4 @@
+import { TourAnchor } from "@/components/TourLink";
 import TournamentEditionClient from './EditionClient';
 import { buildTournamentJsonLdFromDb, fetchEditionInfo, getEditionValue } from './edition-helpers';
 import Breadcrumbs from './Breadcrumbs';
@@ -72,9 +73,9 @@ export default async function Page(props: any) {
       <main className="w-full px-6 py-8 text-center">
         <h1 className="text-3xl font-extrabold mb-4">Tournament edition unavailable</h1>
         <p className="mb-4">We couldn't find that tournament edition or the data is temporarily unavailable.</p>
-        <p className="mb-6">You can <a href="/tournaments" className="text-blue-400 hover:underline">browse all tournaments</a>.</p>
+        <p className="mb-6">You can <TourAnchor href="/tournaments" className="text-blue-400 hover:underline">browse all tournaments</TourAnchor>.</p>
         {/* SEO-only link: visually hidden for users, present in the DOM for crawlers */}
-        <a href={`/tournaments/${id}/${year}/records`} className="sr-only">View Records of the Tournament</a>
+        <TourAnchor href={`/tournaments/${id}/${year}/records`} className="sr-only">View Records of the Tournament</TourAnchor>
       </main>
     );
   }
@@ -275,7 +276,7 @@ export default async function Page(props: any) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbListJson) }} />
 
       {/* SEO-only link: visually hidden for users, present in the DOM for crawlers */}
-      <a href={`/tournaments/${slug}/${year}/records`} className="sr-only">View Records of the Tournament</a>
+      <TourAnchor href={`/tournaments/${slug}/${year}/records`} className="sr-only">View Records of the Tournament</TourAnchor>
 
       {/* Client interactive edition (receives initialMatches so it can skip fetching) */}
       <TournamentEditionClient params={resolvedParams} initialMatches={initialMatches ?? undefined} />

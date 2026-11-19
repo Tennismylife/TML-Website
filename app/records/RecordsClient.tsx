@@ -1,7 +1,10 @@
 "use client";
+import { useTourRouter as useRouter, currentTourPath } from "@/lib/tour-navigation";
 
 import React, { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
+
+import { recordTourPath } from '@/lib/record-tour-path';
+import { useRecordsTour } from './AtpRecordCommentary';
 
 import FiltersComponent from './FiltersComponent';
 import { generateRecordDescription } from '../../lib/generateRecordDescription';
@@ -137,6 +140,7 @@ function getMenuTooltip(record: string, sub?: string) {
 }
 
 export default function RecordsClient({ initialRecord = null, initialSubtab = null }: Props) {
+  const tour = useRecordsTour();
   const router = useRouter();
 
   const [selectedRecord, setSelectedRecord] = useState<string | null>(initialRecord ?? null);
@@ -179,10 +183,10 @@ export default function RecordsClient({ initialRecord = null, initialSubtab = nu
 
     if (!selectedRecord) return;
     const sub = activeSubTabsRef.current[selectedRecord ?? ""];
-    const path = buildPath(selectedRecord, sub);
+    const path = recordTourPath(buildPath(selectedRecord, sub), tour);
     try {
       const desc = generateRecordDescription(selectedRecord, activeSubTabsRef.current, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf);
-      if (desc && typeof document !== 'undefined') {
+      if (tour === 'ATP' && desc && typeof document !== 'undefined') {
         const newTitle = `${desc} | Tennis Records`;
         const currentTitle = typeof document !== 'undefined' ? document.title || '' : '';
         const shouldForceTitle = lastUserActionRef.current === 'click' || lastUserActionRef.current === 'filter';
@@ -212,12 +216,12 @@ export default function RecordsClient({ initialRecord = null, initialSubtab = nu
     } catch (err) {}
     const shouldPush = lastUserActionRef.current === 'click' || lastUserActionRef.current === 'filter';
     if (shouldPush) {
-      try { router.push(path); } catch { try { window.history.pushState(null,'',path); } catch {} }
+      try { router.push(path); } catch { try { window.history.pushState(null,'',currentTourPath(path)); } catch {} }
     } else {
-      try { router.replace(path); } catch { try { window.history.replaceState(null,'',path); } catch {} }
+      try { router.replace(path); } catch { try { window.history.replaceState(null,'',currentTourPath(path)); } catch {} }
     }
     lastUserActionRef.current = 'none';
-  }, [selectedRecord, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf]);
+  }, [selectedRecord, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf, tour]);
 
   const handleTabClick = (tabKey: string) => {
     lastUserActionRef.current = 'click';

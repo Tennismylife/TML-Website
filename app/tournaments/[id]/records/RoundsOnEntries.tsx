@@ -1,9 +1,10 @@
 'use client'
+import { useTourRouter as useRouter, currentTourPath } from "@/lib/tour-navigation";
 
 import { useState, useEffect } from 'react';
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import Link from '@/components/TourLink';
+
 import Flag from '@/components/Flag';
 import { playerMatchesUrl } from '../../../records/nav';
 
@@ -101,7 +102,7 @@ export default function RoundsOnEntries({ id, pathId, initialData }: { id: strin
       try {
         const nav: any = router.push(newPath as any);
         const doReplaceAndDispatch = () => {
-          try { window.history.replaceState(state, '', newPath); } catch (e) {}
+          try { window.history.replaceState(state, '', currentTourPath(newPath)); } catch (e) {}
           try { window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {}
         };
 
@@ -115,7 +116,7 @@ export default function RoundsOnEntries({ id, pathId, initialData }: { id: strin
         }
       } catch (e) {
         try { console.warn('[RoundsOnEntries] handleViewAll navigation failed, dispatching anyway', e); } catch (ex) {}
-        try { window.history.replaceState(state, '', newPath); } catch (e) {}
+        try { window.history.replaceState(state, '', currentTourPath(newPath)); } catch (e) {}
         try { window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {}
       } finally {
         setLoadingViewAll(null);

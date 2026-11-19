@@ -1,15 +1,20 @@
-﻿import React from 'react';
-import Link from 'next/link';
+﻿import { RecordAnchor } from "@/app/records/RecordLink";
+import React from 'react';
+import Link from '@/app/records/RecordLink';
 import RecordsTabs from './RecordsTabs';
 import RecordsItemListJsonLd from './RecordsJsonLd';
 import { metadataBase } from '../../lib/site';
 import { resolveCanonicalRecordHref, resolveRecordHref } from './record-links';
 import type { Metadata } from 'next';
+import { prisma } from '@/lib/prisma';
+import { getTour } from '@/lib/tour';
+import { recordTourUrl } from '@/lib/record-tour-path';
+import { recordHeading, recordTourLabel } from './tour-labels';
 
 const CANONICAL = new URL('/records', metadataBase).toString();
 const OG_IMAGE = new URL('/og/site-preview.png', metadataBase).toString();
 
-export const metadata: Metadata = {
+const atpMetadata: Metadata = {
   title: {
     absolute: 'Tennis Records – ATP Stats | TennisMyLife',
   },
@@ -34,6 +39,21 @@ export const metadata: Metadata = {
   alternates: { canonical: CANONICAL },
 };
 
+export async function generateMetadata(): Promise<Metadata> {
+  if (await getTour() === 'ATP') return atpMetadata;
+  const title = 'WTA Records | TennisMyLife';
+  const description = 'Explore WTA match wins, titles, appearances, streaks and head-to-head records.';
+  const url = recordTourUrl(CANONICAL, 'WTA');
+  return {
+    ...atpMetadata,
+    title: { absolute: title },
+    description,
+    openGraph: { ...atpMetadata.openGraph, title, description, url },
+    twitter: { ...atpMetadata.twitter, title, description },
+    alternates: { canonical: url },
+  };
+}
+
 // ─── Category data ───────────────────────────────────────────────────────────
 
 type SubLink = { label: string; href: string };
@@ -44,6 +64,26 @@ type Category = {
   href: string;
   emoji: string;
   children?: SubLink[];
+};
+
+const wtaCategoryLabels: Record<string, string> = {
+  wins: 'Match Wins',
+  played: 'Matches Played',
+  titles: 'Tournament Titles',
+  entries: 'Tournament Appearances',
+  count: 'Tournament Rounds Reached',
+  percentage: 'Match Winning Percentage',
+  ages: 'Youngest and Oldest Players',
+  streak: 'Match and Round Streaks',
+  timespan: 'Career Milestone Timespans',
+  atage: 'Records by Age',
+  ageofnth: 'Age at Career Milestones',
+  roundsonentries: 'Results per Tournament Appearance',
+  same: 'Records at a Single Tournament',
+  seasons: 'Records in a Single Season',
+  neededto: 'Matches to Reach Career Milestones',
+  counterseasons: 'Records Across Seasons',
+  h2h: 'Head-to-Head Records',
 };
 
 const recordHref = (slug: string[], filters: Record<string, any> = {}) =>
@@ -374,10 +414,27 @@ const itemListEntries = [
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function RecordsPage() {
+export default async function RecordsPage() {
+  const tour = await getTour();
+  const wta = tour === 'WTA';
+  const [winsLeader, playedLeader] = wta ? await Promise.all([
+    prisma.mVTopWinners.findFirst({ orderBy: [{ total_wins: 'desc' }, { winner_name: 'asc' }] }),
+    prisma.mVTopPlayed.findFirst({ orderBy: [{ total_played: 'desc' }, { player_name: 'asc' }] }),
+  ]) : [null, null];
+  const leaders = [
+    winsLeader && { label: 'Most match wins', name: winsLeader.winner_name, value: winsLeader.total_wins, href: recordHref(['wins']) },
+    playedLeader && { label: 'Most matches played', name: playedLeader.player_name, value: playedLeader.total_played, href: recordHref(['played']) },
+  ];
   const webPageSchemaWithDate = {
     ...webPageSchema,
-    dateModified: new Date().toISOString(),
+    name: wta ? 'WTA Records' : webPageSchema.name,
+    description: recordTourLabel(webPageSchema.description, tour),
+    url: recordTourUrl(CANONICAL, tour),
+    breadcrumb: {
+      ...breadcrumbSchema,
+      itemListElement: breadcrumbSchema.itemListElement.map(item => ({ ...item, item: recordTourUrl(item.item, tour) })),
+    },
+    ...(!wta && { dateModified: new Date().toISOString() }),
   };
 
   return (
@@ -387,7 +444,7 @@ export default function RecordsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchemaWithDate) }}
       />
-      <script
+      {!wta && <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
@@ -400,11 +457,11 @@ export default function RecordsPage() {
             })),
           }),
         }}
-      />
+      />}
       <RecordsItemListJsonLd
         name="Tennis Records navigation"
         description="A minimal overview of the main tennis record sections on TennisMyLife."
-        items={itemListEntries}
+        items={itemListEntries.map(item => ({ ...item, url: recordTourUrl(item.url, tour) }))}
       />
 
       <main className="w-full min-h-screen bg-gray-900 text-white">
@@ -418,16 +475,31 @@ export default function RecordsPage() {
           </nav>
 
           <h1 className="text-4xl sm:text-5xl font-extrabold mb-4 text-white leading-tight">
-            ATP Tennis Records
+            {wta ? 'WTA Records' : 'ATP Tennis Records'}
           </h1>
           <p className="text-gray-300 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
-            The most complete ATP tennis records database—<strong className="text-white">wins, titles,
+            Explore {tour} tennis records for <strong className="text-white">wins, titles,
             streaks, ages, head-to-head</strong> and much more. Open Era data from <strong className="text-white">1968</strong> to today,
             filterable by surface, level and round.
           </p>
         </section>
 
         <RecordsTabs activeTab={null} activeSubTab={null} />
+
+        {wta && (
+          <section aria-labelledby="wta-leaders" className="mx-auto max-w-4xl px-4 pt-8">
+            <h2 id="wta-leaders" className="mb-4 text-xl font-bold">WTA career leaders</h2>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {leaders.map((leader) => leader && (
+                <Link key={leader.label} href={leader.href} className="rounded-xl border border-white/10 bg-gray-800/60 p-4 transition-colors hover:bg-gray-800">
+                  <p className="text-sm text-gray-300">{leader.label}</p>
+                  <p className="mt-1 text-lg font-semibold text-white">{leader.name}</p>
+                  <p className="text-lg font-bold text-yellow-400">{leader.value.toLocaleString('en-US')}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* ── How to navigate ──────────────────────────────────────────────── */}
         <section className="px-4 pt-8 pb-6 max-w-4xl mx-auto">
@@ -453,7 +525,7 @@ export default function RecordsPage() {
               <span className="shrink-0 w-7 h-7 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-sm">3</span>
               <div>
                 <strong className="text-white">Apply filters</strong> to narrow results by <em>surface</em> (Hard, Clay, Grass, Carpet),
-                <em> tournament level</em> (Grand Slam, Masters 1000, ATP 500, ATP 250) and <em>round</em>.
+                <em> tournament level</em> ({recordTourLabel('Grand Slam, Masters 1000, ATP 500, ATP 250', tour)}) and <em>round</em>.
                 Filters can be combined and the table updates instantly.
               </div>
             </li>
@@ -481,10 +553,10 @@ export default function RecordsPage() {
                 <Link href={cat.href} className="flex items-center gap-2 group">
                   <span className="text-2xl" aria-hidden="true">{cat.emoji}</span>
                   <h3 className="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors leading-snug">
-                    {cat.label}
+                    {recordHeading(wta ? wtaCategoryLabels[cat.key] ?? cat.label : cat.label, tour)}
                   </h3>
                 </Link>
-                <p className="text-gray-400 text-sm leading-relaxed">{cat.desc}</p>
+                <p className="text-gray-400 text-sm leading-relaxed">{recordTourLabel(cat.desc, tour)}</p>
                 {cat.children && (
                   <ul className="mt-1 flex flex-col gap-1">
                     {cat.children.map((c) => (
@@ -513,17 +585,17 @@ export default function RecordsPage() {
             {filteredGroups.map(group => (
               <div key={group.title}>
                 <h3 className={`inline-block text-sm font-bold px-3 py-1 rounded-full mb-3 text-white bg-gradient-to-r ${group.color}`}>
-                  {group.title}
+                  {recordHeading(group.title, tour)}
                 </h3>
                 <ul className="flex flex-wrap gap-2">
                   {group.links.map(link => (
                     <li key={link.href}>
-                      <a
+                      <RecordAnchor
                         href={link.href}
                         className="px-3 py-1 rounded-full text-sm bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors border border-white/10"
                       >
-                        {link.label}
-                      </a>
+                        {recordTourLabel(link.label, tour)}
+                      </RecordAnchor>
                     </li>
                   ))}
                 </ul>
@@ -533,7 +605,7 @@ export default function RecordsPage() {
         </section>
 
         {/* ── FAQ ──────────────────────────────────────────────────────────── */}
-        <section className="px-4 pb-16 max-w-3xl mx-auto">
+        {!wta && <section className="px-4 pb-16 max-w-3xl mx-auto">
           <h2 className="text-2xl font-bold mb-6 text-white border-b border-white/10 pb-3">
             Frequently Asked Questions
           </h2>
@@ -558,7 +630,7 @@ export default function RecordsPage() {
               </details>
             ))}
           </div>
-        </section>
+        </section>}
       </main>
     </>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/TourLink";
 import { Match, SortKey, SortDirection } from "@/types";
 import Flag from '@/components/Flag';
 import { getTourneyHref, extractUniqueSurfaces, getPlayerHref, formatDateISO } from "@/lib/utils";

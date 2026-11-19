@@ -1,14 +1,16 @@
 "use client";
+import { useTourRouter as useRouter, useBasePathname as usePathname } from "@/lib/tour-navigation";
 
 import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import Link, { useLinkTour } from "@/components/TourLink";
+import { useSearchParams } from "next/navigation";
 import Pagination from "@/components/Pagination";
 import Filters from "./Filters";
 import Flag from '@/components/Flag';
 import ResultsSkeleton from '@/components/ResultsSkeleton';
 import { getPlayerHref } from '@/lib/utils';
 import { playerMatchesUrl } from '../records/nav';
+import { statisticsCategoryLabel } from "./categories";
 
 const STAT_LABELS: Record<string, string> = {
   aces: "Aces",
@@ -55,6 +57,8 @@ interface StatisticsInnerProps {
 
 export default function StatisticsInner({ initialData = [], initialStat: propInitialStat, pageTitle, relatedStats = [] }: StatisticsInnerProps) {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const tour = useLinkTour();
 
   // Initialize stat from props, path segment, or query param
   const derivedInitialStat = (() => {
@@ -62,7 +66,7 @@ export default function StatisticsInner({ initialData = [], initialStat: propIni
     try {
       const sp = searchParams?.get("stat");
       if (sp) return sp;
-      const parts = (usePathname() ?? "").split('/').filter(Boolean);
+      const parts = (pathname ?? "").split('/').filter(Boolean);
       if (parts.length >= 2 && parts[0] === 'statistics') return parts[1];
     } catch (err) {
       // ignore
@@ -73,7 +77,7 @@ export default function StatisticsInner({ initialData = [], initialStat: propIni
   const [stat, setStat] = useState(derivedInitialStat);
   const [surface, setSurface] = useState("all");
   const [year, setYear] = useState("all");
-  const [tourneyLevel, setTourneyLevel] = useState("all");
+  const [tourneyLevel, setTourneyLevel] = useState(searchParams?.get("tourneyLevel") ?? "all");
   const [minMatches, setMinMatches] = useState(1);
   const [playerStats, setPlayerStats] = useState<PlayerStat[]>(initialData);
   const [isLoading, setIsLoading] = useState(false);
@@ -81,7 +85,6 @@ export default function StatisticsInner({ initialData = [], initialStat: propIni
   const [showModal, setShowModal] = useState(false);
 
   const router = useRouter();
-  const pathname = usePathname();
 
   // Funzione per generare il titolo dinamico con i filtri
   const getDynamicTitle = () => {
@@ -96,15 +99,7 @@ export default function StatisticsInner({ initialData = [], initialStat: propIni
       parts.push(`in ${year}`);
     }
     if (tourneyLevel !== "all") {
-      const levelMap: Record<string, string> = {
-        G: "Grand Slam",
-        M: "Masters",
-        A: "ATP Tour",
-        C: "Challenger",
-        F: "Futures",
-        D: "Davis Cup"
-      };
-      parts.push(`in ${levelMap[tourneyLevel] || tourneyLevel}`);
+      parts.push(`in ${statisticsCategoryLabel(tourneyLevel, tour)}`);
     }
     
     return parts.join(" ");
@@ -140,15 +135,7 @@ export default function StatisticsInner({ initialData = [], initialStat: propIni
         parts.push(`in ${qYear}`);
       }
       if (qTourneyLevel && qTourneyLevel !== "all") {
-        const levelMap: Record<string, string> = {
-          G: "Grand Slam",
-          M: "Masters",
-          A: "ATP Tour",
-          C: "Challenger",
-          F: "Futures",
-          D: "Davis Cup"
-        };
-        parts.push(`in ${levelMap[qTourneyLevel] || qTourneyLevel}`);
+        parts.push(`in ${statisticsCategoryLabel(qTourneyLevel, tour)}`);
       }
       
       const dynamicTitle = parts.join(" ");
@@ -156,7 +143,7 @@ export default function StatisticsInner({ initialData = [], initialStat: propIni
     }, 0);
 
     return () => clearTimeout(timer);
-  }, [stat, surface, year, tourneyLevel, pageTitle, searchParams, pathname]);
+  }, [stat, surface, year, tourneyLevel, tour, pageTitle, searchParams, pathname]);
 
   const perPage = 30;
 
@@ -218,7 +205,7 @@ export default function StatisticsInner({ initialData = [], initialStat: propIni
     const params = new URLSearchParams(searchParams?.toString() ?? "");
 
     // If stat is being updated, we'll remove any 'stat' query param and build the new pathname
-    let nextStat: string | null = null;
+    let nextStat = params.get('stat');
     if (updates.hasOwnProperty('stat')) {
       const v = updates['stat'];
       if (v === null || v === '' || v === 'all') nextStat = null;
@@ -228,6 +215,7 @@ export default function StatisticsInner({ initialData = [], initialStat: propIni
       const parts = (pathname ?? "").split('/').filter(Boolean);
       if (parts.length >= 2 && parts[0] === 'statistics') nextStat = parts[1];
     }
+    params.delete('stat');
 
     // Apply other updates to params
     Object.entries(updates).forEach(([k, v]) => {

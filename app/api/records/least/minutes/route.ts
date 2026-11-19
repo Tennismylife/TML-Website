@@ -1,10 +1,7 @@
+import { getTour } from "@/lib/tour";
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient };
-const prisma =
-  globalForPrisma.prisma || new PrismaClient({ log: ["error", "warn"] });
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
 const cache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_TTL = 60 * 60 * 1000; // 1h
@@ -24,7 +21,8 @@ export async function GET(request: NextRequest) {
     const selectedSurfaces = url.searchParams.getAll("surface");
     const selectedLevels = url.searchParams.getAll("level");
 
-    const cacheKey = JSON.stringify({ selectedSurfaces, selectedLevels });
+    const cacheKey = JSON.stringify({
+      tour: await getTour(), selectedSurfaces, selectedLevels });
     const cached = cache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
       return NextResponse.json(cached.data);

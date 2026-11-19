@@ -1,5 +1,6 @@
+import { TourAnchor } from "@/components/TourLink";
 import React from 'react';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import Flag from '@/components/Flag';
 import { metadataBase } from '@/lib/site';
 import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
@@ -87,7 +88,7 @@ export default async function TimespanFull({ id, title, section = 'rounds' }: Pr
                   </tbody>
                 </table>
               </div>
-              <div className="mt-2"><a href={`/tournaments/${slugId}/records/timespan/rounds/${encodeURIComponent(String(item.title))}`} className="mt-2 inline-block px-4 py-2 bg-blue-500 text-white rounded">View All</a></div>
+              <div className="mt-2"><TourAnchor href={`/tournaments/${slugId}/records/timespan/rounds/${encodeURIComponent(String(item.title))}`} className="mt-2 inline-block px-4 py-2 bg-blue-500 text-white rounded">View All</TourAnchor></div>
             </div></div>
           ))}
         </div>

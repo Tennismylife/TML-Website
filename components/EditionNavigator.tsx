@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useRef, useState, useEffect } from "react";
-import Link from "next/link";
+import Link from "@/components/TourLink";
 import { ChevronLeft, ChevronRight, Trophy } from "lucide-react";
 
 type Edition = { year: number; tourney_id?: string | number };

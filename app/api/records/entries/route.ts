@@ -1,10 +1,8 @@
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 
 export const dynamic = 'force-dynamic';
 
-const prisma = global.prisma || new PrismaClient();
-if (process.env.NODE_ENV !== "production") global.prisma = prisma;
 
 type PlayerEntry = {
   id: string;

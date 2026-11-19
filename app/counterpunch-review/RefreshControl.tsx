@@ -1,7 +1,8 @@
 'use client';
+import { useTourRouter as useRouter } from "@/lib/tour-navigation";
 
 import { useEffect, useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+
 import styles from './dashboard.module.css';
 
 export default function RefreshControl() {

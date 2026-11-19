@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import RouteModal from './RouteModal';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import Flag from '@/components/Flag';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
 import { playerMatchesUrl } from '../app/records/nav';

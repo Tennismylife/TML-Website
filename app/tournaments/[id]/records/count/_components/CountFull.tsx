@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import Flag from '@/components/Flag';
 import { playerMatchesUrl } from '../../../../../records/nav';
 import dynamic from 'next/dynamic';

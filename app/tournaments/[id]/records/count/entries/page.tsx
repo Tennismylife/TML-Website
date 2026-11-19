@@ -1,5 +1,6 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import React from 'react';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import ViewRecordsCTA from '../../ViewRecordsCTA';
 import CountFull from '../_components/CountFull';
 import TournamentHeader from '../../../TournamentHeader';
@@ -30,36 +31,36 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       const t = await prisma.tournament.findUnique({ where: { id: parseInt(canonicalId, 10) }, select: { slug: true, category: true, years: true } });
       canonicalSlug = t?.slug ?? canonicalId;
       const canonical = `${site}/tournaments/${canonicalSlug}/records/count/entries`;
-      return {
+      return tourMetadata({
         title,
         description,
         openGraph: { title, description, url: canonical, images: [{ url: `${site}/og/site-preview.png`, alt: `${tournamentName} - Most entries`, width: 1200, height: 630 }] },
         alternates: { canonical },
         robots: { index: shouldIndexRecords(t?.category, t?.years ?? null), follow: true },
         other: { 'script[type="application/ld+json"]': undefined as any },
-      };
+      });
     }
   } else {
     const t = await prisma.tournament.findUnique({ where: { slug: String(id) }, select: { slug: true, category: true, years: true } });
     canonicalSlug = t?.slug ?? String(id);
     const canonical = `${site}/tournaments/${canonicalSlug}/records/count/entries`;
-    return {
+    return tourMetadata({
       title,
       description,
       openGraph: { title, description, url: canonical, images: [{ url: `${site}/og/site-preview.png`, alt: `${tournamentName} - Most entries`, width: 1200, height: 630 }] },
       alternates: { canonical },
       robots: { index: shouldIndexRecords(t?.category, t?.years ?? null), follow: true },
       other: { 'script[type="application/ld+json"]': undefined as any },
-    };
+    });
   }
 
-  return {
+  return tourMetadata({
     title,
     description,
     openGraph: { title, description, url: `${site}/tournaments/${canonicalSlug}/records/count/entries`, images: [{ url: `${site}/og/site-preview.png`, alt: `${tournamentName} - Most entries`, width: 1200, height: 630 }] },
     alternates: { canonical: `${site}/tournaments/${canonicalSlug}/records/count/entries` },
     other: { 'script[type="application/ld+json"]': undefined as any },
-  };
+  });
 }
 
 export default async function EntriesPage({ params }: { params: Promise<{ id: string }> }) {

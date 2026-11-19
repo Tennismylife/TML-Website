@@ -1,9 +1,10 @@
 "use client";
+import { useTourRouter as useRouter, currentTourPath } from "@/lib/tour-navigation";
 
 import React, { useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import RecordsFilteredClient from './RecordsFilteredClient';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 // Import specific client record components (these are client components and will be hydrated)
 const Wins = dynamic(() => import('../Wins/Wins'));
@@ -85,7 +86,7 @@ export default function RecordsAdapterClient({ record, sub, filters = {}, topDat
       router.replace(newUrl);
     } catch (err) {
       try {
-        window.history.replaceState(null, '', newUrl);
+        window.history.replaceState(null, '', currentTourPath(newUrl));
       } catch {}
     } finally {
       // allow small delay for router to settle

@@ -1,3 +1,6 @@
+import { getTour } from "@/lib/tour";
+import { tourUrl } from "@/lib/tour-path";
+import { playerLevelName } from "@/lib/player-levels";
 import React from 'react';
 import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
@@ -28,6 +31,7 @@ const SURFACE_META: Record<SurfaceKey, { label: string; adjective: string }> = {
 
 
 export async function generateSurfaceMetadata(id: string, surface: SurfaceKey): Promise<Metadata> {
+  const tour = await getTour();
   let player: any = null;
   try { player = await resolvePlayer(id); } catch (e) {}
   const name = player ? (player.atpname || player.player) : String(id);
@@ -51,9 +55,9 @@ export async function generateSurfaceMetadata(id: string, surface: SurfaceKey): 
   const metaTotal = metaWins + metaLosses;
   const metaWinPct = metaTotal > 0 ? `${((metaWins / metaTotal) * 100).toFixed(1)}%` : '0%';
   const description = metaTotal > 0
-    ? `${name} ${adjective} court record: ${metaWins}–${metaLosses} (${metaWinPct}), ${metaTitles} title${metaTitles !== 1 ? 's' : ''}. Full ATP ${adjective} stats on TennisMyLife.`
-    : `${name} career ${adjective} court stats: win-loss record by year, categories, ranking performance, rounds, sets and complete match history. Full ATP data on TennisMyLife.`;
-  const canonical = `https://stats.tennismylife.org/players/${encodeURIComponent(slug)}/${surfPath}`;
+    ? `${name} ${adjective} court record: ${metaWins}–${metaLosses} (${metaWinPct}), ${metaTitles} title${metaTitles !== 1 ? 's' : ''}. Full ${tour} ${adjective} stats on TennisMyLife.`
+    : `${name} career ${adjective} court stats: win-loss record by year, categories, ranking performance, rounds, sets and complete match history. Full ${tour} data on TennisMyLife.`;
+  const canonical = tourUrl(`https://stats.tennismylife.org/players/${encodeURIComponent(slug)}/${surfPath}`, tour);
   const imageUrl = `https://stats.tennismylife.org/og/${encodeURIComponent(slug)}.png`;
   const top100Robots = await getPlayerTop100Robots(String(id));
   const nameParts = name.split(/\s+/).filter(Boolean);
@@ -81,7 +85,7 @@ export async function generateSurfaceMetadata(id: string, surface: SurfaceKey): 
     },
     twitter: { card: 'summary_large_image', site: '@TennisMyLife68', creator: '@TennisMyLife68', title, description, images: [{ url: imageUrl, alt: `${name} ${adjective} stats` }] },
     robots: top100Robots,
-    keywords: `${name} ${adjective}, ${name} ${adjective} stats, ${name} ${adjective} court, ${name} ${label.toLowerCase()} record, ATP ${adjective}, ${name} matches ${adjective}`,
+    keywords: `${name} ${adjective}, ${name} ${adjective} stats, ${name} ${adjective} court, ${name} ${label.toLowerCase()} record, ${tour} ${adjective}, ${name} matches ${adjective}`,
   } as Metadata;
 }
 
@@ -91,6 +95,7 @@ interface SurfacePageContentProps {
 }
 
 export default async function SurfacePageContent({ id, surface }: SurfacePageContentProps) {
+  const tour = await getTour();
   let player: any = null;
   try { player = await resolvePlayer(id); } catch (e) {}
   if (!player) return <div className="text-red-500 font-bold">Player not found</div>;
@@ -99,7 +104,7 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
   const slug = player.slug || String(id);
   const surfPath = surface.toLowerCase();
   const { label, adjective } = SURFACE_META[surface];
-  const canonical = `https://stats.tennismylife.org/players/${encodeURIComponent(slug)}/${surfPath}`;
+  const canonical = tourUrl(`https://stats.tennismylife.org/players/${encodeURIComponent(slug)}/${surfPath}`, tour);
 
   // SSR aggregate counts for SEO paragraph and JSON-LD
   let totalMatches = 0, wins = 0, losses = 0;
@@ -252,10 +257,10 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
   const canonicalOrigin = new URL(canonical).origin;
 
   const pageDescription = totalMatches > 0
-    ? `${displayName} ${adjective} court record: ${wins}–${losses} (${winPct}), ${totalTitles} title${totalTitles !== 1 ? 's' : ''}. Full ATP ${adjective} stats, match history, rankings and analysis on TennisMyLife.`
-    : `${displayName} career ${adjective} court stats: win-loss record by year, categories, ranking performance, rounds, sets and complete match history. Full ATP data on TennisMyLife.`;
+    ? `${displayName} ${adjective} court record: ${wins}–${losses} (${winPct}), ${totalTitles} title${totalTitles !== 1 ? 's' : ''}. Full ${tour} ${adjective} stats, match history, rankings and analysis on TennisMyLife.`
+    : `${displayName} career ${adjective} court stats: win-loss record by year, categories, ranking performance, rounds, sets and complete match history. Full ${tour} data on TennisMyLife.`;
   const aboutArr = [{ "@id": `https://stats.tennismylife.org/players/${encodeURIComponent(slug)}` }];
-  const keywords = `${displayName} ${adjective}, ${displayName} ${adjective} stats, ${displayName} ${adjective} court, ${displayName} ${label.toLowerCase()} record, ATP ${adjective}, ${displayName} matches ${adjective}`;
+  const keywords = `${displayName} ${adjective}, ${displayName} ${adjective} stats, ${displayName} ${adjective} court, ${displayName} ${label.toLowerCase()} record, ${tour} ${adjective}, ${displayName} matches ${adjective}`;
   const jsonLd: any = {
     "@context": "https://schema.org",
     "@type": "WebPage",
@@ -358,14 +363,14 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
         {/* Masters 1000: only if 3+ matches, 4 graduated cases + insight sentence */}
         {mastersTotal >= 3 && (
           <p>
-            ATP Masters 1000 on {adjective} ({surface === 'Clay' ? 'Monte Carlo, Madrid, Rome' : surface === 'Hard' ? 'Indian Wells, Miami, Canada, Cincinnati, Shanghai, Paris' : 'N/A'}):{' '}
+            {playerLevelName("M", tour)} on {adjective} {tour === 'ATP' && (surface === 'Clay' ? ' (Monte Carlo, Madrid, Rome)' : surface === 'Hard' ? ' (Indian Wells, Miami, Canada, Cincinnati, Shanghai, Paris)' : '')}:{' '}
             {mastersWinPctN >= 65
               ? <>{displayName} is elite here — <strong className="text-green-400">{mastersWins}</strong>–<strong className="text-red-400">{mastersLosses}</strong> (<strong className="text-blue-400">{mastersWinPctN.toFixed(1)}%</strong>) across <strong className="text-yellow-400">{mastersTotal}</strong> matches. Sustaining that win rate in the Tour's deepest regular-week draws is a defining quality of the very best on this surface.</>
               : mastersWinPctN >= 50
               ? <>a positive <strong className="text-green-400">{mastersWins}</strong>–<strong className="text-red-400">{mastersLosses}</strong> (<strong className="text-blue-400">{mastersWinPctN.toFixed(1)}%</strong>) across <strong className="text-yellow-400">{mastersTotal}</strong> matches — winning above .500 at this level, week in week out, is a genuine sign of quality on {adjective}.</>
               : mastersWinPctN >= 35
               ? <>{displayName} is <strong className="text-green-400">{mastersWins}</strong>–<strong className="text-red-400">{mastersLosses}</strong> (<strong className="text-blue-400">{mastersWinPctN.toFixed(1)}%</strong>) across <strong className="text-yellow-400">{mastersTotal}</strong> Masters matches — below .500 in the Tour's deepest fields. Lifting that record here would unlock better results across the whole {adjective} swing.</>
-              : <>{displayName} has struggled at Masters level on {adjective}: <strong className="text-green-400">{mastersWins}</strong>–<strong className="text-red-400">{mastersLosses}</strong> (<strong className="text-blue-400">{mastersWinPctN.toFixed(1)}%</strong>) in <strong className="text-yellow-400">{mastersTotal}</strong> matches. Improving at this level is the clearest path to a stronger overall record on this surface.</>
+              : <>{displayName} has struggled at {playerLevelName("M", tour)} level on {adjective}: <strong className="text-green-400">{mastersWins}</strong>–<strong className="text-red-400">{mastersLosses}</strong> (<strong className="text-blue-400">{mastersWinPctN.toFixed(1)}%</strong>) in <strong className="text-yellow-400">{mastersTotal}</strong> matches. Improving at this level is the clearest path to a stronger overall record on this surface.</>
             }
           </p>
         )}
@@ -508,12 +513,12 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
         "name": displayName,
         "url": `https://stats.tennismylife.org/players/${slug}`,
         "mainEntityOfPage": canonical,
-        "description": `${displayName} ${adjective} court record: ${wins}–${losses} (${winPct}), ${totalTitles} title${totalTitles !== 1 ? 's' : ''}. Full ATP ${adjective} stats on TennisMyLife.`,
+        "description": `${displayName} ${adjective} court record: ${wins}–${losses} (${winPct}), ${totalTitles} title${totalTitles !== 1 ? 's' : ''}. Full ${tour} ${adjective} stats on TennisMyLife.`,
         "knowsAbout": [
           `${label} tennis`,
           `${adjective} court tennis`,
           `${displayName} ${adjective} court results`,
-          `${displayName} ATP stats`
+          `${displayName} ${tour} stats`
         ],
         "subjectOf": {
           "@type": "WebPage",
@@ -551,7 +556,7 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
           {
             "@type": "Question",
             "name": `How many ${adjective} court titles has ${displayName} won?`,
-            "acceptedAnswer": { "@type": "Answer", "text": `${displayName} has won ${totalTitles} ATP title${totalTitles !== 1 ? 's' : ''} on ${adjective} courts${titles.length > 0 ? ': ' + titles.join(', ') : '.'}` },
+            "acceptedAnswer": { "@type": "Answer", "text": `${displayName} has won ${totalTitles} ${tour} title${totalTitles !== 1 ? 's' : ''} on ${adjective} courts${titles.length > 0 ? ': ' + titles.join(', ') : '.'}` },
           },
           {
             "@type": "Question",
@@ -570,8 +575,8 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
           },
           {
             "@type": "Question",
-            "name": `Are Davis Cup matches included in ${displayName}'s ${adjective} court stats?`,
-            "acceptedAnswer": { "@type": "Answer", "text": `No. This page focuses on official ATP Tour and Grand Slam matches on ${adjective} courts, excluding Davis Cup and other team events.` },
+            "name": `Are ${playerLevelName("D", tour)} matches included in ${displayName}'s ${adjective} court stats?`,
+            "acceptedAnswer": { "@type": "Answer", "text": `No. This page focuses on official ${tour} Tour and Grand Slam matches on ${adjective} courts, excluding ${playerLevelName("D", tour)} and other team events.` },
           },
         ],
       }) }} />
@@ -581,7 +586,7 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
         "@type": "Dataset",
         "name": `${displayName} ${label} Match Statistics`,
         "alternateName": `${displayName} ${adjective} court data`,
-        "description": `Complete statistical dataset for ${displayName} on ${adjective} courts. Includes career win-loss record (${wins}–${losses}, ${winPct}), ${totalTitles} title${totalTitles !== 1 ? 's' : ''}, Grand Slam record (${slamWins}–${slamLosses}), Masters 1000 record (${mastersWins}–${mastersLosses}), vs Top 10 (${top10Wins}–${top10Losses}), best-of-five (${bo5Wins}–${bo5Losses}), best-of-three (${bo3Wins}–${bo3Losses}), ${winStreak > 0 ? `longest win streak ${winStreak}, ` : ''}year-by-year breakdown and full match history. ATP Tour and Grand Slam matches only.`,
+        "description": `Complete statistical dataset for ${displayName} on ${adjective} courts. Includes career win-loss record (${wins}–${losses}, ${winPct}), ${totalTitles} title${totalTitles !== 1 ? 's' : ''}, Grand Slam record (${slamWins}–${slamLosses}), ${playerLevelName("M", tour)} record (${mastersWins}–${mastersLosses}), vs Top 10 (${top10Wins}–${top10Losses}), best-of-five (${bo5Wins}–${bo5Losses}), best-of-three (${bo3Wins}–${bo3Losses}), ${winStreak > 0 ? `longest win streak ${winStreak}, ` : ''}year-by-year breakdown and full match history. ${tour} Tour and Grand Slam matches only.`,
         "url": canonical,
         "identifier": canonical,
         "inLanguage": "en-US",
@@ -591,7 +596,7 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
           `${displayName} ${adjective}`,
           `${displayName} ${adjective} stats`,
           `${adjective} court`,
-          "ATP tennis",
+          `${tour} tennis`,
           "match results",
           "win loss record",
           "tennis statistics",
@@ -653,7 +658,7 @@ export default async function SurfacePageContent({ id, surface }: SurfacePageCon
         ],
         "spatialCoverage": "Global",
         "temporalCoverage": "1968/..",
-        "measurementTechnique": "ATP official match records",
+        "measurementTechnique": `${tour} official match records`,
       }) }} />
 
       {/* Server-rendered directly in HTML DOM for Google crawlers (not in RSC

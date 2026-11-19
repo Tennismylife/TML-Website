@@ -1,7 +1,9 @@
 "use client";
+import { useTourRouter as useRouter } from "@/lib/tour-navigation";
+import { TourAnchor } from "@/components/TourLink";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from 'next/navigation';
+
 import { Search, X } from "lucide-react";
 import { getTourneyHref } from "@/lib/utils";
 
@@ -141,7 +143,7 @@ export default function TournamentSearch({ onDebouncedSearch }: { onDebouncedSea
                         className={`cursor-pointer ${activeSuggestionIndex === idx ? 'bg-gray-700' : ''}`}
                         onMouseEnter={() => setActiveSuggestionIndex(idx)}
                       >
-                        <a
+                        <TourAnchor
                           href={getTourneyHref({ slug: (t as any).slug ?? undefined, id: t.id })}
                           className="block px-4 py-2 hover:bg-gray-700"
                           onClick={(e) => { e.preventDefault(); router.push(getTourneyHref({ id: t.id })); }}
@@ -152,7 +154,7 @@ export default function TournamentSearch({ onDebouncedSearch }: { onDebouncedSea
                             {t.years && t.years.length ? (t.years.length === 1 ? `${t.years[0]} — ` : `${Math.min(...t.years)}–${Math.max(...t.years)} — `) : ''}
                             id: {t.id}
                           </div>
-                        </a>
+                        </TourAnchor>
                       </li>
                     );
                   })}

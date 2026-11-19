@@ -1,3 +1,4 @@
+import { getTour } from "@/lib/tour";
 import React from 'react';
 import { prisma } from '../../../../lib/prisma';
 
@@ -10,6 +11,7 @@ interface Props {
 // parent page (which is a server component) the generated HTML will be visible
 // in the page source right away.
 export default async function CurrentRankingBanner({ playerId }: Props) {
+  const tour = await getTour();
   if (!playerId) return null;
 
   // Find the most recent ranking date globally
@@ -35,7 +37,7 @@ export default async function CurrentRankingBanner({ playerId }: Props) {
     <div className="mb-5 flex flex-wrap items-center justify-start gap-4">
       <div className="flex items-center gap-2 bg-gray-900/90 border border-gray-700 rounded-lg px-4 py-2 shadow">
         <div className="flex flex-col items-center justify-center bg-yellow-500/15 border border-yellow-500/30 rounded px-1.5 py-0.5 min-w-[32px]">
-          <span className="text-[9px] font-black text-yellow-400 tracking-[0.2em] uppercase leading-none">ATP</span>
+          <span className="text-[9px] font-black text-yellow-400 tracking-[0.2em] uppercase leading-none">{tour}</span>
         </div>
         <div className="flex flex-col">
           <span className="text-xl font-black text-yellow-300 leading-none tracking-tight">#{latest.rank}</span>
@@ -48,7 +50,7 @@ export default async function CurrentRankingBanner({ playerId }: Props) {
         </div>
         <div className="flex flex-col">
           <span className="text-xl font-black text-blue-300 leading-none tracking-tight">{latest.points.toLocaleString()}</span>
-          <span className="text-[10px] text-gray-400 leading-none mt-0.5">Current ATP points</span>
+          <span className="text-[10px] text-gray-400 leading-none mt-0.5">Current {tour} points</span>
         </div>
       </div>
       {dateStr && <span className="text-xs text-gray-500">as of {dateStr}</span>}

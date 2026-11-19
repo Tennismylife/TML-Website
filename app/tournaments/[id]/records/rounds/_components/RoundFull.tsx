@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import Flag from '@/components/Flag';
 import { prisma } from '@/lib/prisma';
 import { playerMatchesUrl } from '../../../../../records/nav';

@@ -1,12 +1,6 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-function parseId(value: string | null) {
-  if (value === null) return null;
-  const n = Number(value);
-  return Number.isFinite(n) ? n : value;
-}
-
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
 
@@ -38,20 +32,17 @@ export async function GET(request: NextRequest) {
 
     // Player matching: single (all matches for player) or H2H (only matches between two players)
     if (player1 && player2) {
-      const p1 = parseId(player1);
-      const p2 = parseId(player2);
       andClauses.push({
         OR: [
-          { winner_id: p1, loser_id: p2 },
-          { winner_id: p2, loser_id: p1 },
+          { winner_id: player1, loser_id: player2 },
+          { winner_id: player2, loser_id: player1 },
         ],
       });
     } else if (singleId) {
-      const id = parseId(singleId);
       andClauses.push({
         OR: [
-          { winner_id: id },
-          { loser_id: id },
+          { winner_id: singleId },
+          { loser_id: singleId },
         ],
       });
 
@@ -59,8 +50,8 @@ export async function GET(request: NextRequest) {
       if (opponent) {
         andClauses.push({
           OR: [
-            { AND: [{ winner_id: id }, { loser_name: opponent }] },
-            { AND: [{ loser_id: id }, { winner_name: opponent }] },
+            { winner_id: singleId, loser_name: opponent },
+            { loser_id: singleId, winner_name: opponent },
           ],
         });
       }
@@ -76,10 +67,7 @@ export async function GET(request: NextRequest) {
     if (round) andClauses.push({ round });
 
     if (tourney) {
-      // Try parse as numeric id; if not numeric, match by name
-      const tId = parseId(tourney);
-      if (typeof tId === "number") andClauses.push({ tourney_id: tId });
-      else andClauses.push({ tourney_name: tourney });
+      andClauses.push({ OR: [{ tourney_id: tourney }, { tourney_name: tourney }] });
     }
 
     if (andClauses.length > 0) where.AND = andClauses;

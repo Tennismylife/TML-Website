@@ -1,3 +1,4 @@
+import { useLinkTour } from "@/components/TourLink";
 import React from 'react';
 
 interface Entry {
@@ -25,6 +26,7 @@ function formatDate(iso: string | null): string {
 import RankingTable, { TH_BASE, TD_BASE, TD_LABEL } from './RankingTable';
 
 export default function RankingStatsTable({ data, className }: Props) {
+  const tour = useLinkTour();
   if (!data.length) return null;
 
   // ── Best ranking (lowest rank number) ────────────────────────────
@@ -87,7 +89,7 @@ export default function RankingStatsTable({ data, className }: Props) {
       detail: <span className="text-gray-400 text-sm">{formatDate(bestRankEntry.date)}</span>,
     },
     {
-      label: 'Best ATP points',
+      label: `Best ${tour} points`,
       value: <span className="font-bold text-yellow-300">{bestPointsEntry.points.toLocaleString()}</span>,
       detail: <span className="text-gray-400 text-sm">{formatDate(bestPointsEntry.date)}</span>,
     },

@@ -1,3 +1,4 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import { getPostBySlug } from '@/lib/blog';
 import { notFound } from 'next/navigation';
 
@@ -15,7 +16,7 @@ export async function generateMetadata({ params }: { params: any }) {
     // params might be a Promise in some contexts; await if so
     const resolvedParams = params && typeof params.then === 'function' ? await params : params;
     const slug = resolvedParams?.slug;
-    if (!slug) return { title: 'Blog — Tennis My Life' } as any;
+    if (!slug) return tourMetadata({ title: 'Blog — Tennis My Life' } as any);
     const { getPostBySlug } = await import('@/lib/blog');
     const post = await getPostBySlug(slug);
 
@@ -26,7 +27,7 @@ export async function generateMetadata({ params }: { params: any }) {
     const ogTitle = post?.ogTitle ?? post?.title ?? 'Blog — Tennis My Life';
     const ogType = post?.ogType ?? 'article';
 
-    return {
+    return tourMetadata({
       title: post?.title ?? 'Blog — Tennis My Life',
       description,
       openGraph: {
@@ -39,10 +40,10 @@ export async function generateMetadata({ params }: { params: any }) {
       twitter: { card: 'summary_large_image', site: '@TennisMyLife68', title: ogTitle, description, images: [imageUrl] },
       alternates: { canonical: new URL(`/blog/${slug}`, METADATA_BASE).toString() },
       robots: { index: true, follow: true },
-    } as any;
+    } as any);
   } catch (e) {
     try { console.error('generateMetadata error for slug', params && (params.slug || params), e && (e.stack || e.message || e)); } catch (_) {}
-    return { title: 'Blog — Tennis My Life' } as any;
+    return tourMetadata({ title: 'Blog — Tennis My Life' } as any);
   }
 }
 

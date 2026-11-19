@@ -7,6 +7,7 @@ export async function GET(request: NextRequest) {
       orderBy: [{ tourney_date: "desc" }, { match_num: "desc" }, { id: "desc" }],
       where: {
         score: { not: "To play" },
+        tourney_date: { not: null },
       },
       take: 10,
       select: {
@@ -36,8 +37,7 @@ export async function GET(request: NextRequest) {
       // Resolve tourney slugs for matches so clients can link to canonical slug URLs
       const tourneyIdParts = Array.from(new Set(matches.map((m) => {
         const s = String(m.tourney_id || '');
-        const parts = s.split('-').filter(Boolean);
-        return parts.length === 2 ? parts[1] : s;
+        return s.replace(/^\d{4}-/, '');
       }).filter(Boolean)));
 
       let tourneyMap: Record<string, string | null> = {};
@@ -57,8 +57,7 @@ export async function GET(request: NextRequest) {
         loser_slug: m.loser_id ? (slugMap[String(m.loser_id)] ?? null) : null,
         tourney_slug: (() => {
           const s = String(m.tourney_id || '');
-          const parts = s.split('-').filter(Boolean);
-          const idPart = parts.length === 2 ? parts[1] : s;
+          const idPart = s.replace(/^\d{4}-/, '');
           return idPart ? (tourneyMap[String(idPart)] ?? null) : null;
         })(),
       }));

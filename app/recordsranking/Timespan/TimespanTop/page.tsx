@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Flag from '@/components/Flag';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import { prisma } from "@/lib/prisma";
 import { Prisma } from '@prisma/client';
 import RecordsTopControls from '../../Top/RecordsTopControls';

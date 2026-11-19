@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef } from "react";
-import Link from "next/link";
+import Link from "@/components/TourLink";
 import Flag from '@/components/Flag';
 import { getLevelFullName, getTourneyHref, extractUniqueSurfaces } from "@/lib/utils";
 import { getSurfaceColor, getLevelColor } from "@/lib/colors";

@@ -1,4 +1,5 @@
 'use client';
+import { TourAnchor } from "@/components/TourLink";
 
 import React, { useEffect } from 'react';
 import dynamic from 'next/dynamic';
@@ -41,7 +42,7 @@ function StaticTable({ rows, heading, showYear = true, id }: any) {
                       <td className="py-2 text-center">
                         <div className="flex items-center justify-center gap-2">
                           <Flag ioc={r.ioc} className="w-4 h-3" />
-                          <a href={playerMatchesUrl(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</a>
+                          <TourAnchor href={playerMatchesUrl(r.slug ?? String(r.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{r.name}</TourAnchor>
                         </div>
                       </td>
                       <td className="py-2 text-center text-lg md:text-xl text-white">{formatAge(r.age)}</td>
@@ -50,7 +51,7 @@ function StaticTable({ rows, heading, showYear = true, id }: any) {
                           {/* always link to the current route id (slug when available); the
                               server data sometimes returns the numeric tourney_id which can
                               slip in before the slug is known. */}
-                          <a href={`/tournaments/${id}/${r.year}`} className="text-blue-400 hover:underline">{r.year}</a>
+                          <TourAnchor href={`/tournaments/${id}/${r.year}`} className="text-blue-400 hover:underline">{r.year}</TourAnchor>
                         </td>
                       )}
                     </tr>
@@ -91,14 +92,14 @@ function InnerContent({ rows, loading, error, heading, mode = 'interactive', sho
               <td className="py-2 text-center">
                 <div className="flex items-center justify-center gap-2">
                   <Flag ioc={item.ioc} className="w-4 h-3" />
-                  <a href={playerMatchesUrl(item.slug ?? String(item.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{item.name}</a>
+                  <TourAnchor href={playerMatchesUrl(item.slug ?? String(item.id))} className="text-blue-400 hover:underline text-lg md:text-xl">{item.name}</TourAnchor>
                 </div>
               </td>
               <td className="py-2 text-center text-lg md:text-xl">{formatAge(item.age)}</td>
               {showYear && (
                 <td className="py-2 text-center text-lg md:text-xl">
                   {/* use the current route id (slug) rather than the raw tourney_id */}
-                  <a href={`/tournaments/${id}/${item.year}`} className="text-blue-400 hover:underline">{item.year ?? ''}</a>
+                  <TourAnchor href={`/tournaments/${id}/${item.year}`} className="text-blue-400 hover:underline">{item.year ?? ''}</TourAnchor>
                 </td>
               )}
             </>

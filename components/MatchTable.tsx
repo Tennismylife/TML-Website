@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
+import Link from "@/components/TourLink";
 import { Match, SortDirection, SortKey } from "@/types";
 import Flag from '@/components/Flag';
 import { getTourneyHref, extractUniqueSurfaces, getPlayerHref, getPlayerHrefWithTab, formatDateISO, createH2HUrl, getRoundIndex } from "@/lib/utils";

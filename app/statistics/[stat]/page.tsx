@@ -1,3 +1,6 @@
+import { tourMetadata } from "@/lib/tour-metadata";
+import { fetchForTour, getTour } from "@/lib/tour";
+import { tourPath } from "@/lib/tour-path";
 import { Suspense } from "react";
 import type { Metadata } from 'next'
 import StatisticsInner from "../StatisticsInner";
@@ -528,6 +531,7 @@ export async function generateMetadata(
   { params }: { params: Promise<{ stat?: string }> }
 ) {
   const { stat } = await params;
+  const tour = await getTour();
 
   const base = "https://stats.tennismylife.org";
   const safeStat = typeof stat === "string" ? stat.trim() : "";
@@ -539,17 +543,21 @@ export async function generateMetadata(
     ? "Statistics | Tennis Statistics"
     : `${STAT_LABELS[safeStat] || safeStat.charAt(0).toUpperCase() + safeStat.slice(1)} | Tennis Statistics`;
   
-  const description = isIndex
+  const description = tour === 'WTA'
+    ? `${isIndex ? 'Player and match statistics' : STAT_LABELS[safeStat] || safeStat} on the WTA Tour.`
+    : isIndex
     ? "Player and match statistics across seasons and tournaments."
     : STAT_DESCRIPTIONS[safeStat] || "Player and match statistics across seasons and tournaments.";
 
-  const keywords = isIndex
+  const keywords = tour === 'WTA'
+    ? 'WTA statistics, tennis player stats, WTA records'
+    : isIndex
     ? "tennis statistics, ATP statistics, tennis player stats, tennis records, tennis rankings"
     : STAT_KEYWORDS[safeStat] || "tennis statistics, ATP statistics, tennis player stats";
 
   const currentDate = new Date().toISOString();
 
-  return {
+  return tourMetadata({
     title,
     description,
     keywords,
@@ -566,7 +574,7 @@ export async function generateMetadata(
       modifiedTime: currentDate,
     },
     twitter: { card: "summary_large_image", site: "@TennisMyLife68", creator: "@TennisMyLife68" }
-  };
+  });
 }
 
 import { redirect } from 'next/navigation';
@@ -604,7 +612,7 @@ async function fetchInitialStats(
     });
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const res = await fetch(
+    const res = await fetchForTour(
       `${baseUrl}/api/statistics/${stat}?${params.toString()}`,
       { next: { revalidate: 3600 } } // Cache per 1 ora
     );
@@ -631,10 +639,11 @@ export default async function StatPage({
 }) {
   const { stat } = await params;
   const resolvedSearchParams = searchParams ? await searchParams : {};
+  const tour = await getTour();
 
   // Redirect /statistics/statistics -> /statistics (avoid duplicate index path)
   if (typeof stat === 'string' && stat.toLowerCase() === 'statistics') {
-    redirect('/statistics');
+    redirect(tourPath('/statistics', tour));
   }
 
   // Trim stat param into a safe string to pass down
@@ -646,6 +655,10 @@ export default async function StatPage({
   
   // Genera il page title
   const pageTitle = STAT_LABELS[statKey] || statKey.charAt(0).toUpperCase() + statKey.slice(1);
+  const sectionUrl = `https://stats.tennismylife.org${tourPath('/statistics', tour)}`;
+  const statUrl = `https://stats.tennismylife.org${tourPath(`/statistics/${encodeURIComponent(statKey)}`, tour)}`;
+  const homeUrl = new URL(tourPath('/', tour), sectionUrl).toString();
+  const datasetName = tour === 'WTA' ? `${pageTitle} on the WTA Tour` : `${pageTitle} in Men's Tennis`;
 
   // Prepara le statistiche correlate
   const relatedStatsKeys = RELATED_STATS[statKey] || [];
@@ -658,10 +671,10 @@ export default async function StatPage({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    "name": `${STAT_LABELS[statKey] || statKey} in Men's Tennis`,
+    "name": datasetName,
     "about": {
       "@type": "SportsOrganization",
-      "name": "ATP Tour"
+      "name": `${tour} Tour`
     },
     "itemListOrder": "Descending",
     "itemListElement": initialData.map((player, index) => ({
@@ -704,20 +717,20 @@ export default async function StatPage({
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://stats.tennismylife.org"
+        "item": homeUrl
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "Statistics",
-        "item": "https://stats.tennismylife.org/statistics"
+        "item": sectionUrl
       },
-      {
+      ...(statUrl === sectionUrl ? [] : [{
         "@type": "ListItem",
         "position": 3,
         "name": STAT_LABELS[statKey] || statKey,
-        "item": `https://stats.tennismylife.org/statistics/${statKey}`
-      }
+        "item": statUrl
+      }])
     ]
   };
 
@@ -725,18 +738,18 @@ export default async function StatPage({
   const webPageJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "name": `${STAT_LABELS[statKey] || statKey} in Men's Tennis`,
-    "description": STAT_DESCRIPTIONS[statKey] || "Player and match statistics across seasons and tournaments.",
-    "url": `https://stats.tennismylife.org/statistics/${statKey}`,
+    "name": datasetName,
+    "description": tour === 'WTA' ? datasetName : STAT_DESCRIPTIONS[statKey] || "Player and match statistics across seasons and tournaments.",
+    "url": statUrl,
     "inLanguage": "en",
     "isPartOf": {
       "@type": "WebSite",
       "name": "Tennis My Life Stats",
-      "url": "https://stats.tennismylife.org"
+      "url": homeUrl
     },
     "about": {
       "@type": "SportsOrganization",
-      "name": "ATP Tour"
+      "name": `${tour} Tour`
     },
     "speakable": {
       "@type": "SpeakableSpecification",
@@ -751,10 +764,10 @@ export default async function StatPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <script
+      {tour === 'ATP' && <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
+      />}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}

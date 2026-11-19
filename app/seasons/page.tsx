@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo, useRef } from "react";
-import Link from "next/link";
+import Link from "@/components/TourLink";
 import Flag from '@/components/Flag';
 import { getSurfaceColor } from "@/lib/colors";
 

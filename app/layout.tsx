@@ -6,6 +6,8 @@ import GAListener from './analytics/GAListener' // importa il listener
 import TrackPageClient from './TrackPageClient' // client-side visit tracking (fires on route changes)
 import MatomoClient from '../components/MatomoClient' // client-side Matomo tracker (migrated from pages/_app.tsx) 
 import { Montserrat } from 'next/font/google'
+import { getTour } from '@/lib/tour'
+import { TourProvider } from '@/components/TourLink'
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -35,7 +37,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const tour = await getTour()
 
   return (
     <html lang="en" className={montserrat.variable}>
@@ -117,7 +120,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <TrackPageClient />
         {/* Matomo tracker (migrated from pages/_app.tsx) */}
         <MatomoClient />
-        <Header />
+        <TourProvider value={tour}>
+        <Header tour={tour} />
         <main className="w-full px-0 py-6">
           {(() => {
             try {
@@ -131,6 +135,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             }
           })()}
         </main>
+        </TourProvider>
 
         <footer className="text-sm text-gray-400 py-6 text-center space-y-2">
           <div>

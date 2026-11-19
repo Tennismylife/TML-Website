@@ -1,8 +1,9 @@
 'use client';
+import { useTourRouter as useRouter, currentTourPath } from "@/lib/tour-navigation";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import Link from "@/app/records/RecordLink";
+import { useSearchParams } from "next/navigation";
 import Pagination from "../../../components/Pagination";
 import Modal from "@/components/Modal";
 import Flag from "@/components/Flag";
@@ -177,7 +178,7 @@ export default function RoundSection({ selectedSurfaces, selectedRounds, selecte
         if (!(sameN && sameSurface && sameLevel && sameRound)) {
           try {
             const newUrl = `${path}?${newQuery.toString()}`;
-            if (typeof window !== 'undefined') window.history.replaceState(null, '', newUrl);
+            if (typeof window !== 'undefined') window.history.replaceState(null, '', currentTourPath(newUrl));
           } catch (e) {
             /* ignore */
           }

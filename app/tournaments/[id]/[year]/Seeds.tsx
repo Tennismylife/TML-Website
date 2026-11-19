@@ -5,7 +5,7 @@ import { useMemo, useState, useEffect } from "react";
 import { Match } from "@/types";
 import Flag from '@/components/Flag';
 import { getRoundColor, getTextColorForRound } from '@/lib/colors';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import { getPlayerHrefWithTab } from '@/lib/utils';
 
 // Small helper to render a colored badge for rounds using shared color logic

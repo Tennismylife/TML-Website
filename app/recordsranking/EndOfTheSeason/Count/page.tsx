@@ -1,7 +1,7 @@
 import React from 'react';
 import { prisma } from "@/lib/prisma";
 import Flag from '@/components/Flag';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import EndSeasonCountControls from "./EndSeasonCountControls";
 import ServerPagination from '@/components/ServerPagination';
 import { notFound } from 'next/navigation';

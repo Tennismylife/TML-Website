@@ -1,6 +1,8 @@
+import { getTour } from "@/lib/tour";
+import { playerLevelName } from "@/lib/player-levels";
 // Server Component — Career Overview + Last 10 Matches rendered server-side so Google indexes them.
 import React from 'react';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import { prisma } from '@/lib/prisma';
 import { getTourneyHref, getPlayerHref, formatDateISO, getRoundIndex, createSlug } from '@/lib/utils';
 import { mapIdsToSlugs } from '@/lib/player-slugs';
@@ -154,6 +156,7 @@ function computeStats(matches: any[], playerId: string, playerName: string) {
 // ─── main component ──────────────────────────────────────────────────────────
 
 export default async function OverviewServer({ playerId, playerName, playerSlug }: OverviewServerProps) {
+  const tour = await getTour();
   // ── 1. fetch matches ─────────────────────────────────────────────────────
   const rawMatches = await prisma.match.findMany({
     where: {
@@ -299,7 +302,7 @@ export default async function OverviewServer({ playerId, playerName, playerSlug 
                 ? <>a positive <strong className="text-green-400">{s.slamWins}</strong>–<strong className="text-red-400">{s.slamLosses}</strong> (<strong className="text-blue-400">{s.slamWinPctN.toFixed(1)}%</strong>) across <strong className="text-yellow-400">{s.slamTotal}</strong> matches — a player who generally rises to the occasion at the Slams.</>
                 : s.slamWinPctN >= 40
                 ? <>{s.displayName} is <strong className="text-green-400">{s.slamWins}</strong>–<strong className="text-red-400">{s.slamLosses}</strong> (<strong className="text-blue-400">{s.slamWinPctN.toFixed(1)}%</strong>) across <strong className="text-yellow-400">{s.slamTotal}</strong> Grand Slam matches — below .500, though the elite draw depth makes that a notoriously difficult barrier.</>
-                : <>{s.displayName} has struggled at Grand Slam level: <strong className="text-green-400">{s.slamWins}</strong>–<strong className="text-red-400">{s.slamLosses}</strong> (<strong className="text-blue-400">{s.slamWinPctN.toFixed(1)}%</strong>) in <strong className="text-yellow-400">{s.slamTotal}</strong> matches. The best-of-five format and elite fields make this the toughest benchmark on Tour.</>
+                : <>{s.displayName} has struggled at Grand Slam level: <strong className="text-green-400">{s.slamWins}</strong>–<strong className="text-red-400">{s.slamLosses}</strong> (<strong className="text-blue-400">{s.slamWinPctN.toFixed(1)}%</strong>) in <strong className="text-yellow-400">{s.slamTotal}</strong> matches. {tour === "WTA" ? "The elite fields make this the toughest benchmark on tour." : "The best-of-five format and elite fields make this the toughest benchmark on Tour."}</>
               }
             </p>
           )}
@@ -307,14 +310,14 @@ export default async function OverviewServer({ playerId, playerName, playerSlug 
           {/* Masters 1000 */}
           {s.mastersTotal >= 3 && (
             <p>
-              ATP Masters 1000 (Indian Wells, Miami, Monte Carlo, Madrid, Rome, Canada, Cincinnati, Shanghai, Paris):{' '}
+              {playerLevelName("M", tour)} ({tour === "WTA" ? "Indian Wells, Miami, Madrid, Rome, Canada, Cincinnati, Beijing, Wuhan, Doha, Dubai" : "Indian Wells, Miami, Monte Carlo, Madrid, Rome, Canada, Cincinnati, Shanghai, Paris"}):{' '}
               {s.mastersWinPctN >= 65
                 ? <>{s.displayName} is elite here — <strong className="text-green-400">{s.mastersWins}</strong>–<strong className="text-red-400">{s.mastersLosses}</strong> (<strong className="text-blue-400">{s.mastersWinPctN.toFixed(1)}%</strong>) across <strong className="text-yellow-400">{s.mastersTotal}</strong> matches. Sustaining that win rate in the Tour's deepest regular-week draws is a defining quality of the very best.</>
                 : s.mastersWinPctN >= 50
                 ? <>a positive <strong className="text-green-400">{s.mastersWins}</strong>–<strong className="text-red-400">{s.mastersLosses}</strong> (<strong className="text-blue-400">{s.mastersWinPctN.toFixed(1)}%</strong>) across <strong className="text-yellow-400">{s.mastersTotal}</strong> matches — winning above .500 at this level, week in week out, is a genuine sign of quality.</>
                 : s.mastersWinPctN >= 35
                 ? <>{s.displayName} is <strong className="text-green-400">{s.mastersWins}</strong>–<strong className="text-red-400">{s.mastersLosses}</strong> (<strong className="text-blue-400">{s.mastersWinPctN.toFixed(1)}%</strong>) across <strong className="text-yellow-400">{s.mastersTotal}</strong> Masters matches — below .500 in the Tour's deepest fields. Lifting that record here would unlock better results across the calendar.</>
-                : <>{s.displayName} has struggled at Masters level: <strong className="text-green-400">{s.mastersWins}</strong>–<strong className="text-red-400">{s.mastersLosses}</strong> (<strong className="text-blue-400">{s.mastersWinPctN.toFixed(1)}%</strong>) in <strong className="text-yellow-400">{s.mastersTotal}</strong> matches. Improving at this level is the clearest path to a stronger overall record.</>
+                : <>{s.displayName} has struggled at {playerLevelName("M", tour)} level: <strong className="text-green-400">{s.mastersWins}</strong>–<strong className="text-red-400">{s.mastersLosses}</strong> (<strong className="text-blue-400">{s.mastersWinPctN.toFixed(1)}%</strong>) in <strong className="text-yellow-400">{s.mastersTotal}</strong> matches. Improving at this level is the clearest path to a stronger overall record.</>
               }
             </p>
           )}

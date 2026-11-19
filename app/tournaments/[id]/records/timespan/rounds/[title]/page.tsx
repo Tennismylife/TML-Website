@@ -1,3 +1,4 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import TimespanFull from '@/app/tournaments/[id]/records/timespan/_components/TimespanFull';
 import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
 import { makeTitle } from '@/lib/recordMetadata';
@@ -30,12 +31,12 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   }
 
   const ogUrl = `${site}/tournaments/${canonicalSlug}/records/timespan/rounds/${title}`;
-  return {
+  return tourMetadata({
     title: siteTitle,
     openGraph: { title: siteTitle, url: ogUrl, siteName: 'TennisMyLife', images: [{ url: `${site}/og/site-preview.png`, alt: `${tournamentName} - ${label}`, width: 1200, height: 630, type: 'image/png' }] },
     twitter: { card: 'summary_large_image', title: siteTitle, images: [`${site}/og/site-preview.png`] },
     alternates: { canonical: ogUrl },
-  };
+  });
 }
 
 export default async function RoundPage({ params }: { params: Promise<{ id: string; title: string }> }) {

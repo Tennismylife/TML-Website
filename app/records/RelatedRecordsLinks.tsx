@@ -1,10 +1,13 @@
-// Server component — renders <a href> links crawlable by Google.
+import { RecordAnchor } from "@/app/records/RecordLink";
+// Server component — renders crawlable record links.
 // 1. When filters are active: links to all OTHER record types with the SAME filters
 //    + links to all OTHER filters on the SAME record type (cross-filter navigation)
 // 2. When no filters: links to the most important single-filter variants of this record type
 
 import { shouldShowRecordFilter } from '../../lib/records/allowed-filters';
 import { resolveCanonicalRecordHref } from './record-links';
+import { getTour } from '@/lib/tour';
+import { recordTourLabel } from './tour-labels';
 
 type Filters = {
   level?: string[];
@@ -86,7 +89,7 @@ function getRecordSlugPath(tab: string | null, sub: string | null, filters: Filt
   });
 }
 
-export default function RelatedRecordsLinks({
+export default async function RelatedRecordsLinks({
   currentTab,
   currentSub,
   filters,
@@ -95,6 +98,7 @@ export default function RelatedRecordsLinks({
   currentSub: string | null;
   filters: Filters;
 }) {
+  const tour = await getTour();
   const hasFilters =
     (filters.level?.length ?? 0) > 0 ||
     (filters.surface?.length ?? 0) > 0 ||
@@ -117,10 +121,10 @@ export default function RelatedRecordsLinks({
                 const href = resolveCanonicalRecordHref(slug, { level: [o.value] });
                 if (!href) return null;
                 return (
-                  <a key={o.value} href={href}
+                  <RecordAnchor key={o.value} href={href}
                     className="px-3 py-1 rounded-full text-sm bg-gray-800 text-gray-400 hover:bg-indigo-700 hover:text-white transition-colors">
-                    {o.label}
-                  </a>
+                    {recordTourLabel(o.label, tour)}
+                  </RecordAnchor>
                 );
               })}
             </span>
@@ -132,10 +136,10 @@ export default function RelatedRecordsLinks({
                 const href = resolveCanonicalRecordHref(slug, { surface: [o.value] });
                 if (!href) return null;
                 return (
-                  <a key={o.value} href={href}
+                  <RecordAnchor key={o.value} href={href}
                     className="px-3 py-1 rounded-full text-sm bg-gray-800 text-gray-400 hover:bg-indigo-700 hover:text-white transition-colors">
                     {o.label}
-                  </a>
+                  </RecordAnchor>
                 );
               })}
             </span>
@@ -176,11 +180,11 @@ export default function RelatedRecordsLinks({
                   const href = resolveCanonicalRecordHref(slug, targetFilters);
                   if (!href) return null;
                   return (
-                    <a key={o.value}
+                    <RecordAnchor key={o.value}
                       href={href}
                       className="px-3 py-1 rounded-full text-sm bg-gray-800 text-gray-400 hover:bg-indigo-700 hover:text-white transition-colors">
-                      {o.label}
-                    </a>
+                      {recordTourLabel(o.label, tour)}
+                    </RecordAnchor>
                   );
                 })}
                 {(() => {
@@ -189,10 +193,10 @@ export default function RelatedRecordsLinks({
                     : currentSlugPath;
                   if (!href) return null;
                   return (
-                    <a href={href}
+                    <RecordAnchor href={href}
                       className="px-3 py-1 rounded-full text-sm bg-gray-800 text-gray-400 hover:bg-indigo-700 hover:text-white transition-colors">
                       All Levels
-                    </a>
+                    </RecordAnchor>
                   );
                 })()}
               </span>
@@ -207,11 +211,11 @@ export default function RelatedRecordsLinks({
                   const href = resolveCanonicalRecordHref(slug, targetFilters);
                   if (!href) return null;
                   return (
-                    <a key={o.value}
+                    <RecordAnchor key={o.value}
                       href={href}
                       className="px-3 py-1 rounded-full text-sm bg-gray-800 text-gray-400 hover:bg-indigo-700 hover:text-white transition-colors">
                       {o.label}
-                    </a>
+                    </RecordAnchor>
                   );
                 })}
                 {(() => {
@@ -220,10 +224,10 @@ export default function RelatedRecordsLinks({
                     : currentSlugPath;
                   if (!href) return null;
                   return (
-                    <a href={href}
+                    <RecordAnchor href={href}
                       className="px-3 py-1 rounded-full text-sm bg-gray-800 text-gray-400 hover:bg-indigo-700 hover:text-white transition-colors">
                       All Surfaces
-                    </a>
+                    </RecordAnchor>
                   );
                 })()}
               </span>
@@ -250,12 +254,12 @@ export default function RelatedRecordsLinks({
             if (!href) return null;
             return (
               <li key={`${page.tab}-${page.sub}`}>
-                <a
+                <RecordAnchor
                   href={href}
                   className="px-3 py-1 rounded-full text-sm bg-gray-800 text-gray-400 hover:bg-indigo-700 hover:text-white transition-colors"
                 >
                   {page.label}
-                </a>
+                </RecordAnchor>
               </li>
             );
           })}

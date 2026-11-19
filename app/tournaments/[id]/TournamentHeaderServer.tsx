@@ -1,4 +1,6 @@
-import { getLevelFullName, extractUniqueSurfaces, extractNames } from '@/lib/utils';
+import { extractUniqueSurfaces, extractNames } from '@/lib/utils';
+import { playerLevelName } from '@/lib/player-levels';
+import { getTour } from '@/lib/tour';
 import { getSurfaceColor, getLevelColor, getTextColorForRound } from '@/lib/colors';
 import { prisma } from '@/lib/prisma';
 import { resolveTourneyIds } from '@/lib/tournament';
@@ -48,6 +50,8 @@ export default async function TournamentHeaderServer({ id }: TournamentHeaderSer
 
   if (!tournament) return null;
 
+  const tour = await getTour();
+
   // Fetch editions
   const tourneyIds = (await resolveTourneyIds(String(id))) ?? [String(id)];
   const tourneyIdFilters = tourneyIds.flatMap((tid: string) => [
@@ -93,7 +97,7 @@ export default async function TournamentHeaderServer({ id }: TournamentHeaderSer
       <div className="md:absolute top-4 right-6 flex flex-wrap gap-2 z-20 md:justify-end justify-center">
         {categories.length > 0 &&
           categories.map((cat, i) => {
-            const label = getLevelFullName(cat);
+            const label = playerLevelName(cat, tour);
             const color = getLevelColor(cat) ?? '#555';
             const textColor = getTextColorForRound(color);
             return (

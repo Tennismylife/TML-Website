@@ -1,4 +1,5 @@
 "use client";
+import { useTourRouter as useRouter, currentTourPath } from "@/lib/tour-navigation";
 
 import { useState, useMemo, useEffect } from "react";
 import H2HPageFilters from "./H2HPageFilters";
@@ -15,7 +16,7 @@ import H2HAdvancedMetrics from "./H2HAdvancedMetrics";
 import H2HCareerBarsClient from "./H2HCareerBarsClient";
 import H2HHypotheticalMatchup from "./H2HHypotheticalMatchup";
 import PlayerSearch from "./PlayerSearch";
-import { useRouter } from "next/navigation";
+
 import { createH2HUrl } from "@/lib/utils";
 import { Match, SortKey, SortDirection } from "@/types";
 
@@ -404,7 +405,7 @@ export default function H2HContentClient({ matches, player1, player2, children, 
               /* ignore */
             }
             try {
-              window.history.replaceState({}, '', url);
+              window.history.replaceState({}, '', currentTourPath(url));
             } catch (err) {
               /* ignore */
             }

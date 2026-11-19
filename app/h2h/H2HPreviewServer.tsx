@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import { prisma } from '@/lib/prisma';
 import Flag from '@/components/Flag';
 
@@ -23,9 +23,10 @@ interface Props {
   player1: Player | null;
   player2: Player | null;
   matches: Match[];
+  tour: 'ATP' | 'WTA';
 }
 
-export default async function H2HPreviewServer({ player1, player2, matches }: Props) {
+export default async function H2HPreviewServer({ player1, player2, matches, tour }: Props) {
   if (!player1 || !player2) return null;
 
   const countedMatches = matches.filter((m) => m.status !== false && !((m.score ?? '').toUpperCase().includes('DEF') || (m.score ?? '').toUpperCase().includes('W/O') || (m.score ?? '').toUpperCase().includes('WEA')));
@@ -230,7 +231,7 @@ export default async function H2HPreviewServer({ player1, player2, matches }: Pr
           <span className="inline-flex items-center"><Flag ioc={player2.ioc} className="w-4 h-3 mr-2" /><strong>{player2.atpname}</strong></span>{' '}
           {total >= 10 ? (
             <>
-              have built a notable rivalry on the ATP Tour, having clashed{' '}
+              have built a notable rivalry on the {tour} Tour, having clashed{' '}
               <strong className="text-yellow-400">{total}</strong> times.{' '}
             </>
           ) : total === 0 ? (

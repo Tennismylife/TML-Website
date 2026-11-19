@@ -1,4 +1,5 @@
 "use client";
+import { useLinkTour } from "@/components/TourLink";
 
 import { useState, useEffect, useMemo } from "react";
 import {
@@ -178,6 +179,7 @@ export function RankHistoryTooltip({ active, payload, label }: any) {
 }
 
 export default function RankHistory({ playerId, birthdate, narrativeSlot }: RankHistoryProps) {
+  const tour = useLinkTour();
   const [data, setData] = useState<Entry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -369,7 +371,7 @@ export default function RankHistory({ playerId, birthdate, narrativeSlot }: Rank
       <ConsistencyScore data={data} className="mb-6" />
 
       {/* year selector above chart, left-aligned */}
-      <h2 className="text-xl font-semibold mb-2 text-center w-full">ATP Ranking week-by-week</h2>
+      <h2 className="text-xl font-semibold mb-2 text-center w-full">{tour} Ranking week-by-week</h2>
       {yearSelector('chart')}
 
       <div className="mb-6 h-[52rem] rounded-2xl border border-gray-600 bg-gray-800/90 p-4">
@@ -433,7 +435,7 @@ export default function RankHistory({ playerId, birthdate, narrativeSlot }: Rank
 
       {/* Career stats, weeks and milestones tables side-by-side */}
       {narrativeSlot && <div className="mb-8">{narrativeSlot}</div>}
-      <h2 className="text-xl font-semibold mb-4 text-center w-full">ATP Ranking Milestones</h2>
+      <h2 className="text-xl font-semibold mb-4 text-center w-full">{tour} Ranking Milestones</h2>
       <div className="mb-6 flex flex-wrap gap-6">
         <div className="flex-1 min-w-[300px]">
           <RankingStatsTable data={data} />
@@ -450,7 +452,7 @@ export default function RankHistory({ playerId, birthdate, narrativeSlot }: Rank
       {yearSelector('table')}
 
       {/* complete ranking table header */}
-      <h2 className="text-xl font-semibold mb-2 text-center w-full">All ATP Rankings</h2>
+      <h2 className="text-xl font-semibold mb-2 text-center w-full">All {tour} Rankings</h2>
 
       <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
         <table className="min-w-full border-collapse">

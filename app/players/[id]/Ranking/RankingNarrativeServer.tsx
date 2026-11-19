@@ -1,3 +1,5 @@
+import { getTour } from "@/lib/tour";
+import type { Tour } from "@/lib/tour-path";
 // Server Component — rendered at request time so Google indexes the prose.
 import React from "react";
 import { prisma } from "@/lib/prisma";
@@ -49,6 +51,7 @@ function buildParagraphs(
   data: Entry[],
   birthdate: string | null | undefined,
   playerName: string,
+  tour: Tour,
 ): React.ReactNode[][] {
   const sorted = [...data]
     .filter((e) => !isNaN(new Date(e.date).getTime()) && e.rank > 0)
@@ -76,7 +79,7 @@ function buildParagraphs(
       <>
         {name} entered the ATP rankings on {D(fmtDate(debut.date))}, debuting at{" "}
         {R(`#${debut.rank}`)}
-        {debut.points > 0 && <> with {P(debut.points.toLocaleString())} ATP points</>}
+        {debut.points > 0 && <> with {P(debut.points.toLocaleString())} {tour} points</>}
         {debutAge && <>, aged {A(debutAge)}</>}
         {debutThreshold && <> — already inside the {T(debutThreshold)}</>}.
       </>
@@ -100,7 +103,7 @@ function buildParagraphs(
       group: "rise",
       text: (
         <>
-          He first reached the {T(label)} on {D(fmtDate(entry.date))}{a ? <> (aged {A(a)})</> : null},{" "}
+          {name} first reached the {T(label)} on {D(fmtDate(entry.date))}{a ? <> (aged {A(a)})</> : null},{" "}
           ranked {R(`#${entry.rank}`)}{entry.points > 0 && <> with {P(entry.points.toLocaleString())} pts</>}.
         </>
       ),
@@ -119,7 +122,7 @@ function buildParagraphs(
       group: "rise",
       text: (
         <>
-          He progressed through the rankings, successively breaking into{" "}
+          {name} progressed through the rankings, successively breaking into{" "}
           {parts.map((p, i) => (
             <React.Fragment key={i}>
               {i > 0 && i < parts.length - 1 ? ", " : ""}
@@ -143,10 +146,10 @@ function buildParagraphs(
       group: "peak",
       text: (
         <>
-          His career-high ranking was {R(`#${bestEntry.rank}`)}, reached on{" "}
+          {name}&apos;s career-high ranking was {R(`#${bestEntry.rank}`)}, reached on{" "}
           {D(fmtDate(bestEntry.date))}
           {bestAge && <> at the age of {A(bestAge)}</>}
-          {bestEntry.points > 0 && <>, with {P(bestEntry.points.toLocaleString())} ATP points</>}.
+          {bestEntry.points > 0 && <>, with {P(bestEntry.points.toLocaleString())} {tour} points</>}.
         </>
       ),
     });
@@ -207,7 +210,7 @@ function buildParagraphs(
   } else {
     facts.push({
       group: "weeks",
-      text: <>He accumulated a total of {W(String(totalWeeks))} weeks in the ATP rankings.</>,
+      text: <>{name} accumulated a total of {W(String(totalWeeks))} weeks in the {tour} rankings.</>,
     });
   }
 
@@ -230,8 +233,8 @@ function buildParagraphs(
       group: "weeks",
       text: (
         <>
-          His best end-of-year ranking was {R(`#${b.rank}`)}, recorded at the close of{" "}
-          {D(String(b.year))}{eoyAge && <> when he was {A(eoyAge)} old</>}.
+          {name}&apos;s best end-of-year ranking was {R(`#${b.rank}`)}, recorded at the close of{" "}
+          {D(String(b.year))}{eoyAge && <> at the age of {A(eoyAge)}</>}.
         </>
       ),
     });
@@ -303,7 +306,7 @@ function buildParagraphs(
       group: "drop",
       text: (
         <>
-          Conversely, his biggest single-week climb was{" "}
+          Conversely, {name}&apos;s biggest single-week climb was{" "}
           {W(`${bigRise} places`)}, rising from {R(`#${prevEntry.rank}`)} to{" "}
           {R(`#${riseEntry.rank}`)} on {D(fmtDate(riseEntry.date))}.
         </>
@@ -353,13 +356,13 @@ function buildParagraphs(
       text: (
         <>
           {isRetired
-            ? <>The last recorded entry in his ranking history was on {D(fmtDate(last.date))}
+            ? <>The last recorded entry in {name}&apos;s ranking history was on {D(fmtDate(last.date))}
                 {lastAge && <>, aged {A(lastAge)},</>}{" "}
                 at {R(`#${last.rank}`)}</>
             : <>As of {D(fmtDate(last.date))}{lastAge && <>, aged {A(lastAge)},</>}{" "}
                 he holds a ranking of {R(`#${last.rank}`)}</>
           }
-          {last.points > 0 && <> with {P(last.points.toLocaleString())} ATP points</>}.
+          {last.points > 0 && <> with {P(last.points.toLocaleString())} {tour} points</>}.
         </>
       ),
     });
@@ -388,6 +391,7 @@ export default async function RankingNarrativeServer({
   playerName = "The player",
   className = "",
 }: Props) {
+  const tour = await getTour();
   let paragraphs: React.ReactNode[][] = [];
   let data: Entry[] = [];
 
@@ -406,7 +410,7 @@ export default async function RankingNarrativeServer({
         points: r.points,
       }));
 
-    paragraphs = buildParagraphs(data, birthdate, playerName);
+    paragraphs = buildParagraphs(data, birthdate, playerName, tour);
   } catch {
     return null;
   }
@@ -421,8 +425,8 @@ export default async function RankingNarrativeServer({
   const rankingListLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    "name": `ATP Ranking History – ${playerName}`,
-    "description": `Last 10 ATP ranking entries for ${playerName}`,
+    "name": `${tour} Ranking History – ${playerName}`,
+    "description": `Last 10 ${tour} ranking entries for ${playerName}`,
     "itemListElement": last10.map((e, i) => ({
       "@type": "ListItem",
       "position": i + 1,

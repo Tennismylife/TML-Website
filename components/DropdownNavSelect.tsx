@@ -1,4 +1,6 @@
 "use client";
+import { currentTourPath } from "@/lib/tour-navigation";
+import { tourPath } from "@/lib/tour-path";
 import React from 'react';
 
 export default function DropdownNavSelect({
@@ -20,14 +22,14 @@ export default function DropdownNavSelect({
   const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const v = e.target.value;
     if (pathMode) {
-      const parts = window.location.pathname.split('/');
+      const parts = tourPath(window.location.pathname, 'ATP').split('/');
       const lastPart = parts[parts.length - 1];
       if (/^\d+$/.test(lastPart)) {
         parts[parts.length - 1] = v;
       } else {
         parts.push(v);
       }
-      window.location.assign(parts.join('/'));
+      window.location.assign(currentTourPath(parts.join('/')));
       return;
     }
     const params = new URLSearchParams(window.location.search);

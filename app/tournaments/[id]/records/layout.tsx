@@ -1,3 +1,4 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
@@ -178,7 +179,7 @@ export async function generateMetadata({ params, searchParams }: any): Promise<M
   if (tab === 'ages' && sub === 'titles' && segs[2] === 'youngest') {
     const siteTitle = `Youngest Title Winners at ${displayFromParam} | Tennis Records`;
     const ogUrl = `${site}/tournaments/${canonicalTournamentSlug}/records/${tab}/${sub}/${segs[2]}`;
-    return {
+    return tourMetadata({
       title: siteTitle,
       description: fallbackDescription,
       keywords,
@@ -191,14 +192,14 @@ export async function generateMetadata({ params, searchParams }: any): Promise<M
       },
       twitter: { card: 'summary_large_image', title: siteTitle, description: fallbackDescription, images: [ogImageFromParam] },
       alternates: { canonical: ogUrl + (query ? `?${query}` : '') },
-    };
+    });
   }
 
   // Special-case: Oldest Title
   if (tab === 'ages' && sub === 'titles' && segs[2] === 'oldest') {
     const siteTitle = `Oldest Title Winners at ${displayFromParam} | Tennis Records`;
     const ogUrl = `${site}/tournaments/${canonicalTournamentSlug}/records/${tab}/${sub}/${segs[2]}`;
-    return {
+    return tourMetadata({
       title: siteTitle,
       description: fallbackDescription,
       keywords,
@@ -211,14 +212,14 @@ export async function generateMetadata({ params, searchParams }: any): Promise<M
       },
       twitter: { card: 'summary_large_image', title: siteTitle, description: fallbackDescription, images: [ogImageFromParam] },
       alternates: { canonical: ogUrl + (query ? `?${query}` : '') },
-    };
+    });
   }
 
   // Special-case: Least root (tournament-specific phrasing)
   if (tab === 'least' && !sub) {
     const siteTitle = `${displayFromParam} Least Games Lost to Reach a Round | Tennis Records`;
     const ogUrl = `${site}/tournaments/${canonicalTournamentSlug}/records/least`;
-    return {
+    return tourMetadata({
       title: siteTitle,
       description: fallbackDescription,
       keywords,
@@ -231,7 +232,7 @@ export async function generateMetadata({ params, searchParams }: any): Promise<M
       },
       twitter: { card: 'summary_large_image', title: siteTitle, description: fallbackDescription, images: [ogImageFromParam] },
       alternates: { canonical: ogUrl + (query ? `?${query}` : '') },
-    };
+    });
   }
 
   // Default metadata for other pages
@@ -262,7 +263,7 @@ export async function generateMetadata({ params, searchParams }: any): Promise<M
     baseMeta.robots = { index: false, follow: true };
   }
 
-  return baseMeta;
+  return tourMetadata(baseMeta);
 }
 
 // ---------------- RECORDS LAYOUT ----------------

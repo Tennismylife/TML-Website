@@ -1,9 +1,10 @@
 'use client'
+import { useTourRouter as useRouter, currentTourPath } from "@/lib/tour-navigation";
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import Flag from '@/components/Flag';
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 import { playerMatchesUrl } from '../../../records/nav';
@@ -176,7 +177,7 @@ export default function PercentageSection({ id, activeSubTab, initialData }: { i
         const doReplaceAndDispatch = () => {
           try {
             // replace to ensure modal flag is preserved on the current (navigated) entry
-            window.history.replaceState(state, '', newPath);
+            window.history.replaceState(state, '', currentTourPath(newPath));
             // explicitly hide any server-injected modal that may have been rendered during navigation
             try { const sm = document.getElementById('server-modal'); if (sm) sm.style.display = 'none'; } catch (e) {}
             // ensure fallback global is updated
@@ -204,7 +205,7 @@ export default function PercentageSection({ id, activeSubTab, initialData }: { i
         } catch (e) {
           // if router fails, fall back to replacing history and dispatching immediately
           try { console.debug('[PercentageSection] router.push threw, falling back to history.replaceState'); } catch (ex) {}
-          window.history.replaceState(state, '', newPath);
+          window.history.replaceState(state, '', currentTourPath(newPath));
           window.dispatchEvent(new CustomEvent('open-modal', { detail: { section: sectionSegment, title } }));
         }
       }
@@ -216,7 +217,7 @@ export default function PercentageSection({ id, activeSubTab, initialData }: { i
           if (typeof window !== 'undefined') {
             const state = { modal: true, background: window.location.pathname, section: sectionSegment, title };
             // replace to ensure modal flag is preserved for direct hydration checks
-            window.history.replaceState(state, '', newPath);
+            window.history.replaceState(state, '', currentTourPath(newPath));
             // explicitly hide any server-injected modal that may have been rendered during navigation
             try { const sm = document.getElementById('server-modal'); if (sm) sm.style.display = 'none'; } catch (e) {}
             // ensure fallback global is updated

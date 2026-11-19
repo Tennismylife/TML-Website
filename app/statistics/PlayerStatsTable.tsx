@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/TourLink";
 import { Dispatch, SetStateAction } from "react";
 import Flag from '@/components/Flag';
 import { getPlayerHref } from '@/lib/utils';

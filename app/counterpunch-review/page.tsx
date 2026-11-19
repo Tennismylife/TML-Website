@@ -1,3 +1,4 @@
+import { TourAnchor } from "@/components/TourLink";
 import type { Metadata } from 'next';
 import { readFile, readdir, stat } from 'node:fs/promises';
 import { parse } from 'csv-parse/sync';
@@ -93,7 +94,7 @@ export default async function CounterPunchDashboard() {
   return <div className={styles.page}>
     <div className="flex items-center justify-between gap-4 mb-5 text-xs">
       <div className="flex gap-3 items-center"><strong className="bg-lime-300 rounded px-2 py-1 !text-slate-950">TML</strong><span className="uppercase tracking-[.2em] font-extrabold">Audit control / V46</span></div>
-      <a href="/" className="!text-slate-300 hover:!text-lime-200">Torna al sito</a>
+      <TourAnchor href="/" className="!text-slate-300 hover:!text-lime-200">Torna al sito</TourAnchor>
     </div>
     <section className={styles.hero}>
       <div className="flex flex-wrap justify-between items-start gap-6">

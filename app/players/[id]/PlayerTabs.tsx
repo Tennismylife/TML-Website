@@ -1,8 +1,11 @@
 "use client";
+import { tourPath } from "@/lib/tour-path";
+import { useTourRouter as useRouter, useBasePathname as usePathname } from "@/lib/tour-navigation";
+import { TourAnchor } from "@/components/TourLink";
 
 import { useMemo, useRef } from "react";
 import type { ReactNode } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import AllMatches from "./Matches/AllMatches";
 import Seasons from "./season/components/Seasons";
 import SurfaceStatsClient from "./season/components/SurfaceStatsClient";
@@ -84,7 +87,7 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
     const currentQs = typeof window !== "undefined" ? window.location.search.replace(/^\?/, "") : "";
 
     // Build new pathname with tab as segment (remove extra trailing segments like an encoded year)
-    const parts = typeof window !== 'undefined' ? window.location.pathname.split('/') : ['','players','','overview'];
+    const parts = typeof window !== 'undefined' ? tourPath(window.location.pathname, 'ATP').split('/') : ['','players','','overview'];
     // Keep only the first 4 segments: ['', 'players', ':slug', ':tab'] to avoid preserving trailing year or other segments
     const baseParts = parts.slice(0, 4);
     let newPathname: string;
@@ -121,7 +124,7 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
     }
 
     // Avoid triggering navigation if nothing actually changed (both pathname and qs)
-    if (newQs === currentQs && newPathname === window.location.pathname) {
+    if (newQs === currentQs && newPathname === tourPath(window.location.pathname, "ATP")) {
       if (process.env.NODE_ENV !== 'production') {
         // eslint-disable-next-line no-console
         console.debug('[PlayerTabs] handleTabClick: no-op navigation suppressed (pathname+qs unchanged)');
@@ -285,7 +288,7 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
                   </button>
                   <div className="flex flex-wrap gap-4">
                     {[{ key: 'hard', label: 'Hard' }, { key: 'clay', label: 'Clay' }, { key: 'grass', label: 'Grass' }].map(({ key, label: slabel }) => (
-                        <a
+                        <TourAnchor
                           key={key}
                           href={`/players/${player.slug}/${key}`}
                           onClick={(e) => { e.preventDefault(); handleTabClick(key); }}
@@ -294,7 +297,7 @@ export default function PlayerTabs({ player, tabs, initialTab, banner, rankingNa
                               ? 'text-white border-b-2 border-yellow-400'
                               : 'text-gray-400 hover:text-yellow-400'
                           }`}
-                        >{slabel}</a>
+                        >{slabel}</TourAnchor>
                       ))}
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import { ArrowLeft } from 'lucide-react';
 import { getTournamentSlug } from '@/lib/getTournamentName';
 

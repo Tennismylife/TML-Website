@@ -1,8 +1,9 @@
 "use client";
+import { useTourRouter as useRouter } from "@/lib/tour-navigation";
 
 import React, { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import Link from "@/components/TourLink";
+
 import { motion } from "framer-motion";
 import Flag from '@/components/Flag';
 import { createH2HUrl, getPlayerHref } from "@/lib/utils";

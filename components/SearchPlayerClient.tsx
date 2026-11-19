@@ -1,7 +1,8 @@
 "use client";
+import { useTourRouter as useRouter } from "@/lib/tour-navigation";
 
 import React, { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+
 import Flag from '@/components/Flag';
 import { getPlayerHref } from '@/lib/utils';
 

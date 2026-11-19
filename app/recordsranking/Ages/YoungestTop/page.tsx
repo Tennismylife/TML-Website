@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import Flag from '@/components/Flag';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import DropdownNavSelect from '../../../../components/DropdownNavSelect';
 import ServerPagination from '@/components/ServerPagination';
 import type { Metadata } from 'next';

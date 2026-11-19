@@ -1,7 +1,8 @@
 'use client'
+import { TourAnchor } from "@/components/TourLink";
 
 import React, { useEffect, useRef } from 'react'
-import Link from 'next/link'
+import Link from '@/components/TourLink'
 
 export default function Card({
   href,
@@ -170,9 +171,9 @@ export default function Card({
   const isExternal = href && href.toLowerCase().startsWith("http");
 
   return isExternal ? (
-    <a href={href} target="_blank" rel="noopener noreferrer" aria-label={`Go to ${title}`} className={wrapperClass}>
+    <TourAnchor href={href} target="_blank" rel="noopener noreferrer" aria-label={`Go to ${title}`} className={wrapperClass}>
       {content}
-    </a>
+    </TourAnchor>
   ) : (
     <Link href={href} aria-label={`Go to ${title}`} className={wrapperClass}>
       {content}

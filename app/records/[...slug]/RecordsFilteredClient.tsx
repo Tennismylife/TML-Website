@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import { useRecordsTour } from '../AtpRecordCommentary';
 import { generateRecordDescription } from '../../../lib/generateRecordDescription';
 import { keyFromParamLabel } from '@/lib/levels';
 import { RECORDS_NOINDEX_ENABLED } from '@/lib/seo/records-policy';
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export default function RecordsFilteredClient({ record, sub, filters = {}, canonicalUrl }: Props) {
+  const tour = useRecordsTour();
   const [data, setData] = useState<any[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +58,7 @@ export default function RecordsFilteredClient({ record, sub, filters = {}, canon
 
     const description = generateRecordDescription(record, { ...activeSubTabsDefault, [record || '']: effectiveSub || activeSubTabsDefault[record || ''] }, selectedSurfaces, selectedLevels, selectedRounds, selectedBestOf);
 
-    if (description) {
+    if (tour === 'ATP' && description) {
       document.title = `${description} | Tennis Records`;
       if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') console.debug('[RecordsFilteredClient] set title', document.title);
     } else {
@@ -120,7 +122,7 @@ export default function RecordsFilteredClient({ record, sub, filters = {}, canon
     }
 
     doFetch();
-  }, [record, sub, JSON.stringify(filters), canonicalUrl]);
+  }, [record, sub, JSON.stringify(filters), canonicalUrl, tour]);
 
   if (loading) return <div className="text-gray-300">Loading filtered results…</div>;
   if (error) return <div className="text-red-400">{error}</div>;

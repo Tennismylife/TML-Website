@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import type { JsonValue } from "@prisma/client/runtime/library";
 import { prisma } from '@/lib/prisma';
+import { getTour } from "@/lib/tour";
+import { getWtaTeamTournamentIds } from "@/lib/wta-team-tournaments";
 
 // Helpers copied / adapted from app/api/tournaments/route.ts
 function extractFirstString(field: any): string {
@@ -72,11 +74,16 @@ export async function GET(req: Request) {
       return NextResponse.json({ results: [] });
     }
 
-    const tournaments = await prisma.tournament.findMany({ orderBy: { id: 'asc' } });
+    const tour = await getTour();
+    const [tournaments, teamIds] = await Promise.all([
+      prisma.tournament.findMany({ orderBy: { id: 'asc' } }),
+      tour === "WTA" ? getWtaTeamTournamentIds() : null,
+    ]);
 
     const matches = [] as any[];
 
     for (const t of tournaments) {
+      if (teamIds && (teamIds.has(String(t.id)) || extractNames(t.category).includes("D"))) continue;
       const names = Array.isArray(t.name) ? t.name.flatMap(n => extractNames(n)) : extractNames(t.name);
       const nameStr = names.join(' ');
       const surfaces = extractUniqueSurfaces(t.surfaces || []);

@@ -2,6 +2,8 @@ import React from 'react';
 import { Metadata } from 'next';
 import { metadataBase } from '../../lib/site';
 import RoundOnEntriesModalOutletRecords from '@/components/RoundOnEntriesModalOutletRecords';
+import { getTour } from '@/lib/tour';
+import { RecordsTourProvider } from './AtpRecordCommentary';
 
 export const metadata: Metadata = {
   title: 'Tennis Records',
@@ -15,9 +17,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RecordsLayout({ children }: { children: React.ReactNode }) {
-  return <>
+export default async function RecordsLayout({ children }: { children: React.ReactNode }) {
+  const tour = await getTour();
+  return <RecordsTourProvider tour={tour}>
     {children}
     <RoundOnEntriesModalOutletRecords />
-  </>;
+  </RecordsTourProvider>;
 }

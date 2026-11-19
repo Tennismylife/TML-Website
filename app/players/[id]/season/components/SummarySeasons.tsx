@@ -1,6 +1,6 @@
 
 import React, { useMemo } from "react";
-import Link from "next/link";
+import Link from "@/components/TourLink";
 import type { Match } from "@/types";
 import { getPlayerHref, getPlayerHrefWithTab } from "@/lib/utils";
 import SummarySeasonsClient from './SummarySeasonsClient';

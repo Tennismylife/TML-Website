@@ -1,4 +1,7 @@
 "use client";
+import { usePlayerLevel } from "@/lib/use-player-level";
+import { useLinkTour } from "@/components/TourLink";
+import { sortPlayerLevels } from "@/lib/player-levels";
 
 import React, { useState, useEffect } from "react";
 
@@ -30,6 +33,7 @@ interface FilterBarProps {
   selectedYear: string;
   setSelectedYear: (val: string) => void;
   tourneyLevels: string[];
+  hasBestOfFive: boolean;
   tourneyLevelLabels?: Record<string,string>;
   selectedLevel: string;
   setSelectedLevel: (val: string) => void;
@@ -141,9 +145,11 @@ function Category({ category, onExplicitChange }: { category: CategoryNode, onEx
 }
 
 export default function FilterBar(props: FilterBarProps) {
+  const levelNameFor = usePlayerLevel();
+  const tour = useLinkTour();
   const {
     years, selectedYear, setSelectedYear,
-    tourneyLevels, selectedLevel, setSelectedLevel,
+    tourneyLevels, tourneyLevelLabels, hasBestOfFive, selectedLevel, setSelectedLevel,
     tourneyIds, tourneyNames, selectedTourneyId, setSelectedTourneyId,
     surfaces, selectedSurface, setSelectedSurface,
     rounds, selectedRound, setSelectedRound,
@@ -209,9 +215,9 @@ export default function FilterBar(props: FilterBarProps) {
 
   const levelChildren: FilterNode[] = [
     { label: "All", value: "All", setter: setSelectedLevel },
-    ...TOURNEY_LEVELS.map(l => ({
-      label: l.label,
-      value: l.code,
+    ...sortPlayerLevels(new Set(tour === "WTA" ? tourneyLevels : TOURNEY_LEVELS.map(level => level.code))).map(code => ({
+      label: levelNameFor(code, TOURNEY_LEVELS.find(level => level.code === code)?.label ?? tourneyLevelLabels?.[code]),
+      value: code,
       setter: setSelectedLevel
     }))
   ];
@@ -230,8 +236,8 @@ export default function FilterBar(props: FilterBarProps) {
     { label: "vs Entry", children: createChildren(["Seeded","Unseeded","Qualifier","WC","Lucky Loser","Protected Ranking","Special Exempt"], setVsEntryFilter), selectedValue: vsEntryFilter },
     { label: "Player Rank", children: createChildren(["Top1","Top5","Top10","Top20","Top50","Top100","11+","21+","51+","101+","Higher","Lower"], setAsRankFilter), selectedValue: asRankFilter },
     { label: "Player Entry", children: createChildren(["Seeded","Unseeded","Qualifier","WC","Lucky Loser","Protected Ranking","Special Exempt"], setAsEntryFilter), selectedValue: asEntryFilter },
-    { label: "Sets", children: createChildren(["Straights","Deciders","All Best of 5","3 Sets (of 5)","4-Setters","5-Setters","All Best of 3","2-Setters","3 Sets (of 3)"], setSetFilter), selectedValue: setFilter },
-    { label: "First Sets", children: createChildren(["Won 1st Set","Lost 1st Set","Won Sets 1&2","Lost Sets 1&2","Split 1&2","Up 2-1 Sets","Down 1-2 Sets"], setFirstSetFilter), selectedValue: firstSetFilter },
+    { label: "Sets", children: createChildren(["Straights","Deciders",...(hasBestOfFive ? ["All Best of 5","3 Sets (of 5)","4-Setters","5-Setters"] : []),"All Best of 3","2-Setters","3 Sets (of 3)"], setSetFilter), selectedValue: setFilter },
+    { label: "First Sets", children: createChildren(["Won 1st Set","Lost 1st Set", ...(hasBestOfFive ? ["Won Sets 1&2","Lost Sets 1&2"] : []), "Split 1&2", ...(hasBestOfFive ? ["Up 2-1 Sets","Down 1-2 Sets"] : [])], setFirstSetFilter), selectedValue: firstSetFilter },
     { label: "Score", children: createChildren(["All tiebreaks","TB won","TB lost","Deciding TB","All 7-5","7-5 won","7-5 lost","All bagels","6-0 won","6-0 lost","All 6-1","6-1 won","6-1 lost"], setScoreFilter), selectedValue: scoreFilter },
   ];
 

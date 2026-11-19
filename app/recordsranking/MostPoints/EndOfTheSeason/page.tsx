@@ -2,7 +2,7 @@ import React from 'react';
 import type { Metadata } from 'next';
 import { prisma } from "@/lib/prisma";
 import Flag from '@/components/Flag';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 
 const SITE = 'https://stats.tennismylife.org';
 const OG_IMAGE = `${SITE}/og/site-preview.png`;

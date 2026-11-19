@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getTour } from "@/lib/tour";
 import { Prisma } from "@prisma/client";
 
 export const dynamic = 'force-dynamic';
+
+// PlayerTournament stores the final position in a draw. A player who
+// won a title also reached every recorded round before it.
+const finishedAtOrAfter: Record<string, string[]> = {
+  F: ["F", "W"],
+  SF: ["SF", "F", "W"],
+  QF: ["QF", "SF", "F", "W"],
+};
 
 export async function GET(request: NextRequest) {
   try {
@@ -15,9 +24,11 @@ export async function GET(request: NextRequest) {
       .map(Number)
       .filter(n => !isNaN(n));
 
+    const reached = roundFilter && await getTour() === "WTA" ? finishedAtOrAfter[roundFilter] : undefined;
+
     // Filtro dinamico
     const baseFilter: Prisma.PlayerTournamentWhereInput = {
-      ...(roundFilter && { round: roundFilter }),
+      ...(roundFilter && { round: reached ? { in: reached } : roundFilter }),
       ...(selectedSurfaces.length > 0 && { surface: { in: selectedSurfaces } }),
       ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),
       ...(selectedBestOf.length > 0 && { best_of: { in: selectedBestOf } }),

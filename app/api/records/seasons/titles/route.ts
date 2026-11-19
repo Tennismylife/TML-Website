@@ -1,13 +1,8 @@
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 
 export const dynamic = 'force-dynamic';
 
-let prisma: PrismaClient;
-if (!globalThis.prisma) {
-  globalThis.prisma = new PrismaClient();
-}
-prisma = globalThis.prisma;
 
 // --- Utils ---
 function getMultiParam(url: URL, key: string): string[] {

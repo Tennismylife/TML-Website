@@ -1,4 +1,5 @@
 "use client";
+import { usePlayerLevel } from "@/lib/use-player-level";
 
 import React, { useMemo, useState } from "react";
 
@@ -115,6 +116,7 @@ function formatYears(years: number[]): string {
 }
 
 export default function TournamentSummary({ filteredMatches }: TournamentSummaryProps) {
+  const levelNameFor = usePlayerLevel();
   const [sortConfig, setSortConfig] = useState<{ key: keyof SummaryRow; direction: "asc" | "desc" } | null>(null);
 
   const summaryStats = useMemo<SummaryRow[]>(() => {
@@ -131,7 +133,7 @@ export default function TournamentSummary({ filteredMatches }: TournamentSummary
       const validMatches = tourneyMatches.filter(m => m.status !== false);
 
       const Years = formatYears(tourneyMatches.map(m => m.year));
-      const Level = Array.from(new Set(tourneyMatches.map(m => LEVEL_LABELS[m.tourney_level ?? ""] || "Unknown")))
+      const Level = Array.from(new Set(tourneyMatches.map(m => levelNameFor(m.tourney_level, LEVEL_LABELS[m.tourney_level ?? ""]))))
         .sort((a, b) => a.localeCompare(b)).join(", ");
       const Surface = Array.from(new Set(tourneyMatches.map(m => m.surface ?? "Unknown")))
         .sort((a, b) => a.localeCompare(b)).join(", ");

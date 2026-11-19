@@ -1,8 +1,9 @@
 "use client";
+import { useTourRouter as useRouter, useBasePathname as usePathname } from "@/lib/tour-navigation";
 
 import React, { useState, useEffect, use } from "react";
-import Link from "next/link";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import Link from "@/components/TourLink";
+import { useSearchParams } from "next/navigation";
 import CountSection from "./CountSection";
 import RoundsSection from "./RoundsSection";
 import AgesSection from "./AgesSection";

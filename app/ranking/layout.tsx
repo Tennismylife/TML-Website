@@ -1,7 +1,8 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import type { Metadata } from 'next';
 import React from 'react';
 
-export const metadata: Metadata = {
+const metadata: Metadata = {
   title: { absolute: 'Rankings - TennisMyLife' },
   description: 'Latest ATP rankings and historical ranking tables.',
   openGraph: {
@@ -13,6 +14,10 @@ export const metadata: Metadata = {
   twitter: { card: 'summary_large_image', site: '@TennisMyLife68' },
   alternates: { canonical: 'https://stats.tennismylife.org/ranking' },
 };
+
+export async function generateMetadata() {
+  return tourMetadata(metadata);
+}
 
 export default function RankingLayout({ children }: { children: React.ReactNode }) {
   return <>{children}</>;

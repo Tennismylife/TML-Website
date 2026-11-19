@@ -1,6 +1,6 @@
 ﻿'use client'
 
-import Link from "next/link";
+import Link from "@/app/records/RecordLink";
 import { useState, useEffect } from "react";
 import Flag from '@/components/Flag';
 import { getPlayerHref } from "@/lib/utils";

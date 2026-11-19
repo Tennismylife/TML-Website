@@ -1,5 +1,6 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import LeastFull from '@/app/tournaments/[id]/records/least/_components/LeastFull';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import { ArrowLeft } from 'lucide-react';
 import TournamentHeader from '../../../../TournamentHeader';
 import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
@@ -34,7 +35,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const ogUrl = `${site}/tournaments/${canonicalSlug}/records/least/rounds/${encodeURIComponent(String(title))}`;
   const ogImage = `${site}/og/site-preview.png`;
 
-  return {
+  return tourMetadata({
     title: titleText,
     openGraph: {
       title: titleText,
@@ -45,7 +46,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     },
     twitter: { card: 'summary_large_image', title: titleText, images: [ogImage] },
     alternates: { canonical: ogUrl },
-  };
+  });
 }
 
 export default async function Page({ params }: any) {

@@ -1,11 +1,6 @@
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 
-let prisma: PrismaClient;
-if (!globalThis.prisma) {
-  globalThis.prisma = new PrismaClient();
-}
-prisma = globalThis.prisma;
 
 // --- Utils ---
 function getMultiParam(url: URL, key: string): string[] {
@@ -43,6 +38,8 @@ export async function GET(request: NextRequest) {
     const url = request.nextUrl;
     const selectedSurfaces = getMultiParam(url, 'surface');
     const selectedLevels = getMultiParam(url, 'level');
+    // The all-level top rows can omit the best Masters / WTA 1000 results.
+    const filterTopTierBeforeRanking = selectedLevels.length === 1 && selectedLevels[0] === 'M';
     const selectedRounds = getMultiParam(url, 'round');
     const selectedBestOf = getMultiParam(url, 'best_of');
     const limit = Math.max(1, Math.min(100, Number(url.searchParams.get('limit') ?? 100)));
@@ -50,7 +47,7 @@ export async function GET(request: NextRequest) {
     let finalMatches: PlayedRecord[] = [];
 
     // --- Caso 1: zero o un solo filtro (usa MV) ---
-    if (selectedSurfaces.length + selectedLevels.length + selectedRounds.length + selectedBestOf.length <= 1) {
+    if (!filterTopTierBeforeRanking && selectedSurfaces.length + selectedLevels.length + selectedRounds.length + selectedBestOf.length <= 1) {
       let matches: Awaited<ReturnType<typeof prisma.mVSameTournamentPlayed.findMany>> = [];
       try {
         matches = await prisma.mVSameTournamentPlayed.findMany({
@@ -158,7 +155,7 @@ export async function GET(request: NextRequest) {
     }
 
     // --- Caso 2: più filtri → calcolo dinamico da Match ---
-    if (selectedSurfaces.length + selectedLevels.length + selectedRounds.length + selectedBestOf.length > 1) {
+    if (filterTopTierBeforeRanking || selectedSurfaces.length + selectedLevels.length + selectedRounds.length + selectedBestOf.length > 1) {
       const matches = await prisma.match.findMany({
         where: {
           status: true,

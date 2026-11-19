@@ -1,7 +1,9 @@
 "use client";
+import { tourPath } from "@/lib/tour-path";
+import { useTourRouter as useRouter, currentTourPath } from "@/lib/tour-navigation";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+
 import Flag from '@/components/Flag';
 import PlayerTabs from "./PlayerTabs";
 import { Player } from "@/types";
@@ -41,7 +43,7 @@ export default function PlayerClient(props: any) {
   const [activeTab, setActiveTab] = useState<string>(() => {
     try {
       if (typeof window === 'undefined') return params?.tab || 'overview';
-      const parts = window.location.pathname.split('/');
+      const parts = tourPath(window.location.pathname, 'ATP').split('/');
       const pathTab = parts[3] || null; // /players/<slug>/<tab>
       // Surface-specific route segments are not tabs in the UI — map them to the matches tab
       // so AllMatches renders with the surface-filtered initialMatches provided by the server.
@@ -88,7 +90,7 @@ export default function PlayerClient(props: any) {
     // This eliminates 3 unnecessary re-renders (setLoading×2 + setPlayer)
     // that cannot produce any visual change but contribute to CLS measurement.
     if (initialPlayer?.slug) {
-      const slug = (initialPlayer.atpname || initialPlayer.player || (initialPlayer as any).id || '')
+      const slug = (initialPlayer.slug || initialPlayer.atpname || initialPlayer.player || (initialPlayer as any).id || '')
         .toString()
         .toLowerCase()
         .trim()
@@ -97,15 +99,16 @@ export default function PlayerClient(props: any) {
         const params = new URLSearchParams(window.location.search);
         const explicitTab = params.get('tab');
         if (explicitTab) params.delete('tab');
-        const pathParts = window.location.pathname.split('/');
+        const pathParts = tourPath(window.location.pathname, 'ATP').split('/');
         const tabFromPath = pathParts[3];
         const finalTab = explicitTab || tabFromPath || 'overview';
         const search = params.toString();
         const pathYearSegment = (pathParts[4] && /^[0-9]{4}$/.test(pathParts[4])) ? `/${pathParts[4]}` : '';
         // For 'overview', keep the URL at /players/slug (no tab segment)
-        const desired = finalTab === 'overview'
+        const desiredPath = finalTab === 'overview'
           ? `${getPlayerHref(slug)}${search ? `?${search}` : ''}`
           : `${getPlayerHref(slug)}/${encodeURIComponent(finalTab)}${pathYearSegment}${search ? `?${search}` : ''}`;
+        const desired = currentTourPath(desiredPath);
         if (window.location.pathname + (search ? `?${search}` : '') !== desired) {
           window.history.replaceState(null, "", desired);
         }
@@ -134,7 +137,7 @@ export default function PlayerClient(props: any) {
         setPlayer(data);
 
         // slug SOLO per l'URL del browser
-        const slug = (data.atpname || data.player || data.id)
+        const slug = (data.slug || data.atpname || data.player || data.id)
           .toString()
           .toLowerCase()
           .trim()
@@ -144,17 +147,17 @@ export default function PlayerClient(props: any) {
         const params = new URLSearchParams(window.location.search);
         const explicitTab = params.get('tab');
         if (explicitTab) params.delete('tab');
-        const pathParts = window.location.pathname.split('/');
+        const pathParts = tourPath(window.location.pathname, 'ATP').split('/');
         const tabFromPath = pathParts[3];
         const finalTab = explicitTab || tabFromPath || 'overview';
         const search = params.toString();
         // Preserve a path-based year segment when present (e.g. /players/slug/season/2026)
         const pathYearSegment = (pathParts[4] && /^[0-9]{4}$/.test(pathParts[4])) ? `/${pathParts[4]}` : '';
         // For 'overview', keep the URL at /players/slug (no tab segment)
-        const desired = finalTab === 'overview'
+        const desiredPath = finalTab === 'overview'
           ? `${getPlayerHref(slug)}${search ? `?${search}` : ''}`
           : `${getPlayerHref(slug)}/${encodeURIComponent(finalTab)}${pathYearSegment}${search ? `?${search}` : ''}`;
-        window.history.replaceState(null, "", desired);
+        window.history.replaceState(null, "", currentTourPath(desiredPath));
       } catch (err) {
         if (!(err instanceof DOMException && err.name === "AbortError")) {
           setError("Errore nel caricamento del giocatore.");
@@ -210,7 +213,7 @@ export default function PlayerClient(props: any) {
     const buildAndReplace = () => {
       // If the location's path-based tab doesn't match our activeTab, respect the path and update state instead
       try {
-        const pathTabNow = typeof window !== 'undefined' ? window.location.pathname.split('/')[3] : null;
+        const pathTabNow = typeof window !== 'undefined' ? tourPath(window.location.pathname, 'ATP').split('/')[3] : null;
         if (pathTabNow && pathTabNow !== activeTab) {
           // If a user-initiated navigation was initiated very recently, do not override it; wait for it to settle
           const recent = typeof window !== 'undefined' && (window as any).__player_navigation_recent && (Date.now() - (window as any).__player_navigation_recent < 1200);
@@ -284,7 +287,7 @@ export default function PlayerClient(props: any) {
 
       // Build new pathname with the active tab as the 3rd segment
       // For 'overview', keep URL at /players/slug (no tab segment)
-      const pathParts = window.location.pathname.split('/');
+      const pathParts = tourPath(window.location.pathname, 'ATP').split('/');
       let newUrl: string;
       if (activeTab === 'overview') {
         const basePath = pathParts.slice(0, 3).join('/');
@@ -296,6 +299,7 @@ export default function PlayerClient(props: any) {
         newUrl = `${pathParts.join('/')}${newQs ? `?${newQs}` : ''}`;
       }
 
+      newUrl = currentTourPath(newUrl);
       // Skip router.replace() when URL hasn't changed — prevents spurious re-renders on initial mount
       const currentFullUrl = window.location.pathname + (window.location.search || '');
       if (newUrl === currentFullUrl) {

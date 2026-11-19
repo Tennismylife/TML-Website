@@ -1,3 +1,4 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import type { Metadata } from 'next';
 import React from 'react';
 import TournamentServer from './TournamentServer';
@@ -48,7 +49,7 @@ async function getTournament(param: string) {
 // Metadata dinamica per il torneo
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const { id: param } = await params;
-  if (!param) return { title: 'Tournament | Tournament Stats, History, Match Results & Winners' };
+  if (!param) return tourMetadata({ title: 'Tournament | Tournament Stats, History, Match Results & Winners' });
   const tournament = await getTournament(param);
 
   // Prefer the canonical display name when `tournament.name` is an array (use the last item)
@@ -72,7 +73,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   const metaTitle = `${humanized} | Tournament Stats, History, Match Results & Winners`;
   const metaDescription = `Comprehensive results, champions, schedules and match statistics for ${humanized} — browse past winners, draws, player records and historical data.`;
 
-  return {
+  return tourMetadata({
     title: metaTitle,
     description: metaDescription,
     openGraph: {
@@ -97,7 +98,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
       images: [{ url: ogImage, alt: metaTitle }],
     },
     alternates: { canonical: ogUrl },
-  };
+  });
 }
 
 export default async function TournamentPage({ params }: TournamentPageProps) {

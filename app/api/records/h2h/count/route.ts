@@ -1,5 +1,5 @@
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 
 interface H2HRecord {
   player_1: { id: string; name: string; ioc: string };
@@ -9,9 +9,6 @@ interface H2HRecord {
   total_h2h: number;
 }
 
-const globalForPrisma = global as unknown as { prisma?: PrismaClient };
-const prisma = globalForPrisma.prisma || new PrismaClient({ log: ['error', 'warn'] });
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 // --- Helper per arricchire H2H con dati giocatori ---
 function enrichH2H(

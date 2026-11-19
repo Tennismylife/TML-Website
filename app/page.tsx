@@ -1,7 +1,11 @@
-﻿import Image from 'next/image'
+﻿import { tourMetadata } from "@/lib/tour-metadata";
+import { TourAnchor } from "@/components/TourLink";
+import Image from 'next/image'
 import { Suspense } from 'react'
 import LatestMatchesServer from '@/components/LatestMatchesServer'
 import SearchPlayerLoader from '@/components/SearchPlayerLoader'
+import { getTour } from "@/lib/tour";
+import { recordTourPath } from "@/lib/record-tour-path";
 
 import type { ReactNode } from 'react';
 
@@ -33,7 +37,7 @@ import { getAllPosts } from '@/lib/blog';
 
 const METADATA_BASE = process.env.NEXT_PUBLIC_SITE_ORIGIN ?? (process.env.NODE_ENV === 'production' ? 'https://stats.tennismylife.org' : 'http://localhost:3000');
 
-export const metadata = {
+const metadata = {
   title: 'Tennis My Life - Tennis Stats, Records & Matches Database',
   description: "Explore tournament calendars, match results, player head-to-head records, rankings and advanced tennis metrics on Tennis My Life.",
   openGraph: {
@@ -56,10 +60,15 @@ export const metadata = {
   alternates: { canonical: 'https://stats.tennismylife.org/' }
 } as const;
 
+export async function generateMetadata() {
+  return tourMetadata(metadata);
+}
+
 export default async function HomePage() {
+  const tour = await getTour();
 
   const navItems: NavItem[] = [
-    { href: "/tournaments", title: "Tournaments", subtitle: "Calendar & Results", description: "Browse upcoming and past tournaments with full draws, schedules, surfaces, and final results. Filter by level (Grand Slam, ATP 1000/500/250) and view match-by-match details.", colorClass: "text-rose-400 group-hover:text-rose-300", accentColor: "#fb7185", icon: (
+    { href: "/tournaments", title: "Tournaments", subtitle: "Calendar & Results", description: `Browse ${tour} tournaments by level and surface, and explore match results and draws.`, colorClass: "text-rose-400 group-hover:text-rose-300", accentColor: "#fb7185", icon: (
       <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
         <path strokeLinecap="round" strokeLinejoin="round" d="M8 21h8M12 17v4m7-14V5H5v2a5 5 0 0 0 5 5h4a5 5 0 0 0 5-5Z" />
         <path strokeLinecap="round" strokeLinejoin="round" d="M5 7H4a3 3 0 0 0 3 3M19 7h1a3 3 0 0 1-3 3" />
@@ -201,7 +210,7 @@ export default async function HomePage() {
       <SearchPlayerLoader />
 
       {/* Featured ATP Finals Records banner */}
-      <a
+      {tour === "ATP" && <TourAnchor
         href="/tournaments/atp-finals/records"
         className="group relative mb-8 flex w-full overflow-hidden rounded-2xl border border-yellow-500/30 shadow-2xl transition-all duration-300 hover:scale-[1.01] hover:shadow-yellow-500/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-400 motion-reduce:transform-none motion-reduce:transition-none"
         style={{ background: 'linear-gradient(135deg, #0f1720 0%, #1a2a10 40%, #2a1a05 100%)' }}
@@ -233,11 +242,11 @@ export default async function HomePage() {
             </svg>
           </div>
         </div>
-      </a>
+      </TourAnchor>}
 
       {/* Featured Records Card */}
       <div className="w-full mb-8">
-        <Card href="/records" title="Records" subtitle="All-Time Achievements & Milestones" large colorClass="text-yellow-400 group-hover:text-yellow-300" accentColor="#facc15">
+        <Card href={recordTourPath("/records", tour)} title="Records" subtitle="All-Time Achievements & Milestones" large colorClass="text-yellow-400 group-hover:text-yellow-300" accentColor="#facc15">
           <svg viewBox="0 0 24 24" className="w-16 h-16" fill="none" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M8 3h8l-2 4H10L8 3z" />
             <circle cx="12" cy="15" r="4" />
@@ -283,7 +292,7 @@ export default async function HomePage() {
 
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
-        {navItems.map((item: NavItem) => (
+        {navItems.filter((item) => tour === "ATP" || !["/ranking", "/rankingtables", "/recordsranking", "/tennis-match-database"].includes(item.href)).map((item: NavItem) => (
           <Card
             key={item.href}
             href={item.href}

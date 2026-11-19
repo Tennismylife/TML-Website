@@ -1,9 +1,10 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import type { Metadata } from 'next';
 import React from 'react';
 
 const site = 'https://stats.tennismylife.org';
 
-export const metadata: Metadata = {
+const metadata: Metadata = {
   title: { absolute: 'Tournaments - TennisMyLife' },
   description: 'Tournament listings, past champions and records.',
   alternates: {
@@ -16,6 +17,10 @@ export const metadata: Metadata = {
     type: 'website',
   },
 };
+
+export async function generateMetadata() {
+  return tourMetadata(metadata);
+}
 
 export default function TournamentsLayout({
   children,

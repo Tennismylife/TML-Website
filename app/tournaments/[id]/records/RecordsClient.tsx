@@ -1,7 +1,8 @@
 'use client'
+import { useTourRouter as useRouter, useBasePathname as usePathname, currentTourPath } from "@/lib/tour-navigation";
 
 import React, { useState, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
+
 
 import CountSection from "./CountSection";
 import AgesSection from "./AgesSection";
@@ -169,7 +170,7 @@ export default function RecordsPageClient({
           const newPath = pathname.replace(`/tournaments/${id}`, `/tournaments/${data.slug}`);
           if (newPath !== pathname) {
             if (typeof window !== 'undefined' && window.history && typeof window.history.replaceState === 'function') {
-              window.history.replaceState(null, '', newPath);
+              window.history.replaceState(null, '', currentTourPath(newPath));
             } else {
               router.replace(newPath);
             }

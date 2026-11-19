@@ -1,3 +1,4 @@
+import { getTour } from "@/lib/tour";
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -20,6 +21,7 @@ export async function GET(request: NextRequest) {
     const selectedRounds = url.searchParams.get('round');
 
     const cacheKey = JSON.stringify({
+      tour: await getTour(),
       surface: selectedSurfaces.sort(),
       level: selectedLevels.sort(),
       best_of: [5],

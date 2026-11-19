@@ -1,3 +1,4 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import RecordsPageClient from '@/app/tournaments/[id]/records/RecordsClient';
 import { getTournamentName, getTournamentSlug } from '@/lib/getTournamentName';
 import { shouldIndexRecords } from '@/lib/getTournamentName';
@@ -29,14 +30,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     indexPage = shouldIndexRecords(t?.category, t?.years ?? null);
   }
   const ogUrl = `${site}/tournaments/${canonicalSlug}/records/percentage/wins`;
-  return {
+  return tourMetadata({
     title,
     description,
     openGraph: { title, description, url: ogUrl, siteName: 'Tennis My Life', images: [{ url: ogImage, alt: `${tournamentName} - Best Winning Percentage`, width: 1200, height: 630, type: 'image/png' }] },
     twitter: { card: 'summary_large_image', title, description, images: [ogImage] },
     alternates: { canonical: ogUrl },
     robots: { index: indexPage, follow: true },
-  };
+  });
 }
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {

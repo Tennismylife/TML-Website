@@ -1,9 +1,10 @@
 'use client'
+import { useTourRouter as useRouter, currentTourPath } from "@/lib/tour-navigation";
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+
 import useIncrementalCards from '@/lib/hooks/useIncrementalCards';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import Flag from '@/components/Flag';
 import ModalTournamentsSeasons from '@/components/ModalTournamentsSeasons';
 import { playerMatchesUrl } from '../../../records/nav';
@@ -127,17 +128,17 @@ export default function TimespanSection({ id, pathId, initialData }: { id: strin
         if (nav && typeof nav.then === 'function') {
           nav.then(() => {
             try { (window as any).__modalOpenedByPush = true; } catch (e) {}
-            try { window.history.replaceState(state, '', newPath); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {}
+            try { window.history.replaceState(state, '', currentTourPath(newPath)); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {}
           }).catch(() => {
-            setTimeout(() => { try { window.history.replaceState(state, '', newPath); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch(e) {} }, 300);
+            setTimeout(() => { try { window.history.replaceState(state, '', currentTourPath(newPath)); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch(e) {} }, 300);
           });
         } else {
           // some routers don't return a promise; delay then dispatch
-          setTimeout(() => { try { window.history.replaceState(state, '', newPath); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch(e) {} }, 350);
+          setTimeout(() => { try { window.history.replaceState(state, '', currentTourPath(newPath)); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch(e) {} }, 350);
         }
       } catch (e) {
         // fallback: replace state and dispatch immediately
-        try { window.history.replaceState(state, '', newPath); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (err) {}
+        try { window.history.replaceState(state, '', currentTourPath(newPath)); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (err) {}
       }
     } catch (err) {
       console.error(err);

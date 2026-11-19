@@ -1,3 +1,4 @@
+import { tourMetadata } from "@/lib/tour-metadata";
 import AgesFull from '@/app/tournaments/[id]/records/ages/_components/AgesFull';
 import { fetchTournamentHeaderCached } from '@/lib/tournamentHeaderCache';
 import ViewRecordsCTA from '../../../ViewRecordsCTA';
@@ -62,13 +63,13 @@ export async function generateMetadata({ params }: any) {
   const ogUrl = `${site}/tournaments/${canonicalSlug}/records/ages/titles/oldest`;
   const ogImage = `${site}/og/site-preview.png`;
   const description = `Oldest men's singles champions at ${tournamentName}, ranked by age when they won the title, with historical tournament records.`;
-  return {
+  return tourMetadata({
     title,
     description,
     openGraph: { title, description, url: ogUrl, siteName: 'TennisMyLife', images: [{ url: ogImage, alt: `${tournamentName} - Oldest Title Winners`, width: 1200, height: 630, type: 'image/png' }] },
     twitter: { card: 'summary_large_image', title, description, images: [ogImage] },
     alternates: { canonical: ogUrl },
-  };
+  });
 }
 
 export default async function Page({ params }: any) {

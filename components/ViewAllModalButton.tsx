@@ -1,7 +1,8 @@
 'use client'
+import { useTourRouter as useRouter, currentTourPath } from "@/lib/tour-navigation";
 
 import React from 'react'
-import { useRouter } from 'next/navigation'
+
 
 type Props = {
   href: string
@@ -28,15 +29,15 @@ export default function ViewAllModalButton({ href, section, which, title, classN
       if (nav && typeof nav.then === 'function') {
         nav.then(() => {
           try { (window as any).__modalOpenedByPush = true; } catch (e) {}
-          try { window.history.replaceState(state, '', href); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {}
+          try { window.history.replaceState(state, '', currentTourPath(href)); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {}
         }).catch(() => {
-          setTimeout(() => { try { window.history.replaceState(state, '', href); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {} }, 300);
+          setTimeout(() => { try { window.history.replaceState(state, '', currentTourPath(href)); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {} }, 300);
         });
       } else {
-        setTimeout(() => { try { window.history.replaceState(state, '', href); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {} }, 300);
+        setTimeout(() => { try { window.history.replaceState(state, '', currentTourPath(href)); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {} }, 300);
       }
     } catch (err) {
-      try { window.history.replaceState(state, '', href); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {}
+      try { window.history.replaceState(state, '', currentTourPath(href)); window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {}
     }
   }
 

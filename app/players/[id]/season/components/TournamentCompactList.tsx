@@ -1,7 +1,7 @@
 "use client";
+import { usePlayerLevel } from "@/lib/use-player-level";
 
-import Link from "next/link";
-import { getLevelFullName } from "@/lib/utils";
+import Link from "@/components/TourLink";
 import { getRoundColor, getTextColorForRound, getSurfaceColor, getLevelColor } from "@/lib/colors";
 
 type TourneyTile = {
@@ -26,6 +26,7 @@ interface TournamentCompactListProps {
 }
 
 export default function TournamentCompactList({ tourneys, getTourneyLink }: TournamentCompactListProps) {
+  const levelNameFor = usePlayerLevel();
   if (tourneys.length === 0) return null;
 
   return (
@@ -63,7 +64,7 @@ export default function TournamentCompactList({ tourneys, getTourneyLink }: Tour
                   className="px-2 py-0.5 rounded-full text-xs font-semibold shrink-0"
                   style={{ backgroundColor: levelColor, color: "#fff" }}
                 >
-                  {getLevelFullName(t.level)}
+                  {levelNameFor(t.level)}
                 </span>
                 <span
                   className="px-2 py-0.5 rounded-full text-xs font-semibold shrink-0"

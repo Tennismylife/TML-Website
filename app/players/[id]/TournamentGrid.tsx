@@ -1,5 +1,7 @@
-import Link from "next/link";
-import { getLevelFullName } from "@/lib/utils";
+"use client";
+import { usePlayerLevel } from "@/lib/use-player-level";
+
+import Link from "@/components/TourLink";
 import { getRoundColor, getTextColorForRound, getSurfaceColor, getLevelColor } from "@/lib/colors";
 
 type TourneyTile = {
@@ -25,6 +27,7 @@ interface TournamentGridProps {
 }
 
 export default function TournamentGrid({ tourneys, getTourneyLink }: TournamentGridProps) {
+  const levelNameFor = usePlayerLevel();
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
       {tourneys.map(t => {
@@ -70,7 +73,7 @@ export default function TournamentGrid({ tourneys, getTourneyLink }: TournamentG
                     className="px-2 py-0.5 rounded-full text-xs font-semibold shrink-0"
                     style={{ backgroundColor: levelColor, color: "#fff" }}
                   >
-                    {getLevelFullName(t.level)}
+                    {levelNameFor(t.level)}
                   </span>
                   <span
                     className="px-2 py-0.5 rounded-full text-xs font-semibold shrink-0"
@@ -121,7 +124,7 @@ export default function TournamentGrid({ tourneys, getTourneyLink }: TournamentG
                   className="px-2 py-0.5 rounded-full text-xs font-semibold shrink-0"
                   style={{ backgroundColor: levelColor, color: "#fff" }}
                 >
-                  {getLevelFullName(t.level)}
+                  {levelNameFor(t.level)}
                 </span>
                 <span
                   className="px-2 py-0.5 rounded-full text-xs font-semibold shrink-0"

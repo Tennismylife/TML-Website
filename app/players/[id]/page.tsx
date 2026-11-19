@@ -1,5 +1,8 @@
+import { fetchForTour, getTour } from "@/lib/tour";
+import { tourPath, tourUrl } from "@/lib/tour-path";
+import { playerLevelName } from "@/lib/player-levels";
 import React from 'react';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import dynamic from 'next/dynamic';
 import { prisma } from '../../../lib/prisma';
 import { redirect, permanentRedirect } from 'next/navigation';
@@ -54,6 +57,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params, searchParams }: any) {
+  const tour = await getTour();
   // params might be a Promise in this Next.js version, match page behavior
   const { id: slugParam } = await params;
   if (!slugParam) return { title: 'Player | Tennis Statistics, Match Results & Rankings' };
@@ -99,7 +103,7 @@ export async function generateMetadata({ params, searchParams }: any) {
   // (the canonical clean URL /players/slug/tab is the one that should be indexed)
   const hasTabQueryParam = Boolean(resolvedQuery?.tab);
 
-  let playerDescription = `${name} tennis statistics: career win-loss record, match results, ATP rankings, surface stats, head-to-head and tournament history on TennisMyLife.`;
+  let playerDescription = `${name} tennis statistics: career win-loss record, match results, ${tour} rankings, surface stats, head-to-head and tournament history on TennisMyLife.`;
   if (player?.id) {
     try {
       const [totalMatches, careerWins, totalTitles] = await Promise.all([
@@ -128,7 +132,7 @@ export async function generateMetadata({ params, searchParams }: any) {
       if (totalMatches > 0) {
         const careerLosses = totalMatches - careerWins;
         const winPct = ((careerWins / totalMatches) * 100).toFixed(1);
-        playerDescription = `${name} ATP stats: ${careerWins}-${careerLosses} career record (${winPct}% win rate), ${totalTitles} titles, rankings history, match results, surface performance and head-to-head data on TennisMyLife.`;
+        playerDescription = `${name} ${tour} stats: ${careerWins}-${careerLosses} career record (${winPct}% win rate), ${totalTitles} titles, rankings history, match results, surface performance and head-to-head data on TennisMyLife.`;
       }
     } catch {
       // fallback to static description
@@ -141,7 +145,7 @@ export async function generateMetadata({ params, searchParams }: any) {
   const metaKeywords = [
     `${name} tennis`,
     `${name} statistics`,
-    `${name} ATP`,
+    `${name} ${tour}`,
     `${name} career stats`,
     `${name} match results`,
     `${name} rankings`,
@@ -161,7 +165,7 @@ export async function generateMetadata({ params, searchParams }: any) {
     authors: [{ name: 'TennisMyLife' }],
     keywords: metaKeywords,
     openGraph: {
-      url: canonical,
+      url: tourUrl(canonical, tour),
       type: 'profile',
       firstName: ogFirstName,
       lastName: ogLastName,
@@ -172,12 +176,13 @@ export async function generateMetadata({ params, searchParams }: any) {
       images: [{ url: imageUrl, width: 1200, height: 630, alt: `${name} tennis statistics` }],
     },
     twitter: { card: 'summary_large_image', site: '@TennisMyLife68', creator: '@TennisMyLife68', title: pageTitle, description: playerDescription, images: [imageUrl] },
-    alternates: { canonical },
+    alternates: { canonical: tourUrl(canonical, tour) },
     robots,
   };
 }
 
 export default async function PlayerPage({ params, searchParams }: any) {
+  const tour = await getTour();
   const { id: slugParam } = await params;
   if (!slugParam) return <div>Player ID not provided</div>;
 
@@ -203,7 +208,7 @@ export default async function PlayerPage({ params, searchParams }: any) {
     if (!player) {
       try {
         const apiUrl = 'https://stats.tennismylife.org/api/slug-map';
-        const apiResp = await fetch(apiUrl, { method: 'GET', cache: 'force-cache' });
+        const apiResp = await fetchForTour(apiUrl, { method: 'GET', cache: 'force-cache' });
         if (apiResp.ok) {
           const maps = await apiResp.json();
           const mapped = maps?.players?.[String(slugParam).toUpperCase()];
@@ -230,7 +235,7 @@ export default async function PlayerPage({ params, searchParams }: any) {
   );
 
   if (!hasTab && hasLandingQueryParams) {
-    permanentRedirect(`/players/${player.slug}`);
+    permanentRedirect(tourPath(`/players/${player.slug}`, tour));
   }
 
   // Redirect to canonical slug URL: handles numeric IDs, legacy codes (e.g. P0FU) and case mismatches.
@@ -242,7 +247,7 @@ export default async function PlayerPage({ params, searchParams }: any) {
       }
     }
     const qs = remainingParams.toString();
-    permanentRedirect(`/players/${player.slug}${qs ? `?${qs}` : ''}`);
+    permanentRedirect(tourPath(`/players/${player.slug}${qs ? `?${qs}` : ''}`, tour));
   }
 
   // If ?tab= is present, permanently redirect (308) to the clean path-based URL.
@@ -256,7 +261,7 @@ export default async function PlayerPage({ params, searchParams }: any) {
     }
     const qs = remainingParams.toString();
     const cleanUrl = `/players/${player.slug}/${tabValue}${qs ? `?${qs}` : ''}`;
-    permanentRedirect(cleanUrl);
+    permanentRedirect(tourPath(cleanUrl, tour));
   }
 
   const name = player.atpname || player.player;
@@ -357,9 +362,9 @@ export default async function PlayerPage({ params, searchParams }: any) {
     });
 
   const siteUrl = 'https://stats.tennismylife.org';
-  const url = `${siteUrl}/players/${player.slug}`;
+  const url = tourUrl(`${siteUrl}/players/${player.slug}`, tour);
   const nameForWiki = name.replace(/\s+/g, '_');
-  const overviewDescription = `${name} tennis statistics: career win-loss record, match results, ATP rankings, surface stats, head-to-head and tournament history on TennisMyLife.`;
+  const overviewDescription = `${name} tennis statistics: career win-loss record, match results, ${tour} rankings, surface stats, head-to-head and tournament history on TennisMyLife.`;
 
   // Register country names
   try { countries.registerLocale(enLocale as any); } catch {}
@@ -386,7 +391,7 @@ export default async function PlayerPage({ params, searchParams }: any) {
   if (player.turnedpro) biographicalProps.push({ '@type': 'PropertyValue', name: 'Turned Pro', value: Number(player.turnedpro) });
   if (player.coaches) biographicalProps.push({ '@type': 'PropertyValue', name: 'Coach', value: String(player.coaches) });
 
-  const pageKeywords = `${name} tennis, ${name} statistics, ${name} ATP, ${name} career stats, ${name} match results, ${name} rankings, ${name} surface stats, ${name} head to head, ${name} win loss record, tennis player statistics`;
+  const pageKeywords = `${name} tennis, ${name} statistics, ${name} ${tour}, ${name} career stats, ${name} match results, ${name} rankings, ${name} surface stats, ${name} head to head, ${name} win loss record, tennis player statistics`;
 
   // =========================
   // JSON-LD: ATHLETE (ENTITY)
@@ -398,7 +403,7 @@ export default async function PlayerPage({ params, searchParams }: any) {
   const grandSlamCount = titlesByLevel['G'] ?? 0;
   if (grandSlamCount > 0) awardList.push(`${grandSlamCount} Grand Slam title${grandSlamCount > 1 ? 's' : ''}`);
   const mastersCount = titlesByLevel['M'] ?? 0;
-  if (mastersCount > 0) awardList.push(`${mastersCount} Masters 1000 title${mastersCount > 1 ? 's' : ''}`);
+  if (mastersCount > 0) awardList.push(`${mastersCount} ${playerLevelName("M", tour)} title${mastersCount > 1 ? 's' : ''}`);
   const topTourneyEntries = Object.entries(titlesByTourney).sort((a, b) => b[1] - a[1]).slice(0, 3).filter(([, c]) => c > 0);
   for (const [t, c] of topTourneyEntries) {
     awardList.push(`${c} × ${t}`);
@@ -421,8 +426,8 @@ export default async function PlayerPage({ params, searchParams }: any) {
     ...(countryName ? { nationality: { '@type': 'Country', name: countryName } } : {}),
     memberOf: {
       '@type': 'Organization',
-      name: 'ATP Tour',
-      url: 'https://www.atptour.com',
+      name: `${tour} Tour`,
+      url: tour === "WTA" ? "https://www.wtatennis.com" : "https://www.atptour.com",
     },
     additionalProperty: [
       ...biographicalProps,
@@ -441,7 +446,7 @@ export default async function PlayerPage({ params, searchParams }: any) {
           lvl === 'G'
             ? 'Grand Slam Titles'
             : lvl === 'M'
-            ? 'Masters Titles'
+            ? `${playerLevelName("M", tour)} Titles`
             : lvl,
         value: count,
       })),
@@ -454,7 +459,7 @@ export default async function PlayerPage({ params, searchParams }: any) {
     ...(awardList.length ? { award: awardList } : {}),
     sameAs: [
       `https://en.wikipedia.org/wiki/${encodeURIComponent(nameForWiki)}`,
-      `https://www.atptour.com/en/players/${encodeURIComponent(player.slug)}/${String(player.id).toLowerCase()}/overview`,
+      ...(tour === "ATP" ? [`https://www.atptour.com/en/players/${encodeURIComponent(player.slug)}/${String(player.id).toLowerCase()}/overview`] : []),
     ],
   };
 
@@ -511,7 +516,7 @@ export default async function PlayerPage({ params, searchParams }: any) {
   if (totalMatches > 0) {
     faqItems.push({
       q: `What is ${name}'s career win-loss record?`,
-      a: `${name} has a career record of ${careerWins}–${careerLosses} across ${totalMatches} ATP matches, for a win rate of ${winRate(careerWins, careerLosses).toFixed(1)}%.`,
+      a: `${name} has a career record of ${careerWins}–${careerLosses} across ${totalMatches} ${tour} matches, for a win rate of ${winRate(careerWins, careerLosses).toFixed(1)}%.`,
     });
   }
 
@@ -519,14 +524,14 @@ export default async function PlayerPage({ params, searchParams }: any) {
   {
     const titleBreakdown: string[] = [];
     if (grandSlamTitles > 0) titleBreakdown.push(`${grandSlamTitles} Grand Slam title${grandSlamTitles > 1 ? 's' : ''}`);
-    if (mastersTitles > 0) titleBreakdown.push(`${mastersTitles} Masters 1000 title${mastersTitles > 1 ? 's' : ''}`);
+    if (mastersTitles > 0) titleBreakdown.push(`${mastersTitles} ${playerLevelName("M", tour)} title${mastersTitles > 1 ? 's' : ''}`);
     const titleAnswer =
       totalTitles === 0
-        ? `${name} has not yet won an ATP title.`
+        ? `${name} has not yet won an ${tour} title.`
         : titleBreakdown.length > 0
-        ? `${name} has won ${totalTitles} ATP title${totalTitles > 1 ? 's' : ''}, including ${titleBreakdown.join(' and ')}.`
-        : `${name} has won ${totalTitles} ATP title${totalTitles > 1 ? 's' : ''}.`;
-    faqItems.push({ q: `How many ATP titles has ${name} won?`, a: titleAnswer });
+        ? `${name} has won ${totalTitles} ${tour} title${totalTitles > 1 ? 's' : ''}, including ${titleBreakdown.join(' and ')}.`
+        : `${name} has won ${totalTitles} ${tour} title${totalTitles > 1 ? 's' : ''}.`;
+    faqItems.push({ q: `How many ${tour} titles has ${name} won?`, a: titleAnswer });
   }
 
   // Q3: surface stats
@@ -544,7 +549,7 @@ export default async function PlayerPage({ params, searchParams }: any) {
   // Q4: where to find stats
   faqItems.push({
     q: `Where can I find ${name}'s complete tennis statistics?`,
-    a: `Complete ${name} tennis statistics — match results, ATP rankings history, surface breakdowns, head-to-head records and tournament history — are available at ${url}.`,
+    a: `Complete ${name} tennis statistics — match results, ${tour} rankings history, surface breakdowns, head-to-head records and tournament history — are available at ${url}.`,
   });
 
   // Q5: Top-10 record intent query
@@ -558,7 +563,7 @@ export default async function PlayerPage({ params, searchParams }: any) {
   // Q6: best season intent query
   if (bestYear && bestYearTotal > 0) {
     faqItems.push({
-      q: `What has been ${name}'s best ATP season so far?`,
+      q: `What has been ${name}'s best ${tour} season so far?`,
       a: `${name}'s best season by wins was ${bestYear}, with ${bestYearWins} wins in ${bestYearTotal} matches.`,
     });
   }
@@ -645,10 +650,10 @@ export default async function PlayerPage({ params, searchParams }: any) {
               Updated on <time dateTime={updatedDateIso}>{updatedDateIso}</time>
             </span>
             <h1 className="text-2xl font-extrabold text-yellow-300 md:text-3xl">
-              {name} Statistics, Match Results, ATP Rankings &amp; Career Records
+              {name} Statistics, Match Results, {tour} Rankings &amp; Career Records
             </h1>
             <h2 className="mt-1 text-sm font-normal text-gray-300">
-              This page covers {name}&apos;s ATP career record, match results, ATP ranking history, head-to-head data, plus surface, season and tournament performance.
+              This page covers {name}&apos;s {tour} career record, match results, {tour} ranking history, head-to-head data, plus surface, season and tournament performance.
             </h2>
           </div>
         }

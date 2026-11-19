@@ -1,11 +1,6 @@
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 
-let prisma: PrismaClient;
-if (!globalThis.prisma) {
-  globalThis.prisma = new PrismaClient();
-}
-prisma = globalThis.prisma;
 
 function getMultiParam(url: URL, key: string): string[] {
   return url.searchParams

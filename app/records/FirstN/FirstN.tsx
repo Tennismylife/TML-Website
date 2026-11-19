@@ -1,7 +1,9 @@
 'use client'
 
+import RecordH3 from "@/app/records/RecordH3";
+
 import React, { useState, useEffect, useMemo } from 'react';
-import Link from 'next/link';
+import Link from '@/app/records/RecordLink';
 import Flag from '@/components/Flag';
 import { getPlayerHrefWithTab } from "@/lib/utils";
 import { playerSurfaceHref, surfaceFromSelection } from "../nav";
@@ -104,7 +106,7 @@ export default function FirstN({ selectedSurfaces, selectedLevels, selectedRound
 
   return (
     <div>
-      <h3 className="text-md font-semibold mb-2">Wins in First N Matches</h3>
+      <RecordH3 className="text-md font-semibold mb-2" label="Wins in First N Matches" />
       <div className="mb-4">
         <label htmlFor="n-input" className="mr-2">Number of matches:</label>
         <input

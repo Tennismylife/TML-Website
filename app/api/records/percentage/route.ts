@@ -1,19 +1,7 @@
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 
 export const dynamic = 'force-dynamic';
-
-const prisma = new PrismaClient();
-
-type PlayerWinPercentage = {
-  id: string | number;
-  name: string;
-  ioc: string;
-  matchesPlayed: number;
-  wins: number;
-  losses: number;
-  winPercentage: number;
-};
 
 export async function GET(request: NextRequest) {
   try {
@@ -26,78 +14,60 @@ export async function GET(request: NextRequest) {
       .map(b => parseInt(b))
       .filter(n => !isNaN(n));
 
-    // Count wins per player
-    const winners = await prisma.match.groupBy({
-      by: ['winner_id', 'winner_name', 'winner_ioc'],
-      where: {
-        ...(selectedSurfaces.length > 0 && { surface: { in: selectedSurfaces } }),
-        ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),
-        ...(selectedRounds.length > 0 && { round: { in: selectedRounds } }),
-        ...(selectedBestOf.length > 0 && { best_of: { in: selectedBestOf } }),
-        status: true,
-        winner_id: { not: null },
-      },
-      _count: { winner_id: true },
+    const matchFilters = {
+      ...(selectedSurfaces.length > 0 && { surface: { in: selectedSurfaces } }),
+      ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),
+      ...(selectedRounds.length > 0 && { round: { in: selectedRounds } }),
+      ...(selectedBestOf.length > 0 && { best_of: { in: selectedBestOf } }),
+      status: true,
+    };
+
+    const [winners, losers] = await Promise.all([
+      prisma.match.groupBy({
+        by: ['winner_id'],
+        where: { ...matchFilters, winner_id: { not: null } },
+        _count: { winner_id: true },
+        _min: { winner_name: true, winner_ioc: true },
+      }),
+      prisma.match.groupBy({
+        by: ['loser_id'],
+        where: { ...matchFilters, loser_id: { not: null } },
+        _count: { loser_id: true },
+        _min: { loser_name: true, loser_ioc: true },
+      }),
+    ]);
+
+    const winnersById = new Map(winners.map(row => [row.winner_id, row]));
+    const losersById = new Map(losers.map(row => [row.loser_id, row]));
+    const ids = Array.from(new Set([...winnersById.keys(), ...losersById.keys()]))
+      .filter((id): id is string => id !== null);
+    if (ids.length === 0) return NextResponse.json({ topWinPercentages: [] });
+
+    const players = await prisma.player.findMany({
+      where: { id: { in: ids } },
+      select: { id: true, atpname: true, player: true, ioc: true, slug: true },
     });
+    const playersById = new Map(players.map(player => [player.id, player]));
 
-    // Count losses per player
-    const losers = await prisma.match.groupBy({
-      by: ['loser_id', 'loser_name', 'loser_ioc'],
-      where: {
-        ...(selectedSurfaces.length > 0 && { surface: { in: selectedSurfaces } }),
-        ...(selectedLevels.length > 0 && { tourney_level: { in: selectedLevels } }),
-        ...(selectedRounds.length > 0 && { round: { in: selectedRounds } }),
-        ...(selectedBestOf.length > 0 && { best_of: { in: selectedBestOf } }),
-        status: true,
-        loser_id: { not: null },
-      },
-      _count: { loser_id: true },
-    });
+    const topWinPercentages = ids.map(id => {
+      const player = playersById.get(id);
+      const winner = winnersById.get(id);
+      const loser = losersById.get(id);
+      const wins = winner?._count.winner_id ?? 0;
+      const losses = loser?._count.loser_id ?? 0;
+      const matchesPlayed = wins + losses;
 
-    // Merge wins and losses
-    const statsMap = new Map<string, { id: string | number; name: string; ioc: string; wins: number; losses: number }>();
-
-    winners.forEach(w => {
-      const key = String(w.winner_id);
-      statsMap.set(key, {
-        id: String(w.winner_id),
-        name: w.winner_name ?? '',
-        ioc: w.winner_ioc ?? '',
-        wins: w._count.winner_id,
-        losses: 0,
-      });
-    });
-
-    losers.forEach(l => {
-      const key = String(l.loser_id);
-      if (!statsMap.has(key)) {
-        statsMap.set(key, {
-          id: String(l.loser_id),
-          name: l.loser_name ?? '',
-          ioc: l.loser_ioc ?? '',
-          wins: 0,
-          losses: l._count.loser_id,
-        });
-      } else {
-        statsMap.get(key)!.losses = l._count.loser_id;
-      }
-    });
-
-    let topWinPercentages: PlayerWinPercentage[] = Array.from(statsMap.values())
-      .map(p => ({
-        ...p,
-        matchesPlayed: p.wins + p.losses,
-        winPercentage: Math.round((p.wins / (p.wins + p.losses)) * 10000) / 100,
-      }))
-      .sort((a, b) => b.winPercentage - a.winPercentage || b.matchesPlayed - a.matchesPlayed);
-
-    // Attach slugs when available
-    const ids = topWinPercentages.map(p => String(p.id));
-    if (ids.length > 0) {
-      const rows = await prisma.player.findMany({ where: { id: { in: ids } }, select: { id: true, slug: true } });
-      const slugMap = new Map(rows.map(r => [r.id, r.slug] as [string, string | null]));
-      topWinPercentages = topWinPercentages.map(p => ({ ...p, slug: slugMap.get(String(p.id)) ?? null }));
-    }
+      return {
+        id,
+        name: player?.atpname || player?.player || winner?._min.winner_name || loser?._min.loser_name || '',
+        ioc: player?.ioc || winner?._min.winner_ioc || loser?._min.loser_ioc || '',
+        wins,
+        losses,
+        matchesPlayed,
+        winPercentage: Math.round((wins / matchesPlayed) * 10000) / 100,
+        slug: player?.slug ?? null,
+      };
+    }).sort((a, b) => b.winPercentage - a.winPercentage || b.matchesPlayed - a.matchesPlayed);
 
     return NextResponse.json({ topWinPercentages });
   } catch (error) {

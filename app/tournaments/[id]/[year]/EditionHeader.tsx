@@ -2,7 +2,7 @@
 
 import React from "react";
 import { getSurfaceColor, getLevelColor, getTextColorForRound } from "@/lib/colors";
-import {getLevelFullName} from "@/lib/utils";
+import { usePlayerLevel } from "@/lib/use-player-level";
 
 type EditionHeaderProps = {
   tourney_name: string;
@@ -21,6 +21,7 @@ export default function EditionHeader({
   tourney_date,
   draw_size,
 }: EditionHeaderProps) {
+  const levelName = usePlayerLevel();
   // Normalizziamo tourney_level e surface come array
   const levels = Array.isArray(tourney_level) ? tourney_level : [tourney_level];
   const surfaces = Array.isArray(surface) ? surface : [surface];
@@ -69,16 +70,17 @@ export default function EditionHeader({
       {/* Livelli (badge) */}
       <div className="absolute top-4 right-6 flex flex-wrap gap-2">
         {levels.map((level, i) => {
+          const label = levelName(level);
           const color = getLevelColor(level) ?? "#555";
           const textColor = getTextColorForRound(color);
           return (
             <span
               key={i}
-              aria-label={`Tournament level: ${level}`}
+              aria-label={`Tournament level: ${label}`}
               className="px-4 py-1 rounded-full text-sm font-semibold shadow-md flex-shrink-0"
               style={{ backgroundColor: color, color: textColor }}
             >
-             {getLevelFullName(level)}
+              {label}
             </span>
           );
         })}

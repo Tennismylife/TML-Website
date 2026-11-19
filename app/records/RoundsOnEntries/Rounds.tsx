@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import Link from "@/app/records/RecordLink";
 import Flag from '@/components/Flag';
 import { getPlayerHrefWithTab } from "@/lib/utils";
 import { playerSurfaceHref, surfaceFromSelection } from "../nav";

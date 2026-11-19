@@ -1,5 +1,5 @@
 import Flag from '@/components/Flag';
-import Link from 'next/link';
+import Link from '@/components/TourLink';
 import type { Match } from '@/types';
 import { getRoundColor, getTextColorForRound } from '@/lib/colors';
 import React from 'react';
