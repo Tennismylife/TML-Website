@@ -170,6 +170,14 @@ export default async function HomePage() {
             <h1 className="text-gray-300 mb-0 text-base md:text-lg font-normal">
               Welcome to TennisMyLife - a comprehensive tennis statistics site. Explore match records, ranking records, tournament calendars, match results, player head-to-head, season summaries, rankings, ranking tables, and advanced metrics to follow players' careers and compare performances
             </h1>
+            <div className="mt-5 flex items-center justify-center gap-3" aria-label="Since 2015">
+              <span aria-hidden="true" className="h-px w-7 bg-gradient-to-r from-transparent to-lime-400/60" />
+              <span className="inline-flex items-baseline gap-2 rounded-full border border-lime-400/30 bg-lime-400/10 px-4 py-2 shadow-[0_0_24px_rgba(163,230,53,0.10)]">
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-lime-200">Since</span>
+                <span className="text-base font-extrabold tracking-wider text-lime-400">2015</span>
+              </span>
+              <span aria-hidden="true" className="h-px w-7 bg-gradient-to-l from-transparent to-lime-400/60" />
+            </div>
           </div>
 
         </div>
@@ -191,6 +199,41 @@ export default async function HomePage() {
 
       {/* Client Components */}
       <SearchPlayerLoader />
+
+      {/* Featured ATP Finals Records banner */}
+      <a
+        href="/tournaments/atp-finals/records"
+        className="group relative mb-8 flex w-full overflow-hidden rounded-2xl border border-yellow-500/30 shadow-2xl transition-all duration-300 hover:scale-[1.01] hover:shadow-yellow-500/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-400 motion-reduce:transform-none motion-reduce:transition-none"
+        style={{ background: 'linear-gradient(135deg, #0f1720 0%, #1a2a10 40%, #2a1a05 100%)' }}
+      >
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 opacity-20 transition-opacity duration-500 group-hover:opacity-30"
+          style={{ background: 'radial-gradient(ellipse at 70% 50%, #facc15 0%, transparent 70%)' }}
+        />
+        <div aria-hidden="true" className="w-1.5 shrink-0" style={{ background: 'linear-gradient(to bottom, #facc15, #f97316)' }} />
+
+        <div className="relative flex w-full flex-col items-center gap-6 px-6 py-8 sm:flex-row sm:px-10">
+          <div aria-hidden="true" className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full border-2 border-yellow-400/40 bg-yellow-400/10 text-4xl shadow-lg shadow-yellow-500/20">
+            🏆
+          </div>
+
+          <div className="flex-1 text-center sm:text-left">
+            <h2 className="mb-2 text-2xl font-extrabold tracking-tight sm:text-3xl" style={{ color: '#facc15', WebkitTextFillColor: '#facc15' }}>
+              ATP Finals <span style={{ color: '#fb923c', WebkitTextFillColor: '#fb923c' }}>Records</span>
+            </h2>
+            <p className="text-sm text-gray-300 sm:text-base">
+              Turin 2026 · 15–22 November. Explore the all-time singles records, champions and milestones.
+            </p>
+          </div>
+
+          <div aria-hidden="true" className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-yellow-400/30 text-yellow-400 transition-colors duration-300 group-hover:border-yellow-400 group-hover:bg-yellow-400/10 sm:flex">
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        </div>
+      </a>
 
       {/* Featured Records Card */}
       <div className="w-full mb-8">

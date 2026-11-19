@@ -1,0 +1,92 @@
+{
+  "updated_utc": "2026-10-17T15:20:53.732138+00:00",
+  "mode": "ChatGPT manual AI review",
+  "total_alto": 3080,
+  "analyzed": 65,
+  "relevant_pages": 45,
+  "articles_identified": 61,
+  "txt_written": 61,
+  "articles_to_verify": 13,
+  "no_relevant": 20,
+  "errors": 0,
+  "pending_review": 1,
+  "elapsed_seconds": 2228.7,
+  "avg_seconds_per_alto": 55.53,
+  "alto_per_minute": 1.75,
+  "recent_10_alto_per_minute": 1.058,
+  "coverage_pct": 2.11,
+  "last": [
+    {
+      "page": "bpt6k12536053_17.xml",
+      "status": "none",
+      "articles": 0,
+      "seconds": 42.78,
+      "time": "2026-10-17T15:20:53.717134+00:00"
+    },
+    {
+      "page": "bd6t54207592d_17.xml",
+      "status": "none",
+      "articles": 0,
+      "seconds": 42.8,
+      "time": "2026-10-17T15:20:53.641806+00:00"
+    },
+    {
+      "page": "bpt6k9687493p_674.xml",
+      "status": "none",
+      "articles": 0,
+      "seconds": 42.8,
+      "time": "2026-10-17T15:20:53.567155+00:00"
+    },
+    {
+      "page": "bpt6k4524219k_47.xml",
+      "status": "done",
+      "articles": 1,
+      "seconds": 42.79,
+      "time": "2026-10-17T15:20:53.489059+00:00"
+    },
+    {
+      "page": "bpt6k65485652_17.xml",
+      "status": "done",
+      "articles": 1,
+      "seconds": 54.31,
+      "time": "2026-10-17T15:20:53.410111+00:00"
+    },
+    {
+      "page": "bpt6k1035369k_19.xml",
+      "status": "done",
+      "articles": 1,
+      "seconds": 68.37,
+      "time": "2026-10-17T15:15:28.519654+00:00"
+    },
+    {
+      "page": "bpt6k4602172p_1.xml",
+      "status": "done",
+      "articles": 1,
+      "seconds": 68.36,
+      "time": "2026-10-17T15:15:28.428567+00:00"
+    },
+    {
+      "page": "bpt6k51388662_5.xml",
+      "status": "done",
+      "articles": 1,
+      "seconds": 68.35,
+      "time": "2026-10-17T15:15:28.357536+00:00"
+    },
+    {
+      "page": "bpt6k9687493p_545.xml",
+      "status": "done",
+      "articles": 1,
+      "seconds": 68.36,
+      "time": "2026-10-17T15:15:28.281767+00:00"
+    },
+    {
+      "page": "bpt6k9605389m_23.xml",
+      "status": "done",
+      "articles": 2,
+      "seconds": 68.36,
+      "time": "2026-10-17T15:15:28.198938+00:00"
+    }
+  ],
+  "ai_api_background": false,
+  "external_api_calls": 0
+}

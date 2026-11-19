@@ -6,6 +6,7 @@ import Flag from '@/components/Flag';
 import { getPlayerHrefWithTab } from "@/lib/utils";
 import { playerSurfaceHref, surfaceFromSelection } from "../nav";
 import Pagination from "../../../components/Pagination";
+import Modal from "../../../components/Modal";
 
 interface TitlesProps {
   // Accept both Set<string> and string[] to be more flexible with callers
@@ -137,14 +138,9 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries, f
         <button
           type="button"
           onClick={(e) => {
-            try { e.preventDefault(); e.stopPropagation(); } catch (ex) {}
-            try {
-              const state = { modal: true, background: window.location.pathname, section: 'roundsonentries', title: null };
-              try { (window as any).__lastOpenModalPayload = state; (window as any).__modalBackgroundPath = state.background; } catch (e) {}
-              const newPath = `/records/roundsonentries/titles`;
-              try { window.history.replaceState(state, '', newPath); } catch (e) {}
-              try { window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {}
-            } catch (err) {}
+            e.preventDefault();
+            e.stopPropagation();
+            setShowModal(true);
           }}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
         >
@@ -158,6 +154,9 @@ export default function Titles({ selectedSurfaces, selectedLevels, minEntries, f
         <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       )}
 
+      <Modal show={showModal} onClose={() => setShowModal(false)} title="All Players">
+        {renderTable(filteredData)}
+      </Modal>
 
             </>
       ) : (

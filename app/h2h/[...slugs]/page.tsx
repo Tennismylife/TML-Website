@@ -170,7 +170,8 @@ async function hasEverBeenTop20(playerId: string) {
   return Boolean(everTop20);
 }
 
-export async function generateMetadata({ params, searchParams }: { params?: Promise<{ slugs?: string[] }> | { slugs?: string[] }, searchParams?: Record<string, string | string[]> }): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams: requestedSearchParams }: { params?: Promise<{ slugs?: string[] }>, searchParams?: Promise<Record<string, string | string[]>> }): Promise<Metadata> {
+  const searchParams = requestedSearchParams ? await requestedSearchParams : undefined;
   // Next.js 16+ params can be a Promise
   const resolvedParams = params instanceof Promise ? await params : params;
   const slugArr = resolvedParams?.slugs;
@@ -236,7 +237,8 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
   };
 }
 
-export default async function Page({ params, searchParams }: { params?: Promise<{ slugs?: string[] }> | { slugs?: string[] }, searchParams?: Record<string, string | string[]> }) {
+export default async function Page({ params, searchParams: requestedSearchParams }: { params?: Promise<{ slugs?: string[] }>, searchParams?: Promise<Record<string, string | string[]>> }) {
+  const searchParams = requestedSearchParams ? await requestedSearchParams : undefined;
   // Next.js 16+ params can be a Promise
   const resolvedParams = params instanceof Promise ? await params : params;
   const slugArr = resolvedParams?.slugs;

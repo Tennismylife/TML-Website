@@ -145,14 +145,9 @@ export default function Rounds({ selectedSurfaces, selectedLevels, selectedRound
         <button
           type="button"
           onClick={(e) => {
-            try { e.preventDefault(); e.stopPropagation(); } catch (ex) {}
-            try {
-              const state = { modal: true, background: window.location.pathname, section: 'roundsonentries', title: selectedRounds };
-              try { (window as any).__lastOpenModalPayload = state; (window as any).__modalBackgroundPath = state.background; } catch (e) {}
-              const newPath = `/records/roundsonentries/rounds?round=${encodeURIComponent(String(selectedRounds))}`;
-              try { window.history.replaceState(state, '', newPath); } catch (e) {}
-              try { window.dispatchEvent(new CustomEvent('open-modal', { detail: state })); } catch (e) {}
-            } catch (err) {}
+            e.preventDefault();
+            e.stopPropagation();
+            setShowModal(true);
           }}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
         >

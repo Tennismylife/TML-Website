@@ -3,6 +3,7 @@ import DataFileListClient from '@/components/DataFileListClient';
 
 import fs from 'fs';
 import path from 'path';
+const { listPublicCsvFiles } = require('../../lib/public-csv-files.cjs') as { listPublicCsvFiles: (dir: string) => string[] };
 
 export const dynamic = 'force-dynamic';
 
@@ -53,22 +54,7 @@ export default function Page() {
 
   try {
     if (fs.existsSync(dataDir)) {
-      const walkCsvFiles = (dir: string, rootDir: string): string[] => {
-        const items: string[] = [];
-        const entries = fs.readdirSync(dir, { withFileTypes: true });
-        for (const entry of entries) {
-          const fullPath = path.join(dir, entry.name);
-          if (entry.isDirectory()) {
-            items.push(...walkCsvFiles(fullPath, rootDir));
-          } else if (entry.isFile() && /\.csv$/i.test(entry.name)) {
-            const relPath = path.relative(rootDir, fullPath).split(path.sep).join('/');
-            items.push(relPath);
-          }
-        }
-        return items;
-      };
-
-      const files = walkCsvFiles(dataDir, dataDir);
+      const files = listPublicCsvFiles(dataDir);
       const years: number[] = [];
       initialFiles = files.map((name) => {
         const st = fs.statSync(path.join(dataDir, ...name.split('/')));

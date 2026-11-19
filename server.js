@@ -23,6 +23,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 // Archiver to stream ZIPs on-the-fly for bulk download endpoint
 const archiver = require('archiver');
+const { listPublicCsvFiles } = require('./lib/public-csv-files.cjs');
 const {
   hasRecordsFilterParams,
   resolvePageRecordAndSub,
@@ -41,6 +42,42 @@ const CONTROL_PARAMS = new Set(['nocache', 'x-refresh']);
 let redis = null;
 let activeRequests = 0;
 const MAX_CACHE_BODY_BYTES = Math.max(0, Number(process.env.CACHE_MAX_BODY_BYTES || 2 * 1024 * 1024));
+const RSS_TRACE_THRESHOLD_BYTES = Math.max(0, Number(process.env.RSS_TRACE_THRESHOLD_MB || 32) * 1024 * 1024);
+const RATE_LIMIT_WINDOW_MS = Math.max(1000, Number(process.env.RATE_LIMIT_WINDOW_MS || 60_000));
+const RATE_LIMIT_MAX_DYNAMIC = Math.max(1, Number(process.env.RATE_LIMIT_MAX_DYNAMIC || 2000));
+const RATE_LIMIT_MAX_CONCURRENT = Math.max(1, Number(process.env.RATE_LIMIT_MAX_CONCURRENT || 100));
+const scrapeGuardBuckets = new Map();
+
+function clientIp(req) {
+  const forwarded = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
+  return forwarded || req.socket?.remoteAddress || 'unknown';
+}
+
+function isLoopbackIp(ip) {
+  return ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1';
+}
+
+function isExpensiveDynamicPath(reqPath) {
+  if (isCacheExcludedPath(reqPath)) return false;
+  return (
+    reqPath.startsWith('/records/') ||
+    reqPath.startsWith('/players/') ||
+    reqPath.startsWith('/tournaments/') ||
+    reqPath.startsWith('/h2h/') ||
+    reqPath.startsWith('/api/records/') ||
+    reqPath.startsWith('/api/players/') ||
+    reqPath.startsWith('/api/tournaments/') ||
+    reqPath.startsWith('/api/h2h/') ||
+    reqPath === '/api/matches'
+  );
+}
+
+setInterval(() => {
+  const cutoff = Date.now() - (RATE_LIMIT_WINDOW_MS * 2);
+  for (const [ip, bucket] of scrapeGuardBuckets) {
+    if (bucket.windowStart < cutoff && bucket.concurrent === 0) scrapeGuardBuckets.delete(ip);
+  }
+}, Math.max(60_000, RATE_LIMIT_WINDOW_MS)).unref();
 
 /* ---------------- Helpers build info ---------------- */
 function safeReadBuildId() {
@@ -146,6 +183,10 @@ function isCacheExcludedPath(reqPath) {
   return (
     reqPath.startsWith('/_next/') ||
     reqPath.startsWith('/data/') ||
+    reqPath === '/counterpunch-review' ||
+    reqPath.startsWith('/counterpunch-review/') ||
+    reqPath === '/api/ranking' ||
+    reqPath === '/api/ranking/dates' ||
     reqPath === '/api/download-all' ||
     /\.(png|jpg|jpeg|gif|webp|avif|svg|ico|css|js|map|csv|zip|gz|pdf|woff|woff2|ttf|otf|eot|mp4|webm)$/i.test(reqPath)
   );
@@ -163,6 +204,8 @@ const APP_BUILD_ID = safeReadBuildId();
 
   const server = express();
 
+
+
   // ⚠️ NON registrare express.json() globalmente: Next ha bisogno del raw body per i suoi handler
 
   /* 1) Compressione Gzip (PRIMA dei middleware di cache) */
@@ -175,11 +218,74 @@ const APP_BUILD_ID = safeReadBuildId();
     next();
   });
 
+  // Diagnostic only: identify requests associated with large native RSS growth.
+  // Logs only significant positive deltas, so normal traffic stays quiet.
+  server.use((req, res, next) => {
+    if (RSS_TRACE_THRESHOLD_BYTES <= 0) return next();
+    const rssAtStart = process.memoryUsage.rss();
+    const startedAt = Date.now();
+    res.on('finish', () => {
+      setImmediate(() => {
+        const rssAtFinish = process.memoryUsage.rss();
+        const delta = rssAtFinish - rssAtStart;
+        if (delta >= RSS_TRACE_THRESHOLD_BYTES) {
+          console.warn('[RSS GROWTH]', JSON.stringify({
+            method: req.method,
+            url: req.originalUrl,
+            status: res.statusCode,
+            deltaMB: Math.round(delta / 1048576),
+            rssMB: Math.round(rssAtFinish / 1048576),
+            durationMs: Date.now() - startedAt,
+            activeRequests,
+          }));
+        }
+      });
+    });
+    next();
+  });
+
   /* 3) Header informativi */
   server.use((req, res, next) => {
     res.setHeader('X-Cache', 'UNCACHED');
     if (APP_GIT_SHA) res.setHeader('X-App-Commit', APP_GIT_SHA.slice(0, 12));
     if (APP_BUILD_ID) res.setHeader('X-App-BuildId', APP_BUILD_ID);
+    // The CounterPunch dashboard reads live audit files: never cache its HTML.
+    if (req.path === '/counterpunch-review' || req.path.startsWith('/counterpunch-review/')) {
+      res.setHeader('Cache-Control', 'private, no-store, max-age=0');
+      res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+      // Nginx's existing cookie bypass keeps this internal live view out of its microcache.
+      res.setHeader('Set-Cookie', 'tml_audit_live=1; Path=/counterpunch-review; Max-Age=31536000; SameSite=Lax; Secure; HttpOnly');
+    }
+    next();
+  });
+
+  /* Keep the weekly ranking date selector live; Next's build can cache the GET route. */
+  server.get('/api/ranking/dates', async (_req, res) => {
+    try {
+      const dates = await prisma.rankingDate.findMany({
+        select: { date: true },
+        orderBy: { date: 'desc' },
+      });
+      res.setHeader('Cache-Control', 'no-store, max-age=0');
+      return res.json({ dates: dates.map((row) => row.date.toISOString().slice(0, 10)) });
+    } catch (err) {
+      console.error('[RANKING DATES]', err);
+      return res.status(500).json({ error: 'Errore recupero date' });
+    }
+  });
+
+  // Scope the cache-bypass cookie to ranking dates only, not the rest of the site.
+  // The nginx microcache otherwise serves the previous Monday's selector for up to six hours.
+  server.use((req, res, next) => {
+    if (req.method === 'GET' && req.path === '/ranking') {
+      res.cookie('tml_rank_dates_live', '1', {
+        path: '/api/ranking/dates',
+        maxAge: 365 * 24 * 60 * 60 * 1000,
+        sameSite: 'lax',
+        secure: true,
+        httpOnly: true,
+      });
+    }
     next();
   });
 
@@ -236,6 +342,18 @@ const APP_BUILD_ID = safeReadBuildId();
       console.error('[RECORDS EMPTY CHECK ERROR]', error);
       return next();
     }
+  });
+
+  // Retired public Gallica 1905 dashboard. The historical mining corpus is untouched.
+  server.get(/^\/gallica-1905(?:\/|\.|$)/, (req, res) => {
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.setHeader('Cache-Control', 'no-store, max-age=0');
+    return res.status(410).send('Gone');
+  });
+  server.get(['/api/gallica-1905-live', '/api/gallica-1905-live/'], (req, res) => {
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.setHeader('Cache-Control', 'no-store, max-age=0');
+    return res.status(410).json({ error: 'Gone' });
   });
 
   /* 4.9) Redirect numeric tournament IDs AND player legacy codes BEFORE cache read.
@@ -308,6 +426,44 @@ const APP_BUILD_ID = safeReadBuildId();
       console.error('[CACHE READ ERROR]', e);
       return next();
     }
+  });
+
+  /* 5.5) Scrape guard: only cache misses / expensive dynamic work */
+  server.use((req, res, next) => {
+    if (req.method !== 'GET' || !isExpensiveDynamicPath(req.path)) return next();
+
+    const ip = clientIp(req);
+    if (isLoopbackIp(ip)) return next();
+
+    const now = Date.now();
+    let bucket = scrapeGuardBuckets.get(ip);
+    if (!bucket || now - bucket.windowStart >= RATE_LIMIT_WINDOW_MS) {
+      bucket = { windowStart: now, count: 0, concurrent: 0, warned: false };
+      scrapeGuardBuckets.set(ip, bucket);
+    }
+
+    bucket.count += 1;
+    if (bucket.count > RATE_LIMIT_MAX_DYNAMIC || bucket.concurrent >= RATE_LIMIT_MAX_CONCURRENT) {
+      const retryAfter = Math.max(1, Math.ceil((bucket.windowStart + RATE_LIMIT_WINDOW_MS - now) / 1000));
+      res.setHeader('Retry-After', String(retryAfter));
+      res.setHeader('Cache-Control', 'no-store');
+      if (!bucket.warned) {
+        bucket.warned = true;
+        console.warn('[SCRAPE GUARD]', JSON.stringify({ ip, path: req.path, count: bucket.count, concurrent: bucket.concurrent }));
+      }
+      return res.status(429).send('Too Many Requests');
+    }
+
+    bucket.concurrent += 1;
+    let released = false;
+    const release = () => {
+      if (released) return;
+      released = true;
+      bucket.concurrent = Math.max(0, bucket.concurrent - 1);
+    };
+    res.once('finish', release);
+    res.once('close', release);
+    return next();
   });
 
   /* 6) CACHE WRITE */
@@ -533,23 +689,9 @@ const APP_BUILD_ID = safeReadBuildId();
       const host = req.headers.host || 'localhost:3000';
       const base = `${proto}://${host}`;
 
-      const walkCsvFiles = (dir, rootDir) => {
-        const items = [];
-        const entries = fs.readdirSync(dir, { withFileTypes: true });
-        for (const entry of entries) {
-          const fullPath = path.join(dir, entry.name);
-          if (entry.isDirectory()) {
-            items.push(...walkCsvFiles(fullPath, rootDir));
-          } else if (entry.isFile() && /\.csv$/i.test(entry.name)) {
-            const relativePath = path.relative(rootDir, fullPath).split(path.sep).join('/');
-            items.push({ name: relativePath, path: fullPath });
-          }
-        }
-        return items;
-      };
-
-      const files = walkCsvFiles(dataDir, dataDir);
-      const results = files.map(({ name, path: fullPath }) => {
+      const files = listPublicCsvFiles(dataDir);
+      const results = files.map((name) => {
+        const fullPath = path.join(dataDir, ...name.split('/'));
         const st = fs.statSync(fullPath);
         const encoded = name.split('/').map(encodeURIComponent).join('/');
         return { name, url: `${base}/data/${encoded}`, size: st.size, mtime: st.mtime.toISOString() };
@@ -569,25 +711,10 @@ const APP_BUILD_ID = safeReadBuildId();
       const dataDir = path.join(process.cwd(), 'data');
       if (!fs.existsSync(dataDir)) return res.status(404).send('data directory not found');
 
-      const walkCsvFiles = (dir, rootDir) => {
-        const items = [];
-        const entries = fs.readdirSync(dir, { withFileTypes: true });
-        for (const entry of entries) {
-          const fullPath = path.join(dir, entry.name);
-          if (entry.isDirectory()) {
-            items.push(...walkCsvFiles(fullPath, rootDir));
-          } else if (entry.isFile() && /\.csv$/i.test(entry.name)) {
-            const relativePath = path.relative(rootDir, fullPath).split(path.sep).join('/');
-            items.push(relativePath);
-          }
-        }
-        return items;
-      };
-
-      // Optional query parameter `files=name1.csv,name2.csv` to include a subset
+      // The same strict published-dataset list used by /api/data-files.
       const requested = req.query.files ? req.query.files.toString().split(',').map((s) => s.trim()).filter(Boolean) : null;
 
-      let files = walkCsvFiles(dataDir, dataDir);
+      let files = listPublicCsvFiles(dataDir);
       if (requested && requested.length) {
         files = files.filter((f) => requested.includes(f));
       }

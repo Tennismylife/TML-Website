@@ -90,8 +90,8 @@ const SUB_LABELS: Record<string, Record<string, string>> = {
 };
 
 type Props = {
-  params: { slug?: string[] } | Promise<{ slug?: string[] }>;
-  searchParams?: Record<string, string | string[] | undefined> | Promise<Record<string, string | string[] | undefined>>;
+  params: Promise<{ slug?: string[] }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
 function kebabToKey(s?: string) {
@@ -893,7 +893,7 @@ export default async function SlugPage({ params, searchParams }: Props) {
               </>
             )}
           </nav>
-          <SyncUrlClient url={canonicalFull} />
+          <SyncUrlClient url={record === 'roundsonentries' && hasQueryParams ? undefined : canonicalFull} />
           {(() => {
             const h1 = getRecordsPageTitle(
               policySlugRender,

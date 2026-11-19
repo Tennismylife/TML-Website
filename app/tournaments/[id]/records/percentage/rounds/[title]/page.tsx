@@ -8,7 +8,7 @@ import { resolveCanonicalTourneyId } from '@/lib/tournament';
 import RecordsWebPageJsonLd from '../../../RecordsWebPageJsonLd';
 import RecordsBreadcrumb from '../../../RecordsBreadcrumb';
 
-export async function generateMetadata({ params }: { params: { id: string; title: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ id: string; title: string }> }) {
   const p = await params;
   const { id, title } = p;
   const tournamentName = await getTournamentName(id);

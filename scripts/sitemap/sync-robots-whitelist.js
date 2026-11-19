@@ -89,7 +89,7 @@ function main() {
 
   lines.push('');
   lines.push('# Sitemap');
-  lines.push('Sitemap: https://stats.tennismylife.org/sitemap_index.xml');
+  lines.push('Sitemap: https://stats.tennismylife.org/sitemaps/sitemap_index.xml');
 
   fs.writeFileSync(outputPath, lines.join('\n') + '\n', 'utf8');
 

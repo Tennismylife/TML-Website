@@ -176,7 +176,7 @@ export default function DataFileList({ full = false, initialFiles }: { full?: bo
         </div>
 
         <div className="mb-3 text-center">
-          <a href="/api/download-all" className="inline-flex w-full items-center justify-center rounded-xl bg-indigo-600 px-6 py-3 text-lg font-extrabold text-white shadow-xl hover:bg-indigo-500 sm:w-auto sm:px-10 sm:py-4 sm:text-2xl">
+          <a href="/api/download-all" onClick={(e) => { e.preventDefault(); window.location.href = `/api/download-all?cb=${Date.now()}`; }} className="inline-flex w-full items-center justify-center rounded-xl bg-indigo-600 px-6 py-3 text-lg font-extrabold text-white shadow-xl hover:bg-indigo-500 sm:w-auto sm:px-10 sm:py-4 sm:text-2xl">
             <svg className="w-6 h-6 mr-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path d="M12 3v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               <path d="M5 11l7 7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

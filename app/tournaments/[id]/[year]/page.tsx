@@ -1,5 +1,5 @@
 import TournamentEditionClient from './EditionClient';
-import { buildTournamentJsonLdFromDb, fetchEditionInfo, getEditionValue } from './layout';
+import { buildTournamentJsonLdFromDb, fetchEditionInfo, getEditionValue } from './edition-helpers';
 import Breadcrumbs from './Breadcrumbs';
 import { prisma } from '@/lib/prisma';
 import { redirect, permanentRedirect } from 'next/navigation';

@@ -33,18 +33,18 @@ export default function RankingTable({ rankings, perPage = 20 }: RankingTablePro
   const currentPage = rankings.slice(start, end);
 
   const renderTable = (list: Ranking[], startIndex = 0) => (
-    <div className="overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
+    <div className="mx-auto w-full max-w-4xl overflow-x-auto rounded border border-white/30 bg-gray-900 shadow">
       <table className="min-w-full border-collapse">
         <thead>
           <tr className="bg-black">
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Rank</th>
-            <th className="border border-white/30 px-4 py-2 text-left text-lg text-gray-200">Player</th>
+            <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Player</th>
             <th className="border border-white/30 px-4 py-2 text-center text-lg text-gray-200">Points</th>
           </tr>
         </thead>
         <tbody>
           {list.map((p, idx) => {
-            const globalRank = startIndex + idx + 1;
+            const globalRank = p.rank; // preserve ATP ties rather than sequential row numbers
             return (
               <tr key={p.id} className="hover:bg-gray-800 border-b border-white/10">
                 <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
@@ -52,8 +52,8 @@ export default function RankingTable({ rankings, perPage = 20 }: RankingTablePro
                     ? <Link href={`/players/${p.slug}/ranking`} className="hover:underline">{globalRank}</Link>
                     : globalRank}
                 </td>
-                <td className="border border-white/10 px-4 py-2 text-lg text-gray-200">
-                  <div className="flex items-center gap-2">
+                <td className="border border-white/10 px-4 py-2 text-center text-lg text-gray-200">
+                  <div className="flex items-center justify-center gap-2">
                     {p.ioc && <Flag ioc={p.ioc} className="w-4 h-3" />}
                     <Link href={p.slug ? `/players/${p.slug}/ranking` : getPlayerHrefWithTab(String(p.id), 'ranking')} className="text-indigo-300 hover:underline">
                       {p.name}

@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const archiver = require('archiver');
+const { listPublicCsvFiles } = require('../../lib/public-csv-files.cjs');
 
 export default async function handler(req, res) {
   console.log('/api/download-all handler hit');
@@ -15,7 +16,7 @@ export default async function handler(req, res) {
     // Optional query parameter `files=name1.csv,name2.csv` to include a subset
     const requested = req.query.files ? req.query.files.toString().split(',').map((s) => s.trim()).filter(Boolean) : null;
 
-    let files = fs.readdirSync(dataDir).filter((f) => /\.csv$/i.test(f));
+    let files = listPublicCsvFiles(dataDir);
     if (requested && requested.length) {
       files = files.filter((f) => requested.includes(f));
     }
@@ -40,7 +41,7 @@ export default async function handler(req, res) {
     archive.pipe(res);
 
     for (const f of files) {
-      const p = path.join(dataDir, f);
+      const p = path.join(dataDir, ...f.split('/'));
       archive.file(p, { name: f });
     }
 

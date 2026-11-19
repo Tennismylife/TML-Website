@@ -41,8 +41,9 @@ export async function generateMetadata({ params }: any) {
   } catch (e) {
     // ignore
   }
+  if (/^us open$/i.test(tournamentName.trim())) tournamentName = 'US Open';
 
-  const title = `Oldest Title Winners at ${tournamentName} | Tennis Records`;
+  const title = `Oldest Men's Singles Champions at ${tournamentName}`;
   const site = process.env.SITE_URL || 'https://stats.tennismylife.org';
 
   // Resolve canonical tournament slug (prefer slug for URLs)
@@ -60,10 +61,12 @@ export async function generateMetadata({ params }: any) {
 
   const ogUrl = `${site}/tournaments/${canonicalSlug}/records/ages/titles/oldest`;
   const ogImage = `${site}/og/site-preview.png`;
+  const description = `Oldest men's singles champions at ${tournamentName}, ranked by age when they won the title, with historical tournament records.`;
   return {
     title,
-    openGraph: { title, url: ogUrl, siteName: 'TennisMyLife', images: [{ url: ogImage, alt: `${tournamentName} - Oldest Title Winners`, width: 1200, height: 630, type: 'image/png' }] },
-    twitter: { card: 'summary_large_image', title, images: [ogImage] },
+    description,
+    openGraph: { title, description, url: ogUrl, siteName: 'TennisMyLife', images: [{ url: ogImage, alt: `${tournamentName} - Oldest Title Winners`, width: 1200, height: 630, type: 'image/png' }] },
+    twitter: { card: 'summary_large_image', title, description, images: [ogImage] },
     alternates: { canonical: ogUrl },
   };
 }
@@ -81,6 +84,7 @@ export default async function Page({ params }: any) {
       <div className="pt-14 px-2">
         <RecordsBreadcrumb slugId={slugId} tournamentName={tournamentName} crumbs={[{ label: 'Ages', href: `/tournaments/${slugId}/records/ages/main` }, { label: 'Title Ages', href: `/tournaments/${slugId}/records/ages/titles` }, { label: 'Oldest Champions' }]} />
       </div>
+      <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">{`Oldest Men's Singles Champions at ${tournamentName}`}</h1>
       <AgesFull id={id} section="titles" which="oldest" />
     </div>
   );

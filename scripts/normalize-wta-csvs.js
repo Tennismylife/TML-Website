@@ -234,7 +234,7 @@ function extractStatsFromMatchPage(html) {
   const lBpSaved = parseIntOrNull(bpSaved[1].split('/')[0]);
   const lBpFaced = parseIntOrNull(bpSaved[1].split('/')[1]);
 
-  return {
+  const result = {
     w_ace: parseIntOrNull(aces[0]),
     w_df: parseIntOrNull(dfs[0]),
     w_svpt: wSvpt,
@@ -254,6 +254,14 @@ function extractStatsFromMatchPage(html) {
     l_bpSaved: lBpSaved,
     l_bpFaced: lBpFaced,
   };
+  if (!Object.values(result).every((n) => Number.isInteger(n) && n >= 0)) return null;
+  for (const side of ['w', 'l']) {
+    const val = (name) => result[side + '_' + name];
+    if (val('1stWon') > val('1stIn') || val('1stIn') > val('svpt')
+      || val('2ndWon') + val('df') > val('svpt') - val('1stIn')
+      || val('bpSaved') > val('bpFaced')) return null;
+  }
+  return result;
 }
 
 function extractPlayersFromMatchPage(html) {
@@ -323,8 +331,21 @@ async function updateNottingham2026(filePath) {
     const stats = extractStatsFromMatchPage(html);
     if (!stats) continue;
 
+    // Match-page stats are left/right, not necessarily winner/loser.
+    // Fail closed unless both page-player identities match the CSV row.
+    const first = normalizeName(players[0]);
+    const second = normalizeName(players[1]);
+    const csvWinner = normalizeName(cols[headerIndex.winner_name]);
+    const csvLoser = normalizeName(cols[headerIndex.loser_name]);
+    const winnerFirst = first === csvWinner && second === csvLoser;
+    const loserFirst = first === csvLoser && second === csvWinner;
+    if (!winnerFirst && !loserFirst) continue;
+
     for (const [k, v] of Object.entries(stats)) {
-      cols[headerIndex[k]] = v == null ? '' : String(v);
+      const mapped = loserFirst && k.startsWith('w_') ? 'l_' + k.slice(2)
+        : loserFirst && k.startsWith('l_') ? 'w_' + k.slice(2) : k;
+      if (headerIndex[mapped] === undefined) continue;
+      cols[headerIndex[mapped]] = v == null ? '' : String(v);
     }
     updated += 1;
   }

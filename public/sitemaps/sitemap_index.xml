@@ -1,10 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/eastbourne-h2h-sitemap-2026-06-23.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/halle%202026-new.xml</loc>
+  </sitemap>
+  <sitemap>
     <loc>https://stats.tennismylife.org/sitemaps/halle-2026-h2h-sitemap.xml</loc>
   </sitemap>
   <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/mallorca-h2h-sitemap-2026-06-22.xml</loc>
+  </sitemap>
+  <sitemap>
     <loc>https://stats.tennismylife.org/sitemaps/queens-2026-h2h-sitemap.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-cincinnati-2026-r4-qf-h2h.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-bastad-2026.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-canada-2026.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-chengdu-2026-r32.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-estoril-2026.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-gstaad-2026.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-hangzhou-2026-r32.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-kitzbuhel-2026.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-los-cabos-2026.xml</loc>
   </sitemap>
   <sitemap>
     <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-rome-2026-new.xml</loc>
@@ -13,7 +49,28 @@
     <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-top100.xml</loc>
   </sitemap>
   <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-us-open-2026-qf-sf-possible-noindex.xml</loc>
+  </sitemap>
+  <sitemap>
     <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-us-open-2026-r128-r64-noindex.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-washington-2026.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-wimbledon-2026-bottom-half-R3.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-wimbledon-2026-bottom-half.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-wimbledon-2026-r1-noindex-r2.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-wimbledon-2026-top%20half.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-wimbledon-2026-top-half-R3.xml</loc>
   </sitemap>
   <sitemap>
     <loc>https://stats.tennismylife.org/sitemaps/sitemap-new-roland-garros-2026.xml</loc>
@@ -29,6 +86,9 @@
   </sitemap>
   <sitemap>
     <loc>https://stats.tennismylife.org/sitemaps/sitemap-player-surfaces-top100.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-player-urls-r16-bastad-gstaad-umag-2026.xml</loc>
   </sitemap>
   <sitemap>
     <loc>https://stats.tennismylife.org/sitemaps/sitemap-players-A.xml</loc>
@@ -205,6 +265,27 @@
     <loc>https://stats.tennismylife.org/sitemaps/sitemap-tournaments-Z.xml</loc>
   </sitemap>
   <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-winston-salem-2026-r2-r3.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap_cincinnati_atp_2026_r2_r3.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemaps-umag-h2h-2026.xml</loc>
+  </sitemap>
+  <sitemap>
     <loc>https://stats.tennismylife.org/sitemaps/statistics-sitemap.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-shanghai-2026.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-lyon-brussels-almaty-2026.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-basel-vienna-2026.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://stats.tennismylife.org/sitemaps/sitemap-h2h-paris-2026.xml</loc>
   </sitemap>
 </sitemapindex>

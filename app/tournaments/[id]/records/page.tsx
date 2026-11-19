@@ -47,14 +47,9 @@ type PercentageSubTabState = 'overall' | 'per-round';
 
 interface RecordsPageProps {
   params: Promise<{ id: string }>;
-  initialTournament?: { id: string; slug?: string; name?: string };
-  initialActiveTab?: string;
-  initialAgeSubTab?: AgeSubTab;
-  initialPercentageSubTab?: PercentageSubTabState;
-  initialPathId?: string;
 }
 
-export default async function RecordsPage({ params, initialTournament, initialActiveTab, initialAgeSubTab, initialPercentageSubTab, initialPathId }: RecordsPageProps) {
+export default async function RecordsPage({ params }: RecordsPageProps) {
   const { id } = await params;
 
   // In test environments, avoid rendering the client component (which uses `use()` with a Promise)
@@ -77,7 +72,14 @@ export default async function RecordsPage({ params, initialTournament, initialAc
     'madrid-masters': 'Madrid_Records.md',
     'canada-masters': 'Canada_Records.md',
     'cincinnati-masters': 'Cincinnati_Records.md',
+    'paris-masters': 'Paris_Records.md',
+    'shanghai': 'Shanghai_Records.md',
+    'australian-open': 'AustralianOpen_Records.md',
+    'indian-wells-masters': 'IndianWells_Records.md',
+    'miami-masters': 'Miami_Records.md',
+    'atp-finals': 'ATPFinals_Records.md',
     'roland-garros': 'RolandGarros_Records.md',
+    'us-open': 'USOpen_Records.md',
     'wimbledon': 'Wimbledon_Records.md',
   };
   const markdownFileName = markdownFiles[slugId] || markdownFiles[id];

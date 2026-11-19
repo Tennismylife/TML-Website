@@ -9,7 +9,7 @@ export default async function LatestMatchesServer() {
 
   try {
     const raw = await prisma.match.findMany({
-      orderBy: [{ tourney_date: 'desc' }, { id: 'desc' }],
+      orderBy: [{ tourney_date: 'desc' }, { match_num: 'desc' }, { id: 'desc' }],
       where: { score: { not: 'To play' } },
       take: 10,
       select: {

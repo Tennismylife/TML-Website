@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
     const url = new URL(request.url);
     const selectedSurfaces = url.searchParams.getAll('surface').filter(Boolean);
     const selectedLevels = url.searchParams.getAll('level').filter(Boolean);
-    const limitParam = Math.max(1, Math.min(100, Number(url.searchParams.get('limit') ?? 100)));
+    const limitParam = Math.max(1, Math.min(1000, Number(url.searchParams.get('limit') ?? 100)));
 
     const filters: Prisma.Sql[] = [];
     if (selectedSurfaces.length) {
@@ -32,8 +32,8 @@ export async function GET(request: NextRequest) {
       WITH agg AS (
         SELECT
           pt.player_id,
-          COUNT(*) AS entries,
-          COUNT(*) FILTER (WHERE pt.round = 'W') AS wins
+          COUNT(DISTINCT pt.event_id) AS entries,
+          COUNT(DISTINCT pt.event_id) FILTER (WHERE pt.round = 'W') AS wins
         FROM "PlayerTournament" pt
         ${whereSql}
         GROUP BY pt.player_id

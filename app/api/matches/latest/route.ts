@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 export async function GET(request: NextRequest) {
   try {
     const matches = await prisma.match.findMany({
-      orderBy: [{ tourney_date: "desc" }, { id: "desc" }],
+      orderBy: [{ tourney_date: "desc" }, { match_num: "desc" }, { id: "desc" }],
       where: {
         score: { not: "To play" },
       },

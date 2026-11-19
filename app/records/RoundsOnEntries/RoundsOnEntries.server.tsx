@@ -1,9 +1,7 @@
 import React from 'react'
 import ServerWrapper from '../../../components/ServerWrapper'
 import RoundsOnEntries from './RoundsOnEntries'
-import { metadataBase } from '../../../lib/site'
 import { isRecordsSsrPrefetchEnabled } from '../../../lib/recordsSsrPrefetch'
-import { rateLimitedFetch } from '../../../lib/recordsPrefetchThrottle'
 
 type SearchParams = Record<string, string | string[] | undefined>
 
@@ -29,6 +27,9 @@ export default async function RoundsOnEntriesServer({ searchParams, ...serverPro
   })()
 
   const prefetchEnabled = isRecordsSsrPrefetchEnabled()
+  // Narrative/table SSR data must come straight from the current Next process,
+  // never through the public Nginx microcache.
+  const internalApiBase = process.env.RECORDS_INTERNAL_BASE_URL || 'http://127.0.0.1:3000'
   // Prefetch roundsonentries results with selected filters so SSR includes filtered table
   const prefetchedData: Record<string, any[] | undefined> = {}
   if (prefetchEnabled) {
@@ -38,8 +39,8 @@ export default async function RoundsOnEntriesServer({ searchParams, ...serverPro
         params.set('limit', '10')
         for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
         for (const l of Array.from(selectedLevels)) params.append('level', l)
-        const apiUrl = new URL(`/api/records/roundsonentries/titles${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
-        const res = await rateLimitedFetch(apiUrl, { next: { tags: ['records'] } })
+        const apiUrl = new URL(`/api/records/roundsonentries/titles${params.toString() ? '?' + params.toString() : ''}`, internalApiBase).toString()
+        const res = await fetch(apiUrl, { cache: 'no-store' })
         if (res.ok) {
           const json = await res.json()
           if (Array.isArray((json as any).FinalWins)) prefetchedData.titles = (json as any).FinalWins
@@ -50,8 +51,8 @@ export default async function RoundsOnEntriesServer({ searchParams, ...serverPro
         params.set('round', selectedRounds)
         for (const s of Array.from(selectedSurfaces)) params.append('surface', s)
         for (const l of Array.from(selectedLevels)) params.append('level', l)
-        const apiUrl = new URL(`/api/records/roundsonentries/rounds${params.toString() ? '?' + params.toString() : ''}`, metadataBase).toString()
-        const res = await rateLimitedFetch(apiUrl, { next: { tags: ['records'] } })
+        const apiUrl = new URL(`/api/records/roundsonentries/rounds${params.toString() ? '?' + params.toString() : ''}`, internalApiBase).toString()
+        const res = await fetch(apiUrl, { cache: 'no-store' })
         if (res.ok) {
           const json = await res.json()
           if (Array.isArray((json as any).FinalWins)) prefetchedData.round = (json as any).FinalWins

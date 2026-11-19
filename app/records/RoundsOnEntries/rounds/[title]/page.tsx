@@ -4,7 +4,7 @@ import RoundsOnEntriesServer from '@/app/records/RoundsOnEntries/RoundsOnEntries
 
 type Props = {
   params: Promise<{ title: string }>;
-  searchParams?: Record<string, string | string[] | undefined> | Promise<Record<string, string | string[] | undefined>>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {

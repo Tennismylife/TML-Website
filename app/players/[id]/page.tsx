@@ -14,7 +14,7 @@ const PlayerClient = dynamic(() => import('./PlayerClient'), {
   loading: () => <div className="mb-6 rounded-xl border border-gray-700 bg-gray-800 p-4 text-sm text-gray-300">Loading player data...</div>,
 });
 
-export const revalidate = false; // cache infinita — rivalidare via /api/revalidate dopo import DB
+export const revalidate = 0; // dynamic: player landing uses searchParams at request time
 
 export async function generateStaticParams() {
   try {

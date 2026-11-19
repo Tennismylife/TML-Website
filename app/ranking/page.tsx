@@ -36,7 +36,7 @@ export default function RankingPage() {
   useEffect(() => {
     const fetchDates = async () => {
       try {
-        const res = await fetch("/api/ranking/dates");
+        const res = await fetch(`/api/ranking/dates?nocache=${Date.now()}`, { cache: "no-store" });
         const data = await res.json();
 
         const grouped: DateItem[] = [];
@@ -126,7 +126,7 @@ export default function RankingPage() {
     const fetchRanking = async () => {
       try {
         const dateStr = selectedDate.toISOString().slice(0, 10);
-        const res = await fetch(`/api/ranking?date=${dateStr}`);
+        const res = await fetch(`/api/ranking?date=${dateStr}&nocache=${Date.now()}`, { cache: "no-store" });
         const data = await res.json();
         setRankings(data.rankings || []);
       } catch (err) {

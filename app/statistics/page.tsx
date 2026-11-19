@@ -23,9 +23,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function StatisticsPage({ searchParams }: { searchParams?: Record<string, string> }) {
+export default async function StatisticsPage({ searchParams }: { searchParams?: Promise<Record<string, string>> }) {
   // If no stat is provided in query params, redirect to the canonical /statistics/aces
-  const stat = searchParams?.stat;
+  const stat = (await searchParams)?.stat;
   if (!stat) redirect('/statistics/aces');
 
   return (

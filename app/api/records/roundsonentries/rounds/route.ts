@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const levels = url.searchParams.getAll('level').filter(Boolean);
     const targetRound = String(url.searchParams.get('round') ?? '').toUpperCase();
     const limitRaw = Number(url.searchParams.get('limit') ?? '100');
-    const limit = Number.isFinite(limitRaw) ? Math.min(100, Math.max(1, Math.floor(limitRaw))) : 100;
+    const limit = Number.isFinite(limitRaw) ? Math.min(1000, Math.max(1, Math.floor(limitRaw))) : 100;
     const debugMode = url.searchParams.get('debug') === '1' || url.searchParams.get('debug') === 'true';
 
     if (!targetRound) return NextResponse.json({ error: 'Missing round parameter' }, { status: 400 });
@@ -28,8 +28,8 @@ export async function GET(request: NextRequest) {
       WITH agg AS (
         SELECT
           pt.player_id,
-          COUNT(*) AS entries,
-          COUNT(*) FILTER (WHERE UPPER(pt.round) = ${targetRound}) AS wins
+          COUNT(DISTINCT pt.event_id) AS entries,
+          COUNT(DISTINCT pt.event_id) FILTER (WHERE UPPER(pt.round) = ${targetRound}) AS wins
         FROM "PlayerTournament" pt
         ${whereSql}
         GROUP BY pt.player_id

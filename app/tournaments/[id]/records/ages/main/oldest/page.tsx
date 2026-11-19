@@ -7,7 +7,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const p = await params;
   const { id } = p;
   const tournamentName = await getTournamentName(id);
-  return { title: `Oldest Players in Main Draw at ${tournamentName}` };
+  const slugId = await getTournamentSlug(id).catch(() => id);
+  const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
+  const canonical = `${site}/tournaments/${slugId}/records/ages/main/oldest`;
+  const description = `Oldest players to compete in the men's singles main draw at ${tournamentName}, ranked by age with historical tournament records.`;
+  return { title: `Oldest Players in Main Draw at ${tournamentName}`, description, alternates: { canonical } };
 }
 
 export default async function Page({ params }: any) {

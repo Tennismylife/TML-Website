@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+const { listPublicCsvFiles } = require('../../../lib/public-csv-files.cjs') as { listPublicCsvFiles: (dir: string) => string[] };
 
 export async function GET(request: Request) {
   try {
@@ -9,14 +10,14 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'data directory not found' }, { status: 404 });
     }
 
-    const files = fs.readdirSync(dataDir).filter((f) => /\.csv$/i.test(f));
+    const files = listPublicCsvFiles(dataDir);
 
     const url = new URL(request.url);
     const base = `${url.protocol}//${url.host}`;
 
     const results = files.map((name) => {
-      const st = fs.statSync(path.join(dataDir, name));
-      return { name, url: `${base}/data/${encodeURIComponent(name)}`, size: st.size, mtime: st.mtime.toISOString() };
+      const st = fs.statSync(path.join(dataDir, ...name.split('/')));
+      return { name, url: `${base}/data/${name.split('/').map(encodeURIComponent).join('/')}`, size: st.size, mtime: st.mtime.toISOString() };
     });
 
     return NextResponse.json({ count: results.length, files: results });

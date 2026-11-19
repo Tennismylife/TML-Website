@@ -47,11 +47,12 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const raw = extractName(header?.name);
     if (raw) tournamentName = humanize(raw);
   } catch (e) {}
+  if (/^us open$/i.test(tournamentName.trim())) tournamentName = 'US Open';
 
   // Use the exact phrasing requested for SEO title (include brand suffix)
-  const title = `Most Wins At ${tournamentName} | Tennis Records`;
+  const title = `Most ${tournamentName} Match Wins – Men's Singles Records`;
   const site = process.env.SITE_URL?.replace(/\/+$/, '') || 'https://stats.tennismylife.org';
-  const description = `Discover the players with the most wins in the men's singles main draw at ${tournamentName}. This page lists historical records from the Open Era, updated after each tournament edition.`;
+  const description = `Players with the most men's singles main-draw match wins at ${tournamentName}, with Open Era totals and historical records.`;
 
   // Resolve canonical tournament slug (prefer slug for URLs)
   let canonicalSlug = String(id);
@@ -60,7 +61,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     if (canonicalId) {
       const t = await prisma.tournament.findUnique({ where: { id: parseInt(canonicalId, 10) }, select: { slug: true, category: true, years: true } });
       canonicalSlug = t?.slug ?? canonicalId;
-      const canonical = `${site}/tournaments/${canonicalSlug}/records/wins`;
+      const canonical = `${site}/tournaments/${canonicalSlug}/records/count/wins`;
       return {
         title,
         description,
@@ -73,7 +74,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   } else {
     const t = await prisma.tournament.findUnique({ where: { slug: String(id) }, select: { slug: true, category: true, years: true } });
     canonicalSlug = t?.slug ?? String(id);
-    const canonical = `${site}/tournaments/${canonicalSlug}/records/wins`;
+    const canonical = `${site}/tournaments/${canonicalSlug}/records/count/wins`;
     return {
       title,
       description,
@@ -87,8 +88,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return {
     title,
     description,
-    openGraph: { title, description, url: `${site}/tournaments/${canonicalSlug}/records/wins`, images: [{ url: `${site}/og/site-preview.png`, alt: `${tournamentName} - Most wins`, width: 1200, height: 630 }] },
-    alternates: { canonical: `${site}/tournaments/${canonicalSlug}/records/wins` },
+    openGraph: { title, description, url: `${site}/tournaments/${canonicalSlug}/records/count/wins`, images: [{ url: `${site}/og/site-preview.png`, alt: `${tournamentName} - Most wins`, width: 1200, height: 630 }] },
+    alternates: { canonical: `${site}/tournaments/${canonicalSlug}/records/count/wins` },
     other: { 'script[type="application/ld+json"]': undefined as any },
   };
 }
@@ -100,6 +101,7 @@ export default async function WinsPage({ params }: { params: Promise<{ id: strin
     if (raw) return humanize(raw);
     return humanize(String(id).replace(/-/g, ' '));
   }).catch(() => humanize(String(id).replace(/-/g, ' ')));
+  const displayTournamentName = /^us open$/i.test(tournamentName.trim()) ? 'US Open' : tournamentName;
 
   const list = await getCountSection(id, 'wins');
 
@@ -120,10 +122,10 @@ export default async function WinsPage({ params }: { params: Promise<{ id: strin
 
   const canonical = `${site}/tournaments/${canonicalSlug}/records/count/wins`;
 
-  const description = `Discover the players with the most wins in the men's singles main draw at ${tournamentName}. This page lists historical records from the Open Era, updated after each tournament edition.`;
+  const description = `Players with the most men's singles main-draw match wins at ${displayTournamentName}, with Open Era totals and historical records.`;
 
   const faqJson = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
-    { '@type': 'Question', name: `What does "Most wins" at ${tournamentName} mean?`, acceptedAnswer: { '@type': 'Answer', text: `It indicates the total number of match wins by each player in the men's singles main draw at ${tournamentName}, summed across all editions they participated in.` } },
+    { '@type': 'Question', name: `What does "Most wins" at ${displayTournamentName} mean?`, acceptedAnswer: { '@type': 'Answer', text: `It indicates the total number of match wins by each player in the men's singles main draw at ${displayTournamentName}, summed across all editions they participated in.` } },
     { '@type': 'Question', name: 'Does the list cover the Open Era?', acceptedAnswer: { '@type': 'Answer', text: 'Yes — the list covers the Open Era; any pre‑Open inclusions (if present) will be noted on the tournament\'s page.' } },
     { '@type': 'Question', name: 'How do you handle ties (same number of wins)?', acceptedAnswer: { '@type': 'Answer', text: 'In case of a tie we show players with the same count at the same rank, then order by name or by most recent year played (consistent with the table behavior).' } },
     { '@type': 'Question', name: 'Does the page include qualifying matches or only the main draw?', acceptedAnswer: { '@type': 'Answer', text: 'It includes only the men\'s singles main draw, not qualifying matches.' } },
@@ -151,18 +153,18 @@ export default async function WinsPage({ params }: { params: Promise<{ id: strin
 
       {/* Server-rendered JSON-LD scripts (WebPage, FAQPage, BreadcrumbList) */}
       <RecordsWebPageJsonLd
-        pageTitle={`Most Wins At ${tournamentName} | Tennis Records`}
+        pageTitle={`Most ${displayTournamentName} Match Wins – Men's Singles Records`}
         pageDescription={description}
         canonical={canonical}
-        keywords={`${tournamentName}, most wins, tennis records, open era, men's singles`}
+        keywords={`${displayTournamentName}, most wins, tennis records, open era, men's singles`}
       />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJson) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
 
       <main>
-        <RecordsBreadcrumb slugId={canonicalSlug} tournamentName={tournamentName} crumbs={[{ label: 'Wins' }]} />
-        <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">{`Most wins at ${tournamentName}`}</h1>
-        <CountFull id={id} section="wins" list={list} tourneyName={tournamentName} />
+        <RecordsBreadcrumb slugId={canonicalSlug} tournamentName={displayTournamentName} crumbs={[{ label: 'Wins' }]} />
+        <h1 className="text-3xl font-extrabold mb-4 text-center mx-0">{`Most ${displayTournamentName} match wins`}</h1>
+        <CountFull id={id} section="wins" list={list} tourneyName={displayTournamentName} />
       </main>
     </div>
   );

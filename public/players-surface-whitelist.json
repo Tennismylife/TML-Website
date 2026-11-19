@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-14T22:20:45.687Z",
+  "generatedAt": "2026-09-03T06:05:42.472632Z",
   "source": "https://stats.tennismylife.org/api/ranking?date=2026-06-01",
   "snapshotDate": "2026-06-01",
   "manualAllowlist": [
@@ -53,10 +53,18 @@
     "jaime-faria",
     "federico-agustin-gomez",
     "titouan-droguet",
-    "juan-carlos-prado-angelo"
+    "juan-carlos-prado-angelo",
+    "gael-monfils",
+    "dane-sweeny",
+    "yunchaokete-bu",
+    "dalibor-svrcina",
+    "jurij-rodionov",
+    "tristan-schoolkate",
+    "michael-zheng",
+    "arthur-gea"
   ],
   "top100Count": 100,
-  "totalSlugs": 145,
+  "totalSlugs": 153,
   "slugs": [
     "adam-walton",
     "adolfo-daniel-vallejo",
@@ -202,7 +210,15 @@
     "jaime-faria",
     "federico-agustin-gomez",
     "titouan-droguet",
-    "juan-carlos-prado-angelo"
+    "juan-carlos-prado-angelo",
+    "gael-monfils",
+    "dane-sweeny",
+    "yunchaokete-bu",
+    "dalibor-svrcina",
+    "jurij-rodionov",
+    "tristan-schoolkate",
+    "michael-zheng",
+    "arthur-gea"
   ],
   "surfacePages": [
     "/players/adam-walton/clay",
@@ -639,6 +655,27 @@
     "/players/titouan-droguet/grass",
     "/players/juan-carlos-prado-angelo/clay",
     "/players/juan-carlos-prado-angelo/hard",
-    "/players/juan-carlos-prado-angelo/grass"
+    "/players/juan-carlos-prado-angelo/grass",
+    "/players/dane-sweeny/clay",
+    "/players/dane-sweeny/hard",
+    "/players/dane-sweeny/grass",
+    "/players/yunchaokete-bu/clay",
+    "/players/yunchaokete-bu/hard",
+    "/players/yunchaokete-bu/grass",
+    "/players/dalibor-svrcina/clay",
+    "/players/dalibor-svrcina/hard",
+    "/players/dalibor-svrcina/grass",
+    "/players/jurij-rodionov/clay",
+    "/players/jurij-rodionov/hard",
+    "/players/jurij-rodionov/grass",
+    "/players/tristan-schoolkate/clay",
+    "/players/tristan-schoolkate/hard",
+    "/players/tristan-schoolkate/grass",
+    "/players/michael-zheng/clay",
+    "/players/michael-zheng/hard",
+    "/players/michael-zheng/grass",
+    "/players/arthur-gea/clay",
+    "/players/arthur-gea/hard",
+    "/players/arthur-gea/grass"
   ]
 }
