@@ -31,6 +31,89 @@ function parseGamesLostByWinner(score: string): number {
   return total;
 }
 
+type RoundItemData = {
+  year: number;
+  minGamesLost: number;
+  player: { id: string | number; name: string; ioc: string };
+  tourney_id?: string | number;
+};
+
+type RoundItem = { round: string; data: RoundItemData[] };
+
+type AtpFinalsMatch = {
+  round: string | null;
+  tourney_id: string | null;
+  score: string | null;
+  winner_id: string | number | null;
+  winner_name: string | null;
+  winner_ioc: string | null;
+  loser_id: string | number | null;
+  loser_name: string | null;
+  loser_ioc: string | null;
+};
+
+function fillAtpFinalsYear(year: number, matches: AtpFinalsMatch[], roundItems: RoundItem[]) {
+  const orderedRounds = ['RR', 'R128', 'R64', 'R32', 'R16', 'QF', 'SF', 'F'];
+  const roundRobinOnly = year === 1970 || year === 1971;
+  const totals = new Map<string | number, number>();
+
+  for (const round of orderedRounds) {
+    const roundMatches = matches.filter(match => match.round === round);
+    // The 1970 and 1971 championship-clinching matches are stored as F.
+    const reachedRound = roundRobinOnly && round === 'F'
+      ? undefined
+      : roundItems.find(item => item.round === round);
+
+    if (reachedRound) {
+      const seen = new Set<string | number>();
+      for (const match of roundMatches) {
+        for (const side of ['winner', 'loser'] as const) {
+          const id = match[`${side}_id`];
+          const name = match[`${side}_name`];
+          if (!id || !name || seen.has(id)) continue;
+          seen.add(id);
+          // Snapshot both participants before adding any games from this round.
+          reachedRound.data.push({
+            year,
+            minGamesLost: totals.get(id) ?? 0,
+            player: { id, name, ioc: match[`${side}_ioc`] ?? '' },
+            tourney_id: match.tourney_id?.split('-').pop(),
+          });
+        }
+      }
+    }
+
+    for (const match of roundMatches) {
+      let winnerGamesLost = 0;
+      let loserGamesLost = 0;
+      // Count games actually played, including the recorded portion of retirements.
+      for (const token of (match.score ?? '').split(/\s+/)) {
+        const set = token.match(/^(\d+)-(\d+)(?:\([^)]*\))?$/);
+        if (!set) continue;
+        winnerGamesLost += Number(set[2]);
+        loserGamesLost += Number(set[1]);
+      }
+      if (match.winner_id) {
+        totals.set(match.winner_id, (totals.get(match.winner_id) ?? 0) + winnerGamesLost);
+      }
+      if (match.loser_id) {
+        totals.set(match.loser_id, (totals.get(match.loser_id) ?? 0) + loserGamesLost);
+      }
+    }
+
+    if (round !== 'F') continue;
+    const titleMatch = roundMatches.find(match => match.winner_id && match.winner_name && match.score?.trim());
+    if (titleMatch?.winner_id && titleMatch.winner_name) {
+      roundItems.find(item => item.round === 'W')?.data.push({
+        year,
+        minGamesLost: totals.get(titleMatch.winner_id) ?? 0,
+        player: { id: titleMatch.winner_id, name: titleMatch.winner_name, ioc: titleMatch.winner_ioc ?? '' },
+        tourney_id: titleMatch.tourney_id?.split('-').pop(),
+      });
+    }
+  }
+}
+
 export async function GET(request: NextRequest, context: any) {
   try {
     // Supporto compat per Next (params oggetto o Promise)
@@ -97,20 +180,18 @@ export async function GET(request: NextRequest, context: any) {
       highestIdx: number; // indice nel fullRoundOrder (con F→W per il vincitore)
     };
 
-    type RoundItemData = {
-      year: number;
-      minGamesLost: number; // ⚠️ per compatibilità: contiene la somma per quel giocatore
-      player: { id: string | number; name: string; ioc: string };
-      tourney_id?: string | number;
-    };
-
-    const roundItems: { round: string; data: RoundItemData[] }[] = exposedRounds.map((round) => ({
+    const roundItems: RoundItem[] = exposedRounds.map((round) => ({
       round,
       data: [],
     }));
 
     // Process per anno
+    const isAtpFinals = tourneyIds.includes('605');
     for (const [year, matches] of matchesByYear) {
+      if (isAtpFinals) {
+        fillAtpFinalsYear(year, matches, roundItems);
+        continue;
+      }
       // 1) Mappa il round più alto raggiunto per ogni giocatore
       const players = new Map<string, PlayerInfo>();
 
